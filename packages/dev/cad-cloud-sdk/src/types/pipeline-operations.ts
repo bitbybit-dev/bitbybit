@@ -920,11 +920,6 @@ export interface OperationParams {
      * Reads the blue channel of a hex color, remapped to a range of your choice.
      *
      * Example: '#FF5733' in [0,1] -> 0.2
-     *
-     * @example
-     * ```typescript
-     * const blue = bitbybit.color.getBlueParam({ color: "#ff5733", from: 0, to: 1 });
-     * ```
      */
     "color.getBlueParam": {
         /** The color as a hex text such as `#ff5733`. */
@@ -938,11 +933,6 @@ export interface OperationParams {
      * Reads the green channel of a hex color, remapped to a range of your choice.
      *
      * Example: '#FF5733' in [0,1] -> 0.341
-     *
-     * @example
-     * ```typescript
-     * const green = bitbybit.color.getGreenParam({ color: "#ff5733", from: 0, to: 1 });
-     * ```
      */
     "color.getGreenParam": {
         /** The color as a hex text such as `#ff5733`. */
@@ -956,11 +946,6 @@ export interface OperationParams {
      * Reads the red channel of a hex color, remapped to a range of your choice.
      *
      * Example: '#FF5733' in [0,1] -> 1
-     *
-     * @example
-     * ```typescript
-     * const red = bitbybit.color.getRedParam({ color: "#ff5733", from: 0, to: 1 });
-     * ```
      */
     "color.getRedParam": {
         /** The color as a hex text such as `#ff5733`. */
@@ -984,11 +969,6 @@ export interface OperationParams {
      *
      * The text may start with or without `#`; anything else than six hex digits throws an error.
      * Example: '#FF5733' -> { r: 255, g: 87, b: 51 }
-     *
-     * @example
-     * ```typescript
-     * const rgb = bitbybit.color.hexToRgb({ color: "#ff5733" });
-     * ```
      */
     "color.hexToRgb": {
         /** The color as a hex text such as `#ff5733`, with or without the `#`. */
@@ -999,11 +979,6 @@ export interface OperationParams {
      * choice.
      *
      * Example: '#FF5733' mapped to [0,1] -> { r: 1, g: 0.341, b: 0.2 }
-     *
-     * @example
-     * ```typescript
-     * const rgb = bitbybit.color.hexToRgbMapped({ color: "#ff5733", from: 0, to: 1 });
-     * ```
      */
     "color.hexToRgbMapped": {
         /** The color as a hex text such as `#ff5733`. */
@@ -1019,11 +994,6 @@ export interface OperationParams {
      * With `blackAndWhite` on, the result is plain black for a light color or white for a dark
      * one, which suits text on a colored background.
      * Example: '#FF5733' -> '#00a8cc'; with blackAndWhite -> '#ffffff'
-     *
-     * @example
-     * ```typescript
-     * const textColor = bitbybit.color.invert({ color: "#ff5733", blackAndWhite: true });
-     * ```
      */
     "color.invert": {
         /**
@@ -1084,11 +1054,6 @@ export interface OperationParams {
      * Builds an `{ r, g, b }` color from three separate channel values from 0 to 1.
      *
      * Example: r 1, g 0.34, b 0.2 -> { r: 1, g: 0.34, b: 0.2 }
-     *
-     * @example
-     * ```typescript
-     * const orange = bitbybit.color.rgbAtomic1Color({ r: 1, g: 0.34, b: 0.2 });
-     * ```
      */
     "color.rgbAtomic1Color": {
         /** The red channel, from 0 to 1. */
@@ -1102,11 +1067,6 @@ export interface OperationParams {
      * Builds an `{ r, g, b }` color from three separate channel values from 0 to 255.
      *
      * Example: r 255, g 87, b 51 -> { r: 255, g: 87, b: 51 }
-     *
-     * @example
-     * ```typescript
-     * const orange = bitbybit.color.rgbAtomic255Color({ r: 255, g: 87, b: 51 });
-     * ```
      */
     "color.rgbAtomic255Color": {
         /** The red channel, from 0 to 255. */
@@ -1122,11 +1082,6 @@ export interface OperationParams {
      * `min` and `max` say which range the channels use; a range other than 0 to 255 is remapped
      * first.
      * Example: { r: 1, g: 0.5, b: 0.2 } in [0,1] -> '#ff8033'
-     *
-     * @example
-     * ```typescript
-     * const hex = bitbybit.color.rgbObjToHex({ rgb: { r: 1, g: 0.5, b: 0.2 }, min: 0, max: 1 });
-     * ```
      */
     "color.rgbObjToHex": {
         /** The color object to convert. */
@@ -1163,11 +1118,6 @@ export interface OperationParams {
      * `min` and `max` say which range the values use; a range other than 0 to 255 is remapped
      * first, so channels from 0 to 1 work as well.
      * Example: r 255, g 87, b 51 in [0,255] -> '#ff5733'; r 1, g 0.5, b 0.2 in [0,1] -> '#ff8033'
-     *
-     * @example
-     * ```typescript
-     * const hex = bitbybit.color.rgbToHex({ r: 1, g: 0.5, b: 0.2, min: 0, max: 1 });
-     * ```
      */
     "color.rgbToHex": {
         /** The red channel, within `min` to `max`. */
@@ -1198,11 +1148,6 @@ export interface OperationParams {
      * or a line break is wrapped in double quotes.
      *
      * Example: `[["name", "age"], ["John", "30"]]` -> `name,age` and `John,30` on two lines.
-     *
-     * @example
-     * ```typescript
-     * const csv = bitbybit.csv.arrayToCsv({ array: [["x", "y", "z"], [1, 2, 3]], rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.arrayToCsv": {
         /**
@@ -1223,11 +1168,6 @@ export interface OperationParams {
      * 0.
      *
      * Example: `name,age,city` then `John,30,NYC` -> 3.
-     *
-     * @example
-     * ```typescript
-     * const columns = bitbybit.csv.getColumnCount({ csv: "name,age,city\nJohn,30,NYC", rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.getColumnCount": {
         /** The whole CSV text, rows separated by `rowSeparator` */
@@ -1248,11 +1188,6 @@ export interface OperationParams {
      * error.
      *
      * Example: `name,age` then `John,30` -> `["name", "age"]`.
-     *
-     * @example
-     * ```typescript
-     * const headers = bitbybit.csv.getHeaders({ csv: "name,age\nJohn,30", headerRow: 0, rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.getHeaders": {
         /** The whole CSV text, headers included */
@@ -1278,11 +1213,6 @@ export interface OperationParams {
      * header line when `hasHeaders` is true and `dataStartRow` is left out.
      *
      * Example: `name,age`, `John,30`, `Jane,25` with headers -> 2.
-     *
-     * @example
-     * ```typescript
-     * const count = bitbybit.csv.getRowCount({ csv: "name,age\nJohn,30\nJane,25", hasHeaders: true, rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.getRowCount": {
         /**
@@ -1311,11 +1241,6 @@ export interface OperationParams {
      *
      * With `includeHeaders` true the first line holds the header names. Example: `[{ name: "John",
      * age: "30" }]` with headers `["name", "age"]` -> `name,age` and `John,30`.
-     *
-     * @example
-     * ```typescript
-     * const csv = bitbybit.csv.jsonToCsv({ json: people, headers: ["name", "age"], includeHeaders: true, rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.jsonToCsv": {
         /** The objects, one row each, in order; a property an object lacks becomes an empty cell */
@@ -1337,11 +1262,6 @@ export interface OperationParams {
      * columns, in their order; an empty list gives empty text.
      *
      * Example: `[{ name: "John", age: "30" }]` -> `name,age` and `John,30`.
-     *
-     * @example
-     * ```typescript
-     * const csv = bitbybit.csv.jsonToCsvAuto({ json: people, includeHeaders: true, rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.jsonToCsvAuto": {
         /**
@@ -1366,11 +1286,6 @@ export interface OperationParams {
      * Blank lines are skipped, cells are trimmed with their line, and a double-quoted cell may
      * contain the separator and doubled quotes. Example: `a,b,c` and `1,2,3` on two lines ->
      * `[["a", "b", "c"], ["1", "2", "3"]]`.
-     *
-     * @example
-     * ```typescript
-     * const rows = bitbybit.csv.parseToArray({ csv: "x,y,z\n1,2,3\n4,5,6", rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.parseToArray": {
         /** The whole CSV text, rows separated by `rowSeparator` */
@@ -1393,11 +1308,6 @@ export interface OperationParams {
      * Rows start at `dataStartRow`, columns named in `numberColumns` become numbers and a missing
      * cell becomes an empty string. Example: `name,age` then `John,30` -> `[{ name: "John", age:
      * "30" }]`.
-     *
-     * @example
-     * ```typescript
-     * const people = bitbybit.csv.parseToJson({ csv: "name,age\nJohn,30\nJane,25", headerRow: 0, dataStartRow: 1, rowSeparator: "\n", columnSeparator: ",", numberColumns: ["age"] });
-     * ```
      */
     "csv.parseToJson": {
         /** The whole CSV text, headers included */
@@ -1431,11 +1341,6 @@ export interface OperationParams {
      *
      * Columns named in `numberColumns` become numbers. Example: `John,30` with headers `["name",
      * "age"]` -> `[{ name: "John", age: "30" }]`.
-     *
-     * @example
-     * ```typescript
-     * const people = bitbybit.csv.parseToJsonWithHeaders({ csv: "John,30\nJane,25", headers: ["name", "age"], dataStartRow: 0, rowSeparator: "\n", columnSeparator: ",", numberColumns: ["age"] });
-     * ```
      */
     "csv.parseToJsonWithHeaders": {
         /** The whole CSV text, normally without a header line */
@@ -1469,11 +1374,6 @@ export interface OperationParams {
      *
      * With `asNumber` true the values are parsed as numbers. Example: `name,age` then `John,30` and
      * `Jane,25`, column `name` -> `["John", "Jane"]`.
-     *
-     * @example
-     * ```typescript
-     * const ages = bitbybit.csv.queryColumn({ csv: "name,age\nJohn,30\nJane,25", column: "age", headerRow: 0, dataStartRow: 1, rowSeparator: "\n", columnSeparator: ",", asNumber: true });
-     * ```
      */
     "csv.queryColumn": {
         /** The whole CSV text, headers included */
@@ -1504,11 +1404,6 @@ export interface OperationParams {
      * The comparison is on text unless the column is listed in `numberColumns`, in which case both
      * sides are compared as numbers. Example: column `age`, value `30` -> `[{ name: "John", age:
      * "30" }]`.
-     *
-     * @example
-     * ```typescript
-     * const thirty = bitbybit.csv.queryRowsByValue({ csv: "name,age\nJohn,30\nJane,25", column: "age", value: "30", headerRow: 0, dataStartRow: 1, rowSeparator: "\n", columnSeparator: "," });
-     * ```
      */
     "csv.queryRowsByValue": {
         /** The whole CSV text, headers included */
@@ -1542,11 +1437,6 @@ export interface OperationParams {
      *
      * The inputs must all be solids or all be 2D shapes; an empty result is possible when they do
      * not overlap.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.jscad.booleans.intersect({ meshes: [cube, sphere] });
-     * ```
      */
     "jscad.booleans.intersect": {
         /**
@@ -1558,11 +1448,6 @@ export interface OperationParams {
     /**
      * Keeps only the volume or area that `first` and `second` share, the two-input form of
      * `intersect`.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.jscad.booleans.intersectTwo({ first: cube, second: sphere });
-     * ```
      */
     "jscad.booleans.intersectTwo": {
         /** The first solid or 2D shape, the one that is kept and cut in a subtraction */
@@ -1575,11 +1460,6 @@ export interface OperationParams {
      *
      * The inputs must all be solids or all be 2D shapes; the order matters, the first is the one
      * being cut.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.jscad.booleans.subtract({ meshes: [cube, cylinder1, cylinder2] });
-     * ```
      */
     "jscad.booleans.subtract": {
         /**
@@ -1591,11 +1471,6 @@ export interface OperationParams {
     /**
      * Cuts every entry of `meshes` out of `from`, leaving what remains of `from`; the same as
      * `subtract` with the base geometry named separately.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.jscad.booleans.subtractFrom({ from: cube, meshes: [cylinder1, cylinder2] });
-     * ```
      */
     "jscad.booleans.subtractFrom": {
         /** The solid or 2D shape to cut from; it stays as it is and a cut copy comes back */
@@ -1603,14 +1478,7 @@ export interface OperationParams {
         /** The solids or 2D shapes to cut out of `from`, of the same kind as it */
         meshes: unknown[] | PipelineRef;
     };
-    /**
-     * Cuts `second` out of `first`, the two-input form of `subtract`.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.jscad.booleans.subtractTwo({ first: cube, second: sphere });
-     * ```
-     */
+    /** Cuts `second` out of `first`, the two-input form of `subtract`. */
     "jscad.booleans.subtractTwo": {
         /** The first solid or 2D shape, the one that is kept and cut in a subtraction */
         first: unknown | PipelineRef;
@@ -1622,11 +1490,6 @@ export interface OperationParams {
      * separate parts as one entity.
      *
      * The inputs must all be solids or all be 2D shapes.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.jscad.booleans.union({ meshes: [cube, sphere] });
-     * ```
      */
     "jscad.booleans.union": {
         /**
@@ -1635,14 +1498,7 @@ export interface OperationParams {
          */
         meshes: unknown[] | PipelineRef;
     };
-    /**
-     * Fuses `first` and `second` into one, the two-input form of `union`.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.jscad.booleans.unionTwo({ first: cube, second: sphere });
-     * ```
-     */
+    /** Fuses `first` and `second` into one, the two-input form of `union`. */
     "jscad.booleans.unionTwo": {
         /** The first solid or 2D shape, the one that is kept and cut in a subtraction */
         first: unknown | PipelineRef;
@@ -1655,11 +1511,6 @@ export interface OperationParams {
      *
      * The color wins over the color of the drawing options, so leave the entity uncolored to
      * control it there.
-     *
-     * @example
-     * ```typescript
-     * const red = await bitbybit.jscad.colors.colorize({ geometry: cube, color: "#ff0000" });
-     * ```
      */
     "jscad.colors.colorize": {
         /**
@@ -1675,11 +1526,6 @@ export interface OperationParams {
      * format, and downloads it in the browser as `fileName` plus `.3mf`.
      *
      * `options` is passed to the 3MF writer as it is and can stay out.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.jscad.downloadGeometry3MF({ geometry: [cube, sphere], fileName: "parts", options: {} });
-     * ```
      */
     "jscad.downloadGeometry3MF": {
         /** A solid, a 2D shape, a path, or a list of them, all written into one file */
@@ -1694,12 +1540,6 @@ export interface OperationParams {
      * in the browser as `fileName` plus `.dxf`.
      *
      * `options` is passed to the DXF writer as it is and can stay out.
-     *
-     * @example
-     * ```typescript
-     * const circle = await bitbybit.jscad.polygon.circle({ center: [0, 0], radius: 5, segments: 32 });
-     * await bitbybit.jscad.downloadGeometryDxf({ geometry: circle, fileName: "circle", options: {} });
-     * ```
      */
     "jscad.downloadGeometryDxf": {
         /** A solid, a 2D shape, a path, or a list of them, all written into one file */
@@ -1712,11 +1552,6 @@ export interface OperationParams {
     /**
      * Writes several solids into one binary STL file and downloads it in the browser as `fileName`
      * plus `.stl`.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.jscad.downloadSolidsSTL({ meshes: [cube, sphere], fileName: "parts" });
-     * ```
      */
     "jscad.downloadSolidsSTL": {
         /** The solids to write, all into the same file */
@@ -1727,11 +1562,6 @@ export interface OperationParams {
     /**
      * Writes a solid as a binary STL file, the common format for 3D printing, and downloads it in
      * the browser as `fileName` plus `.stl`.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.jscad.downloadSolidSTL({ mesh: cube, fileName: "cube" });
-     * ```
      */
     "jscad.downloadSolidSTL": {
         /** The solid to write to the file */
@@ -1746,12 +1576,6 @@ export interface OperationParams {
      * A 2D shape stays a 2D shape, a path becomes a 2D band of that width around it, and a solid
      * grows into a bigger solid, with round corners and a positive `delta` only. Corners are
      * rounded when `corners` is left out.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.jscad.polygon.square({ center: [0, 0], size: 10 });
-     * const grown = await bitbybit.jscad.expansions.expand({ geometry: square, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.round, segments: 16 });
-     * ```
      */
     "jscad.expansions.expand": {
         /**
@@ -1781,12 +1605,6 @@ export interface OperationParams {
      *
      * A 2D shape gives a bigger or smaller 2D shape and a path gives a parallel path. When
      * `corners` is left out, corners are kept sharp.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.jscad.path.createFromPoints({ points: [[0, 0], [10, 0], [10, 10]], closed: false });
-     * const parallel = await bitbybit.jscad.expansions.offset({ geometry: path, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.edge, segments: 16 });
-     * ```
      */
     "jscad.expansions.offset": {
         /**
@@ -1816,12 +1634,6 @@ export interface OperationParams {
      *
      * `twistAngle` in degrees turns the top relative to the bottom around Z and `twistSteps` is the
      * number of slices used for it, at least 1. A negative `height` extrudes downward.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.jscad.polygon.square({ center: [0, 0], size: 10 });
-     * const twisted = await bitbybit.jscad.extrusions.extrudeLinear({ geometry: square, height: 20, twistAngle: 90, twistSteps: 15 });
-     * ```
      */
     "jscad.extrusions.extrudeLinear": {
         /**
@@ -1848,12 +1660,6 @@ export interface OperationParams {
      *
      * The wall stands on the XY plane and is twice `size` thick, centered on the outline; the
      * inside of a 2D shape stays empty. A list of inputs gives a list of walls.
-     *
-     * @example
-     * ```typescript
-     * const circle = await bitbybit.jscad.polygon.circle({ center: [0, 0], radius: 10, segments: 32 });
-     * const ring = await bitbybit.jscad.extrusions.extrudeRectangular({ geometry: circle, height: 5, size: 0.5 });
-     * ```
      */
     "jscad.extrusions.extrudeRectangular": {
         /** The 2D shape or path whose outline the wall follows; the inside of a shape stays empty */
@@ -1872,11 +1678,6 @@ export interface OperationParams {
      *
      * Only the X and Y coordinates of the points are used and repeated consecutive points are
      * dropped.
-     *
-     * @example
-     * ```typescript
-     * const wall = await bitbybit.jscad.extrusions.extrudeRectangularPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], height: 5, size: 0.5 });
-     * ```
      */
     "jscad.extrusions.extrudeRectangularPoints": {
         /** The corner points of the line the wall follows, in order; only X and Y are used */
@@ -1895,12 +1696,6 @@ export interface OperationParams {
      * The shape lies in the XY plane, so its X coordinate is its distance from the axis, and a
      * shape crossing the axis is clipped there. `angle` and `startAngle` are in degrees, 360 makes
      * a full ring, and `segments` counts the steps of a full turn.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.jscad.polygon.circle({ center: [10, 0], radius: 3, segments: 24 });
-     * const ring = await bitbybit.jscad.extrusions.extrudeRotate({ polygon: profile, angle: 360, startAngle: 0, segments: 48 });
-     * ```
      */
     "jscad.extrusions.extrudeRotate": {
         /**
@@ -1923,11 +1718,6 @@ export interface OperationParams {
      * all, regardless of their order.
      *
      * All inputs must be of the same kind, solids, 2D shapes or paths.
-     *
-     * @example
-     * ```typescript
-     * const wrapped = await bitbybit.jscad.hulls.hull({ meshes: [cube, sphere] });
-     * ```
      */
     "jscad.hulls.hull": {
         /**
@@ -1942,12 +1732,6 @@ export interface OperationParams {
      *
      * A bend in the row is kept, where `hull` would fill it in. All inputs must be of the same
      * kind.
-     *
-     * @example
-     * ```typescript
-     * const spheres = await bitbybit.jscad.shapes.spheresOnCenterPoints({ centers: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], radius: 1, segments: 16 });
-     * const strand = await bitbybit.jscad.hulls.hullChain({ meshes: spheres });
-     * ```
      */
     "jscad.hulls.hullChain": {
         /**
@@ -1963,12 +1747,6 @@ export interface OperationParams {
      * `radiusX` and `radiusY` size the ellipse and `xAxisRotation` tilts it in degrees; `clockwise`
      * and `large` pick one of the four arcs that fit, and radii too small to reach the end point
      * are scaled up.
-     *
-     * @example
-     * ```typescript
-     * const start = await bitbybit.jscad.path.createFromPoints({ points: [[0, 0]], closed: false });
-     * const arc = await bitbybit.jscad.path.appendArc({ path: start, endPoint: [10, 10], radiusX: 10, radiusY: 10, xAxisRotation: 0, clockwise: false, large: false, segments: 32 });
-     * ```
      */
     "jscad.path.appendArc": {
         /** The open 2D path to extend, with at least one point; the arc starts at its last point */
@@ -2005,11 +1783,6 @@ export interface OperationParams {
      *
      * Only X and Y of each point are used and repeated consecutive points are removed; a closed
      * path throws an error.
-     *
-     * @example
-     * ```typescript
-     * const longer = await bitbybit.jscad.path.appendPoints({ path, points: [[20, 10], [20, 0]] });
-     * ```
      */
     "jscad.path.appendPoints": {
         /** The points to add after the path's last point, in order; only X and Y are used */
@@ -2025,11 +1798,6 @@ export interface OperationParams {
      *
      * Only X and Y of each point are used and repeated consecutive points are removed; a closed
      * path throws an error.
-     *
-     * @example
-     * ```typescript
-     * const longer = await bitbybit.jscad.path.appendPolyline({ path, polyline: { points: [[20, 10, 0], [20, 0, 0]] } });
-     * ```
      */
     "jscad.path.appendPolyline": {
         /** The polyline whose points are added after the path's last point; only X and Y are used */
@@ -2045,11 +1813,6 @@ export interface OperationParams {
      * path that is already closed comes back closed.
      *
      * A 2D shape or a solid throws an error.
-     *
-     * @example
-     * ```typescript
-     * const closed = await bitbybit.jscad.path.close({ path });
-     * ```
      */
     "jscad.path.close": {
         /** The 2D path to work on; it stays as it is and a new path or shape comes back */
@@ -2058,12 +1821,6 @@ export interface OperationParams {
     /**
      * Makes an empty open 2D path with no points, a starting point for `appendPoints`,
      * `appendPolyline` and `appendArc`.
-     *
-     * @example
-     * ```typescript
-     * const empty = await bitbybit.jscad.path.createEmpty();
-     * const path = await bitbybit.jscad.path.appendPoints({ path: empty, points: [[0, 0], [10, 0], [10, 10]] });
-     * ```
      */
     "jscad.path.createEmpty": {
     };
@@ -2072,11 +1829,6 @@ export interface OperationParams {
      * `closed` says.
      *
      * Only X and Y of each point are used and repeated consecutive points are removed.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.jscad.path.createFromPoints({ points: [[0, 0], [10, 0], [10, 10]], closed: false });
-     * ```
      */
     "jscad.path.createFromPoints": {
         /**
@@ -2092,11 +1844,6 @@ export interface OperationParams {
      * `closed` says, whatever the polyline's own flag holds.
      *
      * Only X and Y of each point are used and repeated consecutive points are removed.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.jscad.path.createFromPolyline({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] }, closed: true });
-     * ```
      */
     "jscad.path.createFromPolyline": {
         /**
@@ -2112,11 +1859,6 @@ export interface OperationParams {
      * with its first becomes a closed path, any other stays open.
      *
      * Only X and Y of each point are used and repeated consecutive points are removed.
-     *
-     * @example
-     * ```typescript
-     * const paths = await bitbybit.jscad.path.createPathsFromPoints({ pointsLists: [[[0, 0], [10, 0], [10, 10], [0, 0]], [[20, 0], [30, 0]]] });
-     * ```
      */
     "jscad.path.createPathsFromPoints": {
         /**
@@ -2128,11 +1870,6 @@ export interface OperationParams {
     /**
      * Builds a filled circle of the given `radius` around a 2D `center`; `segments` is the number
      * of straight sides that approximate it.
-     *
-     * @example
-     * ```typescript
-     * const disc = await bitbybit.jscad.polygon.circle({ center: [0, 0], radius: 5, segments: 32 });
-     * ```
      */
     "jscad.polygon.circle": {
         /** The 2D center point, as X and Y in the plane */
@@ -2147,11 +1884,6 @@ export interface OperationParams {
      * outline.
      *
      * Only X and Y of the sampled points are used, Z is dropped.
-     *
-     * @example
-     * ```typescript
-     * const shape = await bitbybit.jscad.polygon.createFromCurve({ curve });
-     * ```
      */
     "jscad.polygon.createFromCurve": {
         /** A NURBS curve that can be sampled into points; only X and Y of the samples are used */
@@ -2162,12 +1894,6 @@ export interface OperationParams {
      *
      * Repeated consecutive points are removed and at least three distinct points are needed; a 2D
      * shape or a solid throws an error.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.jscad.path.createFromPoints({ points: [[0, 0], [10, 0], [10, 10]], closed: true });
-     * const shape = await bitbybit.jscad.polygon.createFromPath({ path });
-     * ```
      */
     "jscad.polygon.createFromPath": {
         /** The 2D path to work on; it stays as it is and a new path or shape comes back */
@@ -2180,11 +1906,6 @@ export interface OperationParams {
      * Only X and Y are used, Z is dropped; repeated consecutive points are removed and at least
      * three distinct points are needed. Counter-clockwise order gives a normal shape, clockwise
      * gives a negative one.
-     *
-     * @example
-     * ```typescript
-     * const triangle = await bitbybit.jscad.polygon.createFromPoints({ points: [[0, 0, 0], [10, 0, 0], [5, 8, 0]] });
-     * ```
      */
     "jscad.polygon.createFromPoints": {
         /** The outline points in order, at least three; only X and Y are used */
@@ -2196,11 +1917,6 @@ export interface OperationParams {
      *
      * Only X and Y are used, Z is dropped; repeated consecutive points are removed and at least
      * three distinct points are needed.
-     *
-     * @example
-     * ```typescript
-     * const shape = await bitbybit.jscad.polygon.createFromPolyline({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]], isClosed: true } });
-     * ```
      */
     "jscad.polygon.createFromPolyline": {
         /** The polyline whose points, in order, outline the shape; only X and Y are used */
@@ -2209,11 +1925,6 @@ export interface OperationParams {
     /**
      * Builds a filled ellipse around a 2D `center`, with `radius` holding the X and Y half-sizes;
      * `segments` is the number of straight sides that approximate it.
-     *
-     * @example
-     * ```typescript
-     * const oval = await bitbybit.jscad.polygon.ellipse({ center: [0, 0], radius: [10, 5], segments: 48 });
-     * ```
      */
     "jscad.polygon.ellipse": {
         /** The 2D center point, as X and Y in the plane */
@@ -2223,14 +1934,7 @@ export interface OperationParams {
         /** Number of straight sides around the ellipse; more makes it rounder */
         segments?: number | PipelineRef;
     };
-    /**
-     * Builds a filled rectangle around a 2D `center`, with `width` along X and `length` along Y.
-     *
-     * @example
-     * ```typescript
-     * const plate = await bitbybit.jscad.polygon.rectangle({ center: [0, 0], width: 20, length: 10 });
-     * ```
-     */
+    /** Builds a filled rectangle around a 2D `center`, with `width` along X and `length` along Y. */
     "jscad.polygon.rectangle": {
         /** The 2D center point, as X and Y in the plane */
         center?: [number, number] | PipelineRef;
@@ -2245,11 +1949,6 @@ export interface OperationParams {
      *
      * `roundRadius` must be less than half of the smaller side or an error is thrown; `segments`
      * sets how smoothly each corner is faceted.
-     *
-     * @example
-     * ```typescript
-     * const plate = await bitbybit.jscad.polygon.roundedRectangle({ center: [0, 0], roundRadius: 2, segments: 16, width: 20, length: 10 });
-     * ```
      */
     "jscad.polygon.roundedRectangle": {
         /** The 2D center point, as X and Y in the plane */
@@ -2272,11 +1971,6 @@ export interface OperationParams {
     /**
      * Builds a filled square of side `size` around a 2D `center`, with its sides parallel to the
      * axes.
-     *
-     * @example
-     * ```typescript
-     * const tile = await bitbybit.jscad.polygon.square({ center: [0, 0], size: 10 });
-     * ```
      */
     "jscad.polygon.square": {
         /** The 2D center point, as X and Y in the plane */
@@ -2291,11 +1985,6 @@ export interface OperationParams {
      * `startAngle` in degrees turns the first tip away from the X axis. `density` matters only when
      * `innerRadius` is 0: the notch radius is then derived from it, as in a pentagram with density
      * 2.
-     *
-     * @example
-     * ```typescript
-     * const star = await bitbybit.jscad.polygon.star({ center: [0, 0], vertices: 5, density: 2, outerRadius: 10, innerRadius: 4, startAngle: 90 });
-     * ```
      */
     "jscad.polygon.star": {
         /** The 2D center point, as X and Y in the plane */
@@ -2317,11 +2006,6 @@ export interface OperationParams {
     /**
      * Builds a cube of edge length `size` centered on `center`, with its faces parallel to the
      * axes.
-     *
-     * @example
-     * ```typescript
-     * const cube = await bitbybit.jscad.shapes.cube({ center: [0, 0, 0], size: 10 });
-     * ```
      */
     "jscad.shapes.cube": {
         /** The point the cube is centered on, so half the edge length lies on each side of it */
@@ -2329,14 +2013,7 @@ export interface OperationParams {
         /** Length of every edge, in model units */
         size?: number | PipelineRef;
     };
-    /**
-     * Builds one cube of edge length `size` on every point of `centers`, in the same order.
-     *
-     * @example
-     * ```typescript
-     * const cubes = await bitbybit.jscad.shapes.cubesOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], size: 10 });
-     * ```
-     */
+    /** Builds one cube of edge length `size` on every point of `centers`, in the same order. */
     "jscad.shapes.cubesOnCenterPoints": {
         /** The points the cubes are centered on, one cube each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
@@ -2346,11 +2023,6 @@ export interface OperationParams {
     /**
      * Builds a box centered on `center` with `width` along X, `height` along Y and `length` along
      * Z, its faces parallel to the axes.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.jscad.shapes.cuboid({ center: [0, 0, 0], width: 10, height: 5, length: 20 });
-     * ```
      */
     "jscad.shapes.cuboid": {
         /** The point the box is centered on, so half of each size lies on each side of it */
@@ -2365,11 +2037,6 @@ export interface OperationParams {
     /**
      * Builds one box of the given `width`, `height` and `length` on every point of `centers`, in
      * the same order.
-     *
-     * @example
-     * ```typescript
-     * const boxes = await bitbybit.jscad.shapes.cuboidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], width: 10, height: 5, length: 20 });
-     * ```
      */
     "jscad.shapes.cuboidsOnCenterPoints": {
         /** The points the boxes are centered on, one box each, in the order the results come back */
@@ -2386,11 +2053,6 @@ export interface OperationParams {
      * above and below `center`.
      *
      * `segments` is the number of flat sides around it; more makes it rounder.
-     *
-     * @example
-     * ```typescript
-     * const cylinder = await bitbybit.jscad.shapes.cylinder({ center: [0, 0, 0], height: 10, radius: 3, segments: 32 });
-     * ```
      */
     "jscad.shapes.cylinder": {
         /** The point halfway up the axis; half the height lies above it along Z and half below */
@@ -2408,11 +2070,6 @@ export interface OperationParams {
      *
      * `startRadius` is the X and Y radius at the bottom end and `endRadius` at the top, so unequal
      * pairs make a tapered or cone-like solid; `height` is split evenly above and below `center`.
-     *
-     * @example
-     * ```typescript
-     * const cone = await bitbybit.jscad.shapes.cylinderElliptic({ center: [0, 0, 0], height: 10, startRadius: [4, 2], endRadius: [1, 0.5], segments: 32 });
-     * ```
      */
     "jscad.shapes.cylinderElliptic": {
         /** The point halfway up the axis; half the height lies above it along Z and half below */
@@ -2429,11 +2086,6 @@ export interface OperationParams {
     /**
      * Builds one elliptic cylinder with the given radii and height on every point of `centers`, in
      * the same order, as `cylinderElliptic` does for one.
-     *
-     * @example
-     * ```typescript
-     * const cones = await bitbybit.jscad.shapes.cylinderEllipticOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], height: 10, startRadius: [4, 2], endRadius: [1, 0.5], segments: 32 });
-     * ```
      */
     "jscad.shapes.cylinderEllipticOnCenterPoints": {
         /** The points halfway up each axis, one cylinder each, in the order the results come back */
@@ -2453,11 +2105,6 @@ export interface OperationParams {
     /**
      * Builds one cylinder of the given `radius` and `height` on every point of `centers`, in the
      * same order, as `cylinder` does for one.
-     *
-     * @example
-     * ```typescript
-     * const posts = await bitbybit.jscad.shapes.cylindersOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], height: 10, radius: 1, segments: 16 });
-     * ```
      */
     "jscad.shapes.cylindersOnCenterPoints": {
         /** The points halfway up each axis, one cylinder each, in the order the results come back */
@@ -2473,11 +2120,6 @@ export interface OperationParams {
      * Builds an ellipsoid, a sphere stretched separately along X, Y and Z, centered on `center`.
      *
      * `radius` holds the three half-sizes in `[x, y, z]` order; equal values make a sphere.
-     *
-     * @example
-     * ```typescript
-     * const egg = await bitbybit.jscad.shapes.ellipsoid({ center: [0, 0, 0], radius: [5, 3, 8], segments: 32 });
-     * ```
      */
     "jscad.shapes.ellipsoid": {
         /** The point the ellipsoid is centered on */
@@ -2490,11 +2132,6 @@ export interface OperationParams {
     /**
      * Builds one ellipsoid with the given radii on every point of `centers`, in the same order, as
      * `ellipsoid` does for one.
-     *
-     * @example
-     * ```typescript
-     * const eggs = await bitbybit.jscad.shapes.ellipsoidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], radius: [5, 3, 8], segments: 32 });
-     * ```
      */
     "jscad.shapes.ellipsoidsOnCenterPoints": {
         /** The points the ellipsoids are centered on, one each, in the order the results come back */
@@ -2510,16 +2147,6 @@ export interface OperationParams {
      * List the points of every face clockwise as seen from outside the solid; the faces must close
      * the solid for booleans to work on it. The lists are reversed in place while the solid is
      * built.
-     *
-     * @example
-     * ```typescript
-     * const tetrahedron = await bitbybit.jscad.shapes.fromPolygonPoints({ polygonPoints: [
-     *     [[0, 0, 0], [10, 0, 0], [0, 10, 0]],
-     *     [[0, 0, 0], [0, 10, 0], [0, 0, 10]],
-     *     [[0, 0, 0], [0, 0, 10], [10, 0, 0]],
-     *     [[10, 0, 0], [0, 0, 10], [0, 10, 0]],
-     * ] });
-     * ```
      */
     "jscad.shapes.fromPolygonPoints": {
         /**
@@ -2534,11 +2161,6 @@ export interface OperationParams {
      *
      * `frequency` is how finely the twenty starting faces are subdivided; it is used in whole
      * multiples of 6 and must be at least 6, and higher values give a rounder sphere.
-     *
-     * @example
-     * ```typescript
-     * const dome = await bitbybit.jscad.shapes.geodesicSphere({ center: [0, 0, 0], radius: 5, frequency: 12 });
-     * ```
      */
     "jscad.shapes.geodesicSphere": {
         /** The point the sphere is centered on */
@@ -2554,11 +2176,6 @@ export interface OperationParams {
     /**
      * Builds one geodesic sphere of the given `radius` on every point of `centers`, in the same
      * order, as `geodesicSphere` does for one.
-     *
-     * @example
-     * ```typescript
-     * const domes = await bitbybit.jscad.shapes.geodesicSpheresOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], radius: 5, frequency: 12 });
-     * ```
      */
     "jscad.shapes.geodesicSpheresOnCenterPoints": {
         /** The points the spheres are centered on, one each, in the order the results come back */
@@ -2577,11 +2194,6 @@ export interface OperationParams {
      *
      * `roundRadius` must be less than half of the smallest side or an error is thrown; `segments`
      * sets how smoothly the rounding is faceted.
-     *
-     * @example
-     * ```typescript
-     * const soft = await bitbybit.jscad.shapes.roundedCuboid({ center: [0, 0, 0], width: 10, height: 5, length: 20, roundRadius: 1, segments: 16 });
-     * ```
      */
     "jscad.shapes.roundedCuboid": {
         /** The point the box is centered on, so half of each size lies on each side of it */
@@ -2603,11 +2215,6 @@ export interface OperationParams {
     /**
      * Builds one rounded box with the given sides and rounding on every point of `centers`, in the
      * same order, as `roundedCuboid` does for one.
-     *
-     * @example
-     * ```typescript
-     * const softBoxes = await bitbybit.jscad.shapes.roundedCuboidsOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], width: 10, height: 5, length: 20, roundRadius: 1, segments: 16 });
-     * ```
      */
     "jscad.shapes.roundedCuboidsOnCenterPoints": {
         /** The points the boxes are centered on, one box each, in the order the results come back */
@@ -2631,11 +2238,6 @@ export interface OperationParams {
      * split evenly above and below `center`.
      *
      * `height` must be more than twice `roundRadius` or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const pill = await bitbybit.jscad.shapes.roundedCylinder({ center: [0, 0, 0], roundRadius: 1, height: 10, radius: 3, segments: 32 });
-     * ```
      */
     "jscad.shapes.roundedCylinder": {
         /** The point halfway up the axis; half the height lies above it along Z and half below */
@@ -2655,11 +2257,6 @@ export interface OperationParams {
     /**
      * Builds one rounded cylinder with the given size and rounding on every point of `centers`, in
      * the same order, as `roundedCylinder` does for one.
-     *
-     * @example
-     * ```typescript
-     * const pills = await bitbybit.jscad.shapes.roundedCylindersOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0]], roundRadius: 1, height: 10, radius: 3, segments: 32 });
-     * ```
      */
     "jscad.shapes.roundedCylindersOnCenterPoints": {
         /** The points halfway up each axis, one cylinder each, in the order the results come back */
@@ -2682,11 +2279,6 @@ export interface OperationParams {
     /**
      * Builds a sphere of the given `radius` centered on `center`; `segments` is the number of
      * facets around it, so more makes it rounder.
-     *
-     * @example
-     * ```typescript
-     * const ball = await bitbybit.jscad.shapes.sphere({ center: [0, 0, 0], radius: 5, segments: 32 });
-     * ```
      */
     "jscad.shapes.sphere": {
         /** The point the sphere is centered on */
@@ -2699,11 +2291,6 @@ export interface OperationParams {
     /**
      * Builds one sphere of the given `radius` on every point of `centers`, in the same order, as
      * `sphere` does for one.
-     *
-     * @example
-     * ```typescript
-     * const balls = await bitbybit.jscad.shapes.spheresOnCenterPoints({ centers: [[0, 0, 0], [20, 0, 0], [40, 0, 0]], radius: 5, segments: 32 });
-     * ```
      */
     "jscad.shapes.spheresOnCenterPoints": {
         /** The points the spheres are centered on, one each, in the order the results come back */
@@ -2720,11 +2307,6 @@ export interface OperationParams {
      * `outerRadius` is the distance from the center to the middle of the tube and `innerRadius` the
      * tube's own radius, which must be smaller. Rotations and `startAngle` are in degrees; an
      * `outerRotation` below 360 leaves the ring open.
-     *
-     * @example
-     * ```typescript
-     * const ring = await bitbybit.jscad.shapes.torus({ center: [0, 0, 0], innerRadius: 1, outerRadius: 5, innerSegments: 16, outerSegments: 48, innerRotation: 0, outerRotation: 360, startAngle: 0 });
-     * ```
      */
     "jscad.shapes.torus": {
         /**
@@ -2763,11 +2345,6 @@ export interface OperationParams {
      * The text starts at `xOffset`, `yOffset` and is not centered; `height` is the height of a
      * capital letter, `lineSpacing` and `letterSpacing` scale the gaps and `align` places the lines
      * of a multi-line text.
-     *
-     * @example
-     * ```typescript
-     * const strokes = await bitbybit.jscad.text.createVectorText({ text: "Hi", segments: 16, xOffset: 0, yOffset: 0, height: 10, lineSpacing: 1.4, letterSpacing: 1, align: Bit.Inputs.JSCAD.jscadTextAlignEnum.center, extrudeOffset: 0 });
-     * ```
      */
     "jscad.text.createVectorText": {
         /**
@@ -2807,11 +2384,6 @@ export interface OperationParams {
      *
      * The strokes lie in the XY plane, centered on the origin, and the cylinders are
      * `extrusionHeight` long with half above and half below the plane.
-     *
-     * @example
-     * ```typescript
-     * const letters = await bitbybit.jscad.text.cylindricalText({ text: "Hello", extrusionHeight: 2, extrusionSize: 0.5, segments: 16, xOffset: 0, yOffset: 0, height: 10, lineSpacing: 1.4, letterSpacing: 1, align: Bit.Inputs.JSCAD.jscadTextAlignEnum.center, extrudeOffset: 0 });
-     * ```
      */
     "jscad.text.cylindricalText": {
         /**
@@ -2861,11 +2433,6 @@ export interface OperationParams {
      *
      * The strokes lie in the XY plane, centered on the origin, and the spheres of `radius` sit on
      * that plane.
-     *
-     * @example
-     * ```typescript
-     * const letters = await bitbybit.jscad.text.sphericalText({ text: "Hello", radius: 0.5, segments: 16, xOffset: 0, yOffset: 0, height: 10, lineSpacing: 1.4, letterSpacing: 1, align: Bit.Inputs.JSCAD.jscadTextAlignEnum.center, extrudeOffset: 0 });
-     * ```
      */
     "jscad.text.sphericalText": {
         /**
@@ -2910,12 +2477,6 @@ export interface OperationParams {
      *
      * A flat 2D shape is given a tiny thickness first so it has faces at all. An entity with no
      * polygons gives an empty list.
-     *
-     * @example
-     * ```typescript
-     * const cube = await bitbybit.jscad.shapes.cube({ center: [0, 0, 0], size: 10 });
-     * const triangles = await bitbybit.jscad.toPolygonPoints({ mesh: cube });
-     * ```
      */
     "jscad.toPolygonPoints": {
         /** The solid to convert; a flat 2D shape works too and is given a tiny thickness first */
@@ -2926,12 +2487,6 @@ export interface OperationParams {
      *
      * `transformation` is one 4x4 matrix, a list of matrices applied in order, or a list of such
      * lists; a flat 2D shape or a path throws an error.
-     *
-     * @example
-     * ```typescript
-     * const rotation = bitbybit.transforms.rotationCenterAxis({ angle: 45, axis: [0, 1, 0], center: [0, 0, 0] });
-     * const turned = await bitbybit.jscad.transformSolid({ mesh: cube, transformation: rotation });
-     * ```
      */
     "jscad.transformSolid": {
         /**
@@ -2951,12 +2506,6 @@ export interface OperationParams {
      *
      * `transformation` is one 4x4 matrix, a list of matrices applied in order, or a list of such
      * lists; a flat 2D shape or a path throws an error.
-     *
-     * @example
-     * ```typescript
-     * const translation = bitbybit.transforms.translationXYZ({ translation: [10, 0, 0] });
-     * const moved = await bitbybit.jscad.transformSolids({ meshes: [cube, sphere], transformation: translation });
-     * ```
      */
     "jscad.transformSolids": {
         /**
@@ -2973,12 +2522,6 @@ export interface OperationParams {
     /**
      * Gives a new empty object with no properties, a starting point for `setValueOnProp` and
      * `setValue`.
-     *
-     * @example
-     * ```typescript
-     * const settings = bitbybit.json.createEmpty();
-     * const withWidth = bitbybit.json.setValueOnProp({ json: settings, property: "width", value: 10 });
-     * ```
      */
     "json.createEmpty": {
     };
@@ -2987,11 +2530,6 @@ export interface OperationParams {
      * equality, and gives it back; nothing matching gives undefined.
      *
      * For anything beyond one property, use `query` with a filter.
-     *
-     * @example
-     * ```typescript
-     * const part = bitbybit.json.getJsonFromArrayByFirstPropMatch({ jsonArray: parts, property: "name", match: "lid" });
-     * ```
      */
     "json.getJsonFromArrayByFirstPropMatch": {
         /** The list of objects searched in order; the first match is the result */
@@ -3001,14 +2539,7 @@ export interface OperationParams {
         /** Name of the property compared on every object */
         property?: string | PipelineRef;
     };
-    /**
-     * Reads one top-level property of a JSON object; a missing property gives undefined.
-     *
-     * @example
-     * ```typescript
-     * const width = bitbybit.json.getValueOnProp({ json: settings, property: "width" });
-     * ```
-     */
+    /** Reads one top-level property of a JSON object; a missing property gives undefined. */
     "json.getValueOnProp": {
         /** The object to read; it is not changed */
         json: unknown | PipelineRef;
@@ -3018,11 +2549,6 @@ export interface OperationParams {
     /**
      * Turns JSON text into the value it describes, as `JSON.parse` does; text that is not valid
      * JSON throws an error.
-     *
-     * @example
-     * ```typescript
-     * const points = bitbybit.json.parse({ text: "[[0, 0, 0], [1, 1, 1]]" });
-     * ```
      */
     "json.parse": {
         /**
@@ -3034,11 +2560,6 @@ export interface OperationParams {
     /**
      * Lists the paths of every value a JSONPath expression matches, each as a full path from the
      * root such as `$['parts'][0]['name']`, instead of the values themselves.
-     *
-     * @example
-     * ```typescript
-     * const where = bitbybit.json.paths({ json: model, query: "$..radius" });
-     * ```
      */
     "json.paths": {
         /** The object or list to search; it is read, never changed */
@@ -3052,11 +2573,6 @@ export interface OperationParams {
     /**
      * Hands the JSON to the running application to show it and offer to save it as a file; the
      * application decides how the preview looks, and nothing happens when the value is empty.
-     *
-     * @example
-     * ```typescript
-     * bitbybit.json.previewAndSaveJson({ json: model });
-     * ```
      */
     "json.previewAndSaveJson": {
         /** The value to show, normally an object or a list; nothing happens when it is empty */
@@ -3065,11 +2581,6 @@ export interface OperationParams {
     /**
      * Hands the JSON to the running application to show it; the application decides how the preview
      * looks, and nothing happens when the value is empty.
-     *
-     * @example
-     * ```typescript
-     * bitbybit.json.previewJson({ json: model });
-     * ```
      */
     "json.previewJson": {
         /** The value to show, normally an object or a list; nothing happens when it is empty */
@@ -3081,11 +2592,6 @@ export interface OperationParams {
      *
      * `$.parts[*].name` lists all part names and `$..radius` every radius at any depth; JSONPath
      * filters in square brackets narrow the matches by a condition.
-     *
-     * @example
-     * ```typescript
-     * const names = bitbybit.json.query({ json: model, query: "$.parts[*].name" });
-     * ```
      */
     "json.query": {
         /** The object or list to search; it is read, never changed */
@@ -3099,11 +2605,6 @@ export interface OperationParams {
      *
      * `path` points at the parent objects, `prop` names the property on them: `path: "$.parts[*]",
      * prop: "visible"` changes every part. A value that is not an object throws an error.
-     *
-     * @example
-     * ```typescript
-     * const hidden = bitbybit.json.setValue({ json: model, path: "$.parts[*]", prop: "visible", value: false });
-     * ```
      */
     "json.setValue": {
         /**
@@ -3124,11 +2625,6 @@ export interface OperationParams {
     /**
      * Sets one top-level property of a JSON object to a value, giving a changed copy; the input
      * stays as it is and a property that did not exist is added.
-     *
-     * @example
-     * ```typescript
-     * const updated = bitbybit.json.setValueOnProp({ json: settings, property: "width", value: 20 });
-     * ```
      */
     "json.setValueOnProp": {
         /** The object to change; it stays as it is and a changed copy comes back */
@@ -3141,11 +2637,6 @@ export interface OperationParams {
     /**
      * Applies several `setValue` changes in one go: entry `i` of `paths`, `props` and `values` is
      * one change, applied in order to a copy of the JSON.
-     *
-     * @example
-     * ```typescript
-     * const updated = bitbybit.json.setValuesOnPaths({ json: model, paths: ["$", "$.parts[0]"], props: ["name", "visible"], values: ["Assembly", false] });
-     * ```
      */
     "json.setValuesOnPaths": {
         /** The object to change; it stays as it is and a changed copy comes back */
@@ -3163,11 +2654,6 @@ export interface OperationParams {
     /**
      * Turns any JSON-compatible value into its JSON text, on one line without indentation, as
      * `JSON.stringify` does.
-     *
-     * @example
-     * ```typescript
-     * const text = bitbybit.json.stringify({ json: { width: 10, points: [[0, 0, 0], [1, 1, 1]] } });
-     * ```
      */
     "json.stringify": {
         /** Any JSON-compatible value: an object, a list, a number, text, a boolean or null */
@@ -3177,11 +2663,6 @@ export interface OperationParams {
      * Builds a line object from a start and an end point.
      *
      * Example: start [0,0,0], end [10,5,0] -> { start: [0,0,0], end: [10,5,0] }
-     *
-     * @example
-     * ```typescript
-     * const line = bitbybit.line.create({ start: [0, 0, 0], end: [10, 5, 0] });
-     * ```
      */
     "line.create": {
         /** The first point of the line, where it begins. */
@@ -3193,11 +2674,6 @@ export interface OperationParams {
      * Builds a segment, the pair-of-points form of a line, from a start and an end point.
      *
      * Example: start [0,0,0], end [10,5,0] -> [[0,0,0], [10,5,0]]
-     *
-     * @example
-     * ```typescript
-     * const segment = bitbybit.line.createSegment({ start: [0, 0, 0], end: [10, 5, 0] });
-     * ```
      */
     "line.createSegment": {
         /** The first point of the line, where it begins. */
@@ -3220,11 +2696,6 @@ export interface OperationParams {
      *
      * A fraction outside 0 to 1 continues past the ends.
      * Example: { start: [0,0,0], end: [10,0,0] } at 0.5 -> [5,0,0]
-     *
-     * @example
-     * ```typescript
-     * const middle = bitbybit.line.getPointOnLine({ line: { start: [0, 0, 0], end: [10, 0, 0] }, param: 0.5 });
-     * ```
      */
     "line.getPointOnLine": {
         /** The line to place the point on. */
@@ -3260,16 +2731,6 @@ export interface OperationParams {
      * extend without end. Parallel lines, lines that pass each other without meeting, and segments
      * that do not reach each other give undefined. The tolerance says how close counts as meeting.
      * Example: [0,0,0] to [10,0,0] and [5,-5,0] to [5,5,0] -> [5,0,0]
-     *
-     * @example
-     * ```typescript
-     * const crossing = bitbybit.line.lineLineIntersection({
-     *     line1: { start: [0, 0, 0], end: [10, 0, 0] },
-     *     line2: { start: [5, -5, 0], end: [5, 5, 0] },
-     *     checkSegmentsOnly: true,
-     *     tolerance: 1e-6,
-     * });
-     * ```
      */
     "line.lineLineIntersection": {
         /** The first line. */
@@ -3291,11 +2752,6 @@ export interface OperationParams {
      * Joins each point to the next with a line, so a list of points becomes a chain of lines.
      *
      * Example: [[0,0,0], [5,0,0], [5,5,0]] -> two lines, [0,0,0] to [5,0,0] and [5,0,0] to [5,5,0]
-     *
-     * @example
-     * ```typescript
-     * const chain = bitbybit.line.linesBetweenPoints({ points: [[0, 0, 0], [5, 0, 0], [5, 5, 0]] });
-     * ```
      */
     "line.linesBetweenPoints": {
         /** The points to join, in order along the chain. */
@@ -3306,14 +2762,6 @@ export interface OperationParams {
      *
      * A pair whose two points coincide makes no line and is left out.
      * Example: starts [[0,0,0], [5,0,0]] and ends [[0,5,0], [5,5,0]] -> two lines
-     *
-     * @example
-     * ```typescript
-     * const rungs = bitbybit.line.linesBetweenStartAndEndPoints({
-     *     startPoints: [[0, 0, 0], [5, 0, 0]],
-     *     endPoints: [[0, 5, 0], [5, 5, 0]],
-     * });
-     * ```
      */
     "line.linesBetweenStartAndEndPoints": {
         /** The start of each line, in order. */
@@ -3371,14 +2819,6 @@ export interface OperationParams {
      *
      * Example: { start: [0,0,0], end: [10,0,0] } moved by [5,5,0] -> { start: [5,5,0], end:
      * [15,5,0] }
-     *
-     * @example
-     * ```typescript
-     * const moved = bitbybit.line.transformLine({
-     *     line: { start: [0, 0, 0], end: [10, 0, 0] },
-     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 5, 0] }),
-     * });
-     * ```
      */
     "line.transformLine": {
         /** The line to transform; a new line is returned. */
@@ -3391,14 +2831,6 @@ export interface OperationParams {
      * and so on.
      *
      * Example: three lines with three translations -> each line moved by its own translation
-     *
-     * @example
-     * ```typescript
-     * const placed = bitbybit.line.transformsForLines({
-     *     lines: [{ start: [0, 0, 0], end: [1, 0, 0] }, { start: [0, 0, 0], end: [0, 1, 0] }],
-     *     transformation: bitbybit.transforms.translationsXYZ({ translations: [[0, 1, 0], [0, 2, 0]] }),
-     * });
-     * ```
      */
     "line.transformsForLines": {
         /** The lines to transform, as many as there are transformations. */
@@ -3413,11 +2845,6 @@ export interface OperationParams {
      * Adds an item at the end of the list.
      *
      * Example: [10, 20, 30] adding 40 -> [10, 20, 30, 40]
-     *
-     * @example
-     * ```typescript
-     * const longer = bitbybit.lists.addItem({ list: [10, 20, 30], item: 40, clone: true });
-     * ```
      */
     "lists.addItem": {
         /** The list that receives the item. */
@@ -3434,11 +2861,6 @@ export interface OperationParams {
      * Inserts an item at a position; the items from that position on shift up by one.
      *
      * Example: [10, 20, 30, 40] with 99 at index 2 -> [10, 20, 99, 30, 40]
-     *
-     * @example
-     * ```typescript
-     * const longer = bitbybit.lists.addItemAtIndex({ list: [10, 20, 30, 40], item: 99, index: 2, clone: true });
-     * ```
      */
     "lists.addItemAtIndex": {
         /** The list to insert into. */
@@ -3460,11 +2882,6 @@ export interface OperationParams {
      * Inserts the same item at several positions of the original list.
      *
      * Example: [10, 20, 30] with 99 at indexes [0, 2] -> [99, 10, 20, 99, 30]
-     *
-     * @example
-     * ```typescript
-     * const marked = bitbybit.lists.addItemAtIndexes({ list: [10, 20, 30], item: 99, indexes: [0, 2], clone: true });
-     * ```
      */
     "lists.addItemAtIndexes": {
         /** The list to insert into. */
@@ -3486,11 +2903,6 @@ export interface OperationParams {
      * Adds an item at the start or at the end of the list, as chosen.
      *
      * Example: [10, 20, 30] adding 5 first -> [5, 10, 20, 30]; last -> [10, 20, 30, 5]
-     *
-     * @example
-     * ```typescript
-     * const longer = bitbybit.lists.addItemFirstLast({ list: [10, 20, 30], item: 5, position: Bit.Inputs.Lists.firstLastEnum.first, clone: true });
-     * ```
      */
     "lists.addItemFirstLast": {
         /** The list that receives the item. */
@@ -3511,11 +2923,6 @@ export interface OperationParams {
      *
      * The indexes must be in ascending order and there must be one per item, or an error is thrown.
      * Example: [10, 20, 30] with items [88, 99] at indexes [1, 2] -> [10, 88, 20, 99, 30]
-     *
-     * @example
-     * ```typescript
-     * const merged = bitbybit.lists.addItemsAtIndexes({ list: [10, 20, 30], items: [88, 99], indexes: [1, 2], clone: true });
-     * ```
      */
     "lists.addItemsAtIndexes": {
         /** The list to insert into. */
@@ -3537,11 +2944,6 @@ export interface OperationParams {
      * Joins several lists into one, end to end.
      *
      * Example: [[1, 2], [3, 4], [5, 6]] -> [1, 2, 3, 4, 5, 6]
-     *
-     * @example
-     * ```typescript
-     * const all = bitbybit.lists.concatenate({ lists: [[1, 2], [3, 4], [5, 6]], clone: true });
-     * ```
      */
     "lists.concatenate": {
         /** The lists to join, in the order they should appear. */
@@ -3560,11 +2962,6 @@ export interface OperationParams {
      * Finds the position of the first occurrence of an item, or -1 when it is not in the list.
      *
      * Example: [10, 20, 30, 20, 40] finding 20 -> 1, finding 50 -> -1
-     *
-     * @example
-     * ```typescript
-     * const where = bitbybit.lists.findIndex({ list: [10, 20, 30, 20, 40], item: 20 });
-     * ```
      */
     "lists.findIndex": {
         /** The list to search. */
@@ -3580,11 +2977,6 @@ export interface OperationParams {
      *
      * All the inner lists must have the same length.
      * Example: [[0, 1, 2], [3, 4, 5]] -> [[0, 3], [1, 4], [2, 5]]
-     *
-     * @example
-     * ```typescript
-     * const columns = bitbybit.lists.flipLists({ list: [[0, 1, 2], [3, 4, 5]], clone: true });
-     * ```
      */
     "lists.flipLists": {
         /** The list to work on. */
@@ -3600,11 +2992,6 @@ export interface OperationParams {
      *
      * The pattern starts over when it runs out.
      * Example: [0, 1, 2, 3, 4, 5] with pattern [true, true, false] -> [0, 1, 3, 4]
-     *
-     * @example
-     * ```typescript
-     * const kept = bitbybit.lists.getByPattern({ list: [0, 1, 2, 3, 4, 5], pattern: [true, true, false] });
-     * ```
      */
     "lists.getByPattern": {
         /** The list to filter. */
@@ -3634,11 +3021,6 @@ export interface OperationParams {
      *
      * An index outside the list throws an error.
      * Example: [10, 20, 30, 40] at index 2 -> 30
-     *
-     * @example
-     * ```typescript
-     * const third = bitbybit.lists.getItem({ list: [10, 20, 30, 40], index: 2, clone: true });
-     * ```
      */
     "lists.getItem": {
         /** The list to read from. */
@@ -3683,11 +3065,6 @@ export interface OperationParams {
      * Measures the longest list among several.
      *
      * Example: [[1, 2], [3, 4, 5, 6], [7]] -> 4
-     *
-     * @example
-     * ```typescript
-     * const longest = bitbybit.lists.getLongestListLength({ lists: [[1, 2], [3, 4, 5, 6], [7]] });
-     * ```
      */
     "lists.getLongestListLength": {
         /** The lists to measure. */
@@ -3698,11 +3075,6 @@ export interface OperationParams {
      *
      * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth 3 and offset 0 -> [0, 3, 6]; with nth 2 and
      * offset 1 -> [1, 3, 5, 7]
-     *
-     * @example
-     * ```typescript
-     * const everyThird = bitbybit.lists.getNthItem({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8], nth: 3, offset: 0, clone: true });
-     * ```
      */
     "lists.getNthItem": {
         /** The list to pick from. */
@@ -3718,11 +3090,6 @@ export interface OperationParams {
      * Cuts out the items from a start index up to, but not including, an end index.
      *
      * Example: [10, 20, 30, 40, 50] from 1 to 4 -> [20, 30, 40]
-     *
-     * @example
-     * ```typescript
-     * const middle = bitbybit.lists.getSubList({ list: [10, 20, 30, 40, 50], indexStart: 1, indexEnd: 4, clone: true });
-     * ```
      */
     "lists.getSubList": {
         /** The list to cut from. */
@@ -3743,11 +3110,6 @@ export interface OperationParams {
      * Items left over at the end are dropped unless `keepRemainder` is on, which adds them as a
      * shorter last group.
      * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] in groups of 3 -> [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-     *
-     * @example
-     * ```typescript
-     * const pairs = bitbybit.lists.groupNth({ list: [0, 1, 2, 3, 4], nrElements: 2, keepRemainder: true });
-     * ```
      */
     "lists.groupNth": {
         /** The items to split into groups, in order. */
@@ -3766,11 +3128,6 @@ export interface OperationParams {
      * Items are compared by identity, so an object is found only if the very same object is in the
      * list.
      * Example: [10, 20, 30, 40] includes 30 -> true, includes 50 -> false
-     *
-     * @example
-     * ```typescript
-     * const found = bitbybit.lists.includes({ list: [10, 20, 30, 40], item: 30 });
-     * ```
      */
     "lists.includes": {
         /** The list to search. */
@@ -3787,11 +3144,6 @@ export interface OperationParams {
      *
      * A shorter list simply drops out once it runs dry. An empty list of lists throws an error.
      * Example: [[0, 1, 2], [3, 4, 5]] -> [0, 3, 1, 4, 2, 5]
-     *
-     * @example
-     * ```typescript
-     * const woven = bitbybit.lists.interleave({ lists: [[0, 1, 2], [3, 4, 5]], clone: true });
-     * ```
      */
     "lists.interleave": {
         /**
@@ -3823,11 +3175,6 @@ export interface OperationParams {
      * `level` says how many levels of nesting to flatten inside each list first; 0 regroups them as
      * they are.
      * Example: [[0, 1, 2], [3, 4, 5]] at level 0 -> [[0, 3], [1, 4], [2, 5]]
-     *
-     * @example
-     * ```typescript
-     * const columns = bitbybit.lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 0 });
-     * ```
      */
     "lists.mergeElementsOfLists": {
         /** The lists whose items are regrouped by position. */
@@ -3842,11 +3189,6 @@ export interface OperationParams {
      * Adds an item at the start of the list.
      *
      * Example: [10, 20, 30] prepending 5 -> [5, 10, 20, 30]
-     *
-     * @example
-     * ```typescript
-     * const longer = bitbybit.lists.prependItem({ list: [10, 20, 30], item: 5, clone: true });
-     * ```
      */
     "lists.prependItem": {
         /** The list that receives the item. */
@@ -3864,11 +3206,6 @@ export interface OperationParams {
      * differs on every call.
      *
      * Example: [1, 2, 3, 4, 5] with threshold 0.5 -> perhaps [1, 3, 5]
-     *
-     * @example
-     * ```typescript
-     * const some = bitbybit.lists.randomGetThreshold({ list: [1, 2, 3, 4, 5], threshold: 0.5, clone: true });
-     * ```
      */
     "lists.randomGetThreshold": {
         /** The list to pick from. */
@@ -3886,11 +3223,6 @@ export interface OperationParams {
      * differs on every call.
      *
      * Example: [1, 2, 3, 4, 5] with threshold 0.5 -> perhaps [2, 4]
-     *
-     * @example
-     * ```typescript
-     * const some = bitbybit.lists.randomRemoveThreshold({ list: [1, 2, 3, 4, 5], threshold: 0.5, clone: true });
-     * ```
      */
     "lists.randomRemoveThreshold": {
         /** The list to pick from. */
@@ -3928,11 +3260,6 @@ export interface OperationParams {
      * by floating-point noise count as the same.
      *
      * Example: [1.0, 1.001, 2.0, 2.002, 3.0] with tolerance 0.01 -> [1.0, 2.0, 3.0]
-     *
-     * @example
-     * ```typescript
-     * const distinct = bitbybit.lists.removeDuplicateNumbersTolerance({ list: [1.0, 1.001, 2.0], tolerance: 0.01, clone: true });
-     * ```
      */
     "lists.removeDuplicateNumbersTolerance": {
         /** The numbers to remove near-repeats from; the first of each group stays. */
@@ -3972,11 +3299,6 @@ export interface OperationParams {
      * Removes the item at a position.
      *
      * Example: [10, 20, 30, 40, 50] removing index 2 -> [10, 20, 40, 50]
-     *
-     * @example
-     * ```typescript
-     * const shorter = bitbybit.lists.removeItemAtIndex({ list: [10, 20, 30, 40, 50], index: 2, clone: true });
-     * ```
      */
     "lists.removeItemAtIndex": {
         /** The list to take the item out of. */
@@ -3996,11 +3318,6 @@ export interface OperationParams {
      * Removes an item counted from the end: index 0 is the last item, 1 the one before it.
      *
      * Example: [10, 20, 30, 40, 50] removing index 1 from the end -> [10, 20, 30, 50]
-     *
-     * @example
-     * ```typescript
-     * const shorter = bitbybit.lists.removeItemAtIndexFromEnd({ list: [10, 20, 30, 40, 50], index: 1, clone: true });
-     * ```
      */
     "lists.removeItemAtIndexFromEnd": {
         /** The list to take the item out of. */
@@ -4020,11 +3337,6 @@ export interface OperationParams {
      * Removes the items at several positions, all counted on the original list.
      *
      * Example: [10, 20, 30, 40, 50] removing indexes [1, 3] -> [10, 30, 50]
-     *
-     * @example
-     * ```typescript
-     * const kept = bitbybit.lists.removeItemsAtIndexes({ list: [10, 20, 30, 40, 50], indexes: [1, 3], clone: true });
-     * ```
      */
     "lists.removeItemsAtIndexes": {
         /** The list to take the items out of. */
@@ -4058,11 +3370,6 @@ export interface OperationParams {
      * Removes every nth item, starting from an offset.
      *
      * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth 3 and offset 0 -> [1, 2, 4, 5, 7, 8]
-     *
-     * @example
-     * ```typescript
-     * const thinned = bitbybit.lists.removeNthItem({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8], nth: 3, offset: 0, clone: true });
-     * ```
      */
     "lists.removeNthItem": {
         /** The list to thin out. */
@@ -4081,11 +3388,6 @@ export interface OperationParams {
      * Makes a list that holds the same item a number of times.
      *
      * Example: 5 three times -> [5, 5, 5]
-     *
-     * @example
-     * ```typescript
-     * const fives = bitbybit.lists.repeat({ item: 5, times: 3 });
-     * ```
      */
     "lists.repeat": {
         /** The item to repeat; every entry of the result is this same item. */
@@ -4097,11 +3399,6 @@ export interface OperationParams {
      * Repeats a pattern of items over and over until the list reaches a given length.
      *
      * Example: [1, 2, 3] to length 7 -> [1, 2, 3, 1, 2, 3, 1]
-     *
-     * @example
-     * ```typescript
-     * const cycle = bitbybit.lists.repeatInPattern({ list: [1, 2, 3], lengthLimit: 7, clone: true });
-     * ```
      */
     "lists.repeatInPattern": {
         /** The items to repeat, in order. */
@@ -4147,11 +3444,6 @@ export interface OperationParams {
      *
      * Example: [{age: 30}, {age: 20}, {age: 25}] by 'age' ascending -> [{age: 20}, {age: 25}, {age:
      * 30}]
-     *
-     * @example
-     * ```typescript
-     * const byAge = bitbybit.lists.sortByPropValue({ list: [{ age: 30 }, { age: 20 }], property: "age", orderAsc: true, clone: true });
-     * ```
      */
     "lists.sortByPropValue": {
         /** The objects to sort; each should carry the property. */
@@ -4170,11 +3462,6 @@ export interface OperationParams {
      * Sorts numbers from lowest to highest, or from highest to lowest.
      *
      * Example: [5, 2, 8, 1, 9] ascending -> [1, 2, 5, 8, 9]; descending -> [9, 8, 5, 2, 1]
-     *
-     * @example
-     * ```typescript
-     * const sorted = bitbybit.lists.sortNumber({ list: [5, 2, 8, 1, 9], orderAsc: true, clone: true });
-     * ```
      */
     "lists.sortNumber": {
         /** The numbers or texts to sort. */
@@ -4194,11 +3481,6 @@ export interface OperationParams {
      * Sorts texts alphabetically, from A to Z or from Z to A.
      *
      * Example: ['dog', 'apple', 'cat'] ascending -> ['apple', 'cat', 'dog']
-     *
-     * @example
-     * ```typescript
-     * const sorted = bitbybit.lists.sortTexts({ list: ["dog", "apple", "cat"], orderAsc: true, clone: true });
-     * ```
      */
     "lists.sortTexts": {
         /** The numbers or texts to sort. */
@@ -4228,11 +3510,6 @@ export interface OperationParams {
      * or not equal, in the loose (`==`) or strict (`===`) form.
      *
      * Example: 5 greater than 3 -> true; 'hello' strictly equal to 'world' -> false
-     *
-     * @example
-     * ```typescript
-     * const bigger = bitbybit.logic.compare({ first: 5, second: 3, operator: Bit.Inputs.Logic.BooleanOperatorsEnum.greater });
-     * ```
      */
     "logic.compare": {
         /** The value on the left of the operator. */
@@ -4249,11 +3526,6 @@ export interface OperationParams {
      * Picks the first of two values that is defined, so the second acts as a fallback.
      *
      * Example: 42 and 10 -> 42; undefined and 10 -> 10
-     *
-     * @example
-     * ```typescript
-     * const chosen = bitbybit.logic.firstDefinedValueGate({ value1: undefined, value2: 10 });
-     * ```
      */
     "logic.firstDefinedValueGate": {
         /** The value used when it is defined. */
@@ -4283,11 +3555,6 @@ export interface OperationParams {
      * Draws a list of random booleans, each true with a given probability.
      *
      * Example: length 5 with trueThreshold 0.7 -> perhaps [true, true, false, true, true]
-     *
-     * @example
-     * ```typescript
-     * const flags = bitbybit.logic.randomBooleans({ length: 5, trueThreshold: 0.7 });
-     * ```
      */
     "logic.randomBooleans": {
         /** How many booleans to draw. */
@@ -4300,11 +3567,6 @@ export interface OperationParams {
      *
      * `inverse` flips every result.
      * Example: [0.3, 0.7, 0.5] with threshold 0.6 -> [true, false, true]
-     *
-     * @example
-     * ```typescript
-     * const below = bitbybit.logic.thresholdBooleanList({ numbers: [0.3, 0.7, 0.5], threshold: 0.6, inverse: false });
-     * ```
      */
     "logic.thresholdBooleanList": {
         /** The numbers to turn into booleans, one each. */
@@ -4320,15 +3582,6 @@ export interface OperationParams {
      *
      * Each range is `[min, max]` with both ends included; `inverse` flips every result.
      * Example: [0.2, 0.5, 0.8] with ranges [[0.3, 0.6], [0.7, 0.9]] -> [false, true, true]
-     *
-     * @example
-     * ```typescript
-     * const inside = bitbybit.logic.thresholdGapsBooleanList({
-     *     numbers: [0.2, 0.5, 0.8],
-     *     gapThresholds: [[0.3, 0.6], [0.7, 0.9]],
-     *     inverse: false,
-     * });
-     * ```
      */
     "logic.thresholdGapsBooleanList": {
         /** The numbers to turn into booleans, one each. */
@@ -4348,16 +3601,6 @@ export interface OperationParams {
      * the chance of true falls in steps from one to the other, so a pattern fades out instead of
      * switching sharply.
      * Example: [0.1, 0.9] with thresholds 0.3 and 0.7 -> [true, false]
-     *
-     * @example
-     * ```typescript
-     * const fade = bitbybit.logic.twoThresholdRandomGradient({
-     *     numbers: [0.1, 0.4, 0.6, 0.9],
-     *     thresholdTotalTrue: 0.3,
-     *     thresholdTotalFalse: 0.7,
-     *     nrLevels: 10,
-     * });
-     * ```
      */
     "logic.twoThresholdRandomGradient": {
         /** The numbers to turn into booleans, one each. */
@@ -4376,11 +3619,6 @@ export interface OperationParams {
      * Lets a value through when the boolean is true and gives undefined when it is false.
      *
      * Example: 42 with true -> 42; 42 with false -> undefined
-     *
-     * @example
-     * ```typescript
-     * const maybe = bitbybit.logic.valueGate({ value: 42, boolean: true });
-     * ```
      */
     "logic.valueGate": {
         /** The value that passes through when the gate is open. */
@@ -4388,120 +3626,57 @@ export interface OperationParams {
         /** When true the gate is open and the value passes; when false the result is undefined. */
         boolean?: boolean | PipelineRef;
     };
-    /**
-     * Fuses two cross-sections into one outline, holes and all.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.crossSection.booleans.add({ crossSection1: square, crossSection2: disc });
-     * ```
-     */
+    /** Fuses two cross-sections into one outline, holes and all. */
     "manifold.crossSection.booleans.add": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
         /** The second cross-section; for a subtraction, the one cut with. */
         crossSection2: unknown | PipelineRef;
     };
-    /**
-     * Cuts every further cross-section in the list out of the first one.
-     *
-     * @example
-     * ```typescript
-     * const plate = await bitbybit.manifold.crossSection.booleans.difference({ crossSections: [square, hole1, hole2] });
-     * ```
-     */
+    /** Cuts every further cross-section in the list out of the first one. */
     "manifold.crossSection.booleans.difference": {
         /** The cross-sections, in the order the method uses them. */
         crossSections: unknown[] | PipelineRef;
     };
-    /**
-     * Cuts the second cross-section out of the first, the same as `subtract`.
-     *
-     * @example
-     * ```typescript
-     * const ring = await bitbybit.manifold.crossSection.booleans.differenceTwo({ crossSection1: outerDisc, crossSection2: innerDisc });
-     * ```
-     */
+    /** Cuts the second cross-section out of the first, the same as `subtract`. */
     "manifold.crossSection.booleans.differenceTwo": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
         /** The second cross-section; for a subtraction, the one cut with. */
         crossSection2: unknown | PipelineRef;
     };
-    /**
-     * Keeps only the area two cross-sections share, dropping everything else.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.crossSection.booleans.intersect({ crossSection1: square, crossSection2: disc });
-     * ```
-     */
+    /** Keeps only the area two cross-sections share, dropping everything else. */
     "manifold.crossSection.booleans.intersect": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
         /** The second cross-section; for a subtraction, the one cut with. */
         crossSection2: unknown | PipelineRef;
     };
-    /**
-     * Keeps only the area all the cross-sections in a list share.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.crossSection.booleans.intersection({ crossSections: [square, disc] });
-     * ```
-     */
+    /** Keeps only the area all the cross-sections in a list share. */
     "manifold.crossSection.booleans.intersection": {
         /** The cross-sections, in the order the method uses them. */
         crossSections: unknown[] | PipelineRef;
     };
-    /**
-     * Keeps only the area two cross-sections share, the same as `intersect`.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.crossSection.booleans.intersectionTwo({ crossSection1: square, crossSection2: disc });
-     * ```
-     */
+    /** Keeps only the area two cross-sections share, the same as `intersect`. */
     "manifold.crossSection.booleans.intersectionTwo": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
         /** The second cross-section; for a subtraction, the one cut with. */
         crossSection2: unknown | PipelineRef;
     };
-    /**
-     * Cuts the second cross-section out of the first, leaving what remains of the first.
-     *
-     * @example
-     * ```typescript
-     * const ring = await bitbybit.manifold.crossSection.booleans.subtract({ crossSection1: outerDisc, crossSection2: innerDisc });
-     * ```
-     */
+    /** Cuts the second cross-section out of the first, leaving what remains of the first. */
     "manifold.crossSection.booleans.subtract": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
         /** The second cross-section; for a subtraction, the one cut with. */
         crossSection2: unknown | PipelineRef;
     };
-    /**
-     * Fuses all the cross-sections in a list into one.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.crossSection.booleans.union({ crossSections: [square, disc, rectangle] });
-     * ```
-     */
+    /** Fuses all the cross-sections in a list into one. */
     "manifold.crossSection.booleans.union": {
         /** The cross-sections, in the order the method uses them. */
         crossSections: unknown[] | PipelineRef;
     };
-    /**
-     * Fuses two cross-sections into one, the same as `add`.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.crossSection.booleans.unionTwo({ crossSection1: square, crossSection2: disc });
-     * ```
-     */
+    /** Fuses two cross-sections into one, the same as `add`. */
     "manifold.crossSection.booleans.unionTwo": {
         /** The first cross-section; for a subtraction, the one cut from. */
         crossSection1: unknown | PipelineRef;
@@ -4514,16 +3689,6 @@ export interface OperationParams {
      *
      * `fillRule` decides which regions of a self-crossing polygon count as inside;
      * `removeDuplicates` drops consecutive repeated points within `tolerance` first.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.manifold.crossSection.crossSectionFromPoints({
-     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
-     *     fillRule: Bit.Inputs.Manifold.fillRuleEnum.positive,
-     *     removeDuplicates: false,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "manifold.crossSection.crossSectionFromPoints": {
         /** The polygon's points in order; only X and Y are used. */
@@ -4547,16 +3712,6 @@ export interface OperationParams {
      *
      * `fillRule` decides which regions count as inside where polygons overlap; `removeDuplicates`
      * drops consecutive repeated points within `tolerance` first.
-     *
-     * @example
-     * ```typescript
-     * const plate = await bitbybit.manifold.crossSection.crossSectionFromPolygons({
-     *     polygonPoints: [outerPoints, holePoints],
-     *     fillRule: Bit.Inputs.Manifold.fillRuleEnum.evenOdd,
-     *     removeDuplicates: false,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "manifold.crossSection.crossSectionFromPolygons": {
         /** One list of points per polygon; only X and Y are used. */
@@ -4577,11 +3732,6 @@ export interface OperationParams {
     /**
      * Reads several cross-sections back as polygons with 3D points, as `crossSectionToPoints` does
      * for one.
-     *
-     * @example
-     * ```typescript
-     * const polylines = await bitbybit.manifold.crossSection.crossSectionsToPoints({ crossSections: [outline, hole] });
-     * ```
      */
     "manifold.crossSection.crossSectionsToPoints": {
         /** The cross-sections, in the order the method uses them. */
@@ -4590,11 +3740,6 @@ export interface OperationParams {
     /**
      * Reads several cross-sections back as their polygons, as `crossSectionToPolygons` does for
      * one.
-     *
-     * @example
-     * ```typescript
-     * const polygons = await bitbybit.manifold.crossSection.crossSectionsToPolygons({ crossSections: [outline, hole] });
-     * ```
      */
     "manifold.crossSection.crossSectionsToPolygons": {
         /** The cross-sections, in the order the method uses them. */
@@ -4603,36 +3748,17 @@ export interface OperationParams {
     /**
      * Reads a cross-section back as its polygons with 3D points, Z set to 0, ready for drawing as
      * polylines.
-     *
-     * @example
-     * ```typescript
-     * const polylines = await bitbybit.manifold.crossSection.crossSectionToPoints({ crossSection: outline });
-     * ```
      */
     "manifold.crossSection.crossSectionToPoints": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
     };
-    /**
-     * Reads a cross-section back as its polygons, each a list of 2D points.
-     *
-     * @example
-     * ```typescript
-     * const polygons = await bitbybit.manifold.crossSection.crossSectionToPolygons({ crossSection: outline });
-     * ```
-     */
+    /** Reads a cross-section back as its polygons, each a list of 2D points. */
     "manifold.crossSection.crossSectionToPolygons": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
     };
-    /**
-     * Measures the area of a cross-section, in square model units, holes excluded.
-     *
-     * @example
-     * ```typescript
-     * const area = await bitbybit.manifold.crossSection.evaluate.area({ crossSection: outline });
-     * ```
-     */
+    /** Measures the area of a cross-section, in square model units, holes excluded. */
     "manifold.crossSection.evaluate.area": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
@@ -4640,48 +3766,22 @@ export interface OperationParams {
     /**
      * Finds the rectangle around a cross-section as two 2D points: the minimum corner, then the
      * maximum corner.
-     *
-     * @example
-     * ```typescript
-     * const [min, max] = await bitbybit.manifold.crossSection.evaluate.bounds({ crossSection: outline });
-     * ```
      */
     "manifold.crossSection.evaluate.bounds": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
     };
-    /**
-     * Tells whether a cross-section has no contours at all.
-     *
-     * @example
-     * ```typescript
-     * const empty = await bitbybit.manifold.crossSection.evaluate.isEmpty({ crossSection: outline });
-     * ```
-     */
+    /** Tells whether a cross-section has no contours at all. */
     "manifold.crossSection.evaluate.isEmpty": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
     };
-    /**
-     * Counts the contours of a cross-section: its outer outlines and its holes.
-     *
-     * @example
-     * ```typescript
-     * const contours = await bitbybit.manifold.crossSection.evaluate.numContour({ crossSection: plate });
-     * ```
-     */
+    /** Counts the contours of a cross-section: its outer outlines and its holes. */
     "manifold.crossSection.evaluate.numContour": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
     };
-    /**
-     * Counts the vertices of a cross-section over all its contours.
-     *
-     * @example
-     * ```typescript
-     * const vertices = await bitbybit.manifold.crossSection.evaluate.numVert({ crossSection: outline });
-     * ```
-     */
+    /** Counts the vertices of a cross-section over all its contours. */
     "manifold.crossSection.evaluate.numVert": {
         /** The cross-section to work on; it is not changed. */
         crossSection: unknown | PipelineRef;
@@ -4689,11 +3789,6 @@ export interface OperationParams {
     /**
      * Packs several cross-sections or polygons into one cross-section without fusing them, the
      * inverse of `decompose`.
-     *
-     * @example
-     * ```typescript
-     * const packed = await bitbybit.manifold.crossSection.operations.compose({ polygons: [square, disc] });
-     * ```
      */
     "manifold.crossSection.operations.compose": {
         /** The cross-sections or polygons to pack together. */
@@ -4702,11 +3797,6 @@ export interface OperationParams {
     /**
      * Splits a cross-section into its separate, unconnected outlines, each with its own holes, the
      * inverse of `compose`.
-     *
-     * @example
-     * ```typescript
-     * const pieces = await bitbybit.manifold.crossSection.operations.decompose({ crossSection: packed });
-     * ```
      */
     "manifold.crossSection.operations.decompose": {
         /** The cross-section to work on; it is not changed. */
@@ -4719,11 +3809,6 @@ export interface OperationParams {
      * it, and `nDivisions` adds sections in between so twists and tapers stay smooth; 0 for both
      * top scales makes a cone. `center` centers the solid on the XY plane instead of standing it on
      * it.
-     *
-     * @example
-     * ```typescript
-     * const twisted = await bitbybit.manifold.crossSection.operations.extrude({ crossSection: square, height: 20, nDivisions: 20, twistDegrees: 90, scaleTopX: 0.5, scaleTopY: 0.5, center: false });
-     * ```
      */
     "manifold.crossSection.operations.extrude": {
         /** The flat outline to extrude. */
@@ -4747,11 +3832,6 @@ export interface OperationParams {
     /**
      * Wraps a cross-section in its convex hull, the smallest outline without dents that contains
      * it, like a rubber band stretched around it.
-     *
-     * @example
-     * ```typescript
-     * const wrapped = await bitbybit.manifold.crossSection.operations.hull({ crossSection: outline });
-     * ```
      */
     "manifold.crossSection.operations.hull": {
         /** The cross-section to work on; it is not changed. */
@@ -4764,11 +3844,6 @@ export interface OperationParams {
      * `joinType` says how corners are treated: rounded, squared off, mitered or beveled;
      * `miterLimit` caps how far a miter may reach and `circularSegments` how round a rounded corner
      * is. `simplify` afterwards cleans up tiny segments.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.manifold.crossSection.operations.offset({ crossSection: outline, delta: 1, joinType: Bit.Inputs.Manifold.manifoldJoinTypeEnum.round, miterLimit: 2, circularSegments: 32 });
-     * ```
      */
     "manifold.crossSection.operations.offset": {
         /** The outline to offset. */
@@ -4795,11 +3870,6 @@ export interface OperationParams {
      * `revolveDegrees` below 360 gives a partial turn and `circularSegments` sets how round the
      * result is. The kernel stands the result along Z; `matchProfile`, true by default, turns it
      * back to match the profile.
-     *
-     * @example
-     * ```typescript
-     * const vase = await bitbybit.manifold.crossSection.operations.revolve({ crossSection: profile, revolveDegrees: 360, circularSegments: 64, matchProfile: true });
-     * ```
      */
     "manifold.crossSection.operations.revolve": {
         /** The flat profile to spin; only the part on the positive X side is used. */
@@ -4820,11 +3890,6 @@ export interface OperationParams {
      *
      * A larger epsilon removes more; run it after `offset` to clean up the tiny segments offsetting
      * leaves behind.
-     *
-     * @example
-     * ```typescript
-     * const cleaner = await bitbybit.manifold.crossSection.operations.simplify({ crossSection: offsetOutline, epsilon: 1e-4 });
-     * ```
      */
     "manifold.crossSection.operations.simplify": {
         /** The outline to simplify. */
@@ -4835,11 +3900,6 @@ export interface OperationParams {
     /**
      * Creates a circular cross-section of the given radius, centered on the origin and drawn with
      * `circularSegments` straight sides.
-     *
-     * @example
-     * ```typescript
-     * const disc = await bitbybit.manifold.crossSection.shapes.circle({ radius: 5, circularSegments: 64 });
-     * ```
      */
     "manifold.crossSection.shapes.circle": {
         /** The distance from the center to the outline, in model units. */
@@ -4853,11 +3913,6 @@ export interface OperationParams {
      *
      * `fillRule` decides which regions count as inside where polygons overlap or a polygon crosses
      * itself.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.manifold.crossSection.shapes.create({ polygons: [[[0, 0], [10, 0], [10, 10], [0, 10]]], fillRule: Bit.Inputs.Manifold.fillRuleEnum.evenOdd });
-     * ```
      */
     "manifold.crossSection.shapes.create": {
         /** The polygons, each a list of 2D points; overlapping ones are fused. */
@@ -4871,11 +3926,6 @@ export interface OperationParams {
     /**
      * Creates a rectangular cross-section with `length` along X and `height` along Y; with `center`
      * true it is centered on the origin, otherwise its corner sits there.
-     *
-     * @example
-     * ```typescript
-     * const rectangle = await bitbybit.manifold.crossSection.shapes.rectangle({ length: 20, height: 10, center: true });
-     * ```
      */
     "manifold.crossSection.shapes.rectangle": {
         /** The side along X, in model units. */
@@ -4888,11 +3938,6 @@ export interface OperationParams {
     /**
      * Creates a square cross-section of the given side; with `center` true it is centered on the
      * origin, otherwise its corner sits there.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.manifold.crossSection.shapes.square({ size: 10, center: true });
-     * ```
      */
     "manifold.crossSection.shapes.square": {
         /** When true, the square is centered on the origin; when false its corner sits there. */
@@ -4906,11 +3951,6 @@ export interface OperationParams {
     /**
      * Mirrors a cross-section across the line through the origin that is perpendicular to the given
      * normal.
-     *
-     * @example
-     * ```typescript
-     * const other = await bitbybit.manifold.crossSection.transforms.mirror({ crossSection: outline, normal: [1, 0] });
-     * ```
      */
     "manifold.crossSection.transforms.mirror": {
         /** The outline to mirror. */
@@ -4918,42 +3958,21 @@ export interface OperationParams {
         /** The normal of the mirror line through the origin; `[1, 0]` mirrors left to right. */
         normal?: [number, number] | PipelineRef;
     };
-    /**
-     * Rotates a cross-section about the origin by an angle in degrees, counterclockwise.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.manifold.crossSection.transforms.rotate({ crossSection: square, degrees: 45 });
-     * ```
-     */
+    /** Rotates a cross-section about the origin by an angle in degrees, counterclockwise. */
     "manifold.crossSection.transforms.rotate": {
         /** The outline to rotate. */
         crossSection: unknown | PipelineRef;
         /** The rotation about the origin, in degrees, counterclockwise. */
         degrees?: number | PipelineRef;
     };
-    /**
-     * Scales a cross-section uniformly about the origin by a factor.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.manifold.crossSection.transforms.scale({ crossSection: square, factor: 2 });
-     * ```
-     */
+    /** Scales a cross-section uniformly about the origin by a factor. */
     "manifold.crossSection.transforms.scale": {
         /** The outline to scale. */
         crossSection: unknown | PipelineRef;
         /** The uniform scale about the origin; 2 doubles every size. */
         factor?: number | PipelineRef;
     };
-    /**
-     * Scales a cross-section by a separate factor along X and Y, about the origin.
-     *
-     * @example
-     * ```typescript
-     * const stretched = await bitbybit.manifold.crossSection.transforms.scale2D({ crossSection: square, vector: [2, 1] });
-     * ```
-     */
+    /** Scales a cross-section by a separate factor along X and Y, about the origin. */
     "manifold.crossSection.transforms.scale2D": {
         /** The outline to scale. */
         crossSection: unknown | PipelineRef;
@@ -4963,11 +3982,6 @@ export interface OperationParams {
     /**
      * Applies a 3x3 matrix to a cross-section, for any combination of move, turn, scale and shear
      * in the plane.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.crossSection.transforms.transform({ crossSection: square, transform: matrix });
-     * ```
      */
     "manifold.crossSection.transforms.transform": {
         /** The outline to transform. */
@@ -4975,28 +3989,14 @@ export interface OperationParams {
         /** The 3x3 matrix as 9 numbers, any combination of move, turn, scale and shear in the plane. */
         transform: unknown | PipelineRef;
     };
-    /**
-     * Moves a cross-section by a 2D vector, in model units.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.crossSection.transforms.translate({ crossSection: square, vector: [10, 0] });
-     * ```
-     */
+    /** Moves a cross-section by a 2D vector, in model units. */
     "manifold.crossSection.transforms.translate": {
         /** The outline to move. */
         crossSection: unknown | PipelineRef;
         /** The 2D vector the outline moves by, in model units. */
         vector: [number, number] | PipelineRef;
     };
-    /**
-     * Moves a cross-section by separate distances along X and Y, in model units.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.crossSection.transforms.translateXY({ crossSection: square, x: 10, y: 5 });
-     * ```
-     */
+    /** Moves a cross-section by separate distances along X and Y, in model units. */
     "manifold.crossSection.transforms.translateXY": {
         /** The outline to move. */
         crossSection: unknown | PipelineRef;
@@ -5008,14 +4008,6 @@ export interface OperationParams {
     /**
      * Moves every point of a cross-section with a function of your own that changes the point in
      * place, then fuses the result so any crossings the move introduced are cleaned up.
-     *
-     * @example
-     * ```typescript
-     * const wavy = await bitbybit.manifold.crossSection.transforms.warp({
-     *     crossSection: square,
-     *     warpFunc: (vert) => { vert[1] += Math.sin(vert[0]) * 0.5; },
-     * });
-     * ```
      */
     "manifold.crossSection.transforms.warp": {
         /** The outline to warp. */
@@ -5029,11 +4021,6 @@ export interface OperationParams {
      *
      * `normalIdx` names the vertex property channel that holds normals, when the solid carries
      * them.
-     *
-     * @example
-     * ```typescript
-     * const mesh = await bitbybit.manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: cube });
-     * ```
      */
     "manifold.decomposeManifoldOrCrossSection": {
         /** The solid or cross-section to turn into plain data. */
@@ -5046,11 +4033,6 @@ export interface OperationParams {
      * `decomposeManifoldOrCrossSection` does for one.
      *
      * `normalIdx` gives one normal channel per shape.
-     *
-     * @example
-     * ```typescript
-     * const meshes = await bitbybit.manifold.decomposeManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
-     * ```
      */
     "manifold.decomposeManifoldsOrCrossSections": {
         /** The solids or cross-sections to turn into plain data, one result each. */
@@ -5062,11 +4044,6 @@ export interface OperationParams {
      * Frees the memory a solid or a cross-section holds inside the kernel; the object cannot be
      * used afterwards. Call it for results a script no longer needs, so long sessions do not run
      * out of memory.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.manifold.deleteManifoldOrCrossSection({ manifoldOrCrossSection: cube });
-     * ```
      */
     "manifold.deleteManifoldOrCrossSection": {
         /** The solid or cross-section to work on. */
@@ -5076,90 +4053,43 @@ export interface OperationParams {
      * Frees the memory several solids or cross-sections hold inside the kernel; they cannot be used
      * afterwards. Call it for results a script no longer needs, so long sessions do not run out of
      * memory.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.manifold.deleteManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
-     * ```
      */
     "manifold.deleteManifoldsOrCrossSections": {
         /** The solids or cross-sections, in the order the method uses them. */
         manifoldsOrCrossSections: unknown[] | PipelineRef;
     };
-    /**
-     * Fuses two solids into one closed, watertight solid.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.manifold.booleans.add({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Fuses two solids into one closed, watertight solid. */
     "manifold.manifold.booleans.add": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
         /** The second solid; for a subtraction, the one cut with. */
         manifold2: unknown | PipelineRef;
     };
-    /**
-     * Cuts every further solid in the list out of the first one.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.manifold.manifold.booleans.difference({ manifolds: [cube, sphere, cylinder] });
-     * ```
-     */
+    /** Cuts every further solid in the list out of the first one. */
     "manifold.manifold.booleans.difference": {
         /** The solids, in the order the method uses them. */
         manifolds: unknown[] | PipelineRef;
     };
-    /**
-     * Cuts the second solid out of the first, the same as `subtract`.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.manifold.manifold.booleans.differenceTwo({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Cuts the second solid out of the first, the same as `subtract`. */
     "manifold.manifold.booleans.differenceTwo": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
         /** The second solid; for a subtraction, the one cut with. */
         manifold2: unknown | PipelineRef;
     };
-    /**
-     * Keeps only the volume two solids share, dropping everything else.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.manifold.booleans.intersect({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Keeps only the volume two solids share, dropping everything else. */
     "manifold.manifold.booleans.intersect": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
         /** The second solid; for a subtraction, the one cut with. */
         manifold2: unknown | PipelineRef;
     };
-    /**
-     * Keeps only the volume all the solids in a list share.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.manifold.booleans.intersection({ manifolds: [cube, sphere] });
-     * ```
-     */
+    /** Keeps only the volume all the solids in a list share. */
     "manifold.manifold.booleans.intersection": {
         /** The solids, in the order the method uses them. */
         manifolds: unknown[] | PipelineRef;
     };
-    /**
-     * Keeps only the volume two solids share, the same as `intersect`.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.manifold.manifold.booleans.intersectionTwo({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Keeps only the volume two solids share, the same as `intersect`. */
     "manifold.manifold.booleans.intersectionTwo": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
@@ -5171,11 +4101,6 @@ export interface OperationParams {
      * part outside it.
      *
      * Cheaper than an intersection followed by a subtraction when both are needed.
-     *
-     * @example
-     * ```typescript
-     * const [inside, outside] = await bitbybit.manifold.manifold.booleans.split({ manifoldToSplit: cube, manifoldCutter: sphere });
-     * ```
      */
     "manifold.manifold.booleans.split": {
         /** The solid that is cut in two. */
@@ -5188,11 +4113,6 @@ export interface OperationParams {
      *
      * The plane is given by its normal and its distance from the origin along that normal; the
      * first piece lies on the side the normal points to, the second on the other side.
-     *
-     * @example
-     * ```typescript
-     * const [top, bottom] = await bitbybit.manifold.manifold.booleans.splitByPlane({ manifold: cube, normal: [0, 0, 1], originOffset: 0.5 });
-     * ```
      */
     "manifold.manifold.booleans.splitByPlane": {
         /** The solid to split. */
@@ -5212,11 +4132,6 @@ export interface OperationParams {
      * Each cut keeps the part on the far side of the normal as a finished piece and carries the
      * rest to the next distance, so the offsets should increase; n offsets give n + 1 pieces, empty
      * ones dropped.
-     *
-     * @example
-     * ```typescript
-     * const slabs = await bitbybit.manifold.manifold.booleans.splitByPlaneOnOffsets({ manifold: cube, normal: [0, 0, 1], originOffsets: [0.25, 0.5, 0.75] });
-     * ```
      */
     "manifold.manifold.booleans.splitByPlaneOnOffsets": {
         /** The solid to cut into slabs. */
@@ -5229,14 +4144,7 @@ export interface OperationParams {
          */
         originOffsets?: number[] | PipelineRef;
     };
-    /**
-     * Cuts the second solid out of the first, leaving what remains of the first.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.manifold.manifold.booleans.subtract({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Cuts the second solid out of the first, leaving what remains of the first. */
     "manifold.manifold.booleans.subtract": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
@@ -5247,11 +4155,6 @@ export interface OperationParams {
      * Cuts a solid with a plane and keeps only the part on the side the normal points to.
      *
      * The plane is given by its normal and its distance from the origin along that normal.
-     *
-     * @example
-     * ```typescript
-     * const half = await bitbybit.manifold.manifold.booleans.trimByPlane({ manifold: sphere, normal: [0, 0, 1], originOffset: 0 });
-     * ```
      */
     "manifold.manifold.booleans.trimByPlane": {
         /** The solid to trim. */
@@ -5264,40 +4167,19 @@ export interface OperationParams {
         /** How far the plane sits from the origin along the normal, in model units. */
         originOffset?: number | PipelineRef;
     };
-    /**
-     * Fuses all the solids in a list into one.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.manifold.booleans.union({ manifolds: [cube, sphere, cylinder] });
-     * ```
-     */
+    /** Fuses all the solids in a list into one. */
     "manifold.manifold.booleans.union": {
         /** The solids, in the order the method uses them. */
         manifolds: unknown[] | PipelineRef;
     };
-    /**
-     * Fuses two solids into one, the same as `add`.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.manifold.manifold.booleans.unionTwo({ manifold1: cube, manifold2: sphere });
-     * ```
-     */
+    /** Fuses two solids into one, the same as `add`. */
     "manifold.manifold.booleans.unionTwo": {
         /** The first solid; for a subtraction, the one cut from. */
         manifold1: unknown | PipelineRef;
         /** The second solid; for a subtraction, the one cut with. */
         manifold2: unknown | PipelineRef;
     };
-    /**
-     * Finds the axis-aligned box around every vertex of a solid.
-     *
-     * @example
-     * ```typescript
-     * const [min, max] = await bitbybit.manifold.manifold.evaluate.boundingBox({ manifold: shape });
-     * ```
-     */
+    /** Finds the axis-aligned box around every vertex of a solid. */
     "manifold.manifold.evaluate.boundingBox": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
@@ -5307,11 +4189,6 @@ export interface OperationParams {
      *
      * It only makes sense for a single connected piece, so run `operations.decompose` first on a
      * solid made of several.
-     *
-     * @example
-     * ```typescript
-     * const holes = await bitbybit.manifold.manifold.evaluate.genus({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.genus": {
         /** The solid to work on; it is not changed. */
@@ -5320,11 +4197,6 @@ export interface OperationParams {
     /**
      * Tells whether a solid has no triangles at all, as the result of an intersection of shapes
      * that do not overlap would.
-     *
-     * @example
-     * ```typescript
-     * const empty = await bitbybit.manifold.manifold.evaluate.isEmpty({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.isEmpty": {
         /** The solid to work on; it is not changed. */
@@ -5334,11 +4206,6 @@ export interface OperationParams {
      * Measures the smallest distance between two solids, searching no farther than `searchLength`.
      *
      * The result is between 0 and the search length.
-     *
-     * @example
-     * ```typescript
-     * const gap = await bitbybit.manifold.manifold.evaluate.minGap({ manifold1: cube, manifold2: sphere, searchLength: 100 });
-     * ```
      */
     "manifold.manifold.evaluate.minGap": {
         /** The first solid. */
@@ -5348,26 +4215,12 @@ export interface OperationParams {
         /** How far apart the solids may be before the search gives up, in model units. */
         searchLength?: number | PipelineRef;
     };
-    /**
-     * Counts the edges of a solid's mesh, each shared by two triangles.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.manifold.manifold.evaluate.numEdge({ manifold: shape });
-     * ```
-     */
+    /** Counts the edges of a solid's mesh, each shared by two triangles. */
     "manifold.manifold.evaluate.numEdge": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
     };
-    /**
-     * Counts the property channels each vertex of a solid carries; the position alone takes three.
-     *
-     * @example
-     * ```typescript
-     * const channels = await bitbybit.manifold.manifold.evaluate.numProp({ manifold: shape });
-     * ```
-     */
+    /** Counts the property channels each vertex of a solid carries; the position alone takes three. */
     "manifold.manifold.evaluate.numProp": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
@@ -5376,36 +4229,17 @@ export interface OperationParams {
      * Counts the property vertices of a solid, which is at least `numVert`: a vertex whose
      * neighboring triangles carry different properties, such as a sharp edge with two normals, is
      * stored more than once.
-     *
-     * @example
-     * ```typescript
-     * const propVertices = await bitbybit.manifold.manifold.evaluate.numPropVert({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.numPropVert": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
     };
-    /**
-     * Counts the triangles of a solid's mesh, which is its whole surface.
-     *
-     * @example
-     * ```typescript
-     * const triangles = await bitbybit.manifold.manifold.evaluate.numTri({ manifold: shape });
-     * ```
-     */
+    /** Counts the triangles of a solid's mesh, which is its whole surface. */
     "manifold.manifold.evaluate.numTri": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
     };
-    /**
-     * Counts the vertices of a solid's mesh, the corners its triangles share.
-     *
-     * @example
-     * ```typescript
-     * const vertices = await bitbybit.manifold.manifold.evaluate.numVert({ manifold: shape });
-     * ```
-     */
+    /** Counts the vertices of a solid's mesh, the corners its triangles share. */
     "manifold.manifold.evaluate.numVert": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
@@ -5413,11 +4247,6 @@ export interface OperationParams {
     /**
      * Reads the id of a solid that is an original, as `operations.asOriginal` or a freshly built
      * solid makes it; a solid produced from others by an operation reports -1.
-     *
-     * @example
-     * ```typescript
-     * const id = await bitbybit.manifold.manifold.evaluate.originalID({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.originalID": {
         /** The solid to work on; it is not changed. */
@@ -5429,24 +4258,12 @@ export interface OperationParams {
      *
      * The status is carried through later operations, so a broken input does not get lost; an empty
      * solid can still report `NoError`, as intersecting shapes that do not overlap does.
-     *
-     * @example
-     * ```typescript
-     * const status = await bitbybit.manifold.manifold.evaluate.status({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.status": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
     };
-    /**
-     * Measures the total surface area of a solid, in square model units.
-     *
-     * @example
-     * ```typescript
-     * const area = await bitbybit.manifold.manifold.evaluate.surfaceArea({ manifold: cube });
-     * ```
-     */
+    /** Measures the total surface area of a solid, in square model units. */
     "manifold.manifold.evaluate.surfaceArea": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
@@ -5456,24 +4273,12 @@ export interface OperationParams {
      * operations that made it.
      *
      * Triangles thinner than this are treated as degenerate and removed.
-     *
-     * @example
-     * ```typescript
-     * const tolerance = await bitbybit.manifold.manifold.evaluate.tolerance({ manifold: shape });
-     * ```
      */
     "manifold.manifold.evaluate.tolerance": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
     };
-    /**
-     * Measures the volume of a solid, in cubic model units.
-     *
-     * @example
-     * ```typescript
-     * const volume = await bitbybit.manifold.manifold.evaluate.volume({ manifold: cube });
-     * ```
-     */
+    /** Measures the volume of a solid, in cubic model units. */
     "manifold.manifold.evaluate.volume": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
@@ -5482,11 +4287,6 @@ export interface OperationParams {
      * Turns several solids into plain mesh data, as `manifoldToMesh` does for one.
      *
      * `normalIdx` gives one normal channel per solid.
-     *
-     * @example
-     * ```typescript
-     * const meshes = await bitbybit.manifold.manifold.manifoldsToMeshes({ manifolds: [cube, sphere] });
-     * ```
      */
     "manifold.manifold.manifoldsToMeshes": {
         /** The solids to turn into mesh data, one mesh each. */
@@ -5500,11 +4300,6 @@ export interface OperationParams {
      *
      * `normalIdx` names the vertex property channel that holds normals, when the solid carries
      * them.
-     *
-     * @example
-     * ```typescript
-     * const mesh = await bitbybit.manifold.manifold.manifoldToMesh({ manifold: cube });
-     * ```
      */
     "manifold.manifold.manifoldToMesh": {
         /** The solid to turn into mesh data. */
@@ -5518,11 +4313,6 @@ export interface OperationParams {
      *
      * Coplanar faces are merged and the edges between them collapsed on the way; keep the mesh
      * route instead when those edges must stay.
-     *
-     * @example
-     * ```typescript
-     * const original = await bitbybit.manifold.manifold.operations.asOriginal({ manifold: shape });
-     * ```
      */
     "manifold.manifold.operations.asOriginal": {
         /** The solid to work on; it is not changed. */
@@ -5534,11 +4324,6 @@ export interface OperationParams {
      *
      * Curvature is the inverse of the bending radius, positive where the surface is convex and
      * negative where it is concave; an index below 0 skips that channel.
-     *
-     * @example
-     * ```typescript
-     * const withCurvature = await bitbybit.manifold.manifold.operations.calculateCurvature({ manifold: shape, gaussianIdx: 0, meanIdx: 1 });
-     * ```
      */
     "manifold.manifold.operations.calculateCurvature": {
         /** The solid to compute curvature for. */
@@ -5560,11 +4345,6 @@ export interface OperationParams {
      *
      * Edges sharper than `minSharpAngle`, in degrees, keep separate normals on each side and stay
      * crisp; at 0 every triangle keeps its own normal. Flat faces of several triangles stay flat.
-     *
-     * @example
-     * ```typescript
-     * const withNormals = await bitbybit.manifold.manifold.operations.calculateNormals({ manifold: shape, normalIdx: 0, minSharpAngle: 60 });
-     * ```
      */
     "manifold.manifold.operations.calculateNormals": {
         /** The solid to compute normals for. */
@@ -5585,11 +4365,6 @@ export interface OperationParams {
      *
      * Nothing is checked for overlap, so keep the solids apart; a boolean union is the right tool
      * for overlapping ones.
-     *
-     * @example
-     * ```typescript
-     * const packed = await bitbybit.manifold.manifold.operations.compose({ manifolds: [cube, sphere] });
-     * ```
      */
     "manifold.manifold.operations.compose": {
         /** The solids, in the order the method uses them. */
@@ -5599,11 +4374,6 @@ export interface OperationParams {
      * Splits a solid into its separate, unconnected pieces, the inverse of `compose`.
      *
      * A solid that is all one piece comes back as a list of one copy.
-     *
-     * @example
-     * ```typescript
-     * const pieces = await bitbybit.manifold.manifold.operations.decompose({ manifold: packed });
-     * ```
      */
     "manifold.manifold.operations.decompose": {
         /** The solid to work on; it is not changed. */
@@ -5612,11 +4382,6 @@ export interface OperationParams {
     /**
      * Wraps a solid in its convex hull, the smallest shape without dents that contains it, like
      * shrink-wrap pulled tight over it.
-     *
-     * @example
-     * ```typescript
-     * const wrapped = await bitbybit.manifold.manifold.operations.hull({ manifold: shape });
-     * ```
      */
     "manifold.manifold.operations.hull": {
         /** The solid to work on; it is not changed. */
@@ -5625,11 +4390,6 @@ export interface OperationParams {
     /**
      * Wraps points, solids or a mix of both in one convex hull, the smallest shape without dents
      * that contains them all.
-     *
-     * @example
-     * ```typescript
-     * const wrapped = await bitbybit.manifold.manifold.operations.hullPoints({ points: [[0, 0, 0], [10, 0, 0], [0, 10, 0], [0, 0, 10]] });
-     * ```
      */
     "manifold.manifold.operations.hullPoints": {
         /** The points and solids to wrap, in any mix. */
@@ -5638,11 +4398,6 @@ export interface OperationParams {
     /**
      * Flattens a solid onto the XY plane and returns its outline as a cross-section, like its
      * shadow under a light straight above.
-     *
-     * @example
-     * ```typescript
-     * const shadow = await bitbybit.manifold.manifold.operations.project({ manifold: shape });
-     * ```
      */
     "manifold.manifold.operations.project": {
         /** The solid to work on; it is not changed. */
@@ -5654,11 +4409,6 @@ export interface OperationParams {
      *
      * On a solid smoothed with `smoothOut` or `smoothByNormals` the new vertices move onto the
      * smooth surface; otherwise the new triangles stay flat.
-     *
-     * @example
-     * ```typescript
-     * const finer = await bitbybit.manifold.manifold.operations.refine({ manifold: smoothed, number: 2 });
-     * ```
      */
     "manifold.manifold.operations.refine": {
         /** The solid to refine. */
@@ -5672,11 +4422,6 @@ export interface OperationParams {
      *
      * On a solid smoothed with `smoothOut` or `smoothByNormals` the new vertices move onto the
      * smooth surface; otherwise the surface stays as it is.
-     *
-     * @example
-     * ```typescript
-     * const finer = await bitbybit.manifold.manifold.operations.refineToLength({ manifold: smoothed, length: 0.5 });
-     * ```
      */
     "manifold.manifold.operations.refineToLength": {
         /** The solid to refine. */
@@ -5690,11 +4435,6 @@ export interface OperationParams {
      *
      * Only a solid that was smoothed with `smoothOut` or `smoothByNormals` changes; any other comes
      * back as a copy.
-     *
-     * @example
-     * ```typescript
-     * const finer = await bitbybit.manifold.manifold.operations.refineToTolerance({ manifold: smoothed, tolerance: 0.01 });
-     * ```
      */
     "manifold.manifold.operations.refineToTolerance": {
         /** The solid to work on. */
@@ -5711,11 +4451,6 @@ export interface OperationParams {
      *
      * Assign them to a mesh's `runOriginalID` before building a solid from it, for instance to keep
      * several materials apart.
-     *
-     * @example
-     * ```typescript
-     * const firstId = await bitbybit.manifold.manifold.operations.reserveIds({ count: 2 });
-     * ```
      */
     "manifold.manifold.operations.reserveIds": {
         /** How many ids to reserve. */
@@ -5727,15 +4462,6 @@ export interface OperationParams {
      *
      * `numProp` sets how many properties each vertex has afterwards, so channels can be added or
      * dropped; reading past the old count or writing past the new one is undefined.
-     *
-     * @example
-     * ```typescript
-     * const colored = await bitbybit.manifold.manifold.operations.setProperties({
-     *     manifold: shape,
-     *     numProp: 3,
-     *     propFunc: (newProp, position) => { newProp[0] = position[0]; newProp[1] = position[1]; newProp[2] = position[2]; },
-     * });
-     * ```
      */
     "manifold.manifold.operations.setProperties": {
         /** The solid whose vertex properties are rewritten. */
@@ -5753,11 +4479,6 @@ export interface OperationParams {
      * mesh when the tolerance grows.
      *
      * Triangles thinner than the tolerance are treated as degenerate and removed.
-     *
-     * @example
-     * ```typescript
-     * const coarser = await bitbybit.manifold.manifold.operations.setTolerance({ manifold: shape, tolerance: 0.01 });
-     * ```
      */
     "manifold.manifold.operations.setTolerance": {
         /** The solid to work on. */
@@ -5774,11 +4495,6 @@ export interface OperationParams {
      *
      * The result keeps a subset of the original vertices; the solid's own tolerance value stays
      * unchanged.
-     *
-     * @example
-     * ```typescript
-     * const lighter = await bitbybit.manifold.manifold.operations.simplify({ manifold: shape, tolerance: 0.05 });
-     * ```
      */
     "manifold.manifold.operations.simplify": {
         /** The solid to simplify. */
@@ -5795,11 +4511,6 @@ export interface OperationParams {
      *
      * A height at the bottom of the solid's bounding box gives its bottom faces; a height at the
      * top gives an empty cross-section.
-     *
-     * @example
-     * ```typescript
-     * const section = await bitbybit.manifold.manifold.operations.slice({ manifold: sphere, height: 2 });
-     * ```
      */
     "manifold.manifold.operations.slice": {
         /** The solid to cut. */
@@ -5813,11 +4524,6 @@ export interface OperationParams {
      *
      * `normalIdx` is the first of the three normal channels, as `calculateNormals` stores them;
      * where the normals on a vertex disagree the edge stays sharp.
-     *
-     * @example
-     * ```typescript
-     * const smoothed = await bitbybit.manifold.manifold.operations.smoothByNormals({ manifold: withNormals, normalIdx: 0 });
-     * ```
      */
     "manifold.manifold.operations.smoothByNormals": {
         /** The solid to mark for smoothing. */
@@ -5835,12 +4541,6 @@ export interface OperationParams {
      * Edges sharper than `minSharpAngle`, in degrees, stay sharp; `minSmoothness` above 0 rounds
      * those a little, and 1 smooths everything. The geometry itself does not change until it is
      * refined.
-     *
-     * @example
-     * ```typescript
-     * const smoothed = await bitbybit.manifold.manifold.operations.smoothOut({ manifold: cube, minSharpAngle: 60, minSmoothness: 0 });
-     * const rounded = await bitbybit.manifold.manifold.operations.refineToLength({ manifold: smoothed, length: 0.5 });
-     * ```
      */
     "manifold.manifold.operations.smoothOut": {
         /** The solid to mark for smoothing. */
@@ -5858,11 +4558,6 @@ export interface OperationParams {
      *
      * With `center` true the box is centered on the origin; otherwise its corner sits on the origin
      * and it extends along the positive axes.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.manifold.manifold.shapes.cube({ size: 10, center: true });
-     * ```
      */
     "manifold.manifold.shapes.cube": {
         /**
@@ -5880,11 +4575,6 @@ export interface OperationParams {
      * `radiusLow` is the bottom radius and must be above 0, `radiusHigh` the top radius, which may
      * be 0 for a point; `circularSegments` sets how round the sides are. `center` centers the
      * cylinder on the origin instead of standing it on it.
-     *
-     * @example
-     * ```typescript
-     * const cone = await bitbybit.manifold.manifold.shapes.cylinder({ height: 10, radiusLow: 4, radiusHigh: 1, circularSegments: 32, center: false });
-     * ```
      */
     "manifold.manifold.shapes.cylinder": {
         /** The height along Z, in model units. */
@@ -5907,11 +4597,6 @@ export interface OperationParams {
      *
      * The triangles must form a closed, consistently oriented surface; entries that are not three
      * points are skipped, and points with missing coordinates throw an error.
-     *
-     * @example
-     * ```typescript
-     * const solid = await bitbybit.manifold.manifold.shapes.fromPolygonPoints({ polygonPoints: triangles });
-     * ```
      */
     "manifold.manifold.shapes.fromPolygonPoints": {
         /** The triangles, each three points, together forming a closed surface. */
@@ -5923,11 +4608,6 @@ export interface OperationParams {
      *
      * The mesh must be closed and consistently oriented, or an error is thrown; degenerate
      * triangles and unneeded vertices are removed on the way in.
-     *
-     * @example
-     * ```typescript
-     * const solid = await bitbybit.manifold.manifold.shapes.manifoldFromMesh({ mesh });
-     * ```
      */
     "manifold.manifold.shapes.manifoldFromMesh": {
         /**
@@ -5941,11 +4621,6 @@ export interface OperationParams {
      *
      * `circularSegments` is the number of segments around the sphere; it is rounded up to a
      * multiple of four, since the sphere is built by refining an octahedron.
-     *
-     * @example
-     * ```typescript
-     * const ball = await bitbybit.manifold.manifold.shapes.sphere({ radius: 5, circularSegments: 32 });
-     * ```
      */
     "manifold.manifold.shapes.sphere": {
         /** The distance from the center to the surface, in model units. */
@@ -5956,11 +4631,6 @@ export interface OperationParams {
     /**
      * Creates a tetrahedron solid centered on the origin, with one corner at `[1, 1, 1]` and the
      * others placed symmetrically.
-     *
-     * @example
-     * ```typescript
-     * const tetra = await bitbybit.manifold.manifold.shapes.tetrahedron();
-     * ```
      */
     "manifold.manifold.shapes.tetrahedron": {
     };
@@ -5968,11 +4638,6 @@ export interface OperationParams {
      * Mirrors a solid across the plane through the origin with the given normal.
      *
      * A zero-length normal gives an empty solid.
-     *
-     * @example
-     * ```typescript
-     * const other = await bitbybit.manifold.manifold.transforms.mirror({ manifold: shape, normal: [1, 0, 0] });
-     * ```
      */
     "manifold.manifold.transforms.mirror": {
         /** The solid to mirror. */
@@ -5984,11 +4649,6 @@ export interface OperationParams {
      * Rotates a solid about the origin by Euler angles in degrees: first about X, then Y, then Z.
      *
      * Multiples of 90 degrees are exact, with no rounding error.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.manifold.manifold.transforms.rotate({ manifold: cube, vector: [0, 0, 45] });
-     * ```
      */
     "manifold.manifold.transforms.rotate": {
         /** The solid to rotate. */
@@ -6000,11 +4660,6 @@ export interface OperationParams {
      * Rotates a solid about the origin by separate angles in degrees about X, then Y, then Z.
      *
      * Multiples of 90 degrees are exact, with no rounding error.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.manifold.manifold.transforms.rotateXYZ({ manifold: cube, x: 0, y: 0, z: 45 });
-     * ```
      */
     "manifold.manifold.transforms.rotateXYZ": {
         /** The solid to rotate. */
@@ -6019,11 +4674,6 @@ export interface OperationParams {
     /**
      * Scales a solid by a factor per axis, about the origin; it takes the same inputs as `scale3D`,
      * so use equal factors for a uniform scale.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.manifold.manifold.transforms.scale({ manifold: cube, vector: [2, 2, 2] });
-     * ```
      */
     "manifold.manifold.transforms.scale": {
         /** The solid to scale. */
@@ -6031,14 +4681,7 @@ export interface OperationParams {
         /** The factors along X, Y and Z, about the origin; 1 keeps an axis as it is, 2 doubles it. */
         vector?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Scales a solid by a separate factor along X, Y and Z, about the origin.
-     *
-     * @example
-     * ```typescript
-     * const stretched = await bitbybit.manifold.manifold.transforms.scale3D({ manifold: cube, vector: [1, 2, 1] });
-     * ```
-     */
+    /** Scales a solid by a separate factor along X, Y and Z, about the origin. */
     "manifold.manifold.transforms.scale3D": {
         /** The solid to scale. */
         manifold: unknown | PipelineRef;
@@ -6050,11 +4693,6 @@ export interface OperationParams {
      *
      * The matrix is column-major, 16 numbers with the translation at indexes 12 to 14; the kernel
      * reads it as a 3x4 affine transform and ignores the last row.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.manifold.transforms.transform({ manifold: cube, transform: matrix });
-     * ```
      */
     "manifold.manifold.transforms.transform": {
         /** The solid to transform. */
@@ -6067,11 +4705,6 @@ export interface OperationParams {
      * final result.
      *
      * An empty list throws an error.
-     *
-     * @example
-     * ```typescript
-     * const placed = await bitbybit.manifold.manifold.transforms.transforms({ manifold: cube, transforms: [turn, move] });
-     * ```
      */
     "manifold.manifold.transforms.transforms": {
         /** The solid to transform. */
@@ -6079,42 +4712,21 @@ export interface OperationParams {
         /** The column-major matrices, applied one after another; the list must not be empty. */
         transforms: unknown | PipelineRef;
     };
-    /**
-     * Moves a solid by a vector, in model units.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.manifold.transforms.translate({ manifold: cube, vector: [10, 0, 0] });
-     * ```
-     */
+    /** Moves a solid by a vector, in model units. */
     "manifold.manifold.transforms.translate": {
         /** The solid to move. */
         manifold: unknown | PipelineRef;
         /** The vector the solid moves by, in model units. */
         vector: [number, number, number] | PipelineRef;
     };
-    /**
-     * Makes one moved copy of a solid per vector, for laying out repeats.
-     *
-     * @example
-     * ```typescript
-     * const row = await bitbybit.manifold.manifold.transforms.translateByVectors({ manifold: cube, vectors: [[0, 0, 0], [10, 0, 0], [20, 0, 0]] });
-     * ```
-     */
+    /** Makes one moved copy of a solid per vector, for laying out repeats. */
     "manifold.manifold.transforms.translateByVectors": {
         /** The solid to copy and move. */
         manifold: unknown | PipelineRef;
         /** One vector per copy, in model units. */
         vectors: [number, number, number][] | PipelineRef;
     };
-    /**
-     * Moves a solid by separate distances along X, Y and Z, in model units.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.manifold.manifold.transforms.translateXYZ({ manifold: cube, x: 10, y: 0, z: 5 });
-     * ```
-     */
+    /** Moves a solid by separate distances along X, Y and Z, in model units. */
     "manifold.manifold.transforms.translateXYZ": {
         /** The solid to move. */
         manifold: unknown | PipelineRef;
@@ -6131,14 +4743,6 @@ export interface OperationParams {
      *
      * The mesh connectivity stays the same and nothing checks that the result still makes sense, so
      * a function that folds the surface through itself gives a broken solid.
-     *
-     * @example
-     * ```typescript
-     * const bent = await bitbybit.manifold.manifold.transforms.warp({
-     *     manifold: cube,
-     *     warpFunc: (vert) => { vert[0] += vert[2] * 0.2; },
-     * });
-     * ```
      */
     "manifold.manifold.transforms.warp": {
         /** The solid to warp. */
@@ -6156,11 +4760,6 @@ export interface OperationParams {
     /**
      * Reads the properties of one vertex beyond its position, such as normals or colors stored in
      * extra channels.
-     *
-     * @example
-     * ```typescript
-     * const props = await bitbybit.manifold.mesh.evaluate.extras({ mesh, vertexIndex: 0 });
-     * ```
      */
     "manifold.mesh.evaluate.extras": {
         /** The mesh data to read. */
@@ -6168,14 +4767,7 @@ export interface OperationParams {
         /** The position of the vertex, counting from 0. */
         vertexIndex?: number | PipelineRef;
     };
-    /**
-     * Counts the property channels each vertex of a mesh carries; the position alone takes three.
-     *
-     * @example
-     * ```typescript
-     * const channels = await bitbybit.manifold.mesh.evaluate.numProp({ mesh });
-     * ```
-     */
+    /** Counts the property channels each vertex of a mesh carries; the position alone takes three. */
     "manifold.mesh.evaluate.numProp": {
         /** The mesh data, as `manifoldToMesh` hands it out. */
         mesh: unknown | PipelineRef;
@@ -6183,24 +4775,12 @@ export interface OperationParams {
     /**
      * Counts the triangle runs of a mesh: each run is a stretch of consecutive triangles that came
      * from the same instance of the same input shape.
-     *
-     * @example
-     * ```typescript
-     * const runs = await bitbybit.manifold.mesh.evaluate.numRun({ mesh });
-     * ```
      */
     "manifold.mesh.evaluate.numRun": {
         /** The mesh data, as `manifoldToMesh` hands it out. */
         mesh: unknown | PipelineRef;
     };
-    /**
-     * Counts the triangles of a mesh, which together make its whole surface.
-     *
-     * @example
-     * ```typescript
-     * const triangles = await bitbybit.manifold.mesh.evaluate.numTri({ mesh });
-     * ```
-     */
+    /** Counts the triangles of a mesh, which together make its whole surface. */
     "manifold.mesh.evaluate.numTri": {
         /** The mesh data, as `manifoldToMesh` hands it out. */
         mesh: unknown | PipelineRef;
@@ -6208,24 +4788,12 @@ export interface OperationParams {
     /**
      * Counts the property vertices of a mesh, which can exceed the geometric vertices where
      * neighboring triangles carry different properties.
-     *
-     * @example
-     * ```typescript
-     * const vertices = await bitbybit.manifold.mesh.evaluate.numVert({ mesh });
-     * ```
      */
     "manifold.mesh.evaluate.numVert": {
         /** The mesh data, as `manifoldToMesh` hands it out. */
         mesh: unknown | PipelineRef;
     };
-    /**
-     * Reads the position of one vertex of a mesh.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.manifold.mesh.evaluate.position({ mesh, vertexIndex: 0 });
-     * ```
-     */
+    /** Reads the position of one vertex of a mesh. */
     "manifold.mesh.evaluate.position": {
         /** The mesh data to read. */
         mesh: unknown | PipelineRef;
@@ -6238,11 +4806,6 @@ export interface OperationParams {
      *
      * Half-edge three times the triangle index plus `j` is the edge of triangle `t` that starts at
      * its `j`-th vertex; a mesh without smoothing tangents has none.
-     *
-     * @example
-     * ```typescript
-     * const tangent = await bitbybit.manifold.mesh.evaluate.tangent({ mesh: smoothedMesh, halfEdgeIndex: 0 });
-     * ```
      */
     "manifold.mesh.evaluate.tangent": {
         /** The mesh data to read. */
@@ -6253,11 +4816,6 @@ export interface OperationParams {
     /**
      * Reads the column-major 4x4 matrix that carries the original mesh onto one run of triangles,
      * the placement of that instance.
-     *
-     * @example
-     * ```typescript
-     * const placement = await bitbybit.manifold.mesh.evaluate.transform({ mesh, triangleRunIndex: 0 });
-     * ```
      */
     "manifold.mesh.evaluate.transform": {
         /** The mesh data to read. */
@@ -6265,14 +4823,7 @@ export interface OperationParams {
         /** The position of the triangle run, counting from 0. */
         triangleRunIndex?: number | PipelineRef;
     };
-    /**
-     * Reads the three vertex indexes of one triangle of a mesh, in counterclockwise order.
-     *
-     * @example
-     * ```typescript
-     * const corners = await bitbybit.manifold.mesh.evaluate.verts({ mesh, triangleIndex: 0 });
-     * ```
-     */
+    /** Reads the three vertex indexes of one triangle of a mesh, in counterclockwise order. */
     "manifold.mesh.evaluate.verts": {
         /** The mesh data to read. */
         mesh: unknown | PipelineRef;
@@ -6285,11 +4836,6 @@ export interface OperationParams {
      *
      * A mesh that is already closed is left alone and false comes back. Meant for a mesh whose
      * merge data was lost in a file; the rebuilt solid reports a status if still open.
-     *
-     * @example
-     * ```typescript
-     * const changed = await bitbybit.manifold.mesh.operations.merge({ mesh });
-     * ```
      */
     "manifold.mesh.operations.merge": {
         /** The mesh data, as `manifoldToMesh` hands it out. */
@@ -6300,11 +4846,6 @@ export interface OperationParams {
      * `shapes.fromPolygonPoints` reads back.
      *
      * An empty solid gives an empty list.
-     *
-     * @example
-     * ```typescript
-     * const triangles = await bitbybit.manifold.toPolygonPoints({ manifold: cube });
-     * ```
      */
     "manifold.toPolygonPoints": {
         /** The solid to work on; it is not changed. */
@@ -6332,11 +4873,6 @@ export interface OperationParams {
      * Adds two numbers.
      *
      * Example: 5 and 3 -> 8, -2 and 7 -> 5
-     *
-     * @example
-     * ```typescript
-     * const sum = bitbybit.math.add({ first: 5, second: 3 });
-     * ```
      */
     "math.add": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6375,11 +4911,6 @@ export interface OperationParams {
      * Keeps a number within a range: below `min` becomes `min`, above `max` becomes `max`.
      *
      * Example: 5 in [0,3] -> 3, -1 in [0,3] -> 0, 1.5 in [0,3] -> 1.5
-     *
-     * @example
-     * ```typescript
-     * const limited = bitbybit.math.clamp({ number: 5, min: 0, max: 3 });
-     * ```
      */
     "math.clamp": {
         /** The number to limit. */
@@ -6412,11 +4943,6 @@ export interface OperationParams {
      *
      * Dividing by 0 gives Infinity, as in JavaScript.
      * Example: 10 and 2 -> 5, 7 and 2 -> 3.5
-     *
-     * @example
-     * ```typescript
-     * const quotient = bitbybit.math.divide({ first: 7, second: 2 });
-     * ```
      */
     "math.divide": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6431,11 +4957,6 @@ export interface OperationParams {
      * An `easeIn` curve starts slowly, an `easeOut` curve ends slowly, an `easeInOut` curve does
      * both.
      * Example: 0.5 from [0,100] with easeInQuad -> 25
-     *
-     * @example
-     * ```typescript
-     * const eased = bitbybit.math.ease({ x: 0.5, min: 0, max: 100, ease: Bit.Inputs.Math.easeEnum.easeInQuad });
-     * ```
      */
     "math.ease": {
         /** The position along the curve, from 0 at `min` to 1 at `max`. */
@@ -6457,11 +4978,6 @@ export interface OperationParams {
      * The expression is parsed and computed by the library itself, never handed to the JavaScript
      * engine to run, so it is safe with text a user typed.
      * Example: '(3+2) times 4' written with the sign -> 20, '10/3' -> 3.3333
-     *
-     * @example
-     * ```typescript
-     * const value = bitbybit.math.evalArithmetic({ expression: "(3 + 2) * 4" });
-     * ```
      */
     "math.evalArithmetic": {
         /**
@@ -6503,11 +5019,6 @@ export interface OperationParams {
      * need to produce it.
      *
      * Example: 5 in [0,10] -> 0.5, 2.5 in [0,10] -> 0.25
-     *
-     * @example
-     * ```typescript
-     * const fraction = bitbybit.math.inverseLerp({ start: 0, end: 10, value: 2.5 });
-     * ```
      */
     "math.inverseLerp": {
         /** The value that counts as fraction 0. */
@@ -6523,11 +5034,6 @@ export interface OperationParams {
      *
      * A `t` outside 0 to 1 extrapolates past the ends.
      * Example: 0 to 100 at 0.5 -> 50, 10 to 20 at 0.25 -> 12.5
-     *
-     * @example
-     * ```typescript
-     * const mid = bitbybit.math.lerp({ start: 10, end: 20, t: 0.25 });
-     * ```
      */
     "math.lerp": {
         /** The value at fraction 0. */
@@ -6560,11 +5066,6 @@ export interface OperationParams {
      *
      * The sign follows the first number, as it does in JavaScript.
      * Example: 10 modulus 3 -> 1, 17 modulus 5 -> 2
-     *
-     * @example
-     * ```typescript
-     * const remainder = bitbybit.math.modulus({ number: 17, modulus: 5 });
-     * ```
      */
     "math.modulus": {
         /** The number to divide. */
@@ -6576,11 +5077,6 @@ export interface OperationParams {
      * Moves a value toward a target by at most `maxDelta`, without overshooting it.
      *
      * Example: 0 toward 10 by 3 -> 3, 8 toward 10 by 3 -> 10
-     *
-     * @example
-     * ```typescript
-     * const next = bitbybit.math.moveTowards({ current: 8, target: 10, maxDelta: 3 });
-     * ```
      */
     "math.moveTowards": {
         /** The value to move. */
@@ -6594,11 +5090,6 @@ export interface OperationParams {
      * Multiplies two numbers.
      *
      * Example: 5 and 3 -> 15, -2 and 4 -> -8
-     *
-     * @example
-     * ```typescript
-     * const product = bitbybit.math.multiply({ first: 5, second: 3 });
-     * ```
      */
     "math.multiply": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6631,11 +5122,6 @@ export interface OperationParams {
      *
      * The trigonometric functions work in radians.
      * Example: sqrt of 5 -> 2.236, absolute of -3 -> 3
-     *
-     * @example
-     * ```typescript
-     * const root = bitbybit.math.oneNrOperation({ number: 5, operation: Bit.Inputs.Math.mathOneNrOperatorEnum.sqrt });
-     * ```
      */
     "math.oneNrOperation": {
         /** The number the operation works on; for the trigonometric operations an angle in radians. */
@@ -6655,11 +5141,6 @@ export interface OperationParams {
      * to 0, and again.
      *
      * Example: length 1 at t 0.5 -> 0.5, t 1 -> 1, t 1.5 -> 0.5, t 2 -> 0
-     *
-     * @example
-     * ```typescript
-     * const bounce = bitbybit.math.pingPong({ t: 1.5, length: 1 });
-     * ```
      */
     "math.pingPong": {
         /** The running value, such as elapsed time; it may grow without limit. */
@@ -6671,11 +5152,6 @@ export interface OperationParams {
      * Raises the first number to the power of the second.
      *
      * Example: 2 to the 3 -> 8, 5 to the 2 -> 25, 10 to the -1 -> 0.1
-     *
-     * @example
-     * ```typescript
-     * const cube = bitbybit.math.power({ first: 2, second: 3 });
-     * ```
      */
     "math.power": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6703,11 +5179,6 @@ export interface OperationParams {
      * Gives a random number between `low` and `high`.
      *
      * Example: low 0, high 10 -> 3.7, 8.2 or any other value between them
-     *
-     * @example
-     * ```typescript
-     * const value = bitbybit.math.randomNumber({ low: 0, high: 10 });
-     * ```
      */
     "math.randomNumber": {
         /** The smallest value that can be picked. */
@@ -6719,11 +5190,6 @@ export interface OperationParams {
      * Gives a list of random numbers between `low` and `high`.
      *
      * Example: low 0, high 10, count 3 -> [2.5, 7.1, 4.8]
-     *
-     * @example
-     * ```typescript
-     * const values = bitbybit.math.randomNumbers({ low: 0, high: 10, count: 3 });
-     * ```
      */
     "math.randomNumbers": {
         /** The smallest value that can be picked. */
@@ -6738,11 +5204,6 @@ export interface OperationParams {
      *
      * A number outside the source range maps proportionally beyond the target range.
      * Example: 5 from [0,10] to [0,100] -> 50, 0.5 from [0,1] to [-10,10] -> 0
-     *
-     * @example
-     * ```typescript
-     * const percent = bitbybit.math.remap({ number: 5, fromLow: 0, fromHigh: 10, toLow: 0, toHigh: 100 });
-     * ```
      */
     "math.remap": {
         /** The number to map. */
@@ -6771,11 +5232,6 @@ export interface OperationParams {
      * As a number the result cannot carry trailing zeros anyway; the difference from
      * `roundToDecimals` is that floating-point noise such as 1.320000001 is cleaned to 1.32.
      * Example: 1.32156 to 3 places -> 1.322, 1.320000001 -> 1.32, 1.000 -> 1
-     *
-     * @example
-     * ```typescript
-     * const clean = bitbybit.math.roundAndRemoveTrailingZeros({ number: 1.320000001, decimalPlaces: 3 });
-     * ```
      */
     "math.roundAndRemoveTrailingZeros": {
         /** The number to round; it is not changed, a rounded copy is returned. */
@@ -6787,11 +5243,6 @@ export interface OperationParams {
      * Rounds a number to a given number of decimal places.
      *
      * Example: 1.32156 to 3 places -> 1.322
-     *
-     * @example
-     * ```typescript
-     * const rounded = bitbybit.math.roundToDecimals({ number: 1.32156, decimalPlaces: 3 });
-     * ```
      */
     "math.roundToDecimals": {
         /** The number to round; it is not changed, a rounded copy is returned. */
@@ -6841,11 +5292,6 @@ export interface OperationParams {
      * Subtracts the second number from the first.
      *
      * Example: 10 and 3 -> 7, 5 and 8 -> -3
-     *
-     * @example
-     * ```typescript
-     * const difference = bitbybit.math.subtract({ first: 10, second: 3 });
-     * ```
      */
     "math.subtract": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6875,11 +5321,6 @@ export interface OperationParams {
      * Formats a number as text with a fixed number of decimal places, keeping trailing zeros.
      *
      * Example: 3.14159 with 2 places -> '3.14', 5 with 3 places -> '5.000'
-     *
-     * @example
-     * ```typescript
-     * const label = bitbybit.math.toFixed({ number: 3.14159, decimalPlaces: 2 });
-     * ```
      */
     "math.toFixed": {
         /** The number to format. */
@@ -6894,11 +5335,6 @@ export interface OperationParams {
      * The operation reads `first` then `second`: subtract gives first minus second, power gives
      * first to the power of second.
      * Example: 5 add 3 -> 8, 10 modulus 3 -> 1, 2 power 3 -> 8
-     *
-     * @example
-     * ```typescript
-     * const result = bitbybit.math.twoNrOperation({ first: 2, second: 3, operation: Bit.Inputs.Math.mathTwoNrOperatorEnum.power });
-     * ```
      */
     "math.twoNrOperation": {
         /** The first operand: the number subtracted from, divided, or raised to a power. */
@@ -6914,11 +5350,6 @@ export interface OperationParams {
      *
      * Useful for angles and repeating patterns; unlike a plain modulus it handles negative numbers.
      * Example: 1.5 in [0,1) -> 0.5, -0.3 in [0,1) -> 0.7, 370 in [0,360) -> 10
-     *
-     * @example
-     * ```typescript
-     * const angle = bitbybit.math.wrap({ number: 370, min: 0, max: 360 });
-     * ```
      */
     "math.wrap": {
         /** The number to wrap; it may be far outside the range. */
@@ -6936,13 +5367,6 @@ export interface OperationParams {
      * applied, then the new parts and nodes added; a structure with neither clears the document
      * unless `clearDocument` is false. `sourceDocuments` supplies the documents imported parts copy
      * from. The document stays in memory until deleted.
-     *
-     * @example
-     * ```typescript
-     * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [part], nodes: [root, first], clearDocument: false });
-     * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
-     * ```
      */
     "occt.assembly.manager.buildAssemblyDocument": {
         /** The parts, nodes and updates to build, from `combineStructure`. */
@@ -6964,12 +5388,6 @@ export interface OperationParams {
      *
      * `clearDocument` false keeps what an existing document already holds when the structure is
      * applied to it.
-     *
-     * @example
-     * ```typescript
-     * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [part], nodes: [root, first, second], clearDocument: false });
-     * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * ```
      */
     "occt.assembly.manager.combineStructure": {
         /**
@@ -7000,12 +5418,6 @@ export interface OperationParams {
      *
      * `parentId` names the assembly it sits in; leave it out for a root. An optional matrix places
      * the whole group.
-     *
-     * @example
-     * ```typescript
-     * const root = await bitbybit.occt.assembly.manager.createAssemblyNode({ id: "root", name: "Root Assembly" });
-     * const sub = await bitbybit.occt.assembly.manager.createAssemblyNode({ id: "sub", name: "Sub Assembly", parentId: "root" });
-     * ```
      */
     "occt.assembly.manager.createAssemblyNode": {
         /** The id child nodes refer to this assembly by; it must be unique among the nodes. */
@@ -7029,16 +5441,6 @@ export interface OperationParams {
      * `sourceDocumentIndex` points into the `sourceDocuments` list given to
      * `buildAssemblyDocument`, and `sourceLabel` picks a sub-tree instead of the whole document.
      * Instance nodes place it by `partId` like any part.
-     *
-     * @example
-     * ```typescript
-     * const chairDoc = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData });
-     * const chair = await bitbybit.occt.assembly.manager.createImportedPart({ id: "chair", sourceDocumentIndex: 0, name: "Chair" });
-     * const c1 = await bitbybit.occt.assembly.manager.createInstanceNode({ id: "c1", partId: "chair", name: "Chair 1", translation: [0, 0, 0] });
-     * const c2 = await bitbybit.occt.assembly.manager.createInstanceNode({ id: "c2", partId: "chair", name: "Chair 2", translation: [500, 0, 0] });
-     * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [], nodes: [c1, c2], loadedParts: [chair], clearDocument: false });
-     * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure, sourceDocuments: [chairDoc] });
-     * ```
      */
     "occt.assembly.manager.createImportedPart": {
         /** The id instance nodes refer to the imported part by; it must be unique among the parts. */
@@ -7068,12 +5470,6 @@ export interface OperationParams {
      * `translation` moves it, `rotation` turns it by Euler angles in degrees about X, Y and Z,
      * `scale` sizes it uniformly; a `matrix` can replace all three. The same part may be placed by
      * many instances.
-     *
-     * @example
-     * ```typescript
-     * const first = await bitbybit.occt.assembly.manager.createInstanceNode({ id: "box1", partId: "box", name: "Box 1" });
-     * const second = await bitbybit.occt.assembly.manager.createInstanceNode({ id: "box2", partId: "box", name: "Box 2", translation: [20, 0, 0], rotation: [0, 0, 45] });
-     * ```
      */
     "occt.assembly.manager.createInstanceNode": {
         /** The id of this placement; it must be unique among the nodes. */
@@ -7110,12 +5506,6 @@ export interface OperationParams {
      *
      * Nothing is built yet; the part only becomes real when a structure holding it goes through
      * `buildAssemblyDocument`. Instance nodes place the part by its id, as many times as needed.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
-     * const part = await bitbybit.occt.assembly.manager.createPart({ id: "box", shape: box, name: "Box", colorRgba: { r: 1, g: 0, b: 0, a: 1 } });
-     * ```
      */
     "occt.assembly.manager.createPart": {
         /** The id instance nodes refer to the part by; it must be unique among the parts. */
@@ -7136,15 +5526,6 @@ export interface OperationParams {
      *
      * Collect the updates in `combineStructure` under `partUpdates` and pass the structure to
      * `buildAssemblyDocument` with the existing document.
-     *
-     * @example
-     * ```typescript
-     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
-     * const bigger = await bitbybit.occt.shapes.solid.createBox({ width: 20, length: 20, height: 20, center: [0, 0, 0] });
-     * const update = await bitbybit.occt.assembly.manager.createPartUpdate({ label: parts[0].label, shape: bigger, name: "Bigger Box" });
-     * const structure = await bitbybit.occt.assembly.manager.combineStructure({ parts: [], nodes: [], partUpdates: [update], clearDocument: false });
-     * await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure, existingDocument: doc });
-     * ```
      */
     "occt.assembly.manager.createPartUpdate": {
         /**
@@ -7164,13 +5545,6 @@ export interface OperationParams {
      *
      * A document built with `buildAssemblyDocument` or loaded with `loadStepToDoc` stays in memory
      * until this is called, so delete it once its shapes and exports have been read.
-     *
-     * @example
-     * ```typescript
-     * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
-     * await bitbybit.occt.assembly.manager.deleteDocument({ document: doc });
-     * ```
      */
     "occt.assembly.manager.deleteDocument": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7182,11 +5556,6 @@ export interface OperationParams {
      *
      * `meshDeflection` and `meshAngle` set how finely curved surfaces are triangulated;
      * `mergeFaces` joins the faces of a part into one mesh. Failure throws an error.
-     *
-     * @example
-     * ```typescript
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
-     * ```
      */
     "occt.assembly.manager.exportDocumentToGltf": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7230,15 +5599,6 @@ export interface OperationParams {
      *
      * The Draco settings set the compression level and how many bits positions, normals, texture
      * coordinates and colors keep.
-     *
-     * @example
-     * ```typescript
-     * const options = new Bit.Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Bit.Inputs.OCCT.TDocStdDocumentPointer>();
-     * options.document = doc;
-     * options.meshDeflection = 0.1;
-     * options.dracoCompressionLevel = 7;
-     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltfWithDraco(options);
-     * ```
      */
     "occt.assembly.manager.exportDocumentToGltfWithDraco": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7303,11 +5663,6 @@ export interface OperationParams {
      *
      * `author` and `organization` go into the file header; `compress` writes gzip-compressed STEP-Z
      * instead. Failure throws an error.
-     *
-     * @example
-     * ```typescript
-     * const step = await bitbybit.occt.assembly.manager.exportDocumentToStep({ document: doc, fileName: "assembly.step", author: "Bitbybit user", organization: "Bitbybit", compress: false, tryDownload: false });
-     * ```
      */
     "occt.assembly.manager.exportDocumentToStep": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7332,12 +5687,6 @@ export interface OperationParams {
      *
      * `stepData` is the file as text or binary; gzip-compressed STEP-Z is accepted too. A file that
      * cannot be loaded throws an error.
-     *
-     * @example
-     * ```typescript
-     * const doc = await bitbybit.occt.assembly.manager.loadStepToDoc({ stepData: stepText });
-     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
-     * ```
      */
     "occt.assembly.manager.loadStepToDoc": {
         /**
@@ -7351,11 +5700,6 @@ export interface OperationParams {
      * from 0 to 1.
      *
      * The color is kept when the document is exported to STEP or glTF.
-     *
-     * @example
-     * ```typescript
-     * const done = await bitbybit.occt.assembly.manager.setDocLabelColor({ document: doc, label: "0:1:1:1", r: 1, g: 0, b: 0, a: 1 });
-     * ```
      */
     "occt.assembly.manager.setDocLabelColor": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7371,14 +5715,7 @@ export interface OperationParams {
         /** The opacity, from 0 for transparent to 1 for opaque. */
         a?: number | PipelineRef;
     };
-    /**
-     * Renames a label of a document, a part, instance or assembly.
-     *
-     * @example
-     * ```typescript
-     * const done = await bitbybit.occt.assembly.manager.setDocLabelName({ document: doc, label: "0:1:1:1", name: "Left bracket" });
-     * ```
-     */
+    /** Renames a label of a document, a part, instance or assembly. */
     "occt.assembly.manager.setDocLabelName": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
         document: unknown | PipelineRef;
@@ -7393,12 +5730,6 @@ export interface OperationParams {
      *
      * Each node carries its label, name, type and placement; the list is in depth-first order, so
      * children follow their parent.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.assembly.query.getAssemblyHierarchy({ document: doc });
-     * console.log(tree.totalNodes, tree.nodes.map(n => n.name));
-     * ```
      */
     "occt.assembly.query.getAssemblyHierarchy": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7409,12 +5740,6 @@ export interface OperationParams {
      * many times it is placed.
      *
      * The labels are what the other query methods and the label setters take.
-     *
-     * @example
-     * ```typescript
-     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
-     * parts.forEach(part => console.log(part.name, part.type, part.label));
-     * ```
      */
     "occt.assembly.query.getDocumentParts": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7423,12 +5748,6 @@ export interface OperationParams {
     /**
      * Reads the color assigned to a label of a document, as red, green, blue and alpha from 0 to 1,
      * together with a flag saying whether the label has a color at all.
-     *
-     * @example
-     * ```typescript
-     * const color = await bitbybit.occt.assembly.query.getLabelColor({ document: doc, label: "0:1:1:1" });
-     * if (color.hasColor) console.log(color.r, color.g, color.b);
-     * ```
      */
     "occt.assembly.query.getLabelColor": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7439,12 +5758,6 @@ export interface OperationParams {
     /**
      * Describes one label of a document: its name, its type and whether it is a simple shape, an
      * assembly, a reference to another label or a component of one.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.assembly.query.getLabelInfo({ document: doc, label: "0:1:1:1" });
-     * console.log(info.name, info.isAssembly);
-     * ```
      */
     "occt.assembly.query.getLabelInfo": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7457,12 +5770,6 @@ export interface OperationParams {
      * translation, rotation quaternion and uniform scale.
      *
      * A part label, as opposed to an instance, carries no placement of its own.
-     *
-     * @example
-     * ```typescript
-     * const placement = await bitbybit.occt.assembly.query.getLabelTransform({ document: doc, label: "0:1:1:1" });
-     * console.log(placement.translation);
-     * ```
      */
     "occt.assembly.query.getLabelTransform": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7473,11 +5780,6 @@ export interface OperationParams {
     /**
      * Reads the shape stored under a label of a document, for instance to draw one part or run an
      * operation on it.
-     *
-     * @example
-     * ```typescript
-     * const shape = await bitbybit.occt.assembly.query.getShapeFromLabel({ document: doc, label: "0:1:1:1" });
-     * ```
      */
     "occt.assembly.query.getShapeFromLabel": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
@@ -7492,11 +5794,6 @@ export interface OperationParams {
      * The shapes are subtracted one after another. With `keepEdges` false, the default, faces left
      * on one surface are merged; when exactly one solid remains it is returned on its own rather
      * than inside a compound.
-     *
-     * @example
-     * ```typescript
-     * const holed = await bitbybit.occt.booleans.difference({ shape: box, shapes: [cylinder], keepEdges: false });
-     * ```
      */
     "occt.booleans.difference": {
         /** The shape material is removed from. */
@@ -7515,11 +5812,6 @@ export interface OperationParams {
      * The first shape is intersected with every other shape one at a time and the pieces come back
      * in one compound: with three shapes you get the overlap of the first with the second and with
      * the third, not of all three. Fewer than two shapes throw.
-     *
-     * @example
-     * ```typescript
-     * const common = await bitbybit.occt.booleans.intersection({ shapes: [box, sphere], keepEdges: false });
-     * ```
      */
     "occt.booleans.intersection": {
         /** The shapes; the first is intersected with every other one in turn. */
@@ -7536,11 +5828,6 @@ export interface OperationParams {
      *
      * `precision` meshes the main shape and `precisionShapes` gives one precision per other shape;
      * each list of points is one crossing line, in order along it.
-     *
-     * @example
-     * ```typescript
-     * const lines = await bitbybit.occt.booleans.meshMeshIntersectionOfShapesPoints({ shape: sphere, shapes: [box, cylinder], precision: 0.01, precisionShapes: [0.01, 0.01] });
-     * ```
      */
     "occt.booleans.meshMeshIntersectionOfShapesPoints": {
         /** The main shape every other shape is intersected with. */
@@ -7561,11 +5848,6 @@ export interface OperationParams {
      *
      * `precision` meshes the main shape and `precisionShapes` gives one precision per other shape;
      * smaller values follow curves more closely and take longer.
-     *
-     * @example
-     * ```typescript
-     * const seams = await bitbybit.occt.booleans.meshMeshIntersectionOfShapesWires({ shape: sphere, shapes: [box, cylinder], precision: 0.01, precisionShapes: [0.01, 0.01] });
-     * ```
      */
     "occt.booleans.meshMeshIntersectionOfShapesWires": {
         /** The main shape every other shape is intersected with. */
@@ -7586,11 +5868,6 @@ export interface OperationParams {
      *
      * Each shape has its own meshing precision: a smaller value follows curved surfaces more
      * closely and takes longer. Each list of points is one crossing line, in order along it.
-     *
-     * @example
-     * ```typescript
-     * const lines = await bitbybit.occt.booleans.meshMeshIntersectionPoints({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });
-     * ```
      */
     "occt.booleans.meshMeshIntersectionPoints": {
         /** The first shape to intersect. */
@@ -7615,11 +5892,6 @@ export interface OperationParams {
      * Each shape has its own meshing precision: a smaller value follows curved surfaces more
      * closely and takes longer. The wires are polylines, so they trace the crossing approximately;
      * the exact curves come from `intersection` with faces.
-     *
-     * @example
-     * ```typescript
-     * const seams = await bitbybit.occt.booleans.meshMeshIntersectionWires({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });
-     * ```
      */
     "occt.booleans.meshMeshIntersectionWires": {
         /** The first shape to intersect. */
@@ -7643,11 +5915,6 @@ export interface OperationParams {
      * The shapes are fused one after another in list order. With `keepEdges` false, the default,
      * faces that end up on one surface are merged and the seams removed; true keeps every edge of
      * the inputs.
-     *
-     * @example
-     * ```typescript
-     * const fused = await bitbybit.occt.booleans.union({ shapes: [box, cylinder], keepEdges: false });
-     * ```
      */
     "occt.booleans.union": {
         /** The shapes to fuse, joined one after another in this order. */
@@ -7664,12 +5931,6 @@ export interface OperationParams {
      *
      * The quickest way to see what an imported file holds, and to tell one solid from a compound
      * that only looks like one.
-     *
-     * @example
-     * ```typescript
-     * const census = await bitbybit.occt.brepGraph.analyze({ shape: imported });
-     * console.log(census.solids, census.faces);
-     * ```
      */
     "occt.brepGraph.analyze": {
         /** The shape to work on; it is not changed. */
@@ -7681,12 +5942,6 @@ export interface OperationParams {
      *
      * This is what STEP assembly import produces and what a tree view walks; a plain shape reports
      * no products.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.brepGraph.assembly({ shape: imported });
-     * console.log(tree.products.length, tree.occurrences.length);
-     * ```
      */
     "occt.brepGraph.assembly": {
         /** The shape to work on; it is not changed. */
@@ -7697,11 +5952,6 @@ export interface OperationParams {
      * belongs to, and which solids each face ends up in.
      *
      * Each list holds the parent indexes of one child, so a face shared by two solids lists both.
-     *
-     * @example
-     * ```typescript
-     * const containment = await bitbybit.occt.brepGraph.containment({ shape: compound });
-     * ```
      */
     "occt.brepGraph.containment": {
         /** The shape to work on; it is not changed. */
@@ -7713,12 +5963,6 @@ export interface OperationParams {
      *
      * The heaviest query here, for reasoning about the whole topology at once rather than answering
      * one question.
-     *
-     * @example
-     * ```typescript
-     * const structure = await bitbybit.occt.brepGraph.dump({ shape: box });
-     * console.log(structure.faces.length, structure.edges.length);
-     * ```
      */
     "occt.brepGraph.dump": {
         /** The shape to work on; it is not changed. */
@@ -7729,11 +5973,6 @@ export interface OperationParams {
      * as whether it is a seam or a border edge.
      *
      * Edges are numbered from 0 in the order `shapes.edge.getEdges` lists them.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.brepGraph.edgeFaceMap({ shape: box });
-     * ```
      */
     "occt.brepGraph.edgeFaceMap": {
         /** The shape to work on; it is not changed. */
@@ -7744,11 +5983,6 @@ export interface OperationParams {
      * continuity and a unique id.
      *
      * Edges are numbered from 0 in the order `shapes.edge.getEdges` lists them.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.brepGraph.edgeInfo({ shape: cylinder });
-     * ```
      */
     "occt.brepGraph.edgeInfo": {
         /** The shape to work on; it is not changed. */
@@ -7761,12 +5995,6 @@ export interface OperationParams {
      * Faces are numbered from 0 in the order the kernel walks the shape, the same order
      * `shapes.face.getFaces` uses. This is the building block for growing a selection outward from
      * a seed face or finding the faces of a pocket.
-     *
-     * @example
-     * ```typescript
-     * const adjacency = await bitbybit.occt.brepGraph.faceAdjacency({ shape: box });
-     * console.log(adjacency.faces[0].adjacent);
-     * ```
      */
     "occt.brepGraph.faceAdjacency": {
         /** The shape to work on; it is not changed. */
@@ -7777,12 +6005,6 @@ export interface OperationParams {
      * it carries a triangulation, and a unique id.
      *
      * Faces are numbered from 0 in the order `shapes.face.getFaces` uses.
-     *
-     * @example
-     * ```typescript
-     * const faces = await bitbybit.occt.brepGraph.faceInfo({ shape: cylinder });
-     * console.log(faces.faces.map(f => f.surfaceType));
-     * ```
      */
     "occt.brepGraph.faceInfo": {
         /** The shape to work on; it is not changed. */
@@ -7794,13 +6016,6 @@ export interface OperationParams {
      *
      * The reverse of `reconstruct`; a sub-shape that does not belong to the shape gives a result
      * marked invalid.
-     *
-     * @example
-     * ```typescript
-     * const faces = await bitbybit.occt.shapes.face.getFaces({ shape: box });
-     * const node = await bitbybit.occt.brepGraph.nodeOfShape({ shape: box, subShape: faces[0] });
-     * console.log(node.kind, node.index);
-     * ```
      */
     "occt.brepGraph.nodeOfShape": {
         /** The shape the graph was built from. */
@@ -7813,11 +6028,6 @@ export interface OperationParams {
      * stands for, so a face or edge found by a query can be used in an operation.
      *
      * The indexes are the ones the query results use, counted from 0 per kind.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.brepGraph.reconstruct({ shape: box, kind: Bit.Inputs.OCCT.brepGraphNodeKindEnum.face, index: 2 });
-     * ```
      */
     "occt.brepGraph.reconstruct": {
         /** The shape the graph was built from. */
@@ -7836,12 +6046,6 @@ export interface OperationParams {
      *
      * This checks the bookkeeping, not the geometry; `shapes.shape.isValid` and
      * `shapeFix.basicShapeRepair` deal with geometric validity.
-     *
-     * @example
-     * ```typescript
-     * const report = await bitbybit.occt.brepGraph.validate({ shape: imported });
-     * console.log(report.valid, report.issues);
-     * ```
      */
     "occt.brepGraph.validate": {
         /** The shape to work on; it is not changed. */
@@ -7851,11 +6055,6 @@ export interface OperationParams {
      * Lists every vertex with its 3D point, its tolerance and the edges that meet there.
      *
      * Vertices are numbered from 0 in the order the kernel walks the shape.
-     *
-     * @example
-     * ```typescript
-     * const vertices = await bitbybit.occt.brepGraph.vertexEdgeMap({ shape: box });
-     * ```
      */
     "occt.brepGraph.vertexEdgeMap": {
         /** The shape to work on; it is not changed. */
@@ -7864,11 +6063,6 @@ export interface OperationParams {
     /**
      * Describes every wire: whether it is closed, whether it is the outer boundary of its face, how
      * many coedges and distinct edges it has and which face owns it.
-     *
-     * @example
-     * ```typescript
-     * const wires = await bitbybit.occt.brepGraph.wireInfo({ shape: plateWithHoles });
-     * ```
      */
     "occt.brepGraph.wireInfo": {
         /** The shape to work on; it is not changed. */
@@ -7878,11 +6072,6 @@ export interface OperationParams {
      * Frees every shape the kernel holds at once, including the ones your variables still point to,
      * so nothing created before can be used afterwards. Call it when starting over rather than
      * between steps.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.occt.cleanAllCache();
-     * ```
      */
     "occt.cleanAllCache": {
     };
@@ -7892,18 +6081,6 @@ export interface OperationParams {
      * `distance` is how far the bevel reaches from the corner and `angle` its slope in degrees.
      * `snapTolerance` caps how far a point may be from a vertex, 0 accepting the nearest; `mode`
      * `planarOnly` skips 3D corners. A corner that cannot be beveled throws.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.corners.chamferCornerByPoint({
-     *     shape: box,
-     *     points: [[5, 5, 5]],
-     *     distance: 1,
-     *     angle: 45,
-     *     snapTolerance: 0,
-     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
-     * });
-     * ```
      */
     "occt.corners.chamferCornerByPoint": {
         /** The shell or solid whose corners are beveled. */
@@ -7932,12 +6109,6 @@ export interface OperationParams {
      * Each entry says where the corner is, how far it was from the point, how many edges and faces
      * meet there and whether it is planar, developable or a true 3D corner, or why none was found.
      * It shows what `filletCornerByPoint` picks.
-     *
-     * @example
-     * ```typescript
-     * const report = await bitbybit.occt.corners.classifyCornerByPoint({ shape: box, points: [[5, 5, 5]], snapTolerance: 0 });
-     * console.log(report.results[0].classification);
-     * ```
      */
     "occt.corners.classifyCornerByPoint": {
         /** The shell or solid whose corners are looked up. */
@@ -7956,19 +6127,6 @@ export interface OperationParams {
      * whether it succeeded.
      *
      * Handy for finding out why a fillet was skipped before changing the radius or the points.
-     *
-     * @example
-     * ```typescript
-     * const report = await bitbybit.occt.corners.cornerByPointReport({
-     *     shape: box,
-     *     points: [[5, 5, 5]],
-     *     radius: 1,
-     *     taperFactor: 1,
-     *     snapTolerance: 0,
-     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
-     * });
-     * console.log(report.results[0].applied, report.results[0].message);
-     * ```
      */
     "occt.corners.cornerByPointReport": {
         /** The shell or solid whose corners are rounded. */
@@ -8000,18 +6158,6 @@ export interface OperationParams {
      * reaches along the meeting edges, 0 for the tightest, 1 for the full reach. `snapTolerance`
      * caps the point-to-vertex distance, 0 accepting the nearest; `mode` `planarOnly` skips 3D
      * corners.
-     *
-     * @example
-     * ```typescript
-     * const rounded = await bitbybit.occt.corners.filletCornerByPoint({
-     *     shape: box,
-     *     points: [[5, 5, 5]],
-     *     radius: 1,
-     *     taperFactor: 1,
-     *     snapTolerance: 0,
-     *     mode: Bit.Inputs.OCCT.cornerModeEnum.auto,
-     * });
-     * ```
      */
     "occt.corners.filletCornerByPoint": {
         /** The shell or solid whose corners are rounded. */
@@ -8040,13 +6186,6 @@ export interface OperationParams {
      * Frees the memory a shape holds inside the kernel; the shape cannot be used afterwards. Call
      * it for intermediate results a script no longer needs, so long sessions do not run out of
      * memory.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
-     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 1 });
-     * await bitbybit.occt.deleteShape({ shape: box });
-     * ```
      */
     "occt.deleteShape": {
         /** The shape to work on; it is not changed. */
@@ -8056,11 +6195,6 @@ export interface OperationParams {
      * Frees the memory several shapes hold inside the kernel; they cannot be used afterwards. Call
      * it for intermediate results a script no longer needs, so long sessions do not run out of
      * memory.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.occt.deleteShapes({ shapes: [box, cylinder] });
-     * ```
      */
     "occt.deleteShapes": {
         /** The shapes to work on, in the order the results should come back. */
@@ -8072,18 +6206,6 @@ export interface OperationParams {
      *
      * `direction` is the normal of the plane the label is written in; `offsetFromStart` moves the
      * line's start along it, and the arrow and label settings shape the rest.
-     *
-     * @example
-     * ```typescript
-     * const pin = await bitbybit.occt.dimensions.pinWithLabel({
-     *     startPoint: [0, 0, 0],
-     *     endPoint: [0, 5, 2],
-     *     direction: [0, 0, 1],
-     *     label: "inlet",
-     *     labelSize: 0.3,
-     *     labelOffset: 0.3,
-     * });
-     * ```
      */
     "occt.dimensions.pinWithLabel": {
         /** The spot on the model the pin marks. */
@@ -8121,23 +6243,6 @@ export interface OperationParams {
      *
      * The angle is written in degrees unless `radians` is true, rounded to `decimalPlaces` with
      * `labelSuffix` after it, or replaced by `labelOverwrite`.
-     *
-     * @example
-     * ```typescript
-     * const dimension = await bitbybit.occt.dimensions.simpleAngularDimension({
-     *     center: [0, 0, 0],
-     *     direction1: [1, 0, 0],
-     *     direction2: [0, 0, 1],
-     *     radius: 4,
-     *     offsetFromCenter: 0.5,
-     *     extraSize: 0,
-     *     decimalPlaces: 1,
-     *     labelSuffix: " deg",
-     *     labelSize: 0.3,
-     *     labelOffset: 0.3,
-     *     radians: false,
-     * });
-     * ```
      */
     "occt.dimensions.simpleAngularDimension": {
         /** The direction of the first leg of the angle, from the center. */
@@ -8192,19 +6297,6 @@ export interface OperationParams {
      * The label shows the distance rounded to `decimalPlaces` with `labelSuffix` after it, or
      * `labelOverwrite` instead; the units are the model's. `direction` must not run along the
      * measured line.
-     *
-     * @example
-     * ```typescript
-     * const dimension = await bitbybit.occt.dimensions.simpleLinearLengthDimension({
-     *     start: [0, 0, 0],
-     *     end: [10, 0, 0],
-     *     direction: [0, 0, 2],
-     *     labelSuffix: " mm",
-     *     labelSize: 0.5,
-     *     decimalPlaces: 1,
-     *     endType: Bit.Inputs.OCCT.dimensionEndTypeEnum.arrow,
-     * });
-     * ```
      */
     "occt.dimensions.simpleLinearLengthDimension": {
         /** The first of the two points whose distance is measured. */
@@ -8342,19 +6434,6 @@ export interface OperationParams {
      * The faces pivot about the neutral plane, given by a point and a normal, which stays put;
      * `angle` is in degrees. `flag` keeps the standard draft side, false tapers the other way.
      * Undraftable faces throw.
-     *
-     * @example
-     * ```typescript
-     * const drafted = await bitbybit.occt.draft.draftAngle({
-     *     shape: box,
-     *     faces: sideFaces,
-     *     direction: [0, 1, 0],
-     *     angle: 5,
-     *     neutralPlaneOrigin: [0, 0, 0],
-     *     neutralPlaneDirection: [0, 1, 0],
-     *     flag: true,
-     * });
-     * ```
      */
     "occt.draft.draftAngle": {
         /** The solid whose faces are tilted. */
@@ -8382,11 +6461,6 @@ export interface OperationParams {
      *
      * `internal` leans the skirt inward instead of outward. A draft the kernel cannot build throws
      * an error.
-     *
-     * @example
-     * ```typescript
-     * const skirt = await bitbybit.occt.draft.makeDraft({ shape: outlineWire, direction: [0, 1, 0], angle: 5, lengthMax: 10, internal: false });
-     * ```
      */
     "occt.draft.makeDraft": {
         /** The wire, face or shape whose edges the skirt grows from. */
@@ -8409,11 +6483,6 @@ export interface OperationParams {
      *
      * `keepOut` keeps the part of the stop shape outside the draft; `internal` leans the skirt
      * inward. A draft the kernel cannot build throws an error.
-     *
-     * @example
-     * ```typescript
-     * const skirt = await bitbybit.occt.draft.makeDraftToShape({ shape: outlineWire, direction: [0, 1, 0], angle: 5, stopShape: ceilingFace, keepOut: false, internal: false });
-     * ```
      */
     "occt.draft.makeDraftToShape": {
         /** The wire, face or shape whose edges the skirt grows from. */
@@ -8435,11 +6504,6 @@ export interface OperationParams {
      *
      * Without `indexes` every corner is beveled; with them, counted from 1 along the outline, only
      * those corners are.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamfer2dVertices({ shape: rectangle, distance: 1, angle: 45, indexes: [1, 3] });
-     * ```
      */
     "occt.fillets.chamfer2dVertices": {
         /** The flat wire or face whose corners are beveled. */
@@ -8457,11 +6521,6 @@ export interface OperationParams {
      *
      * The bevel starts `distance` away from the edge on the given face and leaves it at `angle`; 45
      * degrees gives an even chamfer.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdgeDistAngle({ shape: box, edge: edges[0], face: faces[0], distance: 1, angle: 30 });
-     * ```
      */
     "occt.fillets.chamferEdgeDistAngle": {
         /** The shape the edge belongs to. */
@@ -8485,11 +6544,6 @@ export interface OperationParams {
      * Without `indexes` every edge is beveled with `distance`. With `indexes`, counted from 0 in
      * the order `shapes.edge.getEdges` lists them, only those edges are beveled, each with
      * `distance` or the matching entry of `distanceList`, in edge order.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdges({ shape: box, distance: 1 });
-     * ```
      */
     "occt.fillets.chamferEdges": {
         /** The shape whose edges are beveled. */
@@ -8512,11 +6566,6 @@ export interface OperationParams {
      * edge's paired face and the angle in degrees from it.
      *
      * `faces` pairs with `edges` by position and must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdgesDistAngle({ shape: box, edges: [edges[0], edges[1]], faces: [faces[0], faces[0]], distance: 1, angle: 30 });
-     * ```
      */
     "occt.fillets.chamferEdgesDistAngle": {
         /** The shape the edges belong to. */
@@ -8536,17 +6585,6 @@ export interface OperationParams {
      *
      * `faces`, `distances` and `angles` pair with `edges` by position and must all have the same
      * length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdgesDistsAngles({
-     *     shape: box,
-     *     edges: [edges[0], edges[1]],
-     *     faces: [faces[0], faces[0]],
-     *     distances: [1, 0.5],
-     *     angles: [30, 60],
-     * });
-     * ```
      */
     "occt.fillets.chamferEdgesDistsAngles": {
         /** The shape the edges belong to. */
@@ -8565,12 +6603,6 @@ export interface OperationParams {
      *
      * The edges must belong to the shape; `distanceList` pairs with them by position and must have
      * the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const beveled = await bitbybit.occt.fillets.chamferEdgesList({ shape: box, edges: [edges[0], edges[1]], distanceList: [1, 2] });
-     * ```
      */
     "occt.fillets.chamferEdgesList": {
         /** The shape the edges belong to. */
@@ -8588,11 +6620,6 @@ export interface OperationParams {
      * edge's paired face and `distance2` on the other face.
      *
      * `faces` pairs with `edges` by position and must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdgesTwoDistances({ shape: box, edges: [edges[0], edges[1]], faces: [faces[0], faces[0]], distance1: 1, distance2: 2 });
-     * ```
      */
     "occt.fillets.chamferEdgesTwoDistances": {
         /** The shape the edges belong to. */
@@ -8612,17 +6639,6 @@ export interface OperationParams {
      *
      * `faces`, `distances1` and `distances2` pair with `edges` by position and must all have the
      * same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beveled = await bitbybit.occt.fillets.chamferEdgesTwoDistancesLists({
-     *     shape: box,
-     *     edges: [edges[0], edges[1]],
-     *     faces: [faces[0], faces[0]],
-     *     distances1: [1, 0.5],
-     *     distances2: [2, 1],
-     * });
-     * ```
      */
     "occt.fillets.chamferEdgesTwoDistancesLists": {
         /** The shape the edges belong to. */
@@ -8641,13 +6657,6 @@ export interface OperationParams {
      * the two faces meeting at the edge, and `distance2` on the other.
      *
      * The face decides which side gets which distance; swap them to flip the bevel.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const faces = await bitbybit.occt.shapes.face.getFaces({ shape: box });
-     * const beveled = await bitbybit.occt.fillets.chamferEdgeTwoDistances({ shape: box, edge: edges[0], face: faces[0], distance1: 1, distance2: 2 });
-     * ```
      */
     "occt.fillets.chamferEdgeTwoDistances": {
         /** The shape the edge belongs to. */
@@ -8667,13 +6676,6 @@ export interface OperationParams {
      * Without `indexes` every corner is rounded with `radius`. With `indexes`, counted from 1 along
      * the outline, only those corners are rounded, each with `radius` or the matching entry of
      * `radiusList`, as long as `indexes`. Wires with free-form edges use `fillet3DWire`.
-     *
-     * @example
-     * ```typescript
-     * const rectangle = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 10, length: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const rounded = await bitbybit.occt.fillets.fillet2d({ shape: rectangle, radius: 1 });
-     * const twoCorners = await bitbybit.occt.fillets.fillet2d({ shape: rectangle, radiusList: [1, 2], indexes: [1, 3] });
-     * ```
      */
     "occt.fillets.fillet2d": {
         /** The shape whose edges, or whose corners for a flat wire or face, are rounded. */
@@ -8694,11 +6696,6 @@ export interface OperationParams {
     /**
      * Rounds the corners of several flat wires or faces, as `fillet2d` does for one, with the same
      * radius and corner indexes for all.
-     *
-     * @example
-     * ```typescript
-     * const rounded = await bitbybit.occt.fillets.fillet2dShapes({ shapes: [rectangleA, rectangleB], radius: 1 });
-     * ```
      */
     "occt.fillets.fillet2dShapes": {
         /** The flat wires or faces whose corners are rounded. */
@@ -8719,11 +6716,6 @@ export interface OperationParams {
      * The kernel has no direct 3D wire fillet, so the wire is extruded along `direction` into a
      * shell, the shell is filleted and the rounded wire is read back off it; `direction` must not
      * be parallel to the wire and must leave room for the fillets.
-     *
-     * @example
-     * ```typescript
-     * const rounded = await bitbybit.occt.fillets.fillet3DWire({ shape: zigzagWire, radius: 0.5, direction: [0, 5, 0] });
-     * ```
      */
     "occt.fillets.fillet3DWire": {
         /** The wire whose corners are rounded. */
@@ -8746,11 +6738,6 @@ export interface OperationParams {
     /**
      * Rounds the corners of several wires that do not lie in one plane, as `fillet3DWire` does for
      * one, with the same radius, indexes and direction for all.
-     *
-     * @example
-     * ```typescript
-     * const rounded = await bitbybit.occt.fillets.fillet3DWires({ shapes: [wireA, wireB], radius: 0.5, direction: [0, 5, 0] });
-     * ```
      */
     "occt.fillets.fillet3DWires": {
         /** The wires whose corners are rounded. */
@@ -8776,13 +6763,6 @@ export interface OperationParams {
      * Without `indexes` every edge is rounded with `radius`. With `indexes`, counted from 0 in the
      * order `shapes.edge.getEdges` lists them, only those edges are rounded, each with `radius` or
      * the matching entry of `radiusList`, paired with the selected edges in edge order.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 20, height: 5, center: [0, 0, 0] });
-     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 1 });
-     * const twoEdges = await bitbybit.occt.fillets.filletEdges({ shape: box, radiusList: [1, 2], indexes: [0, 3] });
-     * ```
      */
     "occt.fillets.filletEdges": {
         /** The shape whose edges, or whose corners for a flat wire or face, are rounded. */
@@ -8805,12 +6785,6 @@ export interface OperationParams {
      *
      * The edges must belong to the shape; `radiusList` pairs with them by position and must have
      * the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const rounded = await bitbybit.occt.fillets.filletEdgesList({ shape: box, edges: [edges[0], edges[1]], radiusList: [1, 2] });
-     * ```
      */
     "occt.fillets.filletEdgesList": {
         /** The shape the edges belong to. */
@@ -8827,12 +6801,6 @@ export interface OperationParams {
      * Rounds the given edges of a shape, all with the same radius.
      *
      * The edges must belong to the shape; an empty list throws an error.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const rounded = await bitbybit.occt.fillets.filletEdgesListOneRadius({ shape: box, edges: [edges[0], edges[1]], radius: 1 });
-     * ```
      */
     "occt.fillets.filletEdgesListOneRadius": {
         /** The shape the edges belong to. */
@@ -8847,12 +6815,6 @@ export interface OperationParams {
      *
      * `paramsU` are positions along each edge as fractions from 0 to 1 and `radiusList` the radius
      * at each; the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const tapered = await bitbybit.occt.fillets.filletEdgesSameVariableRadius({ shape: box, edges: [edges[0], edges[2]], radiusList: [0.5, 2, 0.5], paramsU: [0, 0.5, 1] });
-     * ```
      */
     "occt.fillets.filletEdgesSameVariableRadius": {
         /** The shape the edges belong to. */
@@ -8870,17 +6832,6 @@ export interface OperationParams {
      * `radiusLists` and `paramsULists` hold one list per edge, in edge order; within each pair the
      * positions are fractions from 0 to 1 along the edge and the radii apply there. All three lists
      * must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const tapered = await bitbybit.occt.fillets.filletEdgesVariableRadius({
-     *     shape: box,
-     *     edges: [edges[0], edges[2]],
-     *     radiusLists: [[0.5, 2], [2, 0.5]],
-     *     paramsULists: [[0, 1], [0, 1]],
-     * });
-     * ```
      */
     "occt.fillets.filletEdgesVariableRadius": {
         /** The shape the edges belong to. */
@@ -8904,12 +6855,6 @@ export interface OperationParams {
      * `paramsU` are positions along the edge as fractions from 0 at its start to 1 at its end, and
      * `radiusList` gives the radius at each; the kernel blends smoothly between them. The two lists
      * must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * const tapered = await bitbybit.occt.fillets.filletEdgeVariableRadius({ shape: box, edge: edges[0], radiusList: [0.5, 2, 0.5], paramsU: [0, 0.5, 1] });
-     * ```
      */
     "occt.fillets.filletEdgeVariableRadius": {
         /** The shape the edge belongs to. */
@@ -8927,18 +6872,6 @@ export interface OperationParams {
      *
      * The plane is given by `planeOrigin` and `planeDirection`, its normal. When several arcs fit,
      * `solution` picks one by index; -1 takes the one nearest `planeOrigin`.
-     *
-     * @example
-     * ```typescript
-     * const corner = await bitbybit.occt.fillets.filletTwoEdgesInPlaneIntoAWire({
-     *     edge1: horizontal,
-     *     edge2: vertical,
-     *     planeOrigin: [0, 0, 0],
-     *     planeDirection: [0, 1, 0],
-     *     radius: 1,
-     *     solution: -1,
-     * });
-     * ```
      */
     "occt.fillets.filletTwoEdgesInPlaneIntoAWire": {
         /** The first edge to join. */
@@ -8963,11 +6896,6 @@ export interface OperationParams {
      * `direction` is the direction of the major axis; `radiusMajor` must be at least `radiusMinor`,
      * and `sense` flips the curve's direction. The curve cannot be drawn; wrap it with
      * `shapes.edge.makeEdgeFromGeom2dCurveAndSurface`.
-     *
-     * @example
-     * ```typescript
-     * const ellipse = await bitbybit.occt.geom.curves.geom2dEllipse({ center: [0, 0], direction: [1, 0], radiusMinor: 1, radiusMajor: 2, sense: false });
-     * ```
      */
     "occt.geom.curves.geom2dEllipse": {
         /** The center of the ellipse as a 2D point. */
@@ -8986,11 +6914,6 @@ export interface OperationParams {
      * of a surface.
      *
      * The segment cannot be drawn on its own.
-     *
-     * @example
-     * ```typescript
-     * const segment = await bitbybit.occt.geom.curves.geom2dSegment({ start: [0, 0], end: [1, 0] });
-     * ```
      */
     "occt.geom.curves.geom2dSegment": {
         /** The 2D point the segment starts at. */
@@ -9003,11 +6926,6 @@ export interface OperationParams {
      *
      * On a closed curve such as a circle the parameters run around it, so a trimmed circle is an
      * arc. The result cannot be drawn on its own.
-     *
-     * @example
-     * ```typescript
-     * const arc = await bitbybit.occt.geom.curves.geom2dTrimmedCurve({ shape: circle2d, u1: 0, u2: 1.57, sense: true, adjustPeriodic: true });
-     * ```
      */
     "occt.geom.curves.geom2dTrimmedCurve": {
         /** The 2D curve to cut a piece out of. */
@@ -9029,11 +6947,6 @@ export interface OperationParams {
      * `direction`.
      *
      * The same as `shapes.wire.createCircleWire`, kept here beside the 2D curves.
-     *
-     * @example
-     * ```typescript
-     * const circle = await bitbybit.occt.geom.curves.geomCircleCurve({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.geom.curves.geomCircleCurve": {
         /** The distance from the center to the circle, in model units. */
@@ -9049,11 +6962,6 @@ export interface OperationParams {
      *
      * The same as `shapes.wire.createEllipseWire`, kept here beside the 2D curves; `radiusMajor`
      * must not be smaller than `radiusMinor`.
-     *
-     * @example
-     * ```typescript
-     * const ellipse = await bitbybit.occt.geom.curves.geomEllipseCurve({ center: [0, 0, 0], direction: [0, 1, 0], radiusMinor: 3, radiusMajor: 6 });
-     * ```
      */
     "occt.geom.curves.geomEllipseCurve": {
         /** The point the ellipse is centered on. */
@@ -9073,11 +6981,6 @@ export interface OperationParams {
      *
      * The parameter is in the curve's own range, not a fraction: a circle runs from 0 to two pi, a
      * segment from 0 to its length.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.occt.geom.curves.get2dPointFrom2dCurveOnParam({ shape: circle2d, param: 1.57 });
-     * ```
      */
     "occt.geom.curves.get2dPointFrom2dCurveOnParam": {
         /** The wire, edge or curve to evaluate. */
@@ -9095,11 +6998,6 @@ export interface OperationParams {
      * It has no ends and cannot be drawn; cut a face from it with
      * `shapes.face.faceFromSurfaceAndWire` or place wires on it with `shapes.wire.placeWireOnFace`
      * after making a face.
-     *
-     * @example
-     * ```typescript
-     * const cylinder = await bitbybit.occt.geom.surfaces.cylindricalSurface({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.geom.surfaces.cylindricalSurface": {
         /** The distance from the axis to the surface, in model units. */
@@ -9114,11 +7012,6 @@ export interface OperationParams {
      *
      * A face is a bounded piece of such a surface; the surface itself extends beyond the face,
      * which is what lets a new wire be placed on it and cut into a different face.
-     *
-     * @example
-     * ```typescript
-     * const surface = await bitbybit.occt.geom.surfaces.surfaceFromFace({ shape: face });
-     * ```
      */
     "occt.geom.surfaces.surfaceFromFace": {
         /** The shape to work on; it is not changed. */
@@ -9131,11 +7024,6 @@ export interface OperationParams {
      * `stepData` is the file as text, ArrayBuffer or Uint8Array. The mesh settings say how finely
      * curved surfaces are triangulated: `meshPrecision` is the deflection, `meshAngle` the angular
      * deflection. Z-up becomes glTF's Y-up. Failure throws.
-     *
-     * @example
-     * ```typescript
-     * const glb = await bitbybit.occt.io.convertStepToGltf({ stepData: stepText, meshPrecision: 0.005, meshAngle: 0.5, meshRelative: true, internalVerticesMode: false, controlSurfaceDeflection: false });
-     * ```
      */
     "occt.io.convertStepToGltf": {
         /** STEP data as string or ArrayBuffer. Supports compressed .stpz files (auto-decompressed). */
@@ -9150,18 +7038,6 @@ export interface OperationParams {
      * The read flags choose what to take from the file (colors, names, materials, layers,
      * properties), the mesh settings how finely to triangulate, the export settings how the glTF is
      * written (merged faces, 16-bit indexes, naming, scale). Switch off what you do not need.
-     *
-     * @example
-     * ```typescript
-     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfAdvancedDto();
-     * options.stepData = stepText;
-     * options.readColors = true;
-     * options.readNames = true;
-     * options.meshDeflection = 0.005;
-     * options.mergeFaces = true;
-     * options.adjustZtoY = true;
-     * const glb = await bitbybit.occt.io.convertStepToGltfAdvanced(options);
-     * ```
      */
     "occt.io.convertStepToGltfAdvanced": {
         /**
@@ -9247,16 +7123,6 @@ export interface OperationParams {
      *
      * The Draco settings set the compression level and how many bits positions, normals, texture
      * coordinates and colors keep; fewer bits mean a smaller file and less precision.
-     *
-     * @example
-     * ```typescript
-     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto();
-     * options.stepData = stepText;
-     * options.readColors = true;
-     * options.meshDeflection = 0.005;
-     * options.dracoCompressionLevel = 7;
-     * const glb = await bitbybit.occt.io.convertStepToGltfAdvancedWithDraco(options);
-     * ```
      */
     "occt.io.convertStepToGltfAdvancedWithDraco": {
         /**
@@ -9364,16 +7230,6 @@ export interface OperationParams {
      *
      * The Draco settings set the compression level and how many bits positions, normals, texture
      * coordinates and colors keep; fewer bits mean a smaller file and less precision.
-     *
-     * @example
-     * ```typescript
-     * const options = new Bit.Inputs.OCCT.ConvertStepToGltfWithDracoDto();
-     * options.stepData = stepText;
-     * options.meshPrecision = 0.005;
-     * options.dracoCompressionLevel = 7;
-     * options.dracoQuantizePositionBits = 14;
-     * const glb = await bitbybit.occt.io.convertStepToGltfWithDraco(options);
-     * ```
      */
     "occt.io.convertStepToGltfWithDraco": {
         /**
@@ -9435,17 +7291,6 @@ export interface OperationParams {
      * `colorFormat` chooses AutoCAD's indexed colors or true color, `acadVersion` the DXF version:
      * AC1009 is R12, the most widely readable, AC1015 is 2000. `fileName` and `tryDownload` matter
      * only where a browser download can be started.
-     *
-     * @example
-     * ```typescript
-     * const dxf = await bitbybit.occt.io.dxfCreate({
-     *     pathsParts: [part],
-     *     colorFormat: Bit.Inputs.OCCT.dxfColorFormatEnum.aci,
-     *     acadVersion: Bit.Inputs.OCCT.dxfAcadVersionEnum.AC1009,
-     *     fileName: "drawing.dxf",
-     *     tryDownload: false,
-     * });
-     * ```
      */
     "occt.io.dxfCreate": {
         /** The parts from `io.dxfPathsWithLayer`, each with its own layer and color. */
@@ -9467,11 +7312,6 @@ export interface OperationParams {
      *
      * A drawing may hold several parts, each with its own layer and color; `dxfCreate` writes them
      * into one file.
-     *
-     * @example
-     * ```typescript
-     * const part = await bitbybit.occt.io.dxfPathsWithLayer({ paths, layer: "cut", color: "#ff0000" });
-     * ```
      */
     "occt.io.dxfPathsWithLayer": {
         /** The paths from `io.shapeToDxfPaths`. */
@@ -9481,16 +7321,7 @@ export interface OperationParams {
         /** The color of the paths as a hex string such as `#000000`. */
         color?: unknown | PipelineRef;
     };
-    /**
-     * Loads a STEP or IGES file into an OCCT shape. Pass file content as text (for .step/.stp/.iges/.igs) or ArrayBuffer (for .stpz/.igz).
-     *
-     * @example
-     * ```typescript
-     * const file = await bitbybit.asset.getFile({ fileName: "part.step" });
-     * const shape = await bitbybit.occt.io.loadSTEPorIGES({ assetFile: file, adjustZtoY: true });
-     * await bitbybit.draw.drawAnyAsync({ entity: shape });
-     * ```
-     */
+    /** Loads a STEP or IGES file into an OCCT shape. Pass file content as text (for .step/.stp/.iges/.igs) or ArrayBuffer (for .stpz/.igz). */
     "occt.io.loadSTEPorIGES": {
         /** File content: string for plain text files (.step, .stp, .iges, .igs), or base64-encoded ArrayBuffer for compressed files (.stpz, .igz). */
         filetext: unknown | PipelineRef;
@@ -9506,12 +7337,6 @@ export interface OperationParams {
      *
      * The nodes come in depth-first order, so children follow their parent. A file that cannot be
      * parsed reports its error in the result.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.io.parseStepToJson({ stepData: stepText });
-     * console.log(tree.nodes.map(n => n.name));
-     * ```
      */
     "occt.io.parseStepToJson": {
         /**
@@ -9527,11 +7352,6 @@ export interface OperationParams {
      * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
      * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` names the download
      * and `tryDownload` false skips it. `saveShapeSTEPAndReturn` gives the file's text instead.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.occt.io.saveShapeSTEP({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: true });
-     * ```
      */
     "occt.io.saveShapeSTEP": {
         /** The shape written to the file. */
@@ -9558,11 +7378,6 @@ export interface OperationParams {
      * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
      * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` and `tryDownload`
      * matter only where a browser download can be started.
-     *
-     * @example
-     * ```typescript
-     * const step = await bitbybit.occt.io.saveShapeSTEPAndReturn({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: false });
-     * ```
      */
     "occt.io.saveShapeSTEPAndReturn": {
         /** The shape written to the file. */
@@ -9589,11 +7404,6 @@ export interface OperationParams {
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces more
      * closely and make a bigger file. `adjustYtoZ` turns Y-up into Z-up. `fileName` names the
      * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the text instead.
-     *
-     * @example
-     * ```typescript
-     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true });
-     * ```
      */
     "occt.io.saveShapeStl": {
         /** The shape written to the file. */
@@ -9622,11 +7432,6 @@ export interface OperationParams {
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
      * more closely and make a bigger file. `adjustYtoZ` turns the shape so Y-up becomes Z-up.
      * `fileName` and `tryDownload` only matter where a download can start.
-     *
-     * @example
-     * ```typescript
-     * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false });
-     * ```
      */
     "occt.io.saveShapeStlAndReturn": {
         /** The shape written to the file. */
@@ -9654,18 +7459,6 @@ export interface OperationParams {
      * The shape must lie flat on the XZ ground plane, since DXF drawings are two-dimensional. The
      * deflection settings say how closely curved edges are followed. Give the paths a layer with
      * `dxfPathsWithLayer` and write the file with `dxfCreate`.
-     *
-     * @example
-     * ```typescript
-     * const paths = await bitbybit.occt.io.shapeToDxfPaths({
-     *     shape: flatOutline,
-     *     angularDeflection: 0.1,
-     *     curvatureDeflection: 0.1,
-     *     minimumOfPoints: 2,
-     *     uTolerance: 1e-9,
-     *     minimumLength: 1e-7,
-     * });
-     * ```
      */
     "occt.io.shapeToDxfPaths": {
         /** The shape whose wires are traced; it must lie flat on the XZ ground plane. */
@@ -9692,11 +7485,6 @@ export interface OperationParams {
      *
      * This is not the center of mass; `shapes.solid.getSolidCenterOfMass` and its siblings give
      * that.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.operations.boundingBoxCenterOfShape({ shape });
-     * ```
      */
     "occt.operations.boundingBoxCenterOfShape": {
         /** The shape to work on; it is not changed. */
@@ -9705,11 +7493,6 @@ export interface OperationParams {
     /**
      * Reads the maximum corner of a shape's axis-aligned bounding box, the point with the largest
      * X, Y and Z.
-     *
-     * @example
-     * ```typescript
-     * const max = await bitbybit.occt.operations.boundingBoxMaxOfShape({ shape });
-     * ```
      */
     "occt.operations.boundingBoxMaxOfShape": {
         /** The shape to work on; it is not changed. */
@@ -9718,11 +7501,6 @@ export interface OperationParams {
     /**
      * Reads the minimum corner of a shape's axis-aligned bounding box, the point with the smallest
      * X, Y and Z.
-     *
-     * @example
-     * ```typescript
-     * const min = await bitbybit.occt.operations.boundingBoxMinOfShape({ shape });
-     * ```
      */
     "occt.operations.boundingBoxMinOfShape": {
         /** The shape to work on; it is not changed. */
@@ -9734,12 +7512,6 @@ export interface OperationParams {
      *
      * On curved shapes the box can be a little larger than the shape itself, because the kernel
      * bounds the control geometry rather than the exact surface.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.operations.boundingBoxOfShape({ shape });
-     * console.log(box.size, box.center);
-     * ```
      */
     "occt.operations.boundingBoxOfShape": {
         /** The shape to work on; it is not changed. */
@@ -9748,36 +7520,17 @@ export interface OperationParams {
     /**
      * Builds the axis-aligned bounding box of a shape as a box solid, handy for drawing it or using
      * it in a boolean.
-     *
-     * @example
-     * ```typescript
-     * const boxSolid = await bitbybit.occt.operations.boundingBoxShapeOfShape({ shape });
-     * ```
      */
     "occt.operations.boundingBoxShapeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the size of a shape's axis-aligned bounding box along X, Y and Z, in model units.
-     *
-     * @example
-     * ```typescript
-     * const size = await bitbybit.occt.operations.boundingBoxSizeOfShape({ shape });
-     * ```
-     */
+    /** Reads the size of a shape's axis-aligned bounding box along X, Y and Z, in model units. */
     "occt.operations.boundingBoxSizeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the center of a shape's bounding sphere, which is the center of its bounding box.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.operations.boundingSphereCenterOfShape({ shape });
-     * ```
-     */
+    /** Reads the center of a shape's bounding sphere, which is the center of its bounding box. */
     "occt.operations.boundingSphereCenterOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -9785,12 +7538,6 @@ export interface OperationParams {
     /**
      * Computes a sphere that encloses a shape: it is centered on the bounding box and reaches its
      * corners, so it always contains the shape but is not the smallest possible sphere.
-     *
-     * @example
-     * ```typescript
-     * const sphere = await bitbybit.occt.operations.boundingSphereOfShape({ shape });
-     * console.log(sphere.radius);
-     * ```
      */
     "occt.operations.boundingSphereOfShape": {
         /** The shape to work on; it is not changed. */
@@ -9799,24 +7546,12 @@ export interface OperationParams {
     /**
      * Reads the radius of a shape's bounding sphere, the distance from the bounding box center to
      * its corner, in model units.
-     *
-     * @example
-     * ```typescript
-     * const radius = await bitbybit.occt.operations.boundingSphereRadiusOfShape({ shape });
-     * ```
      */
     "occt.operations.boundingSphereRadiusOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Builds the bounding sphere of a shape as a sphere solid.
-     *
-     * @example
-     * ```typescript
-     * const sphereSolid = await bitbybit.occt.operations.boundingSphereShapeOfShape({ shape });
-     * ```
-     */
+    /** Builds the bounding sphere of a shape as a sphere solid. */
     "occt.operations.boundingSphereShapeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -9826,11 +7561,6 @@ export interface OperationParams {
      *
      * The distance between them is the gap between the shapes; it is 0 when they touch or overlap.
      * Throws an error when no pair can be found.
-     *
-     * @example
-     * ```typescript
-     * const [onBox, onSphere] = await bitbybit.occt.operations.closestPointsBetweenTwoShapes({ shape1: box, shape2: sphere });
-     * ```
      */
     "occt.operations.closestPointsBetweenTwoShapes": {
         /** The first shape; the first point of the result lies on it. */
@@ -9842,11 +7572,6 @@ export interface OperationParams {
      * Finds, for each point in a list, the closest point on a shape.
      *
      * A point already on the shape maps to itself. Useful for snapping points onto a surface.
-     *
-     * @example
-     * ```typescript
-     * const snapped = await bitbybit.occt.operations.closestPointsOnShapeFromPoints({ shape: sphere, points: [[0, 20, 0], [20, 0, 0]] });
-     * ```
      */
     "occt.operations.closestPointsOnShapeFromPoints": {
         /** The shape the closest points are looked for on. */
@@ -9859,11 +7584,6 @@ export interface OperationParams {
      *
      * The result is one flat list: all the points for the first shape, in point order, then all the
      * points for the second shape, and so on.
-     *
-     * @example
-     * ```typescript
-     * const snapped = await bitbybit.occt.operations.closestPointsOnShapesFromPoints({ shapes: [box, sphere], points: [[0, 20, 0], [20, 0, 0]] });
-     * ```
      */
     "occt.operations.closestPointsOnShapesFromPoints": {
         /** The shapes the closest points are looked for on, in the order the result groups them. */
@@ -9877,11 +7597,6 @@ export interface OperationParams {
      *
      * The distance is to the shape's surface, so a point inside a solid still reports its distance
      * to the skin.
-     *
-     * @example
-     * ```typescript
-     * const distances = await bitbybit.occt.operations.distancesToShapeFromPoints({ shape: sphere, points: [[0, 20, 0], [20, 0, 0]] });
-     * ```
      */
     "occt.operations.distancesToShapeFromPoints": {
         /** The shape the closest points are looked for on. */
@@ -9895,12 +7610,6 @@ export interface OperationParams {
      *
      * The shape itself stays at the start of the extrusion; the vector is in model units, so `[0,
      * 10, 0]` extrudes 10 units up.
-     *
-     * @example
-     * ```typescript
-     * const disc = await bitbybit.occt.shapes.face.createCircleFace({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const cylinder = await bitbybit.occt.operations.extrude({ shape: disc, direction: [0, 10, 0] });
-     * ```
      */
     "occt.operations.extrude": {
         /** The shape to sweep: a face gives a solid, a wire a shell, an edge a face. */
@@ -9908,14 +7617,7 @@ export interface OperationParams {
         /** The direction and distance of the sweep as one vector, in model units. */
         direction?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Sweeps several shapes along the same vector, as `extrude` does for one.
-     *
-     * @example
-     * ```typescript
-     * const walls = await bitbybit.occt.operations.extrudeShapes({ shapes: [faceA, faceB], direction: [0, 10, 0] });
-     * ```
-     */
+    /** Sweeps several shapes along the same vector, as `extrude` does for one. */
     "occt.operations.extrudeShapes": {
         /** The shapes to sweep, one result per shape. */
         shapes: unknown[] | PipelineRef;
@@ -9929,13 +7631,6 @@ export interface OperationParams {
      * Edges are accepted as single-edge wires. With `makeSolid` true and closed sections the result
      * is capped into a solid; otherwise it is a shell. Sections match up best with equal edge
      * counts.
-     *
-     * @example
-     * ```typescript
-     * const bottom = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const upper = await bitbybit.occt.shapes.wire.createSquareWire({ size: 6, center: [0, 10, 0], direction: [0, 1, 0] });
-     * const vase = await bitbybit.occt.operations.loft({ shapes: [bottom, upper], makeSolid: true });
-     * ```
      */
     "occt.operations.loft": {
         /** The section wires, or edges, in the order the surface passes through them. */
@@ -9950,23 +7645,6 @@ export interface OperationParams {
      * `straight` makes ruled patches between sections instead of a smooth blend; `closed` loops the
      * surface from the last section back to the first, and `periodic` makes that loop smooth by
      * resampling the sections. `startVertex` and `endVertex` close the ends to points.
-     *
-     * @example
-     * ```typescript
-     * const cone = await bitbybit.occt.operations.loftAdvanced({
-     *     shapes: [circleBottom, circleMiddle],
-     *     makeSolid: true,
-     *     closed: false,
-     *     periodic: false,
-     *     straight: false,
-     *     nrPeriodicSections: 10,
-     *     useSmoothing: false,
-     *     maxUDegree: 3,
-     *     tolerance: 1e-7,
-     *     parType: Bit.Inputs.OCCT.approxParametrizationTypeEnum.approxCentripetal,
-     *     endVertex: [0, 20, 0],
-     * });
-     * ```
      */
     "occt.operations.loftAdvanced": {
         /** The section wires, or edges, in the order the surface passes through them. */
@@ -10016,22 +7694,6 @@ export interface OperationParams {
      * Removing the top face of a box, for instance, gives an open cup. `offset` is the wall
      * thickness, negative to grow inward; `joinType` says how the offset walls meet at corners, the
      * other flags go to the kernel's thick-solid builder.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
-     * const faces = await bitbybit.occt.shapes.face.getFaces({ shape: box });
-     * const cup = await bitbybit.occt.operations.makeThickSolidByJoin({
-     *     shape: box,
-     *     shapes: [faces[0]],
-     *     offset: -1,
-     *     tolerance: 1e-3,
-     *     intersection: false,
-     *     selfIntersection: false,
-     *     joinType: Bit.Inputs.OCCT.joinTypeEnum.arc,
-     *     removeIntEdges: false,
-     * });
-     * ```
      */
     "occt.operations.makeThickSolidByJoin": {
         /** The solid to hollow out. */
@@ -10069,11 +7731,6 @@ export interface OperationParams {
      *
      * A positive offset thickens toward the surface normal, a negative one the other way. Use it to
      * turn a lofted or swept skin into something printable.
-     *
-     * @example
-     * ```typescript
-     * const wall = await bitbybit.occt.operations.makeThickSolidSimple({ shape: loftedShell, offset: 0.5 });
-     * ```
      */
     "occt.operations.makeThickSolidSimple": {
         /** The face or shell to give a thickness to. */
@@ -10090,11 +7747,6 @@ export interface OperationParams {
      *
      * A wire or edge is offset in its own plane, or on `face` when given; corners are rounded. A
      * distance of 0 returns the shape as it is.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.occt.operations.offset({ shape: box, distance: 1, tolerance: 0.1 });
-     * ```
      */
     "occt.operations.offset": {
         /** The shape to offset: a wire, edge, face, shell or solid. */
@@ -10118,11 +7770,6 @@ export interface OperationParams {
      *
      * It works best on smooth wires; fillet sharp corners first with `fillets.fillet3DWire`. When
      * the offset edges cannot be joined into one wire they come back as a list of edges.
-     *
-     * @example
-     * ```typescript
-     * const outer = await bitbybit.occt.operations.offset3DWire({ shape: smoothWire, offset: 1, direction: [0, 1, 0] });
-     * ```
      */
     "occt.operations.offset3DWire": {
         /** The wire to offset; smooth wires work best, so fillet sharp corners first. */
@@ -10140,17 +7787,6 @@ export interface OperationParams {
      * `intersection` extends the sides to a sharp corner, `tangent` keeps them tangent.
      *
      * `removeIntEdges` drops the internal edges the offset can leave behind on a solid.
-     *
-     * @example
-     * ```typescript
-     * const sharper = await bitbybit.occt.operations.offsetAdv({
-     *     shape: rectangleWire,
-     *     distance: 1,
-     *     tolerance: 0.1,
-     *     joinType: Bit.Inputs.OCCT.joinTypeEnum.intersection,
-     *     removeIntEdges: false,
-     * });
-     * ```
      */
     "occt.operations.offsetAdv": {
         /** The shape to offset: a wire, edge, face, shell or solid. */
@@ -10180,11 +7816,6 @@ export interface OperationParams {
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
      * the next along the way.
-     *
-     * @example
-     * ```typescript
-     * const tube = await bitbybit.occt.operations.pipe({ shape: pathWire, shapes: [profileAtStart] });
-     * ```
      */
     "occt.operations.pipe": {
         /** The main shape: the path wire for a pipe, the wire to extend when adding edges. */
@@ -10199,18 +7830,6 @@ export interface OperationParams {
      * The polygon of `radius` is placed at the start of the wire, perpendicular to it. `makeSolid`
      * gives a solid instead of a shell, `trihedronEnum` chooses how the profile turns along the
      * path, and `forceApproxC1` smooths the result.
-     *
-     * @example
-     * ```typescript
-     * const bar = await bitbybit.occt.operations.pipePolylineWireNGon({
-     *     shape: pathWire,
-     *     radius: 0.5,
-     *     nrCorners: 6,
-     *     makeSolid: true,
-     *     trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal,
-     *     forceApproxC1: false,
-     * });
-     * ```
      */
     "occt.operations.pipePolylineWireNGon": {
         /** The path wire the tube follows. */
@@ -10235,17 +7854,6 @@ export interface OperationParams {
      * The circle is placed at the start of the wire, perpendicular to it. `makeSolid` gives a solid
      * instead of a shell, `trihedronEnum` chooses how the profile turns as it follows the path, and
      * `forceApproxC1` smooths the result.
-     *
-     * @example
-     * ```typescript
-     * const tube = await bitbybit.occt.operations.pipeWireCylindrical({
-     *     shape: pathWire,
-     *     radius: 0.5,
-     *     makeSolid: true,
-     *     trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal,
-     *     forceApproxC1: false,
-     * });
-     * ```
      */
     "occt.operations.pipeWireCylindrical": {
         /** The path wire the tube follows. */
@@ -10265,17 +7873,6 @@ export interface OperationParams {
     /**
      * Sweeps a circle along each of several wires, as `pipeWireCylindrical` does for one, all with
      * the same radius and options.
-     *
-     * @example
-     * ```typescript
-     * const tubes = await bitbybit.occt.operations.pipeWiresCylindrical({
-     *     shapes: [pathA, pathB],
-     *     radius: 0.5,
-     *     makeSolid: true,
-     *     trihedronEnum: Bit.Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal,
-     *     forceApproxC1: false,
-     * });
-     * ```
      */
     "occt.operations.pipeWiresCylindrical": {
         /** The path wires, one tube per wire. */
@@ -10298,12 +7895,6 @@ export interface OperationParams {
      *
      * `angle` is in degrees; 360 or more gives a full turn. The axis runs along `direction`: a
      * profile beside the Y axis revolved about it gives a vase. The profile must not cross it.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.wire.createPolylineWire({ points: [[2, 0, 0], [4, 0, 0], [3, 10, 0], [2, 12, 0]] });
-     * const vase = await bitbybit.occt.operations.revolve({ shape: profile, angle: 360, direction: [0, 1, 0], copy: false });
-     * ```
      */
     "occt.operations.revolve": {
         /** The profile to spin: a wire gives a shell, a face a solid; it must not cross the axis. */
@@ -10321,12 +7912,6 @@ export interface OperationParams {
      *
      * The shape should lie flat, as the profiles this package creates do. With `makeSolid` true,
      * the default, a face profile gives a closed solid; a wire gives a twisted shell.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.occt.shapes.face.createSquareFace({ size: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const twisted = await bitbybit.occt.operations.rotatedExtrude({ shape: square, height: 20, angle: 90, makeSolid: true });
-     * ```
      */
     "occt.operations.rotatedExtrude": {
         /** The flat profile to extrude, a wire or a face lying on the ground. */
@@ -10344,11 +7929,6 @@ export interface OperationParams {
      *
      * Each slice is the flat section where a cutting plane meets the solid; they come back together
      * in one compound. The shape must be or contain solids, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const layers = await bitbybit.occt.operations.slice({ shape: sphere, step: 0.5, direction: [0, 1, 0] });
-     * ```
      */
     "occt.operations.slice": {
         /** The solid, or shape holding solids, to slice. */
@@ -10363,11 +7943,6 @@ export interface OperationParams {
      * them, such as 0.1, 0.5, 0.1, 0.5.
      *
      * The pattern is applied from the bottom of the shape up and repeats until the top is reached.
-     *
-     * @example
-     * ```typescript
-     * const layers = await bitbybit.occt.operations.sliceInStepPattern({ shape: sphere, steps: [0.1, 0.5], direction: [0, 1, 0] });
-     * ```
      */
     "occt.operations.sliceInStepPattern": {
         /** The solid, or shape holding solids, to slice. */
@@ -10387,11 +7962,6 @@ export interface OperationParams {
      * With `nonDestructive` true, the default, the inputs are left untouched and the result holds
      * the pieces of every shape involved, the cutters included; with false only the pieces of
      * `shape` come back. `localFuzzyTolerance` lets geometry that nearly touches count as touching.
-     *
-     * @example
-     * ```typescript
-     * const pieces = await bitbybit.occt.operations.splitShapeWithShapes({ shape: box, shapes: [cuttingPlane], localFuzzyTolerance: 1e-4, nonDestructive: false });
-     * ```
      */
     "occt.operations.splitShapeWithShapes": {
         /** The shape to cut into pieces. */
@@ -10416,19 +7986,6 @@ export interface OperationParams {
      * `joinSegments` merges consecutive segments into single edges within `tolerance`; `scale` and
      * `flipY` map the path's units and downward Y axis onto the ground plane. An empty path gives
      * undefined.
-     *
-     * @example
-     * ```typescript
-     * const shape = await bitbybit.occt.path.shapeFromPath({
-     *     subpaths: [{ start: [0, 0], segments: [{ type: "line", to: [10, 0] }, { type: "line", to: [10, 10] }, { type: "line", to: [0, 10] }], closed: true }],
-     *     makeFaces: true,
-     *     joinSegments: true,
-     *     tolerance: 1e-7,
-     *     scale: 1,
-     *     flipY: true,
-     *     origin: [0, 0, 0],
-     * });
-     * ```
      */
     "occt.path.shapeFromPath": {
         /** The runs of segments that describe the outline, one wire each. */
@@ -10453,11 +8010,6 @@ export interface OperationParams {
      * `precision` is the meshing tolerance in model units: smaller values follow curved surfaces
      * more closely and give more triangles. `adjustYtoZ` swaps the Y and Z axes for tools that
      * treat Z as up, and `reversedPoints` flips the winding of each triangle.
-     *
-     * @example
-     * ```typescript
-     * const triangles = await bitbybit.occt.shapeFacesToPolygonPoints({ shape: sphere, precision: 0.01, adjustYtoZ: false, reversedPoints: false });
-     * ```
      */
     "occt.shapeFacesToPolygonPoints": {
         /** The shape to triangulate. */
@@ -10485,11 +8037,6 @@ export interface OperationParams {
      * `precision` is the size of defect to look for, `minTolerance` and `maxTolerance` bound the
      * tolerances the repaired shape may carry, all in model units. Try it first on any shape that
      * fails `shapes.shape.isValid`.
-     *
-     * @example
-     * ```typescript
-     * const fixed = await bitbybit.occt.shapeFix.basicShapeRepair({ shape: imported, precision: 0.001, maxTolerance: 0.01, minTolerance: 0.0001 });
-     * ```
      */
     "occt.shapeFix.basicShapeRepair": {
         /** The shape to repair; it stays as it is and a repaired copy comes back. */
@@ -10512,11 +8059,6 @@ export interface OperationParams {
      *
      * A wire assembled from loose edges can hold edges pointing against the flow; this walks the
      * wire in order and joins the edges again the right way round, which some operations need.
-     *
-     * @example
-     * ```typescript
-     * const ordered = await bitbybit.occt.shapeFix.fixEdgeOrientationsAlongWire({ shape: wire });
-     * ```
      */
     "occt.shapeFix.fixEdgeOrientationsAlongWire": {
         /** The shape to work on; it is not changed. */
@@ -10528,11 +8070,6 @@ export interface OperationParams {
      *
      * With `lockvtx` true the existing vertices are kept in place; otherwise they may move to close
      * the gap. A `precsmall` of 0 uses the wire's own tolerance.
-     *
-     * @example
-     * ```typescript
-     * const clean = await bitbybit.occt.shapeFix.fixSmallEdgeOnWire({ shape: wire, lockvtx: false, precsmall: 0.001 });
-     * ```
      */
     "occt.shapeFix.fixSmallEdgeOnWire": {
         /** The wire to clean up. */
@@ -10545,14 +8082,7 @@ export interface OperationParams {
         /** Edges shorter than this, in model units, are removed; 0 uses the wire's own tolerance. */
         precsmall?: number | PipelineRef;
     };
-    /**
-     * Takes a compound apart into the shapes it was made of, in the order they were added.
-     *
-     * @example
-     * ```typescript
-     * const parts = await bitbybit.occt.shapes.compound.getShapesOfCompound({ shape: group });
-     * ```
-     */
+    /** Takes a compound apart into the shapes it was made of, in the order they were added. */
     "occt.shapes.compound.getShapesOfCompound": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -10561,11 +8091,6 @@ export interface OperationParams {
      * Bundles any shapes into one compound so they can be handled as a single shape.
      *
      * The shapes are not joined or fused; they simply travel together.
-     *
-     * @example
-     * ```typescript
-     * const group = await bitbybit.occt.shapes.compound.makeCompound({ shapes: [box, sphere] });
-     * ```
      */
     "occt.shapes.compound.makeCompound": {
         /** The shapes to pack together; any kinds may be mixed. */
@@ -10576,11 +8101,6 @@ export interface OperationParams {
      * from its own start.
      *
      * `sense` picks which way round the circle the arc runs from the first angle to the second.
-     *
-     * @example
-     * ```typescript
-     * const quarter = await bitbybit.occt.shapes.edge.arcFromCircleAndTwoAngles({ circle, alphaAngle1: 0, alphaAngle2: 90, sense: true });
-     * ```
      */
     "occt.shapes.edge.arcFromCircleAndTwoAngles": {
         /** The circle edge the arc is cut from. */
@@ -10599,11 +8119,6 @@ export interface OperationParams {
      * Cuts an arc out of a circle edge between two points on it.
      *
      * `sense` picks which way round the circle the arc runs from the first point to the second.
-     *
-     * @example
-     * ```typescript
-     * const arc = await bitbybit.occt.shapes.edge.arcFromCircleAndTwoPoints({ circle, start: [10, 0, 0], end: [0, 0, 10], sense: true });
-     * ```
      */
     "occt.shapes.edge.arcFromCircleAndTwoPoints": {
         /** The circle edge the arc is cut from. */
@@ -10623,11 +8138,6 @@ export interface OperationParams {
      * angle, in degrees.
      *
      * `sense` picks which way round the circle the arc runs.
-     *
-     * @example
-     * ```typescript
-     * const arc = await bitbybit.occt.shapes.edge.arcFromCirclePointAndAngle({ circle, point: [10, 0, 0], alphaAngle: 45, sense: true });
-     * ```
      */
     "occt.shapes.edge.arcFromCirclePointAndAngle": {
         /** The circle edge the arc is cut from. */
@@ -10645,11 +8155,6 @@ export interface OperationParams {
     /**
      * Makes a circular arc that starts at the first point, passes through the middle one and ends
      * at the last.
-     *
-     * @example
-     * ```typescript
-     * const arc = await bitbybit.occt.shapes.edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [5, 5, 0], end: [10, 0, 0] });
-     * ```
      */
     "occt.shapes.edge.arcThroughThreePoints": {
         /** The point the arc begins at. */
@@ -10664,11 +8169,6 @@ export interface OperationParams {
      * direction.
      *
      * The tangent fixes the plane and the radius of the arc.
-     *
-     * @example
-     * ```typescript
-     * const arc = await bitbybit.occt.shapes.edge.arcThroughTwoPointsAndTangent({ start: [0, 0, 0], tangentVec: [0, 1, 0], end: [10, 0, 0] });
-     * ```
      */
     "occt.shapes.edge.arcThroughTwoPointsAndTangent": {
         /** The point the arc begins at, where the tangent applies. */
@@ -10678,14 +8178,7 @@ export interface OperationParams {
         /** The point the arc finishes at. */
         end?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Draws the circles of a given radius that pass through a point and just touch a circle.
-     *
-     * @example
-     * ```typescript
-     * const circles = await bitbybit.occt.shapes.edge.constraintTanCirclesOnCircleAndPnt({ circle, point: [15, 0, 0], tolerance: 1e-7, radius: 3 });
-     * ```
-     */
+    /** Draws the circles of a given radius that pass through a point and just touch a circle. */
     "occt.shapes.edge.constraintTanCirclesOnCircleAndPnt": {
         /** The circle edge the new circles must touch. */
         circle: unknown | PipelineRef;
@@ -10696,14 +8189,7 @@ export interface OperationParams {
         /** The radius of the circles to draw, in model units. */
         radius?: number | PipelineRef;
     };
-    /**
-     * Draws the circles of a given radius that just touch two circles at once.
-     *
-     * @example
-     * ```typescript
-     * const circles = await bitbybit.occt.shapes.edge.constraintTanCirclesOnTwoCircles({ circle1, circle2, tolerance: 1e-7, radius: 3 });
-     * ```
-     */
+    /** Draws the circles of a given radius that just touch two circles at once. */
     "occt.shapes.edge.constraintTanCirclesOnTwoCircles": {
         /** The first circle edge the new circles must touch. */
         circle1: unknown | PipelineRef;
@@ -10719,17 +8205,6 @@ export interface OperationParams {
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
      * adds the piece of the circle between the touching points.
-     *
-     * @example
-     * ```typescript
-     * const tangents = await bitbybit.occt.shapes.edge.constraintTanLinesFromPtToCircle({
-     *     circle,
-     *     point: [20, 0, 0],
-     *     tolerance: 1e-7,
-     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
-     *     circleRemainder: Bit.Inputs.OCCT.circleInclusionEnum.none,
-     * });
-     * ```
      */
     "occt.shapes.edge.constraintTanLinesFromPtToCircle": {
         /** The circle edge the lines must touch. */
@@ -10752,18 +8227,6 @@ export interface OperationParams {
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
      * `circleRemainder` adds the piece of the circle between the touching points.
-     *
-     * @example
-     * ```typescript
-     * const tangents = await bitbybit.occt.shapes.edge.constraintTanLinesFromTwoPtsToCircle({
-     *     circle,
-     *     point1: [20, 0, 0],
-     *     point2: [-20, 0, 0],
-     *     tolerance: 1e-7,
-     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
-     *     circleRemainder: Bit.Inputs.OCCT.circleInclusionEnum.none,
-     * });
-     * ```
      */
     "occt.shapes.edge.constraintTanLinesFromTwoPtsToCircle": {
         /** The circle edge the lines must touch. */
@@ -10788,17 +8251,6 @@ export interface OperationParams {
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
      * shape.
-     *
-     * @example
-     * ```typescript
-     * const belt = await bitbybit.occt.shapes.edge.constraintTanLinesOnTwoCircles({
-     *     circle1,
-     *     circle2,
-     *     tolerance: 1e-7,
-     *     positionResult: Bit.Inputs.OCCT.positionResultEnum.all,
-     *     circleRemainders: Bit.Inputs.OCCT.twoCircleInclusionEnum.outside,
-     * });
-     * ```
      */
     "occt.shapes.edge.constraintTanLinesOnTwoCircles": {
         /** The first circle edge the lines must touch. */
@@ -10815,14 +8267,7 @@ export interface OperationParams {
          */
         circleRemainders?: "none" | "outside" | "inside" | "outsideInside" | "insideOutside" | PipelineRef;
     };
-    /**
-     * Makes a full circle as one closed edge, lying in the plane whose normal is `direction`.
-     *
-     * @example
-     * ```typescript
-     * const circle = await bitbybit.occt.shapes.edge.createCircleEdge({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
-     */
+    /** Makes a full circle as one closed edge, lying in the plane whose normal is `direction`. */
     "occt.shapes.edge.createCircleEdge": {
         /** The distance from the center to the circle, in model units. */
         radius?: number | PipelineRef;
@@ -10835,11 +8280,6 @@ export interface OperationParams {
      * Makes a full ellipse as one closed edge, lying in the plane whose normal is `direction`.
      *
      * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse.
-     *
-     * @example
-     * ```typescript
-     * const ellipse = await bitbybit.occt.shapes.edge.createEllipseEdge({ center: [0, 0, 0], direction: [0, 1, 0], radiusMinor: 3, radiusMajor: 6 });
-     * ```
      */
     "occt.shapes.edge.createEllipseEdge": {
         /** The point the ellipse is centered on. */
@@ -10858,11 +8298,6 @@ export interface OperationParams {
      * Collects diagnostic facts about the curve of an edge: its type and degree, control point and
      * knot counts, whether it is rational, periodic or closed, its parameter range and period, its
      * length and its end points.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.shapes.edge.debugInfo({ shape: edge });
-     * ```
      */
     "occt.shapes.edge.debugInfo": {
         /** The shape to work on; it is not changed. */
@@ -10873,11 +8308,6 @@ export interface OperationParams {
      *
      * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
      * drop the ends.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.edge.divideEdgeByEqualDistanceToPoints({ shape: edge, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.edge.divideEdgeByEqualDistanceToPoints": {
         /** The wire or edge to place points along. */
@@ -10898,11 +8328,6 @@ export interface OperationParams {
      * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
      * drop the ends. On a free-form curve equal parameter steps are not equal distances; use
      * `divideEdgeByEqualDistanceToPoints` for those.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.edge.divideEdgeByParamsToPoints({ shape: edge, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.edge.divideEdgeByParamsToPoints": {
         /** The wire or edge to place points along. */
@@ -10920,11 +8345,6 @@ export interface OperationParams {
     /**
      * Places points along each edge in a list at equal distances along its curve, one list per
      * edge.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.edge.divideEdgesByEqualDistanceToPoints({ shapes: edges, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.edge.divideEdgesByEqualDistanceToPoints": {
         /** The wires or edges to place points along, one list of points per shape. */
@@ -10939,14 +8359,7 @@ export interface OperationParams {
         /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
-    /**
-     * Places points along each edge in a list at equal steps of its parameter, one list per edge.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.edge.divideEdgesByParamsToPoints({ shapes: edges, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
-     */
+    /** Places points along each edge in a list at equal steps of its parameter, one list per edge. */
     "occt.shapes.edge.divideEdgesByParamsToPoints": {
         /** The wires or edges to place points along, one list of points per shape. */
         shapes: unknown[] | PipelineRef;
@@ -10966,18 +8379,6 @@ export interface OperationParams {
      *
      * The deflection settings say how tightly the points hug curved edges; a wire's edges come in
      * their order along the wire.
-     *
-     * @example
-     * ```typescript
-     * const polylines = await bitbybit.occt.shapes.edge.edgesToPoints({
-     *     shape: wire,
-     *     angularDeflection: 0.1,
-     *     curvatureDeflection: 0.1,
-     *     minimumOfPoints: 2,
-     *     uTolerance: 1e-9,
-     *     minimumLength: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.edge.edgesToPoints": {
         /** The shape whose edges are traced. */
@@ -10999,50 +8400,22 @@ export interface OperationParams {
         /** Edges shorter than this, in model units, are traced with the minimum number of points. */
         minimumLength?: number | PipelineRef;
     };
-    /**
-     * Reads the point where an edge ends, in the edge's own direction.
-     *
-     * @example
-     * ```typescript
-     * const end = await bitbybit.occt.shapes.edge.endPointOnEdge({ shape: edge });
-     * ```
-     */
+    /** Reads the point where an edge ends, in the edge's own direction. */
     "occt.shapes.edge.endPointOnEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the end point of each edge in a list.
-     *
-     * @example
-     * ```typescript
-     * const ends = await bitbybit.occt.shapes.edge.endPointsOnEdges({ shapes: edges });
-     * ```
-     */
+    /** Reads the end point of each edge in a list. */
     "occt.shapes.edge.endPointsOnEdges": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Makes a straight edge from a line object of the form `{ start, end }`.
-     *
-     * @example
-     * ```typescript
-     * const edge = await bitbybit.occt.shapes.edge.fromBaseLine({ line: { start: [0, 0, 0], end: [10, 0, 0] } });
-     * ```
-     */
+    /** Makes a straight edge from a line object of the form `{ start, end }`. */
     "occt.shapes.edge.fromBaseLine": {
         /** The line as `{ start, end }`. */
         line: unknown | PipelineRef;
     };
-    /**
-     * Makes one straight edge per line object of the form `{ start, end }`.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromBaseLines({ lines: [{ start: [0, 0, 0], end: [10, 0, 0] }, { start: [10, 0, 0], end: [10, 10, 0] }] });
-     * ```
-     */
+    /** Makes one straight edge per line object of the form `{ start, end }`. */
     "occt.shapes.edge.fromBaseLines": {
         /** The lines as `{ start, end }` objects, in the order the results should come back. */
         lines: unknown[] | PipelineRef;
@@ -11052,11 +8425,6 @@ export interface OperationParams {
      *
      * A triangle whose edges cannot be built is skipped with a warning rather than stopping the
      * rest.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromBaseMesh({ mesh: triangles });
-     * ```
      */
     "occt.shapes.edge.fromBaseMesh": {
         /** The mesh as a list of triangles, each three corner points. */
@@ -11065,11 +8433,6 @@ export interface OperationParams {
     /**
      * Makes one straight edge per segment of a polyline object; a closed polyline also gets the
      * edge from its last point back to its first.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromBasePolyline({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], isClosed: true } });
-     * ```
      */
     "occt.shapes.edge.fromBasePolyline": {
         /**
@@ -11078,38 +8441,17 @@ export interface OperationParams {
          */
         polyline: unknown | PipelineRef;
     };
-    /**
-     * Makes a straight edge from a segment, a pair of points `[start, end]`.
-     *
-     * @example
-     * ```typescript
-     * const edge = await bitbybit.occt.shapes.edge.fromBaseSegment({ segment: [[0, 0, 0], [10, 0, 0]] });
-     * ```
-     */
+    /** Makes a straight edge from a segment, a pair of points `[start, end]`. */
     "occt.shapes.edge.fromBaseSegment": {
         /** The segment as a pair of points, `[start, end]`. */
         segment: unknown | PipelineRef;
     };
-    /**
-     * Makes one straight edge per segment, each a pair of points `[start, end]`.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromBaseSegments({ segments: [[[0, 0, 0], [10, 0, 0]], [[10, 0, 0], [10, 10, 0]]] });
-     * ```
-     */
+    /** Makes one straight edge per segment, each a pair of points `[start, end]`. */
     "occt.shapes.edge.fromBaseSegments": {
         /** The segments as pairs of points, `[start, end]`, in the order the results should come back. */
         segments: unknown[] | PipelineRef;
     };
-    /**
-     * Makes the three straight edges of a triangle given as three points.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromBaseTriangle({ triangle: [[0, 0, 0], [10, 0, 0], [0, 10, 0]] });
-     * ```
-     */
+    /** Makes the three straight edges of a triangle given as three points. */
     "occt.shapes.edge.fromBaseTriangle": {
         /** The triangle as its three corner points. */
         triangle: unknown | PipelineRef;
@@ -11120,11 +8462,6 @@ export interface OperationParams {
      *
      * The edges are returned loose; `shapes.wire.createPolylineWire` makes the joined wire
      * directly.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
-     * ```
      */
     "occt.shapes.edge.fromPoints": {
         /** The points, in the order the shapes should follow them. */
@@ -11134,11 +8471,6 @@ export interface OperationParams {
      * Finds the center of the circle a circular edge lies on.
      *
      * An edge that is not circular throws an error.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.shapes.edge.getCircularEdgeCenterPoint({ shape: arc });
-     * ```
      */
     "occt.shapes.edge.getCircularEdgeCenterPoint": {
         /** The shape to work on; it is not changed. */
@@ -11148,11 +8480,6 @@ export interface OperationParams {
      * Reads the normal of the plane a circular edge lies in.
      *
      * An edge that is not circular throws an error.
-     *
-     * @example
-     * ```typescript
-     * const normal = await bitbybit.occt.shapes.edge.getCircularEdgePlaneDirection({ shape: arc });
-     * ```
      */
     "occt.shapes.edge.getCircularEdgePlaneDirection": {
         /** The shape to work on; it is not changed. */
@@ -11162,24 +8489,12 @@ export interface OperationParams {
      * Reads the radius of the circle a circular edge lies on.
      *
      * An edge that is not circular throws an error.
-     *
-     * @example
-     * ```typescript
-     * const radius = await bitbybit.occt.shapes.edge.getCircularEdgeRadius({ shape: arc });
-     * ```
      */
     "occt.shapes.edge.getCircularEdgeRadius": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Lists only the circular edges of a wire, in the order they follow each other along it.
-     *
-     * @example
-     * ```typescript
-     * const arcs = await bitbybit.occt.shapes.edge.getCircularEdgesAlongWire({ shape: roundedRectangle });
-     * ```
-     */
+    /** Lists only the circular edges of a wire, in the order they follow each other along it. */
     "occt.shapes.edge.getCircularEdgesAlongWire": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -11189,11 +8504,6 @@ export interface OperationParams {
      * several edges meet appears once.
      *
      * The points come in no particular order.
-     *
-     * @example
-     * ```typescript
-     * const corners = await bitbybit.occt.shapes.edge.getCornerPointsOfEdgesForShape({ shape: box });
-     * ```
      */
     "occt.shapes.edge.getCornerPointsOfEdgesForShape": {
         /** The shape to work on; it is not changed. */
@@ -11205,11 +8515,6 @@ export interface OperationParams {
      *
      * The shape must be an edge, a wire or something built from them; an index beyond the last edge
      * throws an error.
-     *
-     * @example
-     * ```typescript
-     * const first = await bitbybit.occt.shapes.edge.getEdge({ shape: wire, index: 0 });
-     * ```
      */
     "occt.shapes.edge.getEdge": {
         /** The shape to pick the edge from. */
@@ -11223,36 +8528,17 @@ export interface OperationParams {
     /**
      * Finds the center of mass of an edge, the balance point of its curve; for a straight edge that
      * is its midpoint, for an arc a point inside the curve.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.shapes.edge.getEdgeCenterOfMass({ shape: edge });
-     * ```
      */
     "occt.shapes.edge.getEdgeCenterOfMass": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures the length of an edge along its curve, in model units.
-     *
-     * @example
-     * ```typescript
-     * const len = await bitbybit.occt.shapes.edge.getEdgeLength({ shape: edge });
-     * ```
-     */
+    /** Measures the length of an edge along its curve, in model units. */
     "occt.shapes.edge.getEdgeLength": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures every edge of a shape along its curve, in model units.
-     *
-     * @example
-     * ```typescript
-     * const lengths = await bitbybit.occt.shapes.edge.getEdgeLengthsOfShape({ shape: box });
-     * ```
-     */
+    /** Measures every edge of a shape along its curve, in model units. */
     "occt.shapes.edge.getEdgeLengthsOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -11260,11 +8546,6 @@ export interface OperationParams {
     /**
      * Lists every edge of a shape in the order the kernel walks it, which is not the order along a
      * wire; use `getEdgesAlongWire` for that.
-     *
-     * @example
-     * ```typescript
-     * const edges = await bitbybit.occt.shapes.edge.getEdges({ shape: box });
-     * ```
      */
     "occt.shapes.edge.getEdges": {
         /** The shape to work on; it is not changed. */
@@ -11275,84 +8556,37 @@ export interface OperationParams {
      * in the wire's direction.
      *
      * A single edge is returned as a one-element list.
-     *
-     * @example
-     * ```typescript
-     * const ordered = await bitbybit.occt.shapes.edge.getEdgesAlongWire({ shape: wire });
-     * ```
      */
     "occt.shapes.edge.getEdgesAlongWire": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Finds the center of mass of each edge in a list.
-     *
-     * @example
-     * ```typescript
-     * const centers = await bitbybit.occt.shapes.edge.getEdgesCentersOfMass({ shapes: edges });
-     * ```
-     */
+    /** Finds the center of mass of each edge in a list. */
     "occt.shapes.edge.getEdgesCentersOfMass": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Measures each edge in a list along its curve, in model units.
-     *
-     * @example
-     * ```typescript
-     * const lengths = await bitbybit.occt.shapes.edge.getEdgesLengths({ shapes: edges });
-     * ```
-     */
+    /** Measures each edge in a list along its curve, in model units. */
     "occt.shapes.edge.getEdgesLengths": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Lists only the straight edges of a wire, in the order they follow each other along it.
-     *
-     * @example
-     * ```typescript
-     * const straights = await bitbybit.occt.shapes.edge.getLinearEdgesAlongWire({ shape: roundedRectangle });
-     * ```
-     */
+    /** Lists only the straight edges of a wire, in the order they follow each other along it. */
     "occt.shapes.edge.getLinearEdgesAlongWire": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Tells whether an edge lies on a circle, whether a full circle or an arc.
-     *
-     * @example
-     * ```typescript
-     * const round = await bitbybit.occt.shapes.edge.isEdgeCircular({ shape: edge });
-     * ```
-     */
+    /** Tells whether an edge lies on a circle, whether a full circle or an arc. */
     "occt.shapes.edge.isEdgeCircular": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Tells whether an edge is a straight line.
-     *
-     * @example
-     * ```typescript
-     * const straight = await bitbybit.occt.shapes.edge.isEdgeLinear({ shape: edge });
-     * ```
-     */
+    /** Tells whether an edge is a straight line. */
     "occt.shapes.edge.isEdgeLinear": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Makes a straight edge between two points, the simplest edge there is.
-     *
-     * @example
-     * ```typescript
-     * const edge = await bitbybit.occt.shapes.edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
-     * ```
-     */
+    /** Makes a straight edge between two points, the simplest edge there is. */
     "occt.shapes.edge.line": {
         /** The point the line starts at. */
         start?: [number, number, number] | PipelineRef;
@@ -11362,11 +8596,6 @@ export interface OperationParams {
     /**
      * Makes an edge from a 2D curve laid onto a surface: the curve lives in the surface's UV space
      * and the edge follows it across the surface.
-     *
-     * @example
-     * ```typescript
-     * const edge = await bitbybit.occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface({ curve: curve2d, surface });
-     * ```
      */
     "occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface": {
         /** The 2D curve, drawn in the surface's UV space. */
@@ -11379,11 +8608,6 @@ export interface OperationParams {
      * along the curve from its current start.
      *
      * The geometry does not change; only where the edge is considered to begin.
-     *
-     * @example
-     * ```typescript
-     * const rotated = await bitbybit.occt.shapes.edge.moveEdgeSeamByLength({ shape: circle, length: 2.5 });
-     * ```
      */
     "occt.shapes.edge.moveEdgeSeamByLength": {
         /** The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged. */
@@ -11396,11 +8620,6 @@ export interface OperationParams {
      * parameter along the curve.
      *
      * The geometry does not change; only where the edge is considered to begin.
-     *
-     * @example
-     * ```typescript
-     * const rotated = await bitbybit.occt.shapes.edge.moveEdgeSeamByParameter({ shape: circle, parameter: 1.57 });
-     * ```
      */
     "occt.shapes.edge.moveEdgeSeamByParameter": {
         /** The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged. */
@@ -11411,11 +8630,6 @@ export interface OperationParams {
     /**
      * Finds the point a given distance along an edge from its start, measured along the curve in
      * model units.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.occt.shapes.edge.pointOnEdgeAtLength({ shape: edge, length: 2.5 });
-     * ```
      */
     "occt.shapes.edge.pointOnEdgeAtLength": {
         /** The wire or edge to evaluate. */
@@ -11429,11 +8643,6 @@ export interface OperationParams {
      *
      * The fraction follows the curve's own parameter, which for a free-form curve is not evenly
      * spread by length; use `pointOnEdgeAtLength` for a distance.
-     *
-     * @example
-     * ```typescript
-     * const middle = await bitbybit.occt.shapes.edge.pointOnEdgeAtParam({ shape: edge, param: 0.5 });
-     * ```
      */
     "occt.shapes.edge.pointOnEdgeAtParam": {
         /** The wire, edge or curve to evaluate. */
@@ -11444,28 +8653,14 @@ export interface OperationParams {
          */
         param?: number | PipelineRef;
     };
-    /**
-     * Finds the point at the same distance from the start along each edge in a list.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.edge.pointsOnEdgesAtLength({ shapes: edges, length: 2.5 });
-     * ```
-     */
+    /** Finds the point at the same distance from the start along each edge in a list. */
     "occt.shapes.edge.pointsOnEdgesAtLength": {
         /** The edges to evaluate, one result per edge. */
         shapes: unknown[] | PipelineRef;
         /** The distance from the start of each edge along its curve, in model units. */
         length?: number | PipelineRef;
     };
-    /**
-     * Finds the point at the same fraction along each edge in a list.
-     *
-     * @example
-     * ```typescript
-     * const middles = await bitbybit.occt.shapes.edge.pointsOnEdgesAtParam({ shapes: edges, param: 0.5 });
-     * ```
-     */
+    /** Finds the point at the same fraction along each edge in a list. */
     "occt.shapes.edge.pointsOnEdgesAtParam": {
         /** The edges to evaluate, one result per edge. */
         shapes: unknown[] | PipelineRef;
@@ -11477,11 +8672,6 @@ export interface OperationParams {
      *
      * Lowering the degree simplifies the curve, raising it gives later operations more freedom;
      * either way the new curve stays within `tolerance` of the old.
-     *
-     * @example
-     * ```typescript
-     * const simpler = await bitbybit.occt.shapes.edge.rebuildEdgeDegree({ shape: edge, degree: 3, tolerance: 1e-3 });
-     * ```
      */
     "occt.shapes.edge.rebuildEdgeDegree": {
         /** The wire or edge whose curve is rebuilt. */
@@ -11503,48 +8693,22 @@ export interface OperationParams {
      *
      * It is `shapes.shape.unifySameDomain` with edges and faces both unified and B-splines left as
      * they are.
-     *
-     * @example
-     * ```typescript
-     * const clean = await bitbybit.occt.shapes.edge.removeInternalEdges({ shape: fused });
-     * ```
      */
     "occt.shapes.edge.removeInternalEdges": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Flips the direction of an edge, so its start becomes its end.
-     *
-     * @example
-     * ```typescript
-     * const back = await bitbybit.occt.shapes.edge.reversedEdge({ shape: edge });
-     * ```
-     */
+    /** Flips the direction of an edge, so its start becomes its end. */
     "occt.shapes.edge.reversedEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the point where an edge starts, in the edge's own direction.
-     *
-     * @example
-     * ```typescript
-     * const start = await bitbybit.occt.shapes.edge.startPointOnEdge({ shape: edge });
-     * ```
-     */
+    /** Reads the point where an edge starts, in the edge's own direction. */
     "occt.shapes.edge.startPointOnEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the start point of each edge in a list.
-     *
-     * @example
-     * ```typescript
-     * const starts = await bitbybit.occt.shapes.edge.startPointsOnEdges({ shapes: edges });
-     * ```
-     */
+    /** Reads the start point of each edge in a list. */
     "occt.shapes.edge.startPointsOnEdges": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
@@ -11552,11 +8716,6 @@ export interface OperationParams {
     /**
      * Finds the direction the edge is heading at a given distance along it from its start, measured
      * along the curve.
-     *
-     * @example
-     * ```typescript
-     * const tangent = await bitbybit.occt.shapes.edge.tangentOnEdgeAtLength({ shape: arc, length: 2.5 });
-     * ```
      */
     "occt.shapes.edge.tangentOnEdgeAtLength": {
         /** The wire or edge to evaluate. */
@@ -11567,11 +8726,6 @@ export interface OperationParams {
     /**
      * Finds the direction the edge is heading at a fraction of the way along it, from 0 at the
      * start to 1 at the end.
-     *
-     * @example
-     * ```typescript
-     * const tangent = await bitbybit.occt.shapes.edge.tangentOnEdgeAtParam({ shape: arc, param: 0.5 });
-     * ```
      */
     "occt.shapes.edge.tangentOnEdgeAtParam": {
         /** The wire, edge or curve to evaluate. */
@@ -11582,28 +8736,14 @@ export interface OperationParams {
          */
         param?: number | PipelineRef;
     };
-    /**
-     * Finds the direction each edge in a list is heading at the same distance from its start.
-     *
-     * @example
-     * ```typescript
-     * const tangents = await bitbybit.occt.shapes.edge.tangentsOnEdgesAtLength({ shapes: edges, length: 2.5 });
-     * ```
-     */
+    /** Finds the direction each edge in a list is heading at the same distance from its start. */
     "occt.shapes.edge.tangentsOnEdgesAtLength": {
         /** The edges to evaluate, one result per edge. */
         shapes: unknown[] | PipelineRef;
         /** The distance from the start of each edge along its curve, in model units. */
         length?: number | PipelineRef;
     };
-    /**
-     * Finds the direction each edge in a list is heading at the same fraction along it.
-     *
-     * @example
-     * ```typescript
-     * const tangents = await bitbybit.occt.shapes.edge.tangentsOnEdgesAtParam({ shapes: edges, param: 0.5 });
-     * ```
-     */
+    /** Finds the direction each edge in a list is heading at the same fraction along it. */
     "occt.shapes.edge.tangentsOnEdgesAtParam": {
         /** The edges to evaluate, one result per edge. */
         shapes: unknown[] | PipelineRef;
@@ -11617,22 +8757,6 @@ export interface OperationParams {
      *
      * Unlike the other flat shapes here it stands upright in the XY plane, tip along Y; `direction`
      * is the trunk-to-tip direction, `rotation` spins it about that axis, in degrees.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.shapes.face.createChristmasTreeFace({
-     *     height: 10,
-     *     innerDist: 1.5,
-     *     outerDist: 4,
-     *     nrSkirts: 4,
-     *     trunkHeight: 1.5,
-     *     trunkWidth: 1,
-     *     half: false,
-     *     rotation: 0,
-     *     origin: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.face.createChristmasTreeFace": {
         /** The height of the tree without the trunk, in model units. */
@@ -11666,11 +8790,6 @@ export interface OperationParams {
      * Creates a flat circular face, a disc.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const disc = await bitbybit.occt.shapes.face.createCircleFace({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createCircleFace": {
         /** The distance from the center to the circle, in model units. */
@@ -11685,11 +8804,6 @@ export interface OperationParams {
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
      * `radiusMajor` must be at least `radiusMinor`.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createEllipseFace({ radiusMinor: 3, radiusMajor: 6, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createEllipseFace": {
         /** The point the ellipse is centered on. */
@@ -11711,16 +8825,6 @@ export interface OperationParams {
      * `allWithAll` joins every circle of a list with every circle of the next; `inOrder` joins
      * circles at the same position in neighboring lists, which need equal lengths; `inOrderClosed`
      * also closes each list into a ring. `unify` fuses the faces; otherwise they form a compound.
-     *
-     * @example
-     * ```typescript
-     * const mesh = await bitbybit.occt.shapes.face.createFaceFromMultipleCircleTanWireCollections({
-     *     listsOfCircles: [bottomRow, middleRow, topRow],
-     *     combination: Bit.Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed,
-     *     unify: true,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.face.createFaceFromMultipleCircleTanWireCollections": {
         /** The lists of circle wires; belts run between one list and the next. */
@@ -11745,19 +8849,6 @@ export interface OperationParams {
      * `combination` picks the pairs: `allWithAll` every circle with every other, `inOrder`
      * neighbors in the list, `inOrderClosed` also the last with the first. `unify` fuses the faces;
      * otherwise they form a compound.
-     *
-     * @example
-     * ```typescript
-     * const a = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const b = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 1, center: [10, 0, 0], direction: [0, 1, 0] });
-     * const c = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 2, center: [5, 0, 8], direction: [0, 1, 0] });
-     * const belt = await bitbybit.occt.shapes.face.createFaceFromMultipleCircleTanWires({
-     *     circles: [a, b, c],
-     *     combination: Bit.Inputs.OCCT.combinationCirclesForFaceEnum.inOrderClosed,
-     *     unify: true,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.face.createFaceFromMultipleCircleTanWires": {
         /** The circle wires to join, each a single edge. */
@@ -11781,12 +8872,6 @@ export interface OperationParams {
      * With `planar` true the wire must lie in one plane and the face is flat; with false a smooth
      * surface is fitted through the wire's edges, which fills a wire that is not flat. A shape that
      * is not a wire throws an error.
-     *
-     * @example
-     * ```typescript
-     * const wire = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const disc = await bitbybit.occt.shapes.face.createFaceFromWire({ shape: wire, planar: true });
-     * ```
      */
     "occt.shapes.face.createFaceFromWire": {
         /** The closed wire that becomes the face's boundary. */
@@ -11803,11 +8888,6 @@ export interface OperationParams {
      *
      * With `inside` true the wire is turned so the face is the region it encloses; with false the
      * wire's own direction decides, and a wire running the other way gives the region outside it.
-     *
-     * @example
-     * ```typescript
-     * const patch = await bitbybit.occt.shapes.face.createFaceFromWireOnFace({ wire: circleOnCylinder, face: cylinderFace, inside: true });
-     * ```
      */
     "occt.shapes.face.createFaceFromWireOnFace": {
         /** The wire lying on the guiding face's surface that bounds the new face. */
@@ -11826,13 +8906,6 @@ export interface OperationParams {
      *
      * With `planar` true the wires must lie in one plane. The hole wires must sit inside the outer
      * one without crossing it or each other.
-     *
-     * @example
-     * ```typescript
-     * const outer = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 20, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const hole = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
-     * const plate = await bitbybit.occt.shapes.face.createFaceFromWires({ shapes: [outer, hole], planar: true });
-     * ```
      */
     "occt.shapes.face.createFaceFromWires": {
         /** The wires: the first is the outer boundary, every further one cuts a hole. */
@@ -11846,11 +8919,6 @@ export interface OperationParams {
      *
      * The face takes the curvature of the guiding surface. `inside` applies to the first wire: true
      * turns it so the face is the region it encloses; false lets its own direction decide.
-     *
-     * @example
-     * ```typescript
-     * const perforated = await bitbybit.occt.shapes.face.createFaceFromWiresOnFace({ wires: [outerOnCylinder, holeOnCylinder], face: cylinderFace, inside: true });
-     * ```
      */
     "occt.shapes.face.createFaceFromWiresOnFace": {
         /**
@@ -11871,11 +8939,6 @@ export interface OperationParams {
      *
      * With `planar` true every wire must lie in a plane; with false a smooth surface is fitted
      * through each.
-     *
-     * @example
-     * ```typescript
-     * const faces = await bitbybit.occt.shapes.face.createFacesFromWires({ shapes: wires, planar: true });
-     * ```
      */
     "occt.shapes.face.createFacesFromWires": {
         /** The closed wires, one face per wire. */
@@ -11893,11 +8956,6 @@ export interface OperationParams {
      * The wires must lie on the surface. With `inside` true each wire is turned so its face is the
      * region it encloses; with false the wire's own direction decides, and a wire running the other
      * way gives the outside region.
-     *
-     * @example
-     * ```typescript
-     * const patches = await bitbybit.occt.shapes.face.createFacesFromWiresOnFace({ wires: circlesOnSphere, face: sphereFace, inside: true });
-     * ```
      */
     "occt.shapes.face.createFacesFromWiresOnFace": {
         /** The wires lying on the guiding face's surface, one face per wire. */
@@ -11917,20 +8975,6 @@ export interface OperationParams {
      * `width` is the total width, `height` the flange height, `webThickness` and `flangeThickness`
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`,
      * `rotation` turns it in its plane, in degrees. It lies on the ground.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.face.createHBeamProfileFace({
-     *     width: 20,
-     *     height: 10,
-     *     webThickness: 2,
-     *     flangeThickness: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.face.createHBeamProfileFace": {
         /** The total width of the profile, in model units. */
@@ -11958,11 +9002,6 @@ export interface OperationParams {
      *
      * `rotation` turns it in its plane, in degrees. `direction` is the normal of the plane; the
      * default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const heart = await bitbybit.occt.shapes.face.createHeartFace({ sizeApprox: 10, rotation: 0, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createHeartFace": {
         /** The point the heart is centered on. */
@@ -11981,21 +9020,6 @@ export interface OperationParams {
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`,
      * `rotation` turns it in its plane, in degrees. It lies on the ground, ready to extrude along
      * Y.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.face.createIBeamProfileFace({
-     *     width: 10,
-     *     height: 20,
-     *     webThickness: 2,
-     *     flangeThickness: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * const beam = await bitbybit.occt.operations.extrude({ shape: profile, direction: [0, 100, 0] });
-     * ```
      */
     "occt.shapes.face.createIBeamProfileFace": {
         /** The width of the flanges, in model units. */
@@ -12025,20 +9049,6 @@ export interface OperationParams {
      * `lengthSecond`; `align` puts the corner on the outside, inside or middle of the legs, and
      * `rotation` turns the shape in its plane, in degrees. It lies flat on the ground unless
      * `direction` says otherwise.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createLPolygonFace({
-     *     widthFirst: 2,
-     *     lengthFirst: 10,
-     *     widthSecond: 2,
-     *     lengthSecond: 6,
-     *     align: Bit.Inputs.OCCT.directionEnum.outside,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.face.createLPolygonFace": {
         /** The thickness of the first leg, in model units. */
@@ -12065,11 +9075,6 @@ export interface OperationParams {
      * Creates a flat regular polygon face with `nrCorners` corners, all on a circle of `radius`.
      *
      * `direction` is the normal of the plane; the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const hexagon = await bitbybit.occt.shapes.face.createNGonFace({ nrCorners: 6, radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createNGonFace": {
         /** The point the polygon is centered on. */
@@ -12088,11 +9093,6 @@ export interface OperationParams {
      * With `aroundCenter` true the shape is centered on `center`; otherwise it starts there and
      * extends in the positive directions. `direction` is the normal of the plane; the default `[0,
      * 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createParallelogramFace({ width: 10, height: 5, angle: 30, aroundCenter: true, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createParallelogramFace": {
         /** The point the shape is centered on, or starts from when `aroundCenter` is false. */
@@ -12116,11 +9116,6 @@ export interface OperationParams {
      * back to the first.
      *
      * The points must lie in one plane.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createPolygonFace({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 10], [0, 0, 10]] });
-     * ```
      */
     "occt.shapes.face.createPolygonFace": {
         /** The corners in order; the outline closes from the last back to the first. */
@@ -12131,11 +9126,6 @@ export interface OperationParams {
      *
      * On the ground plane `width` runs along X and `length` along Z; `direction` is the normal of
      * the plane, and the default `[0, 1, 0]` keeps the face flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createRectangleFace({ width: 20, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createRectangleFace": {
         /**
@@ -12157,11 +9147,6 @@ export interface OperationParams {
      * Creates a flat square face centered on `center`.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.face.createSquareFace": {
         /** The length of each side, in model units. */
@@ -12178,11 +9163,6 @@ export interface OperationParams {
      * the first half of the rays. `offsetOuterEdges` lifts the ray tips out of the plane and is
      * meant for the wire; a flat face needs it at 0. It lies flat on the ground unless `direction`
      * says otherwise.
-     *
-     * @example
-     * ```typescript
-     * const star = await bitbybit.occt.shapes.face.createStarFace({ outerRadius: 5, innerRadius: 2, numRays: 5, center: [0, 0, 0], direction: [0, 1, 0], offsetOuterEdges: 0, half: false });
-     * ```
      */
     "occt.shapes.face.createStarFace": {
         /** The point the star is centered on. */
@@ -12210,20 +9190,6 @@ export interface OperationParams {
      * `width` is the flange width, `height` the total height, `webThickness` and `flangeThickness`
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`, and
      * `rotation` turns it in its plane, in degrees. It lies flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.face.createTBeamProfileFace({
-     *     width: 10,
-     *     height: 12,
-     *     webThickness: 2,
-     *     flangeThickness: 2,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.face.createTBeamProfileFace": {
         /** The width of the flange, in model units. */
@@ -12253,21 +9219,6 @@ export interface OperationParams {
      * `width` and `height` are the total size, `webThickness` and `flangeThickness` the wall
      * thicknesses; `alignment` says which point of the profile's box sits on `center`, `rotation`
      * turns it in its plane, in degrees. It lies flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.face.createUBeamProfileFace({
-     *     width: 10,
-     *     height: 6,
-     *     webThickness: 1,
-     *     flangeThickness: 1,
-     *     flangeWidth: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.face.createUBeamProfileFace": {
         /** The total width of the profile, in model units. */
@@ -12298,12 +9249,6 @@ export interface OperationParams {
      * orientation and the number of wires and edges.
      *
      * An empty or null face gives a report marked invalid.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.shapes.face.debugInfo({ shape: face });
-     * console.log(info.type, info.isPlanar, info.area);
-     * ```
      */
     "occt.shapes.face.debugInfo": {
         /** The shape to work on; it is not changed. */
@@ -12314,11 +9259,6 @@ export interface OperationParams {
      *
      * `tolerance` is used to detect degenerate edges, such as the pole of a sphere. Surfaces come
      * from `geom.surfaces`.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.faceFromSurface({ shape: surface, tolerance: 1e-7 });
-     * ```
      */
     "occt.shapes.face.faceFromSurface": {
         /** The shape or surface to work on. */
@@ -12332,11 +9272,6 @@ export interface OperationParams {
      * With `inside` true the wire is turned so the face is the region it encloses; with false the
      * wire's own direction decides, and a wire running the other way gives the region outside it.
      * Surfaces come from `geom.surfaces`.
-     *
-     * @example
-     * ```typescript
-     * const patch = await bitbybit.occt.shapes.face.faceFromSurfaceAndWire({ surface, wire: wireOnSurface, inside: true });
-     * ```
      */
     "occt.shapes.face.faceFromSurfaceAndWire": {
         /** The surface the face is cut from. */
@@ -12356,21 +9291,6 @@ export interface OperationParams {
      * `keepIn`, `keepOn` and `keepOut` choose which groups come back; `tolerance` decides how close
      * to the boundary counts as on it. A point off the surface is judged by where it lands in UV
      * space.
-     *
-     * @example
-     * ```typescript
-     * const onFace = await bitbybit.occt.shapes.face.filterFacePoints({
-     *     shape: face,
-     *     points: grid,
-     *     tolerance: 1e-4,
-     *     useBndBox: false,
-     *     gapTolerance: 0.1,
-     *     keepIn: true,
-     *     keepOn: true,
-     *     keepOut: false,
-     *     keepUnknown: false,
-     * });
-     * ```
      */
     "occt.shapes.face.filterFacePoints": {
         /** The face to test the points against. */
@@ -12397,22 +9317,6 @@ export interface OperationParams {
      *
      * By default the result holds one list per face; with `flatPointsArray` true the lists are
      * joined into one, so a point on two faces appears twice.
-     *
-     * @example
-     * ```typescript
-     * const perFace = await bitbybit.occt.shapes.face.filterFacesPoints({
-     *     shapes: faces,
-     *     points: grid,
-     *     tolerance: 1e-4,
-     *     useBndBox: false,
-     *     gapTolerance: 0.1,
-     *     keepIn: true,
-     *     keepOn: true,
-     *     keepOut: false,
-     *     keepUnknown: false,
-     *     flatPointsArray: false,
-     * });
-     * ```
      */
     "occt.shapes.face.filterFacesPoints": {
         /** The faces to test the points against. */
@@ -12446,11 +9350,6 @@ export interface OperationParams {
      * The geometry stays the same; only the parameter directions change, which matters for every
      * method here that works in UV, such as `subdivideToPoints` or `wireAlongParam`. The face is
      * rebuilt over the surface's natural bounds.
-     *
-     * @example
-     * ```typescript
-     * const flipped = await bitbybit.occt.shapes.face.flipFaceUV({ shape: face, swapUV: true, reverseU: false, reverseV: false });
-     * ```
      */
     "occt.shapes.face.flipFaceUV": {
         /** The face whose UV parameters are changed. */
@@ -12467,26 +9366,12 @@ export interface OperationParams {
      *
      * A triangle that cannot form a face, for instance one with repeated points, is skipped with a
      * warning in the console.
-     *
-     * @example
-     * ```typescript
-     * const faces = await bitbybit.occt.shapes.face.fromBaseMesh({
-     *     mesh: [[[0, 0, 0], [10, 0, 0], [0, 0, 10]], [[10, 0, 0], [10, 0, 10], [0, 0, 10]]],
-     * });
-     * ```
      */
     "occt.shapes.face.fromBaseMesh": {
         /** The mesh as a list of triangles, each three corner points. */
         mesh: unknown | PipelineRef;
     };
-    /**
-     * Creates a flat triangular face from three points.
-     *
-     * @example
-     * ```typescript
-     * const face = await bitbybit.occt.shapes.face.fromBaseTriangle({ triangle: [[0, 0, 0], [10, 0, 0], [0, 0, 10]] });
-     * ```
-     */
+    /** Creates a flat triangular face from three points. */
     "occt.shapes.face.fromBaseTriangle": {
         /** The triangle as its three corner points. */
         triangle: unknown | PipelineRef;
@@ -12497,11 +9382,6 @@ export interface OperationParams {
      *
      * The shape must be a face or something built from faces; an index beyond the last face throws
      * an error.
-     *
-     * @example
-     * ```typescript
-     * const first = await bitbybit.occt.shapes.face.getFace({ shape: box, index: 0 });
-     * ```
      */
     "occt.shapes.face.getFace": {
         /** The shape to pick from. */
@@ -12512,14 +9392,7 @@ export interface OperationParams {
          */
         index?: number | PipelineRef;
     };
-    /**
-     * Measures the surface area of a face, in square model units.
-     *
-     * @example
-     * ```typescript
-     * const area = await bitbybit.occt.shapes.face.getFaceArea({ shape: face });
-     * ```
-     */
+    /** Measures the surface area of a face, in square model units. */
     "occt.shapes.face.getFaceArea": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -12528,60 +9401,27 @@ export interface OperationParams {
      * Finds the center of mass of a face, the point its area balances on.
      *
      * On a curved or ring-shaped face this point can lie off the surface.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.shapes.face.getFaceCenterOfMass({ shape: face });
-     * ```
      */
     "occt.shapes.face.getFaceCenterOfMass": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Lists every face of a shape in the order the kernel walks it.
-     *
-     * @example
-     * ```typescript
-     * const faces = await bitbybit.occt.shapes.face.getFaces({ shape: box });
-     * ```
-     */
+    /** Lists every face of a shape in the order the kernel walks it. */
     "occt.shapes.face.getFaces": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures the surface area of each face in a list, in square model units.
-     *
-     * @example
-     * ```typescript
-     * const areas = await bitbybit.occt.shapes.face.getFacesAreas({ shapes: faces });
-     * ```
-     */
+    /** Measures the surface area of each face in a list, in square model units. */
     "occt.shapes.face.getFacesAreas": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Finds the center of mass of each face in a list.
-     *
-     * @example
-     * ```typescript
-     * const centers = await bitbybit.occt.shapes.face.getFacesCentersOfMass({ shapes: faces });
-     * ```
-     */
+    /** Finds the center of mass of each face in a list. */
     "occt.shapes.face.getFacesCentersOfMass": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Reads the largest U parameter value of a face, in the surface's own units.
-     *
-     * @example
-     * ```typescript
-     * const uMax = await bitbybit.occt.shapes.face.getUMaxBound({ shape: face });
-     * ```
-     */
+    /** Reads the largest U parameter value of a face, in the surface's own units. */
     "occt.shapes.face.getUMaxBound": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -12591,36 +9431,17 @@ export interface OperationParams {
      *
      * Together with `getUMaxBound`, `getVMinBound` and `getVMaxBound` it gives the range that the
      * UV fractions used elsewhere in this class map onto.
-     *
-     * @example
-     * ```typescript
-     * const uMin = await bitbybit.occt.shapes.face.getUMinBound({ shape: face });
-     * ```
      */
     "occt.shapes.face.getUMinBound": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the largest V parameter value of a face, in the surface's own units.
-     *
-     * @example
-     * ```typescript
-     * const vMax = await bitbybit.occt.shapes.face.getVMaxBound({ shape: face });
-     * ```
-     */
+    /** Reads the largest V parameter value of a face, in the surface's own units. */
     "occt.shapes.face.getVMaxBound": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Reads the smallest V parameter value of a face, in the surface's own units.
-     *
-     * @example
-     * ```typescript
-     * const vMin = await bitbybit.occt.shapes.face.getVMinBound({ shape: face });
-     * ```
-     */
+    /** Reads the smallest V parameter value of a face, in the surface's own units. */
     "occt.shapes.face.getVMinBound": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -12632,19 +9453,6 @@ export interface OperationParams {
      * The hexagons are scaled so `nrHexagonsInWidth` fit across `width` and `nrHexagonsInHeight`
      * across `height`. The scale, fillet and inclusion patterns are read hexagon by hexagon and
      * repeat; the extend flags stretch the outer rows past the edges to cover the rectangle.
-     *
-     * @example
-     * ```typescript
-     * const cells = await bitbybit.occt.shapes.face.hexagonsInGrid({
-     *     width: 20,
-     *     height: 10,
-     *     nrHexagonsInWidth: 8,
-     *     nrHexagonsInHeight: 4,
-     *     flatTop: false,
-     *     scalePatternWidth: [0.9],
-     *     scalePatternHeight: [0.9],
-     * });
-     * ```
      */
     "occt.shapes.face.hexagonsInGrid": {
         /**
@@ -12707,11 +9515,6 @@ export interface OperationParams {
      * Many surfaces bunch their parameters up in places, so a UV grid over them looks uneven; this
      * resamples the surface at `samples` points per direction and refits it, which evens out
      * `subdivideToPoints` and its siblings. The face is rebuilt over the new bounds.
-     *
-     * @example
-     * ```typescript
-     * const even = await bitbybit.occt.shapes.face.normalizeFaceParametrization({ shape: face, normalizeU: true, normalizeV: true, samples: 50, tolerance: 0.001 });
-     * ```
      */
     "occt.shapes.face.normalizeFaceParametrization": {
         /** The face to reparametrize. */
@@ -12733,11 +9536,6 @@ export interface OperationParams {
      *
      * `paramU` and `paramV` run from 0 to 1 over the face's U and V range. The normal is a unit
      * vector and follows the face's orientation, so a reversed face gives it flipped.
-     *
-     * @example
-     * ```typescript
-     * const normal = await bitbybit.occt.shapes.face.normalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
-     * ```
      */
     "occt.shapes.face.normalOnUV": {
         /** The face to evaluate. */
@@ -12753,11 +9551,6 @@ export interface OperationParams {
      * Each pair holds U then V, both from 0 to 1 over the face's range. The normals are unit
      * vectors of the underlying surface; unlike `normalOnUV`, they are not flipped for a reversed
      * face.
-     *
-     * @example
-     * ```typescript
-     * const normals = await bitbybit.occt.shapes.face.normalsOnUVs({ shape: face, paramsUV: [[0, 0], [0.5, 0.5], [1, 1]] });
-     * ```
      */
     "occt.shapes.face.normalsOnUVs": {
         /** The face to evaluate. */
@@ -12773,11 +9566,6 @@ export interface OperationParams {
      *
      * `paramU` and `paramV` run from 0 to 1 over the face's U and V range, so `0.5, 0.5` is the
      * middle of the range, which on a trimmed face is not always inside the face.
-     *
-     * @example
-     * ```typescript
-     * const middle = await bitbybit.occt.shapes.face.pointOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
-     * ```
      */
     "occt.shapes.face.pointOnUV": {
         /** The face to evaluate. */
@@ -12791,11 +9579,6 @@ export interface OperationParams {
      * Finds the points on a face at several UV fraction pairs at once.
      *
      * Each pair holds U then V, both from 0 to 1 over the face's range.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.face.pointsOnUVs({ shape: face, paramsUV: [[0, 0], [0.5, 0.5], [1, 1]] });
-     * ```
      */
     "occt.shapes.face.pointsOnUVs": {
         /** The face to evaluate. */
@@ -12813,11 +9596,6 @@ export interface OperationParams {
      * raising it is exact. `keepTrim` keeps the original boundary wires, which is reliable when
      * raising; otherwise the face covers the whole new surface. A rebuild that fails gives a null
      * face.
-     *
-     * @example
-     * ```typescript
-     * const smoother = await bitbybit.occt.shapes.face.rebuildFaceDegree({ shape: face, uDegree: 2, vDegree: 2, tolerance: 0.01, keepTrim: true });
-     * ```
      */
     "occt.shapes.face.rebuildFaceDegree": {
         /** The face whose surface is rebuilt. */
@@ -12845,11 +9623,6 @@ export interface OperationParams {
      *
      * The geometry stays the same; only the orientation changes, which decides the outside of a
      * shell and the direction `normalOnUV` reports.
-     *
-     * @example
-     * ```typescript
-     * const flipped = await bitbybit.occt.shapes.face.reversedFace({ shape: face });
-     * ```
      */
     "occt.shapes.face.reversedFace": {
         /** The shape to work on; it is not changed. */
@@ -12861,23 +9634,6 @@ export interface OperationParams {
      * The holes follow the same layout and patterns as `subdivideToHexagonWires`; when no scale
      * pattern is given each hole is half the size of its hexagon. With `holesToFaces` true the
      * result also carries one face per hole, after the perforated face.
-     *
-     * @example
-     * ```typescript
-     * const [perforated] = await bitbybit.occt.shapes.face.subdivideToHexagonHoles({
-     *     shape: face,
-     *     nrHexagonsU: 8,
-     *     nrHexagonsV: 6,
-     *     flatU: false,
-     *     holesToFaces: false,
-     *     scalePatternU: [0.7],
-     *     scalePatternV: [0.7],
-     *     filletPattern: [0],
-     *     inclusionPattern: [true],
-     *     offsetFromBorderU: 0.05,
-     *     offsetFromBorderV: 0.05,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToHexagonHoles": {
         /** The face to cut the holes into. */
@@ -12931,22 +9687,6 @@ export interface OperationParams {
      * The border offsets trim a fraction of the range at each end; `flatU` turns a flat side toward
      * U, the extend flags stretch the outer rows past the edges. Scale, fillet and inclusion
      * patterns repeat per hexagon.
-     *
-     * @example
-     * ```typescript
-     * const cells = await bitbybit.occt.shapes.face.subdivideToHexagonWires({
-     *     shape: face,
-     *     nrHexagonsU: 8,
-     *     nrHexagonsV: 6,
-     *     flatU: false,
-     *     scalePatternU: [0.9],
-     *     scalePatternV: [0.9],
-     *     filletPattern: [0.2],
-     *     inclusionPattern: [true],
-     *     offsetFromBorderU: 0,
-     *     offsetFromBorderV: 0,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToHexagonWires": {
         /** The face to draw the hexagons on. */
@@ -13014,21 +9754,6 @@ export interface OperationParams {
      *
      * The normals are unit vectors and follow the face's orientation, so a reversed face gives them
      * flipped. Pair the list with `subdivideToPoints` to place things standing on the surface.
-     *
-     * @example
-     * ```typescript
-     * const normals = await bitbybit.occt.shapes.face.subdivideToNormals({
-     *     shape: face,
-     *     nrDivisionsU: 10,
-     *     nrDivisionsV: 5,
-     *     shiftHalfStepU: false,
-     *     removeStartEdgeU: false,
-     *     removeEndEdgeU: false,
-     *     shiftHalfStepV: false,
-     *     removeStartEdgeV: false,
-     *     removeEndEdgeV: false,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToNormals": {
         /** The face to lay the grid over. */
@@ -13062,21 +9787,6 @@ export interface OperationParams {
      * `nrDivisionsU` by `nrDivisionsV` points cover the face edge to edge, listed row by row: all V
      * values for the first U, then the next U. The removal flags drop the first or last row; the
      * shift flags push every point half a step.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.face.subdivideToPoints({
-     *     shape: face,
-     *     nrDivisionsU: 10,
-     *     nrDivisionsV: 5,
-     *     shiftHalfStepU: false,
-     *     removeStartEdgeU: false,
-     *     removeEndEdgeU: false,
-     *     shiftHalfStepV: false,
-     *     removeStartEdgeV: false,
-     *     removeEndEdgeV: false,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToPoints": {
         /** The face to lay the grid over. */
@@ -13111,27 +9821,6 @@ export interface OperationParams {
      * Each rule is a pair: `shiftHalfStepNthU` says every how-manyth V row moves half a step in U,
      * `shiftHalfStepUOffsetN` where counting starts; the removal rules drop every nth point of an
      * edge row.
-     *
-     * @example
-     * ```typescript
-     * const staggered = await bitbybit.occt.shapes.face.subdivideToPointsControlled({
-     *     shape: face,
-     *     nrDivisionsU: 10,
-     *     nrDivisionsV: 10,
-     *     shiftHalfStepNthU: 2,
-     *     shiftHalfStepUOffsetN: 0,
-     *     removeStartEdgeNthU: 0,
-     *     removeStartEdgeUOffsetN: 0,
-     *     removeEndEdgeNthU: 0,
-     *     removeEndEdgeUOffsetN: 0,
-     *     shiftHalfStepNthV: 0,
-     *     shiftHalfStepVOffsetN: 0,
-     *     removeStartEdgeNthV: 0,
-     *     removeStartEdgeVOffsetN: 0,
-     *     removeEndEdgeNthV: 0,
-     *     removeEndEdgeVOffsetN: 0,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToPointsControlled": {
         /** The face to lay the grid over. */
@@ -13172,11 +9861,6 @@ export interface OperationParams {
      * `nrPoints` points spread over the whole V range; with false the roles swap.
      * `removeStartPoint` and `removeEndPoint` drop the ends, and `shiftHalfStep` moves every point
      * half a step.
-     *
-     * @example
-     * ```typescript
-     * const midline = await bitbybit.occt.shapes.face.subdivideToPointsOnParam({ shape: face, isU: true, param: 0.5, nrPoints: 10, shiftHalfStep: false, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.face.subdivideToPointsOnParam": {
         /** The face to place the points on. */
@@ -13206,22 +9890,6 @@ export interface OperationParams {
      * The holes follow the same cells and patterns as `subdivideToRectangleWires`; when no scale
      * pattern is given each hole covers half its cell. With `holesToFaces` true the result also
      * carries one face per hole, after the perforated face, which is handy for lids or fillers.
-     *
-     * @example
-     * ```typescript
-     * const [perforated] = await bitbybit.occt.shapes.face.subdivideToRectangleHoles({
-     *     shape: face,
-     *     nrRectanglesU: 6,
-     *     nrRectanglesV: 4,
-     *     scalePatternU: [0.6],
-     *     scalePatternV: [0.6],
-     *     filletPattern: [0.5],
-     *     inclusionPattern: [true],
-     *     holesToFaces: false,
-     *     offsetFromBorderU: 0.05,
-     *     offsetFromBorderV: 0.05,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToRectangleHoles": {
         /** The face to cut the holes into. */
@@ -13267,21 +9935,6 @@ export interface OperationParams {
      * The border offsets trim the range at each end. Each rectangle sits centered in its cell,
      * sized by the scale patterns as a fraction of it; the fillet pattern rounds corners, the
      * inclusion pattern skips cells.
-     *
-     * @example
-     * ```typescript
-     * const cells = await bitbybit.occt.shapes.face.subdivideToRectangleWires({
-     *     shape: face,
-     *     nrRectanglesU: 6,
-     *     nrRectanglesV: 4,
-     *     scalePatternU: [0.8, 0.5],
-     *     scalePatternV: [0.8],
-     *     filletPattern: [0.3],
-     *     inclusionPattern: [true, true, false],
-     *     offsetFromBorderU: 0.05,
-     *     offsetFromBorderV: 0.05,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToRectangleWires": {
         /** The face to draw the rectangles on. */
@@ -13323,21 +9976,6 @@ export interface OperationParams {
      * same options and the same order.
      *
      * The pairs are in the face's real UV values, not fractions.
-     *
-     * @example
-     * ```typescript
-     * const uvs = await bitbybit.occt.shapes.face.subdivideToUV({
-     *     shape: face,
-     *     nrDivisionsU: 10,
-     *     nrDivisionsV: 5,
-     *     shiftHalfStepU: false,
-     *     removeStartEdgeU: false,
-     *     removeEndEdgeU: false,
-     *     shiftHalfStepV: false,
-     *     removeStartEdgeV: false,
-     *     removeEndEdgeV: false,
-     * });
-     * ```
      */
     "occt.shapes.face.subdivideToUV": {
         /** The face to lay the grid over. */
@@ -13372,11 +10010,6 @@ export interface OperationParams {
      * `nrDivisions` steps give one more wire than that, the boundary lines included; `removeStart`
      * and `removeEnd` drop those, `shiftHalfStep` moves every wire half a step. With `isU` true
      * each wire sits at a fixed U and runs across V; false swaps the roles.
-     *
-     * @example
-     * ```typescript
-     * const lines = await bitbybit.occt.shapes.face.subdivideToWires({ shape: face, nrDivisions: 10, isU: true, shiftHalfStep: false, removeStart: false, removeEnd: false });
-     * ```
      */
     "occt.shapes.face.subdivideToWires": {
         /** The face to draw the wires on. */
@@ -13400,11 +10033,6 @@ export interface OperationParams {
      *
      * With `isU` true the wire sits at `param` (a fraction from 0 to 1 of the U range) and runs
      * over the whole V range; with false the roles swap.
-     *
-     * @example
-     * ```typescript
-     * const middle = await bitbybit.occt.shapes.face.wireAlongParam({ shape: face, isU: true, param: 0.5 });
-     * ```
      */
     "occt.shapes.face.wireAlongParam": {
         /** The face the wire is drawn on. */
@@ -13419,11 +10047,6 @@ export interface OperationParams {
      *
      * With `isU` true each wire sits at its fraction of the U range and runs over the whole V
      * range; with false the roles swap.
-     *
-     * @example
-     * ```typescript
-     * const wires = await bitbybit.occt.shapes.face.wiresAlongParams({ shape: face, isU: false, params: [0.25, 0.5, 0.75] });
-     * ```
      */
     "occt.shapes.face.wiresAlongParams": {
         /** The face the wires are drawn on. */
@@ -13436,11 +10059,6 @@ export interface OperationParams {
     /**
      * Reads which way the shape is oriented: forward, reversed, internal or external, which for a
      * face decides which side its normal points to.
-     *
-     * @example
-     * ```typescript
-     * const orientation = await bitbybit.occt.shapes.shape.getOrientation({ shape: face });
-     * ```
      */
     "occt.shapes.shape.getOrientation": {
         /** The shape to work on; it is not changed. */
@@ -13449,11 +10067,6 @@ export interface OperationParams {
     /**
      * Reads what kind of shape this is: vertex, edge, wire, face, shell, solid, compound or another
      * kernel type.
-     *
-     * @example
-     * ```typescript
-     * const type = await bitbybit.occt.shapes.shape.getShapeType({ shape: unknownShape });
-     * ```
      */
     "occt.shapes.shape.getShapeType": {
         /** The shape to work on; it is not changed. */
@@ -13467,11 +10080,6 @@ export interface OperationParams {
     /**
      * Tells whether the kernel has the shape flagged as closed, such as a wire that loops back to
      * its start or a shell with no gaps.
-     *
-     * @example
-     * ```typescript
-     * const wireIsClosed = await bitbybit.occt.shapes.shape.isClosed({ shape: wire });
-     * ```
      */
     "occt.shapes.shape.isClosed": {
         /** The shape to work on; it is not changed. */
@@ -13482,14 +10090,7 @@ export interface OperationParams {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Tells whether two handles point at the same geometry with the same placement and orientation.
-     *
-     * @example
-     * ```typescript
-     * const equal = await bitbybit.occt.shapes.shape.isEqual({ shape: a, otherShape: b });
-     * ```
-     */
+    /** Tells whether two handles point at the same geometry with the same placement and orientation. */
     "occt.shapes.shape.isEqual": {
         /** The first shape of the comparison. */
         shape: unknown | PipelineRef;
@@ -13532,11 +10133,6 @@ export interface OperationParams {
     /**
      * Tells whether the shape is empty: a handle that holds no geometry, which an operation that
      * failed can return.
-     *
-     * @example
-     * ```typescript
-     * const empty = await bitbybit.occt.shapes.shape.isNull({ shape: result });
-     * ```
      */
     "occt.shapes.shape.isNull": {
         /** The shape to work on; it is not changed. */
@@ -13573,11 +10169,6 @@ export interface OperationParams {
      *
      * `unifyEdges` and `unifyFaces` choose what to merge, and `concatBSplines` joins runs of
      * B-spline edges into one curve.
-     *
-     * @example
-     * ```typescript
-     * const clean = await bitbybit.occt.shapes.shape.unifySameDomain({ shape: fused, unifyEdges: true, unifyFaces: true, concatBSplines: true });
-     * ```
      */
     "occt.shapes.shape.unifySameDomain": {
         /** The shape to clean up. */
@@ -13595,24 +10186,12 @@ export interface OperationParams {
      * bounds and area.
      *
      * An empty or null shape gives a report marked invalid with zero counts.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.shapes.shell.debugInfo({ shape: shell });
-     * ```
      */
     "occt.shapes.shell.debugInfo": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures the total area of all the faces of a shell, in square model units.
-     *
-     * @example
-     * ```typescript
-     * const area = await bitbybit.occt.shapes.shell.getShellSurfaceArea({ shape: shell });
-     * ```
-     */
+    /** Measures the total area of all the faces of a shell, in square model units. */
     "occt.shapes.shell.getShellSurfaceArea": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -13622,11 +10201,6 @@ export interface OperationParams {
      *
      * Faces whose edges are further apart than the tolerance stay unjoined, so a shell meant to be
      * closed may come out open; a larger tolerance sews more, a smaller one is more precise.
-     *
-     * @example
-     * ```typescript
-     * const shell = await bitbybit.occt.shapes.shell.sewFaces({ shapes: [top, bottom, side], tolerance: 1e-7 });
-     * ```
      */
     "occt.shapes.shell.sewFaces": {
         /** The faces to stitch together; their shared edges must line up within the tolerance. */
@@ -13640,11 +10214,6 @@ export interface OperationParams {
      * `width` runs along X, `height` along Y (up) and `length` along Z, all in model units. By
      * default the box is centered on `center`; with `originOnCenter` set to false it stands on that
      * point instead, so `center` becomes the middle of the bottom face.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 20, height: 5, center: [0, 0, 0], originOnCenter: true });
-     * ```
      */
     "occt.shapes.solid.createBox": {
         /** The side along X, in model units. */
@@ -13666,11 +10235,6 @@ export interface OperationParams {
      *
      * The corner with the smallest x, y and z sits at `corner`; the box reaches `width` along X,
      * `height` along Y and `length` along Z from there, all in model units.
-     *
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBoxFromCorner({ width: 10, length: 20, height: 5, corner: [0, 0, 0] });
-     * ```
      */
     "occt.shapes.solid.createBoxFromCorner": {
         /** The side along X, in model units. */
@@ -13688,24 +10252,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.shapes.solid.createChristmasTreeSolid({
-     *     height: 10,
-     *     innerDist: 1.5,
-     *     outerDist: 3,
-     *     nrSkirts: 5,
-     *     trunkHeight: 1,
-     *     trunkWidth: 1,
-     *     half: false,
-     *     rotation: 0,
-     *     origin: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     extrusionLengthFront: 2,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createChristmasTreeSolid": {
         /** The direction from the trunk to the tip; the default stands the tree up along Y. */
@@ -13745,11 +10291,6 @@ export interface OperationParams {
      *
      * `radius1` is the base and `radius2` the top; a top radius of 0 makes a pointed cone. `angle`,
      * in degrees, cuts a wedge out of the full 360 degree round.
-     *
-     * @example
-     * ```typescript
-     * const cone = await bitbybit.occt.shapes.solid.createCone({ radius1: 5, radius2: 0, height: 10, center: [0, 0, 0], direction: [0, 1, 0], angle: 360 });
-     * ```
      */
     "occt.shapes.solid.createCone": {
         /** The radius of the base at `center`, in model units. */
@@ -13770,11 +10311,6 @@ export interface OperationParams {
      *
      * By default the cube is centered on `center`; with `originOnCenter` set to false it stands on
      * that point instead, so `center` becomes the middle of the bottom face.
-     *
-     * @example
-     * ```typescript
-     * const cube = await bitbybit.occt.shapes.solid.createCube({ size: 10, center: [0, 0, 0], originOnCenter: true });
-     * ```
      */
     "occt.shapes.solid.createCube": {
         /** The length of every side, in model units. */
@@ -13793,11 +10329,6 @@ export interface OperationParams {
      * With `originOnCenter` on, the cylinder is shifted back by half its height so `center` sits in
      * its middle. `angle`, in degrees, cuts a wedge out of the full 360 degree round, like a slice
      * of cake.
-     *
-     * @example
-     * ```typescript
-     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 5, height: 20, center: [0, 0, 0], direction: [0, 1, 0], angle: 360, originOnCenter: false });
-     * ```
      */
     "occt.shapes.solid.createCylinder": {
         /** The radius of the round base, in model units. */
@@ -13821,14 +10352,6 @@ export interface OperationParams {
      * radius.
      *
      * The height of each cylinder is the length of its line.
-     *
-     * @example
-     * ```typescript
-     * const rods = await bitbybit.occt.shapes.solid.createCylindersOnLines({
-     *     lines: [{ start: [0, 0, 0], end: [0, 10, 0] }, { start: [5, 0, 0], end: [5, 10, 0] }],
-     *     radius: 0.5,
-     * });
-     * ```
      */
     "occt.shapes.solid.createCylindersOnLines": {
         /** The lines the cylinders follow, each from its start to its end. */
@@ -13841,22 +10364,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beam = await bitbybit.occt.shapes.solid.createHBeamProfileSolid({
-     *     width: 20,
-     *     height: 20,
-     *     flangeThickness: 1,
-     *     webThickness: 1,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 0, 1],
-     *     extrusionLengthFront: 100,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createHBeamProfileSolid": {
         /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
@@ -13889,18 +10396,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const heart = await bitbybit.occt.shapes.solid.createHeartSolid({
-     *     sizeApprox: 10,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     extrusionLengthFront: 2,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createHeartSolid": {
         /** The side of the square the heart roughly fits into, in model units. */
@@ -13921,22 +10416,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beam = await bitbybit.occt.shapes.solid.createIBeamProfileSolid({
-     *     width: 10,
-     *     height: 20,
-     *     flangeThickness: 1,
-     *     webThickness: 1,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 0, 1],
-     *     extrusionLengthFront: 100,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createIBeamProfileSolid": {
         /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
@@ -13969,22 +10448,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const bracket = await bitbybit.occt.shapes.solid.createLPolygonSolid({
-     *     widthFirst: 10,
-     *     lengthFirst: 20,
-     *     widthSecond: 10,
-     *     lengthSecond: 15,
-     *     align: Bit.Inputs.OCCT.directionEnum.outside,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     extrusionLengthFront: 2,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createLPolygonSolid": {
         /** The normal of the plane the shape lies in; the default lays it flat on the ground. */
@@ -14017,18 +10480,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const hexPrism = await bitbybit.occt.shapes.solid.createNGonSolid({
-     *     nrCorners: 6,
-     *     radius: 5,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     extrusionLengthFront: 10,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createNGonSolid": {
         /** The distance from the center to each corner, in model units. */
@@ -14050,20 +10501,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const slab = await bitbybit.occt.shapes.solid.createParallelogramSolid({
-     *     width: 10,
-     *     height: 5,
-     *     angle: 15,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     aroundCenter: true,
-     *     extrusionLengthFront: 2,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createParallelogramSolid": {
         /** How far the sides lean over from a rectangle, in degrees; 0 gives a rectangle. */
@@ -14086,14 +10523,7 @@ export interface OperationParams {
         /** How far the parallelogram grows against its plane normal, in model units. */
         extrusionLengthBack?: number | PipelineRef;
     };
-    /**
-     * Creates a sphere solid of the given radius around a center point.
-     *
-     * @example
-     * ```typescript
-     * const sphere = await bitbybit.occt.shapes.solid.createSphere({ radius: 5, center: [0, 0, 0] });
-     * ```
-     */
+    /** Creates a sphere solid of the given radius around a center point. */
     "occt.shapes.solid.createSphere": {
         /** The distance from the center to the surface, in model units. */
         radius?: number | PipelineRef;
@@ -14107,20 +10537,6 @@ export interface OperationParams {
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown. The star itself is built as
      * `shapes.wire.createStarWire` builds it.
-     *
-     * @example
-     * ```typescript
-     * const star = await bitbybit.occt.shapes.solid.createStarSolid({
-     *     numRays: 5,
-     *     outerRadius: 10,
-     *     innerRadius: 5,
-     *     half: false,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     extrusionLengthFront: 2,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createStarSolid": {
         /** Direction of the first tip, in degrees counter-clockwise from the X axis */
@@ -14148,22 +10564,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beam = await bitbybit.occt.shapes.solid.createTBeamProfileSolid({
-     *     width: 10,
-     *     height: 20,
-     *     flangeThickness: 1,
-     *     webThickness: 1,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 0, 1],
-     *     extrusionLengthFront: 100,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createTBeamProfileSolid": {
         /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
@@ -14196,11 +10596,6 @@ export interface OperationParams {
      *
      * `majorRadius` is the distance from the center to the middle of the tube and `minorRadius` the
      * tube's own radius. `angle`, in degrees, makes a partial ring instead of the full 360 degrees.
-     *
-     * @example
-     * ```typescript
-     * const ring = await bitbybit.occt.shapes.solid.createTorus({ majorRadius: 10, minorRadius: 2, center: [0, 0, 0], direction: [0, 1, 0], angle: 360 });
-     * ```
      */
     "occt.shapes.solid.createTorus": {
         /** The distance from the center of the ring to the middle of its tube, in model units. */
@@ -14219,23 +10614,6 @@ export interface OperationParams {
      *
      * `extrusionLengthFront` and `extrusionLengthBack` say how far it grows each way, in model
      * units; at least one must be above 0 or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const beam = await bitbybit.occt.shapes.solid.createUBeamProfileSolid({
-     *     width: 10,
-     *     height: 20,
-     *     flangeThickness: 1,
-     *     webThickness: 1,
-     *     flangeWidth: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 0, 1],
-     *     extrusionLengthFront: 100,
-     *     extrusionLengthBack: 0,
-     * });
-     * ```
      */
     "occt.shapes.solid.createUBeamProfileSolid": {
         /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
@@ -14270,12 +10648,6 @@ export interface OperationParams {
      * counts, bounds and area.
      *
      * An empty or null shape gives a report marked invalid with zero counts.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.shapes.solid.debugInfo({ shape: box });
-     * console.log(info.nbFaces, info.volume);
-     * ```
      */
     "occt.shapes.solid.debugInfo": {
         /** The shape to work on; it is not changed. */
@@ -14287,19 +10659,6 @@ export interface OperationParams {
      *
      * A point counts as on the surface when it is within `tolerance` of it. Points the kernel
      * cannot classify are kept only with `keepUnknown`.
-     *
-     * @example
-     * ```typescript
-     * const inside = await bitbybit.occt.shapes.solid.filterSolidPoints({
-     *     shape: box,
-     *     points: [[0, 0, 0], [100, 0, 0]],
-     *     tolerance: 1e-7,
-     *     keepIn: true,
-     *     keepOn: false,
-     *     keepOut: false,
-     *     keepUnknown: false,
-     * });
-     * ```
      */
     "occt.shapes.solid.filterSolidPoints": {
         /** The solid to test the points against. */
@@ -14322,24 +10681,12 @@ export interface OperationParams {
      * measured, booleaned and meshed.
      *
      * The shell must be watertight; a shell with gaps produces a solid the kernel cannot use.
-     *
-     * @example
-     * ```typescript
-     * const solid = await bitbybit.occt.shapes.solid.fromClosedShell({ shape: closedShell });
-     * ```
      */
     "occt.shapes.solid.fromClosedShell": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Finds the center of mass of a solid, treating it as filled with material of uniform density.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.shapes.solid.getSolidCenterOfMass({ shape: box });
-     * ```
-     */
+    /** Finds the center of mass of a solid, treating it as filled with material of uniform density. */
     "occt.shapes.solid.getSolidCenterOfMass": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -14349,11 +10696,6 @@ export interface OperationParams {
      * boolean.
      *
      * A shape that is itself a solid gives a list with that one solid.
-     *
-     * @example
-     * ```typescript
-     * const solids = await bitbybit.occt.shapes.solid.getSolids({ shape: compound });
-     * ```
      */
     "occt.shapes.solid.getSolids": {
         /** The shape to work on; it is not changed. */
@@ -14362,48 +10704,22 @@ export interface OperationParams {
     /**
      * Finds the center of mass of each solid in a list, treating each as filled with material of
      * uniform density.
-     *
-     * @example
-     * ```typescript
-     * const centers = await bitbybit.occt.shapes.solid.getSolidsCentersOfMass({ shapes: [box, sphere] });
-     * ```
      */
     "occt.shapes.solid.getSolidsCentersOfMass": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Measures the total area of all the faces of a solid.
-     *
-     * @example
-     * ```typescript
-     * const area = await bitbybit.occt.shapes.solid.getSolidSurfaceArea({ shape: box });
-     * ```
-     */
+    /** Measures the total area of all the faces of a solid. */
     "occt.shapes.solid.getSolidSurfaceArea": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures the volume of each solid in a list.
-     *
-     * @example
-     * ```typescript
-     * const volumes = await bitbybit.occt.shapes.solid.getSolidsVolumes({ shapes: [box, sphere] });
-     * ```
-     */
+    /** Measures the volume of each solid in a list. */
     "occt.shapes.solid.getSolidsVolumes": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Measures the volume a solid encloses, in cubic model units.
-     *
-     * @example
-     * ```typescript
-     * const volume = await bitbybit.occt.shapes.solid.getSolidVolume({ shape: box });
-     * ```
-     */
+    /** Measures the volume a solid encloses, in cubic model units. */
     "occt.shapes.solid.getSolidVolume": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -14414,11 +10730,6 @@ export interface OperationParams {
      * A vertex is repeated for every face and edge that use it, so a box lists 48 vertices rather
      * than its 8 corners; use `getVerticesAsPoints` with `point.removeAllDuplicateVectors` for
      * unique corners.
-     *
-     * @example
-     * ```typescript
-     * const corners = await bitbybit.occt.shapes.vertex.getVertices({ shape: box });
-     * ```
      */
     "occt.shapes.vertex.getVertices": {
         /** The shape to work on; it is not changed. */
@@ -14429,11 +10740,6 @@ export interface OperationParams {
      *
      * A vertex is repeated for every face and edge that use it, so a box lists 48 points rather
      * than its 8 corners; `point.removeAllDuplicateVectors` reduces them to the unique ones.
-     *
-     * @example
-     * ```typescript
-     * const corners = await bitbybit.occt.shapes.vertex.getVerticesAsPoints({ shape: box });
-     * ```
      */
     "occt.shapes.vertex.getVerticesAsPoints": {
         /** The shape to work on; it is not changed. */
@@ -14445,16 +10751,6 @@ export interface OperationParams {
      * Each point travels along `direction` for exactly that vector's length, so it must be long
      * enough to reach the shape. Where the path crosses the shape more than once, `projectionType`
      * keeps the closest hit, the furthest, both or all; a path that misses gives nothing.
-     *
-     * @example
-     * ```typescript
-     * const onGround = await bitbybit.occt.shapes.vertex.projectPoints({
-     *     points: [[0, 10, 0], [1, 10, 0]],
-     *     shape: terrain,
-     *     direction: [0, -20, 0],
-     *     projectionType: Bit.Inputs.OCCT.pointProjectionTypeEnum.closest,
-     * });
-     * ```
      */
     "occt.shapes.vertex.projectPoints": {
         /** The points to cast onto the shape. */
@@ -14472,26 +10768,12 @@ export interface OperationParams {
          */
         projectionType?: "all" | "closest" | "furthest" | "closestAndFurthest" | PipelineRef;
     };
-    /**
-     * Makes a vertex, the kernel's own point, from a plain `[x, y, z]` point.
-     *
-     * @example
-     * ```typescript
-     * const vertex = await bitbybit.occt.shapes.vertex.vertexFromPoint({ point: [1, 2, 3] });
-     * ```
-     */
+    /** Makes a vertex, the kernel's own point, from a plain `[x, y, z]` point. */
     "occt.shapes.vertex.vertexFromPoint": {
         /** The position of the vertex, in model units. */
         point?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Makes a vertex from x, y and z values.
-     *
-     * @example
-     * ```typescript
-     * const vertex = await bitbybit.occt.shapes.vertex.vertexFromXYZ({ x: 1, y: 2, z: 3 });
-     * ```
-     */
+    /** Makes a vertex from x, y and z values. */
     "occt.shapes.vertex.vertexFromXYZ": {
         /** The X coordinate, in model units. */
         x?: number | PipelineRef;
@@ -14500,14 +10782,7 @@ export interface OperationParams {
         /** The Z coordinate, in model units. */
         z?: number | PipelineRef;
     };
-    /**
-     * Reads the coordinates of a vertex as a plain `[x, y, z]` point.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.occt.shapes.vertex.vertexToPoint({ shape: vertex });
-     * ```
-     */
+    /** Reads the coordinates of a vertex as a plain `[x, y, z]` point. */
     "occt.shapes.vertex.vertexToPoint": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -14515,36 +10790,17 @@ export interface OperationParams {
     /**
      * Makes one vertex per point and bundles them into a single compound, so a whole point cloud
      * can be drawn or transformed as one shape.
-     *
-     * @example
-     * ```typescript
-     * const cloud = await bitbybit.occt.shapes.vertex.verticesCompoundFromPoints({ points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] });
-     * ```
      */
     "occt.shapes.vertex.verticesCompoundFromPoints": {
         /** The points, in the order the shapes should follow them. */
         points: [number, number, number][] | PipelineRef;
     };
-    /**
-     * Makes one vertex, the kernel's own point, for each plain `[x, y, z]` point.
-     *
-     * @example
-     * ```typescript
-     * const vertices = await bitbybit.occt.shapes.vertex.verticesFromPoints({ points: [[0, 0, 0], [1, 0, 0]] });
-     * ```
-     */
+    /** Makes one vertex, the kernel's own point, for each plain `[x, y, z]` point. */
     "occt.shapes.vertex.verticesFromPoints": {
         /** The points, in the order the shapes should follow them. */
         points: [number, number, number][] | PipelineRef;
     };
-    /**
-     * Reads the coordinates of each vertex as a plain `[x, y, z]` point.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.vertex.verticesToPoints({ shapes: vertices });
-     * ```
-     */
+    /** Reads the coordinates of each vertex as a plain `[x, y, z]` point. */
     "occt.shapes.vertex.verticesToPoints": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
@@ -14554,11 +10810,6 @@ export interface OperationParams {
      *
      * The pieces must connect to the wire or to each other; a gap throws an error. Shapes of other
      * kinds in the list are ignored.
-     *
-     * @example
-     * ```typescript
-     * const longer = await bitbybit.occt.shapes.wire.addEdgesAndWiresToWire({ shape: wire, shapes: [nextEdge, nextWire] });
-     * ```
      */
     "occt.shapes.wire.addEdgesAndWiresToWire": {
         /** The main shape: the path wire for a pipe, the wire to extend when adding edges. */
@@ -14570,11 +10821,6 @@ export interface OperationParams {
      * Closes an open wire with a straight edge from its end point back to its start point.
      *
      * A wire whose ends already meet is returned as it is.
-     *
-     * @example
-     * ```typescript
-     * const closedWire = await bitbybit.occt.shapes.wire.closeOpenWire({ shape: openWire });
-     * ```
      */
     "occt.shapes.wire.closeOpenWire": {
         /** The shape to work on; it is not changed. */
@@ -14585,11 +10831,6 @@ export interface OperationParams {
      *
      * The pieces must connect; a set with a gap or a stray piece throws an error. Shapes of other
      * kinds in the list are ignored.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [arc, line1, line2] });
-     * ```
      */
     "occt.shapes.wire.combineEdgesAndWiresIntoAWire": {
         /** The shapes to work on, in the order the results should come back. */
@@ -14601,11 +10842,6 @@ export interface OperationParams {
      *
      * `closed` appends the first point again so the ends meet; `periodic` instead builds a closed
      * curve that is smooth across the seam. `degree` caps how many neighbors shape each part.
-     *
-     * @example
-     * ```typescript
-     * const curve = await bitbybit.occt.shapes.wire.createBezier({ points: [[0, 0, 0], [5, 0, 10], [10, 0, -10], [15, 0, 0]], closed: false, periodic: false });
-     * ```
      */
     "occt.shapes.wire.createBezier": {
         /**
@@ -14633,16 +10869,6 @@ export interface OperationParams {
      * A weight above 1 draws the curve toward its point, below 1 lets it go. The weights must match
      * the points: the same count, or one more when `closed` is true and `periodic` false, as the
      * first point repeats.
-     *
-     * @example
-     * ```typescript
-     * const curve = await bitbybit.occt.shapes.wire.createBezierWeights({
-     *     points: [[0, 0, 0], [5, 0, 10], [10, 0, 0]],
-     *     weights: [1, 3, 1],
-     *     closed: false,
-     *     periodic: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createBezierWeights": {
         /**
@@ -14669,14 +10895,6 @@ export interface OperationParams {
      * Makes one Bezier wire per definition, as `createBezier` does.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const curves = await bitbybit.occt.shapes.wire.createBezierWires({
-     *     bezierWires: [{ points: [[0, 0, 0], [5, 0, 10], [10, 0, 0]], closed: false }, { points: [[0, 0, 5], [5, 0, 15], [10, 0, 5]], closed: false }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createBezierWires": {
         /** One definition per curve, as `createBezier` takes them. */
@@ -14691,11 +10909,6 @@ export interface OperationParams {
      * `closed` appends the first point again so the ends meet. The fit uses a degree between 3 and
      * 8 and a tolerance of 0.001 model units; use `interpolatePoints` when the curve must go
      * through the points.
-     *
-     * @example
-     * ```typescript
-     * const curve = await bitbybit.occt.shapes.wire.createBSpline({ points: [[0, 0, 0], [5, 0, 5], [10, 0, 0], [15, 0, 5]], closed: false });
-     * ```
      */
     "occt.shapes.wire.createBSpline": {
         /** The points the curve follows closely, in order; it need not pass through them exactly. */
@@ -14707,14 +10920,6 @@ export interface OperationParams {
      * Makes one approximating B-spline wire per definition, as `createBSpline` does.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const curves = await bitbybit.occt.shapes.wire.createBSplines({
-     *     bSplines: [{ points: [[0, 0, 0], [5, 0, 5], [10, 0, 0]], closed: false }, { points: [[0, 0, 5], [5, 0, 10], [10, 0, 5]], closed: false }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createBSplines": {
         /** One definition per curve, as `createBSpline` takes them. */
@@ -14729,22 +10934,6 @@ export interface OperationParams {
      *
      * Unlike the other flat shapes here it stands upright in the XY plane, tip along Y; `direction`
      * is the trunk-to-tip direction, `rotation` spins it about that axis, in degrees.
-     *
-     * @example
-     * ```typescript
-     * const tree = await bitbybit.occt.shapes.wire.createChristmasTreeWire({
-     *     height: 10,
-     *     innerDist: 1.5,
-     *     outerDist: 4,
-     *     nrSkirts: 4,
-     *     trunkHeight: 1.5,
-     *     trunkWidth: 1,
-     *     half: false,
-     *     rotation: 0,
-     *     origin: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createChristmasTreeWire": {
         /** The height of the tree without the trunk, in model units. */
@@ -14777,11 +10966,6 @@ export interface OperationParams {
     /**
      * Makes a full circle as a closed single-edge wire, lying in the plane whose normal is
      * `direction`; the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const circle = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createCircleWire": {
         /** The distance from the center to the circle, in model units. */
@@ -14797,11 +10981,6 @@ export interface OperationParams {
      *
      * `radiusMajor` must not be smaller than `radiusMinor`, or the kernel refuses the ellipse; the
      * default direction `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const ellipse = await bitbybit.occt.shapes.wire.createEllipseWire({ center: [0, 0, 0], direction: [0, 1, 0], radiusMinor: 3, radiusMajor: 6 });
-     * ```
      */
     "occt.shapes.wire.createEllipseWire": {
         /** The point the ellipse is centered on. */
@@ -14822,11 +11001,6 @@ export interface OperationParams {
      *
      * The default direction `[0, 1, 0]` lays it flat on the ground; `clockwise` reverses the
      * winding, and the curve is approximated within `tolerance`.
-     *
-     * @example
-     * ```typescript
-     * const spiral = await bitbybit.occt.shapes.wire.createFlatSpiralWire({ startRadius: 0.5, endRadius: 5, numTurns: 4, center: [0, 0, 0], direction: [0, 1, 0], clockwise: false, tolerance: 1e-4 });
-     * ```
      */
     "occt.shapes.wire.createFlatSpiralWire": {
         /** The distance from the center where the spiral starts, in model units. */
@@ -14851,20 +11025,6 @@ export interface OperationParams {
      * `width` is the total width, `height` the flange height, `webThickness` and `flangeThickness`
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`,
      * `rotation` turns it in its plane, in degrees.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.wire.createHBeamProfileWire({
-     *     width: 20,
-     *     height: 10,
-     *     webThickness: 2,
-     *     flangeThickness: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createHBeamProfileWire": {
         /** The total width of the profile, in model units. */
@@ -14893,11 +11053,6 @@ export interface OperationParams {
      *
      * `rotation` turns it in its plane, in degrees. `direction` is the plane normal; the default
      * `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const heart = await bitbybit.occt.shapes.wire.createHeartWire({ sizeApprox: 10, rotation: 0, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createHeartWire": {
         /** The point the heart is centered on. */
@@ -14916,11 +11071,6 @@ export interface OperationParams {
      * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
      * helix is approximated by a smooth curve within `tolerance`. A radius, pitch or height of 0 or
      * less gives a null wire.
-     *
-     * @example
-     * ```typescript
-     * const spring = await bitbybit.occt.shapes.wire.createHelixWire({ radius: 2, pitch: 1, height: 10, center: [0, 0, 0], direction: [0, 1, 0], clockwise: false, tolerance: 1e-4 });
-     * ```
      */
     "occt.shapes.wire.createHelixWire": {
         /** The distance from the axis to the coil, in model units. */
@@ -14941,11 +11091,6 @@ export interface OperationParams {
     /**
      * Makes a helix wire like `createHelixWire`, but sized by `numTurns` instead of a height: the
      * coil climbs `pitch` model units per turn, `numTurns` times.
-     *
-     * @example
-     * ```typescript
-     * const spring = await bitbybit.occt.shapes.wire.createHelixWireByTurns({ radius: 2, pitch: 1, numTurns: 5, center: [0, 0, 0], direction: [0, 1, 0], clockwise: false, tolerance: 1e-4 });
-     * ```
      */
     "occt.shapes.wire.createHelixWireByTurns": {
         /** The distance from the axis to the coil, in model units. */
@@ -14970,20 +11115,6 @@ export interface OperationParams {
      * `width` is the flange width, `height` the total height, `webThickness` and `flangeThickness`
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`,
      * `rotation` turns it in its plane, in degrees. It lies on the ground, ready to extrude.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.wire.createIBeamProfileWire({
-     *     width: 10,
-     *     height: 20,
-     *     webThickness: 2,
-     *     flangeThickness: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createIBeamProfileWire": {
         /** The width of the flanges, in model units. */
@@ -15010,14 +11141,6 @@ export interface OperationParams {
      * Makes one straight single-edge wire per line definition.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const lines = await bitbybit.occt.shapes.wire.createLines({
-     *     lines: [{ start: [0, 0, 0], end: [10, 0, 0] }, { start: [0, 0, 5], end: [10, 0, 5] }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createLines": {
         /** One start and end point pair per line. */
@@ -15025,14 +11148,7 @@ export interface OperationParams {
         /** When true, the wires are packed into one compound instead of a list. */
         returnCompound: boolean | PipelineRef;
     };
-    /**
-     * Makes a straight single-edge wire between two points.
-     *
-     * @example
-     * ```typescript
-     * const line = await bitbybit.occt.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] });
-     * ```
-     */
+    /** Makes a straight single-edge wire between two points. */
     "occt.shapes.wire.createLineWire": {
         /** The point the line starts at. */
         start?: [number, number, number] | PipelineRef;
@@ -15044,11 +11160,6 @@ export interface OperationParams {
      *
      * `extensionStart` and `extensionEnd` are distances in model units added past the start and the
      * end along the line; the two points must differ or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const longer = await bitbybit.occt.shapes.wire.createLineWireWithExtensions({ start: [0, 0, 0], end: [10, 0, 0], extensionStart: 2, extensionEnd: 5 });
-     * ```
      */
     "occt.shapes.wire.createLineWireWithExtensions": {
         /** The point the line starts at, before the extension. */
@@ -15067,20 +11178,6 @@ export interface OperationParams {
      * `lengthSecond`; `align` puts the corner on the outside, inside or middle of the legs, and
      * `rotation` turns the shape in its plane, in degrees. It lies flat on the ground unless
      * `direction` says otherwise.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.occt.shapes.wire.createLPolygonWire({
-     *     widthFirst: 2,
-     *     lengthFirst: 10,
-     *     widthSecond: 2,
-     *     lengthSecond: 6,
-     *     align: Bit.Inputs.OCCT.directionEnum.outside,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createLPolygonWire": {
         /** The thickness of the first leg, in model units. */
@@ -15107,11 +11204,6 @@ export interface OperationParams {
      * Makes a closed regular polygon wire with `nrCorners` corners, all on a circle of `radius`.
      *
      * `direction` is the normal of the plane; the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const hexagon = await bitbybit.occt.shapes.wire.createNGonWire({ nrCorners: 6, radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createNGonWire": {
         /** The point the polygon is centered on. */
@@ -15130,11 +11222,6 @@ export interface OperationParams {
      * With `aroundCenter` true the shape is centered on `center`; otherwise it starts there and
      * extends in the positive directions. `direction` is the plane normal; the default `[0, 1, 0]`
      * lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const shape = await bitbybit.occt.shapes.wire.createParallelogramWire({ width: 10, height: 5, angle: 30, aroundCenter: true, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createParallelogramWire": {
         /** The point the shape is centered on, or starts from when `aroundCenter` is false. */
@@ -15157,14 +11244,6 @@ export interface OperationParams {
      * Makes one closed polygon wire per point list, as `createPolygonWire` does.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const outlines = await bitbybit.occt.shapes.wire.createPolygons({
-     *     polygons: [{ points: [[0, 0, 0], [5, 0, 0], [5, 0, 5]] }, { points: [[10, 0, 0], [15, 0, 0], [15, 0, 5]] }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createPolygons": {
         /** One list of corner points per polygon. */
@@ -15177,11 +11256,6 @@ export interface OperationParams {
      * the last point back to the first.
      *
      * The points need not lie in one plane; a flat face needs a planar outline though.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.occt.shapes.wire.createPolygonWire({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 10], [0, 0, 10]] });
-     * ```
      */
     "occt.shapes.wire.createPolygonWire": {
         /** The corners in order; the outline closes from the last back to the first. */
@@ -15191,14 +11265,6 @@ export interface OperationParams {
      * Makes one open polyline wire per point list, as `createPolylineWire` does.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const paths = await bitbybit.occt.shapes.wire.createPolylines({
-     *     polylines: [{ points: [[0, 0, 0], [5, 0, 0], [5, 0, 5]] }, { points: [[10, 0, 0], [15, 0, 0]] }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.createPolylines": {
         /** One list of points per polyline. */
@@ -15210,11 +11276,6 @@ export interface OperationParams {
      * Makes an open wire of straight edges through a list of points, in order.
      *
      * The wire is not closed; `createPolygonWire` adds the edge back to the first point.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.occt.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 10]] });
-     * ```
      */
     "occt.shapes.wire.createPolylineWire": {
         /** The points in order; the chain stays open between the last and the first. */
@@ -15225,11 +11286,6 @@ export interface OperationParams {
      *
      * On the ground plane `width` runs along X and `length` along Z; `direction` is the normal of
      * the plane, and the default `[0, 1, 0]` keeps the wire flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const rectangle = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 20, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createRectangleWire": {
         /**
@@ -15251,11 +11307,6 @@ export interface OperationParams {
      * Makes a closed square wire centered on `center`.
      *
      * `direction` is the normal of its plane: the default `[0, 1, 0]` lays it flat on the ground.
-     *
-     * @example
-     * ```typescript
-     * const square = await bitbybit.occt.shapes.wire.createSquareWire({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.shapes.wire.createSquareWire": {
         /** The length of each side, in model units. */
@@ -15272,11 +11323,6 @@ export interface OperationParams {
      * lifts the ray tips out of the plane by that distance, making a 3D star, and `half` keeps the
      * first half of the rays as an open wire. It lies flat on the ground unless `direction` says
      * otherwise.
-     *
-     * @example
-     * ```typescript
-     * const star = await bitbybit.occt.shapes.wire.createStarWire({ outerRadius: 5, innerRadius: 2, numRays: 5, center: [0, 0, 0], direction: [0, 1, 0], offsetOuterEdges: 0, half: false });
-     * ```
      */
     "occt.shapes.wire.createStarWire": {
         /** The point the star is centered on. */
@@ -15303,11 +11349,6 @@ export interface OperationParams {
      *
      * It starts beside `center` and climbs along `direction`; `clockwise` reverses the winding. The
      * curve is approximated within `tolerance`.
-     *
-     * @example
-     * ```typescript
-     * const cone = await bitbybit.occt.shapes.wire.createTaperedHelixWire({ startRadius: 3, endRadius: 0.5, pitch: 1, height: 8, center: [0, 0, 0], direction: [0, 1, 0], clockwise: false, tolerance: 1e-4 });
-     * ```
      */
     "occt.shapes.wire.createTaperedHelixWire": {
         /** The distance from the axis to the coil at its base, in model units. */
@@ -15334,20 +11375,6 @@ export interface OperationParams {
      * `width` is the flange width, `height` the total height, `webThickness` and `flangeThickness`
      * the wall thicknesses; `alignment` says which point of the profile's box sits on `center`,
      * `rotation` turns it in its plane, in degrees. It lies on the ground.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.wire.createTBeamProfileWire({
-     *     width: 10,
-     *     height: 12,
-     *     webThickness: 2,
-     *     flangeThickness: 2,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createTBeamProfileWire": {
         /** The width of the flange, in model units. */
@@ -15377,21 +11404,6 @@ export interface OperationParams {
      * `width` and `height` are the total size, `webThickness` and `flangeThickness` the wall
      * thicknesses; `alignment` says which point of the profile's box sits on `center`, `rotation`
      * turns it in its plane, in degrees. It lies on the ground.
-     *
-     * @example
-     * ```typescript
-     * const profile = await bitbybit.occt.shapes.wire.createUBeamProfileWire({
-     *     width: 10,
-     *     height: 6,
-     *     webThickness: 1,
-     *     flangeThickness: 1,
-     *     flangeWidth: 3,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     rotation: 0,
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.shapes.wire.createUBeamProfileWire": {
         /** The total width of the profile, in model units. */
@@ -15416,14 +11428,7 @@ export interface OperationParams {
         /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
         direction?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Wraps a single edge into a wire, so it can go where a wire is expected.
-     *
-     * @example
-     * ```typescript
-     * const wire = await bitbybit.occt.shapes.wire.createWireFromEdge({ shape: edge });
-     * ```
-     */
+    /** Wraps a single edge into a wire, so it can go where a wire is expected. */
     "occt.shapes.wire.createWireFromEdge": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -15435,17 +11440,6 @@ export interface OperationParams {
      * `keepLines` picks the outer tangent lines (the belt) or the crossing inner ones;
      * `circleRemainders` picks which arc of each circle stays in the outline. Each circle wire must
      * consist of a single edge.
-     *
-     * @example
-     * ```typescript
-     * const belt = await bitbybit.occt.shapes.wire.createWireFromTwoCirclesTan({
-     *     circle1,
-     *     circle2,
-     *     keepLines: Bit.Inputs.OCCT.twoSidesStrictEnum.outside,
-     *     circleRemainders: Bit.Inputs.OCCT.fourSidesStrictEnum.outside,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.wire.createWireFromTwoCirclesTan": {
         /** The first circle wire; it must consist of a single edge. */
@@ -15469,16 +11463,6 @@ export interface OperationParams {
      * `wireType` makes them polylines or smooth interpolated curves, `closed` joins the last point
      * back to the first, and `tolerance` is used for the interpolation. Fewer than two shapes throw
      * an error.
-     *
-     * @example
-     * ```typescript
-     * const [starts, ends] = await bitbybit.occt.shapes.wire.createWiresBetweenStartEndPointsOfWiresAndEdges({
-     *     shapes: [wireA, wireB, wireC],
-     *     wireType: Bit.Inputs.OCCT.wireFromPointsTypeEnum.interpolated,
-     *     closed: false,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.wire.createWiresBetweenStartEndPointsOfWiresAndEdges": {
         /** Two or more wires or edges, in the order their points are joined. */
@@ -15503,18 +11487,6 @@ export interface OperationParams {
      * `nrOfDivisions` steps give one rung more than that; `divideByEqualDistance` spaces the points
      * by length rather than by parameter; `wireType` makes the rungs polylines or smooth curves,
      * `closed` joins each into a loop.
-     *
-     * @example
-     * ```typescript
-     * const rungs = await bitbybit.occt.shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges({
-     *     shapes: [rail1, rail2],
-     *     nrOfDivisions: 10,
-     *     divideByEqualDistance: true,
-     *     wireType: Bit.Inputs.OCCT.wireFromPointsTypeEnum.polyline,
-     *     closed: false,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges": {
         /** Two or more wires or edges, in the order their points are joined. */
@@ -15546,11 +11518,6 @@ export interface OperationParams {
      * `nrZigZags` sets the number of bounces; `inverse` starts on the second wire;
      * `divideByEqualDistance` spaces the points by length rather than by parameter; with
      * `zigZagsPerEdge` true each edge gets its own zig-zag, so edge counts must match.
-     *
-     * @example
-     * ```typescript
-     * const zigzag = await bitbybit.occt.shapes.wire.createZigZagBetweenTwoWires({ wire1: lower, wire2: upper, nrZigZags: 20, inverse: false, divideByEqualDistance: true, zigZagsPerEdge: false });
-     * ```
      */
     "occt.shapes.wire.createZigZagBetweenTwoWires": {
         /** The wire the zig-zag starts on. */
@@ -15580,12 +11547,6 @@ export interface OperationParams {
      * total length and, for every edge, the curve report `shapes.edge.debugInfo` gives.
      *
      * An empty or null wire gives a report marked invalid with zero counts.
-     *
-     * @example
-     * ```typescript
-     * const info = await bitbybit.occt.shapes.wire.debugInfo({ shape: wire });
-     * console.log(info.nbEdges, info.closed, info.totalLength);
-     * ```
      */
     "occt.shapes.wire.debugInfo": {
         /** The shape to work on; it is not changed. */
@@ -15598,11 +11559,6 @@ export interface OperationParams {
      * The first derivative is the tangent with its speed, the second tells how the curve bends, the
      * third how that bending changes; all are with respect to the curve's parameter. The distance
      * is measured along the curves in model units.
-     *
-     * @example
-     * ```typescript
-     * const [first, second, third] = await bitbybit.occt.shapes.wire.derivativesOnWireAtLength({ shape: wire, length: 2.5 });
-     * ```
      */
     "occt.shapes.wire.derivativesOnWireAtLength": {
         /** The wire or edge to evaluate. */
@@ -15616,11 +11572,6 @@ export interface OperationParams {
      *
      * The first derivative is the tangent with its speed, the second tells how the curve bends, the
      * third how that bending changes; all are with respect to the curve's parameter.
-     *
-     * @example
-     * ```typescript
-     * const [first, second, third] = await bitbybit.occt.shapes.wire.derivativesOnWireAtParam({ shape: wire, param: 0.5 });
-     * ```
      */
     "occt.shapes.wire.derivativesOnWireAtParam": {
         /** The wire, edge or curve to evaluate. */
@@ -15636,11 +11587,6 @@ export interface OperationParams {
      *
      * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
      * drop the ends.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.wire.divideWireByEqualDistanceToPoints({ shape: wire, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.wire.divideWireByEqualDistanceToPoints": {
         /** The wire or edge to place points along. */
@@ -15661,11 +11607,6 @@ export interface OperationParams {
      * `nrOfDivisions` steps give one more point than that; `removeStartPoint` and `removeEndPoint`
      * drop the ends. The parameter follows each edge's own curve parameter, so equal steps are not
      * equal distances; use `divideWireByEqualDistanceToPoints` for those.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.wire.divideWireByParamsToPoints({ shape: wire, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
      */
     "occt.shapes.wire.divideWireByParamsToPoints": {
         /** The wire or edge to place points along. */
@@ -15680,14 +11621,7 @@ export interface OperationParams {
         /** When true, the point at the end is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
-    /**
-     * Runs `divideWireByEqualDistanceToPoints` on several wires with the same settings.
-     *
-     * @example
-     * ```typescript
-     * const lists = await bitbybit.occt.shapes.wire.divideWiresByEqualDistanceToPoints({ shapes: wires, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
-     */
+    /** Runs `divideWireByEqualDistanceToPoints` on several wires with the same settings. */
     "occt.shapes.wire.divideWiresByEqualDistanceToPoints": {
         /** The wires or edges to place points along, one list of points per shape. */
         shapes: unknown[] | PipelineRef;
@@ -15701,14 +11635,7 @@ export interface OperationParams {
         /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
-    /**
-     * Runs `divideWireByParamsToPoints` on several wires with the same settings.
-     *
-     * @example
-     * ```typescript
-     * const lists = await bitbybit.occt.shapes.wire.divideWiresByParamsToPoints({ shapes: wires, nrOfDivisions: 10, removeStartPoint: false, removeEndPoint: false });
-     * ```
-     */
+    /** Runs `divideWireByParamsToPoints` on several wires with the same settings. */
     "occt.shapes.wire.divideWiresByParamsToPoints": {
         /** The wires or edges to place points along, one list of points per shape. */
         shapes: unknown[] | PipelineRef;
@@ -15722,38 +11649,17 @@ export interface OperationParams {
         /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
-    /**
-     * Reads the point where a wire ends, in the wire's own direction.
-     *
-     * @example
-     * ```typescript
-     * const end = await bitbybit.occt.shapes.wire.endPointOnWire({ shape: wire });
-     * ```
-     */
+    /** Reads the point where a wire ends, in the wire's own direction. */
     "occt.shapes.wire.endPointOnWire": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Makes a straight single-edge wire from a line object of the form `{ start, end }`.
-     *
-     * @example
-     * ```typescript
-     * const wire = await bitbybit.occt.shapes.wire.fromBaseLine({ line: { start: [0, 0, 0], end: [10, 0, 0] } });
-     * ```
-     */
+    /** Makes a straight single-edge wire from a line object of the form `{ start, end }`. */
     "occt.shapes.wire.fromBaseLine": {
         /** The line as `{ start, end }`. */
         line: unknown | PipelineRef;
     };
-    /**
-     * Makes one straight single-edge wire per line object of the form `{ start, end }`.
-     *
-     * @example
-     * ```typescript
-     * const wires = await bitbybit.occt.shapes.wire.fromBaseLines({ lines: [{ start: [0, 0, 0], end: [10, 0, 0] }, { start: [10, 0, 0], end: [10, 10, 0] }] });
-     * ```
-     */
+    /** Makes one straight single-edge wire per line object of the form `{ start, end }`. */
     "occt.shapes.wire.fromBaseLines": {
         /** The lines as `{ start, end }` objects, in the order the results should come back. */
         lines: unknown[] | PipelineRef;
@@ -15763,11 +11669,6 @@ export interface OperationParams {
      *
      * A triangle whose wire cannot be built is skipped with a warning rather than stopping the
      * rest.
-     *
-     * @example
-     * ```typescript
-     * const outlines = await bitbybit.occt.shapes.wire.fromBaseMesh({ mesh: triangles });
-     * ```
      */
     "occt.shapes.wire.fromBaseMesh": {
         /** The mesh as a list of triangles, each three corner points. */
@@ -15776,11 +11677,6 @@ export interface OperationParams {
     /**
      * Makes a wire from a polyline object, one straight edge per segment; a polyline marked closed
      * also gets the edge from its last point back to its first.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.occt.shapes.wire.fromBasePolyline({ polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 0, 10]], isClosed: true } });
-     * ```
      */
     "occt.shapes.wire.fromBasePolyline": {
         /**
@@ -15789,38 +11685,17 @@ export interface OperationParams {
          */
         polyline: unknown | PipelineRef;
     };
-    /**
-     * Makes a straight single-edge wire from a segment, a pair of points `[start, end]`.
-     *
-     * @example
-     * ```typescript
-     * const wire = await bitbybit.occt.shapes.wire.fromBaseSegment({ segment: [[0, 0, 0], [10, 0, 0]] });
-     * ```
-     */
+    /** Makes a straight single-edge wire from a segment, a pair of points `[start, end]`. */
     "occt.shapes.wire.fromBaseSegment": {
         /** The segment as a pair of points, `[start, end]`. */
         segment: unknown | PipelineRef;
     };
-    /**
-     * Makes one straight single-edge wire per segment, each a pair of points `[start, end]`.
-     *
-     * @example
-     * ```typescript
-     * const wires = await bitbybit.occt.shapes.wire.fromBaseSegments({ segments: [[[0, 0, 0], [10, 0, 0]], [[10, 0, 0], [10, 10, 0]]] });
-     * ```
-     */
+    /** Makes one straight single-edge wire per segment, each a pair of points `[start, end]`. */
     "occt.shapes.wire.fromBaseSegments": {
         /** The segments as pairs of points, `[start, end]`, in the order the results should come back. */
         segments: unknown[] | PipelineRef;
     };
-    /**
-     * Makes a closed three-edge wire from a triangle given as three points.
-     *
-     * @example
-     * ```typescript
-     * const outline = await bitbybit.occt.shapes.wire.fromBaseTriangle({ triangle: [[0, 0, 0], [10, 0, 0], [0, 0, 10]] });
-     * ```
-     */
+    /** Makes a closed three-edge wire from a triangle given as three points. */
     "occt.shapes.wire.fromBaseTriangle": {
         /** The triangle as its three corner points. */
         triangle: unknown | PipelineRef;
@@ -15830,11 +11705,6 @@ export interface OperationParams {
      *
      * Fewer than two points throw an error. For a closed outline use `createPolygonWire`, which
      * adds the edge back to the first point.
-     *
-     * @example
-     * ```typescript
-     * const path = await bitbybit.occt.shapes.wire.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
-     * ```
      */
     "occt.shapes.wire.fromPoints": {
         /** The points, in the order the shapes should follow them. */
@@ -15846,11 +11716,6 @@ export interface OperationParams {
      *
      * The shape must be a wire or something built from wires; an index beyond the last wire throws
      * an error.
-     *
-     * @example
-     * ```typescript
-     * const outer = await bitbybit.occt.shapes.wire.getWire({ shape: face, index: 0 });
-     * ```
      */
     "occt.shapes.wire.getWire": {
         /** The shape to pick from. */
@@ -15864,60 +11729,27 @@ export interface OperationParams {
     /**
      * Finds the center of mass of a wire, the balance point of its curves; for a circle that is its
      * center, off the wire itself.
-     *
-     * @example
-     * ```typescript
-     * const center = await bitbybit.occt.shapes.wire.getWireCenterOfMass({ shape: wire });
-     * ```
      */
     "occt.shapes.wire.getWireCenterOfMass": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Measures the length of a wire along its curves, in model units.
-     *
-     * @example
-     * ```typescript
-     * const len = await bitbybit.occt.shapes.wire.getWireLength({ shape: wire });
-     * ```
-     */
+    /** Measures the length of a wire along its curves, in model units. */
     "occt.shapes.wire.getWireLength": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Lists every wire of a shape in the order the kernel walks it.
-     *
-     * @example
-     * ```typescript
-     * const wires = await bitbybit.occt.shapes.wire.getWires({ shape: face });
-     * ```
-     */
+    /** Lists every wire of a shape in the order the kernel walks it. */
     "occt.shapes.wire.getWires": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /**
-     * Finds the center of mass of each wire in a list.
-     *
-     * @example
-     * ```typescript
-     * const centers = await bitbybit.occt.shapes.wire.getWiresCentersOfMass({ shapes: wires });
-     * ```
-     */
+    /** Finds the center of mass of each wire in a list. */
     "occt.shapes.wire.getWiresCentersOfMass": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
     };
-    /**
-     * Measures the length of each wire in a list along its curves, in model units.
-     *
-     * @example
-     * ```typescript
-     * const lengths = await bitbybit.occt.shapes.wire.getWiresLengths({ shapes: wires });
-     * ```
-     */
+    /** Measures the length of each wire in a list along its curves, in model units. */
     "occt.shapes.wire.getWiresLengths": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
@@ -15929,19 +11761,6 @@ export interface OperationParams {
      * The hexagons are scaled so `nrHexagonsInWidth` fit across `width` and `nrHexagonsInHeight`
      * across `height`. The scale, fillet and inclusion patterns are read hexagon by hexagon and
      * repeat; the extend flags stretch the outer rows past the edges to cover the rectangle.
-     *
-     * @example
-     * ```typescript
-     * const cells = await bitbybit.occt.shapes.wire.hexagonsInGrid({
-     *     width: 20,
-     *     height: 10,
-     *     nrHexagonsInWidth: 8,
-     *     nrHexagonsInHeight: 4,
-     *     flatTop: false,
-     *     scalePatternWidth: [0.9],
-     *     scalePatternHeight: [0.9],
-     * });
-     * ```
      */
     "occt.shapes.wire.hexagonsInGrid": {
         /**
@@ -16005,16 +11824,6 @@ export interface OperationParams {
      * `parametrization` controls the spacing between points: `centripetal` resists cusps and
      * overshoot when the points are uneven. `startTangent` and `endTangent`, or one `tangents`
      * entry per point, force the curve's direction there.
-     *
-     * @example
-     * ```typescript
-     * const loop = await bitbybit.occt.shapes.wire.interpolatePoints({
-     *     points: [[0, 0, 0], [10, 0, 5], [10, 0, 15], [0, 0, 10]],
-     *     periodic: true,
-     *     tolerance: 1e-7,
-     *     parametrization: Bit.Inputs.OCCT.bSplineParametrizationEnum.centripetal,
-     * });
-     * ```
      */
     "occt.shapes.wire.interpolatePoints": {
         /** The points the curve passes through, in order. */
@@ -16045,11 +11854,6 @@ export interface OperationParams {
      * A plain periodic `interpolatePoints` can look skewed at its seam for symmetric inputs such as
      * a square or a triangle; this variant does not. It fails with an error if the points cannot be
      * interpolated.
-     *
-     * @example
-     * ```typescript
-     * const rounded = await bitbybit.occt.shapes.wire.interpolatePointsSymmetric({ points: [[0, 0, 0], [10, 0, 0], [10, 0, 10], [0, 0, 10]], tolerance: 1e-7 });
-     * ```
      */
     "occt.shapes.wire.interpolatePointsSymmetric": {
         /** At least three points the closed curve passes through, in order. */
@@ -16061,14 +11865,6 @@ export interface OperationParams {
      * Makes one interpolated B-spline wire per definition, as `interpolatePoints` does.
      *
      * With `returnCompound` true the wires are packed into one compound shape instead of a list.
-     *
-     * @example
-     * ```typescript
-     * const curves = await bitbybit.occt.shapes.wire.interpolateWires({
-     *     interpolations: [{ points: [[0, 0, 0], [5, 0, 5], [10, 0, 0]], periodic: false, tolerance: 1e-7 }, { points: [[0, 0, 5], [5, 0, 10], [10, 0, 5]], periodic: false, tolerance: 1e-7 }],
-     *     returnCompound: false,
-     * });
-     * ```
      */
     "occt.shapes.wire.interpolateWires": {
         /** One definition per curve, as `interpolatePoints` takes them. */
@@ -16079,11 +11875,6 @@ export interface OperationParams {
     /**
      * Tells whether a wire is closed, which is when its start and end points coincide within a
      * small tolerance.
-     *
-     * @example
-     * ```typescript
-     * const wireIsClosed = await bitbybit.occt.shapes.wire.isWireClosed({ shape: wire });
-     * ```
      */
     "occt.shapes.wire.isWireClosed": {
         /** The shape to work on; it is not changed. */
@@ -16095,11 +11886,6 @@ export interface OperationParams {
      * The parameter follows the edges' own curves, not distance, so on a wire of unequal edges this
      * is not always the middle by length; `pointOnWireAtLength` with half of `getWireLength` gives
      * that.
-     *
-     * @example
-     * ```typescript
-     * const middle = await bitbybit.occt.shapes.wire.midPointOnWire({ shape: wire });
-     * ```
      */
     "occt.shapes.wire.midPointOnWire": {
         /** The shape to work on; it is not changed. */
@@ -16112,11 +11898,6 @@ export interface OperationParams {
      * The geometry does not change; only where the wire is considered to begin. Meant for
      * single-edge wires such as circles: each periodic edge is moved, edges that are not periodic
      * stay as they are.
-     *
-     * @example
-     * ```typescript
-     * const rotated = await bitbybit.occt.shapes.wire.moveWireSeamByLength({ shape: circle, length: 2.5 });
-     * ```
      */
     "occt.shapes.wire.moveWireSeamByLength": {
         /** The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged. */
@@ -16131,11 +11912,6 @@ export interface OperationParams {
      * The geometry does not change; only where the wire is considered to begin. Meant for
      * single-edge wires such as circles: each periodic edge is moved, edges that are not periodic
      * stay as they are.
-     *
-     * @example
-     * ```typescript
-     * const rotated = await bitbybit.occt.shapes.wire.moveWireSeamByParameter({ shape: circle, parameter: 1.57 });
-     * ```
      */
     "occt.shapes.wire.moveWireSeamByParameter": {
         /** The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged. */
@@ -16150,11 +11926,6 @@ export interface OperationParams {
      * The wire's Z coordinate is read as U and its X coordinate as V, in the face's real UV values,
      * which `shapes.face.getUMinBound` and its siblings report; a drawing that fits inside those
      * bounds lands on the face.
-     *
-     * @example
-     * ```typescript
-     * const onSurface = await bitbybit.occt.shapes.wire.placeWireOnFace({ wire: flatWire, face: cylinderFace });
-     * ```
      */
     "occt.shapes.wire.placeWireOnFace": {
         /** The wire drawn on the ground plane; its Z coordinate becomes U and its X coordinate V. */
@@ -16165,11 +11936,6 @@ export interface OperationParams {
     /**
      * Maps several flat wires drawn on the ground plane onto the surface of a face, as
      * `placeWireOnFace` does for one.
-     *
-     * @example
-     * ```typescript
-     * const onSurface = await bitbybit.occt.shapes.wire.placeWiresOnFace({ wires: flatWires, face: cylinderFace });
-     * ```
      */
     "occt.shapes.wire.placeWiresOnFace": {
         /** The wires drawn on the ground plane; their Z coordinate becomes U and their X coordinate V. */
@@ -16180,11 +11946,6 @@ export interface OperationParams {
     /**
      * Finds the point a given distance along a wire from its start, measured along its curves in
      * model units.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.occt.shapes.wire.pointOnWireAtLength({ shape: wire, length: 2.5 });
-     * ```
      */
     "occt.shapes.wire.pointOnWireAtLength": {
         /** The wire or edge to evaluate. */
@@ -16197,11 +11958,6 @@ export interface OperationParams {
      *
      * The fraction follows the parameters of the edges, not distance, so 0.5 is not always the
      * middle by length; use `pointOnWireAtLength` for a distance.
-     *
-     * @example
-     * ```typescript
-     * const point = await bitbybit.occt.shapes.wire.pointOnWireAtParam({ shape: wire, param: 0.25 });
-     * ```
      */
     "occt.shapes.wire.pointOnWireAtParam": {
         /** The wire, edge or curve to evaluate. */
@@ -16217,11 +11973,6 @@ export interface OperationParams {
      *
      * `includeFirst` keeps the point at the start, `includeLast` appends the end point whatever the
      * spacing, and `tryNext` asks for one more point a step beyond the last one that fit.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.wire.pointsOnWireAtEqualLength({ shape: wire, length: 2, tryNext: false, includeFirst: true, includeLast: false });
-     * ```
      */
     "occt.shapes.wire.pointsOnWireAtEqualLength": {
         /** The wire to place points along. */
@@ -16238,11 +11989,6 @@ export interface OperationParams {
     /**
      * Finds the points at several distances along a wire from its start, measured along its curves
      * in model units.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.wire.pointsOnWireAtLengths({ shape: wire, lengths: [1, 2.5, 4] });
-     * ```
      */
     "occt.shapes.wire.pointsOnWireAtLengths": {
         /** The wire to evaluate. */
@@ -16257,11 +12003,6 @@ export interface OperationParams {
      * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
      * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
      * point at the next gap past the last.
-     *
-     * @example
-     * ```typescript
-     * const points = await bitbybit.occt.shapes.wire.pointsOnWireAtPatternOfLengths({ shape: wire, lengths: [1, 3], tryNext: false, includeFirst: true, includeLast: false });
-     * ```
      */
     "occt.shapes.wire.pointsOnWireAtPatternOfLengths": {
         /** The wire to place points along. */
@@ -16284,11 +12025,6 @@ export interface OperationParams {
      * The result is a compound of the curves where the projection meets the shape's faces, which
      * can be on both its near and far side. Cut a face with it through
      * `shapes.face.createFaceFromWireOnFace` or use it as a path.
-     *
-     * @example
-     * ```typescript
-     * const shadow = await bitbybit.occt.shapes.wire.project({ wire: circle, shape: sphere, direction: [0, -1, 0] });
-     * ```
      */
     "occt.shapes.wire.project": {
         /** The wire to cast onto the shape. */
@@ -16298,14 +12034,7 @@ export interface OperationParams {
         /** The direction the wire is cast along; only its direction matters. */
         direction?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Projects several wires onto a shape along one direction, as `project` does for one.
-     *
-     * @example
-     * ```typescript
-     * const shadows = await bitbybit.occt.shapes.wire.projectWires({ wires: [circle, square], shape: sphere, direction: [0, -1, 0] });
-     * ```
-     */
+    /** Projects several wires onto a shape along one direction, as `project` does for one. */
     "occt.shapes.wire.projectWires": {
         /** The wires to cast onto the shape, one result per wire. */
         wires: unknown[] | PipelineRef;
@@ -16320,11 +12049,6 @@ export interface OperationParams {
      *
      * Lowering the degree simplifies the curves, raising it gives later operations more freedom;
      * either way each new curve stays within `tolerance` of the old.
-     *
-     * @example
-     * ```typescript
-     * const simpler = await bitbybit.occt.shapes.wire.rebuildWireDegree({ shape: wire, degree: 3, tolerance: 1e-3 });
-     * ```
      */
     "occt.shapes.wire.rebuildWireDegree": {
         /** The wire or edge whose curve is rebuilt. */
@@ -16346,11 +12070,6 @@ export interface OperationParams {
      * The edges keep their own order and direction flags; the wire as a whole is marked reversed,
      * which is what most operations read. `reversedWireFromReversedEdges` rebuilds the wire edge by
      * edge instead.
-     *
-     * @example
-     * ```typescript
-     * const back = await bitbybit.occt.shapes.wire.reversedWire({ shape: wire });
-     * ```
      */
     "occt.shapes.wire.reversedWire": {
         /** The shape to work on; it is not changed. */
@@ -16362,11 +12081,6 @@ export interface OperationParams {
      *
      * The result is a wire that runs the other way through and through, which some operations need
      * where the plain `reversedWire` flag is not enough.
-     *
-     * @example
-     * ```typescript
-     * const back = await bitbybit.occt.shapes.wire.reversedWireFromReversedEdges({ shape: wire });
-     * ```
      */
     "occt.shapes.wire.reversedWireFromReversedEdges": {
         /** The shape to work on; it is not changed. */
@@ -16378,11 +12092,6 @@ export interface OperationParams {
      * Each point is moved to the closest place on the wire before cutting, so it need not lie
      * exactly on it; repeated points are ignored. The pieces come back in order along the wire,
      * from its start to its end.
-     *
-     * @example
-     * ```typescript
-     * const pieces = await bitbybit.occt.shapes.wire.splitOnPoints({ shape: wire, points: [[3, 0, 0], [7, 0, 0]] });
-     * ```
      */
     "occt.shapes.wire.splitOnPoints": {
         /** The wire to cut into pieces. */
@@ -16390,14 +12099,7 @@ export interface OperationParams {
         /** Where to cut; each point is moved to the closest place on the wire first. */
         points: [number, number, number][] | PipelineRef;
     };
-    /**
-     * Reads the point where a wire starts, in the wire's own direction.
-     *
-     * @example
-     * ```typescript
-     * const start = await bitbybit.occt.shapes.wire.startPointOnWire({ shape: wire });
-     * ```
-     */
+    /** Reads the point where a wire starts, in the wire's own direction. */
     "occt.shapes.wire.startPointOnWire": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -16405,11 +12107,6 @@ export interface OperationParams {
     /**
      * Finds the direction the wire is heading at a given distance from its start, measured along
      * its curves in model units.
-     *
-     * @example
-     * ```typescript
-     * const tangent = await bitbybit.occt.shapes.wire.tangentOnWireAtLength({ shape: wire, length: 2.5 });
-     * ```
      */
     "occt.shapes.wire.tangentOnWireAtLength": {
         /** The wire or edge to evaluate. */
@@ -16422,11 +12119,6 @@ export interface OperationParams {
      * start to 1 at the end.
      *
      * The fraction follows the parameters of the edges, not distance.
-     *
-     * @example
-     * ```typescript
-     * const tangent = await bitbybit.occt.shapes.wire.tangentOnWireAtParam({ shape: wire, param: 0.5 });
-     * ```
      */
     "occt.shapes.wire.tangentOnWireAtParam": {
         /** The wire, edge or curve to evaluate. */
@@ -16444,18 +12136,6 @@ export interface OperationParams {
      * `height` is the height of a capital letter in model units, `lineSpacing` and `letterSpacing`
      * are multiples of it, `align` lines up lines of different length, and `centerOnOrigin` moves
      * the block to the origin.
-     *
-     * @example
-     * ```typescript
-     * const strokes = await bitbybit.occt.shapes.wire.textWires({
-     *     text: "Hello",
-     *     height: 5,
-     *     lineSpacing: 1.5,
-     *     letterSpacing: 0,
-     *     align: Bit.Inputs.Base.horizontalAlignEnum.left,
-     *     centerOnOrigin: true,
-     * });
-     * ```
      */
     "occt.shapes.wire.textWires": {
         /** The text to write; a line break starts a new line. */
@@ -16487,19 +12167,6 @@ export interface OperationParams {
      * The result carries `compound` with the whole text, `characters` with one compound per
      * character in writing order, and `width` and `height`, the extent of the block along X and
      * along Y.
-     *
-     * @example
-     * ```typescript
-     * const text = await bitbybit.occt.shapes.wire.textWiresWithData({
-     *     text: "Hi",
-     *     height: 5,
-     *     lineSpacing: 1.5,
-     *     letterSpacing: 0,
-     *     align: Bit.Inputs.Base.horizontalAlignEnum.left,
-     *     centerOnOrigin: false,
-     * });
-     * console.log(text.width, text.height);
-     * ```
      */
     "occt.shapes.wire.textWiresWithData": {
         /** The text to write; a line break starts a new line. */
@@ -16530,18 +12197,6 @@ export interface OperationParams {
      *
      * The deflection settings say how tightly the points hug curved edges; where one edge ends and
      * the next begins the shared point appears once.
-     *
-     * @example
-     * ```typescript
-     * const polylines = await bitbybit.occt.shapes.wire.wiresToPoints({
-     *     shape: wire,
-     *     angularDeflection: 0.1,
-     *     curvatureDeflection: 0.1,
-     *     minimumOfPoints: 2,
-     *     uTolerance: 1e-9,
-     *     minimumLength: 1e-7,
-     * });
-     * ```
      */
     "occt.shapes.wire.wiresToPoints": {
         /** The shape whose wires are traced. */
@@ -16563,14 +12218,7 @@ export interface OperationParams {
         /** Edges shorter than this, in model units, are traced with the minimum number of points. */
         minimumLength?: number | PipelineRef;
     };
-    /**
-     * Triangulates several shapes with the same settings, as `shapeToMesh` does for one.
-     *
-     * @example
-     * ```typescript
-     * const meshes = await bitbybit.occt.shapesToMeshes({ shapes: [box, sphere], precision: 0.01, adjustYtoZ: false });
-     * ```
-     */
+    /** Triangulates several shapes with the same settings, as `shapeToMesh` does for one. */
     "occt.shapesToMeshes": {
         /** The shapes to triangulate, one mesh per shape. */
         shapes: unknown[] | PipelineRef;
@@ -16612,12 +12260,6 @@ export interface OperationParams {
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
      * more closely and cost more triangles. `adjustYtoZ` swaps Y and Z. A null shape gives empty
      * lists.
-     *
-     * @example
-     * ```typescript
-     * const mesh = await bitbybit.occt.shapeToMesh({ shape: sphere, precision: 0.01, adjustYtoZ: false });
-     * console.log(mesh.faceList.length, mesh.edgeList.length);
-     * ```
      */
     "occt.shapeToMesh": {
         /** The shape to triangulate. */
@@ -16660,23 +12302,6 @@ export interface OperationParams {
      * `faceStrategy` decides whether closed outlines become faces, `scale` and `flipY` map SVG
      * units and its downward Y axis, and `alignment`, `direction` and `center` place the result.
      * Invisible elements are skipped unless asked for.
-     *
-     * @example
-     * ```typescript
-     * const drawing = await bitbybit.occt.svg.loadSVG({
-     *     svg: svgText,
-     *     faceStrategy: Bit.Inputs.OCCT.svgFaceStrategyEnum.auto,
-     *     makeRibbons: false,
-     *     includeInvisible: false,
-     *     joinSegments: true,
-     *     tolerance: 1e-7,
-     *     scale: 0.1,
-     *     flipY: true,
-     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
-     *     direction: [0, 1, 0],
-     *     center: [0, 0, 0],
-     * });
-     * ```
      */
     "occt.svg.loadSVG": {
         /** The text of the SVG document. */
@@ -16715,15 +12340,6 @@ export interface OperationParams {
      *
      * Use it when the elements need their own colors or separate handling; `loadSVG` gives the
      * whole drawing as one shape. Faces are built where the outline allows it.
-     *
-     * @example
-     * ```typescript
-     * const options = new Bit.Inputs.OCCT.LoadSVGDto();
-     * options.svg = svgText;
-     * options.scale = 0.1;
-     * const result = await bitbybit.occt.svg.loadSVGStructured(options);
-     * result.shapes.forEach(s => console.log(s.fill, s.stroke));
-     * ```
      */
     "occt.svg.loadSVGStructured": {
         /** The text of the SVG document. */
@@ -16762,17 +12378,6 @@ export interface OperationParams {
      *
      * This is the way to stand a shape on a surface or point it along a line: the shape is both
      * moved and turned, never scaled.
-     *
-     * @example
-     * ```typescript
-     * const standing = await bitbybit.occt.transforms.align({
-     *     shape: cylinder,
-     *     fromOrigin: [0, 0, 0],
-     *     fromDirection: [0, 1, 0],
-     *     toOrigin: [10, 5, 0],
-     *     toDirection: [1, 0, 0],
-     * });
-     * ```
      */
     "occt.transforms.align": {
         /** The shape to move. */
@@ -16792,11 +12397,6 @@ export interface OperationParams {
      * The flat shapes and primitives of this package are built on the ground with Y up, so this is
      * the one call that places any of them: the direction becomes their new up, and the center
      * where they sit.
-     *
-     * @example
-     * ```typescript
-     * const placed = await bitbybit.occt.transforms.alignAndTranslate({ shape: profile, direction: [1, 0, 0], center: [10, 0, 0] });
-     * ```
      */
     "occt.transforms.alignAndTranslate": {
         /** The shape to place. */
@@ -16810,15 +12410,6 @@ export interface OperationParams {
      * Applies `alignAndTranslate` to several shapes, each with its own direction and center.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const placed = await bitbybit.occt.transforms.alignAndTranslateShapes({
-     *     shapes: [profile, profile2],
-     *     directions: [[1, 0, 0], [0, 0, 1]],
-     *     centers: [[10, 0, 0], [0, 0, 10]],
-     * });
-     * ```
      */
     "occt.transforms.alignAndTranslateShapes": {
         /** The shapes to place. */
@@ -16834,19 +12425,6 @@ export interface OperationParams {
      *
      * Where `align` fixes one direction and leaves the spin around it free, this also fixes the
      * spin, which matters for shapes that are not round about their axis.
-     *
-     * @example
-     * ```typescript
-     * const placed = await bitbybit.occt.transforms.alignNormAndAxis({
-     *     shape: bracket,
-     *     fromOrigin: [0, 0, 0],
-     *     fromNorm: [0, 1, 0],
-     *     fromAx: [1, 0, 0],
-     *     toOrigin: [10, 0, 0],
-     *     toNorm: [0, 0, 1],
-     *     toAx: [0, 1, 0],
-     * });
-     * ```
      */
     "occt.transforms.alignNormAndAxis": {
         /** The shape to move. */
@@ -16871,17 +12449,6 @@ export interface OperationParams {
      * Applies `align` to several shapes, each with its own from and to frames.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const placed = await bitbybit.occt.transforms.alignShapes({
-     *     shapes: [cylinder, cylinder2],
-     *     fromOrigins: [[0, 0, 0], [0, 0, 0]],
-     *     fromDirections: [[0, 1, 0], [0, 1, 0]],
-     *     toOrigins: [[10, 0, 0], [20, 0, 0]],
-     *     toDirections: [[1, 0, 0], [0, 0, 1]],
-     * });
-     * ```
      */
     "occt.transforms.alignShapes": {
         /** The shapes to move. */
@@ -16902,11 +12469,6 @@ export interface OperationParams {
      * The scale is applied first, then the rotations (Z first, then Y, then X), then the
      * translation, which is the order assembly placements use. Any part left out is taken as no
      * change.
-     *
-     * @example
-     * ```typescript
-     * const placement = await bitbybit.occt.transforms.composeTransform({ translation: [10, 0, 0], rotation: [0, 90, 0], scale: 1 });
-     * ```
      */
     "occt.transforms.composeTransform": {
         /** The move as `[x, y, z]`, in model units, applied last. */
@@ -16925,12 +12487,6 @@ export interface OperationParams {
      *
      * A shape placed with `align` or through an assembly carries such a placement; most other
      * methods here bake the move into the geometry, and such a shape reports the identity.
-     *
-     * @example
-     * ```typescript
-     * const placement = await bitbybit.occt.transforms.getShapeTransform({ shape: movedBox });
-     * console.log(placement.translation, placement.scale);
-     * ```
      */
     "occt.transforms.getShapeTransform": {
         /** The shape whose placement is read. */
@@ -16939,22 +12495,12 @@ export interface OperationParams {
     /**
      * Builds the identity matrix, the transform that changes nothing, as a starting point for
      * composing others.
-     *
-     * @example
-     * ```typescript
-     * const identity = await bitbybit.occt.transforms.identityTransform();
-     * ```
      */
     "occt.transforms.identityTransform": {
     };
     /**
      * Inverts a matrix, giving the transform that undoes it: applying a matrix and then its inverse
      * puts a shape back where it was.
-     *
-     * @example
-     * ```typescript
-     * const back = await bitbybit.occt.transforms.invertTransform({ transformation: placement });
-     * ```
      */
     "occt.transforms.invertTransform": {
         /** The 4x4 column-major matrix of 16 numbers to invert. */
@@ -16965,11 +12511,6 @@ export interface OperationParams {
      *
      * Every point lands as far behind the line as it was in front, which in 3D is the same as a
      * half turn about that axis.
-     *
-     * @example
-     * ```typescript
-     * const flipped = await bitbybit.occt.transforms.mirror({ shape: box, origin: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.transforms.mirror": {
         /** The shape to mirror; it stays as it is and a mirrored copy comes back. */
@@ -16984,11 +12525,6 @@ export interface OperationParams {
      * was before it, on the opposite side.
      *
      * The result is turned inside out, the way a plane mirror turns a left hand into a right hand.
-     *
-     * @example
-     * ```typescript
-     * const inverted = await bitbybit.occt.transforms.mirrorAboutPoint({ shape: box, point: [0, 0, 0] });
-     * ```
      */
     "occt.transforms.mirrorAboutPoint": {
         /** The shape to mirror; it stays as it is and a mirrored copy comes back. */
@@ -17001,11 +12537,6 @@ export interface OperationParams {
      *
      * This is the usual mirror image, the kind a symmetric part needs; the result is turned inside
      * out in the sense that a left-hand shape becomes a right-hand one.
-     *
-     * @example
-     * ```typescript
-     * const other = await bitbybit.occt.transforms.mirrorAlongNormal({ shape: leftHalf, origin: [0, 0, 0], normal: [1, 0, 0] });
-     * ```
      */
     "occt.transforms.mirrorAlongNormal": {
         /** The shape to mirror; it stays as it is and a mirrored copy comes back. */
@@ -17019,15 +12550,6 @@ export interface OperationParams {
      * Applies `mirrorAlongNormal` to several shapes, each across its own plane.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const others = await bitbybit.occt.transforms.mirrorAlongNormalShapes({
-     *     shapes: [leftArm, leftLeg],
-     *     origins: [[0, 0, 0], [0, 0, 0]],
-     *     normals: [[1, 0, 0], [1, 0, 0]],
-     * });
-     * ```
      */
     "occt.transforms.mirrorAlongNormalShapes": {
         /** The shapes to mirror; they stay as they are and mirrored copies come back in the same order. */
@@ -17040,11 +12562,6 @@ export interface OperationParams {
     /**
      * Builds the matrix of a mirror across a line, the transform `mirror` applies: the axis through
      * `origin` along `direction`.
-     *
-     * @example
-     * ```typescript
-     * const flip = await bitbybit.occt.transforms.mirrorAxisToMatrix({ origin: [0, 0, 0], direction: [0, 1, 0] });
-     * ```
      */
     "occt.transforms.mirrorAxisToMatrix": {
         /** A point on the mirror axis. */
@@ -17055,11 +12572,6 @@ export interface OperationParams {
     /**
      * Builds the matrix of a mirror across a plane, the transform `mirrorAlongNormal` applies: the
      * plane through `origin` with the given normal.
-     *
-     * @example
-     * ```typescript
-     * const reflect = await bitbybit.occt.transforms.mirrorPlaneToMatrix({ origin: [0, 0, 0], normal: [1, 0, 0] });
-     * ```
      */
     "occt.transforms.mirrorPlaneToMatrix": {
         /** A point on the mirror plane. */
@@ -17067,14 +12579,7 @@ export interface OperationParams {
         /** The normal of the mirror plane; any length will do, but not a zero vector. */
         normal?: [number, number, number] | PipelineRef;
     };
-    /**
-     * Builds the matrix of a mirror through a point, the transform `mirrorAboutPoint` applies.
-     *
-     * @example
-     * ```typescript
-     * const invert = await bitbybit.occt.transforms.mirrorPointToMatrix({ point: [0, 0, 0] });
-     * ```
-     */
+    /** Builds the matrix of a mirror through a point, the transform `mirrorAboutPoint` applies. */
     "occt.transforms.mirrorPointToMatrix": {
         /** The point every part of a shape is mirrored through. */
         point?: [number, number, number] | PipelineRef;
@@ -17083,15 +12588,6 @@ export interface OperationParams {
      * Applies `mirror` to several shapes, each across its own axis.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const flipped = await bitbybit.occt.transforms.mirrorShapes({
-     *     shapes: [box, sphere],
-     *     origins: [[0, 0, 0], [0, 0, 0]],
-     *     directions: [[0, 1, 0], [1, 0, 0]],
-     * });
-     * ```
      */
     "occt.transforms.mirrorShapes": {
         /** The shapes to mirror; they stay as they are and mirrored copies come back in the same order. */
@@ -17106,11 +12602,6 @@ export interface OperationParams {
      * single matrix.
      *
      * A single matrix is returned unchanged and an empty list gives the identity.
-     *
-     * @example
-     * ```typescript
-     * const combined = await bitbybit.occt.transforms.multiplyTransforms({ transformation: [turn, move] });
-     * ```
      */
     "occt.transforms.multiplyTransforms": {
         /**
@@ -17123,11 +12614,6 @@ export interface OperationParams {
      * Builds the rotation matrix of a quaternion given as `[x, y, z, w]`.
      *
      * The quaternion is normalized first, so its length does not matter.
-     *
-     * @example
-     * ```typescript
-     * const turn = await bitbybit.occt.transforms.quaternionToMatrix({ quaternion: [0, 0.7071, 0, 0.7071] });
-     * ```
      */
     "occt.transforms.quaternionToMatrix": {
         /**
@@ -17142,11 +12628,6 @@ export interface OperationParams {
      * The rotation follows the right-hand rule: with the thumb along `axis`, the fingers show the
      * positive direction. A shape away from the origin swings around it; `rotateAroundCenter`
      * rotates about a chosen point instead.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.occt.transforms.rotate({ shape: box, axis: [0, 1, 0], angle: 90 });
-     * ```
      */
     "occt.transforms.rotate": {
         /** The shape to rotate; it stays as it is and a rotated copy comes back. */
@@ -17161,11 +12642,6 @@ export interface OperationParams {
      *
      * The shape is moved so the point sits at the origin, rotated there with the right-hand rule
      * about `axis`, and moved back.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.occt.transforms.rotateAroundCenter({ shape: box, angle: 90, center: [5, 0, 5], axis: [0, 1, 0] });
-     * ```
      */
     "occt.transforms.rotateAroundCenter": {
         /** The shape to rotate; it stays as it is and a rotated copy comes back. */
@@ -17182,16 +12658,6 @@ export interface OperationParams {
      * and axis.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.occt.transforms.rotateAroundCenterShapes({
-     *     shapes: [box, sphere],
-     *     angles: [90, 45],
-     *     centers: [[5, 0, 5], [0, 0, 0]],
-     *     axes: [[0, 1, 0], [0, 1, 0]],
-     * });
-     * ```
      */
     "occt.transforms.rotateAroundCenterShapes": {
         /** The shapes to rotate; they stay as they are and rotated copies come back in the same order. */
@@ -17209,11 +12675,6 @@ export interface OperationParams {
      * The quaternion is normalized first, so its length does not matter. Quaternions are what
      * animation and physics libraries hand out, so this saves converting them to an axis and an
      * angle.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.occt.transforms.rotateByQuaternion({ shape: box, quaternion: [0, 0.7071, 0, 0.7071] });
-     * ```
      */
     "occt.transforms.rotateByQuaternion": {
         /** The shape to rotate; it stays as it is and a rotated copy comes back. */
@@ -17229,11 +12690,6 @@ export interface OperationParams {
      * angle in degrees.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const turned = await bitbybit.occt.transforms.rotateShapes({ shapes: [box, sphere], axes: [[0, 1, 0], [1, 0, 0]], angles: [90, 45] });
-     * ```
      */
     "occt.transforms.rotateShapes": {
         /** The shapes to rotate; they stay as they are and rotated copies come back in the same order. */
@@ -17248,11 +12704,6 @@ export interface OperationParams {
      * through an optional center point.
      *
      * The rotation follows the right-hand rule about `axis`.
-     *
-     * @example
-     * ```typescript
-     * const turn = await bitbybit.occt.transforms.rotationAxisAngleToMatrix({ axis: [0, 1, 0], angle: 90, center: [5, 0, 5] });
-     * ```
      */
     "occt.transforms.rotationAxisAngleToMatrix": {
         /** The direction of the rotation axis. */
@@ -17267,11 +12718,6 @@ export interface OperationParams {
      *
      * A shape away from the origin also moves away from or toward it; `scaleFromCenter` scales
      * about a chosen point and `scale3d` scales each axis by its own factor.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.occt.transforms.scale({ shape: box, factor: 2 });
-     * ```
      */
     "occt.transforms.scale": {
         /** The shape to scale; it stays as it is and a scaled copy comes back. */
@@ -17285,11 +12731,6 @@ export interface OperationParams {
      * Unequal factors stretch the shape, which turns circles into ellipses and can make later
      * operations, such as fillets, slower or fail; keep the factors equal when the shape only needs
      * to grow.
-     *
-     * @example
-     * ```typescript
-     * const stretched = await bitbybit.occt.transforms.scale3d({ shape: box, scale: [1, 2, 1], center: [0, 0, 0] });
-     * ```
      */
     "occt.transforms.scale3d": {
         /** The shape to scale. */
@@ -17303,15 +12744,6 @@ export interface OperationParams {
      * Applies `scale3d` to several shapes, each with its own three factors and center.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const scaled = await bitbybit.occt.transforms.scale3dShapes({
-     *     shapes: [box, sphere],
-     *     scales: [[1, 2, 1], [2, 2, 2]],
-     *     centers: [[0, 0, 0], [10, 0, 0]],
-     * });
-     * ```
      */
     "occt.transforms.scale3dShapes": {
         /** The shapes to scale. */
@@ -17325,11 +12757,6 @@ export interface OperationParams {
      * Scales a shape uniformly about a chosen point by a factor.
      *
      * The point stays where it is and everything else moves away from it or toward it.
-     *
-     * @example
-     * ```typescript
-     * const bigger = await bitbybit.occt.transforms.scaleFromCenter({ shape: box, factor: 2, center: [5, 0, 5] });
-     * ```
      */
     "occt.transforms.scaleFromCenter": {
         /** The shape to scale; it stays as it is and a scaled copy comes back. */
@@ -17343,11 +12770,6 @@ export interface OperationParams {
      * Applies `scale` to several shapes, each uniformly about the origin by its own factor.
      *
      * The two lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const scaled = await bitbybit.occt.transforms.scaleShapes({ shapes: [box, sphere], factors: [2, 0.5] });
-     * ```
      */
     "occt.transforms.scaleShapes": {
         /** The shapes to scale; they stay as they are and scaled copies come back in the same order. */
@@ -17358,11 +12780,6 @@ export interface OperationParams {
     /**
      * Builds the matrix of a uniform scale by a factor about the origin or an optional center
      * point.
-     *
-     * @example
-     * ```typescript
-     * const grow = await bitbybit.occt.transforms.scaleUniformToMatrix({ factor: 2, center: [0, 0, 0] });
-     * ```
      */
     "occt.transforms.scaleUniformToMatrix": {
         /** The uniform scale factor; 2 doubles every size, 0.5 halves it. */
@@ -17380,17 +12797,6 @@ export interface OperationParams {
      * Because the scale and the rotation happen about the origin, a shape that is not there also
      * swings around it; move it first, or use `rotateAroundCenter` and `scale3d` for a chosen
      * center.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.occt.transforms.transform({
-     *     shape: box,
-     *     translation: [10, 0, 0],
-     *     rotationAxis: [0, 1, 0],
-     *     rotationAngle: 45,
-     *     scaleFactor: 2,
-     * });
-     * ```
      */
     "occt.transforms.transform": {
         /** The shape to transform; it stays as it is and a transformed copy comes back. */
@@ -17410,13 +12816,6 @@ export interface OperationParams {
      * The matrix is column-major, so the translation sits at indices 12 to 14. A matrix that
      * stretches or shears is allowed; build matrices with the `...ToMatrix` methods and combine
      * them with `multiplyTransforms`. A matrix the kernel cannot apply throws an error.
-     *
-     * @example
-     * ```typescript
-     * const move = await bitbybit.occt.transforms.translationToMatrix({ translation: [10, 0, 0] });
-     * const turn = await bitbybit.occt.transforms.rotationAxisAngleToMatrix({ axis: [0, 1, 0], angle: 90, center: [0, 0, 0] });
-     * const placed = await bitbybit.occt.transforms.transformByMatrix({ shape: box, transformation: [turn, move] });
-     * ```
      */
     "occt.transforms.transformByMatrix": {
         /** The shape to transform; it stays as it is and a transformed copy comes back. */
@@ -17432,17 +12831,6 @@ export interface OperationParams {
      * and scale factor.
      *
      * All the lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.occt.transforms.transformShapes({
-     *     shapes: [box, sphere],
-     *     translations: [[10, 0, 0], [-10, 0, 0]],
-     *     rotationAxes: [[0, 1, 0], [0, 1, 0]],
-     *     rotationAngles: [45, 0],
-     *     scaleFactors: [1, 2],
-     * });
-     * ```
      */
     "occt.transforms.transformShapes": {
         /**
@@ -17462,11 +12850,6 @@ export interface OperationParams {
     /**
      * Applies the same 4x4 matrix, or list of matrices applied first to last, to several shapes, as
      * `transformByMatrix` does for one.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.occt.transforms.transformShapesByMatrix({ shapes: [box, sphere], transformation: matrix });
-     * ```
      */
     "occt.transforms.transformShapesByMatrix": {
         /** The shapes to transform, all with the same matrix. */
@@ -17477,14 +12860,7 @@ export interface OperationParams {
          */
         transformation: unknown | PipelineRef;
     };
-    /**
-     * Moves a shape by a vector, in model units.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.occt.transforms.translate({ shape: box, translation: [10, 0, 0] });
-     * ```
-     */
+    /** Moves a shape by a vector, in model units. */
     "occt.transforms.translate": {
         /** The shape to move. */
         shape: unknown | PipelineRef;
@@ -17495,11 +12871,6 @@ export interface OperationParams {
      * Applies `translate` to several shapes, each by its own vector.
      *
      * The two lists must have the same length, or an error is thrown.
-     *
-     * @example
-     * ```typescript
-     * const moved = await bitbybit.occt.transforms.translateShapes({ shapes: [box, sphere], translations: [[10, 0, 0], [-10, 0, 0]] });
-     * ```
      */
     "occt.transforms.translateShapes": {
         /** The shapes to move. */
@@ -17507,14 +12878,7 @@ export interface OperationParams {
         /** One vector per shape, in model units. */
         translations?: [number, number, number][] | PipelineRef;
     };
-    /**
-     * Builds the matrix of a move by a vector, in model units.
-     *
-     * @example
-     * ```typescript
-     * const move = await bitbybit.occt.transforms.translationToMatrix({ translation: [10, 0, 0] });
-     * ```
-     */
+    /** Builds the matrix of a move by a vector, in model units. */
     "occt.transforms.translationToMatrix": {
         /** The move as `[x, y, z]`, in model units. */
         translation?: [number, number, number] | PipelineRef;
@@ -17555,11 +12919,6 @@ export interface OperationParams {
      * Finds the average of the points, which is their center of mass when they weigh the same.
      *
      * Example: [[0,0,0], [10,0,0], [10,10,0]] -> [6.67,3.33,0]
-     *
-     * @example
-     * ```typescript
-     * const center = bitbybit.point.averagePoint({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
-     * ```
      */
     "point.averagePoint": {
         /** The points, each `[x, y, z]`. */
@@ -17571,11 +12930,6 @@ export interface OperationParams {
      * The result carries the min and max corners, the center, and the width (X), height (Y) and
      * length (Z).
      * Example: points [[0,0,0], [10,5,3]] -> min [0,0,0], max [10,5,3], center [5,2.5,1.5]
-     *
-     * @example
-     * ```typescript
-     * const box = bitbybit.point.boundingBoxOfPoints({ points: [[0, 0, 0], [10, 5, 3], [-2, 1, 1]] });
-     * ```
      */
     "point.boundingBoxOfPoints": {
         /** The points, each `[x, y, z]`. */
@@ -17585,11 +12939,6 @@ export interface OperationParams {
      * Finds the nearest point in a list to a given point.
      *
      * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> [3,0,0]
-     *
-     * @example
-     * ```typescript
-     * const nearest = bitbybit.point.closestPointFromPoints({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
-     * ```
      */
     "point.closestPointFromPoints": {
         /** Points to search through */
@@ -17601,11 +12950,6 @@ export interface OperationParams {
      * Measures the distance from a point to the nearest point in a list.
      *
      * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> 3
-     *
-     * @example
-     * ```typescript
-     * const nearest = bitbybit.point.closestPointFromPointsDistance({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
-     * ```
      */
     "point.closestPointFromPointsDistance": {
         /** Points to search through */
@@ -17617,11 +12961,6 @@ export interface OperationParams {
      * Finds the position of the nearest point in a list, counted from 1.
      *
      * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> 3
-     *
-     * @example
-     * ```typescript
-     * const index = bitbybit.point.closestPointFromPointsIndex({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
-     * ```
      */
     "point.closestPointFromPointsIndex": {
         /** Points to search through */
@@ -17633,11 +12972,6 @@ export interface OperationParams {
      * Measures the straight-line distance between two points.
      *
      * Example: [0,0,0] to [3,4,0] -> 5
-     *
-     * @example
-     * ```typescript
-     * const d = bitbybit.point.distance({ startPoint: [0, 0, 0], endPoint: [3, 4, 0] });
-     * ```
      */
     "point.distance": {
         /** The point the measurement starts from. */
@@ -17649,11 +12983,6 @@ export interface OperationParams {
      * Measures the distance from one point to each point in a list.
      *
      * Example: start [0,0,0] and end points [[3,0,0], [0,4,0], [5,0,0]] -> [3, 4, 5]
-     *
-     * @example
-     * ```typescript
-     * const distances = bitbybit.point.distancesToPoints({ startPoint: [0, 0, 0], endPoints: [[3, 0, 0], [0, 4, 0]] });
-     * ```
      */
     "point.distancesToPoints": {
         /** The point every distance is measured from. */
@@ -17694,11 +13023,6 @@ export interface OperationParams {
      * `radiusHexagon` is the distance from a hexagon's center to a corner; columns run along X and
      * rows along Y, every second row shifted by half a column. `orientOnCenter` centers the grid on
      * the origin, `pointsOnGround` lays it on the XZ plane.
-     *
-     * @example
-     * ```typescript
-     * const centers = bitbybit.point.hexGrid({ radiusHexagon: 1, nrHexagonsX: 5, nrHexagonsY: 4, orientOnCenter: true, pointsOnGround: false });
-     * ```
      */
     "point.hexGrid": {
         /** How many rows of hexagons along Y. */
@@ -17719,18 +13043,6 @@ export interface OperationParams {
      * The result carries the center points and the six corners of every hexagon. A corner points up
      * unless `flatTop` is set; the extend flags stretch the outer rows past the edges to cover the
      * rectangle without a jagged border.
-     *
-     * @example
-     * ```typescript
-     * const grid = bitbybit.point.hexGridScaledToFit({
-     *     width: 10,
-     *     height: 10,
-     *     nrHexagonsInWidth: 5,
-     *     nrHexagonsInHeight: 5,
-     *     flatTop: false,
-     *     centerGrid: true,
-     * });
-     * ```
      */
     "point.hexGridScaledToFit": {
         /**
@@ -17784,11 +13096,6 @@ export interface OperationParams {
      * The corner is `end`; `start` and `center` are the far ends of the two segments that meet
      * there. The radius is limited by the shorter segment. A straight or folded-back corner, or a
      * segment shorter than `tolerance`, gives 0.
-     *
-     * @example
-     * ```typescript
-     * const radius = bitbybit.point.maxFilletRadius({ start: [10, 0, 0], center: [0, 10, 0], end: [0, 0, 0], tolerance: 1e-7 });
-     * ```
      */
     "point.maxFilletRadius": {
         /** The far end of the first segment. */
@@ -17809,11 +13116,6 @@ export interface OperationParams {
      *
      * The corner is `end`; `start` and `center` are the far ends of the two segments. A straight or
      * folded-back corner, or a segment shorter than `tolerance`, gives 0.
-     *
-     * @example
-     * ```typescript
-     * const radius = bitbybit.point.maxFilletRadiusHalfLine({ start: [10, 0, 0], center: [0, 10, 0], end: [0, 0, 0], tolerance: 1e-7 });
-     * ```
      */
     "point.maxFilletRadiusHalfLine": {
         /** The far end of the first segment. */
@@ -17834,15 +13136,6 @@ export interface OperationParams {
      *
      * With `checkLastWithFirst` on, the polyline is treated as closed and the two corners at the
      * ends are included. Fewer than three points give an empty list.
-     *
-     * @example
-     * ```typescript
-     * const radii = bitbybit.point.maxFilletsHalfLine({
-     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
-     *     checkLastWithFirst: true,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "point.maxFilletsHalfLine": {
         /** The points of the polyline, in order; at least three make a corner. */
@@ -17862,11 +13155,6 @@ export interface OperationParams {
      * Repeats one point a given number of times in a list.
      *
      * Example: point [5,5,0] three times -> [[5,5,0], [5,5,0], [5,5,0]]
-     *
-     * @example
-     * ```typescript
-     * const copies = bitbybit.point.multiplyPoint({ point: [5, 5, 0], amountOfPoints: 3 });
-     * ```
      */
     "point.multiplyPoint": {
         /** The point to repeat. */
@@ -17881,16 +13169,6 @@ export interface OperationParams {
      * third; `reverseNormal` flips it. Points on one line have no plane, so the result is
      * undefined.
      * Example: [0,0,0], [1,0,0], [0,1,0] -> [0,0,1]
-     *
-     * @example
-     * ```typescript
-     * const normal = bitbybit.point.normalFromThreePoints({
-     *     point1: [0, 0, 0],
-     *     point2: [1, 0, 0],
-     *     point3: [0, 1, 0],
-     *     reverseNormal: false,
-     * });
-     * ```
      */
     "point.normalFromThreePoints": {
         /** The first point; the normal is measured from here. */
@@ -17909,11 +13187,6 @@ export interface OperationParams {
      * Builds a 2D point from its x and y values.
      *
      * Example: x=10, y=5 -> [10,5]
-     *
-     * @example
-     * ```typescript
-     * const point = bitbybit.point.pointXY({ x: 10, y: 5 });
-     * ```
      */
     "point.pointXY": {
         /** The X value, the first entry. */
@@ -17925,11 +13198,6 @@ export interface OperationParams {
      * Builds a 3D point from its x, y and z values.
      *
      * Example: x=10, y=5, z=3 -> [10,5,3]
-     *
-     * @example
-     * ```typescript
-     * const point = bitbybit.point.pointXYZ({ x: 10, y: 5, z: 3 });
-     * ```
      */
     "point.pointXYZ": {
         /** The X value, the first entry. */
@@ -17945,15 +13213,6 @@ export interface OperationParams {
      * With `checkFirstAndLast` on, a last point that repeats the first is dropped too. Points
      * within `tolerance` of each other count as the same.
      * Example: [[0,0,0], [0,0,0], [1,0,0], [1,0,0], [2,0,0]] -> [[0,0,0], [1,0,0], [2,0,0]]
-     *
-     * @example
-     * ```typescript
-     * const cleaned = bitbybit.point.removeConsecutiveDuplicates({
-     *     points: [[0, 0, 0], [0, 0, 0], [1, 0, 0]],
-     *     tolerance: 1e-7,
-     *     checkFirstAndLast: false,
-     * });
-     * ```
      */
     "point.removeConsecutiveDuplicates": {
         /** The points to filter; their order is kept. */
@@ -17971,16 +13230,6 @@ export interface OperationParams {
      *
      * The angle is in degrees and turns counter-clockwise when the axis points toward you.
      * Example: point [10,0,0] around the Y axis through [0,0,0] by 90 -> [0,0,-10]
-     *
-     * @example
-     * ```typescript
-     * const turned = bitbybit.point.rotatePointsCenterAxis({
-     *     points: [[10, 0, 0]],
-     *     center: [0, 0, 0],
-     *     axis: [0, 1, 0],
-     *     angle: 90,
-     * });
-     * ```
      */
     "point.rotatePointsCenterAxis": {
         /** The points to rotate; they are not changed and the result keeps their order. */
@@ -18001,15 +13250,6 @@ export interface OperationParams {
      *
      * With `checkLastWithFirst` on, the polyline is treated as closed. Fewer than three points, or
      * any corner that allows no fillet, give 0.
-     *
-     * @example
-     * ```typescript
-     * const radius = bitbybit.point.safestPointsMaxFilletHalfLine({
-     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
-     *     checkLastWithFirst: true,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "point.safestPointsMaxFilletHalfLine": {
         /** The points of the polyline, in order; at least three make a corner. */
@@ -18029,15 +13269,6 @@ export interface OperationParams {
      * Scales points away from or toward a center, with its own factor per axis.
      *
      * Example: point [10,0,0] about center [5,0,0] with factors [2,1,1] -> [15,0,0]
-     *
-     * @example
-     * ```typescript
-     * const stretched = bitbybit.point.scalePointsCenterXYZ({
-     *     points: [[10, 0, 0], [0, 10, 0]],
-     *     center: [0, 0, 0],
-     *     scaleXyz: [2, 1, 1],
-     * });
-     * ```
      */
     "point.scalePointsCenterXYZ": {
         /** The points to scale; they are not changed and the result keeps their order. */
@@ -18054,11 +13285,6 @@ export interface OperationParams {
      * Sorts points by X, then by Y for equal X, then by Z.
      *
      * Example: [[5,0,0], [1,0,0], [3,0,0]] -> [[1,0,0], [3,0,0], [5,0,0]]
-     *
-     * @example
-     * ```typescript
-     * const sorted = bitbybit.point.sortPoints({ points: [[5, 0, 0], [1, 0, 0], [3, 0, 0]] });
-     * ```
      */
     "point.sortPoints": {
         /** The points, each `[x, y, z]`. */
@@ -18070,11 +13296,6 @@ export interface OperationParams {
      *
      * `numberPoints` sets how many points are placed, `phi` and `widening` how quickly the spiral
      * opens, and `factor` where along the curve it starts. Every point has z = 0.
-     *
-     * @example
-     * ```typescript
-     * const points = bitbybit.point.spiral({ phi: 0.9, numberPoints: 100, widening: 3, radius: 10, factor: 1 });
-     * ```
      */
     "point.spiral": {
         /**
@@ -18099,16 +13320,6 @@ export interface OperationParams {
      * stay as they are.
      *
      * Example: point [10,0,0] from center [0,0,0] along [1,0,0] with scale 2 -> [20,0,0]
-     *
-     * @example
-     * ```typescript
-     * const taller = bitbybit.point.stretchPointsDirFromCenter({
-     *     points: [[0, 1, 0], [0, 2, 0]],
-     *     center: [0, 0, 0],
-     *     direction: [0, 1, 0],
-     *     scale: 2,
-     * });
-     * ```
      */
     "point.stretchPointsDirFromCenter": {
         /** The points to stretch; they are not changed and the result keeps their order. */
@@ -18127,14 +13338,6 @@ export interface OperationParams {
      * Applies a transformation matrix, or a list of them in order, to one point.
      *
      * Example: point [0,0,0] with a translation by [5,5,0] -> [5,5,0]
-     *
-     * @example
-     * ```typescript
-     * const moved = bitbybit.point.transformPoint({
-     *     point: [0, 0, 0],
-     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 5, 0] }),
-     * });
-     * ```
      */
     "point.transformPoint": {
         /** The point to transform; it is not changed, a new point is returned. */
@@ -18146,14 +13349,6 @@ export interface OperationParams {
      * Applies the same transformation matrix, or list of them in order, to every point.
      *
      * Example: five points with a 90 degree rotation -> all five rotated together
-     *
-     * @example
-     * ```typescript
-     * const rotated = bitbybit.point.transformPoints({
-     *     points: [[1, 0, 0], [2, 0, 0]],
-     *     transformation: bitbybit.transforms.rotationCenterAxis({ center: [0, 0, 0], axis: [0, 1, 0], angle: 90 }),
-     * });
-     * ```
      */
     "point.transformPoints": {
         /** The points to transform; they are not changed and the result keeps their order. */
@@ -18167,14 +13362,6 @@ export interface OperationParams {
      *
      * The two lists must have the same length, or an error is thrown.
      * Example: three points with three translations -> each point moved by its own translation
-     *
-     * @example
-     * ```typescript
-     * const placed = bitbybit.point.transformsForPoints({
-     *     points: [[0, 0, 0], [1, 0, 0]],
-     *     transformation: bitbybit.transforms.translationsXYZ({ translations: [[0, 1, 0], [0, 2, 0]] }),
-     * });
-     * ```
      */
     "point.transformsForPoints": {
         /**
@@ -18192,11 +13379,6 @@ export interface OperationParams {
      * Moves every point by the same vector.
      *
      * Example: points [[0,0,0], [1,0,0]] by [5,5,0] -> [[5,5,0], [6,5,0]]
-     *
-     * @example
-     * ```typescript
-     * const moved = bitbybit.point.translatePoints({ points: [[0, 0, 0], [1, 0, 0]], translation: [5, 5, 0] });
-     * ```
      */
     "point.translatePoints": {
         /** The points to move. */
@@ -18209,14 +13391,6 @@ export interface OperationParams {
      *
      * The two lists must have the same length, or an error is thrown.
      * Example: three points with three vectors -> each point moved by its own vector
-     *
-     * @example
-     * ```typescript
-     * const moved = bitbybit.point.translatePointsWithVectors({
-     *     points: [[0, 0, 0], [1, 0, 0]],
-     *     translations: [[0, 1, 0], [0, 2, 0]],
-     * });
-     * ```
      */
     "point.translatePointsWithVectors": {
         /** The points to move. */
@@ -18228,11 +13402,6 @@ export interface OperationParams {
      * Moves every point by the given x, y and z amounts.
      *
      * Example: point [0,0,0] with x=10, y=5, z=0 -> [10,5,0]
-     *
-     * @example
-     * ```typescript
-     * const lifted = bitbybit.point.translateXYZPoints({ points: [[0, 0, 0], [1, 0, 0]], x: 0, y: 5, z: 0 });
-     * ```
      */
     "point.translateXYZPoints": {
         /** The points to move. */
@@ -18248,11 +13417,6 @@ export interface OperationParams {
      * Tells whether two points are closer together than a tolerance.
      *
      * Example: [1.0000001, 2, 3] and [1, 2, 3] with tolerance 1e-6 -> true
-     *
-     * @example
-     * ```typescript
-     * const same = bitbybit.point.twoPointsAlmostEqual({ point1: [1, 2, 3], point2: [1, 2, 3.0000001], tolerance: 1e-6 });
-     * ```
      */
     "point.twoPointsAlmostEqual": {
         /** First point to compare */
@@ -18275,11 +13439,6 @@ export interface OperationParams {
      * Builds a polyline object from points, open or closed.
      *
      * Example: three points with isClosed true -> a triangle
-     *
-     * @example
-     * ```typescript
-     * const triangle = bitbybit.polyline.create({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: true });
-     * ```
      */
     "polyline.create": {
         /** The points of the polyline, in order along it. */
@@ -18301,11 +13460,6 @@ export interface OperationParams {
      *
      * The closing segment of a closed polyline is not counted.
      * Example: [[0,0,0], [3,0,0], [3,4,0]] -> 7
-     *
-     * @example
-     * ```typescript
-     * const len = bitbybit.polyline.length({ polyline: { points: [[0, 0, 0], [3, 0, 0], [3, 4, 0]] } });
-     * ```
      */
     "polyline.length": {
         /** The polyline object with its points. */
@@ -18317,14 +13471,6 @@ export interface OperationParams {
      *
      * A closed polyline includes the two corners at its ends. Fewer than three points give an empty
      * list.
-     *
-     * @example
-     * ```typescript
-     * const radii = bitbybit.polyline.maxFilletsHalfLine({
-     *     polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]], isClosed: true },
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "polyline.maxFilletsHalfLine": {
         /** The polyline to examine. */
@@ -18338,14 +13484,6 @@ export interface OperationParams {
      * Neighboring segments are not tested against each other, and crossings closer together than
      * the tolerance are reported once.
      * Example: a figure-eight -> its one crossing point
-     *
-     * @example
-     * ```typescript
-     * const crossings = bitbybit.polyline.polylineSelfIntersection({
-     *     polyline: { points: [[0, 0, 0], [2, 2, 0], [2, 0, 0], [0, 2, 0]] },
-     *     tolerance: 1e-6,
-     * });
-     * ```
      */
     "polyline.polylineSelfIntersection": {
         /** The polyline to examine. */
@@ -18359,11 +13497,6 @@ export interface OperationParams {
      * A closed polyline also gets the segment from its last point back to its first, unless the two
      * coincide.
      * Example: three points -> two lines, or three when closed
-     *
-     * @example
-     * ```typescript
-     * const lines = bitbybit.polyline.polylineToLines({ polyline: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: true } });
-     * ```
      */
     "polyline.polylineToLines": {
         /** The polyline object with its points. */
@@ -18375,11 +13508,6 @@ export interface OperationParams {
      * A closed polyline also gets the segment from its last point back to its first, unless the two
      * coincide. Fewer than two points give no segments.
      * Example: four points, closed -> four segments around the loop
-     *
-     * @example
-     * ```typescript
-     * const segments = bitbybit.polyline.polylineToSegments({ polyline: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]], isClosed: false } });
-     * ```
      */
     "polyline.polylineToSegments": {
         /** The polyline object with its points. */
@@ -18391,11 +13519,6 @@ export interface OperationParams {
      * The given polyline's own point list is reversed in place and handed back inside a new
      * polyline object.
      * Example: [[0,0,0], [1,0,0], [2,0,0]] -> [[2,0,0], [1,0,0], [0,0,0]]
-     *
-     * @example
-     * ```typescript
-     * const back = bitbybit.polyline.reverse({ polyline: { points: [[0, 0, 0], [1, 0, 0], [2, 0, 0]] } });
-     * ```
      */
     "polyline.reverse": {
         /** The polyline object with its points. */
@@ -18406,14 +13529,6 @@ export interface OperationParams {
      * per-corner maximums under the half-segment rule.
      *
      * Fewer than three points, or any corner that allows no fillet, give 0.
-     *
-     * @example
-     * ```typescript
-     * const radius = bitbybit.polyline.safestFilletRadius({
-     *     polyline: { points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]], isClosed: true },
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "polyline.safestFilletRadius": {
         /** The polyline to examine. */
@@ -18427,14 +13542,6 @@ export interface OperationParams {
      * Segments that connect end to end become one polyline each chain; segments that touch nothing
      * become single-segment polylines.
      * Example: ten scattered segments forming two chains -> two polylines
-     *
-     * @example
-     * ```typescript
-     * const chains = bitbybit.polyline.sortSegmentsIntoPolylines({
-     *     segments: [[[0, 0, 0], [1, 0, 0]], [[1, 0, 0], [1, 1, 0]], [[5, 5, 0], [6, 5, 0]]],
-     *     tolerance: 1e-5,
-     * });
-     * ```
      */
     "polyline.sortSegmentsIntoPolylines": {
         /** The segments to join, each a pair of points, in any order. */
@@ -18446,14 +13553,6 @@ export interface OperationParams {
      * Applies a transformation matrix, or a list of them in order, to every point of the polyline.
      *
      * Example: a translation by [5,0,0] -> every point moved 5 along X
-     *
-     * @example
-     * ```typescript
-     * const moved = bitbybit.polyline.transformPolyline({
-     *     polyline: { points: [[0, 0, 0], [1, 0, 0]] },
-     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 0, 0] }),
-     * });
-     * ```
      */
     "polyline.transformPolyline": {
         /** The polyline whose points are transformed; a new polyline is returned. */
@@ -18467,15 +13566,6 @@ export interface OperationParams {
      *
      * Crossings closer together than the tolerance are reported once.
      * Example: two polylines forming an X -> the point in the middle
-     *
-     * @example
-     * ```typescript
-     * const crossings = bitbybit.polyline.twoPolylineIntersection({
-     *     polyline1: { points: [[0, 0, 0], [2, 2, 0]] },
-     *     polyline2: { points: [[0, 2, 0], [2, 0, 0]] },
-     *     tolerance: 1e-6,
-     * });
-     * ```
      */
     "polyline.twoPolylineIntersection": {
         /** The first polyline. */
@@ -18489,11 +13579,6 @@ export interface OperationParams {
      * Reads the character at a position, counting from 0.
      *
      * Example: 'hello' at 1 -> 'e'
-     *
-     * @example
-     * ```typescript
-     * const second = bitbybit.text.charAt({ text: "hello", index: 1 });
-     * ```
      */
     "text.charAt": {
         /** The text to read a character from. */
@@ -18505,11 +13590,6 @@ export interface OperationParams {
      * Joins several texts into one with nothing between them.
      *
      * Example: ['hello', ' ', 'world'] -> 'hello world'
-     *
-     * @example
-     * ```typescript
-     * const sentence = bitbybit.text.concat({ texts: ["hello", " ", "world"] });
-     * ```
      */
     "text.concat": {
         /** The texts to join, in order. */
@@ -18528,11 +13608,6 @@ export interface OperationParams {
      * Tells whether a text ends with a search text.
      *
      * Example: 'hello world' ends with 'world' -> true
-     *
-     * @example
-     * ```typescript
-     * const ends = bitbybit.text.endsWith({ text: "hello world", search: "world" });
-     * ```
      */
     "text.endsWith": {
         /** The text to look in. */
@@ -18546,11 +13621,6 @@ export interface OperationParams {
      *
      * A placeholder without a value is left as it is.
      * Example: 'Point: ({0}, {1})' with [10, 5] -> 'Point: (10, 5)'
-     *
-     * @example
-     * ```typescript
-     * const label = bitbybit.text.format({ text: "Point: ({0}, {1})", values: ["10", "5"] });
-     * ```
      */
     "text.format": {
         /** The text with placeholders such as `{0}` and `{1}`. */
@@ -18562,11 +13632,6 @@ export interface OperationParams {
      * Tells whether a text contains a search text.
      *
      * Example: 'hello world' includes 'world' -> true
-     *
-     * @example
-     * ```typescript
-     * const has = bitbybit.text.includes({ text: "hello world", search: "world" });
-     * ```
      */
     "text.includes": {
         /** The text to look in. */
@@ -18579,11 +13644,6 @@ export interface OperationParams {
      * occur.
      *
      * Example: 'hello world' finding 'world' -> 6
-     *
-     * @example
-     * ```typescript
-     * const at = bitbybit.text.indexOf({ text: "hello world", search: "world" });
-     * ```
      */
     "text.indexOf": {
         /** The text to look in. */
@@ -18604,11 +13664,6 @@ export interface OperationParams {
      * Joins a list of texts into one, with a separator between neighbors.
      *
      * Example: ['apple', 'banana', 'cherry'] joined by ', ' -> 'apple, banana, cherry'
-     *
-     * @example
-     * ```typescript
-     * const line = bitbybit.text.join({ list: ["apple", "banana"], separator: ", " });
-     * ```
      */
     "text.join": {
         /** The texts to join, in order. */
@@ -18621,11 +13676,6 @@ export interface OperationParams {
      * occur.
      *
      * Example: 'hello world hello' finding 'hello' -> 12
-     *
-     * @example
-     * ```typescript
-     * const at = bitbybit.text.lastIndexOf({ text: "hello world hello", search: "hello" });
-     * ```
      */
     "text.lastIndexOf": {
         /** The text to look in. */
@@ -18647,11 +13697,6 @@ export interface OperationParams {
      * alone.
      *
      * Example: 'x' to length 3 with 'a' -> 'xaa'
-     *
-     * @example
-     * ```typescript
-     * const padded = bitbybit.text.padEnd({ text: "x", length: 3, padString: "a" });
-     * ```
      */
     "text.padEnd": {
         /** The text to lengthen. */
@@ -18666,11 +13711,6 @@ export interface OperationParams {
      * alone.
      *
      * Example: 'x' to length 3 with 'a' -> 'aax'
-     *
-     * @example
-     * ```typescript
-     * const padded = bitbybit.text.padStart({ text: "7", length: 3, padString: "0" });
-     * ```
      */
     "text.padStart": {
         /** The text to lengthen. */
@@ -18686,11 +13726,6 @@ export interface OperationParams {
      * With the `g` flag every match is listed; without it only the first match and its capture
      * groups. No match gives null.
      * Example: 'hello123world456' against '[0-9]+' with 'g' -> ['123', '456']
-     *
-     * @example
-     * ```typescript
-     * const numbers = bitbybit.text.regexMatch({ text: "hello123world456", pattern: "[0-9]+", flags: "g" });
-     * ```
      */
     "text.regexMatch": {
         /** The text the pattern is applied to. */
@@ -18711,11 +13746,6 @@ export interface OperationParams {
      *
      * With the `g` flag every match is replaced; without it only the first.
      * Example: 'hello123world456' against '[0-9]+' with 'g', replaced by 'X' -> 'helloXworldX'
-     *
-     * @example
-     * ```typescript
-     * const clean = bitbybit.text.regexReplace({ text: "hello123world456", pattern: "[0-9]+", flags: "g", replaceWith: "X" });
-     * ```
      */
     "text.regexReplace": {
         /** The text to make the replacements in. */
@@ -18741,11 +13771,6 @@ export interface OperationParams {
      * does not match.
      *
      * Example: 'hello123' against '[0-9]+' -> 5
-     *
-     * @example
-     * ```typescript
-     * const at = bitbybit.text.regexSearch({ text: "hello123", pattern: "[0-9]+", flags: "" });
-     * ```
      */
     "text.regexSearch": {
         /** The text the pattern is applied to. */
@@ -18766,11 +13791,6 @@ export interface OperationParams {
      * dropped.
      *
      * Example: 'a1b2c3' split by '[0-9]+' -> ['a', 'b', 'c', '']
-     *
-     * @example
-     * ```typescript
-     * const letters = bitbybit.text.regexSplit({ text: "a1b2c3", pattern: "[0-9]+", flags: "" });
-     * ```
      */
     "text.regexSplit": {
         /** The text the pattern is applied to. */
@@ -18790,11 +13810,6 @@ export interface OperationParams {
      * Tells whether a regular expression matches somewhere in a text.
      *
      * Example: 'hello123' against '[0-9]+' -> true
-     *
-     * @example
-     * ```typescript
-     * const hasDigits = bitbybit.text.regexTest({ text: "hello123", pattern: "[0-9]+", flags: "" });
-     * ```
      */
     "text.regexTest": {
         /** The text the pattern is applied to. */
@@ -18814,11 +13829,6 @@ export interface OperationParams {
      * Repeats a text a number of times, end to end.
      *
      * Example: 'ha' three times -> 'hahaha'
-     *
-     * @example
-     * ```typescript
-     * const laugh = bitbybit.text.repeat({ text: "ha", count: 3 });
-     * ```
      */
     "text.repeat": {
         /** The text that is written out again and again. */
@@ -18830,11 +13840,6 @@ export interface OperationParams {
      * Replaces every occurrence of a search text with another text.
      *
      * Example: 'hello hello' replacing 'hello' with 'hi' -> 'hi hi'
-     *
-     * @example
-     * ```typescript
-     * const greeting = bitbybit.text.replaceAll({ text: "hello hello", search: "hello", replaceWith: "hi" });
-     * ```
      */
     "text.replaceAll": {
         /** The text to make the replacements in. */
@@ -18858,11 +13863,6 @@ export interface OperationParams {
      *
      * Unlike `substring`, a negative position counts from the end of the text.
      * Example: 'hello world' from 0 to 5 -> 'hello'; from -5 -> 'world'
-     *
-     * @example
-     * ```typescript
-     * const tail = bitbybit.text.slice({ text: "hello world", start: 6, end: 11 });
-     * ```
      */
     "text.slice": {
         /** The text to take characters from. */
@@ -18879,11 +13879,6 @@ export interface OperationParams {
      * Cuts a text into pieces wherever a separator occurs; the separator itself is dropped.
      *
      * Example: 'apple,banana,cherry' split by ',' -> ['apple', 'banana', 'cherry']
-     *
-     * @example
-     * ```typescript
-     * const parts = bitbybit.text.split({ text: "apple,banana,cherry", separator: "," });
-     * ```
      */
     "text.split": {
         /** The text to cut into pieces. */
@@ -18895,11 +13890,6 @@ export interface OperationParams {
      * Tells whether a text begins with a search text.
      *
      * Example: 'hello world' starts with 'hello' -> true
-     *
-     * @example
-     * ```typescript
-     * const starts = bitbybit.text.startsWith({ text: "hello world", search: "hello" });
-     * ```
      */
     "text.startsWith": {
         /** The text to look in. */
@@ -18912,11 +13902,6 @@ export interface OperationParams {
      *
      * A start larger than the end swaps the two, and negative positions count as 0.
      * Example: 'hello world' from 0 to 5 -> 'hello'
-     *
-     * @example
-     * ```typescript
-     * const word = bitbybit.text.substring({ text: "hello world", start: 0, end: 5 });
-     * ```
      */
     "text.substring": {
         /** The text to take characters from. */
@@ -19017,11 +14002,6 @@ export interface OperationParams {
      * returned with the character's width and height. An unknown character is drawn as a question
      * mark.
      * Example: 'A' at height 10 -> the strokes of an A, 10 units tall
-     *
-     * @example
-     * ```typescript
-     * const letter = bitbybit.text.vectorChar({ char: "A", height: 10, xOffset: 0, yOffset: 0, extrudeOffset: 0 });
-     * ```
      */
     "text.vectorChar": {
         /**
@@ -19051,16 +14031,6 @@ export interface OperationParams {
      * the given height, spacing and alignment; `centerOnOrigin` puts the middle of the block at the
      * origin.
      * Example: 'Hello' at height 10 -> five characters with their strokes
-     *
-     * @example
-     * ```typescript
-     * const lines = bitbybit.text.vectorText({
-     *     text: "Hello\nWorld",
-     *     height: 10,
-     *     align: Bit.Inputs.Base.horizontalAlignEnum.center,
-     *     centerOnOrigin: true,
-     * });
-     * ```
      */
     "text.vectorText": {
         /** The text to draw; a line break starts a new line. */
@@ -19098,11 +14068,6 @@ export interface OperationParams {
      * Adds two vectors entry by entry.
      *
      * Example: [1,2,3] + [4,5,6] -> [5,7,9]
-     *
-     * @example
-     * ```typescript
-     * const sum = bitbybit.vector.add({ first: [1, 2, 3], second: [4, 5, 6] });
-     * ```
      */
     "vector.add": {
         /**
@@ -19118,11 +14083,6 @@ export interface OperationParams {
      *
      * The result has as many entries as the first vector.
      * Example: [[1,2,3], [4,5,6], [7,8,9]] -> [12,15,18]
-     *
-     * @example
-     * ```typescript
-     * const total = bitbybit.vector.addAll({ vectors: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] });
-     * ```
      */
     "vector.addAll": {
         /** The vectors to add together; the result has as many entries as the first. */
@@ -19132,11 +14092,6 @@ export interface OperationParams {
      * Tells whether every value in a list of booleans is true.
      *
      * Example: [true, true, true] -> true, [true, false, true] -> false
-     *
-     * @example
-     * ```typescript
-     * const allTrue = bitbybit.vector.all({ vector: [true, true, false] });
-     * ```
      */
     "vector.all": {
         /** The booleans to check. */
@@ -19147,11 +14102,6 @@ export interface OperationParams {
      *
      * The direction of turning is not considered; use `signedAngleBetween` for that.
      * Example: [1,0,0] and [0,1,0] -> 90
-     *
-     * @example
-     * ```typescript
-     * const angle = bitbybit.vector.angleBetween({ first: [1, 0, 0], second: [0, 1, 0] });
-     * ```
      */
     "vector.angleBetween": {
         /**
@@ -19168,11 +14118,6 @@ export interface OperationParams {
      *
      * Only the first two entries of each vector are used; a positive angle turns counter-clockwise.
      * Example: [1,0] to [0,1] -> 90, [0,1] to [1,0] -> -90
-     *
-     * @example
-     * ```typescript
-     * const angle = bitbybit.vector.angleBetweenNormalized2d({ first: [1, 0], second: [0, 1] });
-     * ```
      */
     "vector.angleBetweenNormalized2d": {
         /**
@@ -19189,11 +14134,6 @@ export interface OperationParams {
      * Its direction follows the right-hand rule and its length is the area of the parallelogram the
      * two vectors span.
      * Example: [1,0,0] x [0,1,0] -> [0,0,1]
-     *
-     * @example
-     * ```typescript
-     * const normal = bitbybit.vector.cross({ first: [1, 0, 0], second: [0, 1, 0] });
-     * ```
      */
     "vector.cross": {
         /**
@@ -19208,11 +14148,6 @@ export interface OperationParams {
      * Computes the straight-line distance between two vectors.
      *
      * Example: [0,0,0] to [3,4,0] -> 5
-     *
-     * @example
-     * ```typescript
-     * const distance = bitbybit.vector.dist({ first: [0, 0, 0], second: [3, 4, 0] });
-     * ```
      */
     "vector.dist": {
         /**
@@ -19228,11 +14163,6 @@ export interface OperationParams {
      * comparing distances.
      *
      * Example: [0,0,0] to [3,4,0] -> 25
-     *
-     * @example
-     * ```typescript
-     * const d2 = bitbybit.vector.distSquared({ first: [0, 0, 0], second: [3, 4, 0] });
-     * ```
      */
     "vector.distSquared": {
         /**
@@ -19247,11 +14177,6 @@ export interface OperationParams {
      * Divides every entry of a vector by one number.
      *
      * Example: [10,20,30] / 2 -> [5,10,15]
-     *
-     * @example
-     * ```typescript
-     * const half = bitbybit.vector.div({ vector: [10, 20, 30], scalar: 2 });
-     * ```
      */
     "vector.div": {
         /** The vector to scale. */
@@ -19263,11 +14188,6 @@ export interface OperationParams {
      * Subtracts the first value of a vector from its last, which for a sorted list is its range.
      *
      * Example: [1,3,5,9] -> 8
-     *
-     * @example
-     * ```typescript
-     * const span = bitbybit.vector.domain({ vector: [1, 3, 5, 9] });
-     * ```
      */
     "vector.domain": {
         /** The vector, as a list of numbers. */
@@ -19279,11 +14199,6 @@ export interface OperationParams {
      * It is 0 for vectors at right angles and, for unit vectors, the cosine of the angle between
      * them.
      * Example: [1,2,3] and [4,5,6] -> 32
-     *
-     * @example
-     * ```typescript
-     * const projection = bitbybit.vector.dot({ first: [1, 2, 3], second: [4, 5, 6] });
-     * ```
      */
     "vector.dot": {
         /**
@@ -19298,11 +14213,6 @@ export interface OperationParams {
      * Marks which entries of a vector are finite numbers.
      *
      * Example: [1, 2, Infinity, 3] -> [true, true, false, true]
-     *
-     * @example
-     * ```typescript
-     * const flags = bitbybit.vector.finite({ vector: [1, Infinity, 3] });
-     * ```
      */
     "vector.finite": {
         /** The vector, as a list of numbers. */
@@ -19312,11 +14222,6 @@ export interface OperationParams {
      * Tells whether a vector has no length, that is, every entry is exactly 0.
      *
      * Example: [0,0,0] -> true, [0,0,0.001] -> false
-     *
-     * @example
-     * ```typescript
-     * const zero = bitbybit.vector.isZero({ vector: [0, 0, 0] });
-     * ```
      */
     "vector.isZero": {
         /** The vector, as a list of numbers. */
@@ -19326,11 +14231,6 @@ export interface OperationParams {
      * Computes the length of a 3D vector.
      *
      * Example: [3,4,0] -> 5
-     *
-     * @example
-     * ```typescript
-     * const len = bitbybit.vector.length({ vector: [3, 4, 0] });
-     * ```
      */
     "vector.length": {
         /** The vector as `[x, y, z]`. */
@@ -19341,11 +14241,6 @@ export interface OperationParams {
      * lengths.
      *
      * Example: [3,4,0] -> 25
-     *
-     * @example
-     * ```typescript
-     * const l2 = bitbybit.vector.lengthSq({ vector: [3, 4, 0] });
-     * ```
      */
     "vector.lengthSq": {
         /** The vector as `[x, y, z]`. */
@@ -19356,11 +14251,6 @@ export interface OperationParams {
      *
      * `fraction` is the share of `first`: 1 gives `first`, 0 gives `second`, 0.5 the midpoint.
      * Example: [0,0,0] and [10,10,10] at 0.5 -> [5,5,5]
-     *
-     * @example
-     * ```typescript
-     * const mid = bitbybit.vector.lerp({ first: [0, 0, 0], second: [10, 10, 10], fraction: 0.5 });
-     * ```
      */
     "vector.lerp": {
         /** The vector the blend reaches at fraction 1. */
@@ -19377,11 +14267,6 @@ export interface OperationParams {
      * Finds the largest value in a vector.
      *
      * Example: [3, 7, 2, 9, 1] -> 9
-     *
-     * @example
-     * ```typescript
-     * const largest = bitbybit.vector.max({ vector: [3, 7, 2, 9, 1] });
-     * ```
      */
     "vector.max": {
         /** The vector, as a list of numbers. */
@@ -19391,11 +14276,6 @@ export interface OperationParams {
      * Finds the smallest value in a vector.
      *
      * Example: [3, 7, 2, 9, 1] -> 1
-     *
-     * @example
-     * ```typescript
-     * const smallest = bitbybit.vector.min({ vector: [3, 7, 2, 9, 1] });
-     * ```
      */
     "vector.min": {
         /** The vector, as a list of numbers. */
@@ -19405,11 +14285,6 @@ export interface OperationParams {
      * Multiplies every entry of a vector by one number.
      *
      * Example: [2,3,4] x 5 -> [10,15,20]
-     *
-     * @example
-     * ```typescript
-     * const scaled = bitbybit.vector.mul({ vector: [2, 3, 4], scalar: 5 });
-     * ```
      */
     "vector.mul": {
         /** The vector to scale. */
@@ -19421,11 +14296,6 @@ export interface OperationParams {
      * Flips the sign of every entry, so the vector points the opposite way.
      *
      * Example: [5,-3,2] -> [-5,3,-2]
-     *
-     * @example
-     * ```typescript
-     * const opposite = bitbybit.vector.neg({ vector: [5, -3, 2] });
-     * ```
      */
     "vector.neg": {
         /** The vector, as a list of numbers. */
@@ -19435,11 +14305,6 @@ export interface OperationParams {
      * Computes the length of a vector.
      *
      * Example: [3,4,0] -> 5, [1,0,0] -> 1
-     *
-     * @example
-     * ```typescript
-     * const len = bitbybit.vector.norm({ vector: [3, 4, 0] });
-     * ```
      */
     "vector.norm": {
         /** The vector, as a list of numbers. */
@@ -19450,11 +14315,6 @@ export interface OperationParams {
      *
      * A vector shorter than 1e-8 has no direction to keep, so the result is undefined.
      * Example: [3,4,0] -> [0.6,0.8,0]
-     *
-     * @example
-     * ```typescript
-     * const direction = bitbybit.vector.normalized({ vector: [3, 4, 0] });
-     * ```
      */
     "vector.normalized": {
         /** The vector, as a list of numbers. */
@@ -19465,11 +14325,6 @@ export interface OperationParams {
      * lengths.
      *
      * Example: [3,4,0] -> 25
-     *
-     * @example
-     * ```typescript
-     * const n2 = bitbybit.vector.normSquared({ vector: [3, 4, 0] });
-     * ```
      */
     "vector.normSquared": {
         /** The vector, as a list of numbers. */
@@ -19480,11 +14335,6 @@ export interface OperationParams {
      *
      * The direction is used as given, so a direction of length 2 travels twice the distance.
      * Example: start [0,0,0], direction [1,0,0], distance 5 -> [5,0,0]
-     *
-     * @example
-     * ```typescript
-     * const ahead = bitbybit.vector.onRay({ point: [0, 0, 0], vector: [1, 0, 0], distance: 5 });
-     * ```
      */
     "vector.onRay": {
         /** Where the ray starts. */
@@ -19505,11 +14355,6 @@ export interface OperationParams {
      *
      * A string that is not a number becomes NaN.
      * Example: ['1', '2.5', '3'] -> [1, 2.5, 3]
-     *
-     * @example
-     * ```typescript
-     * const numbers = bitbybit.vector.parseNumbers({ vector: ["1", "2.5", "-3"] });
-     * ```
      */
     "vector.parseNumbers": {
         /** The strings to parse, such as `["1", "2.5"]`. */
@@ -19521,11 +14366,6 @@ export interface OperationParams {
      *
      * The turn is counter-clockwise when the reference vector points toward you.
      * Example: [1,0,0] to [0,0,-1] around [0,1,0] -> 90
-     *
-     * @example
-     * ```typescript
-     * const angle = bitbybit.vector.positiveAngleBetween({ first: [1, 0, 0], second: [0, 0, -1], reference: [0, 1, 0] });
-     * ```
      */
     "vector.positiveAngleBetween": {
         /**
@@ -19542,11 +14382,6 @@ export interface OperationParams {
      * Lists the whole numbers from 0 up to, but not including, `max`.
      *
      * Example: max=5 -> [0,1,2,3,4]
-     *
-     * @example
-     * ```typescript
-     * const indices = bitbybit.vector.range({ max: 5 });
-     * ```
      */
     "vector.range": {
         /** The end of the range; it is not included, so 5 gives `[0, 1, 2, 3, 4]`. */
@@ -19557,14 +14392,6 @@ export interface OperationParams {
      *
      * Two vectors count as the same when every entry differs by less than `tolerance`.
      * Example: [[1,2,3], [4,5,6], [1,2,3], [7,8,9]] -> [[1,2,3], [4,5,6], [7,8,9]]
-     *
-     * @example
-     * ```typescript
-     * const unique = bitbybit.vector.removeAllDuplicateVectors({
-     *     vectors: [[1, 2, 3], [4, 5, 6], [1, 2, 3]],
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "vector.removeAllDuplicateVectors": {
         /** The vectors to filter; their order is kept. */
@@ -19579,15 +14406,6 @@ export interface OperationParams {
      * With `checkFirstAndLast` on, a last vector that repeats the first is dropped too, which
      * closes a loop of points cleanly. Entries within `tolerance` of each other count as equal.
      * Example: [[1,2], [1,2], [3,4], [1,2]] -> [[1,2], [3,4], [1,2]]
-     *
-     * @example
-     * ```typescript
-     * const cleaned = bitbybit.vector.removeConsecutiveDuplicateVectors({
-     *     vectors: [[0, 0], [0, 0], [1, 1], [0, 0]],
-     *     checkFirstAndLast: true,
-     *     tolerance: 1e-7,
-     * });
-     * ```
      */
     "vector.removeConsecutiveDuplicateVectors": {
         /** The vectors to filter; their order is kept. */
@@ -19607,11 +14425,6 @@ export interface OperationParams {
      * The turn is counter-clockwise when the reference vector points toward you: a clockwise turn
      * of 30 degrees reads as 330.
      * Example: [1,0,0] to [0,0,-1] around [0,1,0] -> 90
-     *
-     * @example
-     * ```typescript
-     * const angle = bitbybit.vector.signedAngleBetween({ first: [1, 0, 0], second: [0, 0, -1], reference: [0, 1, 0] });
-     * ```
      */
     "vector.signedAngleBetween": {
         /**
@@ -19629,11 +14442,6 @@ export interface OperationParams {
      * lands on it.
      *
      * Example: min=0, max=10, step=2 -> [0,2,4,6,8,10]
-     *
-     * @example
-     * ```typescript
-     * const values = bitbybit.vector.span({ min: 0, max: 10, step: 2.5 });
-     * ```
      */
     "vector.span": {
         /**
@@ -19653,11 +14461,6 @@ export interface OperationParams {
      * With `intervals` on, the result holds the gaps between neighbors instead of the values
      * themselves.
      * Example: min=0, max=100, nrItems=5, ease='easeInQuad' -> [0, 6.25, 25, 56.25, 100]
-     *
-     * @example
-     * ```typescript
-     * const eased = bitbybit.vector.spanEaseItems({ min: 0, max: 100, nrItems: 5, ease: Bit.Inputs.Math.easeEnum.easeInQuad, intervals: false });
-     * ```
      */
     "vector.spanEaseItems": {
         /** How many numbers to produce, including `min` and `max`; at least 2. */
@@ -19681,11 +14484,6 @@ export interface OperationParams {
      * Lists `nrItems` evenly spaced numbers from `min` to `max`, both included.
      *
      * Example: min=0, max=10, nrItems=5 -> [0, 2.5, 5, 7.5, 10]
-     *
-     * @example
-     * ```typescript
-     * const values = bitbybit.vector.spanLinearItems({ min: 0, max: 10, nrItems: 5 });
-     * ```
      */
     "vector.spanLinearItems": {
         /** How many numbers to produce, including `min` and `max`; at least 2. */
@@ -19699,11 +14497,6 @@ export interface OperationParams {
      * Subtracts the second vector from the first, entry by entry.
      *
      * Example: [10,20,30] - [1,2,3] -> [9,18,27]
-     *
-     * @example
-     * ```typescript
-     * const diff = bitbybit.vector.sub({ first: [10, 20, 30], second: [1, 2, 3] });
-     * ```
      */
     "vector.sub": {
         /**
@@ -19718,11 +14511,6 @@ export interface OperationParams {
      * Adds up all values of a vector into one number.
      *
      * Example: [1,2,3,4] -> 10
-     *
-     * @example
-     * ```typescript
-     * const total = bitbybit.vector.sum({ vector: [1, 2, 3, 4] });
-     * ```
      */
     "vector.sum": {
         /** The vector, as a list of numbers. */
@@ -19733,11 +14521,6 @@ export interface OperationParams {
      *
      * Vectors of different length are never the same.
      * Example: [1,2,3] and [1.0001,2.0001,3.0001] with tolerance 0.001 -> true
-     *
-     * @example
-     * ```typescript
-     * const same = bitbybit.vector.vectorsTheSame({ vec1: [1, 2, 3], vec2: [1, 2, 3.0000001], tolerance: 1e-6 });
-     * ```
      */
     "vector.vectorsTheSame": {
         /** First vector to compare. */
@@ -19751,11 +14534,6 @@ export interface OperationParams {
      * Builds a 2D vector from its x and y values.
      *
      * Example: x=3, y=4 -> [3,4]
-     *
-     * @example
-     * ```typescript
-     * const right = bitbybit.vector.vectorXY({ x: 1, y: 0 });
-     * ```
      */
     "vector.vectorXY": {
         /** The X value, the first entry. */
@@ -19767,11 +14545,6 @@ export interface OperationParams {
      * Builds a 3D vector from its x, y and z values.
      *
      * Example: x=1, y=2, z=3 -> [1,2,3]
-     *
-     * @example
-     * ```typescript
-     * const up = bitbybit.vector.vectorXYZ({ x: 0, y: 1, z: 0 });
-     * ```
      */
     "vector.vectorXYZ": {
         /** The X value, the first entry. */
