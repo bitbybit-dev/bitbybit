@@ -17,6 +17,7 @@ export interface Approx_ParametrizationTypeValue<T extends number> {
 interface AssemblyHierarchyNode {
     colorRgba?: Base.ColorRGBA | undefined;
     definitionId?: string | undefined;
+    definitionName?: string | undefined;
     depth: number;
     hasGeometry: boolean;
     id: string;
@@ -79,6 +80,7 @@ interface AssemblyNodeDef {
 interface AssemblyNodeJson {
     colorRgba?: Base.ColorRGBA | undefined;
     definitionId?: string | undefined;
+    definitionName?: string | undefined;
     depth: number;
     id: string;
     isAssembly: boolean;
@@ -4316,12 +4318,15 @@ interface LabelInfo {
     children?: string[] | undefined;
     isAssembly: boolean;
     isComponent: boolean;
+    isCompound: boolean;
     isFreeShape: boolean;
     isReference: boolean;
     isSimpleShape: boolean;
+    isSubShape: boolean;
     label: string;
     name: string;
     refLabel?: string | undefined;
+    refName?: string | undefined;
     shapeType?: string | undefined;
     type: string;
 }

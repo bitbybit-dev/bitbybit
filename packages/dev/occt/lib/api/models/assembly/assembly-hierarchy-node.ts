@@ -29,7 +29,10 @@ export interface AssemblyHierarchyNode {
     depth: number;
     /** Label entry string (e.g., "0:1:1:1") */
     label: string;
-    /** Node name */
+    /**
+     * Node name as a CAD tree would show it: the label's own name, or for an instance the file
+     * left unnamed the name of the part or assembly it places (see `definitionName`)
+     */
     name: string;
     
     /** Whether this label IS an assembly container (not just references one) */
@@ -38,6 +41,8 @@ export interface AssemblyHierarchyNode {
     isInstance: boolean;
     /** Definition ID (for instances - the label of the referenced part/assembly) */
     definitionId?: string | undefined;
+    /** Definition name (for instances - the name of the referenced part/assembly, empty if it has none) */
+    definitionName?: string | undefined;
     
     /** True if this instance references an assembly (only present for instances) */
     refersToAssembly?: boolean | undefined;

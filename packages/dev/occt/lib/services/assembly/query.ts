@@ -118,8 +118,9 @@ export class OCCTAssemblyQuery {
      * Reads the whole assembly tree of a document as a flat list of nodes with their parents, so it
      * can be walked or shown as a tree.
      *
-     * Each node carries its label, name, type and placement; the list is in depth-first order, so
-     * children follow their parent.
+     * Each node carries its label, name, type and placement, in depth-first order, so children
+     * follow their parent. An unnamed instance is named after what it places, numbered when
+     * repeated; `definitionName` holds that name.
      * @param inputs - The document
      * @returns The nodes of the tree with their count and the format version
      * @group query

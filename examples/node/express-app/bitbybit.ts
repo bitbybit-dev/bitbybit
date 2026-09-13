@@ -1,4 +1,6 @@
 import { createRequire } from "module";
+import { readdirSync } from "fs";
+import { dirname, join } from "path";
 
 // Base utilities
 import {
@@ -63,8 +65,14 @@ export class BitByBitBase {
     public occt!: OCCTService;
 
     async init() {
-        // Initialize OCCT (OpenCascade) with locateFile for Node.js WASM loading
-        const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.a4a6ec2a.wasm");
+        // Initialize OCCT (OpenCascade) with locateFile for Node.js WASM loading. The wasm name
+        // carries a content hash that changes with every kernel build, so find it beside the loader.
+        const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
+        const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
+        if (!wasmFile) {
+            throw new Error(`No OCCT kernel found in ${kernelDir}`);
+        }
+        const wasmPath = join(kernelDir, wasmFile);
         const occ = await (initOpenCascade as (options?: { locateFile?: (path: string) => string }) => Promise<BitbybitOcctModule>)({
             locateFile: (path: string) => {
                 if (path.endsWith(".wasm")) {

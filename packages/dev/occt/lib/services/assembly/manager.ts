@@ -295,7 +295,8 @@ export class OCCTAssemblyManager {
      * and placements.
      *
      * `stepData` is the file as text or binary; gzip-compressed STEP-Z is accepted too. A file that
-     * cannot be loaded throws an error.
+     * cannot be loaded throws. An instance the file leaves unnamed, as SolidWorks does, is named
+     * after the part it places, numbered when that part repeats beside it.
      * @param inputs - The STEP file content
      * @returns The document handle
      * @throws Error if STEP loading fails

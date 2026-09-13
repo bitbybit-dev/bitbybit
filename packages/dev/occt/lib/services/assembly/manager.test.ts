@@ -431,10 +431,12 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(rootNode!.isAssembly).toBe(true);
             
             const subNode = hierarchy.nodes.find(n => n.name === "SubAssembly");
-            if (subNode) {
-                expect(subNode.depth).toBe(1);
-                expect(subNode.isAssembly).toBe(true);
-            }
+            expect(subNode).toBeDefined();
+            expect(subNode!.depth).toBe(1);
+            expect(subNode!.isInstance).toBe(true);
+            expect(subNode!.refersToAssembly).toBe(true);
+            expect(subNode!.nodeType).toBe("instance-assembly");
+            expect(subNode!.definitionName).toBe("SubAssembly");
             
             const depths = [...new Set(hierarchy.nodes.map(n => n.depth))];
             expect(depths.length).toEqual(3);

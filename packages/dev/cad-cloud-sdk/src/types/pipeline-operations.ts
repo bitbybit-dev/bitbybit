@@ -5686,7 +5686,8 @@ export interface OperationParams {
      * and placements.
      *
      * `stepData` is the file as text or binary; gzip-compressed STEP-Z is accepted too. A file that
-     * cannot be loaded throws an error.
+     * cannot be loaded throws. An instance the file leaves unnamed, as SolidWorks does, is named
+     * after the part it places, numbered when that part repeats beside it.
      */
     "occt.assembly.manager.loadStepToDoc": {
         /**
@@ -5728,8 +5729,9 @@ export interface OperationParams {
      * Reads the whole assembly tree of a document as a flat list of nodes with their parents, so it
      * can be walked or shown as a tree.
      *
-     * Each node carries its label, name, type and placement; the list is in depth-first order, so
-     * children follow their parent.
+     * Each node carries its label, name, type and placement, in depth-first order, so children
+     * follow their parent. An unnamed instance is named after what it places, numbered when
+     * repeated; `definitionName` holds that name.
      */
     "occt.assembly.query.getAssemblyHierarchy": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
