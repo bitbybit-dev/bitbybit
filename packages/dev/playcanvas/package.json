@@ -118,7 +118,7 @@
         "@bitbybit-dev/occt-worker": "1.2.0",
         "@bitbybit-dev/jscad-worker": "1.2.0",
         "@bitbybit-dev/manifold-worker": "1.2.0",
-        "playcanvas": "2.20.0",
+        "playcanvas": "2.22.2",
         "jsonpath-plus": "10.3.0",
         "verb-nurbs-web": "2.1.3"
     },

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@bitbybit-dev/playcanvas": "1.2.0",
-    "playcanvas": "2.20.0"
+    "playcanvas": "2.22.2"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
