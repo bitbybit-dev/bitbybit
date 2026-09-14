@@ -163,7 +163,7 @@
         "@bitbybit-dev/jscad-worker": "1.2.0",
         "@bitbybit-dev/manifold-worker": "1.2.0",
         "@bitbybit-dev/occt-worker": "1.2.0",
-        "jsonpath-plus": "10.3.0",
+        "jsonpath-plus": "10.4.0",
         "verb-nurbs-web": "2.1.3"
     },
     "peerDependencies": {
@@ -176,7 +176,7 @@
         "earcut": "3.0.2"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.0",
+        "@microsoft/api-extractor": "7.59.1",
         "@types/earcut": "3.0.0",
         "@vitest/coverage-v8": "4.1.11",
         "jsdom": "29.0.1",

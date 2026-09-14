@@ -102,11 +102,11 @@
     },
     "type": "module",
     "dependencies": {
-        "manifold-3d": "3.3.2",
+        "manifold-3d": "3.5.3",
         "@bitbybit-dev/base": "1.2.0"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.0",
+        "@microsoft/api-extractor": "7.59.1",
         "@vitest/coverage-v8": "4.1.11",
         "shx": "0.4.0",
         "typescript": "5.9.3",
