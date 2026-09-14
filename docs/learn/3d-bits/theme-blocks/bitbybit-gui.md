@@ -24,7 +24,7 @@ This block does not display 3D on its own. It contributes a spot in your templat
 
 So a product using this needs two things. A 3D view on the page, from either the app embed or a BITBYBIT VIEWER block, and one or more of these GUI blocks in the places you want panel content to appear. They find each other automatically as long as they are on the same product page.
 
-The assignment happens in Composer. In the **Layout** tab you give an element an **Area**, and that element then appears in the block claiming that area. Elements you do not assign go to the main panel.
+The assignment happens in Composer. In the **Layout** tab you give an element an **Area**, and that element then appears in the block claiming that area. Elements you do not assign go to the main panel. Every element type can be assigned, Link and Custom HTML elements included, so a care-guide link can sit beside the buy button while the options stay in the main panel.
 
 Two rules are worth knowing before you plan a layout.
 

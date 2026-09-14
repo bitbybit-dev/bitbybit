@@ -42,6 +42,7 @@ Every plan covers unlimited products and unlimited 3D models. We do not charge p
 | Dimensions, all six types | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Gradient and image backgrounds | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Scripting | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
+| Custom HTML in the option panel | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Personalisation, image and text on the model | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Options and parts linked to your own products | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Parts, the bill of materials | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
@@ -96,6 +97,8 @@ Standard is about showing a product properly, and about products whose shape is 
 **Gradient and image backgrounds** go beyond a flat colour behind the product.
 
 **Scripting** is for parametric products. You build the geometry in our visual node editor or write it in TypeScript, link the script into your Composer project, and the model is calculated from what the shopper enters. Standard also unlocks the Scripts section of the app, where those scripts live.
+
+**Custom HTML** lets you place a fragment of your own HTML, with its own CSS, in the option panel - a measurements table, a badge, a formatted note. Scripts and anything else that could run code are removed before it renders; [Custom HTML](/learn/3d-bits/composer/gui/custom-html) lists exactly what survives. Links, whether as their own element or written inline in a text, are available on every plan.
 
 **Single line charging** shows a configured product as one clean line at its exact price. It needs Standard or Pro, and it also needs your store to be on Shopify Plus or to be a partner development store, which is a Shopify restriction rather than ours. Everything works without it, and [Charging methods](/learn/3d-bits/pricing/charging-methods) explains the alternatives.
 

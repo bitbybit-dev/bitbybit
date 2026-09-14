@@ -24,9 +24,11 @@ You build the panel from elements, added with **Add Element**.
 
 **Tabs** split the panel into pages the shopper switches between. Good when your product has genuinely separate areas of choice, and worse than accordions when the choices interact, since a shopper cannot see both at once. You choose which tab opens first, and each tab has its own visibility and availability conditions.
 
-**Text** and **Message** add words. Text is plain explanation, in one of four styles from heading down to caption. Message is a highlighted note, for a lead time or a warning about a particular combination, and it comes in info, success, warning and error flavours. Both can be set to appear only under certain conditions.
+**Text** and **Message** add words. Text is plain explanation, in one of four styles from heading down to caption. Message is a highlighted note, for a lead time or a warning about a particular combination, and it comes in info, success, warning and error flavours. Both can be set to appear only under certain conditions. Either can carry a link written as `[label](https://...)`, which becomes clickable in the panel - `Read the [care guide](/pages/care) first.` The destination has to be a web address, a `mailto:` or `tel:` address, or a page on your store; anything else stays as the literal text you typed.
 
 **Image** places a picture, useful for a diagram explaining what a measurement refers to. It takes alt text, an optional caption and a maximum height.
+
+**Link** is a hyperlink on its own: link text and a destination, shown either as plain link text or as a button in the panel's button styling. It can open in a new tab, carry an icon the way the Download PDF button does, and both its text and its destination are translatable, so a French shopper can be sent to the French page. The same destination rules as inline links apply.
 
 **Divider** is a line - or, set to **Empty space**, nothing at all. The second is how you get breathing room between two groups without drawing anything across the panel. Either way you set the size in pixels.
 
@@ -71,6 +73,8 @@ It reacts to an **Add to cart** element, so without one in the panel it never ap
 **Validation summary** collects any outstanding problems in one place. Each entry is a link: clicking it opens whichever accordion or tab the offending control is hiding in, scrolls to it and puts the cursor in it. It hides itself while everything the shopper can see is valid.
 
 **Download PDF** gives the shopper a document of what they designed. The button renders nothing unless the customer document is enabled and designed under [PDF Reports](/learn/3d-bits/composer/gui/pdf-reports). Pro plan.
+
+**Custom HTML** places a fragment of your own HTML, with its own CSS, for content the other elements cannot express - a table of measurements, a badge, a note with formatting. The panel keeps text formatting and removes everything that could run code, so it is safe to paste; what survives and what does not is spelled out on [Custom HTML](/learn/3d-bits/composer/gui/custom-html). Standard or Pro plan.
 
 Sections, rows and accordions can hold other elements, and each tab of a Tabs element holds its own, so you can nest as deeply as the product needs. Every element also offers **Clone Element**, **Move To** for shifting it into another container or back out to the top level, and - for sections, rows, accordions and tabs - **Convert To**, which turns one into another without rebuilding its contents. A section that has grown into two short things sitting awkwardly on top of each other becomes a row in one click.
 
