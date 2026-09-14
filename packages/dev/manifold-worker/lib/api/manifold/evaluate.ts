@@ -219,6 +219,26 @@ export class ManifoldEvaluate {
     }
 
     /**
+     * Shoots a ray segment from one point to another and lists every place it crosses the surface
+     * of a solid, nearest first; an empty list when it misses.
+     *
+     * A hit carries the point, the normal there, the original face id and its distance along the
+     * segment as a fraction of the segment's length.
+     * @param inputs - The solid, the start and the end of the ray segment
+     * @returns The hits sorted by distance
+     * @group spatial
+     * @shortname ray cast
+     * @drawable false
+     * @example
+     * ```typescript
+     * const hits = await bitbybit.manifold.manifold.evaluate.rayCast({ manifold: shape, origin: [0, 10, 0], endpoint: [0, -10, 0] });
+     * ```
+     */
+    rayCast(inputs: Inputs.Manifold.RayCastDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.RayHit[]> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.evaluate.rayCast", inputs);
+    }
+
+    /**
      * Reads the id of a solid that is an original, as `operations.asOriginal` or a freshly built
      * solid makes it; a solid produced from others by an operation reports -1.
      * @param inputs - The solid

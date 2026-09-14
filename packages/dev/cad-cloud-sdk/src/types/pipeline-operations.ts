@@ -38,6 +38,7 @@ export type OperationPath =
     | "csv.queryRowsByValue"
     | "jscad.booleans.intersect"
     | "jscad.booleans.intersectTwo"
+    | "jscad.booleans.minkowskiSum"
     | "jscad.booleans.subtract"
     | "jscad.booleans.subtractFrom"
     | "jscad.booleans.subtractTwo"
@@ -56,6 +57,7 @@ export type OperationPath =
     | "jscad.extrusions.extrudeRotate"
     | "jscad.hulls.hull"
     | "jscad.hulls.hullChain"
+    | "jscad.hulls.isConvex"
     | "jscad.path.appendArc"
     | "jscad.path.appendPoints"
     | "jscad.path.appendPolyline"
@@ -229,6 +231,8 @@ export type OperationPath =
     | "manifold.manifold.booleans.intersect"
     | "manifold.manifold.booleans.intersection"
     | "manifold.manifold.booleans.intersectionTwo"
+    | "manifold.manifold.booleans.minkowskiDifference"
+    | "manifold.manifold.booleans.minkowskiSum"
     | "manifold.manifold.booleans.split"
     | "manifold.manifold.booleans.splitByPlane"
     | "manifold.manifold.booleans.splitByPlaneOnOffsets"
@@ -246,6 +250,7 @@ export type OperationPath =
     | "manifold.manifold.evaluate.numTri"
     | "manifold.manifold.evaluate.numVert"
     | "manifold.manifold.evaluate.originalID"
+    | "manifold.manifold.evaluate.rayCast"
     | "manifold.manifold.evaluate.status"
     | "manifold.manifold.evaluate.surfaceArea"
     | "manifold.manifold.evaluate.tolerance"
@@ -288,7 +293,9 @@ export type OperationPath =
     | "manifold.manifold.transforms.translateXYZ"
     | "manifold.manifold.transforms.warp"
     | "manifold.manifoldToMeshPointer"
+    | "manifold.mesh.evaluate.backside"
     | "manifold.mesh.evaluate.extras"
+    | "manifold.mesh.evaluate.hasNormals"
     | "manifold.mesh.evaluate.numProp"
     | "manifold.mesh.evaluate.numRun"
     | "manifold.mesh.evaluate.numTri"
@@ -1456,6 +1463,20 @@ export interface OperationParams {
         second: unknown | PipelineRef;
     };
     /**
+     * Sweeps each later solid over the whole surface of the running result and fuses everything it
+     * passes through, so the first solid grows by the shape of the others - the Minkowski sum,
+     * which is how a solid is rounded or padded by a sphere.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     */
+    "jscad.booleans.minkowskiSum": {
+        /**
+         * The solids to sum, at least two; each later one is swept over the surface of the running
+         * result
+         */
+        meshes: unknown[] | PipelineRef;
+    };
+    /**
      * Cuts every later input out of the first one, leaving what remains of the first.
      *
      * The inputs must all be solids or all be 2D shapes; the order matters, the first is the one
@@ -1739,6 +1760,16 @@ export interface OperationParams {
          * connect
          */
         meshes: unknown[] | PipelineRef;
+    };
+    /**
+     * Tells whether a solid is convex, meaning it already equals its own hull: every straight line
+     * between two of its points stays inside it.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     */
+    "jscad.hulls.isConvex": {
+        /** The solid to examine; a 2D shape or a path is refused */
+        mesh: unknown | PipelineRef;
     };
     /**
      * Adds an elliptical arc from the last point of an open 2D path to `endPoint`, giving a longer
@@ -4094,6 +4125,28 @@ export interface OperationParams {
         manifold2: unknown | PipelineRef;
     };
     /**
+     * Sweeps the second solid over the whole surface of the first and cuts away everything it
+     * passes through, shrinking the first solid by the shape of the second - the Minkowski
+     * difference, the erosion that undoes a Minkowski sum.
+     */
+    "manifold.manifold.booleans.minkowskiDifference": {
+        /** The first solid; for a subtraction, the one cut from. */
+        manifold1: unknown | PipelineRef;
+        /** The second solid; for a subtraction, the one cut with. */
+        manifold2: unknown | PipelineRef;
+    };
+    /**
+     * Sweeps the second solid over the whole surface of the first and fuses everything it passes
+     * through, growing the first solid by the shape of the second - the Minkowski sum, which is
+     * how a solid is rounded or padded by a sphere.
+     */
+    "manifold.manifold.booleans.minkowskiSum": {
+        /** The first solid; for a subtraction, the one cut from. */
+        manifold1: unknown | PipelineRef;
+        /** The second solid; for a subtraction, the one cut with. */
+        manifold2: unknown | PipelineRef;
+    };
+    /**
      * Cuts a solid with another solid and keeps both pieces: the part inside the cutter and the
      * part outside it.
      *
@@ -4248,6 +4301,21 @@ export interface OperationParams {
     "manifold.manifold.evaluate.originalID": {
         /** The solid to work on; it is not changed. */
         manifold: unknown | PipelineRef;
+    };
+    /**
+     * Shoots a ray segment from one point to another and lists every place it crosses the surface
+     * of a solid, nearest first; an empty list when it misses.
+     *
+     * A hit carries the point, the normal there, the original face id and its distance along the
+     * segment as a fraction of the segment's length.
+     */
+    "manifold.manifold.evaluate.rayCast": {
+        /** The solid to cast the ray at. */
+        manifold: unknown | PipelineRef;
+        /** Where the ray segment starts. */
+        origin?: [number, number, number] | PipelineRef;
+        /** Where the ray segment ends; nothing beyond it is hit. */
+        endpoint?: [number, number, number] | PipelineRef;
     };
     /**
      * Tells why a solid came out empty: `NoError`, or a reason such as `NotManifold` or
@@ -4755,6 +4823,17 @@ export interface OperationParams {
         normalIdx?: number | PipelineRef;
     };
     /**
+     * Tells whether one run of triangles faces the other way than the original mesh it came from,
+     * as the inner surface left by a subtraction does. Informational: the normals a mesh hands out
+     * are already oriented for the result.
+     */
+    "manifold.mesh.evaluate.backside": {
+        /** The mesh data to read. */
+        mesh: unknown | PipelineRef;
+        /** The position of the triangle run, counting from 0. */
+        triangleRunIndex?: number | PipelineRef;
+    };
+    /**
      * Reads the properties of one vertex beyond its position, such as normals or colors stored in
      * extra channels.
      */
@@ -4763,6 +4842,16 @@ export interface OperationParams {
         mesh: unknown | PipelineRef;
         /** The position of the vertex, counting from 0. */
         vertexIndex?: number | PipelineRef;
+    };
+    /**
+     * Tells whether the first three extra property channels of one run of triangles hold vertex
+     * normals, which `manifold.operations.calculateNormals` writes there.
+     */
+    "manifold.mesh.evaluate.hasNormals": {
+        /** The mesh data to read. */
+        mesh: unknown | PipelineRef;
+        /** The position of the triangle run, counting from 0. */
+        triangleRunIndex?: number | PipelineRef;
     };
     /** Counts the property channels each vertex of a mesh carries; the position alone takes three. */
     "manifold.mesh.evaluate.numProp": {

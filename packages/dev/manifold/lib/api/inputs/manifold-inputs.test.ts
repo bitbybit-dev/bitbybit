@@ -24,6 +24,7 @@ const DTOS: [string, AnyDto][] = [
     ["CalculateCurvatureDto", Inputs.Manifold.CalculateCurvatureDto<unknown>],
     ["CountDto", Inputs.Manifold.CountDto],
     ["ManifoldsMinGapDto", Inputs.Manifold.ManifoldsMinGapDto<unknown>],
+    ["RayCastDto", Inputs.Manifold.RayCastDto<unknown>],
     ["ManifoldRefineToleranceDto", Inputs.Manifold.ManifoldRefineToleranceDto<unknown>],
     ["ManifoldRefineLengthDto", Inputs.Manifold.ManifoldRefineLengthDto<unknown>],
     ["ManifoldRefineDto", Inputs.Manifold.ManifoldRefineDto<unknown>],

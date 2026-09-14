@@ -596,6 +596,10 @@ export namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
+    export class MinkowskiSumDto {
+        constructor(meshes?: JSCADEntity[]);
+        meshes: JSCADEntity[];
+    }
     export class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
         clockwise: boolean;
@@ -701,6 +705,10 @@ export namespace JSCAD {
         chamfer = "chamfer",
         edge = "edge",
         round = "round"
+    }
+    export class SolidDto {
+        constructor(mesh?: JSCADEntity);
+        mesh: JSCADEntity;
     }
     export class SphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number);

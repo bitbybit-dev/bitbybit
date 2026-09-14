@@ -58,3 +58,18 @@ export class BooleanObjectsFromDto {
      */
     meshes!: JSCADEntity[];
 }
+/**
+ * Feeds `booleans.minkowskiSum` with the solids to sweep over one another; unlike the other
+ * booleans this one takes solids only, a 2D shape is refused.
+ */
+export class MinkowskiSumDto {
+    constructor(meshes?: JSCADEntity[]) {
+        if (meshes !== undefined) { this.meshes = meshes; }
+    }
+    /**
+     * The solids to sum, at least two; each later one is swept over the surface of the running
+     * result
+     * @default undefined
+     */
+    meshes!: JSCADEntity[];
+}

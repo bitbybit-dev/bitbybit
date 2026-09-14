@@ -54,4 +54,19 @@ describe("JSCADHulls", () => {
             expect(kernel.measurements.measureVolume(chain)).toBeGreaterThan(3 * CUBE_VOLUME);
         });
     });
+
+    describe("isConvex", () => {
+        it("should call a cube convex and the union of two apart cubes not", () => {
+            // Arrange
+            const apart = jscad.booleans.union(new Inputs.JSCAD.BooleanObjectsDto([left, right]));
+
+            // Act
+            const cubeIsConvex = jscad.hulls.isConvex(new Inputs.JSCAD.SolidDto(left));
+            const pairIsConvex = jscad.hulls.isConvex(new Inputs.JSCAD.SolidDto(apart));
+
+            // Assert
+            expect(cubeIsConvex).toBe(true);
+            expect(pairIsConvex).toBe(false);
+        });
+    });
 });

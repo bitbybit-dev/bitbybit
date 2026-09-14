@@ -55,4 +55,23 @@ export class JSCADHulls {
     hull(inputs: Inputs.JSCAD.HullDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.hull", inputs);
     }
+
+    /**
+     * Tells whether a solid is convex, meaning it already equals its own hull: every straight line
+     * between two of its points stays inside it.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     * @param inputs - The solid to examine
+     * @returns True when the solid is convex
+     * @group hulls
+     * @shortname is convex
+     * @drawable false
+     * @example
+     * ```typescript
+     * const convex = await bitbybit.jscad.hulls.isConvex({ mesh: shape });
+     * ```
+     */
+    isConvex(inputs: Inputs.JSCAD.SolidDto): Promise<boolean> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("hulls.isConvex", inputs);
+    }
 }

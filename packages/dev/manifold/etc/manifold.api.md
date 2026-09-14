@@ -920,6 +920,18 @@ export namespace Manifold {
         joinType: manifoldJoinTypeEnum;
         miterLimit: number;
     }
+    export class RayCastDto<T> {
+        constructor(manifold?: T, origin?: Base.Point3, endpoint?: Base.Point3);
+        endpoint: Base.Point3;
+        manifold: T;
+        origin: Base.Point3;
+    }
+    export type RayHit = {
+        faceID: number;
+        distance: number;
+        position: Base.Point3;
+        normal: Base.Vector3;
+    };
     export class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center: boolean;

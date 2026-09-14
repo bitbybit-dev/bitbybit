@@ -18,6 +18,42 @@ export class ManifoldBooleans {
     }
 
     /**
+     * Sweeps the second solid over the whole surface of the first and fuses everything it passes
+     * through, growing the first solid by the shape of the second - the Minkowski sum, which is
+     * how a solid is rounded or padded by a sphere.
+     * @param inputs - The solid to grow and the solid to sweep
+     * @returns The grown solid
+     * @group minkowski
+     * @shortname minkowski sum
+     * @drawable true
+     * @example
+     * ```typescript
+     * const padded = await bitbybit.manifold.manifold.booleans.minkowskiSum({ manifold1: cube, manifold2: sphere });
+     * ```
+     */
+    minkowskiSum(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.minkowskiSum", inputs);
+    }
+
+    /**
+     * Sweeps the second solid over the whole surface of the first and cuts away everything it
+     * passes through, shrinking the first solid by the shape of the second - the Minkowski
+     * difference, the erosion that undoes a Minkowski sum.
+     * @param inputs - The solid to shrink and the solid to sweep
+     * @returns The shrunken solid
+     * @group minkowski
+     * @shortname minkowski difference
+     * @drawable true
+     * @example
+     * ```typescript
+     * const eroded = await bitbybit.manifold.manifold.booleans.minkowskiDifference({ manifold1: cube, manifold2: sphere });
+     * ```
+     */
+    minkowskiDifference(inputs: Inputs.Manifold.TwoManifoldsDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Manifold.ManifoldPointer> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("manifold.booleans.minkowskiDifference", inputs);
+    }
+
+    /**
      * Cuts the second solid out of the first, leaving what remains of the first.
      * @param inputs - The solid to cut from and the solid to cut with
      * @returns The first solid minus the second

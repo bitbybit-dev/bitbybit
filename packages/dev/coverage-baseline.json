@@ -73,17 +73,25 @@
             "branches": 90.14,
             "functions": 98.83,
             "statements": 97.54
+        },
+        {
+            "measured": "2026-09-14",
+            "tests": 7855,
+            "lines": 97.59,
+            "branches": 90.18,
+            "functions": 98.83,
+            "statements": 97.55
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1943,
+            "tests": 1950,
             "suites": 55,
-            "lines": 98.51,
-            "branches": 93.72,
-            "functions": 98.56,
-            "statements": 98.7
+            "lines": 98.52,
+            "branches": 93.77,
+            "functions": 98.57,
+            "statements": 98.71
         },
         "base": {
             "runner": "vitest",
@@ -119,16 +127,16 @@
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 295,
+            "tests": 304,
             "suites": 13,
             "lines": 99.84,
-            "branches": 99.58,
+            "branches": 99.59,
             "functions": 100,
             "statements": 99.88
         },
         "jscad-worker": {
             "runner": "vitest",
-            "tests": 264,
+            "tests": 268,
             "suites": 8,
             "lines": 100,
             "branches": 100,
@@ -137,16 +145,16 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 343,
+            "tests": 352,
             "suites": 9,
-            "lines": 99.31,
-            "branches": 99.24,
+            "lines": 99.32,
+            "branches": 99.25,
             "functions": 100,
-            "statements": 99.47
+            "statements": 99.48
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 391,
+            "tests": 401,
             "suites": 7,
             "lines": 100,
             "branches": 100,

@@ -1,7 +1,7 @@
 
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
-import { asKind } from "./entity-narrowing";
+import { asKind, asSolid } from "./entity-narrowing";
 
 /**
  * Combining JSCAD geometry: union fuses, subtract cuts and intersect keeps the overlap, in a
@@ -140,5 +140,25 @@ export class JSCADBooleans {
     subtractFrom(inputs: Inputs.JSCAD.BooleanObjectsFromDto): Inputs.JSCAD.JSCADEntity {
         const meshes = asKind<Inputs.JSCAD.JSCADGeom3>([inputs.from, ...inputs.meshes]);
         return this.jscad.booleans.subtract(...meshes);
+    }
+
+    /**
+     * Sweeps each later solid over the whole surface of the running result and fuses everything it
+     * passes through, so the first solid grows by the shape of the others - the Minkowski sum,
+     * which is how a solid is rounded or padded by a sphere.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     * @param inputs - The solids to sum, at least two
+     * @returns The grown solid
+     * @group minkowski
+     * @shortname minkowski sum
+     * @drawable true
+     * @example
+     * ```typescript
+     * const padded = await bitbybit.jscad.booleans.minkowskiSum({ meshes: [cube, sphere] });
+     * ```
+     */
+    minkowskiSum(inputs: Inputs.JSCAD.MinkowskiSumDto): Inputs.JSCAD.JSCADEntity {
+        return this.jscad.minkowski.minkowskiSum(...inputs.meshes.map((mesh) => asSolid(mesh, "minkowskiSum")));
     }
 }

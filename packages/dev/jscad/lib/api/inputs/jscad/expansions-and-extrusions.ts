@@ -106,6 +106,19 @@ export class HullDto {
     meshes!: JSCADEntity[];
 }
 /**
+ * Feeds `hulls.isConvex` with the one solid to examine.
+ */
+export class SolidDto {
+    constructor(mesh?: JSCADEntity) {
+        if (mesh !== undefined) { this.mesh = mesh; }
+    }
+    /**
+     * The solid to examine; a 2D shape or a path is refused
+     * @default undefined
+     */
+    mesh!: JSCADEntity;
+}
+/**
  * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
  * Z and its half thickness.
  */

@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
-import { asKind } from "./entity-narrowing";
+import { asKind, asSolid } from "./entity-narrowing";
 
 /**
  * Wrapping JSCAD geometry in its convex hull, the shape a tight sheet would take around it: `hull`
@@ -52,5 +52,24 @@ export class JSCADHulls {
      */
     hull(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity  {
         return this.jscad.hulls.hull(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
+    }
+
+    /**
+     * Tells whether a solid is convex, meaning it already equals its own hull: every straight line
+     * between two of its points stays inside it.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     * @param inputs - The solid to examine
+     * @returns True when the solid is convex
+     * @group hulls
+     * @shortname is convex
+     * @drawable false
+     * @example
+     * ```typescript
+     * const convex = await bitbybit.jscad.hulls.isConvex({ mesh: shape });
+     * ```
+     */
+    isConvex(inputs: Inputs.JSCAD.SolidDto): boolean {
+        return this.jscad.geometries.geom3.isConvex(asSolid(inputs.mesh, "isConvex"));
     }
 }

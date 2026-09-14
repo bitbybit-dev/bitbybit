@@ -1,5 +1,6 @@
 // A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
+import { Base } from "../base-inputs";
 
 /**
  * One solid for the methods that take nothing else, such as `manifold.evaluate.volume` or
@@ -114,3 +115,38 @@ export class ManifoldsMinGapDto<T> {
      */
     searchLength = 100;
 }
+/**
+ * A solid and a ray segment for `manifold.evaluate.rayCast`.
+ */
+export class RayCastDto<T> {
+    constructor(manifold?: T, origin?: Base.Point3, endpoint?: Base.Point3) {
+        if (manifold !== undefined) { this.manifold = manifold; }
+        if (origin !== undefined) { this.origin = origin; }
+        if (endpoint !== undefined) { this.endpoint = endpoint; }
+    }
+    /**
+     * The solid to cast the ray at.
+     */
+    manifold!: T;
+    /**
+     * Where the ray segment starts.
+     * @default [0,0,0]
+     */
+    origin: Base.Point3 = [0, 0, 0];
+    /**
+     * Where the ray segment ends; nothing beyond it is hit.
+     * @default [0,0,10]
+     */
+    endpoint: Base.Point3 = [0, 0, 10];
+}
+/**
+ * One place a ray segment crosses the surface of a solid, as `manifold.evaluate.rayCast` reports
+ * it: the triangle's original face, how far along the segment it lies as a fraction of the
+ * segment's length (0 at the origin, 1 at the endpoint), the point and the surface normal there.
+ */
+export type RayHit = {
+    faceID: number;
+    distance: number;
+    position: Base.Point3;
+    normal: Base.Vector3;
+};

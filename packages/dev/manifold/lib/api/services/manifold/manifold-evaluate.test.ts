@@ -56,6 +56,32 @@ describe("ManifoldEvaluate", () => {
         });
     });
 
+    describe("rayCast", () => {
+        it("should report both faces a segment through a centered cube crosses, nearest first", () => {
+            // Arrange
+            const inputs = new Inputs.Manifold.RayCastDto(cube, [0, 0, GAP], [0, 0, -GAP]);
+
+            // Act
+            const hits = manifold.manifold.evaluate.rayCast(inputs);
+
+            // Assert
+            expect(hits.map((hit) => hit.position[2])).toEqual([CUBE_SIZE / 2, -CUBE_SIZE / 2]);
+            expect(hits.map((hit) => hit.distance)).toEqual([(GAP - CUBE_SIZE / 2) / (2 * GAP), (GAP + CUBE_SIZE / 2) / (2 * GAP)]);
+            expect(hits.map((hit) => hit.normal[2])).toEqual([1, -1]);
+        });
+
+        it("should report nothing for a segment that ends before the solid", () => {
+            // Arrange
+            const inputs = new Inputs.Manifold.RayCastDto(cube, [0, 0, GAP], [0, 0, CUBE_SIZE]);
+
+            // Act
+            const hits = manifold.manifold.evaluate.rayCast(inputs);
+
+            // Assert
+            expect(hits).toEqual([]);
+        });
+    });
+
     describe("minGap", () => {
         it("should measure the clear distance between two separated solids", () => {
             // Arrange

@@ -573,6 +573,21 @@ export namespace JSCAD {
         meshes!: JSCADEntity[];
     }
     /**
+     * Feeds `booleans.minkowskiSum` with the solids to sweep over one another; unlike the other
+     * booleans this one takes solids only, a 2D shape is refused.
+     */
+    export class MinkowskiSumDto {
+        constructor(meshes?: JSCADEntity[]) {
+            if (meshes !== undefined) { this.meshes = meshes; }
+        }
+        /**
+         * The solids to sum, at least two; each later one is swept over the surface of the running
+         * result
+         * @default undefined
+         */
+        meshes!: JSCADEntity[];
+    }
+    /**
      * Feeds `expansions.expand` and `expansions.offset`: the geometry, the signed distance to move its
      * boundary by and how the corners are shaped on the way.
      */
@@ -673,6 +688,19 @@ export namespace JSCAD {
          * @default undefined
          */
         meshes!: JSCADEntity[];
+    }
+    /**
+     * Feeds `hulls.isConvex` with the one solid to examine.
+     */
+    export class SolidDto {
+        constructor(mesh?: JSCADEntity) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+         * The solid to examine; a 2D shape or a path is refused
+         * @default undefined
+         */
+        mesh!: JSCADEntity;
     }
     /**
      * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along

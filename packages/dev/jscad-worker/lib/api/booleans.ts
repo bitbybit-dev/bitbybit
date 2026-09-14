@@ -138,4 +138,24 @@ export class JSCADBooleans {
     subtractFrom(inputs: Inputs.JSCAD.BooleanObjectsFromDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.subtractFrom", inputs);
     }
+
+    /**
+     * Sweeps each later solid over the whole surface of the running result and fuses everything it
+     * passes through, so the first solid grows by the shape of the others - the Minkowski sum,
+     * which is how a solid is rounded or padded by a sphere.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     * @param inputs - The solids to sum, at least two
+     * @returns The grown solid
+     * @group minkowski
+     * @shortname minkowski sum
+     * @drawable true
+     * @example
+     * ```typescript
+     * const padded = await bitbybit.jscad.booleans.minkowskiSum({ meshes: [cube, sphere] });
+     * ```
+     */
+    minkowskiSum(inputs: Inputs.JSCAD.MinkowskiSumDto): Promise<Inputs.JSCAD.JSCADEntity> {
+        return this.jscadWorkerManager.genericCallToWorkerPromise("booleans.minkowskiSum", inputs);
+    }
 }

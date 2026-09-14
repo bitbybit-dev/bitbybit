@@ -102,6 +102,41 @@ export class MeshEvaluate {
     }
 
     /**
+     * Tells whether one run of triangles faces the other way than the original mesh it came from,
+     * as the inner surface left by a subtraction does. Informational: the normals a mesh hands out
+     * are already oriented for the result.
+     * @param inputs - The mesh and the run index
+     * @returns True when the run is a backside
+     * @group basic
+     * @shortname is backside
+     * @drawable false
+     * @example
+     * ```typescript
+     * const flipped = await bitbybit.manifold.mesh.evaluate.backside({ mesh, triangleRunIndex: 0 });
+     * ```
+     */
+    backside(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Inputs.Manifold.MeshPointer>): Promise<boolean> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("mesh.evaluate.backside", inputs);
+    }
+
+    /**
+     * Tells whether the first three extra property channels of one run of triangles hold vertex
+     * normals, which `manifold.operations.calculateNormals` writes there.
+     * @param inputs - The mesh and the run index
+     * @returns True when the run carries normals in its properties
+     * @group basic
+     * @shortname has normals
+     * @drawable false
+     * @example
+     * ```typescript
+     * const lit = await bitbybit.manifold.mesh.evaluate.hasNormals({ mesh, triangleRunIndex: 0 });
+     * ```
+     */
+    hasNormals(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Inputs.Manifold.MeshPointer>): Promise<boolean> {
+        return this.manifoldWorkerManager.genericCallToWorkerPromise("mesh.evaluate.hasNormals", inputs);
+    }
+
+    /**
      * Counts the property channels each vertex of a mesh carries; the position alone takes three.
      * @param inputs - The mesh
      * @returns The number of properties per vertex
