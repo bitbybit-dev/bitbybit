@@ -74,7 +74,7 @@ Move to Pro when shoppers put their own name, image or artwork on the product, w
 
 You get Composer, where you build the whole thing. Load your 3D models, arrange the scene, set up the camera, lighting and skybox, and connect objects in the model to the choices your shoppers make.
 
-You get the option panel your shoppers see on the product page. There are fourteen control types: dropdowns, radio buttons, checkboxes, switches, sliders, number fields, single-line text fields, long text areas, email fields, colour pickers, date pickers, time pickers, file uploads for shoppers sending you artwork, and buttons that trigger an action rather than carry a value. A radio or checkbox group can present its choices six ways - plain text, colour swatches, image swatches, cards, buttons or pills - and a dropdown can be the device's native list or a styled one with images. You arrange them into sections, accordions and tabs, style them to match your theme, and translate them into the languages you sell in.
+You get the option panel your shoppers see on the product page. There are fourteen control types: dropdowns, radio buttons, checkboxes, switches, sliders, number fields, single-line text fields, long text areas, email fields, colour pickers, date pickers, time pickers, file uploads for shoppers sending you artwork, and buttons that trigger an action rather than carry a value. A radio or checkbox group can present its choices six ways - plain text, colour swatches, image swatches, cards, buttons or pills - and a dropdown can be the device's native list or a styled one with images. You arrange them into sections, rows, accordions and tabs alongside text, messages, images, dividers and links - a link can be its own element, shown as text or a button, or written straight into a text as `[label](url)` - then style everything to match your theme and translate it into the languages you sell in.
 
 You get the logic that ties it together, so an option can appear only when it makes sense, and choosing one thing can change or restrict another.
 
@@ -112,11 +112,11 @@ Pro is for personalised products, and for the paperwork that comes with making t
 
 **[Parts](/learn/3d-bits/composer/gui/parts)** are the bill of materials behind a configured product. A part can link a real product, so it is charged and shipped like any other item, or it can simply be recorded on the order and in the report - which is how a works order gets the pieces that cost nothing extra but still have to be made. Parts nest into assemblies, and their quantities can be worked out from what the shopper chose.
 
-**PDF documents** are generated from the configuration. One is for your shopper, a summary they can download of what they designed. The other is attached to the order for the people who make it, and it can carry publishable manufacturer references for each chosen option alongside rendered views of the finished item.
+**PDF documents** are generated from the configuration. One is for your shopper, a summary they can download of what they designed. The other is attached to the order for the people who make it, and it can carry publishable manufacturer references for each chosen option alongside rendered views of the finished item. The **Download PDF** element and the button action that trigger the shopper's copy carry a premium badge in Composer on any lesser plan.
 
 **Downloading the configured model** gives the shopper a button that hands them a single `.glb` of exactly what they are looking at - every visible model, in position, with the materials they chose and any personalisation they applied baked in. Useful when your shopper is an architect dropping the piece into their own scene, or when you want them to be able to show someone else what they configured. It is a [Button control](/learn/3d-bits/composer/gui/controls) with the **Download the 3D model (GLB)** action.
 
-The action carries a premium badge in Composer on any lesser plan, and choosing it opens the upgrade dialog rather than setting it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
+Every plan-gated element and action carries that premium badge in Composer on a lesser plan - Custom HTML on Base, Download PDF and the model download on Base and Standard - and choosing one opens the upgrade dialog rather than adding it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
 
 ## Support
 
