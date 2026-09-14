@@ -1,6 +1,16 @@
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { Models } from "@bitbybit-dev/occt";
 
+/** Finishes a cyrb53 hash: the two 32-bit lanes are avalanched into each other and 21 bits of one
+ * are stacked above the 32 bits of the other, giving a non-negative safe integer below 2^53. */
+function foldHashLanes(lane1: number, lane2: number): number {
+    let h1 = Math.imul(lane1 ^ (lane1 >>> 16), 2246822507);
+    h1 ^= Math.imul(lane2 ^ (lane2 >>> 13), 3266489909);
+    let h2 = Math.imul(lane2 ^ (lane2 >>> 16), 2246822507);
+    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+
 export class CacheHelper {
 
     hashesFromPreviousRun: Record<string, string | number> = {};
@@ -171,7 +181,7 @@ export class CacheHelper {
      * If `args.inputs` contains a large/binary payload (e.g. STEP file data
      * as a string > LARGE_STRING_THRESHOLD, ArrayBuffer, TypedArray, Blob or
      * File), the payload itself is NOT fed into the hash. Instead a compact
-     * content digest (length/byteLength + a rolling hash of the content) is
+     * content digest (length/byteLength + a hash of the content) is
      * used so that the operation can still be cached normally. This avoids
      * JSON.stringify crashes / memory blowups on huge inputs while keeping
      * the hash content-sensitive - two different payloads produce different
@@ -308,8 +318,16 @@ export class CacheHelper {
         return hash;
     }
 
-    /** This function computes a 32-bit integer hash given a set of `arguments`.
-     * If `raw` is true, the raw set of sanitized arguments will be returned instead.
+    /** Computes the cache key of a set of `arguments`: a 53-bit hash of their JSON form, or that
+     * JSON string itself when `raw` is true. A kernel handle among the arguments serializes as
+     * nothing but the cache hash it carries - embind keeps the pointer under a non-enumerable `$$` -
+     * so pointer identity never reaches the key and nothing has to be scrubbed from the string.
+     *
+     * The key is a pure function of the arguments, so equal inputs get equal keys across runs and
+     * JavaScript engines, and a hit is served on the key alone, without comparing the arguments.
+     * The key therefore has to separate distinct inputs by itself: among n live entries the chance
+     * that two share a 53-bit key is about n^2 / 2^54, negligible at the cache threshold, where a
+     * 32-bit key gives about n^2 / 2^33 - around one wrong hit per hundred runs at 10,000 entries.
      *
      * Large / binary inputs (e.g. STEP file data) are replaced by a compact
      * content digest via `toHashableArgs` before stringifying, so this method
@@ -318,13 +336,9 @@ export class CacheHelper {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     computeHash(args: any, raw?: boolean): number | string {
-        let argsString = JSON.stringify(this.toHashableArgs(args));
-        argsString = argsString.replace(/("ptr":(-?[0-9]*?),)/g, "");
-        argsString = argsString.replace(/("ptr":(-?[0-9]*))/g, "");
-        if (argsString.includes("ptr")) { console.error("YOU DONE MESSED UP YOUR REGEX."); }
-        const hashString = Math.random.toString() + argsString;
-        if (raw) { return hashString; }
-        return this.stringToHash(hashString);
+        const argsString = JSON.stringify(this.toHashableArgs(args));
+        if (raw) { return argsString; }
+        return this.stringToHash(argsString);
     }
 
     /** Threshold above which a string value is considered "large" and triggers
@@ -422,36 +436,30 @@ export class CacheHelper {
         return undefined;
     }
 
-    /** Computes a 32-bit rolling hash over raw bytes, mirroring `stringToHash`. */
+    /** Hashes raw bytes the way `stringToHash` hashes code units, so ASCII text digests to the same
+     * number whether it arrives as a string or as bytes. */
     bytesToHash(bytes: Uint8Array): number {
-        let hash = 0;
-        if (bytes.length === 0) { return hash; }
+        let h1 = 0xdeadbeef;
+        let h2 = 0x41c6ce57;
         for (let i = 0; i < bytes.length; i++) {
-            hash = ((hash << 5) - hash) + bytes[i]!;
-            hash = hash & hash;
+            const byte = bytes[i]!;
+            h1 = Math.imul(h1 ^ byte, 2654435761);
+            h2 = Math.imul(h2 ^ byte, 1597334677);
         }
-        return hash;
+        return foldHashLanes(h1, h2);
     }
 
-    /** This function converts a string to a 32bit integer. */
+    /** Hashes a string to a non-negative 53-bit safe integer with cyrb53. Both lanes are mixed with
+     * `Math.imul`, so the result is the same on every JavaScript engine. */
     stringToHash(str: string): number {
-        let hash = 0;
-        if (str.length === 0) { return hash; }
+        let h1 = 0xdeadbeef;
+        let h2 = 0x41c6ce57;
         for (let i = 0; i < str.length; i++) {
             const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+            h1 = Math.imul(h1 ^ char, 2654435761);
+            h2 = Math.imul(h2 ^ char, 1597334677);
         }
-        return hash;
-    }
-
-    /** This function returns a version of the `inputArray` without the `objectToRemove`. */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    remove(inputArray: any[], objectToRemove: any): any[] {
-        return inputArray.filter((el) => {
-            return el.hash !== objectToRemove.hash ||
-                el.ptr !== objectToRemove.ptr;
-        });
+        return foldHashLanes(h1, h2);
     }
 
 }

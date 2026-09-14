@@ -5,7 +5,13 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
 
 ## The caches
 
-- **Identity is the (hash, ptr) pair.** An entry is dropped only when both match.
+- **The key is a pure function of the arguments.** `computeHash` is cyrb53 over the argument JSON,
+  identical in all three kernel workers: 53 bits, non-negative, the same on every JavaScript engine. A
+  hit is served on the key alone, without comparing the arguments, so the key has to separate inputs by
+  itself - never seed it with anything environment-dependent, and never narrow it back to 32 bits (at
+  10,000 live entries a 32-bit key hands back the wrong shape about once per hundred runs). Nothing is
+  scrubbed from the JSON: a handle rehydrated into the arguments serializes as nothing but its cache
+  hash, because embind keeps the pointer under a non-enumerable `$$`, and `cache-helper.test.ts` pins that.
 - **Disposal is best-effort by necessity.** A freed WASM handle does not become null; calling anything
   on it throws. So the delete, null-test and cleanup calls are all wrapped in catches that swallow, and
   the same shape is legitimately reachable through two entries. Those empty catch blocks are

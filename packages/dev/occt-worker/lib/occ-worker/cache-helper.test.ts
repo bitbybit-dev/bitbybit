@@ -2,6 +2,15 @@ import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
+function javaStringHash(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash;
+    }
+    return hash;
+}
+
 describe("CacheHelper unit tests", () => {
     let occt: BitbybitOcctModule;
     let cacheHelper: CacheHelper;
@@ -87,14 +96,14 @@ describe("CacheHelper unit tests", () => {
             expect(hash1).not.toBe(hash2);
         });
 
-        it("should filter out ptr properties from hash computation", () => {
+        it("should key a property named like a pointer as ordinary data", () => {
             const args1 = { functionName: "test", param1: 1, ptr: 12345 };
             const args2 = { functionName: "test", param1: 1, ptr: 67890 };
-            
+
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
-            
-            expect(hash1).toBe(hash2);
+
+            expect(hash1).not.toBe(hash2);
         });
 
         it("should return raw string when raw parameter is true", () => {
@@ -104,6 +113,39 @@ describe("CacheHelper unit tests", () => {
             expect(typeof result).toBe("string");
             expect(result).toContain("functionName");
             expect(result).toContain("test");
+        });
+
+        it("should return exactly the JSON of the arguments when raw is true", () => {
+            const args = { functionName: "test", param1: 1 };
+            expect(cacheHelper.computeHash(args, true)).toBe(JSON.stringify(args));
+        });
+
+        it("should be a pure function of the arguments", () => {
+            expect(cacheHelper.computeHash({ functionName: "test", param1: 1 })).toBe(8436340963968630);
+        });
+
+        it("should produce non-negative safe integers", () => {
+            const keys = [{}, { functionName: "test" }, { functionName: "test", nested: { deep: [1, 2, 3] } }]
+                .map(args => cacheHelper.computeHash(args));
+            keys.forEach(key => {
+                expect(Number.isSafeInteger(key)).toBe(true);
+                expect(key).toBeGreaterThanOrEqual(0);
+            });
+        });
+
+        it("should separate arguments that collide under a 32-bit string hash", () => {
+            const first = { functionName: "test", name: "Aa" };
+            const second = { functionName: "test", name: "BB" };
+            expect(javaStringHash(JSON.stringify(first))).toBe(javaStringHash(JSON.stringify(second)));
+            expect(cacheHelper.computeHash(first)).not.toBe(cacheHelper.computeHash(second));
+        });
+
+        it("should separate two operations that share a 32-bit key", () => {
+            const shape = { hash: -1322661805, type: "occ-shape" };
+            const cylinder = { functionName: "shapes.solid.createCylinder", inputs: { radius: 12.4, height: 7, shape } };
+            const sphere = { functionName: "shapes.solid.createSphere", inputs: { radius: 68.7, height: 1.25, shape } };
+            expect(javaStringHash(JSON.stringify(cylinder))).toBe(javaStringHash(JSON.stringify(sphere)));
+            expect(cacheHelper.computeHash(cylinder)).not.toBe(cacheHelper.computeHash(sphere));
         });
 
         it("should compute hash for empty object", () => {
@@ -242,9 +284,10 @@ describe("CacheHelper unit tests", () => {
     });
 
     describe("stringToHash", () => {
-        it("should convert empty string to hash", () => {
+        it("should hash the empty string to a stable safe integer", () => {
             const hash = cacheHelper.stringToHash("");
-            expect(hash).toBe(0);
+            expect(hash).toBe(cacheHelper.stringToHash(""));
+            expect(Number.isSafeInteger(hash)).toBe(true);
         });
 
         it("should convert string to consistent hash", () => {
@@ -383,6 +426,21 @@ describe("CacheHelper unit tests", () => {
             
             expect(cacheMissCalled).toBe(true);
             expect(result).toEqual(mockResult);
+        });
+
+        it("should serve the cached result again when the arguments mention pointers", () => {
+            const args = { functionName: "test", inputs: { ptrCount: 3, label: "sculptress" } };
+            let cacheMissCallCount = 0;
+            const cacheMiss = () => {
+                cacheMissCallCount++;
+                return { value: "result" };
+            };
+
+            const first = cacheHelper.cacheOp(args, cacheMiss);
+            const second = cacheHelper.cacheOp(args, cacheMiss);
+
+            expect(cacheMissCallCount).toBe(1);
+            expect(second).toEqual(first);
         });
 
         it("should return cached value without calling cacheMiss", () => {
@@ -816,57 +874,6 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    describe("remove", () => {
-        it("should remove object from array by hash", () => {
-            const obj1 = { hash: "hash1", ptr: 123 };
-            const obj2 = { hash: "hash2", ptr: 456 };
-            const obj3 = { hash: "hash3", ptr: 789 };
-            
-            const array = [obj1, obj2, obj3];
-            const result = cacheHelper.remove(array, obj2);
-            
-            expect(result.length).toBe(2);
-            expect(result).toContain(obj1);
-            expect(result).toContain(obj3);
-            expect(result).not.toContain(obj2);
-        });
-
-        it("should remove object from array by ptr when hash is different", () => {
-            const obj1 = { hash: "hash1", ptr: 123 };
-            const obj2 = { hash: "hash2", ptr: 456 };
-            const obj3 = { hash: "hash3", ptr: 789 };
-            
-            const array = [obj1, obj2, obj3];
-            const toRemove = { hash: "hash2", ptr: 456 };
-            const result = cacheHelper.remove(array, toRemove);
-            
-            expect(result.length).toBe(2);
-            expect(result).toContain(obj1);
-            expect(result).toContain(obj3);
-        });
-
-        it("should return original array if object not found", () => {
-            const obj1 = { hash: "hash1", ptr: 123 };
-            const obj2 = { hash: "hash2", ptr: 456 };
-            
-            const array = [obj1, obj2];
-            const toRemove = { hash: "hash3", ptr: 789 };
-            const result = cacheHelper.remove(array, toRemove);
-            
-            expect(result.length).toBe(2);
-            expect(result).toContain(obj1);
-            expect(result).toContain(obj2);
-        });
-
-        it("should return empty array when all elements are removed", () => {
-            const obj = { hash: "hash1", ptr: 123 };
-            const array = [obj];
-            const result = cacheHelper.remove(array, obj);
-            
-            expect(result.length).toBe(0);
-        });
-    });
-
     describe("integration tests", () => {
         it("should handle complex caching scenario with multiple shapes", () => {
             const point1 = new occt.gp_Pnt(0, 0, 0);
@@ -1217,35 +1224,40 @@ describe("CacheHelper unit tests", () => {
                 expect(cacheHelper.bytesToHash(new Uint8Array([1, 2, 3]))).not.toBe(cacheHelper.bytesToHash(new Uint8Array([3, 2, 1])));
             });
 
-            it("should hash no bytes to zero", () => {
-                expect(cacheHelper.bytesToHash(new Uint8Array([]))).toBe(0);
+            it("should hash bytes like stringToHash hashes the same ASCII text", () => {
+                expect(cacheHelper.bytesToHash(new Uint8Array([]))).toBe(cacheHelper.stringToHash(""));
+                expect(cacheHelper.bytesToHash(new TextEncoder().encode("abc"))).toBe(cacheHelper.stringToHash("abc"));
             });
         });
     });
 
-    describe("computeHash and stray pointers", () => {
-        it("should say so when a pointer survives the strip", () => {
+    describe("arguments that mention pointers", () => {
+        it("should key a property whose name starts with ptr like any other and report nothing", () => {
             // Arrange
             const reported: unknown[] = [];
             vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
 
             // Act
-            cacheHelper.computeHash({ ptrCount: 3 });
+            const first = cacheHelper.computeHash({ functionName: "test", ptrCount: 3 });
+            const second = cacheHelper.computeHash({ functionName: "test", ptrCount: 4 });
 
             // Assert
-            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+            expect(first).not.toBe(second);
+            expect(reported).toEqual([]);
             vi.restoreAllMocks();
         });
 
-        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+        it("should keep text containing ptr intact in the raw form and report nothing", () => {
             // Arrange
             const reported: unknown[] = [];
             vi.spyOn(console, "error").mockImplementation((message: unknown) => { reported.push(message); });
+            const args = { functionName: "test", name: "sculptress" };
 
             // Act
-            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+            const raw = cacheHelper.computeHash(args, true);
 
             // Assert
+            expect(raw).toBe(JSON.stringify(args));
             expect(reported).toEqual([]);
             vi.restoreAllMocks();
         });
@@ -1259,6 +1271,31 @@ describe("CacheHelper unit tests", () => {
 
             // Assert
             expect(result[0]).toMatchObject({ length: large.length });
+        });
+    });
+
+    describe("kernel shapes rehydrated into the arguments", () => {
+        const isHandle = (value: unknown): value is { $$: { ptr: number } } =>
+            typeof value === "object" && value !== null && "$$" in value;
+
+        it("should key a shape by its cache hash and never by its pointer", () => {
+            // Arrange
+            const point = new occt.gp_Pnt(0, 0, 0);
+            const first = new occt.BRepBuilderAPI_MakeVertex(point).Vertex();
+            const second = new occt.BRepBuilderAPI_MakeVertex(point).Vertex();
+            if (!isHandle(first) || !isHandle(second)) { throw new Error("the vertices are not embind handles"); }
+            cacheHelper.addToCache(42, first);
+            cacheHelper.addToCache(42, second);
+
+            // Act
+            const raw = cacheHelper.computeHash({ functionName: "test", inputs: { shape: first } }, true);
+
+            // Assert
+            expect(first.$$.ptr).not.toBe(second.$$.ptr);
+            expect(raw).toBe(JSON.stringify({ functionName: "test", inputs: { shape: { hash: 42 } } }));
+            expect(raw).not.toContain(String(first.$$.ptr));
+            expect(cacheHelper.computeHash({ functionName: "test", inputs: { shape: second } }))
+                .toBe(cacheHelper.computeHash({ functionName: "test", inputs: { shape: first } }));
         });
     });
 

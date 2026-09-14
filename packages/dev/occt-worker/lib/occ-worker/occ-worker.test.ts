@@ -24,14 +24,14 @@ describe("OCCT wire unit tests", () => {
     it("should create a wire", async () => {
         const cdto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
         const wire = await callAction<Inputs.OCCT.CircleDto>("shapes.wire.createCircleWire", cdto);
-        expect(wire.hash).toEqual(1646405596);
+        expect(wire.hash).toEqual(5651468716275304);
         expect(wire.type).toEqual("occ-shape");
     });
 
     it("should get length of a wire", async () => {
         const cdto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);
         const wire = await callAction<Inputs.OCCT.CircleDto>("shapes.wire.createCircleWire", cdto);
-        expect(wire.hash).toEqual(1646405596);
+        expect(wire.hash).toEqual(5651468716275304);
         expect(wire.type).toEqual("occ-shape");
         const length = await callAction<Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSWirePointer>>("shapes.wire.getWireLength", { shape: wire });
         expect(length).toBeCloseTo(6.283185307179586);

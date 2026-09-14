@@ -1,6 +1,15 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
 
+function javaStringHash(str: string): number {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash = hash & hash;
+    }
+    return hash;
+}
+
 describe("CacheHelper unit tests", () => {
     let cacheHelper: CacheHelper;
 
@@ -69,14 +78,14 @@ describe("CacheHelper unit tests", () => {
             expect(hash1).not.toBe(hash2);
         });
 
-        it("should filter out ptr properties from hash computation", () => {
+        it("should key a property named like a pointer as ordinary data", () => {
             const args1 = { functionName: "test", param1: 1, ptr: 12345 };
             const args2 = { functionName: "test", param1: 1, ptr: 67890 };
-            
+
             const hash1 = cacheHelper.computeHash(args1);
             const hash2 = cacheHelper.computeHash(args2);
-            
-            expect(hash1).toBe(hash2);
+
+            expect(hash1).not.toBe(hash2);
         });
 
         it("should return raw string when raw parameter is true", () => {
@@ -86,6 +95,31 @@ describe("CacheHelper unit tests", () => {
             expect(typeof result).toBe("string");
             expect(result).toContain("functionName");
             expect(result).toContain("test");
+        });
+
+        it("should return exactly the JSON of the arguments when raw is true", () => {
+            const args = { functionName: "test", param1: 1 };
+            expect(cacheHelper.computeHash(args, true)).toBe(JSON.stringify(args));
+        });
+
+        it("should be a pure function of the arguments", () => {
+            expect(cacheHelper.computeHash({ functionName: "test", param1: 1 })).toBe(8436340963968630);
+        });
+
+        it("should produce non-negative safe integers", () => {
+            const keys = [{}, { functionName: "test" }, { functionName: "test", nested: { deep: [1, 2, 3] } }]
+                .map(args => cacheHelper.computeHash(args));
+            keys.forEach(key => {
+                expect(Number.isSafeInteger(key)).toBe(true);
+                expect(key).toBeGreaterThanOrEqual(0);
+            });
+        });
+
+        it("should separate arguments that collide under a 32-bit string hash", () => {
+            const first = { functionName: "test", name: "Aa" };
+            const second = { functionName: "test", name: "BB" };
+            expect(javaStringHash(JSON.stringify(first))).toBe(javaStringHash(JSON.stringify(second)));
+            expect(cacheHelper.computeHash(first)).not.toBe(cacheHelper.computeHash(second));
         });
 
         it("should compute hash for empty object", () => {
@@ -108,9 +142,10 @@ describe("CacheHelper unit tests", () => {
     });
 
     describe("stringToHash", () => {
-        it("should convert empty string to hash", () => {
+        it("should hash the empty string to a stable safe integer", () => {
             const hash = cacheHelper.stringToHash("");
-            expect(hash).toBe(0);
+            expect(hash).toBe(cacheHelper.stringToHash(""));
+            expect(Number.isSafeInteger(hash)).toBe(true);
         });
 
         it("should convert string to consistent hash", () => {
@@ -215,6 +250,21 @@ describe("CacheHelper unit tests", () => {
             
             expect(cacheMissCalled).toBe(true);
             expect(result).toEqual(mockResult);
+        });
+
+        it("should serve the cached result again when the arguments mention pointers", () => {
+            const args = { functionName: "test", inputs: { ptrCount: 3, label: "sculptress" } };
+            let cacheMissCallCount = 0;
+            const cacheMiss = () => {
+                cacheMissCallCount++;
+                return { value: "result" };
+            };
+
+            const first = cacheHelper.cacheOp(args, cacheMiss);
+            const second = cacheHelper.cacheOp(args, cacheMiss);
+
+            expect(cacheMissCallCount).toBe(1);
+            expect(second).toEqual(first);
         });
 
         it("should return cached value without calling cacheMiss", () => {
@@ -575,58 +625,6 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    describe("remove", () => {
-        it("should remove object from array by hash", () => {
-            const obj1 = { hash: "hash1", data: "test1" };
-            const obj2 = { hash: "hash2", data: "test2" };
-            const obj3 = { hash: "hash3", data: "test3" };
-            const array = [obj1, obj2, obj3];
-            
-            const result = cacheHelper.remove(array, obj2);
-            
-            expect(result.length).toBe(2);
-            expect(result).toContain(obj1);
-            expect(result).toContain(obj3);
-            expect(result).not.toContain(obj2);
-        });
-
-        it("should remove object from array by ptr when hash is different", () => {
-            const obj1 = { hash: "hash1", ptr: 100, data: "test1" };
-            const obj2 = { hash: "hash2", ptr: 200, data: "test2" };
-            const obj3 = { hash: "hash3", ptr: 300, data: "test3" };
-            const array = [obj1, obj2, obj3];
-            
-            const objToRemove = { hash: "different", ptr: 200 };
-            const result = cacheHelper.remove(array, objToRemove);
-            
-            expect(result.length).toBe(3);
-            expect(result).toContain(obj1);
-            expect(result).toContain(obj2);
-            expect(result).toContain(obj3);
-        });
-
-        it("should return original array if object not found", () => {
-            const obj1 = { hash: "hash1", data: "test1" };
-            const obj2 = { hash: "hash2", data: "test2" };
-            const array = [obj1, obj2];
-            
-            const objToRemove = { hash: "hash3", data: "test3" };
-            const result = cacheHelper.remove(array, objToRemove);
-            
-            expect(result.length).toBe(2);
-            expect(result).toEqual(array);
-        });
-
-        it("should return empty array when all elements are removed", () => {
-            const obj = { hash: "hash1", data: "test" };
-            const array = [obj];
-            
-            const result = cacheHelper.remove(array, obj);
-            
-            expect(result.length).toBe(0);
-        });
-    });
-
     describe("integration tests", () => {
         it("should handle complex caching scenario with multiple manifolds", () => {
             const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
@@ -793,7 +791,7 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    describe("computeHash and stray pointers", () => {
+    describe("arguments that mention pointers", () => {
         let reported: unknown[];
 
         beforeEach(() => {
@@ -805,19 +803,25 @@ describe("CacheHelper unit tests", () => {
             vi.restoreAllMocks();
         });
 
-        it("should say so when a pointer survives the strip", () => {
+        it("should key a property whose name starts with ptr like any other and report nothing", () => {
             // Act
-            cacheHelper.computeHash({ ptrCount: 3 });
+            const first = cacheHelper.computeHash({ functionName: "test", ptrCount: 3 });
+            const second = cacheHelper.computeHash({ functionName: "test", ptrCount: 4 });
 
             // Assert
-            expect(reported).toEqual(["YOU DONE MESSED UP YOUR REGEX."]);
+            expect(first).not.toBe(second);
+            expect(reported).toEqual([]);
         });
 
-        it("should stay quiet for arguments carrying a pointer the strip catches", () => {
+        it("should keep text containing ptr intact in the raw form and report nothing", () => {
+            // Arrange
+            const args = { functionName: "test", name: "sculptress" };
+
             // Act
-            cacheHelper.computeHash({ ptr: 140, radius: 3 });
+            const raw = cacheHelper.computeHash(args, true);
 
             // Assert
+            expect(raw).toBe(JSON.stringify(args));
             expect(reported).toEqual([]);
         });
     });

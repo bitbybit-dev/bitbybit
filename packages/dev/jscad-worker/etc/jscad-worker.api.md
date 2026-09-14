@@ -36,7 +36,6 @@ export class CacheHelper {
     isJSCADObject(obj: any): boolean;
     // (undocumented)
     jscadObjectHashes: Set<string | number>;
-    remove(inputArray: any[], objectToRemove: any): any[];
     stringToHash(str: string): number;
     // (undocumented)
     usedHashes: Record<string, string | number>;
