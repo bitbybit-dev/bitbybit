@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Toorbaidid, mida Uint8Array-na vaadata; koopiat ei tehta",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Annab funktsioonile `asset.uint8ArrayToArrayBuffer` baidimassiivi, mis oma puhvrisse kopeerida.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Kopeeritavad baidid; kopeeritakse ainult see osa, mida see massiiv katab",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "ekspordi glb baidid",
+    "exportGLBBytes": "ekspordi glb baidid",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Kirjutab kogu stseeni või valitud sõlmed koos nende eellastega glb baitidena, midagi\nalla laadimata, et neid saaks salvestada, edasi saata või `loadGlbFromArrayBuffer` abil tagasi laadida.\n\nIga valitud sõlme eellane kirjutatakse samuti, et geomeetria säilitaks oma koha, ja\nfail kannab materjale, mis võrkudel on väljakutse hetkel.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "glb fail baitidena",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Kirjutatavad sõlmed, kas jätta välja taevakuup ja maapind ning kas tihendada Dracoga",
+    "BABYLON.Node[]": "babyloni sõlmede massiiv",
+    "compressWithDraco": "tihenda dracoga",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Toidab `babylon.io.exportGLBBytes` kirjutatavate sõlmedega, sellega, kas jätta välja taevakuup ja\nmaapind, mille see teek lisab, ning sellega, kas tihendada võrgud Dracoga.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Kirjutatavad sõlmed; iga valitud sõlme eellane kirjutatakse samuti, et see säilitaks oma koha, ja kui see puudub, kirjutatakse kogu stseen",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Kui true, jäetakse selle teegi lisatud taevakuubi ja maapinna võrgud failist välja",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Kui true, tihendatakse võrkude geomeetria Dracoga, mis teeb faili väiksemaks ja aeglasemini avatavaks"
 }

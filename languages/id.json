@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Byte mentah yang dilihat sebagai Uint8Array; tidak ada salinan yang dibuat",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Masukan untuk `asset.uint8ArrayToArrayBuffer` berupa array byte yang disalin ke buffernya sendiri.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Byte-byte yang disalin; hanya bagian yang dicakup array ini yang disalin",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "ekspor byte glb",
+    "exportGLBBytes": "ekspor byte glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Menulis seluruh scene, atau node yang dipilih beserta leluhurnya, sebagai byte glb tanpa mengunduh\napa pun, sehingga dapat disimpan, diteruskan, atau dimuat kembali dengan `loadGlbFromArrayBuffer`.\n\nSetiap leluhur dari node yang dipilih juga ditulis, sehingga geometri mempertahankan posisinya, dan\nberkas membawa material yang dimiliki mesh pada saat pemanggilan.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "Berkas glb sebagai byte",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Node yang akan ditulis, apakah skybox dan tanah tidak disertakan, dan apakah dikompresi dengan Draco",
+    "BABYLON.Node[]": "array node babylon",
+    "compressWithDraco": "kompresi dengan draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Masukan untuk `babylon.io.exportGLBBytes` dengan node yang akan ditulis, apakah skybox dan\ntanah yang ditambahkan pustaka ini tidak disertakan, dan apakah mesh dikompresi dengan Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Node yang akan ditulis; setiap leluhur dari node yang dipilih juga ditulis agar mempertahankan posisinya, dan jika dikosongkan seluruh scene ditulis",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Jika true, mesh skybox dan tanah yang ditambahkan pustaka ini tidak disertakan dalam berkas",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Jika true, geometri mesh dikompresi dengan Draco, yang membuat berkas lebih kecil dan lebih lambat dibuka"
 }

@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Os bytes brutos a ver como um Uint8Array; não é feita nenhuma cópia",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Alimenta `asset.uint8ArrayToArrayBuffer` com o array de bytes a copiar para o seu próprio buffer.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Os bytes a copiar; só a parte que este array cobre é copiada",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "exportar bytes glb",
+    "exportGLBBytes": "exportar bytes glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Escreve a cena inteira, ou os nós escolhidos com os seus antepassados, como bytes glb sem descarregar\nnada, para que possam ser guardados, enviados ou carregados de volta com `loadGlbFromArrayBuffer`.\n\nCada antepassado de um nó escolhido também é escrito, para que a geometria mantenha o seu lugar, e o\nficheiro leva os materiais que as malhas têm no momento da chamada.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "O ficheiro glb como bytes",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Os nós a escrever, se deve excluir o skybox e o chão, e se deve comprimir com Draco",
+    "BABYLON.Node[]": "array de nós babylon",
+    "compressWithDraco": "comprimir com draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Alimenta `babylon.io.exportGLBBytes` com os nós a escrever, se deve excluir o skybox e o\nchão que esta biblioteca adiciona, e se deve comprimir as malhas com Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Os nós a escrever; cada antepassado de um nó escolhido também é escrito para que mantenha o seu lugar, e se omitido é escrita a cena inteira",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Quando true, as malhas do skybox e do chão que esta biblioteca adiciona ficam de fora do ficheiro",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Quando true, a geometria das malhas é comprimida com Draco, o que torna o ficheiro mais pequeno e mais lento a abrir"
 }

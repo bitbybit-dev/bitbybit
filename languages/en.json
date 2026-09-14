@@ -14096,5 +14096,16 @@
     "Things.Furniture.Tables.SnakeTable.SnakeTableDrawDto.edgeColour_description": "Hex colour string for the edges",
     "Things.Furniture.Tables.SnakeTable.SnakeTableDrawDto.edgeWidth_description": "Edge width",
     "Things.Enums.LodDto.lod_description": "Level of detail",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "export glb bytes",
+    "exportGLBBytes": "export glb bytes",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Writes the whole scene, or chosen nodes with their ancestors, as glb bytes without downloading\nanything, so they can be saved, sent on or loaded back with `loadGlbFromArrayBuffer`.\n\nEvery ancestor of a chosen node is written too, so the geometry keeps its place, and the\nfile carries the materials the meshes have at the time of the call.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "The glb file as bytes",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "The nodes to write, whether to leave out the skybox and ground, and whether to compress with Draco",
+    "BABYLON.Node[]": "babylon node array",
+    "compressWithDraco": "compress with draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Feeds `babylon.io.exportGLBBytes` with the nodes to write, whether to leave out the skybox and\nground this library adds, and whether to compress the meshes with Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "The nodes to write; every ancestor of a chosen node is written too so it keeps its place, and when omitted the whole scene is written",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "When true, the skybox and ground meshes this library adds are left out of the file",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "When true, the mesh geometry is compressed with Draco, which makes the file smaller and slower to open"
 }

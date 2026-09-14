@@ -1033,6 +1033,7 @@ export class BabylonIO {
     constructor(context: Context);
     exportBabylon(inputs: Inputs_2.BabylonIO.ExportSceneDto): void;
     exportGLB(inputs: Inputs_2.BabylonIO.ExportSceneGlbDto): void;
+    exportGLBBytes(inputs: Inputs_2.BabylonIO.ExportSceneGlbBytesDto): Promise<Uint8Array>;
     exportMeshesToStl(inputs: Inputs_2.BabylonIO.ExportMeshesToStlDto): Promise<any>;
     exportMeshToStl(inputs: Inputs_2.BabylonIO.ExportMeshToStlDto): Promise<any>;
     loadAssetIntoScene(inputs: Inputs_2.Asset.AssetFileDto): Promise<BABYLON_2.Mesh>;
@@ -1058,6 +1059,12 @@ namespace BabylonIO_2 {
     class ExportSceneDto {
         constructor(fileName?: string);
         fileName: string;
+    }
+    class ExportSceneGlbBytesDto {
+        constructor(nodes?: BABYLON_2.Node[], discardSkyboxAndGrid?: boolean, compressWithDraco?: boolean);
+        compressWithDraco?: boolean | undefined;
+        discardSkyboxAndGrid?: boolean | undefined;
+        nodes?: BABYLON_2.Node[] | undefined;
     }
     class ExportSceneGlbDto {
         constructor(fileName?: string, discardSkyboxAndGrid?: boolean);

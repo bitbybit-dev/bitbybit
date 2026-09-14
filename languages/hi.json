@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Uint8Array के रूप में देखे जाने वाले कच्चे बाइट; कोई कॉपी नहीं बनाई जाती",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "`asset.uint8ArrayToArrayBuffer` को अपने बफ़र में कॉपी किए जाने वाले बाइट ऐरे के साथ फ़ीड करता है।",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "कॉपी किए जाने वाले बाइट; केवल वह हिस्सा कॉपी होता है जिसे यह ऐरे कवर करता है",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "GLB बाइट्स निर्यात करें",
+    "exportGLBBytes": "GLB बाइट्स निर्यात करें",
+    "bitbybit.babylon.io.exportGLBBytes_description": "पूरे सीन को, या चुने गए नोड्स को उनके पूर्वजों सहित, बिना कुछ डाउनलोड किए glb बाइट्स के रूप में लिखता है,\nताकि उन्हें सहेजा, आगे भेजा या `loadGlbFromArrayBuffer` से वापस लोड किया जा सके।\n\nचुने गए नोड का हर पूर्वज भी लिखा जाता है, ताकि ज्यामिति अपनी जगह बनाए रखे, और\nफ़ाइल में वे मटेरियल होते हैं जो कॉल के समय मेश के पास होते हैं।",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "बाइट्स के रूप में glb फ़ाइल",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "लिखे जाने वाले नोड्स, क्या स्काईबॉक्स और ग्राउंड को छोड़ना है, और क्या Draco से संपीड़ित करना है",
+    "BABYLON.Node[]": "बेबीलोन नोड एरे",
+    "compressWithDraco": "draco से संपीड़ित करें",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "`babylon.io.exportGLBBytes` को लिखे जाने वाले नोड्स, क्या इस लाइब्रेरी द्वारा जोड़े गए स्काईबॉक्स और\nग्राउंड को छोड़ना है, और क्या मेश को Draco से संपीड़ित करना है, के साथ फ़ीड करता है।",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "लिखे जाने वाले नोड्स; चुने गए नोड का हर पूर्वज भी लिखा जाता है ताकि वह अपनी जगह बनाए रखे, और छोड़े जाने पर पूरा सीन लिखा जाता है",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "true होने पर, इस लाइब्रेरी द्वारा जोड़े गए स्काईबॉक्स और ग्राउंड मेश फ़ाइल से बाहर रखे जाते हैं",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "true होने पर, मेश ज्यामिति को Draco से संपीड़ित किया जाता है, जिससे फ़ाइल छोटी और खोलने में धीमी हो जाती है"
 }

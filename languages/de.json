@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Die rohen Bytes, die als Uint8Array betrachtet werden; es wird keine Kopie erstellt",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Speist `asset.uint8ArrayToArrayBuffer` mit dem Byte-Array, das in einen eigenen Puffer kopiert wird.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Die zu kopierenden Bytes; nur der Teil, den dieses Array abdeckt, wird kopiert",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "GLB-Bytes exportieren",
+    "exportGLBBytes": "GLB-Bytes exportieren",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Schreibt die ganze Szene oder ausgewählte Knoten mit ihren Vorfahren als glb-Bytes, ohne etwas\nherunterzuladen, sodass sie gespeichert, weitergegeben oder mit `loadGlbFromArrayBuffer` zurückgeladen werden können.\n\nJeder Vorfahre eines gewählten Knotens wird ebenfalls geschrieben, damit die Geometrie an ihrem Platz bleibt, und die\nDatei trägt die Materialien, die die Meshes zum Zeitpunkt des Aufrufs haben.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "Die glb-Datei als Bytes",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Die zu schreibenden Knoten, ob die Skybox und der Boden weggelassen werden und ob mit Draco komprimiert wird",
+    "BABYLON.Node[]": "Babylon-Knoten-Array",
+    "compressWithDraco": "mit Draco komprimieren",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Speist `babylon.io.exportGLBBytes` mit den zu schreibenden Knoten, ob die Skybox und der Boden, die diese Bibliothek\nhinzufügt, weggelassen werden, und ob die Meshes mit Draco komprimiert werden.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Die zu schreibenden Knoten; jeder Vorfahre eines gewählten Knotens wird ebenfalls geschrieben, damit er an seinem Platz bleibt, und ohne Angabe wird die ganze Szene geschrieben",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Wenn true, werden die Skybox- und Boden-Meshes, die diese Bibliothek hinzufügt, aus der Datei weggelassen",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Wenn true, wird die Mesh-Geometrie mit Draco komprimiert, was die Datei kleiner und langsamer zu öffnen macht"
 }

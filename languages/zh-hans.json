@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "要以 Uint8Array 视图查看的原始字节；不进行复制",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "为 `asset.uint8ArrayToArrayBuffer` 提供要复制到其自身缓冲区的字节数组。",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "要复制的字节；只复制该数组覆盖的部分",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "导出 GLB 字节",
+    "exportGLBBytes": "导出 GLB 字节",
+    "bitbybit.babylon.io.exportGLBBytes_description": "将整个场景或选定的节点及其祖先写为 glb 字节，不下载任何内容，以便保存、传递或通过 `loadGlbFromArrayBuffer` 加载回来。\n\n选定节点的每个祖先也会被写入，使几何体保持其位置，文件携带调用时网格所具有的材质。",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "作为字节的 glb 文件",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "要写入的节点、是否排除天空盒和地面，以及是否使用 Draco 压缩",
+    "BABYLON.Node[]": "Babylon 节点数组",
+    "compressWithDraco": "使用 draco 压缩",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "为 `babylon.io.exportGLBBytes` 提供要写入的节点、是否排除本库添加的天空盒和地面，以及是否使用 Draco 压缩网格。",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "要写入的节点；选定节点的每个祖先也会被写入以保持其位置，省略时写入整个场景",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "为 true 时，本库添加的天空盒和地面网格不写入文件",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "为 true 时，网格几何体使用 Draco 压缩，文件更小但打开更慢"
 }

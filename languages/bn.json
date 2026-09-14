@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "যে কাঁচা বাইটগুলি Uint8Array হিসেবে দেখতে হবে; কোনো কপি তৈরি হয় না",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "`asset.uint8ArrayToArrayBuffer` কে যে বাইট অ্যারেটি তার নিজস্ব বাফারে কপি করতে হবে তা দেয়।",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "যে বাইটগুলি কপি করতে হবে; শুধু এই অ্যারে যে অংশটুকু জুড়ে আছে তা কপি হয়",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "GLB বাইট রপ্তানি",
+    "exportGLBBytes": "GLB বাইট রপ্তানি",
+    "bitbybit.babylon.io.exportGLBBytes_description": "পুরো দৃশ্যকে, অথবা নির্বাচিত নোডগুলোকে তাদের পূর্বসূরিসহ, কিছু ডাউনলোড না করেই glb বাইট হিসেবে লেখে,\nযাতে সেগুলো সংরক্ষণ, প্রেরণ বা `loadGlbFromArrayBuffer` দিয়ে আবার লোড করা যায়।\n\nনির্বাচিত নোডের প্রতিটি পূর্বসূরিও লেখা হয়, যাতে জ্যামিতি তার অবস্থান বজায় রাখে, এবং\nফাইলে সেই ম্যাটেরিয়ালগুলো থাকে যা কলের সময় মেশগুলোর ছিল।",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "বাইট হিসেবে glb ফাইল",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "যে নোডগুলো লেখা হবে, স্কাইবক্স ও গ্রাউন্ড বাদ দেওয়া হবে কিনা, এবং Draco দিয়ে সংকুচিত করা হবে কিনা",
+    "BABYLON.Node[]": "ব্যাবিলন নোড অ্যারে",
+    "compressWithDraco": "draco দিয়ে সংকুচিত করুন",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "`babylon.io.exportGLBBytes` কে যে নোডগুলো লেখা হবে, এই লাইব্রেরি যে স্কাইবক্স ও গ্রাউন্ড যোগ করে তা বাদ দেওয়া হবে কিনা,\nএবং মেশগুলো Draco দিয়ে সংকুচিত করা হবে কিনা তা দেয়।",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "যে নোডগুলো লেখা হবে; নির্বাচিত নোডের প্রতিটি পূর্বসূরিও লেখা হয় যাতে তা নিজের অবস্থান বজায় রাখে, এবং বাদ দিলে পুরো দৃশ্য লেখা হয়",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "true হলে, এই লাইব্রেরি যে স্কাইবক্স ও গ্রাউন্ড মেশ যোগ করে তা ফাইল থেকে বাদ দেওয়া হয়",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "true হলে, মেশের জ্যামিতি Draco দিয়ে সংকুচিত করা হয়, যাতে ফাইল ছোট হয় কিন্তু খুলতে ধীর হয়"
 }

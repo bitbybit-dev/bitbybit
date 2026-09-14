@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Neapdoroti baitai, žiūrimi kaip Uint8Array; kopija nedaroma",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Maitina `asset.uint8ArrayToArrayBuffer` baitų masyvu, kopijuojamu į savo buferį.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Kopijuojami baitai; kopijuojama tik ta dalis, kurią apima šis masyvas",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "eksportuoti glb baitus",
+    "exportGLBBytes": "eksportuoti glb baitus",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Įrašo visą sceną arba pasirinktus mazgus su jų protėviais kaip glb baitus nieko\nneatsisiunčiant, kad juos būtų galima išsaugoti, perduoti toliau arba įkelti atgal per `loadGlbFromArrayBuffer`.\n\nKiekvienas pasirinkto mazgo protėvis taip pat įrašomas, kad geometrija išlaikytų savo vietą, o\nfailas neša medžiagas, kurias tinkleliai turi iškvietimo metu.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "glb failas kaip baitai",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Įrašytini mazgai, ar praleisti dangaus gaubtą ir žemę, ir ar suspausti Draco",
+    "BABYLON.Node[]": "babylon mazgų masyvas",
+    "compressWithDraco": "suspausti draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Maitina `babylon.io.exportGLBBytes` įrašytinais mazgais, ar praleisti dangaus gaubtą ir\nžemę, kuriuos prideda ši biblioteka, ir ar suspausti tinklelius Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Įrašytini mazgai; kiekvienas pasirinkto mazgo protėvis taip pat įrašomas, kad išlaikytų savo vietą, o nenurodžius įrašoma visa scena",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Kai tiesa, šios bibliotekos pridedami dangaus gaubto ir žemės tinkleliai į failą neįtraukiami",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Kai tiesa, tinklelių geometrija suspaudžiama Draco, todėl failas mažesnis ir lėčiau atidaromas"
 }

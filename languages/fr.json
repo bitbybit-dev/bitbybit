@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Les octets bruts à voir comme un Uint8Array ; aucune copie n'est faite",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Alimente `asset.uint8ArrayToArrayBuffer` avec le tableau d'octets à copier dans son propre tampon.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Les octets à copier ; seule la partie que ce tableau couvre est copiée",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "exporter octets glb",
+    "exportGLBBytes": "exporter octets glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Écrit toute la scène, ou les noeuds choisis avec leurs ancêtres, sous forme d'octets glb sans rien\ntélécharger, pour qu'ils puissent être enregistrés, transmis ou rechargés avec `loadGlbFromArrayBuffer`.\n\nChaque ancêtre d'un noeud choisi est écrit aussi, pour que la géométrie garde sa place, et le\nfichier porte les matériaux que les maillages ont au moment de l'appel.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "Le fichier glb sous forme d'octets",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Les noeuds à écrire, s'il faut exclure la skybox et le sol, et s'il faut compresser avec Draco",
+    "BABYLON.Node[]": "tableau de noeuds babylon",
+    "compressWithDraco": "compresser avec draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Alimente `babylon.io.exportGLBBytes` avec les noeuds à écrire, s'il faut exclure la skybox et le\nsol que cette bibliothèque ajoute, et s'il faut compresser les maillages avec Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Les noeuds à écrire ; chaque ancêtre d'un noeud choisi est écrit aussi pour qu'il garde sa place, et s'il est omis toute la scène est écrite",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Quand vrai, les maillages de skybox et de sol que cette bibliothèque ajoute sont exclus du fichier",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Quand vrai, la géométrie des maillages est compressée avec Draco, ce qui rend le fichier plus petit et plus lent à ouvrir"
 }

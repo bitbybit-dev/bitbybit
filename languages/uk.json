@@ -14098,5 +14098,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Сирі байти, які потрібно подати як Uint8Array; копія не створюється",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Подається в `asset.uint8ArrayToArrayBuffer` з масивом байтів, який потрібно скопіювати у власний буфер.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Байти, які потрібно скопіювати; копіюється лише частина, яку покриває цей масив",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "експортувати байти glb",
+    "exportGLBBytes": "експортувати байти glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Записує всю сцену або вибрані вузли з їхніми предками як байти glb, нічого не\nзавантажуючи, щоб їх можна було зберегти, передати далі або завантажити назад через `loadGlbFromArrayBuffer`.\n\nКожен предок вибраного вузла теж записується, щоб геометрія зберегла своє місце, а\nфайл несе матеріали, які сітки мають на момент виклику.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "Файл glb у вигляді байтів",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Вузли для запису, чи виключити скайбокс та землю, і чи стискати за допомогою Draco",
+    "BABYLON.Node[]": "масив вузлів бабілон",
+    "compressWithDraco": "стиснути за допомогою draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Подається в `babylon.io.exportGLBBytes` з вузлами для запису, тим, чи виключити скайбокс та\nземлю, які додає ця бібліотека, і тим, чи стискати сітки за допомогою Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Вузли для запису; кожен предок вибраного вузла теж записується, щоб він зберіг своє місце, а без зазначення записується вся сцена",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Коли true, сітки скайбокса та землі, які додає ця бібліотека, не включаються до файлу",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Коли true, геометрія сіток стискається за допомогою Draco, що робить файл меншим і повільнішим у відкритті"
 }

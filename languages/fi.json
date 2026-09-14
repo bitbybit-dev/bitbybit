@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Raa'at tavut, jotka näytetään Uint8Array-oliona; kopiota ei tehdä",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Syöttää funktiolle `asset.uint8ArrayToArrayBuffer` tavutaulukon, joka kopioidaan omaan puskuriinsa.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Kopioitavat tavut; vain tämän taulukon kattama osa kopioidaan",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "vie glb-tavut",
+    "exportGLBBytes": "vie glb-tavut",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Kirjoittaa koko näkymän tai valitut solmut edeltäjineen glb-tavuiksi lataamatta\nmitään, jotta ne voi tallentaa, välittää eteenpäin tai ladata takaisin funktiolla `loadGlbFromArrayBuffer`.\n\nJokainen valitun solmun edeltäjä kirjoitetaan myös, jotta geometria pysyy paikallaan, ja\ntiedosto sisältää materiaalit, jotka verkoilla on kutsuhetkellä.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "glb-tiedosto tavuina",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Kirjoitettavat solmut, jätetäänkö taivaskupu ja maa pois ja pakataanko Dracolla",
+    "BABYLON.Node[]": "babylon-solmut",
+    "compressWithDraco": "pakkaa dracolla",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Syöttää funktiolle `babylon.io.exportGLBBytes` kirjoitettavat solmut, sen, jätetäänkö tämän kirjaston lisäämät\ntaivaskupu ja maa pois, ja sen, pakataanko verkot Dracolla.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Kirjoitettavat solmut; jokainen valitun solmun edeltäjä kirjoitetaan myös, jotta se pysyy paikallaan, ja jos ne jätetään pois, kirjoitetaan koko näkymä",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Kun tosi, tämän kirjaston lisäämät taivaskupu- ja maaverkot jätetään pois tiedostosta",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Kun tosi, verkkojen geometria pakataan Dracolla, mikä tekee tiedostosta pienemmän ja hitaamman avata"
 }

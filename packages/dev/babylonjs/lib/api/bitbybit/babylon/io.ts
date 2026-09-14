@@ -201,15 +201,63 @@ export class BabylonIO {
      * ```
      */
     exportGLB(inputs: Inputs.BabylonIO.ExportSceneGlbDto): void {
-        const options: SERIALIZERS.IExportOptions = {
-            metadataSelector: (metadata: { gltf?: { extras?: unknown } } | undefined) => metadata?.gltf?.extras,
-        };
-        if (inputs.discardSkyboxAndGrid) {
-            options.shouldExportNode = (m: BABYLON.Node) => m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("bitbybit-ground");
-        }
+        const options = this.glbExportOptions(inputs.discardSkyboxAndGrid === true, false);
         SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, inputs.fileName, options)
             .then((glb) => glb.downloadFiles())
             .catch((error: unknown) => console.error(`Failed to export the scene to ${inputs.fileName}:`, error));
+    }
+
+    /**
+     * Writes the whole scene, or chosen nodes with their ancestors, as glb bytes without downloading
+     * anything, so they can be saved, sent on or loaded back with `loadGlbFromArrayBuffer`.
+     *
+     * Every ancestor of a chosen node is written too, so the geometry keeps its place, and the
+     * file carries the materials the meshes have at the time of the call.
+     * @param inputs - The nodes to write, whether to leave out the skybox and ground, and whether to compress with Draco
+     * @returns The glb file as bytes
+     * @group export
+     * @shortname gltf scene bytes
+     * @example
+     * ```typescript
+     * const glb = await bitbybit.babylon.io.exportGLBBytes({ nodes: [chair], discardSkyboxAndGrid: true, compressWithDraco: false });
+     * const copy = await bitbybit.babylon.io.loadGlbFromArrayBuffer({ glbData: glb, fileName: "chair.glb", hidden: false });
+     * ```
+     */
+    async exportGLBBytes(inputs: Inputs.BabylonIO.ExportSceneGlbBytesDto): Promise<Uint8Array> {
+        const options = this.glbExportOptions(inputs.discardSkyboxAndGrid === true, inputs.compressWithDraco === true, inputs.nodes);
+        const data = await SERIALIZERS.GLTF2Export.GLBAsync(this.context.scene, "scene", options);
+        const glbName = Object.keys(data.files).find((name) => name.toLowerCase().endsWith(".glb"));
+        const file = glbName === undefined ? undefined : data.files[glbName];
+        if (!(file instanceof Blob)) {
+            throw new Error("The glb export produced no file");
+        }
+        return new Uint8Array(await file.arrayBuffer());
+    }
+
+    private glbExportOptions(discardSkyboxAndGrid: boolean, compressWithDraco: boolean, nodes?: BABYLON.Node[]): SERIALIZERS.IExportOptions {
+        const options: SERIALIZERS.IExportOptions = {
+            metadataSelector: (metadata: { gltf?: { extras?: unknown } } | undefined) => metadata?.gltf?.extras,
+            meshCompressionMethod: compressWithDraco ? "Draco" : "None",
+        };
+        const isSceneFurniture = (node: BABYLON.Node): boolean => node.name === "bitbybit-hdrSkyBox" || node.name.includes("bitbybit-ground");
+        const included = nodes === undefined ? undefined : this.withAncestors(nodes);
+        if (included !== undefined || discardSkyboxAndGrid) {
+            options.shouldExportNode = (node: BABYLON.Node) =>
+                (included === undefined || included.has(node)) && !(discardSkyboxAndGrid && isSceneFurniture(node));
+        }
+        return options;
+    }
+
+    private withAncestors(nodes: BABYLON.Node[]): Set<BABYLON.Node> {
+        const included = new Set<BABYLON.Node>();
+        for (const node of nodes) {
+            let current: BABYLON.Node | null = node;
+            while (current !== null && !included.has(current)) {
+                included.add(current);
+                current = current.parent;
+            }
+        }
+        return included;
     }
 
     /**

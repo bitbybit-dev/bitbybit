@@ -29,6 +29,34 @@ export namespace BabylonIO {
         discardSkyboxAndGrid?: boolean | undefined = false;
     }
     /**
+     * Feeds `babylon.io.exportGLBBytes` with the nodes to write, whether to leave out the skybox and
+     * ground this library adds, and whether to compress the meshes with Draco.
+     */
+    export class ExportSceneGlbBytesDto {
+        constructor(nodes?: BABYLON.Node[], discardSkyboxAndGrid?: boolean, compressWithDraco?: boolean) {
+            if (nodes !== undefined) { this.nodes = nodes; }
+            if (discardSkyboxAndGrid !== undefined) { this.discardSkyboxAndGrid = discardSkyboxAndGrid; }
+            if (compressWithDraco !== undefined) { this.compressWithDraco = compressWithDraco; }
+        }
+        /**
+         * The nodes to write; every ancestor of a chosen node is written too so it keeps its place, and when omitted the whole scene is written
+         * @optional true
+         */
+        nodes?: BABYLON.Node[] | undefined;
+        /**
+         * When true, the skybox and ground meshes this library adds are left out of the file
+         * @default false
+         * @optional true
+         */
+        discardSkyboxAndGrid?: boolean | undefined = false;
+        /**
+         * When true, the mesh geometry is compressed with Draco, which makes the file smaller and slower to open
+         * @default false
+         * @optional true
+         */
+        compressWithDraco?: boolean | undefined = false;
+    }
+    /**
      * Feeds `babylon.io.exportBabylon` with the name of the downloaded `.babylon` file.
      */
     export class ExportSceneDto {

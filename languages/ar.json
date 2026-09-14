@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "البايتات الخام المراد عرضها كمصفوفة Uint8Array؛ لا تُنشأ أي نسخة",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "يغذّي `asset.uint8ArrayToArrayBuffer` بمصفوفة البايتات المراد نسخها إلى مخزن مؤقت خاص بها.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "البايتات المراد نسخها؛ يُنسخ فقط الجزء الذي تغطيه هذه المصفوفة",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "تصدير بايتات glb",
+    "exportGLBBytes": "تصدير بايتات glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "يكتب المشهد كاملًا، أو العقد المختارة مع أسلافها، كبايتات glb دون تنزيل\nأي شيء، بحيث يمكن حفظها أو تمريرها أو إعادة تحميلها عبر `loadGlbFromArrayBuffer`.\n\nيُكتب كل سلف لعقدة مختارة أيضًا، لكي تحافظ الهندسة على موضعها، ويحمل\nالملف المواد التي تملكها الشبكات لحظة الاستدعاء.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "ملف glb كبايتات",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "العقد المراد كتابتها، وما إذا كان يستثنى صندوق السماء والأرضية، وما إذا كان يُضغط بواسطة Draco",
+    "BABYLON.Node[]": "مصفوفة عقد Babylon",
+    "compressWithDraco": "ضغط بواسطة draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "يغذي `babylon.io.exportGLBBytes` بالعقد المراد كتابتها، وما إذا كان يستثني صندوق السماء والأرضية\nاللذين تضيفهما هذه المكتبة، وما إذا كانت الشبكات تُضغط بواسطة Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "العقد المراد كتابتها؛ يُكتب كل سلف لعقدة مختارة أيضًا لكي يحافظ على موضعه، وعند إغفالها يُكتب المشهد كاملًا",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "عندما يكون true، تستثنى من الملف شبكتا صندوق السماء والأرضية اللتان تضيفهما هذه المكتبة",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "عندما يكون true، تُضغط هندسة الشبكات بواسطة Draco، مما يجعل الملف أصغر وأبطأ في الفتح"
 }

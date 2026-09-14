@@ -184,6 +184,112 @@ describe("BabylonIO", () => {
         });
     });
 
+    describe("exportGLBBytes", () => {
+        const GLB_BYTES = new Uint8Array([0x67, 0x6c, 0x54, 0x46, 2, 0, 0, 0]);
+
+        const serialiserAnswering = (): SERIALIZERS.IExportOptions[] => {
+            const asked: SERIALIZERS.IExportOptions[] = [];
+            vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync").mockImplementation(((_scene: BABYLON.Scene, _fileName: string, options: SERIALIZERS.IExportOptions) => {
+                asked.push(options);
+                return Promise.resolve({ files: { "scene.glb": new Blob([GLB_BYTES], { type: "model/gltf-binary" }) } });
+            }) as never);
+            return asked;
+        };
+
+        it("should give back the bytes of the glb file the serialiser wrote", async () => {
+            // Arrange
+            serialiserAnswering();
+
+            // Act
+            const bytes = await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+
+            // Assert
+            expect(Array.from(bytes)).toEqual(Array.from(GLB_BYTES));
+        });
+
+        it("should write the whole scene when no nodes are chosen", async () => {
+            // Arrange
+            const asked = serialiserAnswering();
+
+            // Act
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+
+            // Assert
+            expect(typeof asked[0]!.shouldExportNode).toBe("undefined");
+            expect(asked[0]!.meshCompressionMethod).toBe("None");
+        });
+
+        it("should write a chosen node with every ancestor and leave its siblings out", async () => {
+            // Arrange
+            const asked = serialiserAnswering();
+            const root = new BABYLON.TransformNode("root", headless.scene);
+            const assembly = new BABYLON.TransformNode("assembly", headless.scene);
+            assembly.parent = root;
+            const chosen = new BABYLON.Mesh("chosen", headless.scene);
+            chosen.parent = assembly;
+            const sibling = new BABYLON.Mesh("sibling", headless.scene);
+            sibling.parent = assembly;
+
+            // Act
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto([chosen]));
+
+            // Assert
+            const shouldExport = (node: BABYLON.Node): boolean => asked[0]!.shouldExportNode!(node);
+            expect(shouldExport(chosen)).toBe(true);
+            expect(shouldExport(assembly)).toBe(true);
+            expect(shouldExport(root)).toBe(true);
+            expect(shouldExport(sibling)).toBe(false);
+        });
+
+        it("should leave the skybox out even when it is among the chosen nodes", async () => {
+            // Arrange
+            const asked = serialiserAnswering();
+            const skybox = new BABYLON.Mesh("bitbybit-hdrSkyBox", headless.scene);
+            const part = new BABYLON.Mesh("part", headless.scene);
+
+            // Act
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto([skybox, part], true));
+
+            // Assert
+            const shouldExport = (node: BABYLON.Node): boolean => asked[0]!.shouldExportNode!(node);
+            expect(shouldExport(skybox)).toBe(false);
+            expect(shouldExport(part)).toBe(true);
+        });
+
+        it("should ask for Draco compression when told to", async () => {
+            // Arrange
+            const asked = serialiserAnswering();
+
+            // Act
+            await io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto(undefined, false, true));
+
+            // Assert
+            expect(asked[0]!.meshCompressionMethod).toBe("Draco");
+        });
+
+        it("should reject when the serialiser fails", async () => {
+            // Arrange
+            vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync").mockRejectedValue(new Error("no gpu"));
+
+            // Act
+            const exported = io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+
+            // Assert
+            await expect(exported).rejects.toThrow("no gpu");
+        });
+
+        it("should reject when the serialiser wrote no glb file", async () => {
+            // Arrange
+            vi.spyOn(SERIALIZERS.GLTF2Export, "GLBAsync").mockResolvedValue({ files: {} } as never);
+
+            // Act
+            const exported = io.exportGLBBytes(new Inputs.BabylonIO.ExportSceneGlbBytesDto());
+
+            // Assert
+            await expect(exported).rejects.toThrow("The glb export produced no file");
+        });
+    });
+
     describe("exportMeshToStl", () => {
         it("should write the mesh and its children", async () => {
             // Arrange

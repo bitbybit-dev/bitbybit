@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Neapstrādātie baiti, ko skatīt kā Uint8Array; kopija netiek veidota",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Padod `asset.uint8ArrayToArrayBuffer` baitu masīvu, ko nokopēt savā buferī.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Kopējamie baiti; tiek kopēta tikai tā daļa, ko šis masīvs aptver",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "eksportēt glb baitus",
+    "exportGLBBytes": "eksportēt glb baitus",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Ieraksta visu ainu vai izvēlētos mezglus ar to senčiem kā glb baitus, neko\nnelejupielādējot, lai tos varētu saglabāt, nodot tālāk vai ielādēt atpakaļ ar `loadGlbFromArrayBuffer`.\n\nKatrs izvēlētā mezgla sencis arī tiek ierakstīts, lai ģeometrija saglabātu savu vietu, un\nfails nes materiālus, kādi tīkliem ir izsaukuma brīdī.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "glb fails kā baiti",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Ierakstāmie mezgli, vai izlaist debesu kasti un zemi, un vai saspiest ar Draco",
+    "BABYLON.Node[]": "babylon mezglu masīvs",
+    "compressWithDraco": "saspiest ar draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Baro `babylon.io.exportGLBBytes` ar ierakstāmajiem mezgliem, vai izlaist debesu kasti un\nzemi, ko šī bibliotēka pievieno, un vai saspiest tīklus ar Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Ierakstāmie mezgli; katrs izvēlētā mezgla sencis arī tiek ierakstīts, lai tas saglabātu savu vietu, un ja nav norādīts, tiek ierakstīta visa aina",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Ja true, debesu kastes un zemes tīkli, ko šī bibliotēka pievieno, tiek izlaisti no faila",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Ja true, tīklu ģeometrija tiek saspiesta ar Draco, kas padara failu mazāku un lēnāk atveramu"
 }

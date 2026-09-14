@@ -14096,5 +14096,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "Surowe bajty do podglądu jako Uint8Array; nie jest tworzona kopia",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Zasila `asset.uint8ArrayToArrayBuffer` tablicą bajtów do skopiowania do własnego bufora.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Bajty do skopiowania; kopiowana jest tylko część, którą obejmuje ta tablica",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "eksportuj bajty glb",
+    "exportGLBBytes": "eksportuj bajty glb",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Zapisuje całą scenę lub wybrane węzły z ich przodkami jako bajty glb bez pobierania\nczegokolwiek, aby można je było zapisać, przekazać dalej lub wczytać z powrotem przez `loadGlbFromArrayBuffer`.\n\nKażdy przodek wybranego węzła jest również zapisywany, dzięki czemu geometria zachowuje swoje miejsce, a\nplik zawiera materiały, które siatki mają w chwili wywołania.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "Plik glb jako bajty",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Węzły do zapisania, czy pominąć skybox i podłoże oraz czy kompresować przez Draco",
+    "BABYLON.Node[]": "tablica węzłów babylon",
+    "compressWithDraco": "kompresuj przez draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Zasila `babylon.io.exportGLBBytes` węzłami do zapisania, tym, czy pominąć skybox i\npodłoże dodawane przez tę bibliotekę, oraz tym, czy kompresować siatki przez Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Węzły do zapisania; każdy przodek wybranego węzła jest również zapisywany, aby zachował swoje miejsce, a gdy pominięte, zapisywana jest cała scena",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "Gdy true, siatki skyboxa i podłoża dodawane przez tę bibliotekę są pomijane w pliku",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "Gdy true, geometria siatek jest kompresowana przez Draco, przez co plik jest mniejszy i wolniej się otwiera"
 }

@@ -14097,5 +14097,16 @@
     "Inputs.Asset.ArrayBufferToUint8ArrayDto.arrayBuffer_description": "De råa byten som ska betraktas som en Uint8Array; ingen kopia görs",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto_description": "Matar `asset.uint8ArrayToArrayBuffer` med bytearrayen som ska kopieras till en egen buffert.",
     "Inputs.Asset.Uint8ArrayToArrayBufferDto.uint8Array_description": "Byten som ska kopieras; bara den del denna array täcker kopieras",
-    "Record<string, unknown>": "Record<string, unknown>"
+    "Record<string, unknown>": "Record<string, unknown>",
+    "bitbybit.babylon.io.exportGLBBytes": "exportera glb-byte",
+    "exportGLBBytes": "exportera glb-byte",
+    "bitbybit.babylon.io.exportGLBBytes_description": "Skriver hela scenen, eller valda noder med sina förfäder, som glb-byte utan att ladda ned\nnågot, så att de kan sparas, skickas vidare eller läsas in igen med `loadGlbFromArrayBuffer`.\n\nVarje förfader till en vald nod skrivs också, så att geometrin behåller sin plats, och\nfilen bär de material som mesharna har vid anropet.",
+    "bitbybit.babylon.io.exportGLBBytes_returns": "glb-filen som byte",
+    "bitbybit.babylon.io.exportGLBBytes_param_inputs": "Noderna att skriva, om skyboxen och marken ska utelämnas och om Draco-komprimering ska användas",
+    "BABYLON.Node[]": "babylon nod array",
+    "compressWithDraco": "komprimera med draco",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto_description": "Matar `babylon.io.exportGLBBytes` med noderna att skriva, om skyboxen och marken som\nbiblioteket lägger till ska utelämnas, och om mesharna ska komprimeras med Draco.",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.nodes_description": "Noderna att skriva; varje förfader till en vald nod skrivs också så att den behåller sin plats, och utelämnas de skrivs hela scenen",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.discardSkyboxAndGrid_description": "När true utelämnas skybox- och markmesharna som biblioteket lägger till ur filen",
+    "Inputs.BabylonIO.ExportSceneGlbBytesDto.compressWithDraco_description": "När true komprimeras meshgeometrin med Draco, vilket gör filen mindre och långsammare att öppna"
 }
