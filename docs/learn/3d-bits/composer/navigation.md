@@ -13,11 +13,11 @@ tags: [3d-bits, composer, navigation]
 
 Shoppers looking at a 3D product rarely find the good bits on their own. They spin it once, see the outside, and move on. Navigation is how you take them to the parts worth seeing.
 
-The section has two lists - **Points of Interest** and **Focals** - and both can be reordered, cloned and named.
+The section has two lists - **Points of Interest** and **Focals** - and both can be reordered, cloned and named. A third sub-section, **Camera motion**, sets how the camera travels whenever either of them moves it.
 
 ## Points of interest
 
-A marker on the model that a shopper can click. Clicking it flies the camera smoothly to a view you chose.
+A marker on the model that a shopper can click. Clicking it flies the camera smoothly to a view you chose, with the motion set under [Camera motion](#camera-motion).
 
 Use them for the things you would point at if the shopper were standing next to you. The dovetail joint that shows the work is real. The reinforced stitching. The port on the back nobody expects to be there.
 
@@ -80,6 +80,34 @@ A fitted focal lands where the framed parts just fill the view, with a small mar
 By default a fitted focal keeps the angle you authored with its Camera Position and Camera Target, and only recomputes distance and target. Set **Camera direction** to **Shopper's current view** and it keeps the angle the shopper is looking from instead: the camera stays where they turned it and only moves in or out to frame the part. This is the gentler behaviour when a shopper is already examining the product and changes an option - the view does not swing round on them - and it pairs well with Distance. If there is no live camera to read (it always exists in Play and on the storefront), the authored angle is used.
 
 In edit mode, **Preview focal** frames every copy of a listed part, because edit mode shows all geometry regardless of conditions. Press Play to see the focal frame only what the shopper sees.
+
+### Camera transition
+
+A focal normally travels with the shared motion set under [Camera motion](#camera-motion). Tick **Override the shared camera motion** to give this one focal its own **Duration** and **Easing** - a slow, gentle reveal for the option that changes the whole product, a quick snap for a detail a shopper toggles often. The override is stored in full, so a focal that says "2000 ms" keeps saying it even if you later shorten the shared motion. Untick it and the focal follows the shared motion again; the values you typed are kept in the form but no longer used.
+
+## Camera motion
+
+Every camera flight the configurator makes - a fired focal, a clicked point of interest, and the fly home when a **Reset** button restores the defaults - shares one motion, set here.
+
+**Duration (ms)** is the flight time in milliseconds. The default, `2000`, is the two-second flight every configurator has always used, so an existing scene moves exactly as before until you change it. `0` jumps to the view with no animation at all, which is what you want for a "compare A / B" pair of focals where the motion would only get in the way. The upper limit is one minute.
+
+**Easing** is the curve the motion follows between its start and its end. The names come from the bitbybit math library, and each is built from two parts:
+
+| Part | What it does |
+|------|--------------|
+| **Ease In** | starts gently and speeds up - the camera leaves the current view softly |
+| **Ease Out** | starts fast and slows into the destination - the arrival is soft |
+| **Ease In-out** | both - the classic camera glide; **Ease In-out Cubic** is the default |
+| **Sine, Quad, Cubic, Quart, Quint, Expo, Circ** | how pronounced the curve is, from the mildest (Sine) to the sharpest (Expo). Circ is close to Quart with a rounder end |
+| **Back** | overshoots the destination slightly and settles back - a little "pull in" at the end |
+| **Elastic** | overshoots and springs a few times before settling |
+| **Bounce** | arrives like a dropped ball, bouncing on the destination |
+
+The last three are effects, not glides. They can be delightful on a product that is playful and irritating on one that is not. Try them in **Play** with the real duration before deciding, because a bounce that reads as fun over 600 ms reads as broken over 3 s.
+
+**Preview focal** in edit mode uses the focal's real duration and easing, so you can judge the motion without pressing Play. Clicking a marker in edit mode does not, because markers do not fly in edit mode at all - see below.
+
+The shared motion and a focal's override are both saved in the scene configuration under `navigation.cameraTransition` and `focals[].transition`, as `durationMs` and `easing`, if you edit the JSON directly. Leaving them out means the built-in two-second motion.
 
 ## Both are edit-time invisible
 
