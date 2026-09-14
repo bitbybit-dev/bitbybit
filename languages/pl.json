@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Tworzy kopię bryły, która liczy się jako nowy oryginał, tak by kopia mogła nieść własne właściwości\nwierzchołków, takie jak inne mapowanie UV, i być odróżniana od tego, z czego ją zbudowano.\n\nWspółpłaszczyznowe ściany są scalane, a krawędzie między nimi zwijane po drodze; zamiast tego zostań przy\ndrodze przez siatkę, gdy te krawędzie muszą pozostać.",
     "bitbybit.manifold.manifold.operations.compose": "komponuj",
     "compose": "komponuj",
-    "bitbybit.manifold.manifold.operations.compose_description": "Pakuje kilka brył w jedną bez ich scalania, odwrotność `decompose`.\n\nNic nie jest sprawdzane pod kątem nakładania, więc trzymaj bryły osobno; dla nakładających się właściwym narzędziem jest\nsuma logiczna.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Pakuje kilka brył w jedną, odwrotność `decompose`.\n\nNakładające się bryły są scalane jak w sumie logicznej; bryły trzymane osobno pozostają odrębnymi\nczęściami jednego wyniku.",
     "composition": "kompozycja",
     "bitbybit.manifold.manifold.operations.decompose": "rozłóż",
     "bitbybit.manifold.manifold.operations.decompose_description": "Dzieli bryłę na jej osobne, niepołączone kawałki, odwrotność `compose`.\n\nBryła będąca w całości jednym kawałkiem wraca jako lista z jedną kopią.",

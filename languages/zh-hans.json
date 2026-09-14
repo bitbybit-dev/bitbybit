@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "创建实体的一个算作新原始体的副本，使该副本可以携带自己的顶点属性（例如不同的 UV 映射），并与其构建来源区分开。\n\n过程中共面的面被合并，它们之间的边被折叠；当这些边必须保留时，请改用网格途径。",
     "bitbybit.manifold.manifold.operations.compose": "组合",
     "compose": "组合",
-    "bitbybit.manifold.manifold.operations.compose_description": "将多个实体打包成一个而不融合它们，是 `decompose` 的逆操作。\n\n不检查任何重叠，因此请让实体保持分离；对于重叠的实体，布尔并集才是正确的工具。",
+    "bitbybit.manifold.manifold.operations.compose_description": "将多个实体打包成一个，是 `decompose` 的逆操作。\n\n重叠的实体会像布尔并集那样被融合；保持分离的实体则作为同一结果的独立部分保留。",
     "composition": "组合体",
     "bitbybit.manifold.manifold.operations.decompose": "分解",
     "bitbybit.manifold.manifold.operations.decompose_description": "将实体拆分为其分离的、不相连的各块，是 `compose` 的逆操作。\n\n完整一块的实体以只含一个副本的列表返回。",

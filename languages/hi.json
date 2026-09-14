@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "सॉलिड की ऐसी कॉपी बनाता है जो नए मूल के रूप में गिनी जाती है, ताकि कॉपी अपनी वर्टेक्स\nप्रॉपर्टी, जैसे अलग UV मैपिंग, वहन कर सके और जिससे वह बनी उससे अलग पहचानी जा सके।\n\nरास्ते में समतलीय फेसेस मिला दिए जाते हैं और उनके बीच के एजेस ढहा दिए जाते हैं; जब वे एजेस रहने\nचाहिए तब इसके बजाय मेश मार्ग रखें।",
     "bitbybit.manifold.manifold.operations.compose": "compose",
     "compose": "compose",
-    "bitbybit.manifold.manifold.operations.compose_description": "कई सॉलिड को बिना फ़्यूज़ किए एक में पैक करता है, `decompose` का उल्टा।\n\nओवरलैप के लिए कुछ नहीं जाँचा जाता, इसलिए सॉलिड को अलग रखें; ओवरलैप होने वालों के लिए बूलियन यूनियन\nसही टूल है।",
+    "bitbybit.manifold.manifold.operations.compose_description": "कई सॉलिड को एक में पैक करता है, `decompose` का उल्टा।\n\nओवरलैप होने वाले सॉलिड बूलियन यूनियन की तरह फ़्यूज़ हो जाते हैं; अलग रखे गए सॉलिड एक ही परिणाम के\nअलग-अलग हिस्से बने रहते हैं।",
     "composition": "रचना",
     "bitbybit.manifold.manifold.operations.decompose": "विघटित (Decompose)",
     "bitbybit.manifold.manifold.operations.decompose_description": "सॉलिड को उसके अलग, असंबद्ध टुकड़ों में बाँटता है, `compose` का उल्टा।\n\nजो सॉलिड पूरा एक टुकड़ा है वह एक कॉपी की सूची के रूप में वापस आता है।",

@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "يصنع نسخة من مجسم صلب تُعد أصلا جديدا، بحيث يمكن للنسخة أن تحمل خصائص رؤوسها\nالخاصة، مثل ربط UV مختلف، وأن تُميّز عما بُنيت منه.\n\nتُدمج الأوجه المتحدة المستوى وتُطوى الحواف بينها في الطريق؛ ابق على طريق\nالشبكة بدلا من ذلك عندما يجب أن تبقى تلك الحواف.",
     "bitbybit.manifold.manifold.operations.compose": "تأليف",
     "compose": "تأليف",
-    "bitbybit.manifold.manifold.operations.compose_description": "يجمع عدة مجسمات صلبة في واحد دون دمجها، عكس `decompose`.\n\nلا يُفحص شيء بحثا عن التداخل، فأبق المجسمات الصلبة متباعدة؛ الاتحاد المنطقي هو الأداة الصحيحة\nللمتداخلة منها.",
+    "bitbybit.manifold.manifold.operations.compose_description": "يجمع عدة مجسمات صلبة في واحد، عكس `decompose`.\n\nالمجسمات الصلبة المتداخلة تُدمج كما يفعل الاتحاد المنطقي؛ والمتباعدة منها تبقى قطعا منفصلة\nضمن النتيجة الواحدة.",
     "composition": "تأليف",
     "bitbybit.manifold.manifold.operations.decompose": "تحليل",
     "bitbybit.manifold.manifold.operations.decompose_description": "يقسم مجسما صلبا إلى قطعه المنفصلة غير المتصلة، عكس `compose`.\n\nالمجسم الصلب الذي هو قطعة واحدة كلها يعود كقائمة من نسخة واحدة.",

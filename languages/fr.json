@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Fait une copie d'un solide qui compte comme un nouvel original, de sorte que la copie peut porter ses propres propriétés\nde sommet, comme une projection UV différente, et être distinguée de ce dont elle a été construite.\n\nLes faces coplanaires sont fusionnées et les arêtes entre elles supprimées au passage ; gardez plutôt la\nvoie du maillage quand ces arêtes doivent rester.",
     "bitbybit.manifold.manifold.operations.compose": "composer",
     "compose": "composer",
-    "bitbybit.manifold.manifold.operations.compose_description": "Regroupe plusieurs solides en un seul sans les fusionner, l'inverse de `decompose`.\n\nRien ne vérifie les chevauchements, gardez donc les solides séparés ; une union booléenne est le bon outil\npour ceux qui se chevauchent.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Regroupe plusieurs solides en un seul, l'inverse de `decompose`.\n\nLes solides qui se chevauchent sont fusionnés, comme le ferait une union booléenne ; ceux qui restent séparés demeurent\ndes pièces distinctes du même résultat.",
     "composition": "composition",
     "bitbybit.manifold.manifold.operations.decompose": "décomposer",
     "bitbybit.manifold.manifold.operations.decompose_description": "Sépare un solide en ses morceaux distincts et non connectés, l'inverse de `compose`.\n\nUn solide d'un seul tenant revient sous forme de liste d'une seule copie.",

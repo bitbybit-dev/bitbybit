@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Membuat salinan solid yang dihitung sebagai asli baru, sehingga salinan dapat membawa properti verteksnya sendiri, misalnya pemetaan UV yang berbeda, dan dibedakan dari asal pembangunannya.\n\nMuka-muka sebidang digabung dan tepi-tepi di antaranya diciutkan dalam prosesnya; tetap gunakan jalur mesh jika tepi-tepi itu harus dipertahankan.",
     "bitbybit.manifold.manifold.operations.compose": "susun",
     "compose": "susun",
-    "bitbybit.manifold.manifold.operations.compose_description": "Mengemas beberapa solid menjadi satu tanpa meleburnya, kebalikan dari `decompose`.\n\nTidak ada pemeriksaan tumpang tindih, jadi jaga solid-solid tetap terpisah; union boolean adalah alat yang tepat untuk yang tumpang tindih.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Mengemas beberapa solid menjadi satu, kebalikan dari `decompose`.\n\nSolid yang tumpang tindih dilebur, seperti yang dilakukan union boolean; solid yang dijaga terpisah tetap menjadi\nbagian-bagian terpisah dari satu hasil itu.",
     "composition": "komposisi",
     "bitbybit.manifold.manifold.operations.decompose": "urai",
     "bitbybit.manifold.manifold.operations.decompose_description": "Memecah solid menjadi potongan-potongan terpisah yang tidak terhubung, kebalikan dari `compose`.\n\nSolid yang seluruhnya satu potongan dikembalikan sebagai daftar berisi satu salinan.",

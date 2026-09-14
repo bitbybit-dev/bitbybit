@@ -47,7 +47,6 @@ export default defineConfig([
         "docs/",
         "examples/",
         "packages/dev/create-app/templates/",
-        "packages/dev/jscad/jscad-generated.js",
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
         "**/*.d.ts",

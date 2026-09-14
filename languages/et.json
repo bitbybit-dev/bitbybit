@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Teeb kehast koopia, mis loetakse uueks originaaliks, nii et koopia saab kanda oma tipuomadusi, näiteks erinevat UV kaardistust, ja seda saab eristada sellest, millest see ehitati.\n\nSamatasandilised tahud liidetakse ja nendevahelised servad kukutatakse teel kokku; kui need servad peavad jääma, kasuta selle asemel võrgu teed.",
     "bitbybit.manifold.manifold.operations.compose": "koosta",
     "compose": "koosta",
-    "bitbybit.manifold.manifold.operations.compose_description": "Pakib mitu keha üheks neid liitmata, funktsiooni `decompose` vastand.\n\nKattumist ei kontrollita, nii et hoia kehad lahus; kattuvate jaoks on õige tööriist Boole'i ühend.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Pakib mitu keha üheks, funktsiooni `decompose` vastand.\n\nKattuvad kehad liidetakse nagu Boole'i ühendis; lahus hoitud kehad jäävad ühe tulemuse eraldi osadeks.",
     "composition": "koostis",
     "bitbybit.manifold.manifold.operations.decompose": "dekomponeeri",
     "bitbybit.manifold.manifold.operations.decompose_description": "Jaotab keha selle eraldi, ühendamata tükkideks, funktsiooni `compose` vastand.\n\nKeha, mis on tervenisti üks tükk, tuleb tagasi ühe koopia loendina.",

@@ -151,10 +151,10 @@ export class ManifoldOperations {
     }
 
     /**
-     * Packs several solids into one without fusing them, the inverse of `decompose`.
+     * Packs several solids into one, the inverse of `decompose`.
      *
-     * Nothing is checked for overlap, so keep the solids apart; a boolean union is the right tool
-     * for overlapping ones.
+     * Solids that overlap are fused, as a boolean union would; solids kept apart stay separate
+     * pieces of the one result.
      * @param inputs - The solids to pack together
      * @returns One solid holding all of them
      * @group composition
@@ -167,8 +167,8 @@ export class ManifoldOperations {
      */
     compose(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { compose } = Manifold;
-        return compose(inputs.manifolds);
+        const { union } = Manifold;
+        return union(inputs.manifolds);
     }
 
     /**

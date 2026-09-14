@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Erstellt eine Kopie eines Volumenkörpers, die als neues Original gilt, sodass die Kopie ihre eigenen Vertex-\nEigenschaften tragen kann, etwa eine andere UV-Abbildung, und von dem unterschieden werden kann, woraus sie gebaut wurde.\n\nKoplanare Flächen werden dabei zusammengeführt und die Kanten dazwischen entfernt; bleiben Sie stattdessen beim Mesh-\nWeg, wenn diese Kanten bleiben müssen.",
     "bitbybit.manifold.manifold.operations.compose": "zusammenstellen",
     "compose": "zusammenstellen",
-    "bitbybit.manifold.manifold.operations.compose_description": "Packt mehrere Volumenkörper in einen, ohne sie zu verschmelzen, die Umkehrung von `decompose`.\n\nNichts wird auf Überlappung geprüft, also halten Sie die Volumenkörper auseinander; eine boolesche Vereinigung ist das richtige Werkzeug\nfür überlappende.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Packt mehrere Volumenkörper in einen, die Umkehrung von `decompose`.\n\nÜberlappende Volumenkörper werden verschmolzen, wie bei einer booleschen Vereinigung; auseinander gehaltene bleiben\ngetrennte Teile des einen Ergebnisses.",
     "composition": "Zusammenstellung",
     "bitbybit.manifold.manifold.operations.decompose": "zerlegen",
     "bitbybit.manifold.manifold.operations.decompose_description": "Teilt einen Volumenkörper in seine getrennten, unverbundenen Stücke, die Umkehrung von `compose`.\n\nEin Volumenkörper, der ganz aus einem Stück ist, kommt als Liste mit einer Kopie zurück.",

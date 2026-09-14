@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Makes a copy of a solid that counts as a new original, so the copy can carry its own vertex\nproperties, such as a different UV mapping, and be told apart from what it was built from.\n\nCoplanar faces are merged and the edges between them collapsed on the way; keep the mesh\nroute instead when those edges must stay.",
     "bitbybit.manifold.manifold.operations.compose": "compose",
     "compose": "compose",
-    "bitbybit.manifold.manifold.operations.compose_description": "Packs several solids into one without fusing them, the inverse of `decompose`.\n\nNothing is checked for overlap, so keep the solids apart; a boolean union is the right tool\nfor overlapping ones.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Packs several solids into one, the inverse of `decompose`.\n\nSolids that overlap are fused, as a boolean union would; solids kept apart stay separate\npieces of the one result.",
     "composition": "composition",
     "bitbybit.manifold.manifold.operations.decompose": "decompose",
     "bitbybit.manifold.manifold.operations.decompose_description": "Splits a solid into its separate, unconnected pieces, the inverse of `compose`.\n\nA solid that is all one piece comes back as a list of one copy.",

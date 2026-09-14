@@ -4358,10 +4358,10 @@ export interface OperationParams {
         minSharpAngle?: number | PipelineRef;
     };
     /**
-     * Packs several solids into one without fusing them, the inverse of `decompose`.
+     * Packs several solids into one, the inverse of `decompose`.
      *
-     * Nothing is checked for overlap, so keep the solids apart; a boolean union is the right tool
-     * for overlapping ones.
+     * Solids that overlap are fused, as a boolean union would; solids kept apart stay separate
+     * pieces of the one result.
      */
     "manifold.manifold.operations.compose": {
         /** The solids, in the order the method uses them. */

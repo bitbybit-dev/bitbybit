@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Izveido ķermeņa kopiju, kas skaitās kā jauns oriģināls, lai kopija varētu nest savas virsotņu īpašības, piemēram, citu UV kartējumu, un to varētu atšķirt no tā, no kā tā tika būvēta.\n\nPa ceļam vienā plaknē esošās skaldnes tiek apvienotas un šķautnes starp tām sakļautas; paturiet tīkla ceļu, kad šīm šķautnēm jāpaliek.",
     "bitbybit.manifold.manifold.operations.compose": "komponēt",
     "compose": "komponēt",
-    "bitbybit.manifold.manifold.operations.compose_description": "Sapako vairākus ķermeņus vienā, tos nesakausējot, `decompose` pretstats.\n\nNekas netiek pārbaudīts uz pārklāšanos, tāpēc turiet ķermeņus atsevišķi; Būla apvienojums ir pareizais rīks pārklājošiem.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Sapako vairākus ķermeņus vienā, `decompose` pretstats.\n\nĶermeņi, kas pārklājas, tiek sakausēti kā Būla apvienojumā; atsevišķi turētie paliek viena rezultāta\natsevišķas daļas.",
     "composition": "kompozīcija",
     "bitbybit.manifold.manifold.operations.decompose": "sadalīt",
     "bitbybit.manifold.manifold.operations.decompose_description": "Sadala ķermeni tā atsevišķajos, nesavienotajos gabalos, `compose` pretstats.\n\nĶermenis, kas viss ir viens gabals, atgriežas kā saraksts ar vienu kopiju.",

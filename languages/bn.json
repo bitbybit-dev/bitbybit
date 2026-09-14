@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "একটি সলিডের একটি কপি তৈরি করে যা একটি নতুন মূল হিসেবে গণ্য হয়, যাতে কপিটি তার নিজস্ব ভার্টেক্স\nপ্রপার্টি, যেমন একটি ভিন্ন UV ম্যাপিং, বহন করতে পারে এবং যা থেকে এটি তৈরি তা থেকে আলাদা করা যায়।\n\nসমতলীয় ফেসগুলি একীভূত হয় এবং তাদের মধ্যের এজগুলি পথে গুটিয়ে যায়; সেই এজগুলি থাকতেই হলে\nবদলে মেশ রুটটি রাখুন।",
     "bitbybit.manifold.manifold.operations.compose": "সংযোজন",
     "compose": "সংযোজন",
-    "bitbybit.manifold.manifold.operations.compose_description": "কয়েকটি সলিডকে ফিউজ না করে একটিতে প্যাক করে, `decompose` এর বিপরীত।\n\nওভারল্যাপের জন্য কিছুই পরীক্ষা করা হয় না, তাই সলিডগুলি আলাদা রাখুন; ওভারল্যাপ করাগুলির জন্য একটি বুলিয়ান\nইউনিয়ন সঠিক টুল।",
+    "bitbybit.manifold.manifold.operations.compose_description": "কয়েকটি সলিডকে একটিতে প্যাক করে, `decompose` এর বিপরীত।\n\nযে সলিডগুলি ওভারল্যাপ করে সেগুলি বুলিয়ান ইউনিয়নের মতোই ফিউজ হয়ে যায়; আলাদা রাখা সলিডগুলি একই ফলাফলের\nআলাদা অংশ হিসেবে থাকে।",
     "composition": "সংযোজন",
     "bitbybit.manifold.manifold.operations.decompose": "বিঘ্নিত করা",
     "bitbybit.manifold.manifold.operations.decompose_description": "একটি সলিডকে তার আলাদা, অসংযুক্ত টুকরোগুলিতে ভাগ করে, `compose` এর বিপরীত।\n\nপুরোটা এক টুকরো এমন একটি সলিড একটি কপির তালিকা হিসেবে ফেরত আসে।",

@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Tekee kappaleesta kopion, joka lasketaan uudeksi alkuperäiseksi, jotta kopio voi kantaa omia kärkipisteominaisuuksiaan, kuten erilaista UV-kuvausta, ja sen voi erottaa siitä, mistä se rakennettiin.\n\nSamassa tasossa olevat tahkot yhdistetään ja niiden väliset reunat romautetaan matkalla; pysy sen sijaan verkkoreitissä, kun näiden reunojen on säilyttävä.",
     "bitbybit.manifold.manifold.operations.compose": "kokoa",
     "compose": "kokoa",
-    "bitbybit.manifold.manifold.operations.compose_description": "Pakkaa useita kappaleita yhdeksi sulauttamatta niitä, funktion `decompose` käänteinen.\n\nPäällekkäisyyttä ei tarkisteta, joten pidä kappaleet erillään; Boolen yhdiste on oikea työkalu päällekkäisille.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Pakkaa useita kappaleita yhdeksi, funktion `decompose` käänteinen.\n\nPäällekkäiset kappaleet sulautetaan kuten Boolen yhdisteessä; erillään pidetyt kappaleet pysyvät yhden tuloksen\nerillisinä osina.",
     "composition": "koostumus",
     "bitbybit.manifold.manifold.operations.decompose": "hajota",
     "bitbybit.manifold.manifold.operations.decompose_description": "Jakaa kappaleen erillisiin, yhdistämättömiin paloihinsa, funktion `compose` käänteinen.\n\nKappale, joka on kokonaan yhtä palaa, palautuu yhden kopion listana.",

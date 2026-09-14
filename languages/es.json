@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Hace una copia de un sólido que cuenta como un original nuevo, de modo que la copia puede llevar sus propias propiedades\nde vértice, como un mapeado UV distinto, y distinguirse de aquello a partir de lo que se construyó.\n\nLas caras coplanares se fusionan y las aristas entre ellas se colapsan por el camino; conserva la\nruta de malla en su lugar cuando esas aristas deban quedarse.",
     "bitbybit.manifold.manifold.operations.compose": "componer",
     "compose": "componer",
-    "bitbybit.manifold.manifold.operations.compose_description": "Empaqueta varios sólidos en uno sin fusionarlos, el inverso de `decompose`.\n\nNo se comprueba ningún solape, así que mantén los sólidos separados; una unión booleana es la herramienta adecuada\npara los que se solapan.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Empaqueta varios sólidos en uno, el inverso de `decompose`.\n\nLos sólidos que se solapan se fusionan, como haría una unión booleana; los que se mantienen separados siguen siendo\npiezas independientes del único resultado.",
     "composition": "composición",
     "bitbybit.manifold.manifold.operations.decompose": "descomponer",
     "bitbybit.manifold.manifold.operations.decompose_description": "Divide un sólido en sus piezas separadas y no conectadas, el inverso de `compose`.\n\nUn sólido que es todo una pieza vuelve como una lista de una copia.",

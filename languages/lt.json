@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Padaro kūno kopiją, kuri laikoma nauju originalu, tad kopija gali nešti savo viršūnių\nsavybes, tokias kaip kitoks UV atvaizdavimas, ir būti atskiriama nuo to, iš ko ji sukurta.\n\nPakeliui vienoje plokštumoje gulinčios sienelės sujungiamos, o briaunos tarp jų suglaudžiamos; kai tos briaunos turi likti,\nvietoj to laikykitės tinklelio kelio.",
     "bitbybit.manifold.manifold.operations.compose": "sujungti",
     "compose": "sujungti",
-    "bitbybit.manifold.manifold.operations.compose_description": "Supakuoja kelis kūnus į vieną jų nesuliejant, atvirkštinis `decompose`.\n\nPersidengimas netikrinamas, tad laikykite kūnus atskirai; persidengiantiems tinkamas įrankis yra loginė\nsąjunga.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Supakuoja kelis kūnus į vieną, atvirkštinis `decompose`.\n\nPersidengiantys kūnai suliejami kaip loginėje sąjungoje; atskirai laikomi kūnai lieka atskiromis\nvieno rezultato dalimis.",
     "composition": "kompozicija",
     "bitbybit.manifold.manifold.operations.decompose": "išskaidyti",
     "bitbybit.manifold.manifold.operations.decompose_description": "Padalija kūną į jo atskiras, nesujungtas dalis, atvirkštinis `compose`.\n\nKūnas, kuris visas yra viena dalis, grįžta kaip vienos kopijos sąrašas.",

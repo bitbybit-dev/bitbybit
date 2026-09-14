@@ -241,20 +241,20 @@ importers:
         specifier: 1.2.0
         version: link:../base
       '@jscad/3mf-serializer':
-        specifier: 2.1.12
-        version: 2.1.12
+        specifier: 2.1.17
+        version: 2.1.17
       '@jscad/dxf-serializer':
-        specifier: 2.1.18
-        version: 2.1.18
+        specifier: 2.1.23
+        version: 2.1.23
       '@jscad/io-utils':
-        specifier: 2.0.28
-        version: 2.0.28
+        specifier: 2.0.33
+        version: 2.0.33
       '@jscad/modeling':
-        specifier: 2.12.3
-        version: 2.12.3
+        specifier: 2.13.0
+        version: 2.13.0
       '@jscad/stl-serializer':
-        specifier: 2.1.18
-        version: 2.1.18
+        specifier: 2.1.23
+        version: 2.1.23
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.0
@@ -303,8 +303,8 @@ importers:
         specifier: 1.2.0
         version: link:../base
       manifold-3d:
-        specifier: 3.3.2
-        version: 3.3.2(@types/node@22.20.1)
+        specifier: 3.5.3
+        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.0
@@ -1009,23 +1009,23 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@jscad/3mf-serializer@2.1.12':
-    resolution: {integrity: sha512-+rxAIKIHCpaplupwwsdXtG1IdimPXFFB45nrjy6gdFHi36bEQW6y/RQD/ngenRiKnYSxu7/M0LatHcjve8z64A==}
+  '@jscad/3mf-serializer@2.1.17':
+    resolution: {integrity: sha512-n6rfk7m1unRucB0TdGs+YzplsKI4TE75N+pu2WXOoUNqWYRuuIOU/igGCNAuws5/FKJ9/zMQaZ0GTRJJIrH/nA==}
 
   '@jscad/array-utils@2.1.4':
     resolution: {integrity: sha512-c31r4zSKsE+4Xfwk2V8monDA0hx5G89QGzaakWVUvuGNowYS9WSsYCwHiTIXodjR+HEnDu4okQ7k/whmP0Ne2g==}
 
-  '@jscad/dxf-serializer@2.1.18':
-    resolution: {integrity: sha512-T5Qe2jbEphcWAk7GaOY8PCMD4DPhTm6gWk/MPJCExphhnUwJqcU/1RiMb5hiD+N6hHzmlxD59I8QTjlp9LbLSA==}
+  '@jscad/dxf-serializer@2.1.23':
+    resolution: {integrity: sha512-FlsW9O/lDE1F7litAmT7Xh1sB1YLIl2K2utqYNonm8Nopf5Fs8HM6kaG4HV5Do/cvoVjPS8sDH0+vmk8pzDKww==}
 
-  '@jscad/io-utils@2.0.28':
-    resolution: {integrity: sha512-spXh37wAgmwjKztoH/HANLgImcqRHX5+H/cRIxPfpqDIWvu7I5bRg2ZTwh25SYlKIzxPk4qX5Nu7Ax5+Kg+QXQ==}
+  '@jscad/io-utils@2.0.33':
+    resolution: {integrity: sha512-Hiul/9FAyLSgHeJHqjIxu2ImNDiafkQNGONkKjhj/StsEKWQ7awQg/XjqC6JyhtWe5LY8IFW/As0YgmUVYCdgQ==}
 
-  '@jscad/modeling@2.12.3':
-    resolution: {integrity: sha512-DnAacXq3zhlYWIixGlFD7RMpgZAMuCaMZNQov0NaoFfs2GaBuTC5eqkqKcEVbhEerBmTllbjjF5IXjJMt9jcOA==}
+  '@jscad/modeling@2.13.0':
+    resolution: {integrity: sha512-Thv/JJZZOMzQ9rfhP+75PbgrNbBTZduRL+ClaGfGFts9+JdIXcUueqRL3NtZZ/v/hyZCUBkPSRxHIi4icz04tQ==}
 
-  '@jscad/stl-serializer@2.1.18':
-    resolution: {integrity: sha512-pz++TRjHI7jBPnnxQUi4B/uYUG3yCDsKlw8+xL2kumwjb+auc6Ng6Rnr/GqUTkgHrnGut08wg/8AekyWjvBwYg==}
+  '@jscad/stl-serializer@2.1.23':
+    resolution: {integrity: sha512-bSaz2hte30ig2kT1ogBQIjQVGD0Nu1dDyQ4q+fHBFKKmJ8A7ximnFZj7hgQegm3XUD6pSE5KwzPWspCyRWQ5kA==}
 
   '@jscadui/3mf-export@0.5.0':
     resolution: {integrity: sha512-y5vZktqCjyi7wA38zqNlLIdZUIRZoOO9vCjLzwmL4bR0hk7B/Zm1IeffzJPFe1vFc0C1IEv3hm8caDv3doRk9g==}
@@ -1065,6 +1065,9 @@ packages:
 
   '@microsoft/tsdoc@0.16.0':
     resolution: {integrity: sha512-xgAyonlVVS+q7Vc7qLW0UrJU7rSFcETRWsqdXZtjzRU8dF+6CkozTK4V4y1LwOX7j8r/vHphjDeMeGI4tNGeGA==}
+
+  '@nodable/entities@3.0.0':
+    resolution: {integrity: sha512-8L9xFeTYKhm49xfIypoe2W5wV1m/3Z58kT+7kR9A8OyFxcPduI4VmxaUMQyKYrRjUoLLSXv6EKKID5Tvj9cUVw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1515,6 +1518,9 @@ packages:
     resolution: {integrity: sha512-WpDfL7NO6j7tH88IDBNVdUJxDh9nmCteAVW9dsep846XdwF4naCBK+/tGLX3KJgcpgMRXCFlTM2hKGoK9FsdrQ==}
     engines: {node: '>=12'}
 
+  anynum@1.0.1:
+    resolution: {integrity: sha512-N6//FLET/tXYNM/F6ABca1oH6fWB+KlTt909Le28WMDBk8oaT4vY17DCrwg2MvmuqUKt3Ni4N5dGJ/EoBgcO6A==}
+
   argparse@1.0.10:
     resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
 
@@ -1622,9 +1628,6 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  core-js@3.50.0:
-    resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
-
   cross-spawn@6.0.6:
     resolution: {integrity: sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==}
     engines: {node: '>=4.8'}
@@ -1692,12 +1695,8 @@ packages:
   es-module-lexer@2.3.2:
     resolution: {integrity: sha512-poHGpORABojJJucnV9KbOavETW8lBVnphkW77ER5/BQ5Fz7oXSoCNek7IH3vR5nRjdsEz926ibFYX8KtLQmdyw==}
 
-  esbuild-plugin-text-replace@1.3.0:
-    resolution: {integrity: sha512-RWB/bbdP0xDHBOtA0st4CAE6UZtky76aCB7Shw5r350JY403lfvrj2UMkInUB346tMtFWXKWXNf4gqNM+WbXag==}
-    engines: {node: '>=10.1.0'}
-
-  esbuild-wasm@0.25.12:
-    resolution: {integrity: sha512-rZqkjL3Y6FwLpSHzLnaEy8Ps6veCNo1kZa9EOfJvmWtBq5dJH4iVjfmOO6Mlkv9B0tt9WFPFmb/VxlgJOnueNg==}
+  esbuild-wasm@0.27.7:
+    resolution: {integrity: sha512-1k03e2/tGz+sLz3/xzoZmUsIqtaGIvJa8k4UqUeqCUry83nHmlxQYZUUES0WBFUYilSQUf7nDUGAciIIklljSg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -1786,6 +1785,13 @@ packages:
 
   fast-wrap-ansi@0.2.2:
     resolution: {integrity: sha512-7F2Fl+TjRSenLqlU3UjSH0iyqopqoZIu7eZVpEirP2g1GtWa2G/ecEmBdgz31+Mxr+ELclgg6sokpSFIQiZ02Q==}
+
+  fast-xml-builder@1.3.1:
+    resolution: {integrity: sha512-pIM/1n3ntFXKYrUZwW7QCK0gAW7XY+wzj1YMIV3tLDvPj/V+zTGJK5e3/4WJfwj0qWw2ElNXiTixda/R+3YSug==}
+
+  fast-xml-parser@5.11.1:
+    resolution: {integrity: sha512-TBw6K/fxoQGGjCmZDw9w/ZwP3uDcnTM4YH/g+PFRWr8sbe5idXtxNN6vITh4+1ruCZaho6uBFurElsA7F0zzgw==}
+    hasBin: true
 
   fastq@1.20.3:
     resolution: {integrity: sha512-XKv5nnLs6nLF71NgiKJLIZFLkPyIEuOselLG7ujZnGrRfQK8HpvY+WqKhAJUAdLomwVHErVS4LfxFlPq0/FTAw==}
@@ -1985,6 +1991,9 @@ packages:
     resolution: {integrity: sha512-mE00Gnza5EEB3Ds0HfMyllZzbBrmLOX3vfWoj9A9PEnTfratQ/BcaJOuMhnkhjXvb2+FkY3VuHqtAGpTPmglFQ==}
     engines: {node: '>=18'}
 
+  is-unsafe@2.0.2:
+    resolution: {integrity: sha512-HgbIHPBH0KHHCcjLfGsCvhtPTVxjaAZlXjwdz7/GQC40SjSe4sfQsar8J5VFo8JOSbarkpV0OLG95bbaNd9aAQ==}
+
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
@@ -2153,9 +2162,14 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
 
-  manifold-3d@3.3.2:
-    resolution: {integrity: sha512-Xx+S7kkbqlZxSPfBKH5yVKDO6k/eW7JRvnG1dKCFO0D4zjifOV5GM18TR0sREDcbKAzglHZ5OoxxpZRkxg6U5A==}
+  manifold-3d@3.5.3:
+    resolution: {integrity: sha512-u00Dc4IKm6W6VyVCAs6eFWNOW9V1w9/QM+xdwS/0TQKXLDtMIauxH5RXUwhOGDnvXa9uciKKYMUD2At76ffsaA==}
     hasBin: true
+    peerDependencies:
+      '@gltf-transform/core': ^4.2.0
+      '@gltf-transform/extensions': ^4.2.0
+      '@gltf-transform/functions': ^4.2.0
+      esbuild-wasm: ^0.27.3
 
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
@@ -2298,6 +2312,10 @@ packages:
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
     engines: {node: '>=8'}
+
+  path-expression-matcher@1.6.2:
+    resolution: {integrity: sha512-enSlaiat05iasnzmgNxRj8reFdj3puY2QpNgP1aPIaVfT6nn9ICuPoFlKHk8EN22HcwewshO+mN2DGbkCEOtqQ==}
+    engines: {node: '>=14.0.0'}
 
   path-key@2.0.1:
     resolution: {integrity: sha512-fEHGKCSmUSDPv4uoj8AlD+joPlq3peND+HRYyxFz4KPw4z926S/b8rIuFs2FYJg3BwsxJf6A9/3eIdLaYC+9Dw==}
@@ -2539,6 +2557,9 @@ packages:
     resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
     engines: {node: '>=0.10.0'}
 
+  strnum@2.4.2:
+    resolution: {integrity: sha512-rDG3Ah4TV0k1hWvLSzkZtMmLN9+eS+h3knq4MP6A42Y3Yh5qGNnOUs1jJkoSr8FG5dsL28c7KgkIBzSEykqtuw==}
+
   supports-color@10.2.2:
     resolution: {integrity: sha512-SS+jx45GF1QjgEXQx4NJZV9ImqmO2NPz5FNsIHrsDjh2YsHnawpan7SNQ1o8NuhrbHZy9AZhIoCUiCeaW/C80g==}
     engines: {node: '>=18'}
@@ -2613,9 +2634,6 @@ packages:
     engines: {node: '>=18.12'}
     peerDependencies:
       typescript: '>=4.8.4'
-
-  ts-replace-all@1.0.0:
-    resolution: {integrity: sha512-6uBtdkw3jHXkPtx/e9xB/5vcngMm17CyJYsS2YZeQ+9FdRnt6Ev5g931Sg2p+dxbtMGoCm13m3ax/obicTZIkQ==}
 
   tsc-baseline@2.1.0:
     resolution: {integrity: sha512-EFXz+jMVjE++p3rnwb5wLa4jTeK7Jipw7NRqdYdMVWZJYqDKYDzVBnW2tvBF0vWQoDlvBP3otE4pyD+JoFC18g==}
@@ -2806,6 +2824,10 @@ packages:
   xml-name-validator@5.0.0:
     resolution: {integrity: sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg==}
     engines: {node: '>=18'}
+
+  xml-naming@0.3.0:
+    resolution: {integrity: sha512-ghig2TBE/H11aOVgmahA3MhimvkBr6JIYknH/Dhdk10nXwdbIqBJsbfMxpvFPG8bAw77gN29aQWvKpmVoPlvPQ==}
+    engines: {node: '>=16.0.0'}
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
@@ -3259,28 +3281,28 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  '@jscad/3mf-serializer@2.1.12':
+  '@jscad/3mf-serializer@2.1.17':
     dependencies:
       '@jscad/array-utils': 2.1.4
-      '@jscad/modeling': 2.12.3
+      '@jscad/modeling': 2.13.0
       fflate: 0.7.3
       onml: 1.2.0
 
   '@jscad/array-utils@2.1.4': {}
 
-  '@jscad/dxf-serializer@2.1.18':
+  '@jscad/dxf-serializer@2.1.23':
     dependencies:
       '@jscad/array-utils': 2.1.4
-      '@jscad/modeling': 2.12.3
+      '@jscad/modeling': 2.13.0
 
-  '@jscad/io-utils@2.0.28': {}
+  '@jscad/io-utils@2.0.33': {}
 
-  '@jscad/modeling@2.12.3': {}
+  '@jscad/modeling@2.13.0': {}
 
-  '@jscad/stl-serializer@2.1.18':
+  '@jscad/stl-serializer@2.1.23':
     dependencies:
       '@jscad/array-utils': 2.1.4
-      '@jscad/modeling': 2.12.3
+      '@jscad/modeling': 2.13.0
 
   '@jscadui/3mf-export@0.5.0': {}
 
@@ -3334,6 +3356,8 @@ snapshots:
       resolve: 1.22.12
 
   '@microsoft/tsdoc@0.16.0': {}
+
+  '@nodable/entities@3.0.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
@@ -3770,6 +3794,8 @@ snapshots:
 
   ansi-regex@6.3.0: {}
 
+  anynum@1.0.1: {}
+
   argparse@1.0.10:
     dependencies:
       sprintf-js: 1.0.3
@@ -3874,8 +3900,6 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  core-js@3.50.0: {}
-
   cross-spawn@6.0.6:
     dependencies:
       nice-try: 1.0.5
@@ -3940,11 +3964,7 @@ snapshots:
 
   es-module-lexer@2.3.2: {}
 
-  esbuild-plugin-text-replace@1.3.0:
-    dependencies:
-      ts-replace-all: 1.0.0
-
-  esbuild-wasm@0.25.12: {}
+  esbuild-wasm@0.27.7: {}
 
   escape-string-regexp@4.0.0: {}
 
@@ -4056,6 +4076,20 @@ snapshots:
   fast-wrap-ansi@0.2.2:
     dependencies:
       fast-string-width: 3.0.2
+
+  fast-xml-builder@1.3.1:
+    dependencies:
+      path-expression-matcher: 1.6.2
+      xml-naming: 0.3.0
+
+  fast-xml-parser@5.11.1:
+    dependencies:
+      '@nodable/entities': 3.0.0
+      fast-xml-builder: 1.3.1
+      is-unsafe: 2.0.2
+      path-expression-matcher: 1.6.2
+      strnum: 2.4.2
+      xml-naming: 0.3.0
 
   fastq@1.20.3:
     dependencies:
@@ -4225,6 +4259,8 @@ snapshots:
 
   is-unicode-supported@2.1.0: {}
 
+  is-unsafe@2.0.2: {}
+
   isexe@2.0.0: {}
 
   istanbul-lib-coverage@3.2.2: {}
@@ -4385,20 +4421,20 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  manifold-3d@3.3.2(@types/node@22.20.1):
+  manifold-3d@3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7):
     dependencies:
       '@gltf-transform/core': 4.5.0
       '@gltf-transform/extensions': 4.5.0
       '@gltf-transform/functions': 4.5.0(@types/node@22.20.1)
+      '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/trace-mapping': 0.3.31
       '@jscadui/3mf-export': 0.5.0
       commander: 13.1.0
       convert-source-map: 2.0.0
-      esbuild-plugin-text-replace: 1.3.0
-      esbuild-wasm: 0.25.12
+      esbuild-wasm: 0.27.7
+      fast-xml-parser: 5.11.1
       fflate: 0.8.3
-    transitivePeerDependencies:
-      - '@types/node'
+      magic-string: 0.30.21
 
   mdn-data@2.27.1: {}
 
@@ -4551,6 +4587,8 @@ snapshots:
       entities: 8.0.0
 
   path-exists@4.0.0: {}
+
+  path-expression-matcher@1.6.2: {}
 
   path-key@2.0.1: {}
 
@@ -4811,6 +4849,10 @@ snapshots:
   strip-json-comments@2.0.1:
     optional: true
 
+  strnum@2.4.2:
+    dependencies:
+      anynum: 1.0.1
+
   supports-color@10.2.2: {}
 
   supports-color@7.2.0:
@@ -4883,10 +4925,6 @@ snapshots:
   ts-api-utils@2.5.0(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
-
-  ts-replace-all@1.0.0:
-    dependencies:
-      core-js: 3.50.0
 
   tsc-baseline@2.1.0:
     dependencies:
@@ -5023,6 +5061,8 @@ snapshots:
   wrappy@1.0.2: {}
 
   xml-name-validator@5.0.0: {}
+
+  xml-naming@0.3.0: {}
 
   xmlchars@2.2.0: {}
 

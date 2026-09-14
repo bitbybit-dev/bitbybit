@@ -3782,7 +3782,7 @@
     "bitbybit.manifold.manifold.operations.asOriginal_description": "Gör en kopia av en solid som räknas som ett nytt original, så att kopian kan bära sina egna hörnpunkts-\negenskaper, såsom en annan UV-avbildning, och skiljas från det den byggdes av.\n\nKoplanära ytor slås samman och kanterna mellan dem kollapsas på vägen; håll dig till mesh-\nvägen i stället när de kanterna måste stanna.",
     "bitbybit.manifold.manifold.operations.compose": "komponera",
     "compose": "komponera",
-    "bitbybit.manifold.manifold.operations.compose_description": "Packar flera solider till en utan att smälta samman dem, motsatsen till `decompose`.\n\nInget kontrolleras för överlapp, så håll soliderna isär; en boolesk union är rätt verktyg\nför överlappande.",
+    "bitbybit.manifold.manifold.operations.compose_description": "Packar flera solider till en, motsatsen till `decompose`.\n\nSolider som överlappar smälts samman, som en boolesk union skulle göra; solider som hålls isär förblir\nseparata delar av det enda resultatet.",
     "composition": "komposition",
     "bitbybit.manifold.manifold.operations.decompose": "sönderdela",
     "bitbybit.manifold.manifold.operations.decompose_description": "Delar upp en solid i dess separata, osammanhängande bitar, motsatsen till `compose`.\n\nEn solid som är en enda bit kommer tillbaka som en lista med en kopia.",
