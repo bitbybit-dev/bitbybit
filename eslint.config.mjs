@@ -5,6 +5,7 @@ import globals from "globals";
 import { targets } from "./scripts/inputs.config.mjs";
 import noDoubleAssertion from "./eslint-rules/no-double-assertion.mjs";
 import noLooseComments from "./eslint-rules/no-loose-comments.mjs";
+import noInputWrites from "./eslint-rules/no-input-writes.mjs";
 
 // The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
 //
@@ -63,7 +64,7 @@ export default defineConfig([
     {
         files: ["**/*.ts"],
         extends: [...tseslint.configs.recommended],
-        plugins: { bitbybit: { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments } } },
+        plugins: { bitbybit: { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments, "no-input-writes": noInputWrites } } },
         rules: {
             "@typescript-eslint/no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS,
             // A local rule rather than a no-restricted-syntax selector, so that the suppression file
@@ -160,6 +161,20 @@ export default defineConfig([
             "packages/dev/vitest.shared.ts",
         ],
         rules: { "bitbybit/no-loose-comments": "error" },
+    },
+    // A kernel service is called again and again on the same parameter object, so it never writes
+    // into it: a default goes into a local or a spread copy. The renderers' draw helpers are not
+    // held to this - writing the created mesh back onto `inputs.linesMesh` is their documented
+    // updatable-mesh handle - and neither is a test, which owns the objects it builds.
+    {
+        files: [
+            "packages/dev/occt/lib/services/**/*.ts",
+            "packages/dev/jscad/lib/api/services/**/*.ts",
+            "packages/dev/manifold/lib/api/services/**/*.ts",
+            "packages/dev/base/lib/api/services/**/*.ts",
+        ],
+        ignores: ["**/*.test.ts"],
+        rules: { "bitbybit/no-input-writes": "error" },
     },
     {
         files: ["**/*.test.ts", "**/__mocks__/**"],

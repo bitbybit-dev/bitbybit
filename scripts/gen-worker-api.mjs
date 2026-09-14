@@ -29,13 +29,10 @@
  *   node scripts/gen-worker-api.mjs --check   write nothing; fail if any generated file would change
  */
 import ts from "typescript";
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { targets } from "./inputs.config.mjs";
+import { ROOT, parse, isPublic, nameOf, jsdocOf, classesUnder } from "./lib/surface.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FRAGMENT_DIRS = new Set(targets.map((t) => path.join(ROOT, t.dir)));
 const check = process.argv.includes("--check");
 const allow = JSON.parse(readFileSync(path.join(ROOT, "scripts/worker-parity.allow.json"), "utf8"));
 const overrides = JSON.parse(readFileSync(path.join(ROOT, "scripts/worker-api.overrides.json"), "utf8"));
@@ -49,7 +46,7 @@ const PACKAGES = [
         inputsImport: (names) => `import { ${names.join(", ")} } from "@bitbybit-dev/occt";`,
         classNames: { OCCTService: "OCCT" },
         // worker method names that differ from the kernel's: public API, persisted in saved scripts, so they stay
-        methodNames: { "assembly.manager.setLabelColor": "setDocLabelColor", "assembly.manager.setLabelName": "setDocLabelName" },
+        methodNames: {},
         // the manager is public where a consumer subclass overrides it (core's OCCTW and OCCTWIO)
         managerVisibility: { "": "public readonly", "io": "readonly" },
         typeMap: [
@@ -103,42 +100,7 @@ const HEADER = (kernelFile, handFile) => [
 
 // ---------------------------------------------------------------- kernel surface
 
-function sourceFiles(dir) {
-    const out = [];
-    const walk = (d) => {
-        for (const entry of readdirSync(d, { withFileTypes: true })) {
-            if (entry.name === "node_modules" || entry.name === "dist" || entry.name.startsWith(".")) continue;
-            const p = path.join(d, entry.name);
-            // the inputs fragments duplicate the DTO classes of the assembled inputs files (scripts/gen-inputs.mjs)
-            if (entry.isDirectory() && FRAGMENT_DIRS.has(p)) continue;
-            if (entry.isDirectory()) walk(p);
-            else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) out.push(p);
-        }
-    };
-    walk(dir);
-    return out.sort();
-}
-const parse = (file) => ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
-const isPublic = (node) => !(ts.getCombinedModifierFlags(node) & (ts.ModifierFlags.Private | ts.ModifierFlags.Protected | ts.ModifierFlags.Static));
-const nameOf = (node) => (node.name && ts.isIdentifier(node.name) ? node.name.text : null);
-function jsdocOf(node, sf) {
-    const blocks = (ts.getLeadingCommentRanges(sf.text, node.getFullStart()) || []).filter((r) => sf.text.substring(r.pos, r.pos + 3) === "/**");
-    return blocks.length ? sf.text.substring(blocks[blocks.length - 1].pos, blocks[blocks.length - 1].end) : null;
-}
 const reindent = (doc, indent) => doc.split(/\r?\n/).map((l, i) => (i === 0 ? indent + l.trimStart() : indent + " " + l.trimStart())).join("\n");
-
-function kernelClasses(dir) {
-    const classes = new Map();
-    for (const file of sourceFiles(dir)) {
-        const sf = parse(file);
-        const visit = (node) => {
-            if (ts.isClassDeclaration(node) && node.name && !classes.has(node.name.text)) classes.set(node.name.text, { node, sf, file });
-            ts.forEachChild(node, visit);
-        };
-        visit(sf);
-    }
-    return classes;
-}
 
 /** prefix -> { className, file, doc, props: [{name, className}], methods: [{name, path, doc, params, returns}] }, walked from the root. */
 function kernelSurface(classes, rootName) {
@@ -210,7 +172,7 @@ function outputFile(pkg, cls, hasChildren) {
 const mapType = (t, pkg) => pkg.typeMap.reduce((s, [re, to]) => s.replace(re, to), t);
 
 function generatePackage(pkg) {
-    const classes = kernelClasses(path.join(ROOT, pkg.kernelDir));
+    const classes = classesUnder(path.join(ROOT, pkg.kernelDir));
     if (!classes.has(pkg.kernelRoot)) throw new Error(`${pkg.name}: kernel root class ${pkg.kernelRoot} not found`);
     const surface = kernelSurface(classes, pkg.kernelRoot);
     const kernelOnly = new Set(Object.keys((allow[pkg.name] || {}).kernelOnly || {}));

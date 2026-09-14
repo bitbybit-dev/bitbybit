@@ -346,11 +346,6 @@
       "count": 2
     }
   },
-  "packages/dev/jscad/lib/api/inputs/jscad/transforms-and-downloads.ts": {
-    "@typescript-eslint/no-explicit-any": {
-      "count": 1
-    }
-  },
   "packages/dev/jscad/lib/api/jscad-service.test.ts": {
     "bitbybit/no-double-assertion": {
       "count": 3
