@@ -235,74 +235,6 @@ export class SewDto<T> {
      */
     tolerance = 1.0e-7;
 }
-
-/**
- * A face, a parameter and a direction for an isocurve; currently unused by the library.
- */
-export class FaceIsoCurveAtParamDto<T> {
-    constructor(shape?: T, param?: number, dir?: "u" | "v") {
-        if (shape !== undefined) { this.shape = shape; }
-        if (param !== undefined) { this.param = param; }
-        if (dir !== undefined) { this.dir = dir; }
-    }
-    /**
-     * The face to read the curve from.
-     * @default undefined
-     */
-    shape!: T;
-    /**
-     * Where the curve sits, as a fraction from 0 to 1 of the chosen direction's range.
-     * @default 0.5
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    param: number = 0.5;
-    /**
-     * Which parameter is held fixed, `u` or `v`.
-     * @default u
-     */
-    dir: "u" | "v" = "u";
-}
-
-/**
- * A face and a grid size for dividing it into UV points; currently unused by the library.
- */
-export class DivideFaceToUVPointsDto<T> {
-    constructor(shape?: T, nrOfPointsU?: number, nrOfPointsV?: number, flat?: boolean) {
-        if (shape !== undefined) { this.shape = shape; }
-        if (nrOfPointsU !== undefined) { this.nrOfPointsU = nrOfPointsU; }
-        if (nrOfPointsV !== undefined) { this.nrOfPointsV = nrOfPointsV; }
-        if (flat !== undefined) { this.flat = flat; }
-    }
-    /**
-     * The face whose UV range is divided.
-     * @default undefined
-     */
-    shape!: T;
-    /**
-     * How many points across the U range.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfPointsU = 10;
-    /**
-     * How many points across the V range.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfPointsV = 10;
-    /**
-     * When true, the rows are joined into one flat list of points.
-     * @default false
-     */
-    flat = false;
-}
-
 /**
  * A center, a major axis direction and two radii for `geom.curves.geom2dEllipse`, a 2D construction
  * curve.
@@ -966,7 +898,7 @@ export class FlatSpiralWireDto {
  * wires on the ground plane in the single-line Hershey font.
  */
 export class TextWiresDto {
-    constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, _origin?: Base.Point3, _rotation?: number, _direction?: Base.Vector3, centerOnOrigin?: boolean) {
+    constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean) {
         if (text !== undefined) { this.text = text; }
         if (xOffset !== undefined) { this.xOffset = xOffset; }
         if (yOffset !== undefined) { this.yOffset = yOffset; }

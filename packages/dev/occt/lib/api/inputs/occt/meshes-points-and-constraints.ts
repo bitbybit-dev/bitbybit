@@ -27,6 +27,7 @@ export class DecomposedMeshDto {
     /**
      * Which faces carry which color, keyed by `#rrggbbaa`; present only for meshes made from an
      * assembly document.
+     * @optional true
      */
     colorGroups?: { [color: string]: number[] } | undefined;
 }
@@ -75,29 +76,35 @@ export class DecomposedFaceDto {
     uvs!: number[];
     /**
      * The surface area of the face in square model units; present only with `computeMetadata`.
+     * @optional true
      */
     area?: number | undefined;
     /**
      * The center of mass of the face; present only with `computeMetadata`.
+     * @optional true
      */
     centerOfMass?: Base.Point3 | undefined;
     /**
      * The kind of surface the face lies on, such as `Plane`, `Cylinder` or `BSplineSurface`;
      * present only with `computeMetadata`.
+     * @optional true
      */
     surfaceType?: string | undefined;
     /**
      * The geometric tolerance of the face in model units; present only with `computeMetadata`.
+     * @optional true
      */
     tolerance?: number | undefined;
     /**
      * The indexes of the faces that share an edge with this one; present only with
      * `computeMetadata`.
+     * @optional true
      */
     adjacentFaces?: number[] | undefined;
     /**
      * The face's stable id in the shape's graph, or -1 when unavailable; present only with
      * `computeMetadata`.
+     * @optional true
      */
     faceUid?: number | undefined;
 }
@@ -121,29 +128,35 @@ export class DecomposedEdgeDto {
     vertexCoord!: Base.Vector3[];
     /**
      * The length of the edge in model units; present only with `computeMetadata`.
+     * @optional true
      */
     length?: number | undefined;
     /**
      * The center of mass of the edge; present only with `computeMetadata`.
+     * @optional true
      */
     centerOfMass?: Base.Point3 | undefined;
     /**
      * The kind of curve the edge follows, such as `Line`, `Circle` or `BSplineCurve`; present only
      * with `computeMetadata`.
+     * @optional true
      */
     curveType?: string | undefined;
     /**
      * True when the edge has no 3D curve, such as the seam at the pole of a sphere; present only
      * with `computeMetadata`.
+     * @optional true
      */
     degenerated?: boolean | undefined;
     /**
      * The indexes of the faces this edge belongs to; present only with `computeMetadata`.
+     * @optional true
      */
     incidentFaces?: number[] | undefined;
     /**
      * The edge's stable id in the shape's graph, or -1 when unavailable; present only with
      * `computeMetadata`.
+     * @optional true
      */
     edgeUid?: number | undefined;
 }
@@ -274,7 +287,7 @@ export class ConstraintTanLinesFromTwoPtsToCircleDto<T> {
     constructor(circle?: T, point1?: Base.Point3, point2?: Base.Point3, tolerance?: number, positionResult?: positionResultEnum, circleRemainder?: circleInclusionEnum) {
         if (circle !== undefined) { this.circle = circle; }
         if (point1 !== undefined) { this.point1 = point1; }
-        if (point2 !== undefined) { this.point1 = point2; }
+        if (point2 !== undefined) { this.point2 = point2; }
         if (tolerance !== undefined) { this.tolerance = tolerance; }
         if (positionResult !== undefined) { this.positionResult = positionResult; }
         if (circleRemainder !== undefined) { this.circleRemainder = circleRemainder; }
@@ -533,6 +546,7 @@ export class BoundingBoxDto {
     /**
      * The box as its corners, center and size.
      * @default undefined
+     * @optional true
      */
     bbox?: BoundingBoxPropsDto | undefined;
 }
@@ -733,6 +747,7 @@ export class DrawShapeDto<T> {
     /**
      * The shape to draw; it is meshed at `precision` first.
      * @default undefined
+     * @optional true
      */
     shape?: T | undefined;
     /**
@@ -794,7 +809,7 @@ export class DrawShapeDto<T> {
      * The color of the vertex markers as a hex string.
      * @default #ff00ff
      */
-    vertexColour = "#ffaaff";
+    vertexColour = "#ff00ff";
     /**
      * The size of the vertex markers, in model units.
      * @default 0.03
@@ -986,7 +1001,7 @@ export class DrawShapesDto<T> {
      * The color of the vertex markers as a hex string.
      * @default #ff00ff
      */
-    vertexColour = "#ffaaff";
+    vertexColour = "#ff00ff";
     /**
      * The size of the vertex markers, in model units.
      * @default 0.03

@@ -332,45 +332,6 @@ export class DataOnGeometryesAtParamDto<T> {
     param = 0.5;
 }
 /**
- * A face, an edge and two parameters for finding a point inside the face beside the edge; currently
- * unused by the library.
- */
-export class PointInFaceDto<T> {
-    constructor(face: T, edge: T, tEdgeParam?: number, distance2DParam?: number) {
-        if (face !== undefined) { this.face = face; }
-        if (edge !== undefined) { this.edge = edge; }
-        if (tEdgeParam !== undefined) { this.tEdgeParam = tEdgeParam; }
-        if (distance2DParam !== undefined) { this.distance2DParam = distance2DParam; }
-    }
-    /**
-     * The face the point should lie in.
-     * @default undefined
-     */
-    face!: T;
-    /**
-     * The edge of the face the point is measured from.
-     * @default undefined
-     */
-    edge!: T;
-    /**
-     * Where along the edge to start, as a fraction from 0 to 1.
-     * @default 0.5
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    tEdgeParam = 0.5;
-    /**
-     * How far from the edge the point lies, measured in the face's UV space.
-     * @default 0.5
-     * @minimum -Infinity
-     * @maximum Infinity
-     * @step 0.1
-     */
-    distance2DParam = 0.5;
-}
-
-/**
  * A wire and a spacing for `shapes.wire.pointsOnWireAtEqualLength`, which places points every
  * `length` units from the start.
  */
@@ -421,7 +382,7 @@ export class PointsOnWireAtPatternOfLengthsDto<T> {
         if (shape !== undefined) { this.shape = shape; }
         if (lengths !== undefined) { this.lengths = lengths; }
         if (tryNext !== undefined) { this.tryNext = tryNext; }
-        if (includeFirst !== undefined) { this.includeLast = includeFirst; }
+        if (includeFirst !== undefined) { this.includeFirst = includeFirst; }
         if (includeLast !== undefined) { this.includeLast = includeLast; }
     }
     /**
@@ -552,8 +513,8 @@ export class CircleDto {
  * `shapes.face.hexagonsInGrid`, which fill the rectangle on the ground plane with a honeycomb.
  */
 export class HexagonsInGridDto {
-    constructor(wdith?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]) {
-        if (wdith !== undefined) { this.width = wdith; }
+    constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]) {
+        if (width !== undefined) { this.width = width; }
         if (height !== undefined) { this.height = height; }
         if (nrHexagonsInHeight !== undefined) { this.nrHexagonsInHeight = nrHexagonsInHeight; }
         if (nrHexagonsInWidth !== undefined) { this.nrHexagonsInWidth = nrHexagonsInWidth; }

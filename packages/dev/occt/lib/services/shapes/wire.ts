@@ -181,10 +181,11 @@ export class OCCTWire {
     }
 
     /**
-     * Joins a list of points in order with straight edges into one open wire.
+     * Joins a list of points in order with straight edges into one wire.
      *
-     * Fewer than two points throw an error. For a closed outline use `createPolygonWire`, which
-     * adds the edge back to the first point.
+     * Fewer than two points throw an error. When the last point repeats the first, the repeat is
+     * dropped and the wire is closed back to the first point; otherwise the wire stays open. For a
+     * closed outline without repeating a point use `createPolygonWire`.
      * @param inputs - The points, in order
      * @returns The wire through the points
      * @group from base
@@ -193,15 +194,16 @@ export class OCCTWire {
      * @example
      * ```typescript
      * const path = await bitbybit.occt.shapes.wire.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+     * const outline = await bitbybit.occt.shapes.wire.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 0, 0]] });
      * ```
      */
     fromPoints(inputs: Inputs.OCCT.PointsDto): TopoDS_Wire {
         let wire: TopoDS_Wire | undefined;
         if (inputs.points.length > 1) {
             const start = inputs.points[0]!;
-            const end = inputs.points[1]!;
-            if (this.och.base.point.twoPointsAlmostEqual({ point1: start, point2: end })) {
-                wire = this.createPolygonWire({ points: inputs.points });
+            const end = inputs.points[inputs.points.length - 1]!;
+            if (inputs.points.length > 2 && this.och.base.point.twoPointsAlmostEqual({ point1: start, point2: end })) {
+                wire = this.createPolygonWire({ points: inputs.points.slice(0, -1) });
             } else {
                 wire = this.createPolylineWire({ points: inputs.points });
             }
@@ -1603,12 +1605,11 @@ export class OCCTWire {
     }
 
     /**
-     * Writes text as stroke wires like `textWires` and packs them into compounds, with the size of
-     * the block alongside.
+     * Writes text as stroke wires like `textWires` and packs them into compounds, measured.
      *
-     * The result carries `compound` with the whole text, `characters` with one compound per
-     * character in writing order, and `width` and `height`, the extent of the block along X and
-     * along Y.
+     * `compound` holds the whole text, `shapes` lists every compound under an id (`text-compound`,
+     * then `char-0`, `char-1` and so on in writing order), and `data` names them by id beside
+     * `width` and `height`, the extent along X and Z, and `center`.
      * @param inputs - The text, its size and spacing, the alignment and the placement options
      * @returns The text compound, the character compounds and the measured size
      * @group primitives
@@ -1624,7 +1625,7 @@ export class OCCTWire {
      *     align: Bit.Inputs.Base.horizontalAlignEnum.left,
      *     centerOnOrigin: false,
      * });
-     * console.log(text.width, text.height);
+     * console.log(text.data.width, text.data.height, text.shapes.length);
      * ```
      */
     textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<string>, TopoDS_Shape> {

@@ -108,6 +108,7 @@ export class ManifoldSimplifyDto<T> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.001
+     * @optional true
      */
     tolerance?: number | undefined;
 }

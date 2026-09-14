@@ -90,12 +90,18 @@ describe("the mesh services", () => {
     });
 
     describe("tangent", () => {
-        it("should read the tangent of a half edge out of the mesh's window on it", () => {
+        it("should read the tangent of a half edge as four finite numbers, the fourth being its weight", () => {
+            // Arrange
+            const sphere = manifold.manifold.shapes.sphere(new Inputs.Manifold.SphereDto(1, 8));
+            const smoothed = manifold.manifold.operations.smoothOut(new Inputs.Manifold.ManifoldSmoothOutDto(sphere, 60, 0));
+            const smoothedMesh = manifold.manifold.manifoldToMesh(new Inputs.Manifold.ManifoldToMeshDto(smoothed));
+
             // Act
-            const tangent = manifold.mesh.evaluate.tangent(new Inputs.Manifold.MeshHalfEdgeIndexDto(mesh, 0));
+            const tangent = manifold.mesh.evaluate.tangent(new Inputs.Manifold.MeshHalfEdgeIndexDto(smoothedMesh, 0));
 
             // Assert
             expect(tangent).toHaveLength(4);
+            tangent.forEach(component => expect(Number.isFinite(component)).toBe(true));
         });
     });
 });

@@ -63,7 +63,7 @@ export class MeshEvaluate {
      */
     tangent(inputs: Inputs.Manifold.MeshHalfEdgeIndexDto<Manifold3D.Mesh>): number[] {
         const res = inputs.mesh.tangent(inputs.halfEdgeIndex);
-        return [res[0]!, res[1]!, res[2]!, res[4]!];
+        return [res[0]!, res[1]!, res[2]!, res[3]!];
     }
 
     /**

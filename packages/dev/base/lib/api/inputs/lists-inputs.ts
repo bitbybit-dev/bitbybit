@@ -473,9 +473,9 @@ export namespace Lists {
          * @default 0.5
          * @minimum 0
          * @maximum 1
-         * @step 1
+         * @step 0.1
          */
-        threshold = 1;
+        threshold = 0.5;
         /**
          * When true, the list is deep-copied first so the input is never changed.
          * @default true

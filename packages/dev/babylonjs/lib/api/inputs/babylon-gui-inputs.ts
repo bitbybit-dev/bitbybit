@@ -251,14 +251,14 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        width!: number | string;
+        width?: number | string | undefined;
         /**
          * Height as a pixel string or a fraction; give it for a horizontal panel and leave it out
          * for a vertical one, which sizes from its children
          * @default undefined
          * @optional true
          */
-        height!: number | string;
+        height?: number | string | undefined;
         /**
          * CSS color of the panel's text and border; the default is fully transparent
          * @default #00000000
@@ -326,7 +326,6 @@ export namespace BabylonGui {
         /**
          * Width as a pixel string such as `300px` or a fraction of the parent from 0 to 1
          * @default undefined
-         * @optional true
          */
         width!: number | string;
     }
@@ -346,7 +345,6 @@ export namespace BabylonGui {
         /**
          * Height as a pixel string such as `300px` or a fraction of the parent from 0 to 1
          * @default undefined
-         * @optional true
          */
         height!: number | string;
     }
@@ -1245,11 +1243,12 @@ export namespace BabylonGui {
          */
         name = "radioBtnName";
         /**
-         * Radio buttons sharing a group let only one of them be checked at a time
-         * @default
+         * Radio buttons sharing a group let only one of them be checked at a time; left out, the
+         * button is in the unnamed group
+         * @default undefined
          * @optional true
          */
-        group!: string;
+        group?: string | undefined;
         /**
          * When true, the radio button starts checked
          * @default false
@@ -1740,27 +1739,27 @@ export namespace BabylonGui {
          * @default undefined
          * @optional true
          */
-        paddingLeft!: number | string;
+        paddingLeft?: number | string | undefined;
         /**
          * Space kept clear on the right, as a pixel string or a fraction; left out, it stays as it
          * is
          * @default undefined
          * @optional true
          */
-        paddingRight!: number | string;
+        paddingRight?: number | string | undefined;
         /**
          * Space kept clear at the top, as a pixel string or a fraction; left out, it stays as it is
          * @default undefined
          * @optional true
          */
-        paddingTop!: number | string;
+        paddingTop?: number | string | undefined;
         /**
          * Space kept clear at the bottom, as a pixel string or a fraction; left out, it stays as it
          * is
          * @default undefined
          * @optional true
          */
-        paddingBottom!: number | string;
+        paddingBottom?: number | string | undefined;
     }
     /**
      * Feeds `babylon.gui.control.cloneControl`: the control to copy, the container the copy goes

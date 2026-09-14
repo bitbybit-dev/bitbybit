@@ -219,7 +219,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setLabelColor", inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelColor", inputs);
     }
 
     /**
@@ -235,7 +235,7 @@ export class OCCTAssemblyManager {
      * ```
      */
     setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<boolean> {
-        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setLabelName", inputs);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.setDocLabelName", inputs);
     }
 
     /**

@@ -414,10 +414,10 @@ export namespace JSCAD {
         yOffset: number;
     }
     export class DownloadGeometryDto {
-        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any);
+        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: Record<string, unknown>);
         fileName: string;
         geometry: JSCADEntity | JSCADEntity[];
-        options: any;
+        options?: Record<string, unknown> | undefined;
     }
     export class DownloadSolidDto {
         constructor(mesh?: JSCADEntity, fileName?: string);
@@ -458,7 +458,7 @@ export namespace JSCAD {
         drawTwoSided: boolean;
         hidden: boolean;
         jscadMesh?: T | undefined;
-        meshes: JSCADEntity[];
+        meshes?: JSCADEntity[] | undefined;
         opacity: number;
         updatable: boolean;
     }
@@ -596,13 +596,6 @@ export namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
-    export class OffsetDto {
-        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
-        corners: solidCornerTypeEnum;
-        delta: number;
-        geometry: JSCADEntity;
-        segments: number;
-    }
     export class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
         clockwise: boolean;
@@ -613,11 +606,6 @@ export namespace JSCAD {
         radiusY: number;
         segments: number;
         xAxisRotation: number;
-    }
-    export class PathAppendCurveDto {
-        constructor(curve?: JSCADEntity, path?: JSCADEntity);
-        curve: JSCADEntity;
-        path: JSCADEntity;
     }
     export class PathAppendPointsDto {
         constructor(points?: Base.Point2[], path?: JSCADEntity);
@@ -1446,7 +1434,7 @@ export namespace Point {
         radiusHexagon: number;
     }
     export class HexGridScaledToFitDto {
-        constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean);
+        constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean);
         centerGrid?: boolean | undefined;
         extendBottom?: boolean | undefined;
         extendLeft?: boolean | undefined;

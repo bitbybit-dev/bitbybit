@@ -182,7 +182,7 @@ export class ArcEdgeCircleTwoAnglesDto<T> {
  * cuts an arc of that angle from the point.
  */
 export class ArcEdgeCirclePointAngleDto<T> {
-    constructor(circle?: T, alphaAngle?: number, _alphaAngle2?: number, sense?: boolean) {
+    constructor(circle?: T, alphaAngle?: number, sense?: boolean) {
         if (circle !== undefined) { this.circle = circle; }
         if (alphaAngle !== undefined) { this.alphaAngle = alphaAngle; }
         if (sense !== undefined) { this.sense = sense; }

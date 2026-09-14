@@ -26,6 +26,7 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
     /**
      * The solid or cross-section to draw.
      * @default undefined
+     * @optional true
      */
     manifoldOrCrossSection?: T | undefined;
     /**
@@ -114,6 +115,7 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
     /**
      * The solids or cross-sections to draw with the same options.
      * @default undefined
+     * @optional true
      */
     manifoldsOrCrossSections?: T[] | undefined;
     /**

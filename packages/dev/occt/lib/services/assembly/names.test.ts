@@ -338,7 +338,7 @@ describe("assembly names", () => {
             const definition = query.getDocumentParts({ document }).find(p => p.name === "Bracket");
 
             // Act
-            const renamed = manager.setLabelName({ document, label: definition!.label, name: "Holder" });
+            const renamed = manager.setDocLabelName({ document, label: definition!.label, name: "Holder" });
 
             // Assert
             expect(renamed).toBe(true);

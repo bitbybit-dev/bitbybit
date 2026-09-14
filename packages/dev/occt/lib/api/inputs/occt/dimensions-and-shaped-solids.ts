@@ -11,7 +11,7 @@ import { ChristmasTreeDto, Heart2DDto, NGonWireDto, ParallelogramDto, StarDto } 
  * written.
  */
 export class SimpleLinearLengthDimensionDto {
-    constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
+    constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
         if (start !== undefined) { this.start = start; }
         if (end !== undefined) { this.end = end; }
         if (direction !== undefined) { this.direction = direction; }
@@ -21,7 +21,7 @@ export class SimpleLinearLengthDimensionDto {
         if (labelSize !== undefined) { this.labelSize = labelSize; }
         if (labelOffset !== undefined) { this.labelOffset = labelOffset; }
         if (labelRotation !== undefined) { this.labelRotation = labelRotation; }
-        if (arrowType !== undefined) { this.endType = arrowType; }
+        if (endType !== undefined) { this.endType = endType; }
         if (arrowSize !== undefined) { this.arrowSize = arrowSize; }
         if (arrowAngle !== undefined) { this.arrowAngle = arrowAngle; }
         if (arrowsFlipped !== undefined) { this.arrowsFlipped = arrowsFlipped; }
@@ -57,7 +57,7 @@ export class SimpleLinearLengthDimensionDto {
     offsetFromPoints?: number | undefined = 0;
     /**
      * How far the lines stick out past their crossings, in model units.
-     * @default 0
+     * @default 0.2
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
@@ -154,13 +154,13 @@ export class SimpleLinearLengthDimensionDto {
  * arc, the extension lines, the arrows and the label with the angle.
  */
 export class SimpleAngularDimensionDto {
-    constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
+    constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, extraSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean) {
         if (direction1 !== undefined) { this.direction1 = direction1; }
         if (direction2 !== undefined) { this.direction2 = direction2; }
         if (center !== undefined) { this.center = center; }
         if (radius !== undefined) { this.radius = radius; }
         if (offsetFromCenter !== undefined) { this.offsetFromCenter = offsetFromCenter; }
-        if (crossingSize !== undefined) { this.extraSize = crossingSize; }
+        if (extraSize !== undefined) { this.extraSize = extraSize; }
         if (radians !== undefined) { this.radians = radians; }
         if (labelSuffix !== undefined) { this.labelSuffix = labelSuffix; }
         if (labelSize !== undefined) { this.labelSize = labelSize; }

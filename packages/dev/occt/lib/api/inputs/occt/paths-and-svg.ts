@@ -359,26 +359,32 @@ export class SVGShape<T> {
     closed!: boolean;
     /**
      * The fill color that applied to the element, if any.
+     * @optional true
      */
     fill?: string | undefined;
     /**
      * The stroke color that applied to the element, if any.
+     * @optional true
      */
     stroke?: string | undefined;
     /**
      * The stroke width that applied to the element, if any.
+     * @optional true
      */
     strokeWidth?: number | undefined;
     /**
      * The combined opacity of the element from 0 to 1, if any was set.
+     * @optional true
      */
     opacity?: number | undefined;
     /**
      * The element's `id` attribute, if any.
+     * @optional true
      */
     id?: string | undefined;
     /**
      * The element's `class` attribute, if any.
+     * @optional true
      */
     className?: string | undefined;
 }
@@ -394,6 +400,7 @@ export class SVGResult<T> {
     shapes!: SVGShape<T>[];
     /**
      * The document's view box as `[minX, minY, width, height]`, when it has one.
+     * @optional true
      */
     viewBox?: [number, number, number, number] | undefined;
     /**

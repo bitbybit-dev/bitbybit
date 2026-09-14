@@ -490,7 +490,7 @@ export class Draw extends DrawCore {
      * @shortname babylon node
      * @example
      * ```typescript
-     * const options = bitbybit.draw.optionsBabylonNode({ colorX: "#0000ff", colorY: "#00ff00", colorZ: "#ff0000", size: 2 });
+     * const options = bitbybit.draw.optionsBabylonNode({ colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", size: 2 });
      * const drawn = await bitbybit.draw.drawAnyAsync({ entity: node, options });
      * ```
      */

@@ -1210,7 +1210,7 @@ namespace Point_2 {
         radiusHexagon: number;
     }
     class HexGridScaledToFitDto {
-        constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean);
+        constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean);
         centerGrid?: boolean | undefined;
         extendBottom?: boolean | undefined;
         extendLeft?: boolean | undefined;

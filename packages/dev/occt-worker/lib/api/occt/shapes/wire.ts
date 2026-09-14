@@ -168,10 +168,11 @@ export class OCCTWire {
     }
 
     /**
-     * Joins a list of points in order with straight edges into one open wire.
+     * Joins a list of points in order with straight edges into one wire.
      *
-     * Fewer than two points throw an error. For a closed outline use `createPolygonWire`, which
-     * adds the edge back to the first point.
+     * Fewer than two points throw an error. When the last point repeats the first, the repeat is
+     * dropped and the wire is closed back to the first point; otherwise the wire stays open. For a
+     * closed outline without repeating a point use `createPolygonWire`.
      * @param inputs - The points, in order
      * @returns The wire through the points
      * @group from base
@@ -180,6 +181,7 @@ export class OCCTWire {
      * @example
      * ```typescript
      * const path = await bitbybit.occt.shapes.wire.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+     * const outline = await bitbybit.occt.shapes.wire.fromPoints({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 0, 0]] });
      * ```
      */
     fromPoints(inputs: Inputs.OCCT.PointsDto): Promise<Inputs.OCCT.TopoDSWirePointer> {
@@ -1523,8 +1525,8 @@ export class OCCTWire {
      * the block alongside.
      *
      * The result carries `compound` with the whole text, `characters` with one compound per
-     * character in writing order, and `width` and `height`, the extent of the block along X and
-     * along Y.
+     * character in writing order, `width` and `height` as the extent of the block along X and
+     * along Z, and `center` as the middle of the block.
      * @param inputs - The text, its size and spacing, the alignment and the placement options
      * @returns The text compound, the character compounds and the measured size
      * @group primitives
@@ -1540,7 +1542,7 @@ export class OCCTWire {
      *     align: Bit.Inputs.Base.horizontalAlignEnum.left,
      *     centerOnOrigin: false,
      * });
-     * console.log(text.width, text.height);
+     * console.log(text.width, text.height, text.characters.length);
      * ```
      */
     async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {

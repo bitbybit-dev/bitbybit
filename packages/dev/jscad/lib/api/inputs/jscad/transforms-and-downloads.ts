@@ -71,7 +71,7 @@ export class DownloadSolidDto {
  * write, the file name and optional options for the file writer.
  */
 export class DownloadGeometryDto {
-    constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any) {
+    constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: Record<string, unknown>) {
         if (geometry !== undefined) { this.geometry = geometry; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (options !== undefined) { this.options = options; }
@@ -91,7 +91,7 @@ export class DownloadGeometryDto {
      * @default undefined
      * @optional true
      */
-    options;
+    options?: Record<string, unknown> | undefined;
 }
 /**
  * Feeds `downloadSolidsSTL` on the JSCAD service: the solids to write into one STL file and the

@@ -612,7 +612,7 @@ describe("OCCTAssemblyManager unit tests", () => {
         });
     });
 
-    describe("setLabelColor", () => {
+    describe("setDocLabelColor", () => {
         let document: Handle_TDocStd_Document | null = null;
         const shapesToClean: TopoDS_Shape[] = [];
 
@@ -639,7 +639,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             const label = parts[0]!.label;
 
             // Act
-            const result = manager.setLabelColor({
+            const result = manager.setDocLabelColor({
                 document: document,
                 label,
                 r: 0,
@@ -656,7 +656,7 @@ describe("OCCTAssemblyManager unit tests", () => {
         });
     });
 
-    describe("setLabelName", () => {
+    describe("setDocLabelName", () => {
         let document: Handle_TDocStd_Document | null = null;
         const shapesToClean: TopoDS_Shape[] = [];
 
@@ -684,7 +684,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(label).toBeDefined();
 
             // Act
-            const result = manager.setLabelName({
+            const result = manager.setDocLabelName({
                 document: document,
                 label: label!,
                 name: "NewName"

@@ -140,7 +140,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
     constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (nrRectanglesU !== undefined) { this.nrRectanglesU = nrRectanglesU; }
-        if (nrRectanglesV !== undefined) { this.nrRectanglesU = nrRectanglesV; }
+        if (nrRectanglesV !== undefined) { this.nrRectanglesV = nrRectanglesV; }
         if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
         if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
         if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
@@ -175,27 +175,27 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      * @default undefined
      * @optional true
      */
-    scalePatternU!: number[];
+    scalePatternU?: number[] | undefined;
     /**
      * Sizes of the rectangles along V as fractions of their cell, from 0 to 1, applied in turn; 1
      * fills the cell, and leaving the list out means no scaling.
      * @default undefined
      * @optional true
      */
-    scalePatternV!: number[];
+    scalePatternV?: number[] | undefined;
     /**
      * Corner rounding of the rectangles as fractions from 0 to 1 of half the shorter side, applied
      * in turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
-    filletPattern!: number[];
+    filletPattern?: number[] | undefined;
     /**
      * Which cells get a rectangle, applied in turn: true draws one, false skips the cell.
      * @default undefined
      * @optional true
      */
-    inclusionPattern!: boolean[];
+    inclusionPattern?: boolean[] | undefined;
     /**
      * A fraction of the U range trimmed at each end before dividing into cells, so the pattern
      * keeps clear of the border; keep it below 0.5.
@@ -227,7 +227,7 @@ export class FaceSubdivideToHexagonWiresDto<T> {
     constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number, extendUUp?: boolean, extendUBottom?: boolean, extendVUp?: boolean, extendVBottom?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
-        if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+        if (nrHexagonsV !== undefined) { this.nrHexagonsV = nrHexagonsV; }
         if (flatU !== undefined) { this.flatU = flatU; }
         if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
         if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
@@ -353,7 +353,7 @@ export class FaceSubdivideToHexagonHolesDto<T> {
     constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, holesToFaces?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (nrHexagonsU !== undefined) { this.nrHexagonsU = nrHexagonsU; }
-        if (nrHexagonsV !== undefined) { this.nrHexagonsU = nrHexagonsV; }
+        if (nrHexagonsV !== undefined) { this.nrHexagonsV = nrHexagonsV; }
         if (flatU !== undefined) { this.flatU = flatU; }
         if (holesToFaces !== undefined) { this.holesToFaces = holesToFaces; }
         if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
@@ -458,7 +458,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
     constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], holesToFaces?: boolean, offsetFromBorderU?: number, offsetFromBorderV?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (nrRectanglesU !== undefined) { this.nrRectanglesU = nrRectanglesU; }
-        if (nrRectanglesV !== undefined) { this.nrRectanglesU = nrRectanglesV; }
+        if (nrRectanglesV !== undefined) { this.nrRectanglesV = nrRectanglesV; }
         if (scalePatternU !== undefined) { this.scalePatternU = scalePatternU; }
         if (scalePatternV !== undefined) { this.scalePatternV = scalePatternV; }
         if (filletPattern !== undefined) { this.filletPattern = filletPattern; }
@@ -494,27 +494,27 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * @default undefined
      * @optional true
      */
-    scalePatternU!: number[];
+    scalePatternU?: number[] | undefined;
     /**
      * Sizes of the holes along V as fractions of their cell, applied in turn; leaving the list out
      * uses 0.5.
      * @default undefined
      * @optional true
      */
-    scalePatternV!: number[];
+    scalePatternV?: number[] | undefined;
     /**
      * Corner rounding of the holes as fractions from 0 to 1 of half the shorter side, applied in
      * turn; 0 leaves sharp corners.
      * @default undefined
      * @optional true
      */
-    filletPattern!: number[];
+    filletPattern?: number[] | undefined;
     /**
      * Which cells become holes, applied in turn: true cuts one, false leaves the face whole there.
      * @default undefined
      * @optional true
      */
-    inclusionPattern!: boolean[];
+    inclusionPattern?: boolean[] | undefined;
     /**
      * When true, the result also carries one face per hole after the perforated face.
      * @default false

@@ -988,6 +988,52 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
+    it("should reject points beyond the grown bounding box without the exact test and still keep them when outside points are wanted", () => {
+        // Arrange
+        const square = face.createSquareFace(new OCCT.SquareDto(2, [0, 0, 0], [0, 1, 0]));
+        const inside: Base.Point3 = [0, 0, 0];
+        const nearOutside: Base.Point3 = [1.05, 0, 0];
+        const farOutside: Base.Point3 = [5, 0, 0];
+        const points = [inside, nearOutside, farOutside];
+
+        // Act
+        const kept = face.filterFacePoints({ ...new OCCT.FilterFacePointsDto<TopoDS_Face>(), shape: square, points, useBndBox: true, gapTolerance: 0.1 });
+        const keptWithOutside = face.filterFacePoints({ ...new OCCT.FilterFacePointsDto<TopoDS_Face>(), shape: square, points, useBndBox: true, gapTolerance: 0.1, keepIn: false, keepOn: false, keepOut: true });
+
+        // Assert
+        expect(kept).toEqual([inside]);
+        expect(keptWithOutside).toEqual([nearOutside, farOutside]);
+        square.delete();
+    });
+
+    it("should honour an explicit zero tolerance instead of falling back to the default", () => {
+        // Arrange
+        const square = face.createSquareFace(new OCCT.SquareDto(2, [0, 0, 0], [0, 1, 0]));
+        const justOutside: Base.Point3 = [1.00001, 0, 0];
+
+        // Act
+        const withDefaultTolerance = face.filterFacePoints({ ...new OCCT.FilterFacePointsDto<TopoDS_Face>(), shape: square, points: [justOutside] });
+        const withZeroTolerance = face.filterFacePoints({ ...new OCCT.FilterFacePointsDto<TopoDS_Face>(), shape: square, points: [justOutside], tolerance: 0 });
+
+        // Assert
+        expect(withDefaultTolerance).toEqual([justOutside]);
+        expect(withZeroTolerance).toEqual([]);
+        square.delete();
+    });
+
+    it("should keep no extra points when unknown points are asked for on a plain planar face", () => {
+        // Arrange
+        const square = face.createSquareFace(new OCCT.SquareDto(2, [0, 0, 0], [0, 1, 0]));
+        const points: Base.Point3[] = [[0, 0, 0], [0.5, 0, 0.5], [3, 0, 3]];
+
+        // Act
+        const kept = face.filterFacePoints({ ...new OCCT.FilterFacePointsDto<TopoDS_Face>(), shape: square, points, keepUnknown: true });
+
+        // Assert
+        expect(kept).toEqual([[0, 0, 0], [0.5, 0, 0.5]]);
+        square.delete();
+    });
+
     it("should create a face from wires", async () => {
         const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const circle2 = wire.createCircleWire({ radius: 0.2, center: [0, 0, 0.3], direction: [0, 1, 0] });
@@ -1787,11 +1833,11 @@ describe("OCCT face unit tests", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 3, 3);
             const wires = face.subdivideToRectangleWires(dto);
-            expect(wires.length).toBe(30);
+            expect(wires.length).toBe(9);
             wires.forEach(w => {
                 expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.WIRE);
                 const length = wire.getWireLength({ shape: w });
-                expect(length).toBeCloseTo(8.666666666666666);
+                expect(length).toBeCloseTo(13.333333333333332);
                 w.delete();
             });
             f.delete();
@@ -1801,13 +1847,13 @@ describe("OCCT face unit tests", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToRectangleWiresDto(f, 2, 2, [0.8, 0.6], [0.9, 0.7]);
             const wires = face.subdivideToRectangleWires(dto);
-            expect(wires.length).toBe(20);
+            expect(wires.length).toBe(4);
             wires.forEach((w, i) => {
                 const length = wire.getWireLength({ shape: w });
                 if (i % 2 === 0) {
-                    expect(length).toBeCloseTo(9.8);
+                    expect(length).toBeCloseTo(17);
                 } else {
-                    expect(length).toBeCloseTo(7.4);
+                    expect(length).toBeCloseTo(13);
                 }
                 w.delete();
             });
@@ -1872,11 +1918,27 @@ describe("OCCT face unit tests", () => {
             f.delete();
         });
 
+        it("should subdivide face to rectangle holes with the default scale pattern, without writing it back into the options", () => {
+            // Arrange
+            const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const options = { ...new OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>(f, 2, 2), scalePatternU: undefined, scalePatternV: undefined } as OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>;
+
+            // Act
+            const faces = face.subdivideToRectangleHoles(options);
+
+            // Assert
+            expect(faces.length).toBe(1);
+            expect(options.scalePatternU).toBeUndefined();
+            expect(options.scalePatternV).toBeUndefined();
+            faces.forEach(fc => fc.delete());
+            f.delete();
+        });
+
         it("should subdivide face to rectangle holes with holesToFaces", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToRectangleHolesDto(f, 2, 2, [0.5], [0.5], undefined, undefined, true);
             const faces = face.subdivideToRectangleHoles(dto);
-            expect(faces.length).toBe(21);
+            expect(faces.length).toBe(5);
             faces.forEach(fc => fc.delete());
             f.delete();
         });
@@ -1887,11 +1949,11 @@ describe("OCCT face unit tests", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToHexagonWiresDto(f, 3, 3);
             const wires = face.subdivideToHexagonWires(dto);
-            expect(wires.length).toBe(30);
+            expect(wires.length).toBe(9);
             wires.forEach(w => {
                 expect(w.ShapeType()).toBe(occt.TopAbs_ShapeEnum.WIRE);
                 const length = wire.getWireLength({ shape: w });
-                expect(length).toBeCloseTo(8.430363180804955);
+                expect(length).toBeCloseTo(10.975174637562116);
                 w.delete();
             });
             f.delete();
@@ -1901,10 +1963,10 @@ describe("OCCT face unit tests", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToHexagonWiresDto(f, 2, 2, true);
             const wires = face.subdivideToHexagonWires(dto);
-            expect(wires.length).toBe(20);
+            expect(wires.length).toBe(4);
             wires.forEach(w => {
                 const length = wire.getWireLength({ shape: w });
-                expect(length).toBeCloseTo(9.393712757732946);
+                expect(length).toBeCloseTo(15.545514590905858);
                 w.delete();
             });
             f.delete();
@@ -1916,7 +1978,7 @@ describe("OCCT face unit tests", () => {
             const faces = face.subdivideToHexagonHoles(dto);
             expect(faces.length).toBe(1);
             const area = face.getFaceArea({ shape: faces[0]! });
-            expect(area).toBeCloseTo(79.59183673469393);
+            expect(area).toBeCloseTo(82.85714285714285);
             faces.forEach(fc => fc.delete());
             f.delete();
         });
@@ -1925,13 +1987,13 @@ describe("OCCT face unit tests", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
             const dto = new OCCT.FaceSubdivideToHexagonHolesDto(f, 2, 2, false, true);
             const faces = face.subdivideToHexagonHoles(dto);
-            expect(faces.length).toBe(21);
+            expect(faces.length).toBe(5);
             faces.forEach((fc, i) => {
                 const area = face.getFaceArea({ shape: fc });
                 if (i === 0) {
-                    expect(area).toBeCloseTo(79.59183673469393);
+                    expect(area).toBeCloseTo(82.85714285714285);
                 } else {
-                    expect(area).toBeCloseTo(1.0204081632653064);
+                    expect(area).toBeCloseTo(4.285714285714285);
                 }
                 fc.delete();
             });

@@ -114,26 +114,6 @@ export class PathFromPolylineDto {
     closed = false;
 }
 /**
- * A 2D path and a NURBS curve to add to its end. No method reads it at present; sample the curve
- * into points and use `path.appendPoints` instead.
- */
-export class PathAppendCurveDto {
-    constructor(curve?: JSCADEntity, path?: JSCADEntity) {
-        if (curve !== undefined) { this.curve = curve; }
-        if (path !== undefined) { this.path = path; }
-    }
-    /**
-     * A NURBS curve whose sampled points would extend the path
-     * @default undefined
-     */
-    curve!: JSCADEntity;
-    /**
-     * The open 2D path that would be extended
-     * @default undefined
-     */
-    path!: JSCADEntity;
-}
-/**
  * Feeds `path.appendPoints`: an open 2D path and the points to add after its last point.
  */
 export class PathAppendPointsDto {

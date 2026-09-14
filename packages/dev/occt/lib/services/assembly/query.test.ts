@@ -348,7 +348,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             expect(colorInfo.hasColor).toBe(false);
         });
 
-        it("should return color after setLabelColor", () => {
+        it("should return color after setDocLabelColor", () => {
             // Arrange
             const box = solid.createBox({ width: 5, height: 5, length: 5, center: [0, 0, 0] });
             shapesToClean.push(box);
@@ -361,7 +361,7 @@ describe("OCCTAssemblyQuery unit tests", () => {
             const docParts = query.getDocumentParts({ document: document });
             const partInfo = docParts.find(p => p.name === "SetColorTest");
 
-            manager.setLabelColor({
+            manager.setDocLabelColor({
                 document: document,
                 label: partInfo!.label,
                 r: 1, g: 0, b: 1, a: 1

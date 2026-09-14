@@ -23,8 +23,9 @@ export namespace BabylonTools {
         /**
          * The camera to render through; left out, the active camera is used
          * @default undefined
+         * @optional true
          */
-        camera!: BABYLON.Camera;
+        camera?: BABYLON.Camera | undefined;
         /**
          * Pixel width of the image
          * @default 1920

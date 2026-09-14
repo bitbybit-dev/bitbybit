@@ -108,7 +108,7 @@ export class CubeDto {
      */
     center = true;
     /**
-     * The side length, one number for a cube or three for a box along X, Y and Z, in model units.
+     * The side length of the cube, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity

@@ -383,6 +383,7 @@ export namespace Text {
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
+         * @optional true
          */
         yOffset?: number | undefined = 0;
         /**

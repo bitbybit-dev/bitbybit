@@ -187,7 +187,7 @@ export class OCCTAssemblyManager {
             nodes: inputs.nodes ?? [],
             removals: inputs.removals,
             partUpdates: inputs.partUpdates,
-            clearDocument: inputs.clearDocument,
+            clearDocument: inputs.clearDocument ?? false,
             loadedParts: inputs.loadedParts
         };
     }
@@ -334,7 +334,7 @@ export class OCCTAssemblyManager {
      * const done = await bitbybit.occt.assembly.manager.setDocLabelColor({ document: doc, label: "0:1:1:1", r: 1, g: 0, b: 0, a: 1 });
      * ```
      */
-    setLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean {
+    setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean {
         return this.occ.SetDocLabelColor(inputs.document, inputs.label, inputs.r, inputs.g, inputs.b, inputs.a);
     }
 
@@ -350,7 +350,7 @@ export class OCCTAssemblyManager {
      * const done = await bitbybit.occt.assembly.manager.setDocLabelName({ document: doc, label: "0:1:1:1", name: "Left bracket" });
      * ```
      */
-    setLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean {
+    setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean {
         return this.occ.SetDocLabelName(inputs.document, inputs.label, inputs.name);
     }
 

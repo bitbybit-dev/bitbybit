@@ -1215,11 +1215,6 @@ export interface OperationParams {
      * Example: `name,age`, `John,30`, `Jane,25` with headers -> 2.
      */
     "csv.getRowCount": {
-        /**
-         * Index of the first data row, counting from 0; when set, the rows before it are not
-         * counted and `hasHeaders` is ignored
-         */
-        dataStartRow: number | PipelineRef;
         /** The whole CSV text; blank lines are not counted */
         csv?: string | PipelineRef;
         /**
@@ -1227,6 +1222,11 @@ export interface OperationParams {
          * is set
          */
         hasHeaders?: boolean | PipelineRef;
+        /**
+         * Index of the first data row, counting from 0; when set, the rows before it are not
+         * counted and `hasHeaders` is ignored
+         */
+        dataStartRow?: number | PipelineRef;
         /**
          * The text between rows, normally a line break; `\n` written as two characters is read as
          * one
@@ -2145,13 +2145,13 @@ export interface OperationParams {
      * Builds a solid from its faces, each given as a list of points that go around the face.
      *
      * List the points of every face clockwise as seen from outside the solid; the faces must close
-     * the solid for booleans to work on it. The lists are reversed in place while the solid is
-     * built.
+     * the solid for booleans to work on it. Each list is read in reverse order and the input is not
+     * changed.
      */
     "jscad.shapes.fromPolygonPoints": {
         /**
          * One list of points per face, each going around the face clockwise as seen from outside; the
-         * lists are reversed in place while the solid is built
+         * lists are read, not changed
          */
         polygonPoints: [number, number, number][] | PipelineRef;
     };
@@ -2301,18 +2301,15 @@ export interface OperationParams {
         segments?: number | PipelineRef;
     };
     /**
-     * Builds a torus, a ring with a round cross-section, lying flat in the XY plane around the
-     * origin with Z through its hole.
+     * Builds a torus, a ring with a round cross-section, lying flat in the XY plane around `center`
+     * with Z through its hole.
      *
      * `outerRadius` is the distance from the center to the middle of the tube and `innerRadius` the
      * tube's own radius, which must be smaller. Rotations and `startAngle` are in degrees; an
      * `outerRotation` below 360 leaves the ring open.
      */
     "jscad.shapes.torus": {
-        /**
-         * Meant to be the ring's center; it is not applied at present, the torus is built around the
-         * origin, so move it with `transformSolid`
-         */
+        /** The point the ring is centered on, in model units */
         center?: [number, number, number] | PipelineRef;
         /** Radius of the tube itself, in model units; it must be less than `outerRadius` */
         innerRadius?: number | PipelineRef;
@@ -4026,7 +4023,7 @@ export interface OperationParams {
         /** The solid or cross-section to turn into plain data. */
         manifoldOrCrossSection: unknown | PipelineRef;
         /** The property channel holding the normals of a solid, when it carries them. */
-        normalIdx: number | PipelineRef;
+        normalIdx?: number | PipelineRef;
     };
     /**
      * Turns several solids into mesh data, or cross-sections into polygons, as
@@ -4038,7 +4035,7 @@ export interface OperationParams {
         /** The solids or cross-sections to turn into plain data, one result each. */
         manifoldsOrCrossSections: unknown[] | PipelineRef;
         /** One normal channel per shape, for the solids that carry normals. */
-        normalIdx: number[] | PipelineRef;
+        normalIdx?: number[] | PipelineRef;
     };
     /**
      * Frees the memory a solid or a cross-section holds inside the kernel; the object cannot be
@@ -4292,7 +4289,7 @@ export interface OperationParams {
         /** The solids to turn into mesh data, one mesh each. */
         manifolds: unknown[] | PipelineRef;
         /** One normal channel per solid, when they carry normals. */
-        normalIdx: number[] | PipelineRef;
+        normalIdx?: number[] | PipelineRef;
     };
     /**
      * Turns a solid into plain mesh data: vertex properties, triangle indexes and the runs that
@@ -4305,7 +4302,7 @@ export interface OperationParams {
         /** The solid to turn into mesh data. */
         manifold: unknown | PipelineRef;
         /** The property channel holding the normals, when the solid carries them. */
-        normalIdx: number | PipelineRef;
+        normalIdx?: number | PipelineRef;
     };
     /**
      * Makes a copy of a solid that counts as a new original, so the copy can carry its own vertex
@@ -4503,7 +4500,7 @@ export interface OperationParams {
          * How far surfaces may move while vertices are removed, in model units; left out or below the
          * solid's own tolerance, that tolerance is used.
          */
-        tolerance: number | PipelineRef;
+        tolerance?: number | PipelineRef;
     };
     /**
      * Cuts a solid with a plane parallel to the XY plane at the given Z height and returns the flat
@@ -4554,9 +4551,9 @@ export interface OperationParams {
         minSmoothness?: number | PipelineRef;
     };
     /**
-     * Creates a box solid with the given size along X, Y and Z.
+     * Creates a cube solid with the given side length.
      *
-     * With `center` true the box is centered on the origin; otherwise its corner sits on the origin
+     * With `center` true the cube is centered on the origin; otherwise its corner sits on the origin
      * and it extends along the positive axes.
      */
     "manifold.manifold.shapes.cube": {
@@ -4565,7 +4562,7 @@ export interface OperationParams {
          * along the positive axes.
          */
         center?: boolean | PipelineRef;
-        /** The side length, one number for a cube or three for a box along X, Y and Z, in model units. */
+        /** The side length of the cube, in model units. */
         size?: number | PipelineRef;
     };
     /**
@@ -4755,7 +4752,7 @@ export interface OperationParams {
         /** The solid to turn into mesh data. */
         manifold: unknown | PipelineRef;
         /** The property channel holding the normals, when the solid carries them. */
-        normalIdx: number | PipelineRef;
+        normalIdx?: number | PipelineRef;
     };
     /**
      * Reads the properties of one vertex beyond its position, such as normals or colors stored in
@@ -5390,27 +5387,27 @@ export interface OperationParams {
      * applied to it.
      */
     "occt.assembly.manager.combineStructure": {
-        /**
-         * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
-         * new one.
-         */
-        removals: unknown[] | PipelineRef;
-        /** Changes to parts of an existing document from `createPartUpdate`; ignored for a new one. */
-        partUpdates: unknown[] | PipelineRef;
-        /**
-         * Imported part definitions from `createImportedPart`, each copying a label tree out of one of
-         * the source documents so instances can place it.
-         */
-        loadedParts: unknown[] | PipelineRef;
         /** The part definitions from `createPart`, the shapes that instances place. */
         parts?: unknown[] | PipelineRef;
         /** The assembly and instance node definitions that make up the tree. */
         nodes?: unknown[] | PipelineRef;
         /**
+         * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
+         * new one.
+         */
+        removals?: unknown[] | PipelineRef;
+        /** Changes to parts of an existing document from `createPartUpdate`; ignored for a new one. */
+        partUpdates?: unknown[] | PipelineRef;
+        /**
          * When true, an existing document is emptied before the new parts and nodes are added; when
          * false its content is kept and the removals and updates applied.
          */
         clearDocument?: boolean | PipelineRef;
+        /**
+         * Imported part definitions from `createImportedPart`, each copying a label tree out of one of
+         * the source documents so instances can place it.
+         */
+        loadedParts?: unknown[] | PipelineRef;
     };
     /**
      * Describes an assembly node, a container that groups instances and other assemblies in the
@@ -5425,14 +5422,14 @@ export interface OperationParams {
         /** The name of the assembly, written into STEP files and shown by viewers. */
         name: string | PipelineRef;
         /** The id of the assembly this one sits in; leave it out for a root. */
-        parentId: string | PipelineRef;
+        parentId?: string | PipelineRef;
+        /** A color for the assembly as `{ r, g, b, a }` with every channel from 0 to 1. */
+        colorRgba?: unknown | PipelineRef;
         /**
          * A placement for the whole group as a column-major 4x4 matrix, or a list of them applied first
          * to last.
          */
-        matrix: unknown | PipelineRef;
-        /** A color for the assembly as `{ r, g, b, a }` with every channel from 0 to 1. */
-        colorRgba?: unknown | PipelineRef;
+        matrix?: unknown | PipelineRef;
     };
     /**
      * Describes a part taken from another document, typically one loaded from STEP, so its whole
@@ -5446,22 +5443,22 @@ export interface OperationParams {
         /** The id instance nodes refer to the imported part by; it must be unique among the parts. */
         id: string | PipelineRef;
         /**
-         * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
-         * shape of the source document.
-         */
-        sourceLabel: string | PipelineRef;
-        /** A name for the copied root; leave it out to keep the source's name. */
-        name: string | PipelineRef;
-        /**
-         * A color for the copied root as `{ r, g, b, a }` from 0 to 1; leave it out to keep the
-         * source's colors.
-         */
-        colorRgba: unknown | PipelineRef;
-        /**
          * Which of the `sourceDocuments` given to `buildAssemblyDocument` to copy from, counting from
          * 0.
          */
         sourceDocumentIndex?: number | PipelineRef;
+        /**
+         * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
+         * shape of the source document.
+         */
+        sourceLabel?: string | PipelineRef;
+        /** A name for the copied root; leave it out to keep the source's name. */
+        name?: string | PipelineRef;
+        /**
+         * A color for the copied root as `{ r, g, b, a }` from 0 to 1; leave it out to keep the
+         * source's colors.
+         */
+        colorRgba?: unknown | PipelineRef;
     };
     /**
      * Describes an instance node, one placement of a part: which part by `partId`, where it goes
@@ -5479,17 +5476,7 @@ export interface OperationParams {
         /** The name of this placement, written into STEP files and shown by viewers. */
         name: string | PipelineRef;
         /** The id of the assembly this placement sits in; leave it out for the root. */
-        parentId: string | PipelineRef;
-        /**
-         * A color for this placement only, as `{ r, g, b, a }` from 0 to 1, overriding the part's
-         * color.
-         */
-        colorRgba: unknown | PipelineRef;
-        /**
-         * The placement as a column-major 4x4 matrix, or a list of them applied first to last; when
-         * given, translation, rotation and scale are ignored.
-         */
-        matrix: unknown | PipelineRef;
+        parentId?: string | PipelineRef;
         /** Where the part is moved to, as `[x, y, z]` in model units. */
         translation?: [number, number, number] | PipelineRef;
         /**
@@ -5499,6 +5486,16 @@ export interface OperationParams {
         rotation?: [number, number, number] | PipelineRef;
         /** A uniform scale of the placed part; 1 keeps its size. */
         scale?: number | PipelineRef;
+        /**
+         * A color for this placement only, as `{ r, g, b, a }` from 0 to 1, overriding the part's
+         * color.
+         */
+        colorRgba?: unknown | PipelineRef;
+        /**
+         * The placement as a column-major 4x4 matrix, or a list of them applied first to last; when
+         * given, translation, rotation and scale are ignored.
+         */
+        matrix?: unknown | PipelineRef;
     };
     /**
      * Describes a part for an assembly structure: an id to reference it by, its shape, a name and
@@ -5534,11 +5531,11 @@ export interface OperationParams {
          */
         label: string | PipelineRef;
         /** The new geometry of the part; leave it out to keep the old one. */
-        shape: unknown | PipelineRef;
+        shape?: unknown | PipelineRef;
         /** The new name of the part; leave it out to keep the old one. */
-        name: string | PipelineRef;
+        name?: string | PipelineRef;
         /** The new color of the part as `{ r, g, b, a }` from 0 to 1; leave it out to keep the old one. */
-        colorRgba: unknown | PipelineRef;
+        colorRgba?: unknown | PipelineRef;
     };
     /**
      * Deletes an assembly document and frees the memory it holds.
@@ -6510,12 +6507,12 @@ export interface OperationParams {
     "occt.fillets.chamfer2dVertices": {
         /** The flat wire or face whose corners are beveled. */
         shape: unknown | PipelineRef;
-        /** Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all. */
-        indexes: number[] | PipelineRef;
         /** How far the bevel cuts back from each corner along one edge, in model units. */
         distance?: number | PipelineRef;
         /** The angle of the bevel to that edge, in degrees; 45 gives an even chamfer. */
         angle?: number | PipelineRef;
+        /** Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all. */
+        indexes?: number[] | PipelineRef;
     };
     /**
      * Bevels one edge of a shape by a distance measured on `face` and an angle in degrees from that
@@ -9287,12 +9284,11 @@ export interface OperationParams {
         inside?: boolean | PipelineRef;
     };
     /**
-     * Keeps the points of a list that lie on a face, sorting each point as inside the face, on its
-     * boundary or outside it.
+     * Sorts points as inside a face, on its boundary or outside it, and keeps the chosen groups.
      *
-     * `keepIn`, `keepOn` and `keepOut` choose which groups come back; `tolerance` decides how close
-     * to the boundary counts as on it. A point off the surface is judged by where it lands in UV
-     * space.
+     * `keepIn`, `keepOn`, `keepOut` and `keepUnknown` choose the groups; `tolerance` decides how
+     * close to the boundary counts as on it. With `useBndBox`, a point outside the bounding box
+     * grown by `gapTolerance` is outside.
      */
     "occt.shapes.face.filterFacePoints": {
         /** The face to test the points against. */
@@ -9301,9 +9297,15 @@ export interface OperationParams {
         points: [number, number, number][] | PipelineRef;
         /** How close to the boundary a point may be to count as on it, in model units. */
         tolerance?: number | PipelineRef;
-        /** Currently unused: the points are always tested against the face itself. */
+        /**
+         * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
+         * outside without the exact test; a quick reject for many points far from the face.
+         */
         useBndBox?: boolean | PipelineRef;
-        /** Currently unused by the filter. */
+        /**
+         * How far beyond the bounding box a point may lie and still get the exact test when
+         * `useBndBox` is on, in model units.
+         */
         gapTolerance?: number | PipelineRef;
         /** When true, points inside the face are kept. */
         keepIn?: boolean | PipelineRef;
@@ -9311,7 +9313,7 @@ export interface OperationParams {
         keepOn?: boolean | PipelineRef;
         /** When true, points outside the face are kept. */
         keepOut?: boolean | PipelineRef;
-        /** Currently unused: a point is always inside, on or outside. */
+        /** When true, points the kernel cannot place inside, on or outside the face are kept. */
         keepUnknown?: boolean | PipelineRef;
     };
     /**
@@ -9327,9 +9329,15 @@ export interface OperationParams {
         points: [number, number, number][] | PipelineRef;
         /** How close to a boundary a point may be to count as on it, in model units. */
         tolerance?: number | PipelineRef;
-        /** Currently unused: the points are always tested against the face itself. */
+        /**
+         * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
+         * outside without the exact test; a quick reject for many points far from the face.
+         */
         useBndBox?: boolean | PipelineRef;
-        /** Currently unused by the filter. */
+        /**
+         * How far beyond the bounding box a point may lie and still get the exact test when
+         * `useBndBox` is on, in model units.
+         */
         gapTolerance?: number | PipelineRef;
         /** When true, points inside a face are kept. */
         keepIn?: boolean | PipelineRef;
@@ -9337,7 +9345,7 @@ export interface OperationParams {
         keepOn?: boolean | PipelineRef;
         /** When true, points outside a face are kept. */
         keepOut?: boolean | PipelineRef;
-        /** Currently unused: a point is always inside, on or outside. */
+        /** When true, points the kernel cannot place inside, on or outside a face are kept. */
         keepUnknown?: boolean | PipelineRef;
         /**
          * When true, the kept points of all faces come back in one list; when false, one list per face
@@ -11703,10 +11711,11 @@ export interface OperationParams {
         triangle: unknown | PipelineRef;
     };
     /**
-     * Joins a list of points in order with straight edges into one open wire.
+     * Joins a list of points in order with straight edges into one wire.
      *
-     * Fewer than two points throw an error. For a closed outline use `createPolygonWire`, which
-     * adds the edge back to the first point.
+     * Fewer than two points throw an error. When the last point repeats the first, the repeat is
+     * dropped and the wire is closed back to the first point; otherwise the wire stays open. For a
+     * closed outline without repeating a point use `createPolygonWire`.
      */
     "occt.shapes.wire.fromPoints": {
         /** The points, in the order the shapes should follow them. */
@@ -12167,8 +12176,8 @@ export interface OperationParams {
      * the block alongside.
      *
      * The result carries `compound` with the whole text, `characters` with one compound per
-     * character in writing order, and `width` and `height`, the extent of the block along X and
-     * along Y.
+     * character in writing order, `width` and `height` as the extent of the block along X and
+     * along Z, and `center` as the middle of the block.
      */
     "occt.shapes.wire.textWiresWithData": {
         /** The text to write; a line break starts a new line. */
@@ -14007,17 +14016,17 @@ export interface OperationParams {
      */
     "text.vectorChar": {
         /**
-         * How far to shift the strokes along the second axis of the character plane, in model
-         * units.
-         */
-        yOffset: number | PipelineRef;
-        /**
          * The character to draw; only its first character is used, and an unknown one is drawn as a
          * question mark.
          */
         char?: string | PipelineRef;
         /** How far to shift the strokes along X, in model units. */
         xOffset?: number | PipelineRef;
+        /**
+         * How far to shift the strokes along the second axis of the character plane, in model
+         * units.
+         */
+        yOffset?: number | PipelineRef;
         /** The height of a capital letter, in model units; the strokes are scaled to it. */
         height?: number | PipelineRef;
         /**

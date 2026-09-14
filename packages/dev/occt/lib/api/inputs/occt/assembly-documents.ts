@@ -108,6 +108,7 @@ export class CreateAssemblyNodeDto {
     /**
      * The id of the assembly this one sits in; leave it out for a root.
      * @default undefined
+     * @optional true
      */
     parentId?: string | undefined;
     /**
@@ -121,6 +122,7 @@ export class CreateAssemblyNodeDto {
      * A placement for the whole group as a column-major 4x4 matrix, or a list of them applied first
      * to last.
      * @default undefined
+     * @optional true
      */
     matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
 }
@@ -169,6 +171,7 @@ export class CreateInstanceNodeDto {
     /**
      * The id of the assembly this placement sits in; leave it out for the root.
      * @default undefined
+     * @optional true
      */
     parentId?: string | undefined;
     /**
@@ -191,12 +194,14 @@ export class CreateInstanceNodeDto {
      * A color for this placement only, as `{ r, g, b, a }` from 0 to 1, overriding the part's
      * color.
      * @default undefined
+     * @optional true
      */
     colorRgba?: Base.ColorRGBA | undefined;
     /**
      * The placement as a column-major 4x4 matrix, or a list of them applied first to last; when
      * given, translation, rotation and scale are ignored.
      * @default undefined
+     * @optional true
      */
     matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
 }
@@ -226,16 +231,19 @@ export class CreatePartUpdateDto<T> {
     /**
      * The new geometry of the part; leave it out to keep the old one.
      * @default undefined
+     * @optional true
      */
     shape?: T | undefined;
     /**
      * The new name of the part; leave it out to keep the old one.
      * @default undefined
+     * @optional true
      */
     name?: string | undefined;
     /**
      * The new color of the part as `{ r, g, b, a }` from 0 to 1; leave it out to keep the old one.
      * @default undefined
+     * @optional true
      */
     colorRgba?: Base.ColorRGBA | undefined;
 }
@@ -275,11 +283,13 @@ export class CombineAssemblyStructureDto<T> {
      * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
      * new one.
      * @default undefined
+     * @optional true
      */
     removals?: string[] | undefined;
     /**
      * Changes to parts of an existing document from `createPartUpdate`; ignored for a new one.
      * @default undefined
+     * @optional true
      */
     partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[] | undefined;
     /**
@@ -287,11 +297,12 @@ export class CombineAssemblyStructureDto<T> {
      * false its content is kept and the removals and updates applied.
      * @default false
      */
-    clearDocument = false;
+    clearDocument?: boolean | undefined = false;
     /**
      * Imported part definitions from `createImportedPart`, each copying a label tree out of one of
      * the source documents so instances can place it.
      * @default undefined
+     * @optional true
      */
     loadedParts?: Models.OCCT.AssemblyLoadedPartDef[] | undefined;
 }
@@ -329,23 +340,26 @@ export class CreateImportedPartDto {
      * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
      * shape of the source document.
      * @default undefined
+     * @optional true
      */
     sourceLabel?: string | undefined;
     /**
      * A name for the copied root; leave it out to keep the source's name.
      * @default undefined
+     * @optional true
      */
     name?: string | undefined;
     /**
      * A color for the copied root as `{ r, g, b, a }` from 0 to 1; leave it out to keep the
      * source's colors.
      * @default undefined
+     * @optional true
      */
     colorRgba?: Base.ColorRGBA | undefined;
 }
 
 /**
- * A document, a label and a color for `assembly.manager.setLabelColor`.
+ * A document, a label and a color for `assembly.manager.setDocLabelColor`.
  */
 export class SetDocLabelColorDto<T> {
     constructor(
@@ -408,7 +422,7 @@ export class SetDocLabelColorDto<T> {
 }
 
 /**
- * A document, a label and a name for `assembly.manager.setLabelName`.
+ * A document, a label and a name for `assembly.manager.setDocLabelName`.
  */
 export class SetDocLabelNameDto<T> {
     constructor(document?: T, label?: string, name?: string) {

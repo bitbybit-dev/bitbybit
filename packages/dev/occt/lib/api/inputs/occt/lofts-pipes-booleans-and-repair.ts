@@ -375,8 +375,8 @@ export class PipeWireCylindricalDto<T> {
  * a tube with flat sides along the wire.
  */
 export class PipePolygonWireNGonDto<T> {
-    constructor(shapes?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
-        if (shapes !== undefined) { this.shape = shapes; }
+    constructor(shape?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean) {
+        if (shape !== undefined) { this.shape = shape; }
         if (radius !== undefined) { this.radius = radius; }
         if (nrCorners !== undefined) { this.nrCorners = nrCorners; }
         if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
@@ -746,50 +746,6 @@ export class BasicShapeRepairDto<T> {
     minTolerance = 0.0001;
 }
 /**
- * A shape and a precision for closing wires; currently unused by the library.
- */
-export class FixClosedDto<T> {
-    constructor(shape?: T, precision?: number) {
-        if (shape !== undefined) { this.shape = shape; }
-        if (precision !== undefined) { this.precision = precision; }
-    }
-    /**
-     * The shape to close.
-     * @default undefined
-     */
-    shape!: T;
-    /**
-     * The precision for the closing, in model units.
-     * @default -0.1
-     * @minimum -Infinity
-     * @maximum Infinity
-     * @step 0.0000000001
-     */
-    precision = -0.1;
-}
-/**
- * Shapes and a tolerance; currently unused by the library.
- */
-export class ShapesWithToleranceDto<T> {
-    constructor(shapes?: T[], tolerance?: number) {
-        if (shapes !== undefined) { this.shapes = shapes; }
-        if (tolerance !== undefined) { this.tolerance = tolerance; }
-    }
-    /**
-     * The shapes to work on.
-     * @default undefined
-     */
-    shapes!: T[];
-    /**
-     * The tolerance for the operation, in model units.
-     * @default 1.0e-7
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.000001
-     */
-    tolerance = 1.0e-7;
-}
-/**
  * A shape and a tolerance for `shapes.face.faceFromSurface`, `shapes.shell.sewFaces` and the other
  * methods that build within a tolerance.
  */
@@ -898,4 +854,3 @@ export class RotationExtrudeDto<T> {
      */
     makeSolid = true;
 }
-

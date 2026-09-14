@@ -109,7 +109,7 @@ export namespace Math {
         number = 1;
         /**
          * The number to divide by; the remainder is smaller than it.
-         * @default 1
+         * @default 2
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1

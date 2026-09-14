@@ -226,6 +226,7 @@ export class Chamfer2dVertexDto<T> {
     /**
      * Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all.
      * @default undefined
+     * @optional true
      */
     indexes?: number[] | undefined;
 }

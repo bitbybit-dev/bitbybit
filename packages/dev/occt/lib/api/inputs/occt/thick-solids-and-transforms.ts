@@ -119,11 +119,11 @@ export class TransformDto<T> {
  * lists must have the same length.
  */
 export class TransformShapesDto<T> {
-    constructor(shapes?: T[], translation?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationDegrees?: number[], scaleFactors?: number[]) {
+    constructor(shapes?: T[], translations?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationAngles?: number[], scaleFactors?: number[]) {
         if (shapes !== undefined) { this.shapes = shapes; }
-        if (translation !== undefined) { this.translations = translation; }
+        if (translations !== undefined) { this.translations = translations; }
         if (rotationAxes !== undefined) { this.rotationAxes = rotationAxes; }
-        if (rotationDegrees !== undefined) { this.rotationAngles = rotationDegrees; }
+        if (rotationAngles !== undefined) { this.rotationAngles = rotationAngles; }
         if (scaleFactors !== undefined) { this.scaleFactors = scaleFactors; }
     }
     /**
@@ -218,7 +218,7 @@ export class AlignNormAndAxisDto<T> {
     fromOrigin: Base.Point3 = [0, 0, 0];
     /**
      * The normal direction at the shape's frame, carried onto `toNorm`.
-     * @default [0, 0, 1]
+     * @default [1, 0, 0]
      */
     fromNorm: Base.Vector3 = [1, 0, 0];
     /**
@@ -241,7 +241,7 @@ export class AlignNormAndAxisDto<T> {
      * The direction `fromAx` lands on.
      * @default [0, 0, 1]
      */
-    toAx: Base.Vector3 = [0, 1, 0];
+    toAx: Base.Vector3 = [0, 0, 1];
 }
 /**
  * A shape, a point and direction on it, and the point and direction to land on, for
@@ -441,7 +441,7 @@ export class AlignAndTranslateDto<T> {
     shape!: T;
     /**
      * The direction the shape's Y axis should point along after placing.
-     * @default [0, 0, 1]
+     * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
@@ -518,12 +518,14 @@ export class FilterFacesPointsDto<T> {
      */
     tolerance = 1.0e-4;
     /**
-     * Currently unused: the points are always tested against the face itself.
+     * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
+     * outside without the exact test; a quick reject for many points far from the face.
      * @default false
      */
     useBndBox = false;
     /**
-     * Currently unused by the filter.
+     * How far beyond the bounding box a point may lie and still get the exact test when
+     * `useBndBox` is on, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -546,7 +548,7 @@ export class FilterFacesPointsDto<T> {
      */
     keepOut = false;
     /**
-     * Currently unused: a point is always inside, on or outside.
+     * When true, points the kernel cannot place inside, on or outside a face are kept.
      * @default false
      */
     keepUnknown = false;
@@ -592,12 +594,14 @@ export class FilterFacePointsDto<T> {
      */
     tolerance = 1.0e-4;
     /**
-     * Currently unused: the points are always tested against the face itself.
+     * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
+     * outside without the exact test; a quick reject for many points far from the face.
      * @default false
      */
     useBndBox = false;
     /**
-     * Currently unused by the filter.
+     * How far beyond the bounding box a point may lie and still get the exact test when
+     * `useBndBox` is on, in model units.
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
@@ -620,7 +624,7 @@ export class FilterFacePointsDto<T> {
      */
     keepOut = false;
     /**
-     * Currently unused: a point is always inside, on or outside.
+     * When true, points the kernel cannot place inside, on or outside the face are kept.
      * @default false
      */
     keepUnknown = false;
@@ -695,7 +699,7 @@ export class AlignAndTranslateShapesDto<T> {
     shapes!: T[];
     /**
      * One direction per shape for its Y axis to point along.
-     * @default [0, 0, 1]
+     * @default [[0, 1, 0]]
      */
     directions: Base.Vector3[] = [[0, 1, 0]];
     /**

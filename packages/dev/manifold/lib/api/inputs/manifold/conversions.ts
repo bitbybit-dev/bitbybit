@@ -29,6 +29,7 @@ export class ManifoldToMeshDto<T> {
     manifold!: T;
     /**
      * The property channel holding the normals, when the solid carries them.
+     * @optional true
      */
     normalIdx?: number | undefined;
 }
@@ -46,6 +47,7 @@ export class ManifoldsToMeshesDto<T> {
     manifolds!: T[];
     /**
      * One normal channel per solid, when they carry normals.
+     * @optional true
      */
     normalIdx?: number[] | undefined;
 }
@@ -63,6 +65,7 @@ export class DecomposeManifoldOrCrossSectionDto<T> {
     manifoldOrCrossSection!: T;
     /**
      * The property channel holding the normals of a solid, when it carries them.
+     * @optional true
      */
     normalIdx?: number | undefined;
 }
@@ -105,6 +108,7 @@ export class DecomposeManifoldsOrCrossSectionsDto<T> {
     manifoldsOrCrossSections!: T[];
     /**
      * One normal channel per shape, for the solids that carry normals.
+     * @optional true
      */
     normalIdx?: number[] | undefined;
 }

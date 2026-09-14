@@ -337,13 +337,13 @@ export class JSCADShapes {
     }
 
     /**
-     * Builds a torus, a ring with a round cross-section, lying flat in the XY plane around the
-     * origin with Z through its hole.
+     * Builds a torus, a ring with a round cross-section, lying flat in the XY plane around `center`
+     * with Z through its hole.
      *
      * `outerRadius` is the distance from the center to the middle of the tube and `innerRadius` the
      * tube's own radius, which must be smaller. Rotations and `startAngle` are in degrees; an
      * `outerRotation` below 360 leaves the ring open.
-     * @param inputs - The two radii, the two segment counts, the two rotations and the start angle
+     * @param inputs - The center, the two radii, the two segment counts, the two rotations and the start angle
      * @returns The torus solid
      * @group primitives
      * @shortname torus
@@ -361,8 +361,8 @@ export class JSCADShapes {
      * Builds a solid from its faces, each given as a list of points that go around the face.
      *
      * List the points of every face clockwise as seen from outside the solid; the faces must close
-     * the solid for booleans to work on it. The lists are reversed in place while the solid is
-     * built.
+     * the solid for booleans to work on it. Each list is read in reverse order and the input is not
+     * changed.
      * @param inputs - The faces as lists of points
      * @returns The solid
      * @group shapes

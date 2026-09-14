@@ -97,7 +97,7 @@ the kernel drops those (and `=>[entry]` names a file carries) before naming, kee
 as a word, and writes the result onto the labels, so `getAssemblyHierarchy`, `getLabelInfo`,
 `parseStepToJson`, the STEP and glTF exports and every glTF name format agree. `definitionName`
 (hierarchy nodes and `parseStepToJson` nodes) and `refName` (`getLabelInfo`) carry the placed
-definition's name beside it. Renaming a definition (`setLabelName`, a `partUpdates` entry) renames
+definition's name beside it. Renaming a definition (`setDocLabelName`, a `partUpdates` entry) renames
 the placements that were named after it.
 
 **The structure JSON is parsed, not scanned.** `buildAssemblyDocument` hands its JSON to a real

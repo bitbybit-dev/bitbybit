@@ -442,6 +442,7 @@ export namespace CSV {
          * @minimum 0
          * @maximum Infinity
          * @step 1
+         * @optional true
          */
         dataStartRow?: number | undefined;
         /**

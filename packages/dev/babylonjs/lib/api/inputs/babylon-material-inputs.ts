@@ -329,7 +329,7 @@ export namespace BabylonMaterial {
          * @default undefined
          * @optional true
          */
-        sunPosition!: Base.Vector3;
+        sunPosition?: Base.Vector3 | undefined;
         /**
          * When true, the sun is placed from `sunPosition`; when false, from inclination and azimuth
          * @default false
@@ -340,7 +340,7 @@ export namespace BabylonMaterial {
          * @default undefined
          * @optional true
          */
-        cameraOffset!: Base.Vector3;
+        cameraOffset?: Base.Vector3 | undefined;
         /**
          * The direction the sky treats as up; `[0, 1, 0]` for the usual Y-up scene
          * @default [0, 1, 0]

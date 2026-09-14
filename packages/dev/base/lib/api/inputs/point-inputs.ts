@@ -166,6 +166,7 @@ export namespace Point {
          * A mesh drawn earlier for this point; when given it is updated in place instead of a new
          * one being made.
          * @default undefined
+         * @optional true
          */
         pointMesh?: T | undefined;
     }
@@ -221,6 +222,7 @@ export namespace Point {
          * A mesh drawn earlier for these points; when given it is updated in place instead of a new
          * one being made.
          * @default undefined
+         * @optional true
          */
         pointsMesh?: T | undefined;
     }
@@ -748,11 +750,11 @@ export namespace Point {
      * given number of them fills the width and height.
      */
     export class HexGridScaledToFitDto {
-        constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean) {
-            if (wdith !== undefined) { this.width = wdith; }
+        constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean) {
+            if (width !== undefined) { this.width = width; }
             if (height !== undefined) { this.height = height; }
-            if (nrHexagonsU !== undefined) { this.nrHexagonsInHeight = nrHexagonsU; }
-            if (nrHexagonsV !== undefined) { this.nrHexagonsInWidth = nrHexagonsV; }
+            if (nrHexagonsInHeight !== undefined) { this.nrHexagonsInHeight = nrHexagonsInHeight; }
+            if (nrHexagonsInWidth !== undefined) { this.nrHexagonsInWidth = nrHexagonsInWidth; }
             if (centerGrid !== undefined) { this.centerGrid = centerGrid; }
             if (pointsOnGround !== undefined) { this.pointsOnGround = pointsOnGround; }
         }

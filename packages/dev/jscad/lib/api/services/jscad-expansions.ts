@@ -34,12 +34,10 @@ export class JSCADExpansions {
      */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
         const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
-        if (!inputs.corners) {
-            inputs.corners = Inputs.JSCAD.solidCornerTypeEnum.round;
-        }
+        const corners = inputs.corners || Inputs.JSCAD.solidCornerTypeEnum.round;
         const result = this.jscad.expansions.expand({
             delta: inputs.delta,
-            corners: inputs.corners,
+            corners,
             segments: inputs.segments,
         }, ...geometry);
         return asEntity(result);
@@ -64,12 +62,10 @@ export class JSCADExpansions {
      */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
         const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
-        if (!inputs.corners) {
-            inputs.corners = Inputs.JSCAD.solidCornerTypeEnum.edge;
-        }
+        const corners = inputs.corners || Inputs.JSCAD.solidCornerTypeEnum.edge;
         const result = this.jscad.expansions.offset({
             delta: inputs.delta,
-            corners: inputs.corners,
+            corners,
             segments: inputs.segments,
         }, ...geometry);
         return asEntity(result);

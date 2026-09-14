@@ -75,33 +75,40 @@ export namespace Manifold {
         /**
          * For each merged vertex, the index of the property vertex that is merged away; pairs with
          * `mergeToVert`.
+         * @optional true
          */
         mergeFromVert?: Uint32Array | undefined;
         /**
          * For each merged vertex, the index of the property vertex it is merged into; pairs with
          * `mergeFromVert`.
+         * @optional true
          */
         mergeToVert?: Uint32Array | undefined;
         /**
          * Where each triangle run starts in `triVerts`, one entry per run plus a final end marker.
+         * @optional true
          */
         runIndex?: Uint32Array | undefined;
         /**
          * The id of the original shape each run of triangles came from, one per run.
+         * @optional true
          */
         runOriginalID?: Uint32Array | undefined;
         /**
          * The placement of each run as 12 numbers of a column-major 3x4 matrix, one per run.
+         * @optional true
          */
         runTransform?: Float32Array | undefined;
         /**
          * For each triangle, the id of the flat face it belongs to, so coplanar triangles can be
          * grouped.
+         * @optional true
          */
         faceID?: Uint32Array | undefined;
         /**
          * The smoothing tangent of each half-edge as four numbers, direction and weight, when the solid
          * was smoothed.
+         * @optional true
          */
         halfedgeTangent?: Float32Array | undefined;
     }
@@ -129,6 +136,7 @@ export namespace Manifold {
         /**
          * The solid or cross-section to draw.
          * @default undefined
+         * @optional true
          */
         manifoldOrCrossSection?: T | undefined;
         /**
@@ -217,6 +225,7 @@ export namespace Manifold {
         /**
          * The solids or cross-sections to draw with the same options.
          * @default undefined
+         * @optional true
          */
         manifoldsOrCrossSections?: T[] | undefined;
         /**
@@ -386,7 +395,7 @@ export namespace Manifold {
          */
         center = true;
         /**
-         * The side length, one number for a cube or three for a box along X, Y and Z, in model units.
+         * The side length of the cube, in model units.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -788,6 +797,7 @@ export namespace Manifold {
          * @minimum 0
          * @maximum Infinity
          * @step 0.001
+         * @optional true
          */
         tolerance?: number | undefined;
     }
@@ -1751,6 +1761,7 @@ export namespace Manifold {
         manifold!: T;
         /**
          * The property channel holding the normals, when the solid carries them.
+         * @optional true
          */
         normalIdx?: number | undefined;
     }
@@ -1768,6 +1779,7 @@ export namespace Manifold {
         manifolds!: T[];
         /**
          * One normal channel per solid, when they carry normals.
+         * @optional true
          */
         normalIdx?: number[] | undefined;
     }
@@ -1785,6 +1797,7 @@ export namespace Manifold {
         manifoldOrCrossSection!: T;
         /**
          * The property channel holding the normals of a solid, when it carries them.
+         * @optional true
          */
         normalIdx?: number | undefined;
     }
@@ -1827,6 +1840,7 @@ export namespace Manifold {
         manifoldsOrCrossSections!: T[];
         /**
          * One normal channel per shape, for the solids that carry normals.
+         * @optional true
          */
         normalIdx?: number[] | undefined;
     }

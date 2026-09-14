@@ -155,6 +155,7 @@ export namespace Polyline {
          * A mesh drawn earlier for this polyline; when given it is updated in place instead of a
          * new one being made.
          * @default undefined
+         * @optional true
          */
         polylineMesh?: T | undefined;
     }
@@ -209,6 +210,7 @@ export namespace Polyline {
          * A mesh drawn earlier for these polylines; when given it is updated in place instead of a
          * new one being made.
          * @default undefined
+         * @optional true
          */
         polylinesMesh?: T | undefined;
     }

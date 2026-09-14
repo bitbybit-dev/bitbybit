@@ -46,46 +46,6 @@ export class ExpansionDto {
     segments = 24;
 }
 /**
- * The offset options, mirroring `ExpansionDto`: the geometry, the signed distance and the corner
- * shaping. `expansions.offset` reads `ExpansionDto`, so this class is here for symmetry.
- */
-export class OffsetDto {
-    constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
-        if (geometry !== undefined) { this.geometry = geometry; }
-        if (delta !== undefined) { this.delta = delta; }
-        if (corners !== undefined) { this.corners = corners; }
-        if (segments !== undefined) { this.segments = segments; }
-    }
-    /**
-     * The 2D shape or path whose outline is moved; it stays as it is and a new entity comes back
-     * @default undefined
-     */
-    geometry!: JSCADEntity;
-    /**
-     * How far the outline moves, in model units: positive outward, negative inward
-     * @default 0.1
-     * @minimum -Infinity
-     * @maximum Infinity
-     * @step 0.1
-     */
-    delta = 0.1;
-    /**
-     * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-     * it
-     * @default edge
-     */
-    corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
-    /**
-     * Number of straight pieces a `round` corner is made of over a full circle; more makes it
-     * smoother
-     * @default 24
-     * @minimum 0
-     * @maximum Infinity
-     * @step 1
-     */
-    segments = 24;
-}
-/**
  * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
  * applied on the way up.
  */

@@ -130,7 +130,7 @@ export class DrawSolidMeshesDto<T> {
      * @default undefined
      * @optional true
      */
-    meshes!: JSCADEntity[];
+    meshes?: JSCADEntity[] | undefined;
     /**
      * How opaque the faces are, from 0 for invisible to 1 for solid
      * @default 1

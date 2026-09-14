@@ -5068,7 +5068,7 @@ namespace OCCT {
         approxIsoParametric = "approxIsoParametric"
     }
     class ArcEdgeCirclePointAngleDto<T> {
-        constructor(circle?: T, alphaAngle?: number, _alphaAngle2?: number, sense?: boolean);
+        constructor(circle?: T, alphaAngle?: number, sense?: boolean);
         alphaAngle: number;
         circle: T;
         point: Base.Point3;
@@ -5358,7 +5358,7 @@ namespace OCCT {
     }
     class CombineAssemblyStructureDto<T> {
         constructor(parts?: Models_2.OCCT.AssemblyPartDef<T>[], nodes?: Models_2.OCCT.AssemblyNodeDef[], removals?: string[], partUpdates?: Models_2.OCCT.AssemblyPartUpdateDef<T>[], clearDocument?: boolean, loadedParts?: Models_2.OCCT.AssemblyLoadedPartDef[]);
-        clearDocument: boolean;
+        clearDocument?: boolean | undefined;
         loadedParts?: Models_2.OCCT.AssemblyLoadedPartDef[] | undefined;
         nodes: Models_2.OCCT.AssemblyNodeDef[];
         parts: Models_2.OCCT.AssemblyPartDef<T>[];
@@ -5668,13 +5668,6 @@ namespace OCCT {
         removeStartPoint?: boolean | undefined;
         shape: T;
     }
-    class DivideFaceToUVPointsDto<T> {
-        constructor(shape?: T, nrOfPointsU?: number, nrOfPointsV?: number, flat?: boolean);
-        flat: boolean;
-        nrOfPointsU: number;
-        nrOfPointsV: number;
-        shape: T;
-    }
     class DivideShapesDto<T> {
         constructor(shapes: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         nrOfDivisions: number;
@@ -5915,12 +5908,6 @@ namespace OCCT {
         inside: boolean;
         wires: T[];
     }
-    class FaceIsoCurveAtParamDto<T> {
-        constructor(shape?: T, param?: number, dir?: "u" | "v");
-        dir: "u" | "v";
-        param: number;
-        shape: T;
-    }
     class FaceLinearSubdivisionDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number, nrPoints?: number, shiftHalfStep?: boolean, removeStartPoint?: boolean, removeEndPoint?: boolean);
         isU: boolean;
@@ -5975,27 +5962,27 @@ namespace OCCT {
     }
     class FaceSubdivideToRectangleHolesDto<T> {
         constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], holesToFaces?: boolean, offsetFromBorderU?: number, offsetFromBorderV?: number);
-        filletPattern: number[];
+        filletPattern?: number[] | undefined;
         holesToFaces: boolean;
-        inclusionPattern: boolean[];
+        inclusionPattern?: boolean[] | undefined;
         nrRectanglesU: number;
         nrRectanglesV: number;
         offsetFromBorderU: number;
         offsetFromBorderV: number;
-        scalePatternU: number[];
-        scalePatternV: number[];
+        scalePatternU?: number[] | undefined;
+        scalePatternV?: number[] | undefined;
         shape: T;
     }
     class FaceSubdivideToRectangleWiresDto<T> {
         constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number);
-        filletPattern: number[];
-        inclusionPattern: boolean[];
+        filletPattern?: number[] | undefined;
+        inclusionPattern?: boolean[] | undefined;
         nrRectanglesU: number;
         nrRectanglesV: number;
         offsetFromBorderU: number;
         offsetFromBorderV: number;
-        scalePatternU: number[];
-        scalePatternV: number[];
+        scalePatternU?: number[] | undefined;
+        scalePatternV?: number[] | undefined;
         shape: T;
     }
     class FaceSubdivisionControlledDto<T> {
@@ -6158,11 +6145,6 @@ namespace OCCT {
         points: Base.Point3[];
         shape: T;
         tolerance: number;
-    }
-    class FixClosedDto<T> {
-        constructor(shape?: T, precision?: number);
-        precision: number;
-        shape: T;
     }
     class FixSmallEdgesInWireDto<T> {
         constructor(shape?: T, lockvtx?: boolean, precsmall?: number);
@@ -6340,7 +6322,7 @@ namespace OCCT {
         tolerance: number;
     }
     class HexagonsInGridDto {
-        constructor(wdith?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]);
+        constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]);
         extendBottom?: boolean | undefined;
         extendLeft?: boolean | undefined;
         extendRight?: boolean | undefined;
@@ -6706,7 +6688,7 @@ namespace OCCT {
         startPoint: Base.Point3;
     }
     class PipePolygonWireNGonDto<T> {
-        constructor(shapes?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean);
+        constructor(shape?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean);
         forceApproxC1: boolean;
         makeSolid: boolean;
         nrCorners: number;
@@ -6733,13 +6715,6 @@ namespace OCCT {
     class PointDto {
         constructor(point?: Base.Point3);
         point: Base.Point3;
-    }
-    class PointInFaceDto<T> {
-        constructor(face: T, edge: T, tEdgeParam?: number, distance2DParam?: number);
-        distance2DParam: number;
-        edge: T;
-        face: T;
-        tEdgeParam: number;
     }
     enum pointProjectionTypeEnum {
         // (undocumented)
@@ -6900,17 +6875,6 @@ namespace OCCT {
         makeSolid: boolean;
         shape: T;
     }
-    class SaveDxfDto<T> {
-        constructor(shape?: T, fileName?: string, tryDownload?: boolean, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
-        angularDeflection: number;
-        curvatureDeflection: number;
-        fileName: string;
-        minimumLength: number;
-        minimumOfPoints: number;
-        shape: T;
-        tryDownload?: boolean | undefined;
-        uTolerance: number;
-    }
     class SaveStepDto<T> {
         constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean);
         adjustYtoZ: boolean;
@@ -7034,11 +6998,6 @@ namespace OCCT {
         precision: number;
         shapes: T[];
     }
-    class ShapesWithToleranceDto<T> {
-        constructor(shapes?: T[], tolerance?: number);
-        shapes: T[];
-        tolerance: number;
-    }
     class ShapeToDxfPathsDto<T> {
         constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
         angularDeflection: number;
@@ -7100,7 +7059,7 @@ namespace OCCT {
         tolerance: number;
     }
     class SimpleAngularDimensionDto {
-        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, crossingSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean);
+        constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, extraSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean);
         arrowAngle?: number | undefined;
         arrowsFlipped?: boolean | undefined;
         arrowSize?: number | undefined;
@@ -7123,7 +7082,7 @@ namespace OCCT {
         removeTrailingZeros?: boolean | undefined;
     }
     class SimpleLinearLengthDimensionDto {
-        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, arrowType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean);
+        constructor(start?: Base.Point3, end?: Base.Point3, direction?: Base.Vector3, offsetFromPoints?: number, crossingSize?: number, labelSuffix?: string, labelSize?: number, labelOffset?: number, labelRotation?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean);
         arrowAngle?: number | undefined;
         arrowsFlipped?: boolean | undefined;
         arrowSize?: number | undefined;
@@ -7254,7 +7213,7 @@ namespace OCCT {
         type: "occ-entity";
     };
     class TextWiresDto {
-        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, _origin?: Base.Point3, _rotation?: number, _direction?: Base.Vector3, centerOnOrigin?: boolean);
+        constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean);
         align?: Base.horizontalAlignEnum | undefined;
         centerOnOrigin: boolean;
         extrudeOffset?: number | undefined;
@@ -7361,7 +7320,7 @@ namespace OCCT {
         transformation: Base.TransformMatrix | Base.TransformMatrixes;
     }
     class TransformShapesDto<T> {
-        constructor(shapes?: T[], translation?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationDegrees?: number[], scaleFactors?: number[]);
+        constructor(shapes?: T[], translations?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationAngles?: number[], scaleFactors?: number[]);
         rotationAngles: number[];
         rotationAxes: Base.Vector3[];
         scaleFactors: number[];
@@ -7608,8 +7567,8 @@ export class OCCTAssemblyManager {
     exportDocumentToGltfWithDraco(inputs: Inputs_3.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>): Uint8Array;
     exportDocumentToStep(inputs: Inputs_3.OCCT.ExportDocumentToStepDto<Handle_TDocStd_Document>): Uint8Array;
     loadStepToDoc(inputs: Inputs_3.OCCT.LoadStepToDocDto): Handle_TDocStd_Document;
-    setLabelColor(inputs: Inputs_3.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean;
-    setLabelName(inputs: Inputs_3.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean;
+    setDocLabelColor(inputs: Inputs_3.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean;
+    setDocLabelName(inputs: Inputs_3.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean;
 }
 
 // @public
@@ -8208,7 +8167,7 @@ namespace Point_2 {
         radiusHexagon: number;
     }
     class HexGridScaledToFitDto {
-        constructor(wdith?: number, height?: number, nrHexagonsU?: number, nrHexagonsV?: number, centerGrid?: boolean, pointsOnGround?: boolean);
+        constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean);
         centerGrid?: boolean | undefined;
         extendBottom?: boolean | undefined;
         extendLeft?: boolean | undefined;

@@ -836,6 +836,7 @@ export namespace BabylonScene {
         /**
          * Address of the image to show behind the scene
          * @default undefined
+         * @optional true
          */
         imageUrl?: string | undefined;
         /**

@@ -303,7 +303,6 @@ export class BabylonMeshBuilder {
      * ```
      */
     extrudePolygon(inputs: Inputs.BabylonMeshBuilder.ExtrudePolygonDto): BABYLON.Mesh {
-        console.log(earcut);
         const mesh = BABYLON.MeshBuilder.ExtrudePolygon(uniqueName("BabylonMesh"), {
             shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
             holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],

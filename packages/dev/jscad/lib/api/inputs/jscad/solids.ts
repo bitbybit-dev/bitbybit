@@ -156,7 +156,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 1;
+    roundRadius = 0.1;
     /**
      * Full size along X, in model units, rounding included
      * @default 1
@@ -714,9 +714,9 @@ export class SphereCentersDto {
     segments = 24;
 }
 /**
- * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around the
- * origin, given by the ring and tube radii, the facet counts of each and the angles that can leave
- * the ring partly open.
+ * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around
+ * `center`, given by the ring and tube radii, the facet counts of each and the angles that can
+ * leave the ring partly open.
  */
 export class TorusDto {
     constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number) {
@@ -730,8 +730,7 @@ export class TorusDto {
         if (startAngle !== undefined) { this.startAngle = startAngle; }
     }
     /**
-     * Meant to be the ring's center; it is not applied at present, the torus is built around the
-     * origin, so move it with `transformSolid`
+     * The point the ring is centered on, in model units
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];

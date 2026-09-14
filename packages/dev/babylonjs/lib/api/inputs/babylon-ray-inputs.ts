@@ -27,6 +27,7 @@ export namespace BabylonRay {
         direction!: Base.Vector3;
         /**
          * How far the ray reaches, in scene units; 0 or left out makes it unlimited
+         * @optional true
          */
         length?: number | undefined;
     }

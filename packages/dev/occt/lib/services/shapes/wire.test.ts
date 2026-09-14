@@ -2327,7 +2327,44 @@ describe("OCCT wire unit tests", () => {
             const w = wire.fromPoints({ points });
             const length = wire.getWireLength({ shape: w });
             expect(length).toBe(6);
+            expect(occHelper.wiresService.isWireClosed({ shape: w })).toBe(false);
             w.delete();
+        });
+
+        it("should close the wire when the last point repeats the first, without a zero-length edge", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [2, 0, 0],
+                [2, 2, 0],
+                [0, 2, 0],
+                [0, 0, 0],
+            ];
+
+            // Act
+            const w = wire.fromPoints({ points });
+
+            // Assert
+            expect(wire.getWireLength({ shape: w })).toBe(8);
+            expect(occHelper.wiresService.isWireClosed({ shape: w })).toBe(true);
+            expect(edge.getEdges({ shape: w }).length).toBe(4);
+            w.delete();
+        });
+
+        it("should not close the wire when only the first two points coincide", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[] = [
+                [0, 0, 0],
+                [0, 0, 0],
+                [2, 0, 0],
+                [2, 2, 0],
+            ];
+
+            // Act
+            const build = () => wire.fromPoints({ points });
+
+            // Assert
+            expect(build).toThrow();
         });
     });
 
@@ -2653,12 +2690,21 @@ describe("OCCT wire unit tests", () => {
             result.compound!.delete();
         });
 
-        it("should create text wires with data containing correct structure", () => {
+        it("should measure the block along X and Z, where the glyphs lie, and name each character's compound", () => {
+            // Arrange
             const dto = new Inputs.OCCT.TextWiresDto("AB", 0, 0, 1);
+
+            // Act
             const result = wire.textWiresWithData(dto);
-            expect(result.data).toBeDefined();
-            expect(result.data!.width).toBeGreaterThan(0);
-            expect(result.data!.height).toBeGreaterThan(0);
+
+            // Assert
+            const data = result.data!;
+            expect(data.height).toBeCloseTo(1, 1);
+            expect(data.width).toBeGreaterThan(data.height);
+            expect(data.center).toHaveLength(3);
+            expect(data.characters!.map(c => c.id)).toEqual(["char-0", "char-1"]);
+            const ids = result.shapes!.map(s => s.id);
+            data.characters!.forEach(c => expect(ids).toContain(c.shapes!.compound));
             result.compound!.delete();
         });
     });

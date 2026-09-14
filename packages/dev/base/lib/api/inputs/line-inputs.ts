@@ -104,6 +104,7 @@ export namespace Line {
          * A mesh drawn earlier for this line; when given it is updated in place instead of a new
          * one being made.
          * @default undefined
+         * @optional true
          */
         lineMesh?: T | undefined;
     }
@@ -159,6 +160,7 @@ export namespace Line {
          * A mesh drawn earlier for these lines; when given it is updated in place instead of a new
          * one being made.
          * @default undefined
+         * @optional true
          */
         linesMesh?: T | undefined;
     }

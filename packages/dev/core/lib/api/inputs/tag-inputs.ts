@@ -28,6 +28,7 @@ export namespace Tag {
         updatable = false;
         /**
          * The tag an earlier draw gave back, to change in place; used only when `updatable` is true
+         * @optional true
          */
         tagVariable?: TagDto | undefined;
     }
@@ -53,6 +54,7 @@ export namespace Tag {
         /**
          * The tags an earlier draw gave back, to change in place; used only when `updatable` is
          * true
+         * @optional true
          */
         tagsVariable?: TagDto[] | undefined;
     }
@@ -98,11 +100,13 @@ export namespace Tag {
         /**
          * Set by drawing to ask for a refresh of the label on the next frame; not something to set
          * by hand
+         * @optional true
          */
         needsUpdate?: boolean | undefined;
         /**
          * Identifier given to the label when it is drawn, which later updates use to find it; not
          * something to set by hand
+         * @optional true
          */
         id?: string | undefined;
     }

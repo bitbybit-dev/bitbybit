@@ -305,7 +305,7 @@ export class FromPolygonPoints {
     }
     /**
      * One list of points per face, each going around the face clockwise as seen from outside; the
-     * lists are reversed in place while the solid is built
+     * lists are read, not changed
      */
     polygonPoints!: Base.Point3[][];
 }

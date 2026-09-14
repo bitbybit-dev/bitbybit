@@ -73,6 +73,7 @@ export namespace ThreeJSScene {
         /**
          * The ID of the canvas element to render to. If not provided, a new canvas will be created and appended to document.body.
          * @default undefined
+         * @optional true
          */
         canvasId?: string | undefined;
 

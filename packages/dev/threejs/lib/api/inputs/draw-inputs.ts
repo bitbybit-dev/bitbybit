@@ -146,6 +146,7 @@ export namespace Draw {
         options?: DrawOptions | undefined;
         /**
          * Group to indicate if geometry should be updated
+         * @optional true
          */
         group?: U | undefined;
     }
@@ -296,7 +297,7 @@ export namespace Draw {
          * Color of the vertices that will be drawn
          * @default #ff00ff
          */
-        vertexColour: Base.Color = "#ffaaff";
+        vertexColour: Base.Color = "#ff00ff";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined

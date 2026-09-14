@@ -132,7 +132,6 @@ export class FilletEdgesListOneRadiusDto<T, U> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius = 0.1;
 }

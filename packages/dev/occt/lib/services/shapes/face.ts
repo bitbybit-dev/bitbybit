@@ -1391,13 +1391,12 @@ export class OCCTFace {
     }
 
     /**
-     * Keeps the points of a list that lie on a face, sorting each point as inside the face, on its
-     * boundary or outside it.
+     * Sorts points as inside a face, on its boundary or outside it, and keeps the chosen groups.
      *
-     * `keepIn`, `keepOn` and `keepOut` choose which groups come back; `tolerance` decides how close
-     * to the boundary counts as on it. A point off the surface is judged by where it lands in UV
-     * space.
-     * @param inputs - The face, the points, the tolerance and which groups to keep
+     * `keepIn`, `keepOn`, `keepOut` and `keepUnknown` choose the groups; `tolerance` decides how
+     * close to the boundary counts as on it. With `useBndBox`, a point outside the bounding box
+     * grown by `gapTolerance` is outside.
+     * @param inputs - The face, the points, the tolerance, the bounding-box shortcut and which groups to keep
      * @returns The points that passed, in their original order
      * @group filter
      * @shortname filter face points

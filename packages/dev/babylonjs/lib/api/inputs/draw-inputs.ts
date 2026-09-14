@@ -373,17 +373,17 @@ export namespace Draw {
      * the lines are.
      */
     export class DrawNodeOptions {
-        constructor(colourX?: Base.Color, colourY?: Base.Color, colourZ?: Base.Color, size?: number) {
-            if (colourX !== undefined) { this.colorX = colourX; }
-            if (colourY !== undefined) { this.colorY = colourY; }
-            if (colourZ !== undefined) { this.colorZ = colourZ; }
+        constructor(colorX?: Base.Color, colorY?: Base.Color, colorZ?: Base.Color, size?: number) {
+            if (colorX !== undefined) { this.colorX = colorX; }
+            if (colorY !== undefined) { this.colorY = colorY; }
+            if (colorZ !== undefined) { this.colorZ = colorZ; }
             if (size !== undefined) { this.size = size; }
         }
         /**
          * X Axis color
          * @default #ff0000
          */
-        colorX: Base.Color = "#0000ff";
+        colorX: Base.Color = "#ff0000";
         /**
          * Y Axis color
          * @default #00ff00
@@ -393,7 +393,7 @@ export namespace Draw {
          * Z Axis color
          * @default #0000ff
          */
-        colorZ: Base.Color = "#ff0000";
+        colorZ: Base.Color = "#0000ff";
         /**
          * Length of the node axis
          * @default 2
@@ -549,7 +549,7 @@ export namespace Draw {
          * Color of the vertices that will be drawn
          * @default #ff00ff
          */
-        vertexColour: Base.Color = "#ffaaff";
+        vertexColour: Base.Color = "#ff00ff";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined

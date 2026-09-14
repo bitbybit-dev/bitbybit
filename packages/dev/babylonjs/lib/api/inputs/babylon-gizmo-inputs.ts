@@ -113,8 +113,9 @@ export namespace BabylonGizmo {
          * The only meshes the pointer may attach the gizmos to; left out or empty, any mesh
          * qualifies
          * @default undefined
+         * @optional true
          */
-        attachableMeshes!: BABYLON.AbstractMesh[];
+        attachableMeshes?: BABYLON.AbstractMesh[] | undefined;
     }
     /**
      * Feeds `babylon.gizmo.base.getScaleRatio` with the one gizmo to read from, of any kind.
@@ -170,8 +171,8 @@ export namespace BabylonGizmo {
      * Feeds the `babylon.gizmo.positionGizmo` getters with the position gizmo to read from.
      */
     export class PositionGizmoDto {
-        constructor(gizmoManager?: BABYLON.IPositionGizmo) {
-            if (gizmoManager !== undefined) { this.positionGizmo = gizmoManager; }
+        constructor(positionGizmo?: BABYLON.IPositionGizmo) {
+            if (positionGizmo !== undefined) { this.positionGizmo = positionGizmo; }
         }
         /**
          * The position gizmo, as `gizmo.manager.getPositionGizmo` reads it
@@ -635,8 +636,8 @@ export namespace BabylonGizmo {
      * whether it is shown.
      */
     export class SetIsEnabledAxisScaleGizmoDto {
-        constructor(gizmoManager?: BABYLON.IAxisScaleGizmo, isEnabled?: boolean) {
-            if (gizmoManager !== undefined) { this.axisScaleGizmo = gizmoManager; }
+        constructor(axisScaleGizmo?: BABYLON.IAxisScaleGizmo, isEnabled?: boolean) {
+            if (axisScaleGizmo !== undefined) { this.axisScaleGizmo = axisScaleGizmo; }
             if (isEnabled !== undefined) { this.isEnabled = isEnabled; }
         }
         /**
@@ -669,8 +670,8 @@ export namespace BabylonGizmo {
      * whether it is shown.
      */
     export class SetIsEnabledAxisDragGizmoDto {
-        constructor(gizmoManager?: BABYLON.IAxisDragGizmo, isEnabled?: boolean) {
-            if (gizmoManager !== undefined) { this.axisDragGizmo = gizmoManager; }
+        constructor(axisDragGizmo?: BABYLON.IAxisDragGizmo, isEnabled?: boolean) {
+            if (axisDragGizmo !== undefined) { this.axisDragGizmo = axisDragGizmo; }
             if (isEnabled !== undefined) { this.isEnabled = isEnabled; }
         }
         /**

@@ -101,11 +101,13 @@ export namespace JSCAD {
         /**
          * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
          * and ignore this flag
+         * @optional true
          */
         isClosed?: boolean | undefined = false;
         /**
          * A color carried along with the polyline for drawing, as a hex string or an RGB list; the
          * JSCAD methods ignore it
+         * @optional true
          */
         color?: string | number[] | undefined;
     }
@@ -271,7 +273,7 @@ export namespace JSCAD {
          * @default undefined
          * @optional true
          */
-        meshes!: JSCADEntity[];
+        meshes?: JSCADEntity[] | undefined;
         /**
          * How opaque the faces are, from 0 for invisible to 1 for solid
          * @default 1
@@ -451,7 +453,7 @@ export namespace JSCAD {
      * write, the file name and optional options for the file writer.
      */
     export class DownloadGeometryDto {
-        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: any) {
+        constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: Record<string, unknown>) {
             if (geometry !== undefined) { this.geometry = geometry; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (options !== undefined) { this.options = options; }
@@ -471,7 +473,7 @@ export namespace JSCAD {
          * @default undefined
          * @optional true
          */
-        options;
+        options?: Record<string, unknown> | undefined;
     }
     /**
      * Feeds `downloadSolidsSTL` on the JSCAD service: the solids to write into one STL file and the
@@ -599,46 +601,6 @@ export namespace JSCAD {
         /**
          * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
          * it; a solid accepts `round` only
-         * @default edge
-         */
-        corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
-        /**
-         * Number of straight pieces a `round` corner is made of over a full circle; more makes it
-         * smoother
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments = 24;
-    }
-    /**
-     * The offset options, mirroring `ExpansionDto`: the geometry, the signed distance and the corner
-     * shaping. `expansions.offset` reads `ExpansionDto`, so this class is here for symmetry.
-     */
-    export class OffsetDto {
-        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
-            if (geometry !== undefined) { this.geometry = geometry; }
-            if (delta !== undefined) { this.delta = delta; }
-            if (corners !== undefined) { this.corners = corners; }
-            if (segments !== undefined) { this.segments = segments; }
-        }
-        /**
-         * The 2D shape or path whose outline is moved; it stays as it is and a new entity comes back
-         * @default undefined
-         */
-        geometry!: JSCADEntity;
-        /**
-         * How far the outline moves, in model units: positive outward, negative inward
-         * @default 0.1
-         * @minimum -Infinity
-         * @maximum Infinity
-         * @step 0.1
-         */
-        delta = 0.1;
-        /**
-         * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-         * it
          * @default edge
          */
         corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
@@ -930,26 +892,6 @@ export namespace JSCAD {
          * @default false
          */
         closed = false;
-    }
-    /**
-     * A 2D path and a NURBS curve to add to its end. No method reads it at present; sample the curve
-     * into points and use `path.appendPoints` instead.
-     */
-    export class PathAppendCurveDto {
-        constructor(curve?: JSCADEntity, path?: JSCADEntity) {
-            if (curve !== undefined) { this.curve = curve; }
-            if (path !== undefined) { this.path = path; }
-        }
-        /**
-         * A NURBS curve whose sampled points would extend the path
-         * @default undefined
-         */
-        curve!: JSCADEntity;
-        /**
-         * The open 2D path that would be extended
-         * @default undefined
-         */
-        path!: JSCADEntity;
     }
     /**
      * Feeds `path.appendPoints`: an open 2D path and the points to add after its last point.
@@ -1448,7 +1390,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 1;
+        roundRadius = 0.1;
         /**
          * Full size along X, in model units, rounding included
          * @default 1
@@ -2006,9 +1948,9 @@ export namespace JSCAD {
         segments = 24;
     }
     /**
-     * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around the
-     * origin, given by the ring and tube radii, the facet counts of each and the angles that can leave
-     * the ring partly open.
+     * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around
+     * `center`, given by the ring and tube radii, the facet counts of each and the angles that can
+     * leave the ring partly open.
      */
     export class TorusDto {
         constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number) {
@@ -2022,8 +1964,7 @@ export namespace JSCAD {
             if (startAngle !== undefined) { this.startAngle = startAngle; }
         }
         /**
-         * Meant to be the ring's center; it is not applied at present, the torus is built around the
-         * origin, so move it with `transformSolid`
+         * The point the ring is centered on, in model units
          * @default [0, 0, 0]
          */
         center: Base.Point3 = [0, 0, 0];
@@ -2389,7 +2330,7 @@ export namespace JSCAD {
         }
         /**
          * One list of points per face, each going around the face clockwise as seen from outside; the
-         * lists are reversed in place while the solid is built
+         * lists are read, not changed
          */
         polygonPoints!: Base.Point3[][];
     }

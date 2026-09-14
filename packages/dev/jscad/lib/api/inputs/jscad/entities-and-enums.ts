@@ -90,11 +90,13 @@ export class PolylinePropertiesDto {
     /**
      * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
      * and ignore this flag
+     * @optional true
      */
     isClosed?: boolean | undefined = false;
     /**
      * A color carried along with the polyline for drawing, as a hex string or an RGB list; the
      * JSCAD methods ignore it
+     * @optional true
      */
     color?: string | number[] | undefined;
 }

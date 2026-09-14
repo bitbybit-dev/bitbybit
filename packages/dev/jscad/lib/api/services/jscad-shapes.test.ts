@@ -146,6 +146,20 @@ describe("JSCADShapes", () => {
             expect(max[0] - min[0]).toBeCloseTo(span, 1);
             expect(max[2] - min[2]).toBeCloseTo(2 * TORUS_INNER_RADIUS, 1);
         });
+
+        it("should place the ring on its center", () => {
+            // Arrange
+            const center: Inputs.Base.Point3 = [5, -3, 2];
+            const inputs = new Inputs.JSCAD.TorusDto(center, TORUS_INNER_RADIUS, TORUS_OUTER_RADIUS);
+
+            // Act
+            const torus = jscad.shapes.torus(inputs);
+
+            // Assert
+            const [min, max] = kernel.measurements.measureBoundingBox(torus);
+            const middle = [0, 1, 2].map(axis => (min[axis]! + max[axis]!) / 2);
+            middle.forEach((value, axis) => expect(value).toBeCloseTo(center[axis]!, 6));
+        });
     });
 
     describe("geodesicSphere", () => {
@@ -204,6 +218,14 @@ describe("JSCADShapes", () => {
             expect(kernel.measurements.measureVolume(shape)).toBeLessThan(CUBOID_VOLUME);
         });
 
+        it("should build a rounded cuboid from the default options, whose rounding fits the unit sides", () => {
+            // Act
+            const shape = expectSolid(jscad.shapes.roundedCuboid(new Inputs.JSCAD.RoundedCuboidDto()));
+
+            // Assert
+            expect(kernel.measurements.measureVolume(shape)).toBeLessThan(1);
+        });
+
         it("should build a rounded cylinder of less volume than the square edged one", () => {
             // Act
             const rounded = expectSolid(jscad.shapes.roundedCylinder(
@@ -228,6 +250,27 @@ describe("JSCADShapes", () => {
 
             // Assert
             expect(shape.polygons).toHaveLength(4);
+        });
+
+        it("should leave the polygon points as given and build the same solid twice from them", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[][] = [
+                [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+                [[0, 0, 0], [0, 1, 0], [0, 0, 1]],
+                [[0, 0, 0], [0, 0, 1], [1, 0, 0]],
+                [[1, 0, 0], [0, 0, 1], [0, 1, 0]],
+            ];
+            const snapshot = structuredClone(points);
+            const inputs = new Inputs.JSCAD.FromPolygonPoints(points);
+
+            // Act
+            const first = expectSolid(jscad.shapes.fromPolygonPoints(inputs));
+            const second = expectSolid(jscad.shapes.fromPolygonPoints(inputs));
+
+            // Assert
+            expect(points).toEqual(snapshot);
+            expect(kernel.measurements.measureVolume(second)).toBeCloseTo(kernel.measurements.measureVolume(first), 9);
+            expect(second.polygons[0]!.vertices).toEqual(first.polygons[0]!.vertices);
         });
     });
 

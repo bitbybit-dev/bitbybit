@@ -105,6 +105,7 @@ export namespace IO {
          * positive bends counter-clockwise, negative clockwise. Leave it out for straight segments
          * only.
          * @default undefined
+         * @optional true
          */
         bulges?: number[] | undefined;
     }

@@ -88,7 +88,7 @@ export const DEFAULT_COLORS = {
     /** Default polyline color */
     POLYLINE: "#ff00ff",
     /** Default vertex color for OCCT shapes */
-    VERTEX: "#ffaaff",
+    VERTEX: "#ff00ff",
     /** Default face color for OCCT shapes */
     FACE: "#ff0000",
     /** Default back face color - blue to distinguish face orientation */

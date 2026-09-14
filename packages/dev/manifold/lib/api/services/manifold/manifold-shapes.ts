@@ -125,11 +125,11 @@ export class ManifoldShapes {
     }
 
     /**
-     * Creates a box solid with the given size along X, Y and Z.
+     * Creates a cube solid with the given side length.
      *
-     * With `center` true the box is centered on the origin; otherwise its corner sits on the origin
+     * With `center` true the cube is centered on the origin; otherwise its corner sits on the origin
      * and it extends along the positive axes.
-     * @param inputs - The size along each axis and whether to center it
+     * @param inputs - The side length and whether to center it
      * @returns The box solid
      * @group primitives
      * @shortname cube
