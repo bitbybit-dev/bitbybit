@@ -1894,6 +1894,27 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("updatePointsInstances", () => {
+        const FLOATS_PER_INSTANCE = 16;
+        const TRANSLATION_OFFSET = 12;
+        const instanceBytes = (instances: number) => instances * FLOATS_PER_INSTANCE * Float32Array.BYTES_PER_ELEMENT;
+
+        const instancedPoints = (lock: () => ArrayBuffer | ArrayBufferView, pointIndices: number[]) => {
+            const unlock = vi.fn();
+            const entity = Object.assign(new pc.Entity("points-#ff0000"), {
+                tags: new Set(["instancedPoints"]),
+                instanceBuffer: { lock, unlock },
+                pointIndices,
+            });
+            const group = new pc.Entity();
+            group.addChild(entity);
+            return { group, unlock };
+        };
+
+        const translationOf = (floats: Float32Array, instance: number): number[] => {
+            const start = instance * FLOATS_PER_INSTANCE + TRANSLATION_OFFSET;
+            return Array.from(floats.subarray(start, start + 3));
+        };
+
         it("should update positions of instanced meshes", () => {
             const group = new pc.Entity();
 
@@ -1906,6 +1927,41 @@ describe("DrawHelper unit tests", () => {
 
             expect(group.children.length).toBe(1);
             expect(instancedEntity.parent).toBe(group);
+        });
+
+        it("should write each new position into the instance matrix of the point it belongs to", () => {
+            // Arrange
+            const storage = new ArrayBuffer(instanceBytes(3));
+            const instanceOfAMissingPoint = 7;
+            const { group, unlock } = instancedPoints(() => storage, [2, 0, instanceOfAMissingPoint]);
+
+            // Act
+            drawHelper.updatePointsInstances(group, [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+
+            // Assert
+            const floats = new Float32Array(storage);
+            expect(translationOf(floats, 0)).toEqual([7, 8, 9]);
+            expect(translationOf(floats, 1)).toEqual([1, 2, 3]);
+            expect(translationOf(floats, 2)).toEqual([0, 0, 0]);
+            expect(unlock).toHaveBeenCalledTimes(1);
+        });
+
+        it("should write through a typed view at its own byte offset when the lock hands one back", () => {
+            // Arrange
+            const leadingBytes = 16;
+            const storage = new ArrayBuffer(leadingBytes + instanceBytes(2));
+            const lockedView = new Uint8Array(storage, leadingBytes, instanceBytes(2));
+            const { group, unlock } = instancedPoints(() => lockedView, [0, 1]);
+
+            // Act
+            drawHelper.updatePointsInstances(group, [[5, 5, 5], [10, 10, 10]]);
+
+            // Assert
+            const floats = new Float32Array(storage, leadingBytes, 2 * FLOATS_PER_INSTANCE);
+            expect(translationOf(floats, 0)).toEqual([5, 5, 5]);
+            expect(translationOf(floats, 1)).toEqual([10, 10, 10]);
+            expect(Array.from(new Uint8Array(storage, 0, leadingBytes))).toEqual(new Array(leadingBytes).fill(0));
+            expect(unlock).toHaveBeenCalledTimes(1);
         });
     });
 
