@@ -1209,6 +1209,10 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
+    class MinkowskiSumDto {
+        constructor(meshes?: JSCADEntity[]);
+        meshes: JSCADEntity[];
+    }
     class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
         clockwise: boolean;
@@ -1314,6 +1318,10 @@ namespace JSCAD {
         chamfer = "chamfer",
         edge = "edge",
         round = "round"
+    }
+    class SolidDto {
+        constructor(mesh?: JSCADEntity);
+        mesh: JSCADEntity;
     }
     class SphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number);
@@ -2052,6 +2060,18 @@ namespace Manifold {
         joinType: manifoldJoinTypeEnum;
         miterLimit: number;
     }
+    class RayCastDto<T> {
+        constructor(manifold?: T, origin?: Base.Point3, endpoint?: Base.Point3);
+        endpoint: Base.Point3;
+        manifold: T;
+        origin: Base.Point3;
+    }
+    type RayHit = {
+        faceID: number;
+        distance: number;
+        position: Base.Point3;
+        normal: Base.Vector3;
+    };
     class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center: boolean;
