@@ -157,7 +157,7 @@ Far more than the labels:
 - **Formula labels**, and **part labels** with their unit labels.
 - **Point of interest names**, so a guided tour reads in the shopper's language too.
 - The whole **customer PDF**: file name, section titles, options table column headers, your own text blocks, image shot labels and the footer.
-- The panel's **built-in wording** - "No file chosen", "Added to cart", "Copy link", "Final price is confirmed at checkout" and the rest of them, plus the PDF's built-in labels once you have a document.
+- The panel's **built-in wording** - "No file chosen", "Added to cart", "Copy link", "Final price is confirmed at checkout", the camera controls' "Zoom in", "View from the top" and the rest of them, plus the PDF's built-in labels once you have a document.
 
 The order document is the exception: its built-in labels follow the shopper's language like everything else, but the section titles and text you wrote on it stay in your language, because it is a document for your workshop rather than for the shopper.
 

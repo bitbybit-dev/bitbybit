@@ -14181,5 +14181,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "När true projiceras den nedre himlen på en plan mark på höjden 0, så att modellen verkar\nstå på miljön och kastar skuggor på den",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Radien för den projicerade marken och himmelskupolen runt den, i scenenheter; håll\nkameran innanför den",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Höjden över marken som miljön fångades på, i scenenheter; själva marken\när alltid på höjden 0",
-    "projectedGroundHeight": "horisonthöjd"
+    "projectedGroundHeight": "horisonthöjd",
+    "app_settings_camera_gizmo": "Kameragizmo över 3D-vyn",
+    "app_camera_zoom_in": "Zooma in",
+    "app_camera_zoom_out": "Zooma ut",
+    "app_camera_orbit": "Rotera vyn åt vänster och höger",
+    "app_camera_tilt": "Luta vyn uppåt och nedåt",
+    "app_camera_view_right": "Vy från höger",
+    "app_camera_view_left": "Vy från vänster",
+    "app_camera_view_top": "Vy uppifrån",
+    "app_camera_view_bottom": "Vy underifrån",
+    "app_camera_view_front": "Vy framifrån",
+    "app_camera_view_back": "Vy bakifrån"
 }

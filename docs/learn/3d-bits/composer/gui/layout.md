@@ -76,6 +76,8 @@ It reacts to an **Add to cart** element, so without one in the panel it never ap
 
 **Custom HTML** places a fragment of your own HTML, with its own CSS, for content the other elements cannot express - a table of measurements, a badge, a note with formatting. The panel keeps text formatting and removes everything that could run code, so it is safe to paste; what survives and what does not is spelled out on [Custom HTML](/learn/3d-bits/composer/gui/custom-html). Standard or Pro plan.
 
+**Camera controls** lets shoppers move the camera without dragging: zoom buttons, a slider that turns the view and one that tilts it, and an axis gizmo that looks at the model from the side you click. Each part can be switched off, and the element pairs with the pointer switches under Scene > Camera that turn the default drag and wheel navigation off. [Camera controls](/learn/3d-bits/composer/gui/camera-controls) has the details. Standard or Pro plan.
+
 Sections, rows and accordions can hold other elements, and each tab of a Tabs element holds its own, so you can nest as deeply as the product needs. Every element also offers **Clone Element**, **Move To** for shifting it into another container or back out to the top level, and - for sections, rows, accordions and tabs - **Convert To**, which turns one into another without rebuilding its contents. A section that has grown into two short things sitting awkwardly on top of each other becomes a row in one click.
 
 ## Width and grow

@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Kai tiesa, apatinė dangaus dalis projektuojama ant plokščios žemės 0 aukštyje, todėl modelis atrodo\nstovintis ant aplinkos ir meta ant jos šešėlius",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projektuotos žemės ir aplink ją esančio dangaus kupolo spindulys scenos vienetais; laikykite\nkamerą jo viduje",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Aukštis virš žemės, kuriame buvo užfiksuota aplinka, scenos vienetais; pati žemė\nvisada yra 0 aukštyje",
-    "projectedGroundHeight": "horizonto aukštis"
+    "projectedGroundHeight": "horizonto aukštis",
+    "app_settings_camera_gizmo": "Kameros valdiklis virš 3D vaizdo",
+    "app_camera_zoom_in": "Priartinti",
+    "app_camera_zoom_out": "Atitolinti",
+    "app_camera_orbit": "Sukti vaizdą kairėn ir dešinėn",
+    "app_camera_tilt": "Pakreipti vaizdą aukštyn ir žemyn",
+    "app_camera_view_right": "Vaizdas iš dešinės",
+    "app_camera_view_left": "Vaizdas iš kairės",
+    "app_camera_view_top": "Vaizdas iš viršaus",
+    "app_camera_view_bottom": "Vaizdas iš apačios",
+    "app_camera_view_front": "Vaizdas iš priekio",
+    "app_camera_view_back": "Vaizdas iš galo"
 }

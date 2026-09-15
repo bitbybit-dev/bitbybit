@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Kui true, projitseeritakse taeva alumine osa tasasele maapinnale kõrgusel 0, nii et mudel näib\nseisvat keskkonnal ja heidab sellele varje",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projitseeritud maapinna ja seda ümbritseva taevakupli raadius, stseeni ühikutes; hoia\nkaamera selle sees",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Kõrgus maapinna kohal, millel keskkond jäädvustati, stseeni ühikutes; maapind ise\non alati kõrgusel 0",
-    "projectedGroundHeight": "horisondi kõrgus"
+    "projectedGroundHeight": "horisondi kõrgus",
+    "app_settings_camera_gizmo": "Kaamera telgede juhtnupp 3D-vaate kohal",
+    "app_camera_zoom_in": "Suumi sisse",
+    "app_camera_zoom_out": "Suumi välja",
+    "app_camera_orbit": "Pööra vaadet vasakule ja paremale",
+    "app_camera_tilt": "Kalluta vaadet üles ja alla",
+    "app_camera_view_right": "Vaade paremalt",
+    "app_camera_view_left": "Vaade vasakult",
+    "app_camera_view_top": "Vaade ülalt",
+    "app_camera_view_bottom": "Vaade alt",
+    "app_camera_view_front": "Vaade eest",
+    "app_camera_view_back": "Vaade tagant"
 }

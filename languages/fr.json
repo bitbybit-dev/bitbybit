@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Quand vrai, le bas du ciel est projeté sur un sol plat à la hauteur 0, de sorte que le modèle semble\nreposer sur l'environnement et y projette des ombres",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Rayon du sol projeté et du dôme de ciel qui l'entoure, en unités de la scène ; gardez la\ncaméra à l'intérieur",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Hauteur à laquelle l'environnement a été capturé, au-dessus du sol, en unités de la scène ; le sol lui-même\nest toujours à la hauteur 0",
-    "projectedGroundHeight": "hauteur de l'horizon"
+    "projectedGroundHeight": "hauteur de l'horizon",
+    "app_settings_camera_gizmo": "Gizmo de caméra sur la vue 3D",
+    "app_camera_zoom_in": "Zoom avant",
+    "app_camera_zoom_out": "Zoom arrière",
+    "app_camera_orbit": "Tourner la vue vers la gauche et la droite",
+    "app_camera_tilt": "Incliner la vue vers le haut et le bas",
+    "app_camera_view_right": "Vue de droite",
+    "app_camera_view_left": "Vue de gauche",
+    "app_camera_view_top": "Vue de dessus",
+    "app_camera_view_bottom": "Vue de dessous",
+    "app_camera_view_front": "Vue de face",
+    "app_camera_view_back": "Vue arrière"
 }

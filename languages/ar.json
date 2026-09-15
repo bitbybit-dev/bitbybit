@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "عندما يكون true، يُسقط الجزء السفلي من السماء على أرضية مستوية عند الارتفاع 0، فيبدو النموذج\nواقفا على البيئة ويلقي ظلاله عليها",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "نصف قطر الأرضية المسقطة وقبة السماء المحيطة بها، بوحدات المشهد؛ أبقِ\nالكاميرا داخلها",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "الارتفاع الذي التُقطت عنده البيئة فوق الأرضية، بوحدات المشهد؛ الأرضية نفسها\nتقع دائما عند الارتفاع 0",
-    "projectedGroundHeight": "ارتفاع الأفق"
+    "projectedGroundHeight": "ارتفاع الأفق",
+    "app_settings_camera_gizmo": "أداة توجيه الكاميرا فوق العرض ثلاثي الأبعاد",
+    "app_camera_zoom_in": "تكبير",
+    "app_camera_zoom_out": "تصغير",
+    "app_camera_orbit": "تدوير العرض يمينًا ويسارًا",
+    "app_camera_tilt": "إمالة العرض لأعلى ولأسفل",
+    "app_camera_view_right": "عرض من اليمين",
+    "app_camera_view_left": "عرض من اليسار",
+    "app_camera_view_top": "عرض من الأعلى",
+    "app_camera_view_bottom": "عرض من الأسفل",
+    "app_camera_view_front": "عرض من الأمام",
+    "app_camera_view_back": "عرض من الخلف"
 }

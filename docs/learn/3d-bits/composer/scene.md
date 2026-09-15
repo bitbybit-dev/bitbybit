@@ -63,6 +63,10 @@ Two fields change the character of the shot rather than its limits:
 
 The rest of the panel is pointer tuning: angular sensibility on each axis, panning sensibility, wheel precision, the two pinch settings and **Use Natural Pinch Zoom**, which makes a two-finger zoom track the shopper's fingers exactly.
 
+### Shopper pointer input
+
+Three switches at the end of the panel decide which gestures move the camera on your product page: **Rotate by dragging**, **Zoom with the wheel and pinch** and **Pan**. They are all on until you change them. Switch one off when a gesture gets in the way of the page - the wheel that should scroll rather than zoom, the one-finger swipe on a phone that should scroll rather than spin the product - and hand the movement to focals, points of interest and the [Camera controls](/learn/3d-bits/composer/gui/camera-controls) layout element instead. They apply on the product page and in Play; the camera you edit with stays free whatever they say.
+
 ## Lighting
 
 Directional lights behave like the sun, casting parallel light from an angle. You add as many as you need, and set the direction, colour, intensity and whether each one casts shadows.

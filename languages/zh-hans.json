@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "为 true 时，天空的下部被投影到高度为 0 的平坦地面上，使模型看起来站在环境之上并向其投射阴影",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "投影地面及其周围天空穹顶的半径，以场景单位表示；请让相机保持在其内部",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "拍摄环境时距地面的高度，以场景单位表示；地面本身始终位于高度 0",
-    "projectedGroundHeight": "地平线高度"
+    "projectedGroundHeight": "地平线高度",
+    "app_settings_camera_gizmo": "3D 视图上的相机坐标轴控件",
+    "app_camera_zoom_in": "放大",
+    "app_camera_zoom_out": "缩小",
+    "app_camera_orbit": "左右旋转视图",
+    "app_camera_tilt": "上下倾斜视图",
+    "app_camera_view_right": "从右侧查看",
+    "app_camera_view_left": "从左侧查看",
+    "app_camera_view_top": "从顶部查看",
+    "app_camera_view_bottom": "从底部查看",
+    "app_camera_view_front": "从正面查看",
+    "app_camera_view_back": "从背面查看"
 }

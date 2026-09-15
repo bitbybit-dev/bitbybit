@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Wenn true, wird der untere Himmel auf einen flachen Boden in Höhe 0 projiziert, sodass das Modell\nauf der Umgebung zu stehen scheint und Schatten darauf wirft",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Radius des projizierten Bodens und der Himmelskuppel darum, in Szeneneinheiten; halten Sie die\nKamera darin",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Höhe, in der die Umgebung über dem Boden aufgenommen wurde, in Szeneneinheiten; der Boden selbst\nliegt immer auf Höhe 0",
-    "projectedGroundHeight": "Horizonthöhe"
+    "projectedGroundHeight": "Horizonthöhe",
+    "app_settings_camera_gizmo": "Kamera-Gizmo über der 3D-Ansicht",
+    "app_camera_zoom_in": "Vergrößern",
+    "app_camera_zoom_out": "Verkleinern",
+    "app_camera_orbit": "Ansicht nach links und rechts drehen",
+    "app_camera_tilt": "Ansicht nach oben und unten neigen",
+    "app_camera_view_right": "Ansicht von rechts",
+    "app_camera_view_left": "Ansicht von links",
+    "app_camera_view_top": "Ansicht von oben",
+    "app_camera_view_bottom": "Ansicht von unten",
+    "app_camera_view_front": "Ansicht von vorne",
+    "app_camera_view_back": "Ansicht von hinten"
 }

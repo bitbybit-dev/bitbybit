@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Jika true, langit bagian bawah diproyeksikan ke tanah datar pada ketinggian 0, sehingga model tampak berdiri di atas lingkungan dan menjatuhkan bayangan ke atasnya",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Radius tanah terproyeksi dan kubah langit di sekelilingnya, dalam satuan scene; jaga kamera tetap di dalamnya",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Ketinggian saat lingkungan ditangkap, di atas tanah, dalam satuan scene; tanah itu sendiri\nselalu berada pada ketinggian 0",
-    "projectedGroundHeight": "tinggi horizon"
+    "projectedGroundHeight": "tinggi horizon",
+    "app_settings_camera_gizmo": "Gizmo kamera di atas tampilan 3D",
+    "app_camera_zoom_in": "Perbesar",
+    "app_camera_zoom_out": "Perkecil",
+    "app_camera_orbit": "Putar tampilan ke kiri dan ke kanan",
+    "app_camera_tilt": "Miringkan tampilan ke atas dan ke bawah",
+    "app_camera_view_right": "Tampilan dari kanan",
+    "app_camera_view_left": "Tampilan dari kiri",
+    "app_camera_view_top": "Tampilan dari atas",
+    "app_camera_view_bottom": "Tampilan dari bawah",
+    "app_camera_view_front": "Tampilan dari depan",
+    "app_camera_view_back": "Tampilan dari belakang"
 }

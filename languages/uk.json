@@ -14182,5 +14182,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Коли true, нижня частина неба проєктується на плоску землю на висоті 0, тож модель ніби\nстоїть на оточенні та відкидає на нього тіні",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Радіус проєктованої землі та купола неба навколо неї, в одиницях сцени; тримайте\nкамеру всередині нього",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Висота над землею, на якій було знято оточення, в одиницях сцени; сама земля\nзавжди на висоті 0",
-    "projectedGroundHeight": "висота горизонту"
+    "projectedGroundHeight": "висота горизонту",
+    "app_settings_camera_gizmo": "Гізмо камери поверх 3D-виду",
+    "app_camera_zoom_in": "Наблизити",
+    "app_camera_zoom_out": "Віддалити",
+    "app_camera_orbit": "Повертати вид ліворуч і праворуч",
+    "app_camera_tilt": "Нахиляти вид вгору і вниз",
+    "app_camera_view_right": "Вид справа",
+    "app_camera_view_left": "Вид зліва",
+    "app_camera_view_top": "Вид зверху",
+    "app_camera_view_bottom": "Вид знизу",
+    "app_camera_view_front": "Вид спереду",
+    "app_camera_view_back": "Вид ззаду"
 }

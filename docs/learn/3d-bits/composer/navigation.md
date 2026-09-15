@@ -109,6 +109,8 @@ The last three are effects, not glides. They can be delightful on a product that
 
 The shared motion and a focal's override are both saved in the scene configuration under `navigation.cameraTransition` and `focals[].transition`, as `durationMs` and `easing`, if you edit the JSON directly. Leaving them out means the built-in two-second motion.
 
+The one flight this motion does not govern is the [Camera controls](/learn/3d-bits/composer/gui/camera-controls) element's: its zoom buttons and axis handles take a short 350 ms move of their own, because a click on a button should answer quickly, and the element can be given its own duration and easing. Those controls, together with the pointer switches under Scene > Camera, are also how you give shoppers a way to move the camera once the default dragging is switched off.
+
 ## Both are edit-time invisible
 
 In edit mode, markers and focals do not behave as they will for a shopper, because conditions are not applied while you are working. Markers appear regardless of their conditions so you can position them, and focals never fire.

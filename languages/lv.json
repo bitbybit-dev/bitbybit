@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Ja true, debesu apakšējā daļa tiek projicēta uz plakanas zemes 0 augstumā, tāpēc modelis šķiet stāvam uz vides un met uz tās ēnas",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projicētās zemes un ap to esošā debesu kupola rādiuss ainas vienībās; turiet kameru tā iekšpusē",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Augstums virs zemes, kurā tika uzņemta vide, ainas vienībās; pati zeme\nvienmēr ir 0 augstumā",
-    "projectedGroundHeight": "horizonta augstums"
+    "projectedGroundHeight": "horizonta augstums",
+    "app_settings_camera_gizmo": "Kameras vadīkla virs 3D skata",
+    "app_camera_zoom_in": "Pietuvināt",
+    "app_camera_zoom_out": "Attālināt",
+    "app_camera_orbit": "Pagriezt skatu pa kreisi un pa labi",
+    "app_camera_tilt": "Sasvērt skatu uz augšu un uz leju",
+    "app_camera_view_right": "Skats no labās puses",
+    "app_camera_view_left": "Skats no kreisās puses",
+    "app_camera_view_top": "Skats no augšas",
+    "app_camera_view_bottom": "Skats no apakšas",
+    "app_camera_view_front": "Skats no priekšas",
+    "app_camera_view_back": "Skats no aizmugures"
 }

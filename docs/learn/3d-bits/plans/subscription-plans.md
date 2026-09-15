@@ -43,6 +43,7 @@ Every plan covers unlimited products and unlimited 3D models. We do not charge p
 | Gradient and image backgrounds | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Scripting | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Custom HTML in the option panel | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
+| Camera controls for shoppers | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Personalisation, image and text on the model | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Options and parts linked to your own products | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Parts, the bill of materials | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
@@ -100,6 +101,8 @@ Standard is about showing a product properly, and about products whose shape is 
 
 **Custom HTML** lets you place a fragment of your own HTML, with its own CSS, in the option panel - a measurements table, a badge, a formatted note. Scripts and anything else that could run code are removed before it renders; [Custom HTML](/learn/3d-bits/composer/gui/custom-html) lists exactly what survives. Links, whether as their own element or written inline in a text, are available on every plan.
 
+**Camera controls** is a layout element with zoom buttons, orbit and tilt sliders and an axis gizmo, so shoppers can move the camera without dragging; it pairs with the switches that turn the default drag and wheel navigation off, which are on every plan. [Camera controls](/learn/3d-bits/composer/gui/camera-controls) describes both.
+
 **Single line charging** shows a configured product as one clean line at its exact price. It needs Standard or Pro, and it also needs your store to be on Shopify Plus or to be a partner development store, which is a Shopify restriction rather than ours. Everything works without it, and [Charging methods](/learn/3d-bits/pricing/charging-methods) explains the alternatives.
 
 ## What Pro adds
@@ -116,7 +119,7 @@ Pro is for personalised products, and for the paperwork that comes with making t
 
 **Downloading the configured model** gives the shopper a button that hands them a single `.glb` of exactly what they are looking at - every visible model, in position, with the materials they chose and any personalisation they applied baked in. Useful when your shopper is an architect dropping the piece into their own scene, or when you want them to be able to show someone else what they configured. It is a [Button control](/learn/3d-bits/composer/gui/controls) with the **Download the 3D model (GLB)** action.
 
-Every plan-gated element and action carries that premium badge in Composer on a lesser plan - Custom HTML on Base, Download PDF and the model download on Base and Standard - and choosing one opens the upgrade dialog rather than adding it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
+Every plan-gated element and action carries that premium badge in Composer on a lesser plan - Custom HTML and Camera controls on Base, Download PDF and the model download on Base and Standard - and choosing one opens the upgrade dialog rather than adding it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
 
 ## Support
 

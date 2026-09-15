@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "true হলে, আকাশের নিচের অংশ উচ্চতা 0-এ একটি সমতল ভূমিতে প্রক্ষেপিত হয়, ফলে মডেলটিকে\nএনভায়রনমেন্টের উপর দাঁড়িয়ে থাকা মনে হয় এবং তার উপর ছায়া ফেলে",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "প্রক্ষিপ্ত ভূমি ও তার চারপাশের আকাশ গম্বুজের ব্যাসার্ধ, দৃশ্য এককে; ক্যামেরাকে\nএর ভিতরে রাখুন",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "ভূমির উপরে যে উচ্চতায় এনভায়রনমেন্টটি ধারণ করা হয়েছিল, দৃশ্য এককে; ভূমি নিজে\nসর্বদা উচ্চতা 0-এ থাকে",
-    "projectedGroundHeight": "দিগন্তের উচ্চতা"
+    "projectedGroundHeight": "দিগন্তের উচ্চতা",
+    "app_settings_camera_gizmo": "3D ভিউয়ের উপরে ক্যামেরা গিজমো",
+    "app_camera_zoom_in": "জুম ইন",
+    "app_camera_zoom_out": "জুম আউট",
+    "app_camera_orbit": "ভিউ বাঁয়ে ও ডানে ঘোরান",
+    "app_camera_tilt": "ভিউ উপরে ও নিচে হেলান",
+    "app_camera_view_right": "ডান দিক থেকে দেখুন",
+    "app_camera_view_left": "বাঁ দিক থেকে দেখুন",
+    "app_camera_view_top": "উপর থেকে দেখুন",
+    "app_camera_view_bottom": "নিচ থেকে দেখুন",
+    "app_camera_view_front": "সামনে থেকে দেখুন",
+    "app_camera_view_back": "পিছন থেকে দেখুন"
 }

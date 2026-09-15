@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "true होने पर, निचला आकाश ऊंचाई 0 पर एक समतल ग्राउंड पर प्रोजेक्ट किया जाता है, जिससे मॉडल एनवायरनमेंट पर खड़ा प्रतीत होता है और उस पर परछाई डालता है",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "प्रोजेक्टेड ग्राउंड और उसके चारों ओर के आकाश गुंबद की त्रिज्या, सीन इकाइयों में; कैमरे को इसके अंदर रखें",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "वह ऊंचाई जिस पर एनवायरनमेंट कैप्चर किया गया था, ग्राउंड के ऊपर, सीन इकाइयों में; ग्राउंड स्वयं\nहमेशा ऊंचाई 0 पर होता है",
-    "projectedGroundHeight": "क्षितिज की ऊंचाई"
+    "projectedGroundHeight": "क्षितिज की ऊंचाई",
+    "app_settings_camera_gizmo": "3D दृश्य के ऊपर कैमरा गिज़्मो",
+    "app_camera_zoom_in": "ज़ूम इन",
+    "app_camera_zoom_out": "ज़ूम आउट",
+    "app_camera_orbit": "दृश्य को बाएँ और दाएँ घुमाएँ",
+    "app_camera_tilt": "दृश्य को ऊपर और नीचे झुकाएँ",
+    "app_camera_view_right": "दाईं ओर से देखें",
+    "app_camera_view_left": "बाईं ओर से देखें",
+    "app_camera_view_top": "ऊपर से देखें",
+    "app_camera_view_bottom": "नीचे से देखें",
+    "app_camera_view_front": "सामने से देखें",
+    "app_camera_view_back": "पीछे से देखें"
 }

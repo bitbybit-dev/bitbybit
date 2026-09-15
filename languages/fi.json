@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Kun tosi, taivaan alaosa projisoidaan tasaiselle maanpinnalle korkeudelle 0, jolloin malli näyttää\nseisovan ympäristön päällä ja heittää siihen varjoja",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projisoidun maanpinnan ja sitä ympäröivän taivaskuvun säde, näkymän yksiköissä; pidä\nkamera sen sisällä",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Korkeus maanpinnan yläpuolella, jolla ympäristö kuvattiin, näkymän yksiköissä; maanpinta itse\non aina korkeudella 0",
-    "projectedGroundHeight": "horisontin korkeus"
+    "projectedGroundHeight": "horisontin korkeus",
+    "app_settings_camera_gizmo": "Kameran akselisäädin 3D-näkymän päällä",
+    "app_camera_zoom_in": "Lähennä",
+    "app_camera_zoom_out": "Loitonna",
+    "app_camera_orbit": "Kierrä näkymää vasemmalle ja oikealle",
+    "app_camera_tilt": "Kallista näkymää ylös ja alas",
+    "app_camera_view_right": "Näkymä oikealta",
+    "app_camera_view_left": "Näkymä vasemmalta",
+    "app_camera_view_top": "Näkymä ylhäältä",
+    "app_camera_view_bottom": "Näkymä alhaalta",
+    "app_camera_view_front": "Näkymä edestä",
+    "app_camera_view_back": "Näkymä takaa"
 }

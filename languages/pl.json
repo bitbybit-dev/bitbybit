@@ -14180,5 +14180,16 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Gdy true, dolna część nieba jest rzutowana na płaskie podłoże na wysokości 0, więc model wydaje się\nstać na środowisku i rzuca na nie cienie",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Promień rzutowanego podłoża i otaczającej je kopuły nieba, w jednostkach sceny; utrzymuj\nkamerę w jego wnętrzu",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Wysokość nad podłożem, na której uchwycono środowisko, w jednostkach sceny; samo podłoże\njest zawsze na wysokości 0",
-    "projectedGroundHeight": "wysokość horyzontu"
+    "projectedGroundHeight": "wysokość horyzontu",
+    "app_settings_camera_gizmo": "Gizmo kamery nad widokiem 3D",
+    "app_camera_zoom_in": "Przybliż",
+    "app_camera_zoom_out": "Oddal",
+    "app_camera_orbit": "Obracaj widok w lewo i w prawo",
+    "app_camera_tilt": "Pochylaj widok w górę i w dół",
+    "app_camera_view_right": "Widok z prawej",
+    "app_camera_view_left": "Widok z lewej",
+    "app_camera_view_top": "Widok z góry",
+    "app_camera_view_bottom": "Widok z dołu",
+    "app_camera_view_front": "Widok z przodu",
+    "app_camera_view_back": "Widok z tyłu"
 }
