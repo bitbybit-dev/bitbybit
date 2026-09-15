@@ -8,7 +8,7 @@ import Version, { useBitbybitVersion } from "@site/src/components/Version";
  * 
  * Usage: <VersionLink href="https://git-cdn.bitbybit.dev/v{version}/ai-context/file.md">Link Text</VersionLink>
  */
-function VersionLink({ href, children }: { href: string; children: React.ReactNode }): JSX.Element {
+function VersionLink({ href, children }: { href: string; children: React.ReactNode }): React.JSX.Element {
     const version = useBitbybitVersion();
     const processedHref = href.replace(/\{version\}/g, version);
     return <a href={processedHref}>{children}</a>;

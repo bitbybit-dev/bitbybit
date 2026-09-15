@@ -121,3 +121,27 @@ jobs:
       - name: Test report
         if: always()
         run: npm run test:report
+
+  # The documentation site (learn.bitbybit.dev) is its own npm app outside the workspace, built
+  # from the committed markdown and OpenAPI document - so it can build here, on a bare clone, in
+  # parallel with the packages. Docusaurus refuses at build time what nothing else checks: a tag
+  # not in tags.yml, a broken link, a page whose frontmatter it cannot parse. Before this the first
+  # build of a doc change was the release's own deploy of the site.
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .tool-versions
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
