@@ -5,6 +5,9 @@ import * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs";
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
+type SkyboxMeshInputs = Pick<Inputs.BabylonScene.SkyboxFromTextureDto,
+    "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+
 
 /**
  * The BabylonJS scene as a whole: the active camera and its limits, lights with shadows, the skybox
@@ -451,7 +454,7 @@ export class BabylonScene {
                 this.context.scene, false, false);
         }
 
-        this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox ?? false, inputs.environmentIntensity);
+        this.createSkyboxMesh(texture, inputs);
     }
 
     /**
@@ -485,8 +488,27 @@ export class BabylonScene {
                 texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
             }
 
-            this.createSkyboxMesh(texture, inputs.size, inputs.blur, inputs.hideSkybox ?? false, inputs.environmentIntensity);
+            this.createSkyboxMesh(texture, inputs);
         }
+    }
+
+    /**
+     * Surrounds the scene with a skybox built from a cube texture you loaded yourself and uses it
+     * as the environment lighting.
+     *
+     * `texture` may come from an `.hdr` or `.env` file. `hideSkybox` keeps the lighting while hiding
+     * the sky; `enableGroundProjection` flattens the lower sky into a ground the model stands on.
+     * @param inputs - The cube texture, the skybox size, blur, environment intensity, visibility and ground projection
+     * @group environment
+     * @shortname skybox from texture
+     * @example
+     * ```typescript
+     * const texture = new BABYLON.CubeTexture("https://example.com/env/studio", bitbybit.babylon.scene.getScene());
+     * bitbybit.babylon.scene.enableSkyboxFromTexture({ texture, size: 1000, blur: 0.1, environmentIntensity: 0.7, hideSkybox: false, enableGroundProjection: true, projectedGroundRadius: 20, projectedGroundHeight: 3 });
+     * ```
+     */
+    enableSkyboxFromTexture(inputs: Inputs.BabylonScene.SkyboxFromTextureDto): void {
+        this.createSkyboxMesh(inputs.texture, inputs);
     }
 
     /**
@@ -784,14 +806,40 @@ export class BabylonScene {
         return BABYLON.Tools.ToRadians(degrees);
     }
 
-    private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, size: number, blur: number, hideSkybox: boolean, environmentIntensity: number) {
+    private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, inputs: SkyboxMeshInputs): void {
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
-        const skybox = this.context.scene.createDefaultSkybox(texture, true, size, blur, true)!;
+        const skybox = (inputs.enableGroundProjection ?? false) && texture
+            ? this.createGroundProjectedSkybox(texture, inputs)
+            : this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true)!;
         skybox.name = "bitbybit-hdrSkyBox";
-        if (hideSkybox) {
+        if (inputs.hideSkybox ?? false) {
             skybox.isVisible = false;
         }
-        this.context.scene.environmentIntensity = environmentIntensity;
+        this.context.scene.environmentIntensity = inputs.environmentIntensity;
+    }
+
+    private createGroundProjectedSkybox(texture: BABYLON.BaseTexture, inputs: SkyboxMeshInputs): BABYLON.Mesh {
+        const scene = this.context.scene;
+        const reflection = texture.clone();
+        if (!reflection) {
+            return scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true)!;
+        }
+        scene.environmentTexture = texture;
+        const skybox = BABYLON.MeshBuilder.CreateBox("bitbybit-hdrSkyBox", { size: inputs.size, sideOrientation: BABYLON.Mesh.BACKSIDE }, scene);
+        skybox.position.y = inputs.size / 2;
+        const material = new BABYLON.BackgroundMaterial("bitbybit-hdrSkyBoxMaterial", scene);
+        reflection.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        reflection.level = inputs.environmentIntensity;
+        material.reflectionTexture = reflection;
+        material.reflectionBlur = inputs.blur;
+        material.enableGroundProjection = true;
+        material.projectedGroundRadius = inputs.projectedGroundRadius ?? 20;
+        material.projectedGroundHeight = inputs.projectedGroundHeight ?? 3;
+        skybox.material = material;
+        skybox.receiveShadows = true;
+        skybox.isPickable = false;
+        skybox.ignoreCameraMaxZ = true;
+        return skybox;
     }
 
 }

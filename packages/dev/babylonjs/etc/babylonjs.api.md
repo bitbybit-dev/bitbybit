@@ -1867,6 +1867,7 @@ export class BabylonScene {
     enablePhysics(inputs: Inputs_2.BabylonScene.EnablePhysicsDto): void;
     enableSkybox(inputs: Inputs_2.BabylonScene.SkyboxDto): void;
     enableSkyboxCustomTexture(inputs: Inputs_2.BabylonScene.SkyboxCustomTextureDto): void;
+    enableSkyboxFromTexture(inputs: Inputs_2.BabylonScene.SkyboxFromTextureDto): void;
     fog(inputs: Inputs_2.BabylonScene.FogDto): void;
     getActiveCamera(): BABYLON_2.Camera;
     getScene(): BABYLON_2.Scene;
@@ -2021,21 +2022,38 @@ namespace BabylonScene_2 {
         stopTo: number;
     }
     class SkyboxCustomTextureDto {
-        constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean);
+        constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
         blur: number;
+        enableGroundProjection?: boolean | undefined;
         environmentIntensity: number;
         hideSkybox?: boolean | undefined;
+        projectedGroundHeight?: number | undefined;
+        projectedGroundRadius?: number | undefined;
         size: number;
         textureSize?: number | undefined;
         textureUrl?: string | undefined;
     }
     class SkyboxDto {
-        constructor(skybox?: Base_3.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean);
+        constructor(skybox?: Base_3.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
         blur: number;
+        enableGroundProjection?: boolean | undefined;
         environmentIntensity: number;
         hideSkybox?: boolean | undefined;
+        projectedGroundHeight?: number | undefined;
+        projectedGroundRadius?: number | undefined;
         size: number;
         skybox: Base_3.skyboxEnum;
+    }
+    class SkyboxFromTextureDto {
+        constructor(texture?: BABYLON_2.BaseTexture, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
+        blur: number;
+        enableGroundProjection?: boolean | undefined;
+        environmentIntensity: number;
+        hideSkybox?: boolean | undefined;
+        projectedGroundHeight?: number | undefined;
+        projectedGroundRadius?: number | undefined;
+        size: number;
+        texture: BABYLON_2.BaseTexture;
     }
     class UseRightHandedSystemDto {
         constructor(use?: boolean);
@@ -3558,6 +3576,10 @@ namespace JSCAD {
         constructor(meshes?: JSCADEntity[]);
         meshes: JSCADEntity[];
     }
+    class MinkowskiSumDto {
+        constructor(meshes?: JSCADEntity[]);
+        meshes: JSCADEntity[];
+    }
     class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
         clockwise: boolean;
@@ -3663,6 +3685,10 @@ namespace JSCAD {
         chamfer = "chamfer",
         edge = "edge",
         round = "round"
+    }
+    class SolidDto {
+        constructor(mesh?: JSCADEntity);
+        mesh: JSCADEntity;
     }
     class SphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number);
@@ -4401,6 +4427,18 @@ namespace Manifold {
         joinType: manifoldJoinTypeEnum;
         miterLimit: number;
     }
+    class RayCastDto<T> {
+        constructor(manifold?: T, origin?: Base.Point3, endpoint?: Base.Point3);
+        endpoint: Base.Point3;
+        manifold: T;
+        origin: Base.Point3;
+    }
+    type RayHit = {
+        faceID: number;
+        distance: number;
+        position: Base.Point3;
+        normal: Base.Vector3;
+    };
     class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center: boolean;

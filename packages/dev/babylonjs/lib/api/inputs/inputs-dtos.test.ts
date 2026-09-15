@@ -266,6 +266,7 @@ const DTOS: [string, AnyDto][] = [
     ["BabylonScene.CameraConfigurationDto", Inputs.BabylonScene.CameraConfigurationDto],
     ["BabylonScene.SkyboxDto", Inputs.BabylonScene.SkyboxDto],
     ["BabylonScene.SkyboxCustomTextureDto", Inputs.BabylonScene.SkyboxCustomTextureDto],
+    ["BabylonScene.SkyboxFromTextureDto", Inputs.BabylonScene.SkyboxFromTextureDto],
     ["BabylonScene.PointerDto", Inputs.BabylonScene.PointerDto],
     ["BabylonScene.FogDto", Inputs.BabylonScene.FogDto],
     ["BabylonScene.SceneCanvasCSSBackgroundImageDto", Inputs.BabylonScene.SceneCanvasCSSBackgroundImageDto],

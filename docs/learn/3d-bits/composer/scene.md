@@ -114,6 +114,14 @@ Once you add the section, **Type** is required - either pick one or remove the s
 
 **Size** is how large the skybox is drawn, **Blur** softens reflections so a busy environment looks less distracting, and **Environment intensity** controls how strongly it lights the scene.
 
+### Standing the product on the ground
+
+**Ground projection** flattens the lower part of the sky into a floor the product stands on, so it looks placed in the environment rather than floating inside it, and the shadows from your lights fall onto that floor. The floor is the horizontal plane at height 0, so position your model to rest on it. It works with every skybox type, built-in or custom.
+
+**Ground radius** is how far that floor and the sky dome reach from the scene's origin, in scene units. Keep the camera inside it - beyond the radius the projected sky breaks up - so match it to the camera's upper radius limit. **Ground height** is how high the horizon sits above the floor; lower values flatten the sky towards it, and a value close to the height the environment was photographed at looks the most natural.
+
+Keep the camera above the floor with an upper beta limit of 90 degrees, since from below there is nothing to project. Hiding the skybox hides the floor and its shadows too.
+
 ### Bringing your own environment, and converting it
 
 A custom skybox takes a texture URL pointing at an `.hdr` or an `.env` file. You can paste a link or upload the file from the field itself.

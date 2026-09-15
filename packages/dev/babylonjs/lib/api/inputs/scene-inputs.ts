@@ -481,12 +481,15 @@ export namespace BabylonScene {
      * much it lights the scene and whether it is shown.
      */
     export class SkyboxDto {
-        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
+        constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
             if (skybox !== undefined) { this.skybox = skybox; }
             if (size !== undefined) { this.size = size; }
             if (blur !== undefined) { this.blur = blur; }
             if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
             if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
+            if (enableGroundProjection !== undefined) { this.enableGroundProjection = enableGroundProjection; }
+            if (projectedGroundRadius !== undefined) { this.projectedGroundRadius = projectedGroundRadius; }
+            if (projectedGroundHeight !== undefined) { this.projectedGroundHeight = projectedGroundHeight; }
         }
         /**
          * The built-in sky to surround the scene with
@@ -525,6 +528,30 @@ export namespace BabylonScene {
          * @default false
          */
         hideSkybox?: boolean | undefined = false;
+        /**
+         * When true, the lower sky is projected onto a flat ground at height 0, so the model seems
+         * to stand on the environment and casts shadows onto it
+         * @default false
+         */
+        enableGroundProjection?: boolean | undefined = false;
+        /**
+         * Radius of the projected ground and of the sky dome around it, in scene units; keep the
+         * camera inside it
+         * @default 20
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        projectedGroundRadius?: number | undefined = 20;
+        /**
+         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
+         * horizon towards the ground
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        projectedGroundHeight?: number | undefined = 3;
     }
 
     /**
@@ -532,14 +559,17 @@ export namespace BabylonScene {
      * the same size, blur, intensity and visibility options as the built-in skies.
      */
     export class SkyboxCustomTextureDto {
-        constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean) {
+        constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
             if (textureUrl !== undefined) { this.textureUrl = textureUrl; }
             if (textureSize !== undefined) { this.textureSize = textureSize; }
             if (size !== undefined) { this.size = size; }
             if (blur !== undefined) { this.blur = blur; }
             if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
             if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
-        } 
+            if (enableGroundProjection !== undefined) { this.enableGroundProjection = enableGroundProjection; }
+            if (projectedGroundRadius !== undefined) { this.projectedGroundRadius = projectedGroundRadius; }
+            if (projectedGroundHeight !== undefined) { this.projectedGroundHeight = projectedGroundHeight; }
+        }
         /**
          * Address of an `.hdr` file, an `.env` file or the root of six cube face images; nothing
          * happens without it
@@ -585,6 +615,109 @@ export namespace BabylonScene {
          * @default false
          */
         hideSkybox?: boolean | undefined = false;
+        /**
+         * When true, the lower sky is projected onto a flat ground at height 0, so the model seems
+         * to stand on the environment and casts shadows onto it
+         * @default false
+         */
+        enableGroundProjection?: boolean | undefined = false;
+        /**
+         * Radius of the projected ground and of the sky dome around it, in scene units; keep the
+         * camera inside it
+         * @default 20
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        projectedGroundRadius?: number | undefined = 20;
+        /**
+         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
+         * horizon towards the ground
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        projectedGroundHeight?: number | undefined = 3;
+    }
+
+    /**
+     * Feeds `babylon.scene.enableSkyboxFromTexture`: a cube texture you already loaded, and the same
+     * size, blur, intensity, visibility and ground projection options as the built-in skies.
+     */
+    export class SkyboxFromTextureDto {
+        constructor(texture?: BABYLON.BaseTexture, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
+            if (texture !== undefined) { this.texture = texture; }
+            if (size !== undefined) { this.size = size; }
+            if (blur !== undefined) { this.blur = blur; }
+            if (environmentIntensity !== undefined) { this.environmentIntensity = environmentIntensity; }
+            if (hideSkybox !== undefined) { this.hideSkybox = hideSkybox; }
+            if (enableGroundProjection !== undefined) { this.enableGroundProjection = enableGroundProjection; }
+            if (projectedGroundRadius !== undefined) { this.projectedGroundRadius = projectedGroundRadius; }
+            if (projectedGroundHeight !== undefined) { this.projectedGroundHeight = projectedGroundHeight; }
+        }
+        /**
+         * Cube texture to surround the scene with and light it by, such as one loaded from an
+         * `.hdr` or `.env` file
+         * @default undefined
+         */
+        texture!: BABYLON.BaseTexture;
+        /**
+         * Edge length of the sky cube, in scene units; make it larger than the scene so nothing
+         * pokes through
+         * @default 1000
+         * @minimum 0
+         * @maximum Infinity
+         * @step 10
+         */
+        size = 1000;
+        /**
+         * How much the visible sky is blurred, from 0 for sharp to 1 for fully soft; the lighting
+         * is unaffected
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        blur = 0.1;
+        /**
+         * How strongly the sky lights the scene through reflections and ambient light; 1 is full
+         * strength
+         * @default 0.7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        environmentIntensity = 0.7;
+        /**
+         * When true, the sky is not drawn but still lights the scene
+         * @default false
+         */
+        hideSkybox?: boolean | undefined = false;
+        /**
+         * When true, the lower sky is projected onto a flat ground at height 0, so the model seems
+         * to stand on the environment and casts shadows onto it
+         * @default false
+         */
+        enableGroundProjection?: boolean | undefined = false;
+        /**
+         * Radius of the projected ground and of the sky dome around it, in scene units; keep the
+         * camera inside it
+         * @default 20
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        projectedGroundRadius?: number | undefined = 20;
+        /**
+         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
+         * horizon towards the ground
+         * @default 3
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        projectedGroundHeight?: number | undefined = 3;
     }
 
     /**
