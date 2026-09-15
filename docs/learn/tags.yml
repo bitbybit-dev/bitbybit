@@ -567,3 +567,8 @@ html:
   label: HTML
   permalink: /html
   description: Custom HTML elements and markup inside the configurator panel.
+
+camera:
+  label: Camera
+  permalink: /camera
+  description: How the view is positioned, framed and moved, and the controls shoppers use for it.
