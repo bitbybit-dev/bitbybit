@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "1.3.0-rc.0"
+    "@bitbybit-dev/babylonjs": "1.3.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",
