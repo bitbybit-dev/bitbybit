@@ -66,5 +66,49 @@ Generic endpoint - works for any registered model. See model-specific endpoints 
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`POST /api/v1/models/{modelName}`
+
+Generic endpoint - works for any registered model. See model-specific endpoints for fully typed parameters. Always returns 202 with a task ID for polling.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `modelName` | path | string | yes | Model slug (e.g. dragon-cup, phone-nest) |
+
+### Request body
+
+Content type: `application/json` (required)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `params` | object | no | Model-specific parameters. Omitted params use their defaults. See model definition for available options. |
+| `outputs` | object | yes | Controls which output formats are generated and their quality settings |
+| `outputs.formats` | array of object | yes | Output formats to generate. Multiple formats can be requested (e.g. ['gltf', 'stpz']) - each produces a separate downloadable result. Do not include both 'step' and 'stpz' - only one STEP variant is supported per request. |
+| `outputs.meshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.gltfMeshPrecision` | number | no | Mesh tessellation precision (lower = finer). Range: [0.0001, 10] |
+| `outputs.adjustYtoZ` | boolean | no | Convert from Y-up to Z-up coordinate system in the output. Useful for software that expects Z-up. |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `202` | Task accepted |
+| `400` | Validation error |
+| `404` | Not found |
+| `500` | Server error |
+
+### Example request
+
+```bash
+curl -X POST "https://api.bitbybit.dev/api/v1/models/{modelName}" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{ ... }'
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

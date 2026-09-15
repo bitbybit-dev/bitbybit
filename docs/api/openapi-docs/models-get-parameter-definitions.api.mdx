@@ -66,5 +66,32 @@ Returns parameter schema, types, defaults, and limits for the specified model.
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/models/{modelName}/params`
+
+Returns parameter schema, types, defaults, and limits for the specified model.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `modelName` | path | string | yes | Model slug (e.g. dragon-cup, phone-nest) |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Model definition |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/models/{modelName}/params" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

@@ -66,5 +66,32 @@ Permanently deletes an uploaded file and the stored blob behind it. This cannot 
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`DELETE /api/v1/files/{fileId}`
+
+Permanently deletes an uploaded file and the stored blob behind it. This cannot be undone, and any task result that still points at the blob stops resolving. Files also expire on their own, so call this only when you need the storage released sooner than that.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `fileId` | path | string | yes | File ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | File deleted |
+| `404` | Not found |
+
+### Example request
+
+```bash
+curl -X DELETE "https://api.bitbybit.dev/api/v1/files/{fileId}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).

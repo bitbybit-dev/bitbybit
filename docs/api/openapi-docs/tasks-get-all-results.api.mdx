@@ -66,5 +66,33 @@ Returns download URLs for every available result format in a single call. Use th
   
 </StatusCodes>
 
+{/* static-reference:generated */}
 
-      
+## Reference
+
+`GET /api/v1/tasks/{taskId}/results`
+
+Returns download URLs for every available result format in a single call. Use this instead of making multiple requests to /result/&#123;format&#125;.
+
+### Parameters
+
+| Parameter | In | Type | Required | Description |
+|---|---|---|---|---|
+| `taskId` | path | string | yes | Task ID |
+
+### Responses
+
+| Status | Description |
+|---|---|
+| `200` | Download links for all available formats |
+| `404` | Not found |
+| `409` | Task is not yet completed |
+
+### Example request
+
+```bash
+curl -X GET "https://api.bitbybit.dev/api/v1/tasks/{taskId}/results" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+Authentication: send your key in the `x-api-key` header. The full machine-readable specification is at [openapi.json](https://learn.bitbybit.dev/openapi.json).
