@@ -45,7 +45,7 @@ const tag = tagIndex >= 0 ? args[tagIndex + 1] : "latest";
 const CHANNELS = ["alpha", "beta", "rc", "next"];
 if (![...CHANNELS, "latest"].includes(tag)) { console.error(`--tag must be latest or one of ${CHANNELS.join(", ")}`); process.exit(2); }
 const SCOPE = "@bitbybit-dev/";
-const POLL_SECONDS = 15, POLL_LIMIT = 40;
+const POLL_SECONDS = 15, POLL_LIMIT = 60;
 
 // ---------------------------------------------------------------- the package graph
 

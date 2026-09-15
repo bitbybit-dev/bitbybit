@@ -4,7 +4,13 @@
   "compilerOptions": {
     "baseUrl": ".",
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    // @docusaurus/module-type-aliases types the classic theme's @theme/* modules only; the OpenAPI
+    // theme's are resolved here the way Docusaurus resolves them at build time, from its lib
+    "paths": {
+      "@site/*": ["./*"],
+      "@theme/ApiExplorer/*": ["node_modules/docusaurus-theme-openapi-docs/lib/theme/ApiExplorer/*"]
+    }
   },
   "exclude": [".docusaurus", "build"]
 }

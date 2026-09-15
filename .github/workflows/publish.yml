@@ -51,7 +51,9 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # Four tier waits of up to 15 minutes each (publish-packages.mjs polls the registry 60 times at
+    # 15 s - it is slow to resolve a fresh version some days) sit on top of the build.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 

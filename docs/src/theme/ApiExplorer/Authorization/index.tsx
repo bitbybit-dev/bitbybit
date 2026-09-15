@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useId } from "react";
 import FormItem from "@theme/ApiExplorer/FormItem";
+import FormLabel from "@theme/ApiExplorer/FormLabel";
 
-export default function Authorization(): JSX.Element | null {
+export default function Authorization(): React.JSX.Element | null {
+  const id = useId();
   return (
-    <FormItem label="X-API-Key">
+    <FormItem>
+      <FormLabel htmlFor={id} label="X-API-Key" />
       <input
+        id={id}
         className="openapi-explorer__form-item-input"
         type="text"
         value="YOUR_API_KEY"
