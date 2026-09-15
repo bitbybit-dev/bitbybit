@@ -132,8 +132,8 @@ If you're interested in contributing please check our [Contribution guidelines](
 For first-time developers working on this project, follow these steps to set up the development environment and run all unit tests:
 
 ### Prerequisites
-- Node.js (v16 or higher recommended)
-- npm (comes with Node.js)
+- Node.js 22 or newer (`.tool-versions` pins 22; the nightly workflow also runs 24)
+- pnpm 11 (see step 2 below)
 - Git
 
 ### Quick Start
@@ -167,9 +167,9 @@ For first-time developers working on this project, follow these steps to set up 
 - `npm run gen:references` - Regenerate the TypeScript project references from the package manifests after a dependency change
 - `npm run check:references` - Fail if the project references and the manifests disagree (the first step of `npm test`)
 - `npm run lint` - ESLint over the repository, green by the committed suppression baseline; a new finding fails
-- `npm run typecheck:strict` - Every package's strict typecheck against its committed baseline (new errors only)
-- `npm run check:strict-baselines` - Fail if any package's strict baseline differs from what its code produces
-- `npm run api:check` - Fail if the public API surface of `base` or `core` differs from the committed report in its `etc/` folder
+- `npm run typecheck:strict` - Every package's typecheck under the full strict set
+- `npm run check:strict-baselines` - Fail if any package has grown a strict baseline; every package is fully strict, so the check holds the line at zero
+- `npm run api:check` - Fail if any package's public API surface differs from the committed report in its `etc/` folder
 - `npm run api:update` - Regenerate those API reports after a deliberate change to the public surface
 - `npm run check:tarballs` - Pack every built package and install the tarballs together into an empty project, as a user would
 
@@ -186,8 +186,8 @@ You can also run tests for individual packages:
 
 ### Troubleshooting
 If you encounter issues during setup:
-1. Make sure you have Node.js v16+ installed
-2. Clear npm cache: `npm cache clean --force`
+1. Make sure you have Node.js 22+ installed (`node --version`)
+2. Clear the pnpm store: `pnpm store prune`
 3. Delete `node_modules` at the root and under `packages/dev/*`, then run `pnpm install`
 
 ## Major Dependencies

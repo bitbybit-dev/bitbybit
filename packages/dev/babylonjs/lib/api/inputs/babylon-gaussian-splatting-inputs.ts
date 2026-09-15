@@ -9,22 +9,29 @@ import * as BABYLON from "@babylonjs/core";
 export namespace BabylonGaussianSplatting {
 
 
+    /**
+     * Feeds `babylon.gaussianSplatting.create` with the address of the `.ply` file to load.
+     */
     export class CreateGaussianSplattingMeshDto {
         constructor(url?: string) {
             if (url !== undefined) { this.url = url; }
         }
         /**
-         * Babylon Mesh that needs to be updated
+         * Address of the Gaussian splatting `.ply` file
          * @default undefined
          */
         url!: string;
     }
+    /**
+     * Feeds `babylon.gaussianSplatting.clone` and `getSplatPositions` with the loaded splatting
+     * mesh to work on.
+     */
     export class GaussianSplattingMeshDto {
         constructor(babylonMesh?: BABYLON.GaussianSplattingMesh) {
             if (babylonMesh !== undefined) { this.babylonMesh = babylonMesh; }
         }
         /**
-         * Gaussian Splatting Mesh that needs to be updated
+         * The loaded Gaussian splatting mesh
          */
         babylonMesh!: BABYLON.GaussianSplattingMesh;
     }

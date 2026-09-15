@@ -2,6 +2,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * The bounding box gizmo: a frame around the attached mesh with corner boxes that scale it and
+ * spheres that rotate it. The handles can keep a constant screen size, snap in steps, scale from a
+ * chosen pivot and respond with a different speed per axis.
+ */
 export class BabylonGizmoBoundingBoxGizmo {
 
 
@@ -11,9 +16,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo rotation sphere size
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Sets the size of the round rotation handles on a bounding box gizmo's edges.
+     * @param inputs - The bounding box gizmo and the sphere size
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set rotation sphere size
      */
@@ -23,11 +28,17 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * If set, the rotation anchors and scale boxes will increase in size based on the distance away from the camera to have a consistent screen size (Default: false) Note : fixedDragMeshScreenSize takes precedence over fixedDragMeshBoundsSize if both are true
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * When true, the rotation spheres and scale boxes of a bounding box gizmo keep the same size on
+     * screen whatever the distance to the camera; it takes precedence over
+     * `fixedDragMeshBoundsSize`.
+     * @param inputs - The bounding box gizmo and the flag
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set fixed drag mesh screen size
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gizmo.boundingBoxGizmo.setFixedDragMeshScreenSize({ boundingBoxGizmo, fixedDragMeshScreenSize: true });
+     * ```
      */
     setFixedDragMeshScreenSize(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDto): BABYLON.BoundingBoxGizmo {
         inputs.boundingBoxGizmo.fixedDragMeshScreenSize = inputs.fixedDragMeshScreenSize;
@@ -35,9 +46,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo fixed drag mesh bounds size
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * When true, the handles of a bounding box gizmo are sized relative to the bounds of the
+     * attached mesh instead of a fixed world size.
+     * @param inputs - The bounding box gizmo and the flag
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set fixed drag mesh bounds size
      */
@@ -47,9 +59,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * The distance away from the object which the draggable meshes should appear world sized when fixedDragMeshScreenSize is set to true (default: 10)
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Sets the camera distance at which a bounding box gizmo's handles appear at their world size
+     * when `fixedDragMeshScreenSize` is on; the default is 10.
+     * @param inputs - The bounding box gizmo and the distance factor
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set fixed drag mesh screen size dist factor
      */
@@ -59,9 +72,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo scaling snap distance. Drag distance in babylon units that the gizmo will snap scaling to when dragged.
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Makes a bounding box gizmo scale the mesh in steps of `scalingSnapDistance` scene units of
+     * drag instead of smoothly; 0 turns snapping off.
+     * @param inputs - The bounding box gizmo and the step size
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set scaling snap dist.
      */
@@ -71,9 +85,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo rotation snap distance. Drag distance in babylon units that the gizmo will snap rotation to when dragged.
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Makes a bounding box gizmo rotate the mesh in steps of `rotationSnapDistance` radians instead
+     * of smoothly; 0 turns snapping off.
+     * @param inputs - The bounding box gizmo and the step in radians
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set rotation snap dist.
      */
@@ -83,9 +98,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo scale box size
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Sets the size of the square scale handles on a bounding box gizmo's corners.
+     * @param inputs - The bounding box gizmo and the box size
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set scale box size
      */
@@ -95,9 +110,11 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo incremental snap. Incremental snap scaling (default is false). When true, with a snapDistance of 0.1, scaling will be 1.1,1.2,1.3 instead of, when false: 1.1,1.21,1.33,...
-     * @param inputs bounding box gizmo
-     * @returns bounding box gizmo
+     * Chooses how a bounding box gizmo's scale snapping steps combine: incremental steps add up,
+     * 1.1 then 1.2 then 1.3 for a step of 0.1, while the default multiplies, 1.1 then 1.21 then
+     * 1.33.
+     * @param inputs - The bounding box gizmo and the flag
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set incremental snap
      */
@@ -107,11 +124,17 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo scale pivot. Relative bounding box pivot used when scaling the attached node. When null object with scale from the opposite corner. 0.5,0.5,0.5 for center and 0.5,0,0.5 for bottom (Default: null)
-     * @param inputs bounding box gizmo and scale pivot
-     * @returns bounding box gizmo
+     * Sets the point a bounding box gizmo scales the mesh around, as fractions of its bounds:
+     * `[0.5, 0.5, 0.5]` is the center and `[0.5, 0, 0.5]` the bottom; by default it scales from the
+     * opposite corner.
+     * @param inputs - The bounding box gizmo and the pivot fractions
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set scale pivot
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gizmo.boundingBoxGizmo.setScalePivot({ boundingBoxGizmo, scalePivot: [0.5, 0, 0.5] });
+     * ```
      */
     setScalePivot(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoScalePivotDto): BABYLON.BoundingBoxGizmo {
         inputs.boundingBoxGizmo.scalePivot = new BABYLON.Vector3(...inputs.scalePivot);
@@ -119,9 +142,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo axis factor. Set custom sensitivity value for each axis
-     * @param inputs bounding box gizmo and axis factor
-     * @returns bounding box gizmo
+     * Sets a separate drag sensitivity per axis for a bounding box gizmo, so scaling along one axis
+     * can respond faster or slower than the others.
+     * @param inputs - The bounding box gizmo and the factor per axis
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set axis factor
      */
@@ -131,9 +155,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Set bounding box gizmo scale drag speed
-     * @param inputs bounding box gizmo and scale drag speed
-     * @returns bounding box gizmo
+     * Sets how fast a bounding box gizmo scales the mesh for a given drag; 1 is the default.
+     * @param inputs - The bounding box gizmo and the drag speed
+     * @returns The same bounding box gizmo
      * @group set
      * @shortname set scale drag speed
      */
@@ -143,9 +167,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get rotation sphere size
-     * @param inputs bounding box gizmo
-     * @returns rotation sphere size
+     * Reads the size of the rotation handles of a bounding box gizmo.
+     * @param inputs - The bounding box gizmo
+     * @returns The rotation sphere size
      * @group get
      * @shortname get rotation sphere size
      */
@@ -154,9 +178,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get scale box size
-     * @param inputs bounding box gizmo
-     * @returns scale box size
+     * Reads the size of the scale handles of a bounding box gizmo.
+     * @param inputs - The bounding box gizmo
+     * @returns The scale box size
      * @group get
      * @shortname get scale box size
      */
@@ -165,9 +189,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get fixed drag mesh screen size
-     * @param inputs bounding box gizmo
-     * @returns fixed drag mesh screen size
+     * Reads whether the handles of a bounding box gizmo keep a constant screen size.
+     * @param inputs - The bounding box gizmo
+     * @returns True when the handles keep their screen size
      * @group get
      * @shortname get fixed drag mesh screen size
      */
@@ -176,9 +200,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get fixed drag mesh bounds size
-     * @param inputs bounding box gizmo
-     * @returns fixed drag mesh bounds size
+     * Reads whether the handles of a bounding box gizmo are sized relative to the mesh bounds.
+     * @param inputs - The bounding box gizmo
+     * @returns True when the handles follow the bounds
      * @group get
      * @shortname get fixed drag mesh bounds size
      */
@@ -187,9 +211,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get fixed drag mesh screen size distance factor
-     * @param inputs bounding box gizmo
-     * @returns fixed drag mesh screen size distance factor
+     * Reads the camera distance at which a bounding box gizmo's handles appear at their world size.
+     * @param inputs - The bounding box gizmo
+     * @returns The distance factor
      * @group get
      * @shortname get fixed drag mesh screen size distance factor
      */
@@ -198,9 +222,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get scaling snap distance
-     * @param inputs bounding box gizmo
-     * @returns scaling snap distance
+     * Reads the drag step a bounding box gizmo snaps scaling to, 0 meaning smooth scaling.
+     * @param inputs - The bounding box gizmo
+     * @returns The scaling snap distance
      * @group get
      * @shortname get scaling snap distance
      */
@@ -209,9 +233,10 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get rotation snap distance
-     * @param inputs bounding box gizmo
-     * @returns rotation snap distance
+     * Reads the angle step in radians a bounding box gizmo snaps rotation to, 0 meaning smooth
+     * rotation.
+     * @param inputs - The bounding box gizmo
+     * @returns The rotation snap distance in radians
      * @group get
      * @shortname get rotation snap distance
      */
@@ -220,9 +245,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get incremental snap
-     * @param inputs bounding box gizmo
-     * @returns incremental snap
+     * Reads whether a bounding box gizmo's scale snapping steps add up rather than multiply.
+     * @param inputs - The bounding box gizmo
+     * @returns True when snapping is incremental
      * @group get
      * @shortname get incremental snap
      */
@@ -231,9 +256,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get scale pivot
-     * @param inputs bounding box gizmo
-     * @returns scale pivot
+     * Reads the pivot fractions a bounding box gizmo scales around.
+     * @param inputs - The bounding box gizmo
+     * @returns The pivot as fractions of the bounds
      * @group get
      * @shortname get scale pivot
      */
@@ -242,9 +267,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get axis factor
-     * @param inputs bounding box gizmo
-     * @returns axis factor
+     * Reads the drag sensitivity per axis of a bounding box gizmo.
+     * @param inputs - The bounding box gizmo
+     * @returns The factor per axis
      * @group get
      * @shortname get axis factor
      */
@@ -253,9 +278,9 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-     * Get scale drag speed
-     * @param inputs bounding box gizmo
-     * @returns scale drag speed
+     * Reads how fast a bounding box gizmo scales the mesh for a given drag.
+     * @param inputs - The bounding box gizmo
+     * @returns The scale drag speed
      * @group get
      * @shortname get scale drag speed
      */
@@ -264,12 +289,17 @@ export class BabylonGizmoBoundingBoxGizmo {
     }
 
     /**
-    * Creates the selector of an observable for a bounding box gizmo
-    * @param inputs observable name
-    * @returns bounding box gizmo observable selector
-    * @group create
-    * @shortname bounding box gizmo observable selector
-    */
+     * Passes through the name of a bounding box gizmo event as a typed selector for code that
+     * subscribes to gizmo events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
+     * @group create
+     * @shortname bounding box gizmo observable selector
+     * @example
+     * ```typescript
+     * const selector = bitbybit.babylon.gizmo.boundingBoxGizmo.createBoundingBoxGizmoObservableSelector({ selector: Bit.Inputs.BabylonGizmo.boundingBoxGizmoObservableSelectorEnum.onScaleBoxDragEndObservable });
+     * ```
+     */
     createBoundingBoxGizmoObservableSelector(inputs: Inputs.BabylonGizmo.BoundingBoxGizmoObservableSelectorDto): Inputs.BabylonGizmo.boundingBoxGizmoObservableSelectorEnum {
         return inputs.selector;
     }

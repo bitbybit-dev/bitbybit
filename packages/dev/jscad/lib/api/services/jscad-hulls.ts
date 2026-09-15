@@ -1,10 +1,12 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
-import { asKind } from "./entity-narrowing";
+import { asKind, asSolid } from "./entity-narrowing";
 
 /**
- * Contains various functions for Solid hulls from JSCAD library https://github.com/jscad/OpenJSCAD.org
- * Thanks JSCAD community for developing this kernel
+ * Wrapping JSCAD geometry in its convex hull, the shape a tight sheet would take around it: `hull`
+ * wraps everything at once and `hullChain` wraps each consecutive pair, so a row of shapes becomes
+ * a bent tube rather than one lump. All inputs of a call must be of the same kind, solids, 2D
+ * shapes or paths.
  */
 export class JSCADHulls {
 
@@ -13,28 +15,61 @@ export class JSCADHulls {
     ) { }
 
     /**
-     * Hull chain connects solids or 2d geometries by filling an empty space in between objects in order.
-     * Geometries need to be of the same type.
-     * @param inputs Geometries
-     * @returns Chain hulled geometry
+     * Wraps each consecutive pair of inputs in a convex hull and fuses the hulls, so a row of
+     * shapes becomes a continuous strand that follows their order.
+     *
+     * A bend in the row is kept, where `hull` would fill it in. All inputs must be of the same
+     * kind.
+     * @param inputs - The solids, 2D shapes or paths, in the order they connect
+     * @returns The chained hull
      * @group hulls
      * @shortname hull chain
      * @drawable true
+     * @example
+     * ```typescript
+     * const spheres = await bitbybit.jscad.shapes.spheresOnCenterPoints({ centers: [[0, 0, 0], [10, 0, 0], [10, 10, 0]], radius: 1, segments: 16 });
+     * const strand = await bitbybit.jscad.hulls.hullChain({ meshes: spheres });
+     * ```
      */
     hullChain(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity {
         return this.jscad.hulls.hullChain(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
     }
 
     /**
-     * Convex hull connects solids or 2d geometries by filling an empty space in between without following order.
-     * Geometries need to be of the same type.
-     * @param inputs Geometries
-     * @returns Hulled geometry
+     * Wraps all the inputs in one convex hull, the smallest shape without dents that contains them
+     * all, regardless of their order.
+     *
+     * All inputs must be of the same kind, solids, 2D shapes or paths.
+     * @param inputs - The solids, 2D shapes or paths
+     * @returns The convex hull
      * @group hulls
      * @shortname hull
      * @drawable true
+     * @example
+     * ```typescript
+     * const wrapped = await bitbybit.jscad.hulls.hull({ meshes: [cube, sphere] });
+     * ```
      */
     hull(inputs: Inputs.JSCAD.HullDto): Inputs.JSCAD.JSCADEntity  {
         return this.jscad.hulls.hull(...asKind<Inputs.JSCAD.JSCADGeom3>(inputs.meshes));
+    }
+
+    /**
+     * Tells whether a solid is convex, meaning it already equals its own hull: every straight line
+     * between two of its points stays inside it.
+     *
+     * Solids only; a 2D shape or a path throws an error.
+     * @param inputs - The solid to examine
+     * @returns True when the solid is convex
+     * @group hulls
+     * @shortname is convex
+     * @drawable false
+     * @example
+     * ```typescript
+     * const convex = await bitbybit.jscad.hulls.isConvex({ mesh: shape });
+     * ```
+     */
+    isConvex(inputs: Inputs.JSCAD.SolidDto): boolean {
+        return this.jscad.geometries.geom3.isConvex(asSolid(inputs.mesh, "isConvex"));
     }
 }

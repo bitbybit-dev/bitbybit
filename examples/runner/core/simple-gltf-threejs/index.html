@@ -9,12 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
         content="Build OCCT geometry with the Bitbybit Core Runner (no game engine), export it to GLTF, and display the result in a Three.js scene.">
-    <script defer src="https://git-cdn.bitbybit.dev/v1.2.0/runner/bitbybit-runner-core.js"></script>
+    <script defer src="https://git-cdn.bitbybit.dev/v1.3.0-rc.0/runner/bitbybit-runner-core.js"></script>
     <script type="importmap">
     {
         "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"
+            "three": "https://cdn.jsdelivr.net/npm/three@0.186.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/"
         }
     }
     </script>
@@ -103,7 +103,7 @@
 
         // ── Load the exported GLB into the scene ────────────────────
         const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/libs/draco/');
+        dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.186.0/examples/jsm/libs/draco/');
 
         const loader = new GLTFLoader();
         loader.setDRACOLoader(dracoLoader);

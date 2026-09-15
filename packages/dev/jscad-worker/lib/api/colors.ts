@@ -5,7 +5,9 @@ import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 /**
- * Contains functions for colorizing objects
+ * Giving JSCAD geometry a color of its own. A colored entity is always drawn in that color, ahead
+ * of whatever color the drawing options ask for; the color survives transforms but a boolean result
+ * starts uncolored again.
  */
 export class JSCADColors {
     constructor(
@@ -14,13 +16,20 @@ export class JSCADColors {
     }
 
     /**
-     * Colorizes geometry of jscad. If geometry is in the array it will colorize all items and return them. If geometry is a single item it will return a single item.
-     * Keep in mind that colorized geometry in jscad will always be drawn in that color even if you try to change it via draw options.
-     * @param inputs contain geometry and hex color
-     * @returns Colorized geometry of jsacd
+     * Gives a solid, a 2D shape or a path a fixed color from a hex string, returning a colored
+     * copy; a list gives a list of colored copies in the same order.
+     *
+     * The color wins over the color of the drawing options, so leave the entity uncolored to
+     * control it there.
+     * @param inputs - The geometry, or a list of it, and the hex color
+     * @returns The colored geometry, one or a list to match the input
      * @group colorize
      * @shortname colorize geometry
      * @drawable true
+     * @example
+     * ```typescript
+     * const red = await bitbybit.jscad.colors.colorize({ geometry: cube, color: "#ff0000" });
+     * ```
      */
     colorize(inputs: Inputs.JSCAD.ColorizeDto): Promise<Inputs.JSCAD.JSCADEntity | Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("colors.colorize", inputs);

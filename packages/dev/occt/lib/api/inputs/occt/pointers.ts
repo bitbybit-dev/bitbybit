@@ -121,7 +121,7 @@ export type TopoDSCompoundPointer = { hash: number, type: "occ-shape" };
 
 /**
  * A handle to an OpenCascade document - the container used for assemblies, holding a shape
- * hierarchy along with names, colours and placements. This is what STEP assembly import and export
+ * hierarchy along with names, colors and placements. This is what STEP assembly import and export
  * work against, as opposed to a single loose shape.
  */
 export type TDocStdDocumentPointer = { hash: number, type: "occ-entity" };

@@ -4,6 +4,12 @@ import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 
+/**
+ * Sticking images onto meshes, the way a label or a logo sits on a product. A geometry decal is a
+ * thin clipped mesh hugging the surface, which works on any static mesh; a decal map paints into
+ * the mesh's own texture space instead, adds no geometry, follows deformation and lets many
+ * projections build up, but needs clean UV coordinates.
+ */
 export class BabylonDecal {
 
     constructor(private readonly context: Context) {

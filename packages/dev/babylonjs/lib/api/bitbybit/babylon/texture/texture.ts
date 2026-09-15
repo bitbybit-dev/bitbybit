@@ -3,6 +3,11 @@ import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 
+/**
+ * Textures, the images a material spreads over a surface: a tiled texture from a URL with scale and
+ * offset for material slots, and an image texture with transparency kept for decals and
+ * projections.
+ */
 export class BabylonTexture {
 
     constructor(private readonly context: Context) {

@@ -83,6 +83,29 @@ describe("the mesh services", () => {
         });
     });
 
+    describe("backside", () => {
+        it("should report the one run of an untouched cube as front-facing", () => {
+            expect(manifold.mesh.evaluate.backside(new Inputs.Manifold.MeshTriangleRunIndexDto(mesh, 0))).toBe(false);
+        });
+    });
+
+    describe("hasNormals", () => {
+        it("should report normals only once calculateNormals has written them", () => {
+            // Arrange
+            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
+            const withNormals = manifold.manifold.operations.calculateNormals(new Inputs.Manifold.CalculateNormalsDto(cube, 0, 60));
+            const litMesh = manifold.manifold.manifoldToMesh(new Inputs.Manifold.ManifoldToMeshDto(withNormals));
+
+            // Act
+            const bare = manifold.mesh.evaluate.hasNormals(new Inputs.Manifold.MeshTriangleRunIndexDto(mesh, 0));
+            const lit = manifold.mesh.evaluate.hasNormals(new Inputs.Manifold.MeshTriangleRunIndexDto(litMesh, 0));
+
+            // Assert
+            expect(bare).toBe(false);
+            expect(lit).toBe(true);
+        });
+    });
+
     describe("merge", () => {
         it("should report that a mesh with no split vertices needed no merging", () => {
             expect(manifold.mesh.operations.merge(new Inputs.Manifold.MeshDto(mesh))).toBe(false);
@@ -90,12 +113,18 @@ describe("the mesh services", () => {
     });
 
     describe("tangent", () => {
-        it("should read the tangent of a half edge out of the mesh's window on it", () => {
+        it("should read the tangent of a half edge as four finite numbers, the fourth being its weight", () => {
+            // Arrange
+            const sphere = manifold.manifold.shapes.sphere(new Inputs.Manifold.SphereDto(1, 8));
+            const smoothed = manifold.manifold.operations.smoothOut(new Inputs.Manifold.ManifoldSmoothOutDto(sphere, 60, 0));
+            const smoothedMesh = manifold.manifold.manifoldToMesh(new Inputs.Manifold.ManifoldToMeshDto(smoothed));
+
             // Act
-            const tangent = manifold.mesh.evaluate.tangent(new Inputs.Manifold.MeshHalfEdgeIndexDto(mesh, 0));
+            const tangent = manifold.mesh.evaluate.tangent(new Inputs.Manifold.MeshHalfEdgeIndexDto(smoothedMesh, 0));
 
             // Assert
             expect(tangent).toHaveLength(4);
+            tangent.forEach(component => expect(Number.isFinite(component)).toBe(true));
         });
     });
 });

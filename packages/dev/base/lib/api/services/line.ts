@@ -4,18 +4,21 @@ import { Point } from "./point";
 import { Vector } from "./vector";
 
 /**
- * Contains various methods for lines and segments. Line in bitbybit is a simple object that has start and
- * end point properties. { start: [ x, y, z ], end: [ x, y, z ] }
+ * Straight lines between two points, held as plain objects of the form `{ start, end }`, and the
+ * segment form `[start, end]` of the same thing. The methods here build lines, measure and
+ * transform them, convert between the two forms, place points along them and find where two lines
+ * cross. Lengths are in model units.
  */
 export class Line {
 
     constructor(private readonly vector: Vector, private readonly point: Point, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Extracts start point from a line.
-     * Example: line={start:[0,0,0], end:[10,5,0]} → [0,0,0]
-     * @param inputs a line
-     * @returns start point
+     * Reads the start point of a line.
+     *
+     * Example: { start: [0,0,0], end: [10,5,0] } -> [0,0,0]
+     * @param inputs - The line
+     * @returns The start point
      * @group get
      * @shortname line start point
      * @drawable true
@@ -25,10 +28,11 @@ export class Line {
     }
 
     /**
-     * Extracts end point from a line.
-     * Example: line={start:[0,0,0], end:[10,5,0]} → [10,5,0]
-     * @param inputs a line
-     * @returns end point
+     * Reads the end point of a line.
+     *
+     * Example: { start: [0,0,0], end: [10,5,0] } -> [10,5,0]
+     * @param inputs - The line
+     * @returns The end point
      * @group get
      * @shortname line end point
      * @drawable true
@@ -38,10 +42,11 @@ export class Line {
     }
 
     /**
-     * Calculates length (distance) of a line segment.
-     * Example: line={start:[0,0,0], end:[3,4,0]} → 5 (using Pythagorean theorem)
-     * @param inputs a line
-     * @returns line length
+     * Measures the straight distance from the start of a line to its end.
+     *
+     * Example: { start: [0,0,0], end: [3,4,0] } -> 5
+     * @param inputs - The line
+     * @returns The length in model units
      * @group get
      * @shortname line length
      * @drawable false
@@ -51,10 +56,11 @@ export class Line {
     }
 
     /**
-     * Reverses line direction by swapping start and end points.
-     * Example: line={start:[0,0,0], end:[10,5,0]} → {start:[10,5,0], end:[0,0,0]}
-     * @param inputs a line
-     * @returns reversed line
+     * Swaps the start and end of a line, so it runs the other way.
+     *
+     * Example: { start: [0,0,0], end: [10,5,0] } -> { start: [10,5,0], end: [0,0,0] }
+     * @param inputs - The line
+     * @returns A new line running the other way
      * @group operations
      * @shortname reversed line
      * @drawable true
@@ -64,13 +70,22 @@ export class Line {
     }
 
     /**
-     * Applies transformation matrix to line (rotates, scales, or translates both endpoints).
-     * Example: line={start:[0,0,0], end:[10,0,0]} with translation [5,5,0] → {start:[5,5,0], end:[15,5,0]}
-     * @param inputs a line
-     * @returns transformed line
+     * Applies a transformation matrix, or a list of them in order, to both ends of a line.
+     *
+     * Example: { start: [0,0,0], end: [10,0,0] } moved by [5,5,0] -> { start: [5,5,0], end:
+     * [15,5,0] }
+     * @param inputs - The line and the transformation
+     * @returns A new line with the transformed ends
      * @group transforms
      * @shortname transform line
      * @drawable true
+     * @example
+     * ```typescript
+     * const moved = bitbybit.line.transformLine({
+     *     line: { start: [0, 0, 0], end: [10, 0, 0] },
+     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 5, 0] }),
+     * });
+     * ```
      */
     transformLine(inputs: Inputs.Line.TransformLineDto): Inputs.Base.Line3 {
         const transformation = inputs.transformation;
@@ -83,13 +98,22 @@ export class Line {
     }
 
     /**
-     * Applies multiple transformations to multiple lines (one transform per line).
-     * Example: 3 lines with 3 different translation matrices → each line moved independently
-     * @param inputs lines
-     * @returns transformed lines
+     * Applies a different transformation to each line: the first transformation to the first line,
+     * and so on.
+     *
+     * Example: three lines with three translations -> each line moved by its own translation
+     * @param inputs - The lines and one transformation per line
+     * @returns The transformed lines, in the same order
      * @group transforms
      * @shortname transform lines
      * @drawable true
+     * @example
+     * ```typescript
+     * const placed = bitbybit.line.transformsForLines({
+     *     lines: [{ start: [0, 0, 0], end: [1, 0, 0] }, { start: [0, 0, 0], end: [0, 1, 0] }],
+     *     transformation: bitbybit.transforms.translationsXYZ({ translations: [[0, 1, 0], [0, 2, 0]] }),
+     * });
+     * ```
      */
     transformsForLines(inputs: Inputs.Line.TransformsLinesDto): Inputs.Base.Line3[] {
         return inputs.lines.map((line, index) => {
@@ -104,13 +128,18 @@ export class Line {
     }
 
     /**
-     * Creates a line from two points (line object with start and end properties).
-     * Example: start=[0,0,0], end=[10,5,0] → {start:[0,0,0], end:[10,5,0]}
-     * @param inputs start and end points of the line
-     * @returns line
+     * Builds a line object from a start and an end point.
+     *
+     * Example: start [0,0,0], end [10,5,0] -> { start: [0,0,0], end: [10,5,0] }
+     * @param inputs - The start and end points
+     * @returns The line object
      * @group create
      * @shortname line
      * @drawable true
+     * @example
+     * ```typescript
+     * const line = bitbybit.line.create({ start: [0, 0, 0], end: [10, 5, 0] });
+     * ```
      */
     create(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Line3 {
         return {
@@ -120,13 +149,18 @@ export class Line {
     }
 
     /**
-     * Creates a segment from two points (array format: [start, end]).
-     * Example: start=[0,0,0], end=[10,5,0] → [[0,0,0], [10,5,0]]
-     * @param inputs start and end points of the segment
-     * @returns segment
+     * Builds a segment, the pair-of-points form of a line, from a start and an end point.
+     *
+     * Example: start [0,0,0], end [10,5,0] -> [[0,0,0], [10,5,0]]
+     * @param inputs - The start and end points
+     * @returns The segment as `[start, end]`
      * @group create
      * @shortname segment
      * @drawable true
+     * @example
+     * ```typescript
+     * const segment = bitbybit.line.createSegment({ start: [0, 0, 0], end: [10, 5, 0] });
+     * ```
      */
     createSegment(inputs: Inputs.Line.LinePointsDto): Inputs.Base.Segment3 {
         return [
@@ -136,13 +170,20 @@ export class Line {
     }
 
     /**
-     * Calculates point at parameter t along line segment (0=start, 1=end, linear interpolation).
-     * Example: line={start:[0,0,0], end:[10,0,0]}, param=0.5 → [5,0,0] (midpoint)
-     * @param inputs line
-     * @returns point on line
+     * Finds the point a fraction of the way along a line: 0 gives the start, 1 the end, 0.5 the
+     * middle.
+     *
+     * A fraction outside 0 to 1 continues past the ends.
+     * Example: { start: [0,0,0], end: [10,0,0] } at 0.5 -> [5,0,0]
+     * @param inputs - The line and the fraction along it
+     * @returns The point on the line
      * @group get
      * @shortname point on line
      * @drawable true
+     * @example
+     * ```typescript
+     * const middle = bitbybit.line.getPointOnLine({ line: { start: [0, 0, 0], end: [10, 0, 0] }, param: 0.5 });
+     * ```
      */
     getPointOnLine(inputs: Inputs.Line.PointOnLineDto): Inputs.Base.Point3 {
         const point1 = inputs.line.start;
@@ -156,13 +197,18 @@ export class Line {
     }
 
     /**
-     * Creates line segments connecting consecutive points in a list (forms a polyline path).
-     * Example: points=[[0,0,0], [5,0,0], [5,5,0]] → 2 lines: [0→5] and [5→5,5]
-     * @param inputs points
-     * @returns lines
+     * Joins each point to the next with a line, so a list of points becomes a chain of lines.
+     *
+     * Example: [[0,0,0], [5,0,0], [5,5,0]] -> two lines, [0,0,0] to [5,0,0] and [5,0,0] to [5,5,0]
+     * @param inputs - The points, in order
+     * @returns One line per pair of neighboring points
      * @group create
      * @shortname lines between points
      * @drawable true
+     * @example
+     * ```typescript
+     * const chain = bitbybit.line.linesBetweenPoints({ points: [[0, 0, 0], [5, 0, 0], [5, 5, 0]] });
+     * ```
      */
     linesBetweenPoints(inputs: Inputs.Line.PointsLinesDto): Inputs.Base.Line3[] {
         const lines = [];
@@ -175,14 +221,22 @@ export class Line {
     }
 
     /**
-     * Creates lines by pairing corresponding start and end points from two arrays.
-     * Filters out zero-length lines.
-     * Example: starts=[[0,0,0], [5,0,0]], ends=[[0,5,0], [5,5,0]] → 2 lines connecting paired points
-     * @param inputs start points and end points
-     * @returns lines
+     * Pairs each start point with the end point at the same position and joins them with a line.
+     *
+     * A pair whose two points coincide makes no line and is left out.
+     * Example: starts [[0,0,0], [5,0,0]] and ends [[0,5,0], [5,5,0]] -> two lines
+     * @param inputs - The start points and the end points, in matching order
+     * @returns One line per pair, skipping pairs of length 0
      * @group create
      * @shortname start and end points to lines
      * @drawable true
+     * @example
+     * ```typescript
+     * const rungs = bitbybit.line.linesBetweenStartAndEndPoints({
+     *     startPoints: [[0, 0, 0], [5, 0, 0]],
+     *     endPoints: [[0, 5, 0], [5, 5, 0]],
+     * });
+     * ```
      */
     linesBetweenStartAndEndPoints(inputs: Inputs.Line.LineStartEndPointsDto): Inputs.Base.Line3[] {
         return inputs.startPoints
@@ -191,10 +245,11 @@ export class Line {
     }
 
     /**
-     * Converts line object to segment array format.
-     * Example: {start:[0,0,0], end:[10,5,0]} → [[0,0,0], [10,5,0]]
-     * @param inputs line
-     * @returns segment
+     * Turns a line object into its segment form, the pair `[start, end]`.
+     *
+     * Example: { start: [0,0,0], end: [10,5,0] } -> [[0,0,0], [10,5,0]]
+     * @param inputs - The line
+     * @returns The segment
      * @group convert
      * @shortname line to segment
      * @drawable false
@@ -204,10 +259,11 @@ export class Line {
     }
 
     /**
-     * Converts multiple line objects to segment array format (batch conversion).
-     * Example: 3 line objects → 3 segment arrays [[start1, end1], [start2, end2], ...]
-     * @param inputs lines
-     * @returns segments
+     * Turns each line object into its segment form, the pair `[start, end]`.
+     *
+     * Example: three lines -> three segments, in the same order
+     * @param inputs - The lines
+     * @returns One segment per line
      * @group convert
      * @shortname lines to segments
      * @drawable false
@@ -217,10 +273,11 @@ export class Line {
     }
 
     /**
-     * Converts segment array to line object format.
-     * Example: [[0,0,0], [10,5,0]] → {start:[0,0,0], end:[10,5,0]}
-     * @param inputs segment
-     * @returns line
+     * Turns a segment, the pair `[start, end]`, into a line object.
+     *
+     * Example: [[0,0,0], [10,5,0]] -> { start: [0,0,0], end: [10,5,0] }
+     * @param inputs - The segment
+     * @returns The line
      * @group convert
      * @shortname segment to line
      * @drawable true
@@ -230,10 +287,11 @@ export class Line {
     }
 
     /**
-     * Converts multiple segment arrays to line object format (batch conversion).
-     * Example: 3 segment arrays → 3 line objects with start/end properties
-     * @param inputs segments
-     * @returns lines
+     * Turns each segment, a pair `[start, end]`, into a line object.
+     *
+     * Example: three segments -> three lines, in the same order
+     * @param inputs - The segments
+     * @returns One line per segment
      * @group convert
      * @shortname segments to lines
      * @drawable true
@@ -243,14 +301,26 @@ export class Line {
     }
 
     /**
-     * Calculates intersection point of two lines (or segments if checkSegmentsOnly=true).
-     * Returns undefined if lines are parallel, skew, or segments don't overlap.
-     * Example: line1={start:[0,0,0], end:[10,0,0]}, line2={start:[5,-5,0], end:[5,5,0]} → [5,0,0]
-     * @param inputs line1 and line2
-     * @returns intersection point or undefined if no intersection
+     * Finds the point where two lines cross.
+     *
+     * With `checkSegmentsOnly` on, the crossing must lie within both segments; off, the lines
+     * extend without end. Parallel lines, lines that pass each other without meeting, and segments
+     * that do not reach each other give undefined. The tolerance says how close counts as meeting.
+     * Example: [0,0,0] to [10,0,0] and [5,-5,0] to [5,5,0] -> [5,0,0]
+     * @param inputs - The two lines, whether to stay within the segments, and the tolerance
+     * @returns The crossing point, or undefined when there is none
      * @group intersection
      * @shortname line-line int
      * @drawable true
+     * @example
+     * ```typescript
+     * const crossing = bitbybit.line.lineLineIntersection({
+     *     line1: { start: [0, 0, 0], end: [10, 0, 0] },
+     *     line2: { start: [5, -5, 0], end: [5, 5, 0] },
+     *     checkSegmentsOnly: true,
+     *     tolerance: 1e-6,
+     * });
+     * ```
      */
     lineLineIntersection(inputs: Inputs.Line.LineLineIntersectionDto): Inputs.Base.Point3 | undefined {
         const epsilon = inputs.tolerance || 1e-6;

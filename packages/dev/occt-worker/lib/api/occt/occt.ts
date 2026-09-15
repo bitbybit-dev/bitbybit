@@ -20,7 +20,13 @@ import { OCCTPath } from "./path";
 import { OCCTSVG } from "./svg";
 
 /**
- * Contains various methods for OpenCascade implementation
+ * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
+ * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
+ * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners` and `draft` change
+ * shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and other
+ * files; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations,
+ * topology graphs, machining paths and SVG. The methods on the service itself turn shapes into
+ * triangle meshes for drawing.
  */
 export class OCCT {
     public readonly shapes: OCCTShapes;
@@ -60,42 +66,69 @@ export class OCCT {
     }
 
     /**
-     * Creates polygon points from the shape faces
-     * @param inputs shape
+     * Triangulates a shape and returns every triangle as three points, in one flat list over all
+     * faces.
+     *
+     * `precision` is the meshing tolerance in model units: smaller values follow curved surfaces
+     * more closely and give more triangles. `adjustYtoZ` swaps the Y and Z axes for tools that
+     * treat Z as up, and `reversedPoints` flips the winding of each triangle.
+     * @param inputs - The shape, the meshing precision and the axis and winding options
+     * @returns One list of three points per triangle
      * @group convert
      * @shortname faces to polygon points
      * @drawable false
+     * @example
+     * ```typescript
+     * const triangles = await bitbybit.occt.shapeFacesToPolygonPoints({ shape: sphere, precision: 0.01, adjustYtoZ: false, reversedPoints: false });
+     * ```
      */
     shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.Base.Point3[][]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapeFacesToPolygonPoints", inputs);
     }
 
     /**
-     * Creates mesh from the shape
-     * @param inputs shape
+     * Triangulates a shape into a mesh for drawing: one entry per face with its vertices, normals,
+     * UVs and triangle indexes, one per edge with its points, and the vertex points.
+     *
+     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
+     * more closely and cost more triangles. `adjustYtoZ` swaps Y and Z. A null shape gives empty
+     * lists.
+     * @param inputs - The shape, the meshing precision and the options
+     * @returns The mesh as face, edge and point lists
      * @group convert
      * @shortname shape to mesh
      * @drawable false
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.occt.shapeToMesh({ shape: sphere, precision: 0.01, adjustYtoZ: false });
+     * console.log(mesh.faceList.length, mesh.edgeList.length);
+     * ```
      */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
     }
 
     /**
-     * Creates mesh from the shape
-     * @param inputs shape
+     * Triangulates several shapes with the same settings, as `shapeToMesh` does for one.
+     * @param inputs - The shapes, the meshing precision and the options
+     * @returns One mesh per shape, in the same order
      * @group convert
      * @shortname shape to mesh
      * @drawable false
+     * @example
+     * ```typescript
+     * const meshes = await bitbybit.occt.shapesToMeshes({ shapes: [box, sphere], precision: 0.01, adjustYtoZ: false });
+     * ```
      */
     shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
     }
 
     /**
-     * Meshes an XCAF document's free (top-level) shapes as one combined mesh, resolving per-face colours
-     * into the colorGroups map of the output.
-     * @param inputs document
+     * Triangulates the top-level shapes of an assembly document into one combined mesh, with the
+     * face colors of the document collected into the mesh's color groups.
+     * @param inputs - The document and the meshing options
+     * @returns The combined mesh
      * @ignore true
      */
     docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
@@ -103,9 +136,10 @@ export class OCCT {
     }
 
     /**
-     * Meshes an XCAF document's free (top-level) shapes into separate meshes (one per shape), resolving
-     * per-face colours into each output's colorGroups map.
-     * @param inputs document
+     * Triangulates the top-level shapes of an assembly document into one mesh per shape, with the
+     * face colors of the document collected into each mesh's color groups.
+     * @param inputs - The document and the meshing options
+     * @returns One mesh per top-level shape
      * @ignore true
      */
     docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
@@ -113,30 +147,49 @@ export class OCCT {
     }
 
     /**
-     * Deletes shape from the cache to keep memory usage low
-     * @param inputs shape
+     * Frees the memory a shape holds inside the kernel; the shape cannot be used afterwards. Call
+     * it for intermediate results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The shape to free
      * @group memory
      * @shortname delete shape
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 1 });
+     * await bitbybit.occt.deleteShape({ shape: box });
+     * ```
      */
     async deleteShape(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("deleteShape", inputs);
     }
 
     /**
-     * Deletes shapes from the cache to keep memory usage low
-     * @param inputs shape
+     * Frees the memory several shapes hold inside the kernel; they cannot be used afterwards. Call
+     * it for intermediate results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The shapes to free
      * @group memory
      * @shortname delete shapes
+     * @example
+     * ```typescript
+     * await bitbybit.occt.deleteShapes({ shapes: [box, cylinder] });
+     * ```
      */
     async deleteShapes(inputs: Inputs.OCCT.ShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("deleteShapes", inputs);
     }
 
     /**
-     * Cleans all cache and all shapes from the memory
-     * @param inputs shape
+     * Frees every shape the kernel holds at once, including the ones your variables still point to,
+     * so nothing created before can be used afterwards. Call it when starting over rather than
+     * between steps.
      * @group memory
      * @shortname clean all cache
+     * @example
+     * ```typescript
+     * await bitbybit.occt.cleanAllCache();
+     * ```
      */
     async cleanAllCache(): Promise<void> {
         return await this.occWorkerManager.genericCallToWorkerPromise("cleanAllCache", {});

@@ -2,8 +2,10 @@ import * as Inputs from "../inputs";
 import { ContextBase } from "../context";
 
 /**
- * Tags help you to put text on top of your 3D objects. Tags are heavily used in data visualization
- * scenarios where you need to convery additional textual information.
+ * Text labels pinned to 3D positions: a tag is an HTML text element placed over the canvas at the
+ * screen position of a point in the scene, and it follows that point as the camera moves. Tags are
+ * for showing names, measurements or other data next to geometry. `drawTag` and `drawTags` create
+ * the elements and register them for updating; `create` only builds the description.
  */
 
 export class Tag {
@@ -11,9 +13,14 @@ export class Tag {
     constructor(private readonly context: ContextBase) { }
 
     /**
-     * Creates a tag dto
-     * @param inputs Tag description
-     * @returns A tag
+     * Builds a tag description from its text, position, color, size and depth behavior, without
+     * drawing it; `drawTag` or `drawTags` put it on screen.
+     * @param inputs - The text, the position, the color, the size and the depth behavior
+     * @returns The tag description, a new object
+     * @example
+     * ```typescript
+     * const tag = bitbybit.tag.create({ text: "Lid", position: [0, 10, 0], colour: "#ffffff", size: 14, adaptDepth: true });
+     * ```
      */
     create(inputs: Inputs.Tag.TagDto): Inputs.Tag.TagDto {
         const tag = new Inputs.Tag.TagDto();
@@ -26,10 +33,19 @@ export class Tag {
     }
 
     /**
-     * Draws a single tag
-     * @param inputs Information to draw the tag
-     * @returns A tag
+     * Puts one tag on screen as a text element pinned to its 3D position, and keeps it following
+     * that position.
+     *
+     * With `updatable` true and a `tagVariable` from an earlier draw, that tag is changed in place
+     * instead of a new one being added.
+     * @param inputs - The tag, whether it may be updated later and the earlier tag to update
+     * @returns The drawn tag, carrying the id that identifies it
      * @ignore true
+     * @example
+     * ```typescript
+     * const tag = bitbybit.tag.create({ text: "Lid", position: [0, 10, 0], colour: "#ffffff", size: 14, adaptDepth: false });
+     * const drawn = bitbybit.tag.drawTag({ tag, updatable: false });
+     * ```
      */
     drawTag(inputs: Inputs.Tag.DrawTagDto): Inputs.Tag.TagDto {
         if (inputs.tagVariable && inputs.updatable) {
@@ -50,10 +66,18 @@ export class Tag {
     }
 
     /**
-     * Draws multiple tags
-     * @param inputs Information to draw the tags
-     * @returns Tags
+     * Puts several tags on screen, each a text element pinned to its 3D position.
+     *
+     * With `updatable` true and a `tagsVariable` from an earlier draw, the earlier tags are changed
+     * in place: extra tags are added, and tags no longer in the list are removed.
+     * @param inputs - The tags, whether they may be updated later and the earlier tags to update
+     * @returns The drawn tags, each carrying the id that identifies it
      * @ignore true
+     * @example
+     * ```typescript
+     * const tags = points.map((position, i) => bitbybit.tag.create({ text: "P" + i, position, colour: "#ffffff", size: 12, adaptDepth: false }));
+     * const drawn = bitbybit.tag.drawTags({ tags, updatable: false });
+     * ```
      */
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
         if (inputs.tagsVariable && inputs.updatable) {

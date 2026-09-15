@@ -37,6 +37,14 @@ import * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 
+/**
+ * The whole library behind one object for a BabylonJS scene: `occt`, `jscad` and `manifold` for the
+ * CAD kernels, `draw` to put anything into the scene, `babylon` for the engine's meshes, cameras,
+ * lights, materials and GUI, and the plain data helpers `math`, `vector`, `point`, `line`,
+ * `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`, `color`, `asset`,
+ * `tag` and `time`. Call `init` once with the scene and the kernel workers before using any of
+ * them. The `bitbybit` object in the examples throughout these docs is an instance of this class.
+ */
 export class BitByBitBase {
 
     public context: Context;
@@ -111,6 +119,25 @@ export class BitByBitBase {
             this.context);
     }
 
+    /**
+     * Connects the library to a BabylonJS scene and to the web workers that run the CAD kernels;
+     * nothing works before it is called.
+     *
+     * A kernel whose worker is left out is unavailable, so pass only the ones your application
+     * loads. `havokPlugin` enables physics for `babylon.scene.enablePhysics`.
+     * @param scene - The scene everything is drawn into
+     * @param occt - The worker running the OCCT kernel, when OCCT is used
+     * @param jscad - The worker running the JSCAD kernel, when JSCAD is used
+     * @param manifold - The worker running the Manifold kernel, when Manifold is used
+     * @param havokPlugin - The Havok physics plugin, when physics is used
+     * @returns Nothing
+     * @example
+     * ```typescript
+     * const bitbybit = new BitByBitBase();
+     * const occtWorker = new Worker(new URL("./occt.worker", import.meta.url), { name: "OCC", type: "module" });
+     * bitbybit.init(scene, occtWorker);
+     * ```
+     */
     init(scene: BABYLON.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker, havokPlugin?: BABYLON.HavokPlugin) {
         this.context.scene = scene;
         if (havokPlugin) {

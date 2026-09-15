@@ -31,6 +31,10 @@ export interface InitThreeJSResult {
  * scene-level options that affect everything drawn into it.
  */
 export namespace ThreeJSScene {
+    /**
+     * Feeds the `initThreeJS` helper that sets up a whole scene in one call: the canvas,
+     * background, ground, lights, shadows and the orbit camera, sized from `sceneSize`.
+     */
     export class InitThreeJSDto {
         constructor(
             canvasId?: string,
@@ -69,6 +73,7 @@ export namespace ThreeJSScene {
         /**
          * The ID of the canvas element to render to. If not provided, a new canvas will be created and appended to document.body.
          * @default undefined
+         * @optional true
          */
         canvasId?: string | undefined;
 
@@ -142,7 +147,7 @@ export namespace ThreeJSScene {
         hemisphereLightGroundColor = "#444444";
 
         /**
-         * Intensity of the hemisphere light.
+         * Brightness of the soft light from above and below, 1 being full strength
          * @default 1
          * @minimum 0
          * @maximum 10
@@ -157,7 +162,7 @@ export namespace ThreeJSScene {
         directionalLightColor = "#ffffff";
 
         /**
-         * Intensity of the directional light.
+         * Brightness of the sun-like light that casts the shadows, 1 being full strength
          * @default 1.5
          * @minimum 0
          * @maximum 10
@@ -181,9 +186,8 @@ export namespace ThreeJSScene {
         enableOrbitCamera = true;
 
         /**
-         * Options for the orbit camera. Only used if enableOrbitCamera is true.
-         * If not provided, scene-aware defaults will be computed based on sceneSize.
-         * Uses the same DTO as the standalone orbit camera creation.
+         * Settings for the orbit camera, the same as `three.camera.orbitCamera.create` takes; left
+         * out, defaults sized from `sceneSize` are used
          * @optional true
          */
         orbitCameraOptions?: ThreeJSCamera.OrbitCameraDto | undefined;

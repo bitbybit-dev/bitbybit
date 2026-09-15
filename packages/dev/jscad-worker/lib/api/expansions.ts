@@ -5,8 +5,10 @@ import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 /**
- * Contains various functions for Solid expansions from JSCAD library https://github.com/jscad/OpenJSCAD.org
- * Thanks JSCAD community for developing this kernel
+ * Growing and shrinking JSCAD geometry by a distance: `expand` moves every boundary outward, or
+ * inward for a negative distance, and `offset` builds the outline at that distance. Both work on
+ * flat 2D shapes and paths and shape their corners as `corners` says; `expand` also grows solids,
+ * with round corners only.
  */
 export class JSCADExpansions {
     constructor(
@@ -15,24 +17,43 @@ export class JSCADExpansions {
     }
 
     /**
-     * Expand geometries of solid category
-     * @param inputs Contains options and geometries for expansion
-     * @returns Expanded geometry
+     * Grows geometry by moving its whole boundary outward by `delta`, or shrinks it when `delta` is
+     * negative.
+     *
+     * A 2D shape stays a 2D shape, a path becomes a 2D band of that width around it, and a solid
+     * grows into a bigger solid, with round corners and a positive `delta` only. Corners are
+     * rounded when `corners` is left out.
+     * @param inputs - The geometry, the distance, the corner style and the segments for round corners
+     * @returns The grown or shrunk geometry
      * @group expansion
      * @shortname expand
      * @drawable true
+     * @example
+     * ```typescript
+     * const square = await bitbybit.jscad.polygon.square({ center: [0, 0], size: 10 });
+     * const grown = await bitbybit.jscad.expansions.expand({ geometry: square, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.round, segments: 16 });
+     * ```
      */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("expansions.expand", inputs);
     }
 
     /**
-     * Offset 2d geometries of solid category
-     * @param inputs Contains options and geometries for offset
-     * @returns Expanded geometry
+     * Builds the outline of a 2D shape or path at distance `delta` from the original, outward for
+     * positive and inward for negative.
+     *
+     * A 2D shape gives a bigger or smaller 2D shape and a path gives a parallel path. When
+     * `corners` is left out, corners are kept sharp.
+     * @param inputs - The 2D shape or path, the distance, the corner style and the segments for round corners
+     * @returns The offset 2D shape or path
      * @group expansion
      * @shortname offset
      * @drawable true
+     * @example
+     * ```typescript
+     * const path = await bitbybit.jscad.path.createFromPoints({ points: [[0, 0], [10, 0], [10, 10]], closed: false });
+     * const parallel = await bitbybit.jscad.expansions.offset({ geometry: path, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.edge, segments: 16 });
+     * ```
      */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("expansions.offset", inputs);

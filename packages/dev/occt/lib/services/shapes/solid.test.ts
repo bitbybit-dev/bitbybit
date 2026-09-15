@@ -458,6 +458,25 @@ describe("OCCT solid unit tests", () => {
             standing.delete();
         });
 
+        it("should centre a box and a cube when the placement is left out, without writing the choice back into the options", () => {
+            // Arrange
+            const boxOptions = { width: 4, length: 6, height: 10, center: [0, 0, 0] } as Inputs.OCCT.BoxDto;
+            const cubeOptions = { size: 8, center: [0, 0, 0] } as Inputs.OCCT.CubeDto;
+
+            // Act
+            const box = solid.createBox(boxOptions);
+            const cube = solid.createCube(cubeOptions);
+
+            // Assert
+            expect(solid.getSolidCenterOfMass({ shape: box })[1]).toBeCloseTo(0, 6);
+            expect(solid.getSolidCenterOfMass({ shape: cube })[1]).toBeCloseTo(0, 6);
+            expect("originOnCenter" in boxOptions).toBe(false);
+            expect("originOnCenter" in cubeOptions).toBe(false);
+
+            box.delete();
+            cube.delete();
+        });
+
         it("should stand a cube on the point it was given rather than straddle it", () => {
             // Act
             const centred = solid.createCube({ size: 8, center: [0, 0, 0], originOnCenter: true });

@@ -6,9 +6,10 @@ import * as Models from "../models";
 import { Lists } from "./lists";
 
 /**
- * Contains various methods for points. Point in bitbybit is simply an array containing 3 numbers for [x, y,
- * z]. Because of this form Point can be interchanged with Vector, which also is an array in [x, y, z] form.
- * When creating 2D points, z coordinate is simply set to 0 - [x, y, 0].
+ * Points as plain number arrays. A point is `[x, y, z]` with Y pointing up, the same shape as a
+ * vector, so the two can be passed to each other's methods; a 2D point is `[x, y]`. Every method
+ * returns new points or numbers and never changes its inputs. Angles are in degrees and lengths in
+ * model units.
  */
 
 export class Point {
@@ -16,13 +17,21 @@ export class Point {
     constructor(private readonly geometryHelper: GeometryHelper, private readonly transforms: Transforms, private readonly vector: Vector, private readonly lists: Lists) { }
 
     /**
-     * Applies transformation matrix to a single point (rotates, scales, or translates).
-     * Example: point=[0,0,0] with translation [5,5,0] → [5,5,0]
-     * @param inputs Contains a point and the transformations to apply
-     * @returns Transformed point
+     * Applies a transformation matrix, or a list of them in order, to one point.
+     *
+     * Example: point [0,0,0] with a translation by [5,5,0] -> [5,5,0]
+     * @param inputs - The point and the transformation to apply
+     * @returns The transformed point
      * @group transforms
      * @shortname transform point
      * @drawable true
+     * @example
+     * ```typescript
+     * const moved = bitbybit.point.transformPoint({
+     *     point: [0, 0, 0],
+     *     transformation: bitbybit.transforms.translationXYZ({ translation: [5, 5, 0] }),
+     * });
+     * ```
      */
     transformPoint(inputs: Inputs.Point.TransformPointDto): Inputs.Base.Point3 {
         const transformation = inputs.transformation;
@@ -32,27 +41,44 @@ export class Point {
     }
 
     /**
-     * Applies same transformation matrix to multiple points (batch transform).
-     * Example: 5 points with rotation 90° → all 5 points rotated together
-     * @param inputs Contains points and the transformations to apply
-     * @returns Transformed points
+     * Applies the same transformation matrix, or list of them in order, to every point.
+     *
+     * Example: five points with a 90 degree rotation -> all five rotated together
+     * @param inputs - The points and the transformation to apply to each
+     * @returns The transformed points, in the same order
      * @group transforms
      * @shortname transform points
      * @drawable true
+     * @example
+     * ```typescript
+     * const rotated = bitbybit.point.transformPoints({
+     *     points: [[1, 0, 0], [2, 0, 0]],
+     *     transformation: bitbybit.transforms.rotationCenterAxis({ center: [0, 0, 0], axis: [0, 1, 0], angle: 90 }),
+     * });
+     * ```
      */
     transformPoints(inputs: Inputs.Point.TransformPointsDto): Inputs.Base.Point3[] {
         return this.geometryHelper.transformControlPoints(inputs.transformation, inputs.points);
     }
 
     /**
-     * Applies different transformation matrices to corresponding points (one transform per point).
-     * Arrays must have equal length.
-     * Example: 3 points with 3 different translations → each point moved independently
-     * @param inputs Contains points and the transformations to apply
-     * @returns Transformed points
+     * Applies a different transformation to each point: the first transformation to the first
+     * point, and so on.
+     *
+     * The two lists must have the same length, or an error is thrown.
+     * Example: three points with three translations -> each point moved by its own translation
+     * @param inputs - The points and one transformation per point
+     * @returns The transformed points, in the same order
      * @group transforms
      * @shortname transforms for points
      * @drawable true
+     * @example
+     * ```typescript
+     * const placed = bitbybit.point.transformsForPoints({
+     *     points: [[0, 0, 0], [1, 0, 0]],
+     *     transformation: bitbybit.transforms.translationsXYZ({ translations: [[0, 1, 0], [0, 2, 0]] }),
+     * });
+     * ```
      */
     transformsForPoints(inputs: Inputs.Point.TransformsForPointsDto): Inputs.Base.Point3[] {
         if (inputs.points.length !== inputs.transformation.length) {
@@ -64,13 +90,18 @@ export class Point {
     }
 
     /**
-     * Moves multiple points by a translation vector (same offset for all points).
-     * Example: points=[[0,0,0], [1,0,0]], translation=[5,5,0] → [[5,5,0], [6,5,0]]
-     * @param inputs Contains points and the translation vector
-     * @returns Translated points
+     * Moves every point by the same vector.
+     *
+     * Example: points [[0,0,0], [1,0,0]] by [5,5,0] -> [[5,5,0], [6,5,0]]
+     * @param inputs - The points and the vector to move them by
+     * @returns The moved points, in the same order
      * @group transforms
      * @shortname translate points
      * @drawable true
+     * @example
+     * ```typescript
+     * const moved = bitbybit.point.translatePoints({ points: [[0, 0, 0], [1, 0, 0]], translation: [5, 5, 0] });
+     * ```
      */
     translatePoints(inputs: Inputs.Point.TranslatePointsDto): Inputs.Base.Point3[] {
         const translationTransform = this.transforms.translationXYZ({ translation: inputs.translation });
@@ -78,14 +109,22 @@ export class Point {
     }
 
     /**
-     * Moves multiple points by corresponding translation vectors (one vector per point).
-     * Arrays must have equal length.
-     * Example: 3 points with 3 different vectors → each point moved by its corresponding vector
-     * @param inputs Contains points and the translation vector
-     * @returns Translated points
+     * Moves each point by its own vector: the first point by the first vector, and so on.
+     *
+     * The two lists must have the same length, or an error is thrown.
+     * Example: three points with three vectors -> each point moved by its own vector
+     * @param inputs - The points and one vector per point
+     * @returns The moved points, in the same order
      * @group transforms
      * @shortname translate points with vectors
      * @drawable true
+     * @example
+     * ```typescript
+     * const moved = bitbybit.point.translatePointsWithVectors({
+     *     points: [[0, 0, 0], [1, 0, 0]],
+     *     translations: [[0, 1, 0], [0, 2, 0]],
+     * });
+     * ```
      */
     translatePointsWithVectors(inputs: Inputs.Point.TranslatePointsWithVectorsDto): Inputs.Base.Point3[] {
         if (inputs.points.length !== inputs.translations.length) {
@@ -98,13 +137,18 @@ export class Point {
     }
 
     /**
-     * Moves multiple points by separate X, Y, Z values (convenience method for translation).
-     * Example: points=[[0,0,0]], x=10, y=5, z=0 → [[10,5,0]]
-     * @param inputs Contains points and the translation in x y and z
-     * @returns Translated points
+     * Moves every point by the given x, y and z amounts.
+     *
+     * Example: point [0,0,0] with x=10, y=5, z=0 -> [10,5,0]
+     * @param inputs - The points and the distance to move along each axis
+     * @returns The moved points, in the same order
      * @group transforms
      * @shortname translate xyz points
      * @drawable true
+     * @example
+     * ```typescript
+     * const lifted = bitbybit.point.translateXYZPoints({ points: [[0, 0, 0], [1, 0, 0]], x: 0, y: 5, z: 0 });
+     * ```
      */
     translateXYZPoints(inputs: Inputs.Point.TranslateXYZPointsDto): Inputs.Base.Point3[] {
         const translationTransform = this.transforms.translationXYZ({ translation: [inputs.x, inputs.y, inputs.z] });
@@ -112,13 +156,22 @@ export class Point {
     }
 
     /**
-     * Scales multiple points around a center point with different factors per axis.
-     * Example: points=[[10,0,0]], center=[5,0,0], scaleXyz=[2,1,1] → [[15,0,0]] (doubles X distance from center)
-     * @param inputs Contains points, center point and scale factors
-     * @returns Scaled points
+     * Scales points away from or toward a center, with its own factor per axis.
+     *
+     * Example: point [10,0,0] about center [5,0,0] with factors [2,1,1] -> [15,0,0]
+     * @param inputs - The points, the center to scale about and the factor per axis
+     * @returns The scaled points, in the same order
      * @group transforms
      * @shortname scale points on center
      * @drawable true
+     * @example
+     * ```typescript
+     * const stretched = bitbybit.point.scalePointsCenterXYZ({
+     *     points: [[10, 0, 0], [0, 10, 0]],
+     *     center: [0, 0, 0],
+     *     scaleXyz: [2, 1, 1],
+     * });
+     * ```
      */
     scalePointsCenterXYZ(inputs: Inputs.Point.ScalePointsCenterXYZDto): Inputs.Base.Point3[] {
         const scaleTransforms = this.transforms.scaleCenterXYZ({ center: inputs.center, scaleXyz: inputs.scaleXyz });
@@ -126,13 +179,24 @@ export class Point {
     }
 
     /**
-     * Stretches multiple points along a direction from a center point (directional scaling).
-     * Example: points=[[10,0,0]], center=[0,0,0], direction=[1,0,0], scale=2 → [[20,0,0]]
-     * @param inputs Contains points, center point, direction and scale factor
-     * @returns Stretched points
+     * Stretches points along one direction, measured from a center; distances across that direction
+     * stay as they are.
+     *
+     * Example: point [10,0,0] from center [0,0,0] along [1,0,0] with scale 2 -> [20,0,0]
+     * @param inputs - The points, the center, the direction to stretch along and the factor
+     * @returns The stretched points, in the same order
      * @group transforms
      * @shortname stretch points dir from center
      * @drawable true
+     * @example
+     * ```typescript
+     * const taller = bitbybit.point.stretchPointsDirFromCenter({
+     *     points: [[0, 1, 0], [0, 2, 0]],
+     *     center: [0, 0, 0],
+     *     direction: [0, 1, 0],
+     *     scale: 2,
+     * });
+     * ```
      */
     stretchPointsDirFromCenter(inputs: Inputs.Point.StretchPointsDirFromCenterDto): Inputs.Base.Point3[] {
         const stretchTransforms = this.transforms.stretchDirFromCenter({ center: inputs.center, scale: inputs.scale, direction: inputs.direction });
@@ -140,13 +204,24 @@ export class Point {
     }
 
     /**
-     * Rotates multiple points around a center point along a custom axis.
-     * Example: points=[[10,0,0]], center=[0,0,0], axis=[0,1,0], angle=90° → [[0,0,-10]]
-     * @param inputs Contains points, axis, center point and angle of rotation
-     * @returns Rotated points
+     * Rotates points around an axis that passes through a center.
+     *
+     * The angle is in degrees and turns counter-clockwise when the axis points toward you.
+     * Example: point [10,0,0] around the Y axis through [0,0,0] by 90 -> [0,0,-10]
+     * @param inputs - The points, the axis direction, the center it passes through and the angle in degrees
+     * @returns The rotated points, in the same order
      * @group transforms
      * @shortname rotate points center axis
      * @drawable true
+     * @example
+     * ```typescript
+     * const turned = bitbybit.point.rotatePointsCenterAxis({
+     *     points: [[10, 0, 0]],
+     *     center: [0, 0, 0],
+     *     axis: [0, 1, 0],
+     *     angle: 90,
+     * });
+     * ```
      */
     rotatePointsCenterAxis(inputs: Inputs.Point.RotatePointsCenterAxisDto): Inputs.Base.Point3[] {
         const rotationTransforms = this.transforms.rotationCenterAxis({ center: inputs.center, axis: inputs.axis, angle: inputs.angle });
@@ -154,13 +229,20 @@ export class Point {
     }
 
     /**
-     * Calculates axis-aligned bounding box containing all points (min, max, center, width, height, length).
-     * Example: points=[[0,0,0], [10,5,3]] → {min:[0,0,0], max:[10,5,3], center:[5,2.5,1.5], width:10, height:5, length:3}
-     * @param inputs Points
-     * @returns Bounding box of points
+     * Finds the smallest axis-aligned box that holds all the points.
+     *
+     * The result carries the min and max corners, the center, and the width (X), height (Y) and
+     * length (Z).
+     * Example: points [[0,0,0], [10,5,3]] -> min [0,0,0], max [10,5,3], center [5,2.5,1.5]
+     * @param inputs - The points to enclose
+     * @returns The bounding box with its corners, center and sizes
      * @group extract
      * @shortname bounding box pts
      * @drawable true
+     * @example
+     * ```typescript
+     * const box = bitbybit.point.boundingBoxOfPoints({ points: [[0, 0, 0], [10, 5, 3], [-2, 1, 1]] });
+     * ```
      */
     boundingBoxOfPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.BoundingBox {
         const xVals: number[] = [];
@@ -194,52 +276,72 @@ export class Point {
     }
 
     /**
-     * Calculates distance to the nearest point in a collection.
-     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → 3 (distance to [3,0,0])
-     * @param inputs Point from which to measure and points to measure the distance against
-     * @returns Distance to closest point
+     * Measures the distance from a point to the nearest point in a list.
+     *
+     * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> 3
+     * @param inputs - The point to measure from and the points to search
+     * @returns The distance to the nearest point, in model units
      * @group extract
      * @shortname distance to closest pt
      * @drawable false
+     * @example
+     * ```typescript
+     * const nearest = bitbybit.point.closestPointFromPointsDistance({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
+     * ```
      */
     closestPointFromPointsDistance(inputs: Inputs.Point.ClosestPointFromPointsDto): number {
         return this.closestPointFromPointData(inputs).distance;
     }
 
     /**
-     * Finds array index of the nearest point in a collection (1-based index, not 0-based).
-     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → 3 (index of [3,0,0])
-     * @param inputs Point from which to find the index in a collection of points
-     * @returns Closest point index
+     * Finds the position of the nearest point in a list, counted from 1.
+     *
+     * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> 3
+     * @param inputs - The point to measure from and the points to search
+     * @returns The 1-based index of the nearest point
      * @group extract
      * @shortname index of closest pt
      * @drawable false
+     * @example
+     * ```typescript
+     * const index = bitbybit.point.closestPointFromPointsIndex({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
+     * ```
      */
     closestPointFromPointsIndex(inputs: Inputs.Point.ClosestPointFromPointsDto): number {
         return this.closestPointFromPointData(inputs).index;
     }
 
     /**
-     * Finds the nearest point in a collection to a reference point.
-     * Example: point=[0,0,0], points=[[5,0,0], [10,0,0], [3,0,0]] → [3,0,0]
-     * @param inputs Point and points collection to find the closest point in
-     * @returns Closest point
+     * Finds the nearest point in a list to a given point.
+     *
+     * Example: point [0,0,0] and points [[5,0,0], [10,0,0], [3,0,0]] -> [3,0,0]
+     * @param inputs - The point to measure from and the points to search
+     * @returns The nearest point
      * @group extract
      * @shortname closest pt
      * @drawable true
+     * @example
+     * ```typescript
+     * const nearest = bitbybit.point.closestPointFromPoints({ point: [0, 0, 0], points: [[5, 0, 0], [3, 0, 0]] });
+     * ```
      */
     closestPointFromPoints(inputs: Inputs.Point.ClosestPointFromPointsDto): Inputs.Base.Point3 {
         return this.closestPointFromPointData(inputs).point;
     }
 
     /**
-     * Calculates Euclidean distance between two points.
-     * Example: start=[0,0,0], end=[3,4,0] → 5 (using Pythagorean theorem: √(3²+4²))
-     * @param inputs Coordinates of start and end points
-     * @returns Distance
+     * Measures the straight-line distance between two points.
+     *
+     * Example: [0,0,0] to [3,4,0] -> 5
+     * @param inputs - The two points
+     * @returns The distance in model units
      * @group measure
      * @shortname distance
      * @drawable false
+     * @example
+     * ```typescript
+     * const d = bitbybit.point.distance({ startPoint: [0, 0, 0], endPoint: [3, 4, 0] });
+     * ```
      */
     distance(inputs: Inputs.Point.StartEndPointsDto): number {
         const x = inputs.endPoint[0] - inputs.startPoint[0];
@@ -249,13 +351,18 @@ export class Point {
     }
 
     /**
-     * Calculates distances from a start point to multiple end points.
-     * Example: start=[0,0,0], endPoints=[[3,0,0], [0,4,0], [5,0,0]] → [3, 4, 5]
-     * @param inputs Coordinates of start and end points
-     * @returns Distances
+     * Measures the distance from one point to each point in a list.
+     *
+     * Example: start [0,0,0] and end points [[3,0,0], [0,4,0], [5,0,0]] -> [3, 4, 5]
+     * @param inputs - The start point and the points to measure to
+     * @returns One distance per end point, in the same order
      * @group measure
      * @shortname distances to points
      * @drawable false
+     * @example
+     * ```typescript
+     * const distances = bitbybit.point.distancesToPoints({ startPoint: [0, 0, 0], endPoints: [[3, 0, 0], [0, 4, 0]] });
+     * ```
      */
     distancesToPoints(inputs: Inputs.Point.StartEndPointsListDto): number[] {
         return inputs.endPoints.map(pt => {
@@ -264,13 +371,18 @@ export class Point {
     }
 
     /**
-     * Duplicates a point N times (creates array with N copies of the same point).
-     * Example: point=[5,5,0], amountOfPoints=3 → [[5,5,0], [5,5,0], [5,5,0]]
-     * @param inputs The point to be multiplied and the amount of points to create
-     * @returns Distance
+     * Repeats one point a given number of times in a list.
+     *
+     * Example: point [5,5,0] three times -> [[5,5,0], [5,5,0], [5,5,0]]
+     * @param inputs - The point and how many copies to make
+     * @returns The list of copies
      * @group transforms
      * @shortname multiply point
      * @drawable true
+     * @example
+     * ```typescript
+     * const copies = bitbybit.point.multiplyPoint({ point: [5, 5, 0], amountOfPoints: 3 });
+     * ```
      */
     multiplyPoint(inputs: Inputs.Point.MultiplyPointDto): Inputs.Base.Point3[] {
         const points: Inputs.Base.Point3[] = [];
@@ -281,10 +393,11 @@ export class Point {
     }
 
     /**
-     * Extracts X coordinate from a point.
-     * Example: point=[5,10,3] → 5
-     * @param inputs The point
-     * @returns X coordinate
+     * Reads the X value of a point.
+     *
+     * Example: [5,10,3] -> 5
+     * @param inputs - The point
+     * @returns The X value
      * @group get
      * @shortname x coord
      * @drawable false
@@ -294,10 +407,11 @@ export class Point {
     }
 
     /**
-     * Extracts Y coordinate from a point.
-     * Example: point=[5,10,3] → 10
-     * @param inputs The point
-     * @returns Y coordinate
+     * Reads the Y value of a point, the one that points up.
+     *
+     * Example: [5,10,3] -> 10
+     * @param inputs - The point
+     * @returns The Y value
      * @group get
      * @shortname y coord
      * @drawable false
@@ -307,10 +421,11 @@ export class Point {
     }
 
     /**
-     * Extracts Z coordinate from a point.
-     * Example: point=[5,10,3] → 3
-     * @param inputs The point
-     * @returns Z coordinate
+     * Reads the Z value of a point.
+     *
+     * Example: [5,10,3] -> 3
+     * @param inputs - The point
+     * @returns The Z value
      * @group get
      * @shortname z coord
      * @drawable false
@@ -320,13 +435,18 @@ export class Point {
     }
 
     /**
-     * Calculates centroid (average position) of multiple points.
-     * Example: points=[[0,0,0], [10,0,0], [10,10,0]] → [6.67,3.33,0]
-     * @param inputs The points
-     * @returns point
+     * Finds the average of the points, which is their center of mass when they weigh the same.
+     *
+     * Example: [[0,0,0], [10,0,0], [10,10,0]] -> [6.67,3.33,0]
+     * @param inputs - The points to average
+     * @returns The average point
      * @group extract
      * @shortname average point
      * @drawable true
+     * @example
+     * ```typescript
+     * const center = bitbybit.point.averagePoint({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+     * ```
      */
     averagePoint(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3 {
         const xVals: number[] = [];
@@ -347,40 +467,56 @@ export class Point {
     }
 
     /**
-     * Creates a 3D point from X, Y, Z coordinates.
-     * Example: x=10, y=5, z=3 → [10,5,3]
-     * @param inputs xyz information
-     * @returns point 3d
+     * Builds a 3D point from its x, y and z values.
+     *
+     * Example: x=10, y=5, z=3 -> [10,5,3]
+     * @param inputs - The three values
+     * @returns The point `[x, y, z]`
      * @group create
      * @shortname point xyz
      * @drawable true
+     * @example
+     * ```typescript
+     * const point = bitbybit.point.pointXYZ({ x: 10, y: 5, z: 3 });
+     * ```
      */
     pointXYZ(inputs: Inputs.Point.PointXYZDto): Inputs.Base.Point3 {
         return [inputs.x, inputs.y, inputs.z];
     }
 
     /**
-     * Creates a 2D point from X, Y coordinates.
-     * Example: x=10, y=5 → [10,5]
-     * @param inputs xy information
-     * @returns point 3d
+     * Builds a 2D point from its x and y values.
+     *
+     * Example: x=10, y=5 -> [10,5]
+     * @param inputs - The two values
+     * @returns The point `[x, y]`
      * @group create
      * @shortname point xy
      * @drawable false
+     * @example
+     * ```typescript
+     * const point = bitbybit.point.pointXY({ x: 10, y: 5 });
+     * ```
      */
     pointXY(inputs: Inputs.Point.PointXYDto): Inputs.Base.Point2 {
         return [inputs.x, inputs.y];
     }
 
     /**
-     * Creates logarithmic spiral points using golden angle or custom widening factor.
-     * Generates natural spiral patterns common in nature (sunflower, nautilus shell).
-     * Example: numberPoints=100, radius=10, phi=1.618 → 100 points forming outward spiral
-     * @param inputs Spiral information
-     * @returns Specified number of points in the array along the spiral
+     * Lays out points along a logarithmic spiral in the XY plane, from the origin outward to
+     * `radius`.
+     *
+     * `numberPoints` sets how many points are placed, `phi` and `widening` how quickly the spiral
+     * opens, and `factor` where along the curve it starts. Every point has z = 0.
+     * @param inputs - The point count, the radius and the shape of the spiral
+     * @returns The points along the spiral, from the center outward
      * @group create
      * @shortname spiral
      * @drawable true
+     * @example
+     * ```typescript
+     * const points = bitbybit.point.spiral({ phi: 0.9, numberPoints: 100, widening: 3, radius: 10, factor: 1 });
+     * ```
      */
     spiral(inputs: Inputs.Point.SpiralDto): Inputs.Base.Point3[] {
         const phi = inputs.phi;
@@ -397,14 +533,20 @@ export class Point {
     }
 
     /**
-     * Creates hexagonal grid center points on XY plane (honeycomb pattern).
-     * Grid size controlled by number of hexagons, not width/height.
-     * Example: radiusHexagon=1, nrHexagonsX=3, nrHexagonsY=3 → 9 hex centers in grid pattern
-     * @param inputs Information about hexagon and the grid
-     * @returns Points in the array on the grid
+     * Lays out the centers of a honeycomb of hexagons in the XY plane.
+     *
+     * `radiusHexagon` is the distance from a hexagon's center to a corner; columns run along X and
+     * rows along Y, every second row shifted by half a column. `orientOnCenter` centers the grid on
+     * the origin, `pointsOnGround` lays it on the XZ plane.
+     * @param inputs - The hexagon size, how many columns and rows, and where to place the grid
+     * @returns The center points, row by row
      * @group create
      * @shortname hex grid
      * @drawable true
+     * @example
+     * ```typescript
+     * const centers = bitbybit.point.hexGrid({ radiusHexagon: 1, nrHexagonsX: 5, nrHexagonsY: 4, orientOnCenter: true, pointsOnGround: false });
+     * ```
      */
     hexGrid(inputs: Inputs.Point.HexGridCentersDto): Inputs.Base.Point3[] {
         const xLength = Math.sqrt(Math.pow(inputs.radiusHexagon, 2) - Math.pow(inputs.radiusHexagon / 2, 2));
@@ -436,14 +578,28 @@ export class Point {
     }
 
     /**
-     * Creates hexagonal grid scaled to fit within specified width/height bounds (auto-calculates hex size).
-     * Returns center points and hex vertices. Supports pointy-top or flat-top orientation.
-     * Example: width=10, height=10, nrHexagonsInHeight=3 → hex grid filling 10×10 area with 3 rows
-     * @param inputs Information about the desired grid dimensions and hexagon counts.
-     * @returns An object containing the array of center points and an array of hexagon vertex arrays.
+     * Lays out a honeycomb of hexagons that fills a given width and height, sizing the hexagons
+     * from the counts.
+     *
+     * The result carries the center points and the six corners of every hexagon. A corner points up
+     * unless `flatTop` is set; the extend flags stretch the outer rows past the edges to cover the
+     * rectangle without a jagged border.
+     * @param inputs - The area to fill, the hexagon counts, the orientation and the placement options
+     * @returns The centers and the corner points of every hexagon
      * @group create
      * @shortname scaled hex grid to fit
      * @drawable false
+     * @example
+     * ```typescript
+     * const grid = bitbybit.point.hexGridScaledToFit({
+     *     width: 10,
+     *     height: 10,
+     *     nrHexagonsInWidth: 5,
+     *     nrHexagonsInHeight: 5,
+     *     flatTop: false,
+     *     centerGrid: true,
+     * });
+     * ```
      */
     hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
         let width = inputs.width ?? 10;
@@ -738,14 +894,21 @@ export class Point {
     }
 
     /**
-     * Calculates the maximum possible fillet radius at a corner formed by two line segments
-     * sharing an endpoint (C), such that the fillet arc is tangent to both segments
-     * and lies entirely within them.
-     * @param inputs three points and the tolerance
-     * @returns the maximum fillet radius
+     * Finds the largest fillet that fits a corner: the arc touches both segments and stays inside
+     * them.
+     *
+     * The corner is `end`; `start` and `center` are the far ends of the two segments that meet
+     * there. The radius is limited by the shorter segment. A straight or folded-back corner, or a
+     * segment shorter than `tolerance`, gives 0.
+     * @param inputs - The far end of each segment, the corner they share, and the tolerance
+     * @returns The largest fillet radius, in model units
      * @group fillet
      * @shortname max fillet radius
      * @drawable false
+     * @example
+     * ```typescript
+     * const radius = bitbybit.point.maxFilletRadius({ start: [10, 0, 0], center: [0, 10, 0], end: [0, 0, 0], tolerance: 1e-7 });
+     * ```
      */
     maxFilletRadius(
         inputs: Inputs.Point.ThreePointsToleranceDto
@@ -791,14 +954,20 @@ export class Point {
     }
 
     /**
-     * Calculates the maximum possible fillet radius at a corner C, such that the fillet arc
-     * is tangent to both segments (P1-C, P2-C) and the tangent points lie within
-     * the first half of each segment (measured from C).
-     * @param inputs three points and the tolerance
-     * @returns the maximum fillet radius
+     * Finds the largest fillet at a corner whose arc touches each segment within its nearer half,
+     * so neighboring corners of a polyline can each be filleted without the arcs overlapping.
+     *
+     * The corner is `end`; `start` and `center` are the far ends of the two segments. A straight or
+     * folded-back corner, or a segment shorter than `tolerance`, gives 0.
+     * @param inputs - The far end of each segment, the corner they share, and the tolerance
+     * @returns The largest fillet radius under the half-segment rule, in model units
      * @group fillet
      * @shortname max fillet radius half line
      * @drawable false
+     * @example
+     * ```typescript
+     * const radius = bitbybit.point.maxFilletRadiusHalfLine({ start: [10, 0, 0], center: [0, 10, 0], end: [0, 0, 0], tolerance: 1e-7 });
+     * ```
      */
     maxFilletRadiusHalfLine(
         inputs: Inputs.Point.ThreePointsToleranceDto
@@ -841,14 +1010,24 @@ export class Point {
     }
 
     /**
-     * Calculates the maximum possible fillet radius at each corner of a polyline formed by 
-     * formed by a series of points. The fillet radius is calculated for each internal
-     * corner and optionally for the closing corners if the polyline is closed.
-     * @param inputs Points, checkLastWithFirst flag, and tolerance
-     * @returns Array of maximum fillet radii for each corner
+     * Finds the largest fillet for every corner of a polyline, each limited to the nearer half of
+     * its segments so the fillets never overlap.
+     *
+     * With `checkLastWithFirst` on, the polyline is treated as closed and the two corners at the
+     * ends are included. Fewer than three points give an empty list.
+     * @param inputs - The polyline points, whether it is closed, and the tolerance
+     * @returns One radius per corner, in the order of the corners
      * @group fillet
      * @shortname max fillets half line
      * @drawable false
+     * @example
+     * ```typescript
+     * const radii = bitbybit.point.maxFilletsHalfLine({
+     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
+     *     checkLastWithFirst: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     maxFilletsHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
@@ -903,17 +1082,24 @@ export class Point {
     }
 
     /**
-     * Calculates the single safest maximum fillet radius that can be applied
-     * uniformly to all corners of collection of points, based on the 'half-line' constraint.
-     * This is determined by finding the minimum of the maximum possible fillet
-     * radii calculated for each individual corner.
-     * @param inputs Defines the points, whether it's closed, and an optional tolerance.
-     * @returns The smallest value from the results of pointsMaxFilletsHalfLine.
-     *          Returns 0 if the polyline has fewer than 3 points or if any
-     *          calculated maximum radius is 0.
+     * Finds one fillet radius that fits every corner of a polyline: the smallest of the per-corner
+     * maximums under the half-segment rule.
+     *
+     * With `checkLastWithFirst` on, the polyline is treated as closed. Fewer than three points, or
+     * any corner that allows no fillet, give 0.
+     * @param inputs - The polyline points, whether it is closed, and the tolerance
+     * @returns The radius that fits every corner, in model units
      * @group fillet
      * @shortname safest fillet radii points
      * @drawable false
+     * @example
+     * ```typescript
+     * const radius = bitbybit.point.safestPointsMaxFilletHalfLine({
+     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
+     *     checkLastWithFirst: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     safestPointsMaxFilletHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
@@ -930,26 +1116,50 @@ export class Point {
     }
 
     /**
-     * Removes consecutive duplicate points from array within tolerance.
-     * Example: [[0,0,0], [0,0,0], [1,0,0], [1,0,0], [2,0,0]] → [[0,0,0], [1,0,0], [2,0,0]]
-     * @param inputs points, tolerance and check first and last
-     * @returns Points in the array without consecutive duplicates
+     * Removes a point when it repeats the one right before it; the same point further away is kept.
+     *
+     * With `checkFirstAndLast` on, a last point that repeats the first is dropped too. Points
+     * within `tolerance` of each other count as the same.
+     * Example: [[0,0,0], [0,0,0], [1,0,0], [1,0,0], [2,0,0]] -> [[0,0,0], [1,0,0], [2,0,0]]
+     * @param inputs - The points, the tolerance and whether to compare the first and last
+     * @returns The points without consecutive repeats
      * @group clean
      * @shortname remove duplicates
      * @drawable true
+     * @example
+     * ```typescript
+     * const cleaned = bitbybit.point.removeConsecutiveDuplicates({
+     *     points: [[0, 0, 0], [0, 0, 0], [1, 0, 0]],
+     *     tolerance: 1e-7,
+     *     checkFirstAndLast: false,
+     * });
+     * ```
      */
     removeConsecutiveDuplicates(inputs: Inputs.Point.RemoveConsecutiveDuplicatesDto): Inputs.Base.Point3[] {
         return this.geometryHelper.removeConsecutivePointDuplicates(inputs.points, inputs.checkFirstAndLast, inputs.tolerance);
     }
 
     /**
-     * Calculates normal vector from three points using cross product (perpendicular to plane).
-     * Example: p1=[0,0,0], p2=[1,0,0], p3=[0,1,0] → [0,0,1] (pointing up from XY plane)
-     * @param inputs Three points and the reverse normal flag
-     * @returns Normal vector
+     * Finds the direction at right angles to the plane through three points, with length 1.
+     *
+     * The direction follows the right-hand rule going from the first point to the second to the
+     * third; `reverseNormal` flips it. Points on one line have no plane, so the result is
+     * undefined.
+     * Example: [0,0,0], [1,0,0], [0,1,0] -> [0,0,1]
+     * @param inputs - The three points and whether to flip the result
+     * @returns The unit normal, or undefined when the points are on one line
      * @group create
      * @shortname normal from 3 points
      * @drawable true
+     * @example
+     * ```typescript
+     * const normal = bitbybit.point.normalFromThreePoints({
+     *     point1: [0, 0, 0],
+     *     point2: [1, 0, 0],
+     *     point3: [0, 1, 0],
+     *     reverseNormal: false,
+     * });
+     * ```
      */
     normalFromThreePoints(inputs: Inputs.Point.ThreePointsNormalDto): Inputs.Base.Vector3 | undefined {
         const p1 = inputs.point1;
@@ -1005,13 +1215,18 @@ export class Point {
     }
 
     /**
-     * Checks if two points are approximately equal within tolerance (distance-based comparison).
-     * Example: point1=[1.0000001, 2.0, 3.0], point2=[1.0, 2.0, 3.0], tolerance=1e-6 → true
-     * @param inputs Two points and the tolerance
-     * @returns true if the points are almost equal
+     * Tells whether two points are closer together than a tolerance.
+     *
+     * Example: [1.0000001, 2, 3] and [1, 2, 3] with tolerance 1e-6 -> true
+     * @param inputs - The two points and the tolerance
+     * @returns True when the distance between them is below the tolerance
      * @group measure
      * @shortname two points almost equal
      * @drawable false
+     * @example
+     * ```typescript
+     * const same = bitbybit.point.twoPointsAlmostEqual({ point1: [1, 2, 3], point2: [1, 2, 3.0000001], tolerance: 1e-6 });
+     * ```
      */
     twoPointsAlmostEqual(inputs: Inputs.Point.TwoPointsToleranceDto): boolean {
         const p1 = inputs.point1;
@@ -1021,13 +1236,18 @@ export class Point {
     }
 
     /**
-     * Sorts points lexicographically (by X, then Y, then Z coordinates).
-     * Example: [[5,0,0], [1,0,0], [3,0,0]] → [[1,0,0], [3,0,0], [5,0,0]]
-     * @param inputs points
-     * @returns sorted points
+     * Sorts points by X, then by Y for equal X, then by Z.
+     *
+     * Example: [[5,0,0], [1,0,0], [3,0,0]] -> [[1,0,0], [3,0,0], [5,0,0]]
+     * @param inputs - The points to sort
+     * @returns A sorted copy of the points
      * @group sort
      * @shortname sort points
      * @drawable true
+     * @example
+     * ```typescript
+     * const sorted = bitbybit.point.sortPoints({ points: [[5, 0, 0], [1, 0, 0], [3, 0, 0]] });
+     * ```
      */
     sortPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3[] {
         return [...inputs.points].sort((a, b) => {

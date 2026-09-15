@@ -8,13 +8,13 @@ export namespace Base {
     // Core Types
     // ============================================================================
     /**
-     * A colour as a CSS string - a hex value such as #ff8800, or any other form the browser
+     * A color as a CSS string - a hex value such as #ff8800, or any other form the browser
      * accepts. This is the form every draw option and material takes; use the color API to convert
      * to and from RGB and HSL.
      */
     export type Color = string;
     /**
-     * A colour as separate red, green and blue channels, each 0-255. Use it when you need to compute
+     * A color as separate red, green and blue channels, each 0-255. Use it when you need to compute
      * with the channels; convert to a Color string before handing it to a draw call.
      */
     export type ColorRGB = { r: number, g: number, b: number };
@@ -47,7 +47,7 @@ export namespace Base {
     /**
      * A direction and magnitude in space as [x, y, z]. Structurally identical to Point3; use this
      * name where the value means a direction - a normal, an axis, an offset - rather than a position.
-     * Many operations expect it normalised, and say so on the parameter.
+     * Many operations expect it normalized, and say so on the parameter.
      */
     export type Vector3 = [number, number, number];
     /**
@@ -90,7 +90,7 @@ export namespace Base {
      */
     export type Plane3 = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
     /**
-     * The axis-aligned box enclosing a shape, as a min and a max corner, with the centre and the
+     * The axis-aligned box enclosing a shape, as a min and a max corner, with the center and the
      * width, height and length filled in as a convenience. Use it to size a camera to a model, to lay
      * objects out without overlap, or to check a part fits a build volume.
      */
@@ -105,12 +105,12 @@ export namespace Base {
      */
     export type Line3 = { start: Base.Point3, end: Base.Point3 };
     /**
-     * A connected chain of points in space, optionally closed, with an optional colour. Closing it
+     * A connected chain of points in space, optionally closed, with an optional color. Closing it
      * turns the chain into an outline that can become a face.
      */
     export type Polyline3 = { points: Base.Point3[], isClosed?: boolean, color?: number[] };
     /**
-     * A connected chain of points in the plane, optionally closed, with an optional colour.
+     * A connected chain of points in the plane, optionally closed, with an optional color.
      */
     export type Polyline2 = { points: Base.Point2[], isClosed?: boolean, color?: number[] };
     /**
@@ -118,18 +118,19 @@ export namespace Base {
      */
     export type TransformMatrix3x3 = [number, number, number, number, number, number, number, number, number];
     /**
-     * A list of 3x3 transformation matrices, for producing patterned layouts in the plane.
+     * A list of 3x3 transformation matrices, applied one after another, first to last, as one
+     * combined transform in the plane.
      */
     export type TransformMatrixes3x3 = TransformMatrix3x3[];
     /**
-     * A 4x4 transformation matrix as 16 numbers in row-major order. Translation, rotation and scale
-     * combined into one value that any geometry API will accept, so the same transform applies
-     * equally to points, curves and solids.
+     * A 4x4 transformation matrix as 16 numbers in column-major order, so the translation sits at
+     * indices 12 to 14. Translation, rotation and scale combined into one value that any geometry
+     * API will accept, so the same transform applies equally to points, curves and solids.
      */
     export type TransformMatrix = [number, number, number, number, number, number, number, number, number, number, number, number, number, number, number, number];
     /**
-     * A list of 4x4 transformation matrices. Applying a list transforms a shape once per matrix,
-     * which is how patterned arrays and instanced layouts are produced in a single call.
+     * A list of 4x4 transformation matrices, applied one after another, first to last, as one
+     * combined transform. A method that takes a list gives one result, not one per matrix.
      */
     export type TransformMatrixes = TransformMatrix[];
 

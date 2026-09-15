@@ -3,6 +3,11 @@ import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * The orbiting camera: it circles a target point at a distance, the way you would turn a product in
+ * your hands, and is the camera this library uses by default. Angles are given in degrees: `alpha`
+ * around the vertical axis, `beta` down from the top.
+ */
 export class BabylonArcRotateCamera {
 
     constructor(
@@ -10,12 +15,21 @@ export class BabylonArcRotateCamera {
     ) { }
 
     /**
-     * Creates a camera that rotates around a given target while traveling the arc path. This camera is suitable for simple 3D navigation and is a default camera used by bitbybit.
-     * Default inputs allow you to control most important camera properties. If you need to change other properties, you can use specific set methods.
-     * @param inputs Describes the arc rotate camera
-     * @returns BabylonJS arc rotate camera
+     * Creates a camera that orbits `target` at distance `radius`, controlled by the pointer on the
+     * canvas, and adds it to the scene without activating it.
+     *
+     * `alpha` and `beta` place it in degrees, `beta` counted down from straight above; the limits
+     * fence how far it can zoom and orbit, and the sensibilities set how fast it reacts, lower
+     * being faster.
+     * @param inputs - The radius, target, angles, limits and sensitivities
+     * @returns The orbiting camera
      * @group create
      * @shortname new arc rotate camera
+     * @example
+     * ```typescript
+     * const camera = bitbybit.babylon.camera.arcRotate.create({ radius: 20, target: [0, 0, 0], alpha: 45, beta: 70, lowerBetaLimit: 1, upperBetaLimit: 179, angularSensibilityX: 1000, angularSensibilityY: 1000, panningSensibility: 1000, wheelPrecision: 3, maxZ: 1000 });
+     * bitbybit.babylon.scene.activateCamera({ camera });
+     * ```
      */
     create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): BABYLON.ArcRotateCamera {
         const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);

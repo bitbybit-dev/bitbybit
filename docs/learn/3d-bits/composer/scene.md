@@ -63,6 +63,10 @@ Two fields change the character of the shot rather than its limits:
 
 The rest of the panel is pointer tuning: angular sensibility on each axis, panning sensibility, wheel precision, the two pinch settings and **Use Natural Pinch Zoom**, which makes a two-finger zoom track the shopper's fingers exactly.
 
+### Shopper pointer input
+
+Three switches at the end of the panel decide which gestures move the camera on your product page: **Rotate by dragging**, **Zoom with the wheel and pinch** and **Pan**. They are all on until you change them. Switch one off when a gesture gets in the way of the page - the wheel that should scroll rather than zoom, the one-finger swipe on a phone that should scroll rather than spin the product - and hand the movement to focals, points of interest and the [Camera controls](/learn/3d-bits/composer/gui/camera-controls) layout element instead. They apply on the product page and in Play; the camera you edit with stays free whatever they say.
+
 ## Lighting
 
 Directional lights behave like the sun, casting parallel light from an angle. You add as many as you need, and set the direction, colour, intensity and whether each one casts shadows.
@@ -113,6 +117,14 @@ Once you add the section, **Type** is required - either pick one or remove the s
 **Hide Skybox** keeps the reflections while showing your chosen background instead of the environment image, which is usually what you want on a product page.
 
 **Size** is how large the skybox is drawn, **Blur** softens reflections so a busy environment looks less distracting, and **Environment intensity** controls how strongly it lights the scene.
+
+### Standing the product on the ground
+
+**Ground projection** flattens the lower part of the sky into a floor the product stands on, so it looks placed in the environment rather than floating inside it, and the shadows from your lights fall onto that floor. The floor is the horizontal plane at height 0, so position your model to rest on it. It works with every skybox type, built-in or custom.
+
+**Ground radius** is how far that floor and the sky dome reach from the scene's origin, in scene units. Keep the camera inside it - beyond the radius the projected sky breaks up - so match it to the camera's upper radius limit. **Horizon height** is the height the environment was captured at, above the floor - the floor itself is always at height 0. A value close to the real capture height of your panorama, typically 1.5 to 3 in a metre-scale scene, looks the most natural; lower values smear the horizon across the floor.
+
+Keep the camera above the floor with an upper beta limit of 90 degrees, since from below there is nothing to project. Hiding the skybox hides the floor and its shadows too. While editing, every light is on regardless of its variant rules, so the floor shows all of their shadows; Play applies the rules.
 
 ### Bringing your own environment, and converting it
 

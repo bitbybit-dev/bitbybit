@@ -217,7 +217,7 @@ export class OperationsService {
     }
 
     offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        if (!inputs.tolerance) { inputs.tolerance = 0.1; }
+        const tolerance = inputs.tolerance || 0.1;
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
         const joinType = this.getJoinType(inputs.joinType);
@@ -249,7 +249,7 @@ export class OperationsService {
                 (offset).PerformByJoin(
                     wire,
                     inputs.distance,
-                    inputs.tolerance,
+                    tolerance,
                     brepOffsetMode,
                     false,
                     false,
@@ -361,20 +361,20 @@ export class OperationsService {
     }
 
     revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
-        if (!inputs.angle) { inputs.angle = 360.0; }
-        if (!inputs.direction) { inputs.direction = [0, 0, 1]; }
+        const angle = inputs.angle || 360.0;
+        const direction = inputs.direction || [0, 0, 1];
         let result;
         const pt1 = new this.occ.gp_Pnt(0, 0, 0);
-        const dir = new this.occ.gp_Dir(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const dir = new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
-        if (inputs.angle >= 360.0) {
+        if (angle >= 360.0) {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
             result = makeRevol.Shape();
             makeRevol.delete();
         } else {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
                 ax1,
-                inputs.angle * 0.0174533, inputs.copy);
+                angle * 0.0174533, inputs.copy);
             result = makeRevol.Shape();
             makeRevol.delete();
         }

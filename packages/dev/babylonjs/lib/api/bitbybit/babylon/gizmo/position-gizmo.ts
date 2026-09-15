@@ -2,6 +2,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * The position gizmo: three arrows that drag the attached mesh along X, Y or Z, plus optional
+ * square handles that drag it within a plane. Snapping moves the mesh in fixed steps, and the axis
+ * and plane parts can be reached one by one to enable or disable them.
+ */
 export class BabylonGizmoPositionGizmo {
 
 
@@ -11,10 +16,16 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Set planar gizmo enabled
-     * @param inputs position gizmo
+     * Shows or hides the square handles of a position gizmo that drag the mesh within the XY, YZ
+     * and XZ planes, in addition to the axis arrows.
+     * @param inputs - The position gizmo and the flag
+     * @returns The same position gizmo
      * @group set
      * @shortname set planar gizmo enabled
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gizmo.positionGizmo.planarGizmoEnabled({ positionGizmo, planarGizmoEnabled: true });
+     * ```
      */
     planarGizmoEnabled(inputs: Inputs.BabylonGizmo.SetPlanarGizmoEnabled): BABYLON.IPositionGizmo {
         inputs.positionGizmo.planarGizmoEnabled = inputs.planarGizmoEnabled;
@@ -22,10 +33,16 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Set position gizmo snap distance
-     * @param inputs position gizmo
+     * Makes a position gizmo move the mesh in steps of `snapDistance` scene units instead of
+     * smoothly; 0 turns snapping off.
+     * @param inputs - The position gizmo and the step size
+     * @returns The same position gizmo
      * @group set
      * @shortname set snap distance
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gizmo.positionGizmo.snapDistance({ positionGizmo, snapDistance: 0.5 });
+     * ```
      */
     snapDistance(inputs: Inputs.BabylonGizmo.SetPositionGizmoSnapDistanceDto): BABYLON.IPositionGizmo {
         inputs.positionGizmo.snapDistance = inputs.snapDistance;
@@ -33,31 +50,32 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-    * Get attached mesh
-    * @param inputs position gizmo
-    * @returns attached mesh
-    * @group get
-    * @shortname get attached mesh
-    */
+     * Reads the mesh a position gizmo is currently attached to.
+     * @param inputs - The position gizmo
+     * @returns The attached mesh
+     * @group get
+     * @shortname get attached mesh
+     */
     getAttachedMesh(inputs: Inputs.BabylonGizmo.PositionGizmoDto): BABYLON.AbstractMesh {
         return inputs.positionGizmo?.attachedMesh as BABYLON.AbstractMesh;
     }
 
     /**
-    * Get attached node
-    * @param inputs position gizmo
-    * @returns attached node
-    * @group get
-    * @shortname get attached node
-    */
+     * Reads the node a position gizmo is currently attached to, which may be a transform node
+     * rather than a mesh.
+     * @param inputs - The position gizmo
+     * @returns The attached node
+     * @group get
+     * @shortname get attached node
+     */
     getAttachedNode(inputs: Inputs.BabylonGizmo.PositionGizmoDto): BABYLON.Node {
         return inputs.positionGizmo?.attachedNode as BABYLON.Node;
     }
 
     /**
-     * Get x gizmo
-     * @param inputs position gizmo
-     * @returns x drag gizmo
+     * Reads the arrow of a position gizmo that drags along X, to enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The X axis drag gizmo
      * @group get
      * @shortname get x gizmo
      */
@@ -66,9 +84,9 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get y gizmo
-     * @param inputs position gizmo
-     * @returns y drag gizmo
+     * Reads the arrow of a position gizmo that drags along Y, to enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The Y axis drag gizmo
      * @group get
      * @shortname get y gizmo
      */
@@ -77,9 +95,9 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get z gizmo
-     * @param inputs position gizmo
-     * @returns z drag gizmo
+     * Reads the arrow of a position gizmo that drags along Z, to enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The Z axis drag gizmo
      * @group get
      * @shortname get z gizmo
      */
@@ -88,8 +106,10 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get x plane gizmo
-     * @param inputs position gizmo
+     * Reads the handle of a position gizmo that drags within the plane facing X, the YZ plane, to
+     * enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The X plane drag gizmo
      * @group get
      * @shortname get x plane gizmo
      */
@@ -98,8 +118,10 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get y plane gizmo
-     * @param inputs position gizmo
+     * Reads the handle of a position gizmo that drags within the plane facing Y, the XZ plane, to
+     * enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The Y plane drag gizmo
      * @group get
      * @shortname get y plane gizmo
      */
@@ -108,8 +130,10 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get z plane gizmo
-     * @param inputs position gizmo
+     * Reads the handle of a position gizmo that drags within the plane facing Z, the XY plane, to
+     * enable or disable it on its own.
+     * @param inputs - The position gizmo
+     * @returns The Z plane drag gizmo
      * @group get
      * @shortname get z plane gizmo
      */
@@ -118,9 +142,9 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get if planar gizmo enabled
-     * @param inputs position gizmo
-     * @returns is enabled
+     * Reads whether a position gizmo shows its plane handles.
+     * @param inputs - The position gizmo
+     * @returns True when the plane handles are shown
      * @group get
      * @shortname get planar gizmo enabled
      */
@@ -129,9 +153,9 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get snap distance
-     * @param inputs position gizmo
-     * @returns snap distance
+     * Reads the step size a position gizmo snaps to, 0 meaning smooth movement.
+     * @param inputs - The position gizmo
+     * @returns The snap distance
      * @group get
      * @shortname get snap distance
      */
@@ -140,9 +164,9 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-     * Get if is dragging
-     * @param inputs position gizmo
-     * @returns is dragging
+     * Tells whether the user is dragging a position gizmo right now.
+     * @param inputs - The position gizmo
+     * @returns True while a drag is in progress
      * @group get
      * @shortname get is dragging
      */
@@ -151,12 +175,17 @@ export class BabylonGizmoPositionGizmo {
     }
 
     /**
-    * Creates the selector of an observable for a position gizmo
-    * @param inputs observable name
-    * @returns position gizmo observable selector
-    * @group create
-    * @shortname position gizmo observable selector
-    */
+     * Passes through the name of a position gizmo event, drag start, drag or drag end, as a typed
+     * selector for code that subscribes to gizmo events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
+     * @group create
+     * @shortname position gizmo observable selector
+     * @example
+     * ```typescript
+     * const selector = bitbybit.babylon.gizmo.positionGizmo.createPositionGizmoObservableSelector({ selector: Bit.Inputs.BabylonGizmo.positionGizmoObservableSelectorEnum.onDragEndObservable });
+     * ```
+     */
     createPositionGizmoObservableSelector(inputs: Inputs.BabylonGizmo.PositionGizmoObservableSelectorDto): Inputs.BabylonGizmo.positionGizmoObservableSelectorEnum {
         return inputs.selector;
     }

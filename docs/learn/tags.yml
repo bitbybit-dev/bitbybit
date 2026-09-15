@@ -562,3 +562,8 @@ testing:
   label: Testing
   permalink: /testing
   description: Checking a configurator behaves before it goes on sale.
+
+html:
+  label: HTML
+  permalink: /html
+  description: Custom HTML elements and markup inside the configurator panel.

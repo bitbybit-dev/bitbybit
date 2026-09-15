@@ -3,7 +3,7 @@
  * Kernel <-> worker parity, by dotted path.
  *
  * Each worker package (occt-worker, jscad-worker, manifold-worker) is a hand-written mirror of its
- * kernel: every worker method sends a dotted path such as "assembly.manager.setLabelColor" and the
+ * kernel: every worker method sends a dotted path such as "assembly.manager.setDocLabelColor" and the
  * worker thread resolves it by walking properties on the kernel's root service and calling the
  * method it lands on. Nothing checked that the path exists, so a rename on either side became a
  * runtime "is not a function" the first time a user reached it. Those paths are also the public
@@ -31,13 +31,10 @@
  *   node scripts/worker-parity.mjs --update   rewrite the snapshot from the current worker surface
  */
 import ts from "typescript";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { targets } from "./inputs.config.mjs";
+import { ROOT, sourceFiles, parse, isPublic, nameOf, jsdocOf, classesUnder } from "./lib/surface.mjs";
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FRAGMENT_DIRS = new Set(targets.map((t) => path.join(ROOT, t.dir)));
 const SNAPSHOT = path.join(ROOT, "scripts/worker-parity.snapshot.json");
 const ALLOW = path.join(ROOT, "scripts/worker-parity.allow.json");
 const update = process.argv.includes("--update");
@@ -48,51 +45,9 @@ const PAIRS = [
     { name: "manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", workerDir: "packages/dev/manifold-worker/lib/api", workerRoot: "ManifoldBitByBit" },
 ];
 
-function sourceFiles(dir) {
-    const out = [];
-    const walk = (d) => {
-        for (const entry of readdirSync(d, { withFileTypes: true })) {
-            if (entry.name === "node_modules" || entry.name === "dist" || entry.name.startsWith(".")) continue;
-            const p = path.join(d, entry.name);
-            // the inputs fragments duplicate the DTO classes of the assembled inputs files (scripts/gen-inputs.mjs)
-            if (entry.isDirectory() && FRAGMENT_DIRS.has(p)) continue;
-            if (entry.isDirectory()) walk(p);
-            else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) out.push(p);
-        }
-    };
-    walk(dir);
-    return out.sort();
-}
-
-const parse = (file) => ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);
-
-const isPublic = (node) => !(ts.getCombinedModifierFlags(node) & (ts.ModifierFlags.Private | ts.ModifierFlags.Protected | ts.ModifierFlags.Static));
-const nameOf = (node) => (node.name && ts.isIdentifier(node.name) ? node.name.text : null);
 const typeText = (node, sf) => (node ? node.getText(sf).replace(/\s+/g, "") : "");
-/** The JSDoc block directly above a declaration, or null. */
-function jsdocOf(node, sf) {
-    const blocks = (ts.getLeadingCommentRanges(sf.text, node.getFullStart()) || []).filter((r) => sf.text.substring(r.pos, r.pos + 3) === "/**");
-    return blocks.length ? sf.text.substring(blocks[blocks.length - 1].pos, blocks[blocks.length - 1].end) : null;
-}
 /** Two docs are the same when their lines read the same; indentation belongs to the file, not the doc. */
 const normaliseDoc = (doc) => (doc ? doc.split(/\r?\n/).map((l) => l.trim()).join("\n") : "");
-
-/** Every class declared under a package dir, by name. Class names are unique per package. */
-function classesUnder(dir) {
-    const classes = new Map();
-    for (const file of sourceFiles(dir)) {
-        const sf = parse(file);
-        const visit = (node) => {
-            if (ts.isClassDeclaration(node) && node.name) {
-                if (classes.has(node.name.text)) classes.get(node.name.text).duplicates.push(file);
-                else classes.set(node.name.text, { node, sf, file, duplicates: [] });
-            }
-            ts.forEachChild(node, visit);
-        };
-        visit(sf);
-    }
-    return classes;
-}
 
 /**
  * Walk a class tree from its root exactly as the worker's path resolver would at runtime: every

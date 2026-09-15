@@ -80,19 +80,20 @@ export class OCCTAssemblyManager {
 
     // last
     /**
-     * Delete an assembly document and release its memory.
-     * Call this when done with the document to free resources.
-     * 
-     * @param inputs - Document to delete
+     * Deletes an assembly document and frees the memory it holds.
+     *
+     * A document built with `buildAssemblyDocument` or loaded with `loadStepToDoc` stays in memory
+     * until this is called, so delete it once its shapes and exports have been read.
+     * @param inputs - The document to delete
+     * @returns Nothing; the document handle is no longer valid afterwards
      * @group lifecycle
      * @shortname delete document
      * @drawable false
-     * 
      * @example
      * ```typescript
-     * const document = await occt.assembly.manager.buildAssemblyDocument({ structure });
-     * // ... use the document ...
-     * await occt.assembly.manager.deleteDocument({ document });
+     * const doc = await bitbybit.occt.assembly.manager.buildAssemblyDocument({ structure });
+     * const glb = await bitbybit.occt.assembly.manager.exportDocumentToGltf({ document: doc, meshDeflection: 0.1, meshAngle: 0.5, internalVerticesMode: false, controlSurfaceDeflection: false, mergeFaces: false, forceUVExport: false, fileName: "assembly.glb", tryDownload: false });
+     * await bitbybit.occt.assembly.manager.deleteDocument({ document: doc });
      * ```
      */
     async deleteDocument(inputs: Inputs.OCCT.DocumentQueryDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<void> {

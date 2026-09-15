@@ -26,7 +26,8 @@
     },
     "docs": {
       "io.saveShapeSTEP": "the worker splits the call into saveShapeSTEP (triggers the download) and saveShapeSTEPAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc",
-      "io.saveShapeStl": "the worker splits the call into saveShapeStl (triggers the download) and saveShapeStlAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc"
+      "io.saveShapeStl": "the worker splits the call into saveShapeStl (triggers the download) and saveShapeStlAndReturn (resolves the text), each documented on its own; the kernel returns the text and carries the returning wrapper's doc",
+      "shapes.wire.textWiresWithData": "the kernel returns an object definition whose data names the compounds by id; the worker resolves those ids into shape pointers and returns the flat text data, so each side documents the result it hands back"
     }
   },
   "jscad": {

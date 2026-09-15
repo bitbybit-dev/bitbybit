@@ -23,6 +23,8 @@ export interface AssemblyNodeJson {
      * Multiple instances with the same definitionId share the same geometry.
      */
     definitionId?: string | undefined;
+    /** Name of the part or assembly this instance places (only set if isInstance is true, empty if it has none) */
+    definitionName?: string | undefined;
     /** Visibility flag */
     visible: boolean;
     /** Surface color (if set) */

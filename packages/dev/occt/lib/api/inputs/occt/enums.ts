@@ -32,7 +32,7 @@ export enum approxParametrizationTypeEnum {
     approxIsoParametric = "approxIsoParametric"
 }
 /**
- * Which side of the original geometry an operation works on: outside, inside, or centred on it.
+ * Which side of the original geometry an operation works on: outside, inside, or centerd on it.
  */
 export enum directionEnum {
     outside = "outside",
@@ -192,8 +192,8 @@ export enum geomFillTrihedronEnum {
     isDiscreteTrihedron = "isDiscreteTrihedron",
 }
 /**
- * How colours are written into a DXF file: ACI index colours, which every DXF reader understands,
- * or true colour, which is exact but less widely supported.
+ * How colors are written into a DXF file: ACI index colors, which every DXF reader understands,
+ * or true color, which is exact but less widely supported.
  */
 export enum dxfColorFormatEnum {
     aci = "aci",

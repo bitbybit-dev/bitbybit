@@ -103,6 +103,32 @@ describe("ManifoldBooleans", () => {
         });
     });
 
+    describe("minkowskiSum", () => {
+        it("should grow a cube by a cube into the cube of the summed size", () => {
+            // Arrange
+            const inputs = new Inputs.Manifold.TwoManifoldsDto(big, manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, SMALL_SIZE)));
+
+            // Act
+            const grown = manifold.manifold.booleans.minkowskiSum(inputs);
+
+            // Assert
+            expect(volumeOf(grown)).toBeCloseTo((BIG_SIZE + SMALL_SIZE) ** 3, 6);
+        });
+    });
+
+    describe("minkowskiDifference", () => {
+        it("should shrink a cube by a cube into the cube of the subtracted size", () => {
+            // Arrange
+            const inputs = new Inputs.Manifold.TwoManifoldsDto(big, manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, SMALL_SIZE)));
+
+            // Act
+            const shrunk = manifold.manifold.booleans.minkowskiDifference(inputs);
+
+            // Assert
+            expect(volumeOf(shrunk)).toBeCloseTo((BIG_SIZE - SMALL_SIZE) ** 3, 6);
+        });
+    });
+
     describe("the list forms", () => {
         it("should agree with the pairwise forms", () => {
             // Arrange

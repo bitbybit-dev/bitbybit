@@ -5,7 +5,7 @@ import { BabylonMaterialPbrMetallicRoughness } from "./pbr-metallic-roughness";
 import { BabylonMaterialSky } from "./sky-material";
 
 /**
- * Materials: physically-based surfaces with base colour, metallic and roughness, emissive and
+ * Materials: physically-based surfaces with base color, metallic and roughness, emissive and
  * ambient contributions, transparency, and the texture slots that drive each of them.
  */
 export class BabylonMaterial {

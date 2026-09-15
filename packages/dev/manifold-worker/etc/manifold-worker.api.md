@@ -9,7 +9,6 @@ import { Subject } from 'rxjs';
 // @public
 export class BitByBitManifold {
     constructor();
-    // (undocumented)
     init(manifold: Worker): void;
     // (undocumented)
     manifold: ManifoldBitByBit;
@@ -37,7 +36,6 @@ export class CacheHelper {
     isManifoldObject(obj: any): boolean;
     // (undocumented)
     manifoldObjectHashes: Set<string | number>;
-    remove(inputArray: any[], objectToRemove: any): any[];
     stringToHash(str: string): number;
     // (undocumented)
     usedHashes: Record<string, string | number>;

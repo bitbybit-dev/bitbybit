@@ -3,8 +3,10 @@ import { MeshEvaluate } from "./mesh-evaluate";
 import { MeshOperations } from "./mesh-operations";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * The plain triangle data of a Manifold solid, as `manifold.manifoldToMesh` hands it out:
+ * `evaluate` reads vertices, triangles, tangents and the runs that group triangles by their
+ * original shape, and `operations` repairs merge information. A mesh is what crosses from the
+ * kernel to a renderer or a file.
  */
 export class Mesh {
 

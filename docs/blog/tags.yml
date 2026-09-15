@@ -226,3 +226,33 @@ configurator:
   label: Configurator
   permalink: /configurator
   description: Interactive 3D product configurators built with Bitbybit for e-commerce and online visualization.
+
+b2c:
+  label: B2C
+  permalink: /b2c
+  description: Configurators sold directly to consumers.
+
+furniture:
+  label: Furniture
+  permalink: /furniture
+  description: 3D configurators for chairs, tables and other furniture.
+
+gaming-chair:
+  label: Gaming Chair
+  permalink: /gaming-chair
+  description: Personalised gaming chair configurators.
+
+personalization:
+  label: Personalization
+  permalink: /personalization
+  description: Shoppers putting their own text, initials or artwork onto the product.
+
+pricing:
+  label: Pricing
+  permalink: /pricing
+  description: Configurator pricing that Shopify charges at checkout.
+
+pdf:
+  label: PDF
+  permalink: /pdf
+  description: PDF documents generated from a configuration for shoppers and workshops.

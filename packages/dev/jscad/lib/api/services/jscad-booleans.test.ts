@@ -133,4 +133,28 @@ describe("JSCADBooleans", () => {
             expect(kernel.measurements.measureVolume(result)).toBeCloseTo(BIG_VOLUME - 2 * OVERLAP_VOLUME, 6);
         });
     });
+
+    describe("minkowskiSum", () => {
+        it("should grow a cube by a cube into the cube of the summed side", () => {
+            // Arrange
+            const inputs = new Inputs.JSCAD.MinkowskiSumDto([big, jscad.shapes.cube(new Inputs.JSCAD.CubeDto(ORIGIN, SMALL_SIDE))]);
+
+            // Act
+            const result = jscad.booleans.minkowskiSum(inputs);
+
+            // Assert
+            expect(kernel.measurements.measureVolume(result)).toBeCloseTo((BIG_SIDE + SMALL_SIDE) ** 3, 6);
+        });
+
+        it("should refuse a 2D shape", () => {
+            // Arrange
+            const inputs = new Inputs.JSCAD.MinkowskiSumDto([big, jscad.polygon.square(new Inputs.JSCAD.SquareDto())]);
+
+            // Act
+            const act = () => jscad.booleans.minkowskiSum(inputs);
+
+            // Assert
+            expect(act).toThrow(/minkowskiSum needs a 3D solid/);
+        });
+    });
 });

@@ -6,17 +6,21 @@ import { Point } from "./point";
 type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
 
 /**
- * Contains various text methods.
+ * Working with text: splitting, joining, searching, trimming, padding, changing case, regular
+ * expressions and formatting with placeholders. `vectorChar` and `vectorText` turn text into line
+ * paths drawn with a simple stroke font, so words can become geometry. Positions in text count from
+ * 0.
  */
 export class TextBitByBit {
     constructor(private readonly point: Point) {
     }
 
     /**
-     * Creates and returns a text string (pass-through for text input).
-     * Example: text='Hello World' → 'Hello World'
-     * @param inputs a text
-     * @returns text
+     * Passes a text through unchanged, so a value can be given a name and reused.
+     *
+     * Example: 'Hello World' -> 'Hello World'
+     * @param inputs - The text
+     * @returns The same text
      * @group create
      * @shortname text
      * @drawable false
@@ -26,76 +30,102 @@ export class TextBitByBit {
     }
 
     /**
-    * Splits text into multiple pieces using a separator string.
-    * Example: text='apple,banana,cherry', separator=',' → ['apple', 'banana', 'cherry']
-    * @param inputs a text
-    * @returns text
-    * @group transform
-    * @shortname split
-    * @drawable false
-    */
+     * Cuts a text into pieces wherever a separator occurs; the separator itself is dropped.
+     *
+     * Example: 'apple,banana,cherry' split by ',' -> ['apple', 'banana', 'cherry']
+     * @param inputs - The text and the separator
+     * @returns The pieces, in order
+     * @group transform
+     * @shortname split
+     * @drawable false
+     * @example
+     * ```typescript
+     * const parts = bitbybit.text.split({ text: "apple,banana,cherry", separator: "," });
+     * ```
+     */
     split(inputs: Inputs.Text.TextSplitDto): string[] {
         return inputs.text.split(inputs.separator);
     }
 
     /**
-    * Replaces all occurrences of a search string with a replacement string.
-    * Example: text='hello hello', search='hello', replaceWith='hi' → 'hi hi'
-    * @param inputs a text
-    * @returns text
-    * @group transform
-    * @shortname replaceAll
-    * @drawable false
-    */
+     * Replaces every occurrence of a search text with another text.
+     *
+     * Example: 'hello hello' replacing 'hello' with 'hi' -> 'hi hi'
+     * @param inputs - The text, what to search for and what to put in its place
+     * @returns The text with the replacements made
+     * @group transform
+     * @shortname replaceAll
+     * @drawable false
+     * @example
+     * ```typescript
+     * const greeting = bitbybit.text.replaceAll({ text: "hello hello", search: "hello", replaceWith: "hi" });
+     * ```
+     */
     replaceAll(inputs: Inputs.Text.TextReplaceDto): string {
         return inputs.text.split(inputs.search).join(inputs.replaceWith);
     }
 
     /**
-    * Joins multiple items into a single text string using a separator.
-    * Example: list=['apple', 'banana', 'cherry'], separator=', ' → 'apple, banana, cherry'
-    * @param inputs a list of items
-    * @returns text
-    * @group transform
-    * @shortname join
-    * @drawable false
-    */
+     * Joins a list of texts into one, with a separator between neighbors.
+     *
+     * Example: ['apple', 'banana', 'cherry'] joined by ', ' -> 'apple, banana, cherry'
+     * @param inputs - The texts and the separator
+     * @returns The joined text
+     * @group transform
+     * @shortname join
+     * @drawable false
+     * @example
+     * ```typescript
+     * const line = bitbybit.text.join({ list: ["apple", "banana"], separator: ", " });
+     * ```
+     */
     join(inputs: Inputs.Text.TextJoinDto): string {
         return inputs.list.join(inputs.separator);
     }
 
     /**
-    * Transform any item to text
-    * @param inputs any item
-    * @returns text
-    * @group transform
-    * @shortname to string
-    * @drawable false
-    */
+     * Turns any value into text, the way JavaScript prints it.
+     *
+     * Example: 42 -> '42', [1, 2] -> '1,2'
+     * @param inputs - The value
+     * @returns The value as text
+     * @group transform
+     * @shortname to string
+     * @drawable false
+     */
     toString<T>(inputs: Inputs.Text.ToStringDto<T>): string {
         return (inputs.item as { toString(): string }).toString();
     }
 
     /**
-    * Transform each item in list to text
-    * @param inputs list of items
-    * @returns texts
-    * @group transform
-    * @shortname to strings
-    * @drawable false
-    */
+     * Turns every item of a list into text, the way JavaScript prints it.
+     *
+     * Example: [1, 2.5, true] -> ['1', '2.5', 'true']
+     * @param inputs - The list of values
+     * @returns One text per item, in order
+     * @group transform
+     * @shortname to strings
+     * @drawable false
+     */
     toStringEach<T>(inputs: Inputs.Text.ToStringEachDto<T>): string[] {
         return inputs.list.map(i => (i as { toString(): string }).toString());
     }
 
     /**
-     * Formats text with placeholder values using {0}, {1}, etc. syntax.
-     * Example: text='Point: ({0}, {1})', values=[10, 5] → 'Point: (10, 5)'
-     * @param inputs a text and values
-     * @returns formatted text
+     * Fills numbered placeholders in a text with values: `{0}` takes the first value, `{1}` the
+     * second, and so on.
+     *
+     * A placeholder without a value is left as it is.
+     * Example: 'Point: ({0}, {1})' with [10, 5] -> 'Point: (10, 5)'
+     * @param inputs - The text with placeholders and the values to fill in
+     * @returns The filled-in text
      * @group transform
      * @shortname format
      * @drawable false
+     * @example
+     * ```typescript
+     * const label = bitbybit.text.format({ text: "Point: ({0}, {1})", values: ["10", "5"] });
+     * ```
      */
     format(inputs: Inputs.Text.TextFormatDto): string {
         return inputs.text.replace(/{(\d+)}/g, (match, number) => {
@@ -104,114 +134,159 @@ export class TextBitByBit {
     }
 
     /**
-     * Checks if text contains a search string.
-     * Example: text='hello world', search='world' → true
-     * @param inputs a text and search string
-     * @returns boolean
+     * Tells whether a text contains a search text.
+     *
+     * Example: 'hello world' includes 'world' -> true
+     * @param inputs - The text and what to look for
+     * @returns True when the search text occurs in it
      * @group query
      * @shortname includes
      * @drawable false
+     * @example
+     * ```typescript
+     * const has = bitbybit.text.includes({ text: "hello world", search: "world" });
+     * ```
      */
     includes(inputs: Inputs.Text.TextSearchDto): boolean {
         return inputs.text.includes(inputs.search);
     }
 
     /**
-     * Checks if text starts with a search string.
-     * Example: text='hello world', search='hello' → true
-     * @param inputs a text and search string
-     * @returns boolean
+     * Tells whether a text begins with a search text.
+     *
+     * Example: 'hello world' starts with 'hello' -> true
+     * @param inputs - The text and what to look for at its start
+     * @returns True when the text begins with it
      * @group query
      * @shortname starts with
      * @drawable false
+     * @example
+     * ```typescript
+     * const starts = bitbybit.text.startsWith({ text: "hello world", search: "hello" });
+     * ```
      */
     startsWith(inputs: Inputs.Text.TextSearchDto): boolean {
         return inputs.text.startsWith(inputs.search);
     }
 
     /**
-     * Checks if text ends with a search string.
-     * Example: text='hello world', search='world' → true
-     * @param inputs a text and search string
-     * @returns boolean
+     * Tells whether a text ends with a search text.
+     *
+     * Example: 'hello world' ends with 'world' -> true
+     * @param inputs - The text and what to look for at its end
+     * @returns True when the text ends with it
      * @group query
      * @shortname ends with
      * @drawable false
+     * @example
+     * ```typescript
+     * const ends = bitbybit.text.endsWith({ text: "hello world", search: "world" });
+     * ```
      */
     endsWith(inputs: Inputs.Text.TextSearchDto): boolean {
         return inputs.text.endsWith(inputs.search);
     }
 
     /**
-     * Returns the index of the first occurrence of a search string.
-     * Example: text='hello world', search='world' → 6
-     * @param inputs a text and search string
-     * @returns index or -1 if not found
+     * Finds where a search text first occurs, counting characters from 0, or -1 when it does not
+     * occur.
+     *
+     * Example: 'hello world' finding 'world' -> 6
+     * @param inputs - The text and what to look for
+     * @returns The position of the first occurrence, or -1
      * @group query
      * @shortname index of
      * @drawable false
+     * @example
+     * ```typescript
+     * const at = bitbybit.text.indexOf({ text: "hello world", search: "world" });
+     * ```
      */
     indexOf(inputs: Inputs.Text.TextSearchDto): number {
         return inputs.text.indexOf(inputs.search);
     }
 
     /**
-     * Returns the index of the last occurrence of a search string.
-     * Example: text='hello world hello', search='hello' → 12
-     * @param inputs a text and search string
-     * @returns index or -1 if not found
+     * Finds where a search text last occurs, counting characters from 0, or -1 when it does not
+     * occur.
+     *
+     * Example: 'hello world hello' finding 'hello' -> 12
+     * @param inputs - The text and what to look for
+     * @returns The position of the last occurrence, or -1
      * @group query
      * @shortname last index of
      * @drawable false
+     * @example
+     * ```typescript
+     * const at = bitbybit.text.lastIndexOf({ text: "hello world hello", search: "hello" });
+     * ```
      */
     lastIndexOf(inputs: Inputs.Text.TextSearchDto): number {
         return inputs.text.lastIndexOf(inputs.search);
     }
 
     /**
-     * Extracts a section of text between two indices.
-     * Example: text='hello world', start=0, end=5 → 'hello'
-     * @param inputs a text, start and end indices
-     * @returns extracted text
+     * Takes the characters from a start position up to, but not including, an end position.
+     *
+     * A start larger than the end swaps the two, and negative positions count as 0.
+     * Example: 'hello world' from 0 to 5 -> 'hello'
+     * @param inputs - The text and the start and end positions
+     * @returns The characters in that range
      * @group transform
      * @shortname substring
      * @drawable false
+     * @example
+     * ```typescript
+     * const word = bitbybit.text.substring({ text: "hello world", start: 0, end: 5 });
+     * ```
      */
     substring(inputs: Inputs.Text.TextSubstringDto): string {
         return inputs.text.substring(inputs.start, inputs.end);
     }
 
     /**
-     * Extracts a section of text and returns a new string.
-     * Example: text='hello world', start=0, end=5 → 'hello'
-     * @param inputs a text, start and end indices
-     * @returns extracted text
+     * Takes the characters from a start position up to, but not including, an end position.
+     *
+     * Unlike `substring`, a negative position counts from the end of the text.
+     * Example: 'hello world' from 0 to 5 -> 'hello'; from -5 -> 'world'
+     * @param inputs - The text and the start and end positions
+     * @returns The characters in that range
      * @group transform
      * @shortname slice
      * @drawable false
+     * @example
+     * ```typescript
+     * const tail = bitbybit.text.slice({ text: "hello world", start: 6, end: 11 });
+     * ```
      */
     slice(inputs: Inputs.Text.TextSubstringDto): string {
         return inputs.text.slice(inputs.start, inputs.end);
     }
 
     /**
-     * Returns the character at the specified index.
-     * Example: text='hello', index=1 → 'e'
-     * @param inputs a text and index
-     * @returns character
+     * Reads the character at a position, counting from 0.
+     *
+     * Example: 'hello' at 1 -> 'e'
+     * @param inputs - The text and the position
+     * @returns The character, or an empty text when the position is outside the text
      * @group query
      * @shortname char at
      * @drawable false
+     * @example
+     * ```typescript
+     * const second = bitbybit.text.charAt({ text: "hello", index: 1 });
+     * ```
      */
     charAt(inputs: Inputs.Text.TextIndexDto): string {
         return inputs.text.charAt(inputs.index);
     }
 
     /**
-     * Removes whitespace from both ends of text.
-     * Example: text='  hello  ' → 'hello'
-     * @param inputs a text
-     * @returns trimmed text
+     * Removes spaces, tabs and line breaks from both ends of a text.
+     *
+     * Example: ' hello ' -> 'hello'
+     * @param inputs - The text
+     * @returns The trimmed text
      * @group transform
      * @shortname trim
      * @drawable false
@@ -221,10 +296,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Removes whitespace from the start of text.
-     * Example: text='  hello  ' → 'hello  '
-     * @param inputs a text
-     * @returns trimmed text
+     * Removes spaces, tabs and line breaks from the start of a text.
+     *
+     * Example: ' hello ' -> 'hello '
+     * @param inputs - The text
+     * @returns The text without leading whitespace
      * @group transform
      * @shortname trim start
      * @drawable false
@@ -234,10 +310,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Removes whitespace from the end of text.
-     * Example: text='  hello  ' → '  hello'
-     * @param inputs a text
-     * @returns trimmed text
+     * Removes spaces, tabs and line breaks from the end of a text.
+     *
+     * Example: ' hello ' -> ' hello'
+     * @param inputs - The text
+     * @returns The text without trailing whitespace
      * @group transform
      * @shortname trim end
      * @drawable false
@@ -247,36 +324,49 @@ export class TextBitByBit {
     }
 
     /**
-     * Pads text from the start to reach target length.
-     * Example: text='x', length=3, padString='a' → 'aax'
-     * @param inputs a text, target length and pad string
-     * @returns padded text
+     * Adds a filler text in front until the text reaches a length; a text already that long is left
+     * alone.
+     *
+     * Example: 'x' to length 3 with 'a' -> 'aax'
+     * @param inputs - The text, the length to reach and the filler
+     * @returns The padded text
      * @group transform
      * @shortname pad start
      * @drawable false
+     * @example
+     * ```typescript
+     * const padded = bitbybit.text.padStart({ text: "7", length: 3, padString: "0" });
+     * ```
      */
     padStart(inputs: Inputs.Text.TextPadDto): string {
         return inputs.text.padStart(inputs.length, inputs.padString);
     }
 
     /**
-     * Pads text from the end to reach target length.
-     * Example: text='x', length=3, padString='a' → 'xaa'
-     * @param inputs a text, target length and pad string
-     * @returns padded text
+     * Adds a filler text behind until the text reaches a length; a text already that long is left
+     * alone.
+     *
+     * Example: 'x' to length 3 with 'a' -> 'xaa'
+     * @param inputs - The text, the length to reach and the filler
+     * @returns The padded text
      * @group transform
      * @shortname pad end
      * @drawable false
+     * @example
+     * ```typescript
+     * const padded = bitbybit.text.padEnd({ text: "x", length: 3, padString: "a" });
+     * ```
      */
     padEnd(inputs: Inputs.Text.TextPadDto): string {
         return inputs.text.padEnd(inputs.length, inputs.padString);
     }
 
     /**
-     * Converts text to uppercase.
-     * Example: text='hello' → 'HELLO'
-     * @param inputs a text
-     * @returns uppercase text
+     * Turns every letter into a capital.
+     *
+     * Example: 'hello' -> 'HELLO'
+     * @param inputs - The text
+     * @returns The text in capitals
      * @group transform
      * @shortname to upper case
      * @drawable false
@@ -286,10 +376,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Converts text to lowercase.
-     * Example: text='HELLO' → 'hello'
-     * @param inputs a text
-     * @returns lowercase text
+     * Turns every letter into lower case.
+     *
+     * Example: 'HELLO' -> 'hello'
+     * @param inputs - The text
+     * @returns The text in lower case
      * @group transform
      * @shortname to lower case
      * @drawable false
@@ -299,10 +390,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Capitalizes the first character of text.
-     * Example: text='hello world' → 'Hello world'
-     * @param inputs a text
-     * @returns text with first character uppercase
+     * Turns the first character into a capital and leaves the rest as it is.
+     *
+     * Example: 'hello world' -> 'Hello world'
+     * @param inputs - The text
+     * @returns The text with its first character capitalized
      * @group transform
      * @shortname capitalize first
      * @drawable false
@@ -313,10 +405,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Lowercases the first character of text.
-     * Example: text='Hello World' → 'hello World'
-     * @param inputs a text
-     * @returns text with first character lowercase
+     * Turns the first character into lower case and leaves the rest as it is.
+     *
+     * Example: 'Hello World' -> 'hello World'
+     * @param inputs - The text
+     * @returns The text with its first character in lower case
      * @group transform
      * @shortname uncapitalize first
      * @drawable false
@@ -327,23 +420,29 @@ export class TextBitByBit {
     }
 
     /**
-     * Repeats text a specified number of times.
-     * Example: text='ha', count=3 → 'hahaha'
-     * @param inputs a text and count
-     * @returns repeated text
+     * Repeats a text a number of times, end to end.
+     *
+     * Example: 'ha' three times -> 'hahaha'
+     * @param inputs - The text and how many times to repeat it
+     * @returns The repeated text
      * @group transform
      * @shortname repeat
      * @drawable false
+     * @example
+     * ```typescript
+     * const laugh = bitbybit.text.repeat({ text: "ha", count: 3 });
+     * ```
      */
     repeat(inputs: Inputs.Text.TextRepeatDto): string {
         return inputs.text.repeat(inputs.count);
     }
 
     /**
-     * Reverses the characters in text.
-     * Example: text='hello' → 'olleh'
-     * @param inputs a text
-     * @returns reversed text
+     * Reverses the order of the characters.
+     *
+     * Example: 'hello' -> 'olleh'
+     * @param inputs - The text
+     * @returns The reversed text
      * @group transform
      * @shortname reverse
      * @drawable false
@@ -353,10 +452,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Returns the length of text.
-     * Example: text='hello' → 5
-     * @param inputs a text
-     * @returns length
+     * Counts the characters in a text.
+     *
+     * Example: 'hello' -> 5
+     * @param inputs - The text
+     * @returns The number of characters
      * @group query
      * @shortname length
      * @drawable false
@@ -366,10 +466,11 @@ export class TextBitByBit {
     }
 
     /**
-     * Checks if text is empty or only whitespace.
-     * Example: text='   ' → true
-     * @param inputs a text
-     * @returns boolean
+     * Tells whether a text is empty or holds only whitespace.
+     *
+     * Example: ' ' -> true, 'a' -> false
+     * @param inputs - The text
+     * @returns True when there is nothing but whitespace
      * @group query
      * @shortname is empty
      * @drawable false
@@ -379,26 +480,36 @@ export class TextBitByBit {
     }
 
     /**
-     * Concatenates multiple text strings.
-     * Example: texts=['hello', ' ', 'world'] → 'hello world'
-     * @param inputs array of texts
-     * @returns concatenated text
+     * Joins several texts into one with nothing between them.
+     *
+     * Example: ['hello', ' ', 'world'] -> 'hello world'
+     * @param inputs - The texts to join
+     * @returns The joined text
      * @group transform
      * @shortname concat
      * @drawable false
+     * @example
+     * ```typescript
+     * const sentence = bitbybit.text.concat({ texts: ["hello", " ", "world"] });
+     * ```
      */
     concat(inputs: Inputs.Text.TextConcatDto): string {
         return inputs.texts.join("");
     }
 
     /**
-     * Tests if text matches a regular expression pattern.
-     * Example: text='hello123', pattern='[0-9]+' → true
-     * @param inputs a text and regex pattern
-     * @returns boolean
+     * Tells whether a regular expression matches somewhere in a text.
+     *
+     * Example: 'hello123' against '[0-9]+' -> true
+     * @param inputs - The text, the pattern and the flags
+     * @returns True when the pattern matches
      * @group regex
      * @shortname test regex
      * @drawable false
+     * @example
+     * ```typescript
+     * const hasDigits = bitbybit.text.regexTest({ text: "hello123", pattern: "[0-9]+", flags: "" });
+     * ```
      */
     regexTest(inputs: Inputs.Text.TextRegexDto): boolean {
         const regex = new RegExp(inputs.pattern, inputs.flags);
@@ -406,13 +517,20 @@ export class TextBitByBit {
     }
 
     /**
-     * Matches text against a regular expression and returns matches.
-     * Example: text='hello123world456', pattern='[0-9]+', flags='g' → ['123', '456']
-     * @param inputs a text and regex pattern
-     * @returns array of matches or null
+     * Finds the parts of a text that a regular expression matches.
+     *
+     * With the `g` flag every match is listed; without it only the first match and its capture
+     * groups. No match gives null.
+     * Example: 'hello123world456' against '[0-9]+' with 'g' -> ['123', '456']
+     * @param inputs - The text, the pattern and the flags
+     * @returns The matches, or null when there are none
      * @group regex
      * @shortname regex match
      * @drawable false
+     * @example
+     * ```typescript
+     * const numbers = bitbybit.text.regexMatch({ text: "hello123world456", pattern: "[0-9]+", flags: "g" });
+     * ```
      */
     regexMatch(inputs: Inputs.Text.TextRegexDto): string[] | null {
         const regex = new RegExp(inputs.pattern, inputs.flags);
@@ -421,13 +539,19 @@ export class TextBitByBit {
     }
 
     /**
-     * Replaces text matching a regular expression pattern.
-     * Example: text='hello123world456', pattern='[0-9]+', flags='g', replaceWith='X' → 'helloXworldX'
-     * @param inputs a text, regex pattern, and replacement
-     * @returns text with replacements
+     * Replaces what a regular expression matches with another text.
+     *
+     * With the `g` flag every match is replaced; without it only the first.
+     * Example: 'hello123world456' against '[0-9]+' with 'g', replaced by 'X' -> 'helloXworldX'
+     * @param inputs - The text, the pattern, the flags and the replacement
+     * @returns The text with the replacements made
      * @group regex
      * @shortname regex replace
      * @drawable false
+     * @example
+     * ```typescript
+     * const clean = bitbybit.text.regexReplace({ text: "hello123world456", pattern: "[0-9]+", flags: "g", replaceWith: "X" });
+     * ```
      */
     regexReplace(inputs: Inputs.Text.TextRegexReplaceDto): string {
         const regex = new RegExp(inputs.pattern, inputs.flags);
@@ -435,13 +559,19 @@ export class TextBitByBit {
     }
 
     /**
-     * Searches text for a regular expression pattern and returns the index.
-     * Example: text='hello123', pattern='[0-9]+' → 5
-     * @param inputs a text and regex pattern
-     * @returns index or -1 if not found
+     * Finds where a regular expression first matches, counting characters from 0, or -1 when it
+     * does not match.
+     *
+     * Example: 'hello123' against '[0-9]+' -> 5
+     * @param inputs - The text, the pattern and the flags
+     * @returns The position of the first match, or -1
      * @group regex
      * @shortname regex search
      * @drawable false
+     * @example
+     * ```typescript
+     * const at = bitbybit.text.regexSearch({ text: "hello123", pattern: "[0-9]+", flags: "" });
+     * ```
      */
     regexSearch(inputs: Inputs.Text.TextRegexDto): number {
         const regex = new RegExp(inputs.pattern, inputs.flags);
@@ -449,13 +579,19 @@ export class TextBitByBit {
     }
 
     /**
-     * Splits text using a regular expression pattern.
-     * Example: text='a1b2c3', pattern='[0-9]+' → ['a', 'b', 'c']
-     * @param inputs a text and regex pattern
-     * @returns array of split strings
+     * Cuts a text into pieces wherever a regular expression matches; the matches themselves are
+     * dropped.
+     *
+     * Example: 'a1b2c3' split by '[0-9]+' -> ['a', 'b', 'c', '']
+     * @param inputs - The text, the pattern and the flags
+     * @returns The pieces, in order
      * @group regex
      * @shortname regex split
      * @drawable false
+     * @example
+     * ```typescript
+     * const letters = bitbybit.text.regexSplit({ text: "a1b2c3", pattern: "[0-9]+", flags: "" });
+     * ```
      */
     regexSplit(inputs: Inputs.Text.TextRegexDto): string[] {
         const regex = new RegExp(inputs.pattern, inputs.flags);
@@ -463,14 +599,21 @@ export class TextBitByBit {
     }
 
     /**
-     * Converts a character to vector paths (polylines) with width and height data for rendering.
-     * Uses simplex stroke font to generate 2D line segments representing the character shape.
-     * Example: char='A', height=10 → {width:8, height:10, paths:[[points forming A shape]]}
-     * @param inputs a text
-     * @returns width, height and segments as json
+     * Draws one character as line paths with a simple stroke font.
+     *
+     * The paths lie flat on the XZ plane, scaled so the character is `height` tall, and are
+     * returned with the character's width and height. An unknown character is drawn as a question
+     * mark.
+     * Example: 'A' at height 10 -> the strokes of an A, 10 units tall
+     * @param inputs - The character, its height and its offsets
+     * @returns The character's width, height and stroke paths as lists of points
      * @group vector
      * @shortname vector char
      * @drawable false
+     * @example
+     * ```typescript
+     * const letter = bitbybit.text.vectorChar({ char: "A", height: 10, xOffset: 0, yOffset: 0, extrudeOffset: 0 });
+     * ```
      */
     vectorChar(inputs: Inputs.Text.VectorCharDto): Models.Text.VectorCharData {
         const {
@@ -504,14 +647,26 @@ export class TextBitByBit {
     }
 
     /**
-     * Converts multi-line text to vector paths (polylines) with alignment and spacing controls.
-     * Supports line breaks, letter spacing, line spacing, horizontal alignment, and origin centering.
-     * Example: text='Hello\nWorld', height=10, align=center → [{line1 chars}, {line2 chars}]
-     * @param inputs a text as string
-     * @returns segments
+     * Draws a text, with line breaks, as line paths with a simple stroke font.
+     *
+     * Each line comes back as its characters with their paths, laid out flat on the XZ plane with
+     * the given height, spacing and alignment; `centerOnOrigin` puts the middle of the block at the
+     * origin.
+     * Example: 'Hello' at height 10 -> five characters with their strokes
+     * @param inputs - The text and how to lay it out
+     * @returns One entry per line, each with its characters and their stroke paths
      * @group vector
      * @shortname vector text
      * @drawable false
+     * @example
+     * ```typescript
+     * const lines = bitbybit.text.vectorText({
+     *     text: "Hello\nWorld",
+     *     height: 10,
+     *     align: Bit.Inputs.Base.horizontalAlignEnum.center,
+     *     centerOnOrigin: true,
+     * });
+     * ```
      */
     vectorText(inputs: Inputs.Text.VectorTextDto): Models.Text.VectorTextData[] {
         const {

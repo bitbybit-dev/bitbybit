@@ -697,6 +697,169 @@ describe("BabylonScene", () => {
             // Assert
             expect(scene.meshes.filter(m => m.name === "bitbybit-hdrSkyBox")).toHaveLength(1);
         });
+
+        it("should keep the PBR skybox that follows the camera when ground projection is off", () => {
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, false));
+            const skybox = scene.getMeshByName("bitbybit-hdrSkyBox")!;
+
+            // Assert
+            expect(skybox.material).toBeInstanceOf(BABYLON.PBRMaterial);
+            expect(skybox.infiniteDistance).toBe(true);
+        });
+
+        it("should build a ground projected skybox standing on the ground when asked to", () => {
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.2, 0.5, false, true, 30, 4));
+            const skybox = scene.getMeshByName("bitbybit-hdrSkyBox") as BABYLON.Mesh;
+            const material = skybox.material as BABYLON.BackgroundMaterial;
+
+            // Assert
+            expect(material).toBeInstanceOf(BABYLON.BackgroundMaterial);
+            expect(material.enableGroundProjection).toBe(true);
+            expect(material.projectedGroundRadius).toBe(30);
+            expect(material.projectedGroundHeight).toBe(4);
+            expect(material.reflectionBlur).toBe(0.2);
+            expect(material.reflectionTexture).not.toBe(scene.environmentTexture);
+            expect(material.reflectionTexture!.coordinatesMode).toBe(BABYLON.Texture.SKYBOX_MODE);
+            expect(material.reflectionTexture!.level).toBe(0.5);
+            expect(scene.environmentTexture).toBeTruthy();
+            expect(scene.environmentIntensity).toBe(0.5);
+            expect(skybox.position.y).toBe(50);
+            expect(skybox.receiveShadows).toBe(true);
+            expect(skybox.isPickable).toBe(false);
+            expect(skybox.ignoreCameraMaxZ).toBe(true);
+            expect(skybox.infiniteDistance).toBe(false);
+        });
+
+        it("should fall back to the ground values of 20 and 3 when a script leaves them out", () => {
+            // Act
+            sceneService.enableSkybox({ skybox: Inputs.Base.skyboxEnum.default, size: 100, blur: 0.1, environmentIntensity: 1, enableGroundProjection: true });
+            const material = scene.getMeshByName("bitbybit-hdrSkyBox")!.material as BABYLON.BackgroundMaterial;
+
+            // Assert
+            expect(material.projectedGroundRadius).toBe(20);
+            expect(material.projectedGroundHeight).toBe(3);
+        });
+
+        it("should keep a ground projected skybox out of sight when it was asked to", () => {
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, true, true));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.isVisible).toBe(false);
+        });
+
+        it("should replace a ground projected skybox rather than add a second", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true));
+
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.city, 100, 0.1, 1, false, true));
+
+            // Assert
+            expect(scene.meshes.filter(m => m.name === "bitbybit-hdrSkyBox")).toHaveLength(1);
+        });
+
+        it("should never sign the ground projected skybox up as a shadow caster", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true));
+            const skybox = scene.getMeshByName("bitbybit-hdrSkyBox")!;
+
+            // Act
+            sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            const [generator] = sceneService.getShadowGenerators();
+
+            // Assert
+            expect(generator!.getShadowMap()!.renderList).not.toContain(skybox);
+            expect(skybox.receiveShadows).toBe(true);
+        });
+
+        it("should keep a light slot for the shadows of more lights than a material takes by default", () => {
+            // Arrange
+            new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
+            for (let index = 0; index < 4; index++) {
+                sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            }
+
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true));
+            const skybox = scene.getMeshByName("bitbybit-hdrSkyBox") as BABYLON.Mesh;
+            const material = skybox.material as BABYLON.BackgroundMaterial;
+
+            // Assert
+            expect(skybox.lightSources).toHaveLength(5);
+            expect(material.maxSimultaneousLights).toBeGreaterThanOrEqual(skybox.lightSources.length);
+        });
+    });
+
+    describe("enableSkyboxFromTexture", () => {
+        const aCubeTexture = (): BABYLON.CubeTexture => new BABYLON.CubeTexture("https://example.test/sky", scene);
+
+        it("should keep the texture it was given as the environment texture", () => {
+            // Arrange
+            const texture = aCubeTexture();
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(texture, 100, 0.1, 1));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeTruthy();
+            expect(scene.environmentTexture).toBe(texture);
+        });
+
+        it("should build the PBR skybox when ground projection is off", () => {
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(aCubeTexture(), 100, 0.1, 1, false, false));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.material).toBeInstanceOf(BABYLON.PBRMaterial);
+        });
+
+        it("should build the ground projected skybox when ground projection is on", () => {
+            // Arrange
+            const texture = aCubeTexture();
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(texture, 100, 0.1, 1, false, true, 25, 2));
+            const material = scene.getMeshByName("bitbybit-hdrSkyBox")!.material as BABYLON.BackgroundMaterial;
+
+            // Assert
+            expect(material).toBeInstanceOf(BABYLON.BackgroundMaterial);
+            expect(material.projectedGroundRadius).toBe(25);
+            expect(material.projectedGroundHeight).toBe(2);
+            expect(scene.environmentTexture).toBe(texture);
+        });
+
+        it("should fall back to the PBR skybox when the texture cannot be cloned for the ground", () => {
+            // Arrange
+            const texture = new BABYLON.BaseTexture(scene);
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(texture, 100, 0.1, 1, false, true));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.material).toBeInstanceOf(BABYLON.PBRMaterial);
+        });
+
+        it("should keep the skybox out of sight when it was asked to", () => {
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(aCubeTexture(), 100, 0.1, 1, true));
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.isVisible).toBe(false);
+        });
+
+        it("should replace the skybox already there rather than add a second", () => {
+            // Arrange
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(aCubeTexture(), 100, 0.1, 1));
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(aCubeTexture(), 100, 0.1, 1, false, true));
+
+            // Assert
+            expect(scene.meshes.filter(m => m.name === "bitbybit-hdrSkyBox")).toHaveLength(1);
+        });
     });
 
     describe("enableSkyboxCustomTexture", () => {
@@ -723,6 +886,19 @@ describe("BabylonScene", () => {
     });
 
     describe("what else clearAllDrawn takes away", () => {
+        it("should take a ground projected skybox and its material with it", () => {
+            // Arrange
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true));
+            const material = scene.getMeshByName("bitbybit-hdrSkyBox")!.material!;
+
+            // Act
+            sceneService.clearAllDrawn();
+
+            // Assert
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")).toBeNull();
+            expect(scene.materials).not.toContain(material);
+        });
+
         it("should let go of the environment texture", () => {
             // Arrange
             sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1));

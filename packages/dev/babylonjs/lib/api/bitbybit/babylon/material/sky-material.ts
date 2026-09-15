@@ -4,16 +4,32 @@ import * as BABYLON from "@babylonjs/core";
 import { SkyMaterial } from "@babylonjs/materials";
 import * as Inputs from "../../../inputs";
 
+/**
+ * A procedural daytime sky computed from atmosphere settings rather than an image: where the sun
+ * is, how hazy the air is and how bright the sky glows. Put the material on a large inside-out box
+ * or sphere around the scene and move the sun with `inclination` and `azimuth`, or with an explicit
+ * `sunPosition`.
+ */
 export class BabylonMaterialSky {
 
     constructor(private readonly context: Context) { }
 
     /**
-     * Create Sky Material
-     * @param inputs required to set up the sky material
-     * @returns Sky material
+     * Creates a sky material from atmosphere settings; only the values you give are applied over
+     * the defaults.
+     *
+     * `inclination` from -0.5 to 0.5 lifts the sun from the horizon and `azimuth` from 0 to 1 turns
+     * it around the sky; `turbidity` adds haze and `luminance` sets the overall brightness.
+     * @param inputs - The atmosphere settings and the sun placement
+     * @returns The sky material
      * @group create
      * @shortname sky material
+     * @example
+     * ```typescript
+     * const sky = bitbybit.babylon.material.skyMaterial.create({ luminance: 1, turbidity: 10, rayleigh: 2, mieCoefficient: 0.005, mieDirectionalG: 0.8, distance: 500, inclination: 0.49, azimuth: 0.25, sunPosition: [0, 100, 100], useSunPosition: false, cameraOffset: [0, 0, 0], up: [0, 1, 0], dithering: false });
+     * const dome = bitbybit.babylon.meshBuilder.createSphere({ diameter: 1000, segments: 32, sideOrientation: Bit.Inputs.BabylonMesh.sideOrientationEnum.backside, enableShadows: false });
+     * bitbybit.babylon.mesh.setMaterial({ babylonMesh: dome, material: sky, includeChildren: false });
+     * ```
      */
     create(inputs: Inputs.BabylonMaterial.SkyMaterialDto): SkyMaterial {
         const name = "bitbybit-skyMaterial";
@@ -62,8 +78,8 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the luminance of the sky material
-     * @param inputs luminance value and material
+     * Changes the overall brightness of a sky material, between 0 and 1.
+     * @param inputs - The material and the luminance
      * @group set
      * @shortname set luminance
      */
@@ -73,8 +89,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the turbidity of the sky material
-     * @param inputs turbidity value and material
+     * Changes how hazy a sky material's air is; more haze whitens the sky and spreads the sun's
+     * glow.
+     * @param inputs - The material and the turbidity
      * @group set
      * @shortname set turbidity
      */
@@ -84,8 +101,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the rayleigh of the sky material
-     * @param inputs rayleigh value and material
+     * Changes how strongly a sky material scatters light in the way that makes a clear sky blue;
+     * higher is a deeper, brighter blue.
+     * @param inputs - The material and the Rayleigh value
      * @group set
      * @shortname set rayleigh
      */
@@ -95,8 +113,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the mieCoefficient of the sky material
-     * @param inputs mieCoefficient value and material
+     * Changes how much haze a sky material has around the sun, between 0 and 0.1; more makes a
+     * wider, whiter glow.
+     * @param inputs - The material and the Mie coefficient
      * @group set
      * @shortname set mieCoefficient
      */
@@ -106,8 +125,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the mieDirectionalG of the sky material
-     * @param inputs mieDirectionalG value and material
+     * Changes how tightly a sky material's haze glow gathers around the sun; values near 1 make a
+     * small bright halo, lower values spread it.
+     * @param inputs - The material and the Mie directional value
      * @group set
      * @shortname set mieDirectionalG
      */
@@ -117,8 +137,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the distance of the sky material
-     * @param inputs distance value and material
+     * Changes how far the sky dome sits from the camera in a sky material, which changes how the
+     * horizon reads.
+     * @param inputs - The material and the distance
      * @group set
      * @shortname set distance
      */
@@ -128,10 +149,15 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the inclination of the sky material
-     * @param inputs inclination value and material
+     * Changes how high the sun stands in a sky material, from -0.5 below the horizon through 0 at
+     * the horizon to 0.5 overhead; ignored while `useSunPosition` is on.
+     * @param inputs - The material and the inclination
      * @group set
      * @shortname set inclination
+     * @example
+     * ```typescript
+     * bitbybit.babylon.material.skyMaterial.setInclination({ material: sky, inclination: 0.1 });
+     * ```
      */
     setInclination(inputs: Inputs.BabylonMaterial.InclinationDto): void {
         const mat = inputs.material;
@@ -139,8 +165,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the azimuth of the sky material
-     * @param inputs azimuth value and material
+     * Changes where around the horizon the sun stands in a sky material, from 0 to 1 for a full
+     * turn; ignored while `useSunPosition` is on.
+     * @param inputs - The material and the azimuth
      * @group set
      * @shortname set azimuth
      */
@@ -150,10 +177,16 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the sun position of the sky material
-     * @param inputs sun position value and material
+     * Places the sun of a sky material at an explicit direction vector; it takes effect only while
+     * `useSunPosition` is on, otherwise inclination and azimuth decide.
+     * @param inputs - The material and the sun position vector
      * @group set
      * @shortname set sun position
+     * @example
+     * ```typescript
+     * bitbybit.babylon.material.skyMaterial.setUseSunPosition({ material: sky, useSunPosition: true });
+     * bitbybit.babylon.material.skyMaterial.setSunPosition({ material: sky, sunPosition: [0, 50, 100] });
+     * ```
      */
     setSunPosition(inputs: Inputs.BabylonMaterial.SunPositionDto): void {
         const mat = inputs.material;
@@ -161,8 +194,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the use sun position of the sky material
-     * @param inputs use sun position value and material
+     * Chooses whether a sky material places the sun from `sunPosition`, when true, or from
+     * inclination and azimuth, when false.
+     * @param inputs - The material and the flag
      * @group set
      * @shortname set use sun position
      */
@@ -172,8 +206,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the camera offset of the sky material
-     * @param inputs camera offset value and material
+     * Shifts the horizon of a sky material by an offset vector, so the sky can sit higher or lower
+     * relative to the camera.
+     * @param inputs - The material and the offset vector
      * @group set
      * @shortname set camera offset
      */
@@ -183,8 +218,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the up of the sky material
-     * @param inputs up value and material
+     * Changes which direction a sky material treats as up, normally `[0, 1, 0]`; change it for
+     * scenes that use another axis as up.
+     * @param inputs - The material and the up vector
      * @group set
      * @shortname set up
      */
@@ -194,8 +230,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Sets the dithering of the sky material
-     * @param inputs dithering value and material
+     * Turns dithering on or off for a sky material; on, it adds fine noise that hides color banding
+     * in smooth gradients.
+     * @param inputs - The material and the flag
      * @group set
      * @shortname set dithering
      */
@@ -205,8 +242,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the luminance of the sky material
-     * @param inputs material
+     * Reads the overall brightness of a sky material.
+     * @param inputs - The material
+     * @returns The luminance
      * @group get
      * @shortname get luminance
      */
@@ -215,8 +253,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the turbidity of the sky material
-     * @param inputs material
+     * Reads how hazy a sky material's air is.
+     * @param inputs - The material
+     * @returns The turbidity
      * @group get
      * @shortname get turbidity
      */
@@ -225,8 +264,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the rayleigh of the sky material
-     * @param inputs material
+     * Reads the Rayleigh scattering strength of a sky material, the setting behind its blue.
+     * @param inputs - The material
+     * @returns The Rayleigh value
      * @group get
      * @shortname get rayleigh
      */
@@ -235,8 +275,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the mieCoefficient of the sky material
-     * @param inputs material
+     * Reads how much haze a sky material has around the sun.
+     * @param inputs - The material
+     * @returns The Mie coefficient
      * @group get
      * @shortname get mieCoefficient
      */
@@ -245,8 +286,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the mieDirectionalG of the sky material
-     * @param inputs material
+     * Reads how tightly a sky material's haze glow gathers around the sun.
+     * @param inputs - The material
+     * @returns The Mie directional value
      * @group get
      * @shortname get mieDirectionalG
      */
@@ -255,8 +297,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the distance of the sky material
-     * @param inputs material
+     * Reads how far the sky dome sits from the camera in a sky material.
+     * @param inputs - The material
+     * @returns The distance
      * @group get
      * @shortname get distance
      */
@@ -265,8 +308,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the inclination of the sky material
-     * @param inputs material
+     * Reads how high the sun stands in a sky material, from -0.5 to 0.5.
+     * @param inputs - The material
+     * @returns The inclination
      * @group get
      * @shortname get inclination
      */
@@ -275,8 +319,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the azimuth of the sky material
-     * @param inputs material
+     * Reads where around the horizon the sun stands in a sky material, from 0 to 1.
+     * @param inputs - The material
+     * @returns The azimuth
      * @group get
      * @shortname get azimuth
      */
@@ -285,8 +330,10 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the sun position of the sky material
-     * @param inputs material
+     * Reads the sun direction of a sky material; when `useSunPosition` is off it reflects the
+     * inclination and azimuth.
+     * @param inputs - The material
+     * @returns The sun position vector
      * @group get
      * @shortname get sun position
      */
@@ -295,8 +342,10 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the use sun position of the sky material
-     * @param inputs material
+     * Reads whether a sky material places the sun from `sunPosition` rather than from inclination
+     * and azimuth.
+     * @param inputs - The material
+     * @returns True when the explicit sun position is used
      * @group get
      * @shortname get use sun position
      */
@@ -305,8 +354,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the camera offset of the sky material
-     * @param inputs material
+     * Reads the horizon offset vector of a sky material.
+     * @param inputs - The material
+     * @returns The offset vector
      * @group get
      * @shortname get camera offset
      */
@@ -315,8 +365,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the up of the sky material
-     * @param inputs material
+     * Reads the direction a sky material treats as up.
+     * @param inputs - The material
+     * @returns The up vector
      * @group get
      * @shortname get up
      */
@@ -325,8 +376,9 @@ export class BabylonMaterialSky {
     }
 
     /**
-     * Gets the dithering of the sky material
-     * @param inputs material
+     * Reads whether a sky material dithers its gradients to hide color banding.
+     * @param inputs - The material
+     * @returns True when dithering is on
      * @group get
      * @shortname get dithering
      */

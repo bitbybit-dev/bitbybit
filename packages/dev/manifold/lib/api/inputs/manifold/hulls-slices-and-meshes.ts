@@ -1,25 +1,31 @@
 // A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 
+/**
+ * Points and solids for `manifold.operations.hullPoints`, which wraps them all in one convex hull.
+ */
 export class HullPointsDto<T> {
     constructor(points?: T) {
         if (points !== undefined) { this.points = points; }
     }
     /**
-     * Points to hull
+     * The points and solids to wrap, in any mix.
      */
     points!: T;
 }
+/**
+ * A solid and a height for `manifold.operations.slice`.
+ */
 export class SliceDto<T> {
     constructor(manifold?: T) {
         if (manifold !== undefined) { this.manifold = manifold; }
     }
     /**
-     * Manifold shape
+     * The solid to cut.
      */
     manifold!: T;
     /**
-     * Height of the slice
+     * The Z height of the cutting plane, which is parallel to the XY plane.
      * @default 0.5
      * @minimum 0
      * @maximum Infinity
@@ -27,27 +33,34 @@ export class SliceDto<T> {
      */
     height = 0.5;
 }
+/**
+ * Mesh data for the methods that read it whole, such as `mesh.evaluate.numTri` and
+ * `mesh.operations.merge`.
+ */
 export class MeshDto<T> {
     constructor(mesh?: T) {
         if (mesh !== undefined) { this.mesh = mesh; }
     }
     /**
-     * Mesh
+     * The mesh data, as `manifoldToMesh` hands it out.
      */
     mesh!: T;
 }
 
+/**
+ * Mesh data and a vertex index for `mesh.evaluate.position` and `mesh.evaluate.extras`.
+ */
 export class MeshVertexIndexDto<T> {
     constructor(mesh?: T, vertexIndex?: number) {
         if (mesh !== undefined) { this.mesh = mesh; }
         if (vertexIndex !== undefined) { this.vertexIndex = vertexIndex; }
     }
     /**
-     * Mesh
+     * The mesh data to read.
      */
     mesh!: T;
     /**
-     * Vertex index
+     * The position of the vertex, counting from 0.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -55,17 +68,20 @@ export class MeshVertexIndexDto<T> {
      */
     vertexIndex: number = 0;
 }
+/**
+ * Mesh data and a run index for `mesh.evaluate.transform`.
+ */
 export class MeshTriangleRunIndexDto<T> {
     constructor(mesh?: T, triangleRunIndex?: number) {
         if (mesh !== undefined) { this.mesh = mesh; }
         if (triangleRunIndex !== undefined) { this.triangleRunIndex = triangleRunIndex; }
     }
     /**
-     * Mesh
+     * The mesh data to read.
      */
     mesh!: T;
     /**
-     * Triangle run index
+     * The position of the triangle run, counting from 0.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -73,17 +89,20 @@ export class MeshTriangleRunIndexDto<T> {
      */
     triangleRunIndex: number = 0;
 }
+/**
+ * Mesh data and a half-edge index for `mesh.evaluate.tangent`.
+ */
 export class MeshHalfEdgeIndexDto<T> {
     constructor(mesh?: T, halfEdgeIndex?: number) {
         if (mesh !== undefined) { this.mesh = mesh; }
         if (halfEdgeIndex !== undefined) { this.halfEdgeIndex = halfEdgeIndex; }
     }
     /**
-     * Mesh
+     * The mesh data to read.
      */
     mesh!: T;
     /**
-     * Half edge index
+     * The position of the half-edge, counting from 0: three per triangle, in triangle order.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -91,17 +110,20 @@ export class MeshHalfEdgeIndexDto<T> {
      */
     halfEdgeIndex: number = 0;
 }
+/**
+ * Mesh data and a triangle index for `mesh.evaluate.verts`.
+ */
 export class MeshTriangleIndexDto<T> {
     constructor(mesh?: T, triangleIndex?: number) {
         if (mesh !== undefined) { this.mesh = mesh; }
         if (triangleIndex !== undefined) { this.triangleIndex = triangleIndex; }
     }
     /**
-     * Mesh
+     * The mesh data to read.
      */
     mesh!: T;
     /**
-     * Triangle index
+     * The position of the triangle, counting from 0.
      * @default 0
      * @minimum 0
      * @maximum Infinity

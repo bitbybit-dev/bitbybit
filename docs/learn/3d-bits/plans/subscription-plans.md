@@ -42,6 +42,8 @@ Every plan covers unlimited products and unlimited 3D models. We do not charge p
 | Dimensions, all six types | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Gradient and image backgrounds | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Scripting | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
+| Custom HTML in the option panel | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
+| Camera controls for shoppers | <PlanExcludedIcon /> | <PlanIncludedIcon /> | <PlanIncludedIcon /> |
 | Personalisation, image and text on the model | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Options and parts linked to your own products | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
 | Parts, the bill of materials | <PlanExcludedIcon /> | <PlanExcludedIcon /> | <PlanIncludedIcon /> |
@@ -73,7 +75,7 @@ Move to Pro when shoppers put their own name, image or artwork on the product, w
 
 You get Composer, where you build the whole thing. Load your 3D models, arrange the scene, set up the camera, lighting and skybox, and connect objects in the model to the choices your shoppers make.
 
-You get the option panel your shoppers see on the product page. There are fourteen control types: dropdowns, radio buttons, checkboxes, switches, sliders, number fields, single-line text fields, long text areas, email fields, colour pickers, date pickers, time pickers, file uploads for shoppers sending you artwork, and buttons that trigger an action rather than carry a value. A radio or checkbox group can present its choices six ways - plain text, colour swatches, image swatches, cards, buttons or pills - and a dropdown can be the device's native list or a styled one with images. You arrange them into sections, accordions and tabs, style them to match your theme, and translate them into the languages you sell in.
+You get the option panel your shoppers see on the product page. There are fourteen control types: dropdowns, radio buttons, checkboxes, switches, sliders, number fields, single-line text fields, long text areas, email fields, colour pickers, date pickers, time pickers, file uploads for shoppers sending you artwork, and buttons that trigger an action rather than carry a value. A radio or checkbox group can present its choices six ways - plain text, colour swatches, image swatches, cards, buttons or pills - and a dropdown can be the device's native list or a styled one with images. You arrange them into sections, rows, accordions and tabs alongside text, messages, images, dividers and links - a link can be its own element, shown as text or a button, or written straight into a text as `[label](url)` - then style everything to match your theme and translate it into the languages you sell in.
 
 You get the logic that ties it together, so an option can appear only when it makes sense, and choosing one thing can change or restrict another.
 
@@ -97,6 +99,10 @@ Standard is about showing a product properly, and about products whose shape is 
 
 **Scripting** is for parametric products. You build the geometry in our visual node editor or write it in TypeScript, link the script into your Composer project, and the model is calculated from what the shopper enters. Standard also unlocks the Scripts section of the app, where those scripts live.
 
+**Custom HTML** lets you place a fragment of your own HTML, with its own CSS, in the option panel - a measurements table, a badge, a formatted note. Scripts and anything else that could run code are removed before it renders; [Custom HTML](/learn/3d-bits/composer/gui/custom-html) lists exactly what survives. Links, whether as their own element or written inline in a text, are available on every plan.
+
+**Camera controls** is a layout element with zoom buttons, orbit and tilt sliders and an axis gizmo, so shoppers can move the camera without dragging; it pairs with the switches that turn the default drag and wheel navigation off, which are on every plan. [Camera controls](/learn/3d-bits/composer/gui/camera-controls) describes both.
+
 **Single line charging** shows a configured product as one clean line at its exact price. It needs Standard or Pro, and it also needs your store to be on Shopify Plus or to be a partner development store, which is a Shopify restriction rather than ours. Everything works without it, and [Charging methods](/learn/3d-bits/pricing/charging-methods) explains the alternatives.
 
 ## What Pro adds
@@ -109,11 +115,11 @@ Pro is for personalised products, and for the paperwork that comes with making t
 
 **[Parts](/learn/3d-bits/composer/gui/parts)** are the bill of materials behind a configured product. A part can link a real product, so it is charged and shipped like any other item, or it can simply be recorded on the order and in the report - which is how a works order gets the pieces that cost nothing extra but still have to be made. Parts nest into assemblies, and their quantities can be worked out from what the shopper chose.
 
-**PDF documents** are generated from the configuration. One is for your shopper, a summary they can download of what they designed. The other is attached to the order for the people who make it, and it can carry publishable manufacturer references for each chosen option alongside rendered views of the finished item.
+**PDF documents** are generated from the configuration. One is for your shopper, a summary they can download of what they designed. The other is attached to the order for the people who make it, and it can carry publishable manufacturer references for each chosen option alongside rendered views of the finished item. The **Download PDF** element and the button action that trigger the shopper's copy carry a premium badge in Composer on any lesser plan.
 
 **Downloading the configured model** gives the shopper a button that hands them a single `.glb` of exactly what they are looking at - every visible model, in position, with the materials they chose and any personalisation they applied baked in. Useful when your shopper is an architect dropping the piece into their own scene, or when you want them to be able to show someone else what they configured. It is a [Button control](/learn/3d-bits/composer/gui/controls) with the **Download the 3D model (GLB)** action.
 
-The action carries a premium badge in Composer on any lesser plan, and choosing it opens the upgrade dialog rather than setting it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
+Every plan-gated element and action carries that premium badge in Composer on a lesser plan - Custom HTML and Camera controls on Base, Download PDF and the model download on Base and Standard - and choosing one opens the upgrade dialog rather than adding it. Publishing is refused as well, so a project that reached a lesser plan another way is still caught before it goes live.
 
 ## Support
 

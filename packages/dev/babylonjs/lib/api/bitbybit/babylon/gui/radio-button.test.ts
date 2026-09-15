@@ -37,6 +37,14 @@ describe("BabylonGuiRadioButton", () => {
             expect(radioButton.background).toBe("#000000");
         });
 
+        it("should join the unnamed group when no group was given", () => {
+            // Act
+            const radioButton = radioButtonFor(inputs => { inputs.group = undefined; });
+
+            // Assert
+            expect(radioButton.group).toBe("");
+        });
+
         it("should be square at a fixed size when no size was asked for", () => {
             // Act
             const radioButton = radioButtonFor();

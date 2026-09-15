@@ -1182,11 +1182,11 @@ export class WiresService {
         const dataRes = new TextWiresDataDto<string>();
 
         const box = this.operationsService.boundingBoxOfShape({ shape: compound });
-        const width = box.max[0] - box.min[0];
-        const height = box.max[1] - box.min[1];
-        dataRes.width = width;
-        dataRes.height = height;
+        dataRes.width = box.size[0];
+        dataRes.height = box.size[2];
+        dataRes.center = box.center;
         dataRes.compound = "text-compound";
+        dataRes.characters = characterCompounds.map(c => ({ id: c.id, shapes: { compound: c.id } }));
 
         const res = new ObjectDefinition<TextWiresDataDto<string>, TopoDS_Compound>();
         res.data = dataRes;

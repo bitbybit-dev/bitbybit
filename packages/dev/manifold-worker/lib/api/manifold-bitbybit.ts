@@ -8,8 +8,12 @@ import { ManifoldCrossSection } from "./cross-section/cross-section";
 import { Mesh } from "./mesh/mesh";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
+ * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from, and
+ * `mesh` reads the triangle data. Manifold works on triangle meshes rather than exact curves, so
+ * booleans are quick and always watertight, and it keeps its own Z axis as up: extrusions grow
+ * along Z and slices are parallel to the XY plane. The methods on the service itself turn solids
+ * and cross-sections into plain mesh data for drawing.
  */
 export class ManifoldBitByBit {
     public readonly manifold: Manifold;
@@ -37,58 +41,92 @@ export class ManifoldBitByBit {
     }
 
     /**
-     * Decomposes manifold or cross section shape into a mesh or simple polygons
-     * @param inputs Manifold shape or cross section
-     * @returns Decomposed mesh definition or simple polygons
+     * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
+     * or export.
+     *
+     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
+     * them.
+     * @param inputs - The solid or cross-section and the optional normal channel
+     * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose
      * @shortname decompose m or cs
      * @drawable false
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: cube });
+     * ```
      */
     decomposeManifoldOrCrossSection(inputs: Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", inputs);
     }
 
     /**
-     * Turns manifold shape into a collection of polygon points representing the mesh.
-     * @param inputs Manifold shape
-     * @returns polygon points
+     * Turns a solid into a list of triangles, each three points, the same form
+     * `shapes.fromPolygonPoints` reads back.
+     *
+     * An empty solid gives an empty list.
+     * @param inputs - The solid
+     * @returns One list of three points per triangle
      * @group decompose
      * @shortname to polygon points
      * @drawable false
+     * @example
+     * ```typescript
+     * const triangles = await bitbybit.manifold.toPolygonPoints({ manifold: cube });
+     * ```
      */
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Inputs.Manifold.ManifoldPointer>): Promise<Inputs.Base.Mesh3> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("toPolygonPoints", inputs);
     }
 
     /**
-     * Decomposes manifold or cross section shape into a mesh or simple polygons
-     * @param inputs Manifold shapes or cross sections
-     * @returns Decomposed mesh definitions or a list of simple polygons
+     * Turns several solids into mesh data, or cross-sections into polygons, as
+     * `decomposeManifoldOrCrossSection` does for one.
+     *
+     * `normalIdx` gives one normal channel per shape.
+     * @param inputs - The solids or cross-sections and the optional normal channels
+     * @returns One mesh or polygon list per shape, in the same order
      * @group decompose
      * @shortname decompose m's or cs's
      * @drawable false
+     * @example
+     * ```typescript
+     * const meshes = await bitbybit.manifold.decomposeManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
+     * ```
      */
     decomposeManifoldsOrCrossSections(inputs: Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer>): Promise<(Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][])[]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", inputs);
     }
 
     /**
-     * Delete manifold or cross section from memory
-     * @param inputs manifold or cross section
+     * Frees the memory a solid or a cross-section holds inside the kernel; the object cannot be
+     * used afterwards. Call it for results a script no longer needs, so long sessions do not run
+     * out of memory.
+     * @param inputs - The solid or cross-section to free
      * @group cleanup
      * @shortname delete m or cs
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.manifold.deleteManifoldOrCrossSection({ manifoldOrCrossSection: cube });
+     * ```
      */
     async deleteManifoldOrCrossSection(inputs: Inputs.Manifold.ManifoldOrCrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldOrCrossSection", inputs);
     }
 
     /**
-     * Delete manifolds or cross sections from memory
-     * @param inputs manifolds or cross sections
+     * Frees the memory several solids or cross-sections hold inside the kernel; they cannot be used
+     * afterwards. Call it for results a script no longer needs, so long sessions do not run out of
+     * memory.
+     * @param inputs - The solids or cross-sections to free
      * @group cleanup
      * @shortname delete m's or cs's
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.manifold.deleteManifoldsOrCrossSections({ manifoldsOrCrossSections: [cube, sphere] });
+     * ```
      */
     async deleteManifoldsOrCrossSections(inputs: Inputs.Manifold.ManifoldsOrCrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<void> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("deleteManifoldsOrCrossSections", inputs);

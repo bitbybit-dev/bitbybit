@@ -985,7 +985,7 @@ export class DrawHelper extends DrawHelperCore {
 
     /**
      * Compute per-vertex colors for polylines based on color mapping strategy
-     * @param colours - Single color or array of colors
+     * @param colors - Single color or array of colors
      * @param polylineSegmentCounts - Number of line segments per polyline
      * @param colorMapStrategy - Strategy for mapping colors to polylines
      * @returns Flat array of RGB values for each vertex
@@ -1070,7 +1070,7 @@ export class DrawHelper extends DrawHelperCore {
     /**
      * The narrowest a drawn line is allowed to get, in pixels.
      *
-     * Below one pixel the ribbon `LineSegments2` builds stops covering a pixel centre reliably and
+     * Below one pixel the ribbon `LineSegments2` builds stops covering a pixel center reliably and
      * the line comes out broken or gone, because this material discards a fragment outside the
      * ribbon rather than fading it - there is no coverage mask to resolve a partial pixel. That
      * regime is easy to reach without meaning to: the library's own defaults scale to well under a
@@ -1128,7 +1128,7 @@ export class DrawHelper extends DrawHelperCore {
      * that is not the window and stays correct across a resize without anything being redrawn.
      * Setting it here as well would be overwritten before it was ever read.
      *
-     * Colour comes from the geometry rather than the material, so one material serves every line of
+     * Color comes from the geometry rather than the material, so one material serves every line of
      * a given width and is cached and disposed with the rest.
      */
     private getOrCreateLineMaterial(size: number): LineMaterial {

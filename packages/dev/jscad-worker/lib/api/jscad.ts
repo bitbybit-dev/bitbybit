@@ -14,8 +14,13 @@ import { JSCADText } from "./text";
 import { JSCADColors } from "./colors";
 
 /**
- * Contains various functions for Solid meshes from JSCAD library https://github.com/jscad/OpenJSCAD.org
- * Thanks JSCAD community for developing this kernel
+ * The entry point to the JSCAD kernel, a mesh-based solid modeler with three kinds of geometry: a
+ * solid, held as a closed set of polygons; a flat 2D shape, held as a region in the XY plane; and a
+ * 2D path, an open or closed polyline in that plane. `shapes` and `polygon` build them, `booleans`,
+ * `extrusions`, `expansions` and `hulls` combine and grow them, `text` writes with them and
+ * `colors` tints them. Flat shapes live in the XY plane and extrude along Z. The methods on the
+ * service itself convert solids to mesh data, move them with matrices and write STL, DXF and 3MF
+ * files. Credit to the JSCAD community for the kernel.
  */
 export class JSCAD {
     public readonly booleans: JSCADBooleans;
@@ -43,46 +48,78 @@ export class JSCAD {
     }
 
     /**
-     * Converts the Jscad mesh to polygon points representing triangles of the mesh.
-     * @param inputs Jscad mesh
-     * @returns polygon points
+     * Turns a solid into a list of triangles, each given as three points, with the solid's own
+     * transform already applied.
+     *
+     * A flat 2D shape is given a tiny thickness first so it has faces at all. An entity with no
+     * polygons gives an empty list.
+     * @param inputs - The solid or 2D shape
+     * @returns The triangles as lists of three points
      * @group conversions
      * @shortname to polygon points
      * @drawable false
+     * @example
+     * ```typescript
+     * const cube = await bitbybit.jscad.shapes.cube({ center: [0, 0, 0], size: 10 });
+     * const triangles = await bitbybit.jscad.toPolygonPoints({ mesh: cube });
+     * ```
      */
     toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Promise<Inputs.Base.Mesh3> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("toPolygonPoints", inputs);
     }
 
     /**
-     * Transforms the Jscad solid meshes with a given list of transformations.
-     * @param inputs Solids with the transformation matrixes
-     * @returns Solids with a transformation
+     * Moves, rotates or scales several solids with the same transformation, giving new solids in
+     * the same order.
+     *
+     * `transformation` is one 4x4 matrix, a list of matrices applied in order, or a list of such
+     * lists; a flat 2D shape or a path throws an error.
+     * @param inputs - The solids and the transformation
+     * @returns The transformed solids, in the same order
      * @group transforms
      * @shortname transform solids
      * @drawable true
+     * @example
+     * ```typescript
+     * const translation = bitbybit.transforms.translationXYZ({ translation: [10, 0, 0] });
+     * const moved = await bitbybit.jscad.transformSolids({ meshes: [cube, sphere], transformation: translation });
+     * ```
      */
     transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Promise<Inputs.JSCAD.JSCADEntity[]> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("transformSolids", inputs);
     }
 
     /**
-     * Transforms the Jscad solid mesh with a given list of transformations.
-     * @param inputs Solid with the transformation matrixes
-     * @returns Solid with a transformation
+     * Moves, rotates or scales a solid with a transformation, giving a new solid.
+     *
+     * `transformation` is one 4x4 matrix, a list of matrices applied in order, or a list of such
+     * lists; a flat 2D shape or a path throws an error.
+     * @param inputs - The solid and the transformation
+     * @returns The transformed solid
      * @group transforms
      * @shortname transform solid
      * @drawable true
+     * @example
+     * ```typescript
+     * const rotation = bitbybit.transforms.rotationCenterAxis({ angle: 45, axis: [0, 1, 0], center: [0, 0, 0] });
+     * const turned = await bitbybit.jscad.transformSolid({ mesh: cube, transformation: rotation });
+     * ```
      */
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("transformSolid", inputs);
     }
 
     /**
-     * Downloads the binary STL file from a 3D solid
-     * @param inputs 3D Solid
+     * Writes a solid as a binary STL file, the common format for 3D printing, and downloads it in
+     * the browser as `fileName` plus `.stl`.
+     * @param inputs - The solid and the file name
+     * @returns The STL file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
      * @shortname solid to stl
+     * @example
+     * ```typescript
+     * await bitbybit.jscad.downloadSolidSTL({ mesh: cube, fileName: "cube" });
+     * ```
      */
     async downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadSolidSTL", inputs);
@@ -90,10 +127,16 @@ export class JSCAD {
     }
 
     /**
-     * Downloads the binary STL file from a 3D solids
-     * @param inputs 3D Solid
+     * Writes several solids into one binary STL file and downloads it in the browser as `fileName`
+     * plus `.stl`.
+     * @param inputs - The solids and the file name
+     * @returns The STL file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
      * @shortname solids to stl
+     * @example
+     * ```typescript
+     * await bitbybit.jscad.downloadSolidsSTL({ meshes: [cube, sphere], fileName: "parts" });
+     * ```
      */
     async downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadSolidsSTL", inputs);
@@ -101,10 +144,19 @@ export class JSCAD {
     }
 
     /**
-     * Downloads the dxf file from jscad geometry. Supports paths and meshes in array.
-     * @param inputs 3D geometry
+     * Writes a solid, a 2D shape, a path or a list of them as a DXF drawing file and downloads it
+     * in the browser as `fileName` plus `.dxf`.
+     *
+     * `options` is passed to the DXF writer as it is and can stay out.
+     * @param inputs - The geometry, the file name and the optional writer options
+     * @returns The DXF file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
      * @shortname geometry to dxf
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.jscad.polygon.circle({ center: [0, 0], radius: 5, segments: 32 });
+     * await bitbybit.jscad.downloadGeometryDxf({ geometry: circle, fileName: "circle", options: {} });
+     * ```
      */
     async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", inputs);
@@ -112,10 +164,18 @@ export class JSCAD {
     }
 
     /**
-     * Downloads the 3MF file from jscad geometry.
-     * @param inputs 3D geometry
+     * Writes a solid, a 2D shape, a path or a list of them as a 3MF file, a modern 3D printing
+     * format, and downloads it in the browser as `fileName` plus `.3mf`.
+     *
+     * `options` is passed to the 3MF writer as it is and can stay out.
+     * @param inputs - The geometry, the file name and the optional writer options
+     * @returns The 3MF file as a blob; the asynchronous API starts the download instead and returns nothing
      * @group io
      * @shortname geometry to 3mf
+     * @example
+     * ```typescript
+     * await bitbybit.jscad.downloadGeometry3MF({ geometry: [cube, sphere], fileName: "parts", options: {} });
+     * ```
      */
     async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", inputs);

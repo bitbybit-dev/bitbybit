@@ -5,10 +5,11 @@ import { Inputs } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 
 /**
- * SVG importer. Parses an SVG document (XML, the path mini-language, transforms, presentation
- * style cascade and basic shapes), reduces it to the generic path vocabulary and builds OCCT
- * wires/faces laid on the ground and aligned per the import options, with per-element
- * colour/stroke metadata bundled alongside each shape.
+ * Importing SVG drawings as OpenCascade shapes. The importer parses the document (paths, basic
+ * shapes, transforms and the style cascade), reduces every element to the generic path vocabulary
+ * of `path` and builds wires, and faces where it can, laid on the ground plane and placed by the
+ * import options. `loadSVG` gives one compound for the whole drawing; `loadSVGStructured` gives one
+ * shape per element with its fill and stroke.
  */
 export class OCCTSVG {
     constructor(
@@ -17,26 +18,57 @@ export class OCCTSVG {
     }
 
     /**
-     * Parses an SVG document and builds a single compound shape containing every drawable element,
-     * laid on the ground and aligned per the import options. Use this to draw, extrude or transform
-     * the whole drawing as one shape.
-     * @param inputs SVG text and import/placement options
+     * Parses an SVG document and builds every drawable element into one compound shape on the
+     * ground plane, ready to draw, extrude or transform as a whole.
+     *
+     * `faceStrategy` decides whether closed outlines become faces, `scale` and `flipY` map SVG
+     * units and its downward Y axis, and `alignment`, `direction` and `center` place the result.
+     * Invisible elements are skipped unless asked for.
+     * @param inputs - The SVG text and the import and placement options
+     * @returns One compound holding every element
      * @group io
      * @shortname load svg
      * @drawable true
+     * @example
+     * ```typescript
+     * const drawing = await bitbybit.occt.svg.loadSVG({
+     *     svg: svgText,
+     *     faceStrategy: Bit.Inputs.OCCT.svgFaceStrategyEnum.auto,
+     *     makeRibbons: false,
+     *     includeInvisible: false,
+     *     joinSegments: true,
+     *     tolerance: 1e-7,
+     *     scale: 0.1,
+     *     flipY: true,
+     *     alignment: Bit.Inputs.Base.basicAlignmentEnum.midMid,
+     *     direction: [0, 1, 0],
+     *     center: [0, 0, 0],
+     * });
+     * ```
      */
     loadSVG(inputs: Inputs.OCCT.LoadSVGDto): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("svg.loadSVG", inputs);
     }
 
     /**
-     * Parses an SVG document and builds an OCCT shape per drawable element, each bundled with its
-     * resolved fill/stroke/stroke-width metadata, plus warnings and the SVG view box. Use this when
-     * you need per-element shapes and their colours/styles. Faces are optional and best-effort.
-     * @param inputs SVG text and import/placement options
+     * Parses an SVG document and builds one shape per drawable element, each bundled with its
+     * resolved fill, stroke and stroke width, plus the parse warnings and the SVG view box.
+     *
+     * Use it when the elements need their own colors or separate handling; `loadSVG` gives the
+     * whole drawing as one shape. Faces are built where the outline allows it.
+     * @param inputs - The SVG text and the import and placement options
+     * @returns The shapes with their styles, the warnings and the view box
      * @group io
      * @shortname load svg structured
      * @drawable false
+     * @example
+     * ```typescript
+     * const options = new Bit.Inputs.OCCT.LoadSVGDto();
+     * options.svg = svgText;
+     * options.scale = 0.1;
+     * const result = await bitbybit.occt.svg.loadSVGStructured(options);
+     * result.shapes.forEach(s => console.log(s.fill, s.stroke));
+     * ```
      */
     loadSVGStructured(inputs: Inputs.OCCT.LoadSVGDto): Promise<Inputs.OCCT.SVGResult<Inputs.OCCT.TopoDSShapePointer>> {
         return this.occWorkerManager.genericCallToWorkerPromise("svg.loadSVGStructured", inputs);

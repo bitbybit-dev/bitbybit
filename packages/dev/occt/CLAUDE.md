@@ -86,6 +86,24 @@ that look plausible and are wrong.
 `loadedParts` reference their source document by index and **deliberately carry no shape data**, unlike
 `parts`, which are serialised by index into the shapes array.
 
+**Instance names are decided in the wasm, not here.** The kernel switches XCAF's auto-naming off
+(no `=>[0:1:1:2]` links, no `SOLID`/`ASSEMBLY` placeholders) and applies one rule everywhere: a
+placement keeps the name its source gives it; a placement without one is named after the part or
+assembly it places, numbered ` (1)`, ` (2)`, ... in placement order when the same definition is
+placed more than once under one parent, so sibling names stay distinct and a scene node path keeps
+addressing one placement. OCCT's STEP reader names an instance whose occurrence has a blank name and
+description after the entity id (`NAUO1`, `NAUO2`, ... from SolidWorks, bare counters from others);
+the kernel drops those (and `=>[entry]` names a file carries) before naming, keeps an id that reads
+as a word, and writes the result onto the labels, so `getAssemblyHierarchy`, `getLabelInfo`,
+`parseStepToJson`, the STEP and glTF exports and every glTF name format agree. `definitionName`
+(hierarchy nodes and `parseStepToJson` nodes) and `refName` (`getLabelInfo`) carry the placed
+definition's name beside it. Renaming a definition (`setDocLabelName`, a `partUpdates` entry) renames
+the placements that were named after it.
+
+**The structure JSON is parsed, not scanned.** `buildAssemblyDocument` hands its JSON to a real
+parser in the kernel, so a part or instance name may hold any character (`]`, `}`, quotes,
+backslashes); names travel escaped on the way back.
+
 ## A security boundary
 
 **Dimension label expressions are filtered, then parsed - never evaluated.** A label is checked against

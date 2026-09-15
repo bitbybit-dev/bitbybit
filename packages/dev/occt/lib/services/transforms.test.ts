@@ -219,6 +219,21 @@ describe("OCCT transforms unit tests", () => {
             transformed.delete();
         });
 
+        it("should align a shape with the default frames, whose axes are perpendicular to their normals", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+            const options = new Inputs.OCCT.AlignNormAndAxisDto(box);
+
+            // Act
+            const transformed = transforms.alignNormAndAxis(options);
+
+            // Assert
+            const center = solid.getSolidCenterOfMass({ shape: transformed });
+            [0, 1, 0].forEach((expected, axis) => expect(center[axis]).toBeCloseTo(expected, 9));
+            box.delete();
+            transformed.delete();
+        });
+
         it("should align and translate the given shape from one origin and direction to the other", () => {
             const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
             const transformed = transforms.alignAndTranslate({ shape: box, center: [1, 3, 4], direction: [0, 0, 1] });

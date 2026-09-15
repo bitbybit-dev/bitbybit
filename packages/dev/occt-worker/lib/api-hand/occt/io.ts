@@ -10,11 +10,21 @@ export class OCCTIO {
 
     // replaces io.saveShapeSTEP
     /**
-     * Saves the step file
-     * @param inputs STEP filename and shape to be saved
+     * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
+     * browser download of the file.
+     *
+     * With `adjustYtoZ` true the shape is turned so this library's Y-up becomes STEP's Z-up;
+     * `fromRightHanded` skips the mirror that swap otherwise includes. `fileName` names the download
+     * and `tryDownload` false skips it. `saveShapeSTEPAndReturn` gives the file's text instead.
+     * @param inputs - The shape, the file name, the axis adjustment and the download options
+     * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save step
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeSTEP({ shape: box, fileName: "box.step", adjustYtoZ: true, tryDownload: true });
+     * ```
      */
     async saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         await this.saveSTEP(inputs);
@@ -27,11 +37,21 @@ export class OCCTIO {
 
     // replaces io.saveShapeStl
     /**
-     * Saves the stl file
-     * @param inputs STL filename and shape to be saved
+     * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
+     * download of the file.
+     *
+     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces more
+     * closely and make a bigger file. `adjustYtoZ` turns Y-up into Z-up. `fileName` names the
+     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the text instead.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
+     * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save stl
      * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true });
+     * ```
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
         await this.saveStl(inputs);

@@ -4,61 +4,94 @@ import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
 
 /**
- * Contains various methods for vector mathematics. Vector in bitbybit is simply an array, usually
- * containing numbers. In 3D [x, y, z] form describes space, where y is the up vector. Because of this form
- * Vector can be interchanged with Point, which also is an array in [x, y, z] form.
+ * Vector maths on plain number arrays. A vector is an array of numbers; in 3D it is `[x, y, z]`
+ * with Y pointing up, the same shape as a point, so the two can be passed to each other's methods.
+ * Every method returns a new array or a number and never changes its inputs. Angles are in degrees.
  */
 export class Vector {
 
     constructor(private readonly math: MathBitByBit, private readonly geometryHelper: GeometryHelper) { }
 
     /**
-     * Removes all duplicate vectors from the input array (keeps only unique vectors).
-     * Example: [[1,2,3], [4,5,6], [1,2,3], [7,8,9]] → [[1,2,3], [4,5,6], [7,8,9]]
-     * @param inputs Contains vectors and a tolerance value
-     * @returns Array of vectors without duplicates
+     * Removes every repeated vector from a list, keeping the first occurrence of each.
+     *
+     * Two vectors count as the same when every entry differs by less than `tolerance`.
+     * Example: [[1,2,3], [4,5,6], [1,2,3], [7,8,9]] -> [[1,2,3], [4,5,6], [7,8,9]]
+     * @param inputs - Vectors to filter and the tolerance
+     * @returns The vectors without repeats, in their original order
      * @group remove
      * @shortname remove all duplicates
      * @drawable false
+     * @example
+     * ```typescript
+     * const unique = bitbybit.vector.removeAllDuplicateVectors({
+     *     vectors: [[1, 2, 3], [4, 5, 6], [1, 2, 3]],
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     removeAllDuplicateVectors(inputs: Inputs.Vector.RemoveAllDuplicateVectorsDto): number[][] {
         return this.geometryHelper.removeAllDuplicateVectors(inputs.vectors, inputs.tolerance);
     }
 
     /**
-     * Removes consecutive duplicate vectors from the input array (only removes duplicates that appear next to each other).
-     * Example: [[1,2], [1,2], [3,4], [1,2]] → [[1,2], [3,4], [1,2]] (only removed consecutive duplicate)
-     * @param inputs Contains vectors and a tolerance value
-     * @returns Array of vectors without duplicates
+     * Removes a vector when it repeats the one right before it; the same vector further away is
+     * kept.
+     *
+     * With `checkFirstAndLast` on, a last vector that repeats the first is dropped too, which
+     * closes a loop of points cleanly. Entries within `tolerance` of each other count as equal.
+     * Example: [[1,2], [1,2], [3,4], [1,2]] -> [[1,2], [3,4], [1,2]]
+     * @param inputs - Vectors to filter, whether to compare the first and last, and the tolerance
+     * @returns The vectors without consecutive repeats
      * @group remove
      * @shortname remove consecutive duplicates
      * @drawable false
+     * @example
+     * ```typescript
+     * const cleaned = bitbybit.vector.removeConsecutiveDuplicateVectors({
+     *     vectors: [[0, 0], [0, 0], [1, 1], [0, 0]],
+     *     checkFirstAndLast: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     removeConsecutiveDuplicateVectors(inputs: Inputs.Vector.RemoveConsecutiveDuplicateVectorsDto): number[][] {
         return this.geometryHelper.removeConsecutiveVectorDuplicates(inputs.vectors, inputs.checkFirstAndLast, inputs.tolerance);
     }
 
     /**
-     * Checks if two vectors are the same within a given tolerance (accounts for floating point precision).
-     * Example: [1,2,3] vs [1.0001,2.0001,3.0001] with tolerance 0.001 → true
-     * @param inputs Contains two vectors and a tolerance value
-     * @returns Boolean indicating if vectors are the same
+     * Tells whether two vectors are the same within a tolerance, entry by entry.
+     *
+     * Vectors of different length are never the same.
+     * Example: [1,2,3] and [1.0001,2.0001,3.0001] with tolerance 0.001 -> true
+     * @param inputs - The two vectors and the tolerance
+     * @returns True when every entry differs by less than the tolerance
      * @group validate
      * @shortname vectors the same
      * @drawable false
+     * @example
+     * ```typescript
+     * const same = bitbybit.vector.vectorsTheSame({ vec1: [1, 2, 3], vec2: [1, 2, 3.0000001], tolerance: 1e-6 });
+     * ```
      */
     vectorsTheSame(inputs: Inputs.Vector.VectorsTheSameDto): boolean {
         return this.geometryHelper.vectorsTheSame(inputs.vec1, inputs.vec2, inputs.tolerance);
     }
 
     /**
-     * Measures the angle between two vectors in degrees (always returns positive angle 0-180°).
-     * Example: [1,0,0] and [0,1,0] → 90° (perpendicular vectors)
-     * @param inputs Contains two vectors represented as number arrays
+     * Measures the angle between two vectors in degrees, always between 0 and 180.
+     *
+     * The direction of turning is not considered; use `signedAngleBetween` for that.
+     * Example: [1,0,0] and [0,1,0] -> 90
+     * @param inputs - The two vectors
+     * @returns Angle in degrees
      * @group angles
      * @shortname angle
-     * @returns Number in degrees
      * @drawable false
+     * @example
+     * ```typescript
+     * const angle = bitbybit.vector.angleBetween({ first: [1, 0, 0], second: [0, 1, 0] });
+     * ```
      */
     angleBetween(inputs: Inputs.Vector.TwoVectorsDto): number {
         return this.math.radToDeg({
@@ -67,13 +100,20 @@ export class Vector {
     }
 
     /**
-     * Measures the normalized 2D angle between two vectors in degrees (considers direction, can be negative).
-     * Example: [1,0] to [0,1] → 90°, [0,1] to [1,0] → -90°
-     * @param inputs Contains two vectors represented as number arrays
-     * @returns Number in degrees
+     * Measures the signed angle from the first 2D vector to the second, in degrees from -180 to
+     * 180.
+     *
+     * Only the first two entries of each vector are used; a positive angle turns counter-clockwise.
+     * Example: [1,0] to [0,1] -> 90, [0,1] to [1,0] -> -90
+     * @param inputs - The two 2D vectors
+     * @returns Signed angle in degrees
      * @group angles
      * @shortname angle normalized 2d
      * @drawable false
+     * @example
+     * ```typescript
+     * const angle = bitbybit.vector.angleBetweenNormalized2d({ first: [1, 0], second: [0, 1] });
+     * ```
      */
     angleBetweenNormalized2d(inputs: Inputs.Vector.TwoVectorsDto): number {
         const perpDot = inputs.first[0]! * inputs.second[1]! - inputs.first[1]! * inputs.second[0]!;
@@ -83,13 +123,20 @@ export class Vector {
     }
 
     /**
-     * Measures a positive angle between two vectors given the reference vector in degrees (always 0-360°).
-     * Example: converts negative signed angles to positive by adding 360° when needed
-     * @param inputs Contains information of two vectors and a reference vector
-     * @returns Number in degrees
+     * Measures the angle from the first vector to the second, turning around a reference direction,
+     * in degrees from 0 to 360.
+     *
+     * The turn is counter-clockwise when the reference vector points toward you.
+     * Example: [1,0,0] to [0,0,-1] around [0,1,0] -> 90
+     * @param inputs - The two vectors and the reference direction to turn around
+     * @returns Angle in degrees from 0 to 360
      * @group angles
      * @shortname positive angle
      * @drawable false
+     * @example
+     * ```typescript
+     * const angle = bitbybit.vector.positiveAngleBetween({ first: [1, 0, 0], second: [0, 0, -1], reference: [0, 1, 0] });
+     * ```
      */
     positiveAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
         const angle = this.signedAngleBetween(inputs);
@@ -97,13 +144,19 @@ export class Vector {
     }
 
     /**
-     * Adds all vector xyz values together element-wise and creates a new vector.
-     * Example: [[1,2,3], [4,5,6], [7,8,9]] → [12,15,18] (sums each column)
-     * @param inputs Vectors to be added
-     * @returns New vector that has xyz values as sums of all the vectors
+     * Adds a list of vectors together entry by entry into one vector.
+     *
+     * The result has as many entries as the first vector.
+     * Example: [[1,2,3], [4,5,6], [7,8,9]] -> [12,15,18]
+     * @param inputs - Vectors to add
+     * @returns The vector of sums
      * @group sum
      * @shortname add all
      * @drawable false
+     * @example
+     * ```typescript
+     * const total = bitbybit.vector.addAll({ vectors: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] });
+     * ```
      */
     addAll(inputs: Inputs.Vector.VectorsDto): number[] {
         const res = [];
@@ -118,13 +171,18 @@ export class Vector {
     }
 
     /**
-     * Adds two vectors together element-wise.
-     * Example: [1,2,3] + [4,5,6] → [5,7,9]
-     * @param inputs Two vectors to be added
-     * @returns Number array representing vector
+     * Adds two vectors entry by entry.
+     *
+     * Example: [1,2,3] + [4,5,6] -> [5,7,9]
+     * @param inputs - The two vectors to add
+     * @returns The vector of sums
      * @group sum
      * @shortname add
      * @drawable false
+     * @example
+     * ```typescript
+     * const sum = bitbybit.vector.add({ first: [1, 2, 3], second: [4, 5, 6] });
+     * ```
      */
     add(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
@@ -135,26 +193,38 @@ export class Vector {
     }
 
     /**
-     * Checks if the boolean array contains only true values, returns false if there's a single false.
-     * Example: [true, true, true] → true, [true, false, true] → false
-     * @param inputs Vectors to be checked
-     * @returns Boolean indicating if vector contains only true values
+     * Tells whether every value in a list of booleans is true.
+     *
+     * Example: [true, true, true] -> true, [true, false, true] -> false
+     * @param inputs - The booleans to check
+     * @returns True when no entry is false
      * @group sum
      * @shortname all
      * @drawable false
+     * @example
+     * ```typescript
+     * const allTrue = bitbybit.vector.all({ vector: [true, true, false] });
+     * ```
      */
     all(inputs: Inputs.Vector.VectorBoolDto): boolean {
         return inputs.vector.every(v => v);
     }
 
     /**
-     * Computes the cross product of two 3D vectors (perpendicular vector to both inputs).
-     * Example: [1,0,0] × [0,1,0] → [0,0,1] (right-hand rule)
-     * @param inputs Two vectors to be crossed
+     * Computes the cross product of two 3D vectors: a vector at right angles to both.
+     *
+     * Its direction follows the right-hand rule and its length is the area of the parallelogram the
+     * two vectors span.
+     * Example: [1,0,0] x [0,1,0] -> [0,0,1]
+     * @param inputs - The two 3D vectors
+     * @returns The vector perpendicular to both
      * @group base
      * @shortname cross
-     * @returns Crossed vector
      * @drawable false
+     * @example
+     * ```typescript
+     * const normal = bitbybit.vector.cross({ first: [1, 0, 0], second: [0, 1, 0] });
+     * ```
      */
     cross(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
@@ -165,13 +235,19 @@ export class Vector {
     }
 
     /**
-     * Calculates squared distance between two vectors (faster than distance, avoids sqrt).
-     * Example: [0,0,0] to [3,4,0] → 25 (distance 5 squared)
-     * @param inputs Two vectors
-     * @returns Number representing squared distance between two vectors
+     * Computes the squared distance between two vectors, which avoids the square root when only
+     * comparing distances.
+     *
+     * Example: [0,0,0] to [3,4,0] -> 25
+     * @param inputs - The two vectors
+     * @returns The squared distance
      * @group distance
      * @shortname dist squared
      * @drawable false
+     * @example
+     * ```typescript
+     * const d2 = bitbybit.vector.distSquared({ first: [0, 0, 0], second: [3, 4, 0] });
+     * ```
      */
     distSquared(inputs: Inputs.Vector.TwoVectorsDto): number {
         let res = 0;
@@ -182,26 +258,36 @@ export class Vector {
     }
 
     /**
-     * Calculates the Euclidean distance between two vectors.
-     * Example: [0,0,0] to [3,4,0] → 5, [1,1] to [4,5] → 5
-     * @param inputs Two vectors
-     * @returns Number representing distance between two vectors
+     * Computes the straight-line distance between two vectors.
+     *
+     * Example: [0,0,0] to [3,4,0] -> 5
+     * @param inputs - The two vectors
+     * @returns The distance in model units
      * @group distance
      * @shortname dist
      * @drawable false
+     * @example
+     * ```typescript
+     * const distance = bitbybit.vector.dist({ first: [0, 0, 0], second: [3, 4, 0] });
+     * ```
      */
     dist(inputs: Inputs.Vector.TwoVectorsDto): number {
         return Math.sqrt(this.distSquared(inputs));
     }
 
     /**
-     * Divides each element of the vector by a scalar value.
-     * Example: [10,20,30] ÷ 2 → [5,10,15]
-     * @param inputs Contains vector and a scalar
-     * @returns Vector that is a result of division by a scalar
+     * Divides every entry of a vector by one number.
+     *
+     * Example: [10,20,30] / 2 -> [5,10,15]
+     * @param inputs - The vector and the number to divide by
+     * @returns The divided vector
      * @group base
      * @shortname div
      * @drawable false
+     * @example
+     * ```typescript
+     * const half = bitbybit.vector.div({ vector: [10, 20, 30], scalar: 2 });
+     * ```
      */
     div(inputs: Inputs.Vector.VectorScalarDto): number[] {
         const res = [];
@@ -212,26 +298,38 @@ export class Vector {
     }
 
     /**
-     * Computes the domain (range) between minimum and maximum values of the vector.
-     * Example: [1,3,5,9] → 8 (difference between last and first: 9-1)
-     * @param inputs Vector information
-     * @returns Number representing distance between two vectors
+     * Subtracts the first value of a vector from its last, which for a sorted list is its range.
+     *
+     * Example: [1,3,5,9] -> 8
+     * @param inputs - The vector
+     * @returns Last value minus first value
      * @group base
      * @shortname domain
      * @drawable false
+     * @example
+     * ```typescript
+     * const span = bitbybit.vector.domain({ vector: [1, 3, 5, 9] });
+     * ```
      */
     domain(inputs: Inputs.Vector.VectorDto): number {
         return inputs.vector[inputs.vector.length - 1]! - inputs.vector[0]!;
     }
 
     /**
-     * Calculates the dot product between two vectors (measures similarity/projection).
-     * Example: [1,2,3] • [4,5,6] → 32 (1×4 + 2×5 + 3×6), perpendicular vectors → 0
-     * @param inputs Two vectors
-     * @returns Number representing dot product of the vector
+     * Computes the dot product of two vectors: the sum of the products of matching entries.
+     *
+     * It is 0 for vectors at right angles and, for unit vectors, the cosine of the angle between
+     * them.
+     * Example: [1,2,3] and [4,5,6] -> 32
+     * @param inputs - The two vectors
+     * @returns The dot product
      * @group base
      * @shortname dot
      * @drawable false
+     * @example
+     * ```typescript
+     * const projection = bitbybit.vector.dot({ first: [1, 2, 3], second: [4, 5, 6] });
+     * ```
      */
     dot(inputs: Inputs.Vector.TwoVectorsDto): number {
         let res = 0;
@@ -242,40 +340,55 @@ export class Vector {
     }
 
     /**
-     * Checks if each element in the vector is finite and returns a boolean array.
-     * Example: [1, 2, Infinity, 3] → [true, true, false, true]
-     * @param inputs Vector with possibly infinite values
-     * @returns Vector array that contains boolean values for each number in the input
-     * vector that identifies if value is finite (true) or infinite (false)
+     * Marks which entries of a vector are finite numbers.
+     *
+     * Example: [1, 2, Infinity, 3] -> [true, true, false, true]
+     * @param inputs - The vector to check
+     * @returns One boolean per entry, true when it is finite
      * @group validate
      * @shortname finite
      * @drawable false
+     * @example
+     * ```typescript
+     * const flags = bitbybit.vector.finite({ vector: [1, Infinity, 3] });
+     * ```
      */
     finite(inputs: Inputs.Vector.VectorDto): boolean[] {
         return inputs.vector.map(v => isFinite(v));
     }
 
     /**
-     * Checks if the vector has zero length (all elements are zero).
-     * Example: [0,0,0] → true, [0,0,0.001] → false
-     * @param inputs Vector to be checked
-     * @returns Boolean that identifies if vector is zero length
+     * Tells whether a vector has no length, that is, every entry is exactly 0.
+     *
+     * Example: [0,0,0] -> true, [0,0,0.001] -> false
+     * @param inputs - The vector to check
+     * @returns True when the length is 0
      * @group validate
      * @shortname isZero
      * @drawable false
+     * @example
+     * ```typescript
+     * const zero = bitbybit.vector.isZero({ vector: [0, 0, 0] });
+     * ```
      */
     isZero(inputs: Inputs.Vector.VectorDto): boolean {
         return this.norm({ vector: inputs.vector }) === 0;
     }
 
     /**
-     * Finds an interpolated vector between two vectors using a fraction (linear interpolation).
-     * Example: [0,0,0] to [10,10,10] at 0.5 → [5,5,5], fraction=0 → first, fraction=1 → second
-     * @param inputs Information for finding vector between two vectors using a fraction
-     * @returns Vector that is in between two vectors
+     * Blends two vectors linearly by a fraction.
+     *
+     * `fraction` is the share of `first`: 1 gives `first`, 0 gives `second`, 0.5 the midpoint.
+     * Example: [0,0,0] and [10,10,10] at 0.5 -> [5,5,5]
+     * @param inputs - The two vectors and the fraction of the first
+     * @returns The blended vector
      * @group distance
      * @shortname lerp
      * @drawable false
+     * @example
+     * ```typescript
+     * const mid = bitbybit.vector.lerp({ first: [0, 0, 0], second: [10, 10, 10], fraction: 0.5 });
+     * ```
      */
     lerp(inputs: Inputs.Vector.FractionTwoVectorsDto): number[] {
         return this.add(
@@ -287,39 +400,54 @@ export class Vector {
     }
 
     /**
-     * Finds the maximum (largest) value in the vector.
-     * Example: [3, 7, 2, 9, 1] → 9
-     * @param inputs Vector to be checked
-     * @returns Largest number in the vector
+     * Finds the largest value in a vector.
+     *
+     * Example: [3, 7, 2, 9, 1] -> 9
+     * @param inputs - The vector
+     * @returns The largest entry
      * @group extract
      * @shortname max
      * @drawable false
+     * @example
+     * ```typescript
+     * const largest = bitbybit.vector.max({ vector: [3, 7, 2, 9, 1] });
+     * ```
      */
     max(inputs: Inputs.Vector.VectorDto): number {
         return Math.max(...inputs.vector);
     }
 
     /**
-     * Finds the minimum (smallest) value in the vector.
-     * Example: [3, 7, 2, 9, 1] → 1
-     * @param inputs Vector to be checked
-     * @returns Lowest number in the vector
+     * Finds the smallest value in a vector.
+     *
+     * Example: [3, 7, 2, 9, 1] -> 1
+     * @param inputs - The vector
+     * @returns The smallest entry
      * @group extract
      * @shortname min
      * @drawable false
+     * @example
+     * ```typescript
+     * const smallest = bitbybit.vector.min({ vector: [3, 7, 2, 9, 1] });
+     * ```
      */
     min(inputs: Inputs.Vector.VectorDto): number {
         return Math.min(...inputs.vector);
     }
 
     /**
-     * Multiplies each element of the vector by a scalar value.
-     * Example: [2,3,4] × 5 → [10,15,20]
-     * @param inputs Vector with a scalar
-     * @returns Vector that results from multiplication
+     * Multiplies every entry of a vector by one number.
+     *
+     * Example: [2,3,4] x 5 -> [10,15,20]
+     * @param inputs - The vector and the number to multiply by
+     * @returns The scaled vector
      * @group base
      * @shortname mul
      * @drawable false
+     * @example
+     * ```typescript
+     * const scaled = bitbybit.vector.mul({ vector: [2, 3, 4], scalar: 5 });
+     * ```
      */
     mul(inputs: Inputs.Vector.VectorScalarDto): number[] {
         const res = [];
@@ -330,13 +458,18 @@ export class Vector {
     }
 
     /**
-     * Negates the vector (flips the sign of each element).
-     * Example: [5,-3,2] → [-5,3,-2]
-     * @param inputs Vector to negate
-     * @returns Negative vector
+     * Flips the sign of every entry, so the vector points the opposite way.
+     *
+     * Example: [5,-3,2] -> [-5,3,-2]
+     * @param inputs - The vector to flip
+     * @returns The negated vector
      * @group base
      * @shortname neg
      * @drawable false
+     * @example
+     * ```typescript
+     * const opposite = bitbybit.vector.neg({ vector: [5, -3, 2] });
+     * ```
      */
     neg(inputs: Inputs.Vector.VectorDto): number[] {
         const res = [];
@@ -347,26 +480,37 @@ export class Vector {
     }
 
     /**
-     * Computes the squared norm (squared magnitude/length) of the vector.
-     * Example: [3,4,0] → 25 (length 5 squared)
-     * @param inputs Vector for squared norm
-     * @returns Number that is squared norm
+     * Computes the squared length of a vector, which avoids the square root when only comparing
+     * lengths.
+     *
+     * Example: [3,4,0] -> 25
+     * @param inputs - The vector
+     * @returns The squared length
      * @group base
      * @shortname norm squared
      * @drawable false
+     * @example
+     * ```typescript
+     * const n2 = bitbybit.vector.normSquared({ vector: [3, 4, 0] });
+     * ```
      */
     normSquared(inputs: Inputs.Vector.VectorDto): number {
         return this.dot({ first: inputs.vector, second: inputs.vector });
     }
 
     /**
-     * Calculates the norm (magnitude/length) of the vector.
-     * Example: [3,4,0] → 5, [1,0,0] → 1
-     * @param inputs Vector to compute the norm
-     * @returns Number that is norm of the vector
+     * Computes the length of a vector.
+     *
+     * Example: [3,4,0] -> 5, [1,0,0] -> 1
+     * @param inputs - The vector
+     * @returns The length in model units
      * @group base
      * @shortname norm
      * @drawable false
+     * @example
+     * ```typescript
+     * const len = bitbybit.vector.norm({ vector: [3, 4, 0] });
+     * ```
      */
     norm(inputs: Inputs.Vector.VectorDto): number {
         const norm2 = this.normSquared(inputs);
@@ -374,13 +518,19 @@ export class Vector {
     }
 
     /**
-     * Normalizes the vector into a unit vector that has a length of 1 (maintains direction, scales magnitude to 1).
-     * Example: [3,4,0] → [0.6,0.8,0], [10,0,0] → [1,0,0]
-     * @param inputs Vector to normalize
-     * @returns Unit vector that has length of 1
+     * Scales a 3D vector to length 1 while keeping its direction.
+     *
+     * A vector shorter than 1e-8 has no direction to keep, so the result is undefined.
+     * Example: [3,4,0] -> [0.6,0.8,0]
+     * @param inputs - The 3D vector to normalize
+     * @returns The unit vector, or undefined for a zero-length input
      * @group base
      * @shortname normalized
      * @drawable false
+     * @example
+     * ```typescript
+     * const direction = bitbybit.vector.normalized({ vector: [3, 4, 0] });
+     * ```
      */
     normalized(inputs: Inputs.Vector.VectorDto): number[] | undefined {
         const len = this.length({vector: inputs.vector as Inputs.Base.Vector3});
@@ -391,52 +541,73 @@ export class Vector {
     }
 
     /**
-     * Finds a point on a ray at a given distance from the origin along the direction vector.
-     * Example: Point [0,0,0] + direction [1,0,0] at distance 5 → [5,0,0]
-     * @param inputs Provide a point, vector and a distance for finding a point
-     * @returns Vector representing point on the ray
+     * Finds the point at a given distance from a start point along a direction.
+     *
+     * The direction is used as given, so a direction of length 2 travels twice the distance.
+     * Example: start [0,0,0], direction [1,0,0], distance 5 -> [5,0,0]
+     * @param inputs - The start point, the direction and the distance
+     * @returns The point on the ray
      * @group base
      * @shortname on ray
      * @drawable false
+     * @example
+     * ```typescript
+     * const ahead = bitbybit.vector.onRay({ point: [0, 0, 0], vector: [1, 0, 0], distance: 5 });
+     * ```
      */
     onRay(inputs: Inputs.Vector.RayPointDto): number[] {
         return this.add({ first: inputs.point, second: this.mul({ vector: inputs.vector, scalar: inputs.distance }) });
     }
 
     /**
-     * Creates a 3D vector from x, y, z coordinates.
-     * Example: x=1, y=2, z=3 → [1,2,3]
-     * @param inputs Vector coordinates
-     * @returns Create a vector of xyz values
+     * Builds a 3D vector from its x, y and z values.
+     *
+     * Example: x=1, y=2, z=3 -> [1,2,3]
+     * @param inputs - The three values
+     * @returns The vector `[x, y, z]`
      * @group create
      * @shortname vector XYZ
      * @drawable true
+     * @example
+     * ```typescript
+     * const up = bitbybit.vector.vectorXYZ({ x: 0, y: 1, z: 0 });
+     * ```
      */
     vectorXYZ(inputs: Inputs.Vector.VectorXYZDto): Inputs.Base.Vector3 {
         return [inputs.x, inputs.y, inputs.z];
     }
 
     /**
-     * Creates a 2D vector from x, y coordinates.
-     * Example: x=3, y=4 → [3,4]
-     * @param inputs Vector coordinates
-     * @returns Create a vector of xy values
+     * Builds a 2D vector from its x and y values.
+     *
+     * Example: x=3, y=4 -> [3,4]
+     * @param inputs - The two values
+     * @returns The vector `[x, y]`
      * @group create
      * @shortname vector XY
      * @drawable true
+     * @example
+     * ```typescript
+     * const right = bitbybit.vector.vectorXY({ x: 1, y: 0 });
+     * ```
      */
     vectorXY(inputs: Inputs.Vector.VectorXYDto): Inputs.Base.Vector2 {
         return [inputs.x, inputs.y];
     }
 
     /**
-     * Creates a vector of integers from 0 to max (exclusive).
-     * Example: max=5 → [0,1,2,3,4], max=3 → [0,1,2]
-     * @param inputs Max value for the range
-     * @returns Vector containing items from 0 to max
+     * Lists the whole numbers from 0 up to, but not including, `max`.
+     *
+     * Example: max=5 -> [0,1,2,3,4]
+     * @param inputs - The end of the range, which is left out
+     * @returns The numbers from 0 to max - 1
      * @group create
      * @shortname range
      * @drawable false
+     * @example
+     * ```typescript
+     * const indices = bitbybit.vector.range({ max: 5 });
+     * ```
      */
     range(inputs: Inputs.Vector.RangeMaxDto): number[] {
         const res = [];
@@ -447,13 +618,21 @@ export class Vector {
     }
 
     /**
-     * Computes signed angle between two vectors using a reference vector (determines rotation direction).
-     * Example: Returns positive or negative angle depending on rotation direction relative to reference
-     * @param inputs Contains information of two vectors and a reference vector
-     * @returns Signed angle in degrees
+     * Measures the angle from the first vector to the second, turning around a reference direction,
+     * in degrees from 0 to 360.
+     *
+     * The turn is counter-clockwise when the reference vector points toward you: a clockwise turn
+     * of 30 degrees reads as 330.
+     * Example: [1,0,0] to [0,0,-1] around [0,1,0] -> 90
+     * @param inputs - The two vectors and the reference direction to turn around
+     * @returns Angle in degrees from 0 to 360
      * @group angles
      * @shortname signed angle
      * @drawable false
+     * @example
+     * ```typescript
+     * const angle = bitbybit.vector.signedAngleBetween({ first: [1, 0, 0], second: [0, 0, -1], reference: [0, 1, 0] });
+     * ```
      */
     signedAngleBetween(inputs: Inputs.Vector.TwoVectorsReferenceDto): number {
         const nab = this.cross({ first: inputs.first, second: inputs.second });
@@ -470,13 +649,19 @@ export class Vector {
     }
 
     /**
-     * Creates a vector containing numbers from min to max at a given step increment.
-     * Example: min=0, max=10, step=2 → [0,2,4,6,8,10]
-     * @param inputs Span information containing min, max and step values
-     * @returns Vector containing number between min, max and increasing at a given step
+     * Lists the numbers from `min` to `max`, stepping by `step`; `max` is included when a step
+     * lands on it.
+     *
+     * Example: min=0, max=10, step=2 -> [0,2,4,6,8,10]
+     * @param inputs - The start, the end and the step
+     * @returns The numbers in the span
      * @group create
      * @shortname span
      * @drawable false
+     * @example
+     * ```typescript
+     * const values = bitbybit.vector.span({ min: 0, max: 10, step: 2.5 });
+     * ```
      */
     span(inputs: Inputs.Vector.SpanDto): number[] {
         const res = [];
@@ -487,13 +672,21 @@ export class Vector {
     }
 
     /**
-     * Creates a vector with numbers from min to max using an easing function for non-linear distribution.
-     * Example: min=0, max=100, nrItems=5, ease='easeInQuad' → creates accelerating intervals
-     * @param inputs Span information containing min, max and ease function
-     * @returns Vector containing numbers between min, max and increasing in non-linear steps defined by nr of items in the vector and type
+     * Lists `nrItems` numbers from `min` to `max` spaced by an easing curve, so they bunch up at
+     * one end or both.
+     *
+     * With `intervals` on, the result holds the gaps between neighbors instead of the values
+     * themselves.
+     * Example: min=0, max=100, nrItems=5, ease='easeInQuad' -> [0, 6.25, 25, 56.25, 100]
+     * @param inputs - The start, the end, the number of items, the easing and whether to return the gaps
+     * @returns The eased numbers, or the gaps between them
      * @group create
      * @shortname span ease items
      * @drawable false
+     * @example
+     * ```typescript
+     * const eased = bitbybit.vector.spanEaseItems({ min: 0, max: 100, nrItems: 5, ease: Bit.Inputs.Math.easeEnum.easeInQuad, intervals: false });
+     * ```
      */
     spanEaseItems(inputs: Inputs.Vector.SpanEaseItemsDto): number[] {
         const res = [];
@@ -508,13 +701,18 @@ export class Vector {
     }
 
     /**
-     * Creates a vector with evenly spaced numbers from min to max with a specified number of items.
-     * Example: min=0, max=10, nrItems=5 → [0, 2.5, 5, 7.5, 10]
-     * @param inputs Span information containing min, max and step values
-     * @returns Vector containing number between min, max by giving nr of items
+     * Lists `nrItems` evenly spaced numbers from `min` to `max`, both included.
+     *
+     * Example: min=0, max=10, nrItems=5 -> [0, 2.5, 5, 7.5, 10]
+     * @param inputs - The start, the end and the number of items
+     * @returns The evenly spaced numbers
      * @group create
      * @shortname span linear items
      * @drawable false
+     * @example
+     * ```typescript
+     * const values = bitbybit.vector.spanLinearItems({ min: 0, max: 10, nrItems: 5 });
+     * ```
      */
     spanLinearItems(inputs: Inputs.Vector.SpanLinearItemsDto): number[] {
         const res = [];
@@ -527,13 +725,18 @@ export class Vector {
     }
 
     /**
-     * Subtracts the second vector from the first element-wise.
-     * Example: [10,20,30] - [1,2,3] → [9,18,27]
-     * @param inputs Two vectors
-     * @returns Vector that result by subtraction two vectors
+     * Subtracts the second vector from the first, entry by entry.
+     *
+     * Example: [10,20,30] - [1,2,3] -> [9,18,27]
+     * @param inputs - The vector to subtract from and the vector to subtract
+     * @returns The vector of differences
      * @group base
      * @shortname sub
      * @drawable false
+     * @example
+     * ```typescript
+     * const diff = bitbybit.vector.sub({ first: [10, 20, 30], second: [1, 2, 3] });
+     * ```
      */
     sub(inputs: Inputs.Vector.TwoVectorsDto): number[] {
         const res = [];
@@ -544,26 +747,37 @@ export class Vector {
     }
 
     /**
-     * Sums all values in the vector and returns a single number.
-     * Example: [1,2,3,4] → 10, [5,10,15] → 30
-     * @param inputs Vector to sum
-     * @returns Number that results by adding up all values in the vector
+     * Adds up all values of a vector into one number.
+     *
+     * Example: [1,2,3,4] -> 10
+     * @param inputs - The vector to add up
+     * @returns The total
      * @group base
      * @shortname sum
      * @drawable false
+     * @example
+     * ```typescript
+     * const total = bitbybit.vector.sum({ vector: [1, 2, 3, 4] });
+     * ```
      */
     sum(inputs: Inputs.Vector.VectorDto): number {
         return inputs.vector.reduce((a, b) => a + b, 0);
     }
 
     /**
-     * Computes the squared length (squared magnitude) of a 3D vector.
-     * Example: [3,4,0] → 25 (length 5 squared)
-     * @param inputs Vector to compute the length
-     * @returns Number that is squared length of the vector
+     * Computes the squared length of a 3D vector, which avoids the square root when only comparing
+     * lengths.
+     *
+     * Example: [3,4,0] -> 25
+     * @param inputs - The 3D vector
+     * @returns The squared length
      * @group base
      * @shortname length squared
      * @drawable false
+     * @example
+     * ```typescript
+     * const l2 = bitbybit.vector.lengthSq({ vector: [3, 4, 0] });
+     * ```
      */
     lengthSq(inputs: Inputs.Vector.Vector3Dto): number {
         const v = inputs.vector;
@@ -571,26 +785,37 @@ export class Vector {
     }
 
     /**
-     * Computes the length (magnitude) of a 3D vector.
-     * Example: [3,4,0] → 5, [1,0,0] → 1
-     * @param inputs Vector to compute the length
-     * @returns Number that is length of the vector
+     * Computes the length of a 3D vector.
+     *
+     * Example: [3,4,0] -> 5
+     * @param inputs - The 3D vector
+     * @returns The length in model units
      * @group base
      * @shortname length
      * @drawable false
+     * @example
+     * ```typescript
+     * const len = bitbybit.vector.length({ vector: [3, 4, 0] });
+     * ```
      */
     length(inputs: Inputs.Vector.Vector3Dto): number {
         return Math.sqrt(this.lengthSq(inputs));
     }
 
     /**
-     * Converts an array of stringified numbers to actual numbers.
-     * Example: ['1', '2.5', '3'] → [1, 2.5, 3], ['10', '-5', '0.1'] → [10, -5, 0.1]
-     * @param inputs Array of stringified numbers
-     * @returns Array of numbers
+     * Turns a list of number strings into numbers.
+     *
+     * A string that is not a number becomes NaN.
+     * Example: ['1', '2.5', '3'] -> [1, 2.5, 3]
+     * @param inputs - The strings to parse
+     * @returns The numbers
      * @group create
      * @shortname parse numbers
      * @drawable false
+     * @example
+     * ```typescript
+     * const numbers = bitbybit.vector.parseNumbers({ vector: ["1", "2.5", "-3"] });
+     * ```
      */
     parseNumbers(inputs: Inputs.Vector.VectorStringDto): number[] {
         return inputs.vector.map(v => parseFloat(v));

@@ -10,6 +10,10 @@ import { Base } from "./base-inputs";
  */
 export namespace BabylonDecal {
 
+    /**
+     * Feeds `babylon.decal.createMeshDecal`: the mesh to stick an image onto, the image, where and
+     * which way it is projected, its size and the rendering details.
+     */
     export class CreateMeshDecalDto {
         constructor(sourceMesh?: BABYLON.AbstractMesh, texture?: BABYLON.BaseTexture, position?: Base.Point3, normal?: Base.Vector3, size?: Base.Vector3, angle?: number, cullBackFaces?: boolean, localMode?: boolean, zOffset?: number) {
             if (sourceMesh !== undefined) { this.sourceMesh = sourceMesh; }
@@ -71,6 +75,10 @@ export namespace BabylonDecal {
         zOffset = -2;
     }
 
+    /**
+     * Feeds `babylon.decal.enableDecalMap`: the mesh and material to give a decal map, and the
+     * resolution of that map.
+     */
     export class EnableDecalMapDto {
         constructor(mesh?: BABYLON.AbstractMesh, material?: BABYLON.Material, width?: number, height?: number) {
             if (mesh !== undefined) { this.mesh = mesh; }
@@ -100,6 +108,10 @@ export namespace BabylonDecal {
         height = 1024;
     }
 
+    /**
+     * Feeds `babylon.decal.projectDecal`: the decal map to paint into, the image and where, which
+     * way and how big it is projected.
+     */
     export class ProjectDecalDto {
         constructor(decalMap?: BABYLON.MeshUVSpaceRenderer, texture?: BABYLON.BaseTexture, position?: Base.Point3, normal?: Base.Vector3, size?: Base.Vector3, angle?: number) {
             if (decalMap !== undefined) { this.decalMap = decalMap; }
@@ -142,6 +154,9 @@ export namespace BabylonDecal {
         angle = 0;
     }
 
+    /**
+     * Feeds `babylon.decal.clearDecalMap` with the decal map to empty.
+     */
     export class DecalMapDto {
         constructor(decalMap?: BABYLON.MeshUVSpaceRenderer) {
             if (decalMap !== undefined) { this.decalMap = decalMap; }

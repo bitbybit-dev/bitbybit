@@ -10,6 +10,17 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
 
+/**
+ * A float view over locked vertex buffer storage. PlayCanvas hands back either the raw buffer or
+ * a typed view over it; both are read and written through one Float32Array on the same bytes.
+ */
+function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
+    if (ArrayBuffer.isView(locked)) {
+        return new Float32Array(locked.buffer, locked.byteOffset, locked.byteLength / Float32Array.BYTES_PER_ELEMENT);
+    }
+    return new Float32Array(locked);
+}
+
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
 export class DrawHelper extends DrawHelperCore {
@@ -326,7 +337,7 @@ export class DrawHelper extends DrawHelperCore {
                 if (instanceBuffer && pointIndices) {
                     const instanceData = instanceBuffer.lock();
                     if (instanceData) {
-                        const floatView = new Float32Array(instanceData);
+                        const floatView = float32ViewOf(instanceData);
                         const tempMat = new pc.Mat4();
                         
                         pointIndices.forEach((originalIndex, instanceIndex) => {
@@ -1056,7 +1067,7 @@ export class DrawHelper extends DrawHelperCore {
      * @param updatable - Whether to attempt updates
      * @param size - Line width. Not applied: a GL line is one pixel wide whatever this says.
      * @param opacity - Line opacity
-     * @param colours - Line colors
+     * @param colors - Line colors
      * @param colorMapStrategy - Strategy for mapping colors to polylines
      * @returns Entity containing rendered polylines, or undefined
      */
@@ -1477,7 +1488,7 @@ export class DrawHelper extends DrawHelperCore {
         
         const lockedData = instanceBuffer.lock();
         if (lockedData) {
-            new Float32Array(lockedData).set(instanceData);
+            float32ViewOf(lockedData).set(instanceData);
             instanceBuffer.unlock();
         }
         

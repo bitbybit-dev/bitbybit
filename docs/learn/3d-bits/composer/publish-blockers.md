@@ -53,6 +53,11 @@ Publishing is refused when the option panel contains a duplicate that would make
 | *"The control 'key' is placed twice in the layout."* | Only the first copy is ever updated, validated or priced, so a shopper could be shown one copy while the charge follows the other. Remove one of them. |
 | *"Two layout elements share the id 'x'."* | Ids name the accordions and tab panels a shopper opens, and the translations attached to them, so a repeat makes the second element unreachable. Give one a different id. |
 | *"The tab strip ... has two tabs with the id 'x'."* | A shopper's tab selection is remembered by that id, so the wrong tab opens. Give one a different id. |
+| *"Custom HTML elements need the Standard or Pro plan."* | The element renders nothing on the Basic plan. Upgrade, or remove the Custom HTML elements from the layout. |
+| *"Camera controls elements need the Standard or Pro plan."* | The element renders nothing on the Basic plan. Upgrade, or remove the Camera controls elements from the layout. |
+| *"The link 'x' points at '...', which is not a web address, mailto:, tel: or a page on your store."* | The storefront never follows such a destination, so the link would be dead. Change the URL in the Composer. |
+
+A Custom HTML element that still contains scripts, frames, forms, event handlers or `javascript:` links publishes with a warning rather than a refusal: the storefront removes those parts and renders the rest, exactly as the Composer preview showed. A `[label](url)` in a text or message whose url is not an allowed destination is likewise a warning, because the words still render, only as plain text. So is a camera whose every pointer gesture is switched off while the project has no Camera controls element, focals or points of interest: the configurator publishes, but shoppers see the model from one fixed view, and the warning says so.
 
 ## PDF documents
 

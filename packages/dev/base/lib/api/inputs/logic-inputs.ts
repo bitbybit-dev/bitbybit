@@ -27,6 +27,9 @@ export namespace Logic {
         equal = "==",
         notEqual = "!=",
     }
+    /**
+     * Two values and an operator for `logic.compare`.
+     */
     export class ComparisonDto<T> {
         constructor(first?: T, second?: T, operator?: BooleanOperatorsEnum) {
             if (first !== undefined) { this.first = first; }
@@ -34,81 +37,97 @@ export namespace Logic {
             if (operator !== undefined) { this.operator = operator; }
         }
         /**
-         * First item
+         * The value on the left of the operator.
          * @default undefined
          */
         first!: T;
         /**
-         * Second item
+         * The value on the right of the operator.
          * @default undefined
          */
         second!: T;
         /**
-         * Operator
+         * The comparison: `<`, `<=`, `>`, `>=`, `==`, `!=`, or the strict `===` and `!==`, which do
+         * not convert types.
          * @default less
          */
         operator: BooleanOperatorsEnum = BooleanOperatorsEnum.less;
     }
+    /**
+     * One boolean for `logic.boolean` and `logic.not`, which pass it through or flip it.
+     */
     export class BooleanDto {
         constructor(boolean?: boolean) {
             if (boolean !== undefined) { this.boolean = boolean; }
         }
         /**
-         * Boolean value
+         * The boolean value.
          * @default false
          */
         boolean = false;
     }
+    /**
+     * A list of booleans for `logic.notList`, which flips every one of them.
+     */
     export class BooleanListDto {
         constructor(booleans?: boolean[]) {
             if (booleans !== undefined) { this.booleans = booleans; }
         }
         /**
-         * Boolean value
+         * The booleans, in order.
          * @default undefined
          */
         booleans!: boolean[];
     }
+    /**
+     * A value and a condition for `logic.valueGate`.
+     */
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean) {
             if (value !== undefined) { this.value = value; }
             if (boolean !== undefined) { this.boolean = boolean; }
         }
         /**
-         * Value to transmit when gate will be released. When value is not released we will transmit undefined value
+         * The value that passes through when the gate is open.
          * @default undefined
          */
         value!: T;
         /**
-         * Boolean value to release the gate
+         * When true the gate is open and the value passes; when false the result is undefined.
          * @default false
          */
         boolean = false;
     }
+    /**
+     * A preferred value and a fallback for `logic.firstDefinedValueGate`.
+     */
     export class TwoValueGateDto<T, U> {
         constructor(value1?: T, value2?: U) {
             if (value1 !== undefined) { this.value1 = value1; }
             if (value2 !== undefined) { this.value2 = value2; }
         }
         /**
-         * First value to check
+         * The value used when it is defined.
          * @default undefined
          * @optional true
          */
         value1?: T | undefined;
         /**
-         * Second value to check
+         * The value used when the first is undefined.
          * @default undefined
          * @optional true
          */
         value2?: U | undefined;
     }
+    /**
+     * A length and a probability for `logic.randomBooleans`.
+     */
     export class RandomBooleansDto {
         constructor(length?: number) {
             if (length !== undefined) { this.length = length; }
         }
         /**
-         * Length of the list
+         * How many booleans to draw.
          * @default 10
          * @minimum 1
          * @maximum Infinity
@@ -116,7 +135,7 @@ export namespace Logic {
          */
         length = 10;
         /**
-         * Threshold for true value between 0 and 1. The closer the value is to 1 the more true values there will be in the list.
+         * The chance of each boolean being true, from 0 (never) to 1 (always).
          * @default 0.5
          * @minimum 0
          * @maximum 1
@@ -124,14 +143,17 @@ export namespace Logic {
          */
         trueThreshold = 0.5;
     }
+    /**
+     * Numbers, two thresholds and a step count for `logic.twoThresholdRandomGradient`.
+     */
     export class TwoThresholdRandomGradientDto {
         /**
-         * Numbers to remap to bools
+         * The numbers to turn into booleans, one each.
          * @default undefined
          */
         numbers!: number[];
         /**
-         * Threshold for the numeric value until which the output will be true
+         * Numbers below this are always true.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -139,7 +161,8 @@ export namespace Logic {
          */
         thresholdTotalTrue: number = 1;
         /**
-         * Threshold for the numeric value until which the output will be true
+         * Numbers above this are always false; between the two thresholds the chance of true fades
+         * from certain to none.
          * @default 2
          * @minimum 0
          * @maximum Infinity
@@ -147,7 +170,7 @@ export namespace Logic {
          */
         thresholdTotalFalse: number = 2;
         /**
-         * Number of levels to go through in between thresholds for gradient
+         * How many steps the fade between the thresholds has; more steps make it smoother.
          * @default 10
          * @minimum 0
          * @maximum Infinity
@@ -155,15 +178,17 @@ export namespace Logic {
          */
         nrLevels: number = 10;
     }
+    /**
+     * Numbers and a threshold for `logic.thresholdBooleanList`, which turns them into booleans.
+     */
     export class ThresholdBooleanListDto {
         /**
-         * Numbers to remap to bools based on threshold
+         * The numbers to turn into booleans, one each.
          * @default undefined
          */
         numbers!: number[];
         /**
-         * Threshold for the numeric value until which the output will be true. 
-         * If number in the list is larger than this threshold it will become false if inverse stays false.
+         * Numbers below this become true and the rest false, unless `inverse` flips them.
          * @default 1
          * @minimum 0
          * @maximum Infinity
@@ -171,24 +196,29 @@ export namespace Logic {
          */
         threshold: number = 1;
         /**
-         * True values become false and false values become true
+         * When true, every result is flipped: true becomes false and false becomes true.
          * @default false
          */
         inverse: boolean = false;
     }
+    /**
+     * Numbers and ranges for `logic.thresholdGapsBooleanList`, which marks the numbers inside any
+     * range.
+     */
     export class ThresholdGapsBooleanListDto {
         /**
-         * Numbers to remap to bools based on threshold
+         * The numbers to turn into booleans, one each.
          * @default undefined
          */
         numbers!: number[];
         /**
-         * 2D arrays representing gaps of the thresholds on which numbers should be flipped from false to true if inverse is false.
+         * The ranges, each `[min, max]` with both ends included; a number inside any of them
+         * becomes true.
          * @default undefined
          */
         gapThresholds!: Base.Vector2[];
         /**
-         * True values become false and false values become true
+         * When true, every result is flipped: true becomes false and false becomes true.
          * @default false
          */
         inverse: boolean = false;

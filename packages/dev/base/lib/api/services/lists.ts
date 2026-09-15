@@ -1,20 +1,26 @@
 import * as Inputs from "../inputs";
 
 /**
- * Contains various list methods.
- * <div>
- *  <img src="../assets/images/blockly-images/math/math.svg" alt="Blockly Image"/>
- * </div>
+ * Reading, building and reshaping plain arrays of any kind of item. Positions are 0-based: index 0
+ * is the first item. Most methods take a `clone` option, on by default, that deep-copies the list
+ * first so the input is never changed; switched off, the modifying methods work on the list in
+ * place, which is faster for large data. `removeAllItems` always empties the list it is given.
  */
 export class Lists {
     /**
-     * Gets an item from the list at a specific position using zero-based indexing.
-     * Example: From [10, 20, 30, 40], getting index 2 returns 30
-     * @param inputs a list and an index
-     * @returns item
+     * Reads the item at a position in the list, counting from 0.
+     *
+     * An index outside the list throws an error.
+     * Example: [10, 20, 30, 40] at index 2 -> 30
+     * @param inputs - The list, the index and whether to copy the item
+     * @returns The item at that index
      * @group get
      * @shortname item by index
      * @drawable false
+     * @example
+     * ```typescript
+     * const third = bitbybit.lists.getItem({ list: [10, 20, 30, 40], index: 2, clone: true });
+     * ```
      */
     getItem<T>(inputs: Inputs.Lists.ListItemDto<T>): T {
         if (inputs.index < 0 || inputs.index >= inputs.list.length) {
@@ -30,10 +36,11 @@ export class Lists {
     }
 
     /**
-     * Gets the first item from the list.
-     * Example: From [10, 20, 30, 40], returns 10
-     * @param inputs a list
-     * @returns first item
+     * Reads the first item of the list.
+     *
+     * Example: [10, 20, 30, 40] -> 10
+     * @param inputs - The list and whether to copy the item
+     * @returns The first item
      * @group get
      * @shortname first item
      * @drawable false
@@ -52,10 +59,11 @@ export class Lists {
     }
 
     /**
-     * Gets the last item from the list.
-     * Example: From [10, 20, 30, 40], returns 40
-     * @param inputs a list
-     * @returns last item
+     * Reads the last item of the list.
+     *
+     * Example: [10, 20, 30, 40] -> 40
+     * @param inputs - The list and whether to copy the item
+     * @returns The last item
      * @group get
      * @shortname last item
      * @drawable false
@@ -75,13 +83,19 @@ export class Lists {
 
 
     /**
-     * Randomly keeps items from the list based on a probability threshold (0 to 1).
-     * Example: From [1, 2, 3, 4, 5] with threshold 0.5, might return [1, 3, 5] (50% chance for each item)
-     * @param inputs a list and a threshold for randomization of items to remove
-     * @returns list with remaining items
+     * Keeps each item of the list with a given probability and drops the rest, so the result
+     * differs on every call.
+     *
+     * Example: [1, 2, 3, 4, 5] with threshold 0.5 -> perhaps [1, 3, 5]
+     * @param inputs - The list, the probability of keeping an item from 0 to 1, and whether to copy
+     * @returns The items that were kept, in their original order
      * @group get
      * @shortname random get threshold
      * @drawable false
+     * @example
+     * ```typescript
+     * const some = bitbybit.lists.randomGetThreshold({ list: [1, 2, 3, 4, 5], threshold: 0.5, clone: true });
+     * ```
      */
     randomGetThreshold<T>(inputs: Inputs.Lists.RandomThresholdDto<T>): T[] {
         let res = inputs.list;
@@ -98,14 +112,19 @@ export class Lists {
     }
 
     /**
-       * Extracts a portion of the list between start and end positions (end is exclusive).
-       * Example: From [10, 20, 30, 40, 50] with start=1 and end=4, returns [20, 30, 40]
-       * @param inputs a list and start and end indexes
-       * @returns sub list
-       * @group get
-       * @shortname sublist
-       * @drawable false
-       */
+     * Cuts out the items from a start index up to, but not including, an end index.
+     *
+     * Example: [10, 20, 30, 40, 50] from 1 to 4 -> [20, 30, 40]
+     * @param inputs - The list, the start and end indexes, and whether to copy
+     * @returns The items in that range
+     * @group get
+     * @shortname sublist
+     * @drawable false
+     * @example
+     * ```typescript
+     * const middle = bitbybit.lists.getSubList({ list: [10, 20, 30, 40, 50], indexStart: 1, indexEnd: 4, clone: true });
+     * ```
+     */
     getSubList<T>(inputs: Inputs.Lists.SubListDto<T>): T[] {
         let result;
         if (inputs.clone) {
@@ -117,14 +136,19 @@ export class Lists {
     }
 
     /**
-     * Gets every nth item from the list, starting from an optional offset position.
-     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=3 and offset=0, returns [0, 3, 6]
-     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=2 and offset=1, returns [1, 3, 5, 7]
-     * @param inputs a list and index
-     * @returns list with filtered items
+     * Keeps every nth item, starting from an offset.
+     *
+     * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth 3 and offset 0 -> [0, 3, 6]; with nth 2 and
+     * offset 1 -> [1, 3, 5, 7]
+     * @param inputs - The list, the step, the offset to start from, and whether to copy
+     * @returns Every nth item, in order
      * @group get
      * @shortname every n-th
      * @drawable false
+     * @example
+     * ```typescript
+     * const everyThird = bitbybit.lists.getNthItem({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8], nth: 3, offset: 0, clone: true });
+     * ```
      */
     getNthItem<T>(inputs: Inputs.Lists.GetNthItemDto<T>): T[] {
         let cloned = inputs.list;
@@ -140,13 +164,19 @@ export class Lists {
         return result;
     }
     /**
-     * Filters items from the list using a repeating true/false pattern.
-     * Example: From [0, 1, 2, 3, 4, 5] with pattern [true, true, false], returns [0, 1, 3, 4] (keeps items where pattern is true)
-     * @param inputs a list and index
-     * @returns list with filtered items
+     * Keeps the items where a repeating true/false pattern says true and drops the others.
+     *
+     * The pattern starts over when it runs out.
+     * Example: [0, 1, 2, 3, 4, 5] with pattern [true, true, false] -> [0, 1, 3, 4]
+     * @param inputs - The list and the pattern
+     * @returns The items the pattern kept, in order
      * @group get
      * @shortname by pattern
      * @drawable false
+     * @example
+     * ```typescript
+     * const kept = bitbybit.lists.getByPattern({ list: [0, 1, 2, 3, 4, 5], pattern: [true, true, false] });
+     * ```
      */
     getByPattern<T>(inputs: Inputs.Lists.GetByPatternDto<T>): T[] {
         const { list, pattern } = inputs;
@@ -179,13 +209,21 @@ export class Lists {
     }
 
     /**
-     * Merges elements from multiple lists at a specific nesting level, grouping elements by position.
-     * Example: From [[0, 1, 2], [3, 4, 5]] at level 0, returns [[0, 3], [1, 4], [2, 5]]
-     * @param inputs lists, level and flatten data
-     * @returns list with merged lists and flattened lists
+     * Regroups nested lists by position: the first items of every list go together, then the second
+     * items, and so on.
+     *
+     * `level` says how many levels of nesting to flatten inside each list first; 0 regroups them as
+     * they are.
+     * Example: [[0, 1, 2], [3, 4, 5]] at level 0 -> [[0, 3], [1, 4], [2, 5]]
+     * @param inputs - The lists and the depth at which to regroup
+     * @returns The regrouped lists
      * @group get
      * @shortname merge levels
      * @drawable false
+     * @example
+     * ```typescript
+     * const columns = bitbybit.lists.mergeElementsOfLists({ lists: [[0, 1, 2], [3, 4, 5]], level: 0 });
+     * ```
      */
     mergeElementsOfLists<T>(inputs: Inputs.Lists.MergeElementsOfLists<T[]>): T[] {
         const lists = inputs.lists;
@@ -230,13 +268,18 @@ export class Lists {
     }
 
     /**
-     * Finds the length of the longest list among multiple lists.
-     * Example: From [[1, 2], [3, 4, 5, 6], [7]], returns 4 (length of [3, 4, 5, 6])
-     * @param inputs a list of lists
-     * @returns number of max length
+     * Measures the longest list among several.
+     *
+     * Example: [[1, 2], [3, 4, 5, 6], [7]] -> 4
+     * @param inputs - The lists to measure
+     * @returns The length of the longest one
      * @group get
      * @shortname longest list length
      * @drawable false
+     * @example
+     * ```typescript
+     * const longest = bitbybit.lists.getLongestListLength({ lists: [[1, 2], [3, 4, 5, 6], [7]] });
+     * ```
      */
     getLongestListLength<T>(inputs: Inputs.Lists.GetLongestListLength<T[]>): number {
         let longestSoFar = 0;
@@ -251,10 +294,11 @@ export class Lists {
     }
 
     /**
-     * Reverses the order of items in the list.
-     * Example: From [1, 2, 3, 4, 5], returns [5, 4, 3, 2, 1]
-     * @param inputs a list and an index
-     * @returns item
+     * Reverses the order of the items.
+     *
+     * Example: [1, 2, 3, 4, 5] -> [5, 4, 3, 2, 1]
+     * @param inputs - The list and whether to copy it first
+     * @returns The reversed list
      * @group edit
      * @shortname reverse
      * @drawable false
@@ -268,10 +312,11 @@ export class Lists {
     }
 
     /**
-     * Randomly rearranges all items in the list (using Fisher-Yates algorithm).
-     * Example: From [1, 2, 3, 4, 5], might return [3, 1, 5, 2, 4] (order varies each time)
-     * @param inputs a list
-     * @returns shuffled list
+     * Puts the items in a random order, different on every call.
+     *
+     * Example: [1, 2, 3, 4, 5] -> perhaps [3, 1, 5, 2, 4]
+     * @param inputs - The list and whether to copy it first
+     * @returns The shuffled list
      * @group edit
      * @shortname shuffle
      * @drawable false
@@ -289,13 +334,19 @@ export class Lists {
     }
 
     /**
-     * Transposes a 2D list by swapping rows and columns (all sublists must be equal length).
-     * Example: From [[0, 1, 2], [3, 4, 5]], returns [[0, 3], [1, 4], [2, 5]]
-     * @param inputs a list of lists to flip
-     * @returns item
+     * Turns a list of lists on its side: rows become columns and columns become rows.
+     *
+     * All the inner lists must have the same length.
+     * Example: [[0, 1, 2], [3, 4, 5]] -> [[0, 3], [1, 4], [2, 5]]
+     * @param inputs - The list of lists and whether to copy it first
+     * @returns The transposed list of lists
      * @group edit
      * @shortname flip lists
      * @drawable false
+     * @example
+     * ```typescript
+     * const columns = bitbybit.lists.flipLists({ list: [[0, 1, 2], [3, 4, 5]], clone: true });
+     * ```
      */
     flipLists<T>(inputs: Inputs.Lists.ListCloneDto<T[]>): T[][] {
         if (inputs.list.length > 0) {
@@ -325,14 +376,20 @@ export class Lists {
     }
 
     /**
-     * Splits the list into smaller lists of n elements each.
-     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with n=3, returns [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-     * Example: From [0, 1, 2, 3, 4] with n=2 and keepRemainder=true, returns [[0, 1], [2, 3], [4]]
-     * @param inputs a list
-     * @returns items grouped in lists of n elements
+     * Splits the list into groups of n items.
+     *
+     * Items left over at the end are dropped unless `keepRemainder` is on, which adds them as a
+     * shorter last group.
+     * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] in groups of 3 -> [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+     * @param inputs - The list, the group size and whether to keep a partial last group
+     * @returns The groups, in order
      * @group edit
      * @shortname group elements
      * @drawable false
+     * @example
+     * ```typescript
+     * const pairs = bitbybit.lists.groupNth({ list: [0, 1, 2, 3, 4], nrElements: 2, keepRemainder: true });
+     * ```
      */
     groupNth<T>(inputs: Inputs.Lists.GroupListDto<T>): T[][] {
         const groupElements = (inputs: Inputs.Lists.GroupListDto<T>) => {
@@ -356,36 +413,49 @@ export class Lists {
     }
 
     /**
-     * Checks whether the list contains a specific item.
-     * Example: List [10, 20, 30, 40] with item 30 returns true, with item 50 returns false
-     * @param inputs a list and an item
-     * @returns true if item is in list
+     * Tells whether an item is in the list.
+     *
+     * Items are compared by identity, so an object is found only if the very same object is in the
+     * list.
+     * Example: [10, 20, 30, 40] includes 30 -> true, includes 50 -> false
+     * @param inputs - The list and the item to look for
+     * @returns True when the item is in the list
      * @group get
      * @shortname contains item
      * @drawable false
+     * @example
+     * ```typescript
+     * const found = bitbybit.lists.includes({ list: [10, 20, 30, 40], item: 30 });
+     * ```
      */
     includes<T>(inputs: Inputs.Lists.IncludesDto<T>): boolean {
         return inputs.list.includes(inputs.item);
     }
 
     /**
-     * Finds the position (index) of the first occurrence of an item in the list.
-     * Example: In [10, 20, 30, 20, 40], finding 20 returns 1 (first occurrence), finding 50 returns -1 (not found)
-     * @param inputs a list and an item
-     * @returns index of the item or -1 if not found
+     * Finds the position of the first occurrence of an item, or -1 when it is not in the list.
+     *
+     * Example: [10, 20, 30, 20, 40] finding 20 -> 1, finding 50 -> -1
+     * @param inputs - The list and the item to look for
+     * @returns The 0-based index, or -1
      * @group get
      * @shortname find index
      * @drawable false
+     * @example
+     * ```typescript
+     * const where = bitbybit.lists.findIndex({ list: [10, 20, 30, 20, 40], item: 20 });
+     * ```
      */
     findIndex<T>(inputs: Inputs.Lists.IncludesDto<T>): number {
         return inputs.list.indexOf(inputs.item);
     }
 
     /**
-     * Determines the maximum nesting level (depth) of a list structure.
-     * Example: [1, 2, 3] has depth 1, [[1, 2], [3, 4]] has depth 2, [[[1]]] has depth 3
-     * @param inputs a list
-     * @returns number of depth
+     * Measures how deeply lists are nested inside the list.
+     *
+     * Example: [1, 2, 3] -> 1, [[1, 2], [3, 4]] -> 2, [[[1]]] -> 3
+     * @param inputs - The list
+     * @returns The number of nesting levels
      * @group get
      * @shortname max list depth
      * @drawable false
@@ -413,10 +483,11 @@ export class Lists {
     }
 
     /**
-     * Returns the number of items in the list.
-     * Example: [10, 20, 30, 40, 50] returns 5, [] returns 0
-     * @param inputs a length list
-     * @returns a number
+     * Counts the items in the list.
+     *
+     * Example: [10, 20, 30, 40, 50] -> 5, [] -> 0
+     * @param inputs - The list
+     * @returns The number of items
      * @group get
      * @shortname list length
      * @drawable false
@@ -426,13 +497,18 @@ export class Lists {
     }
 
     /**
-     * Inserts an item at a specific position in the list.
-     * Example: In [10, 20, 30, 40], adding 99 at index 2 gives [10, 20, 99, 30, 40]
-     * @param inputs a list, item and an index
-     * @returns list with added item
+     * Inserts an item at a position; the items from that position on shift up by one.
+     *
+     * Example: [10, 20, 30, 40] with 99 at index 2 -> [10, 20, 99, 30, 40]
+     * @param inputs - The list, the item, the index and whether to copy
+     * @returns The list with the item inserted
      * @group add
      * @shortname add item
      * @drawable false
+     * @example
+     * ```typescript
+     * const longer = bitbybit.lists.addItemAtIndex({ list: [10, 20, 30, 40], item: 99, index: 2, clone: true });
+     * ```
      */
     addItemAtIndex<T>(inputs: Inputs.Lists.AddItemAtIndexDto<T>): T[] {
         let res = inputs.list;
@@ -446,13 +522,18 @@ export class Lists {
     }
 
     /**
-     * Inserts the same item at multiple specified positions in the list.
-     * Example: In [10, 20, 30], adding 99 at indexes [0, 2] gives [99, 10, 20, 99, 30]
-     * @param inputs a list, item and an indexes
-     * @returns list with added item
+     * Inserts the same item at several positions of the original list.
+     *
+     * Example: [10, 20, 30] with 99 at indexes [0, 2] -> [99, 10, 20, 99, 30]
+     * @param inputs - The list, the item, the indexes and whether to copy
+     * @returns The list with the item inserted at each index
      * @group add
      * @shortname add item at indexes
      * @drawable false
+     * @example
+     * ```typescript
+     * const marked = bitbybit.lists.addItemAtIndexes({ list: [10, 20, 30], item: 99, indexes: [0, 2], clone: true });
+     * ```
      */
     addItemAtIndexes<T>(inputs: Inputs.Lists.AddItemAtIndexesDto<T>): T[] {
         let cloned = inputs.list;
@@ -472,13 +553,20 @@ export class Lists {
     }
 
     /**
-     * Inserts multiple items at corresponding positions (first item at first index, second item at second index, etc.).
-     * Example: In [10, 20, 30], adding items [88, 99] at indexes [1, 2] gives [10, 88, 20, 99, 30]
-     * @param inputs a list, items and an indexes
-     * @returns list with added items
+     * Inserts several items, the first at the first index, the second at the second, and so on, all
+     * counted on the original list.
+     *
+     * The indexes must be in ascending order and there must be one per item, or an error is thrown.
+     * Example: [10, 20, 30] with items [88, 99] at indexes [1, 2] -> [10, 88, 20, 99, 30]
+     * @param inputs - The list, the items, one index per item and whether to copy
+     * @returns The list with the items inserted
      * @group add
      * @shortname add items
      * @drawable false
+     * @example
+     * ```typescript
+     * const merged = bitbybit.lists.addItemsAtIndexes({ list: [10, 20, 30], items: [88, 99], indexes: [1, 2], clone: true });
+     * ```
      */
     addItemsAtIndexes<T>(inputs: Inputs.Lists.AddItemsAtIndexesDto<T>): T[] {
         if (inputs.items.length !== inputs.indexes.length) {
@@ -506,13 +594,18 @@ export class Lists {
     }
 
     /**
-     * Removes the item at a specific position in the list.
-     * Example: From [10, 20, 30, 40, 50], removing index 2 gives [10, 20, 40, 50]
-     * @param inputs a list and index
-     * @returns list with removed item
+     * Removes the item at a position.
+     *
+     * Example: [10, 20, 30, 40, 50] removing index 2 -> [10, 20, 40, 50]
+     * @param inputs - The list, the index and whether to copy
+     * @returns The list without that item
      * @group remove
      * @shortname remove item
      * @drawable false
+     * @example
+     * ```typescript
+     * const shorter = bitbybit.lists.removeItemAtIndex({ list: [10, 20, 30, 40, 50], index: 2, clone: true });
+     * ```
      */
     removeItemAtIndex<T>(inputs: Inputs.Lists.RemoveItemAtIndexDto<T>): T[] {
         let res = inputs.list;
@@ -526,10 +619,11 @@ export class Lists {
     }
 
     /**
-     * Removes the first item from the list.
-     * Example: From [10, 20, 30, 40], returns [20, 30, 40]
-     * @param inputs a list
-     * @returns list with first item removed
+     * Removes the first item.
+     *
+     * Example: [10, 20, 30, 40] -> [20, 30, 40]
+     * @param inputs - The list and whether to copy it first
+     * @returns The list without its first item
      * @group remove
      * @shortname remove first item
      * @drawable false
@@ -546,10 +640,11 @@ export class Lists {
     }
 
     /**
-     * Removes the last item from the list.
-     * Example: From [10, 20, 30, 40], returns [10, 20, 30]
-     * @param inputs a list
-     * @returns list with last item removed
+     * Removes the last item.
+     *
+     * Example: [10, 20, 30, 40] -> [10, 20, 30]
+     * @param inputs - The list and whether to copy it first
+     * @returns The list without its last item
      * @group remove
      * @shortname remove last item
      * @drawable false
@@ -566,13 +661,18 @@ export class Lists {
     }
 
     /**
-     * Removes an item counting from the end of the list (index 0 = last item, 1 = second-to-last, etc.).
-     * Example: From [10, 20, 30, 40, 50], removing index 1 from end gives [10, 20, 30, 50] (removes 40)
-     * @param inputs a list and index from end
-     * @returns list with removed item
+     * Removes an item counted from the end: index 0 is the last item, 1 the one before it.
+     *
+     * Example: [10, 20, 30, 40, 50] removing index 1 from the end -> [10, 20, 30, 50]
+     * @param inputs - The list, the index from the end and whether to copy
+     * @returns The list without that item
      * @group remove
      * @shortname remove item from end
      * @drawable false
+     * @example
+     * ```typescript
+     * const shorter = bitbybit.lists.removeItemAtIndexFromEnd({ list: [10, 20, 30, 40, 50], index: 1, clone: true });
+     * ```
      */
     removeItemAtIndexFromEnd<T>(inputs: Inputs.Lists.RemoveItemAtIndexDto<T>): T[] {
         let res = inputs.list;
@@ -587,13 +687,18 @@ export class Lists {
     }
 
     /**
-     * Removes items at multiple specified positions from the list.
-     * Example: From [10, 20, 30, 40, 50], removing indexes [1, 3] gives [10, 30, 50]
-     * @param inputs a list and indexes
-     * @returns list with removed items
+     * Removes the items at several positions, all counted on the original list.
+     *
+     * Example: [10, 20, 30, 40, 50] removing indexes [1, 3] -> [10, 30, 50]
+     * @param inputs - The list, the indexes and whether to copy
+     * @returns The list without those items
      * @group remove
      * @shortname remove items
      * @drawable false
+     * @example
+     * ```typescript
+     * const kept = bitbybit.lists.removeItemsAtIndexes({ list: [10, 20, 30, 40, 50], indexes: [1, 3], clone: true });
+     * ```
      */
     removeItemsAtIndexes<T>(inputs: Inputs.Lists.RemoveItemsAtIndexesDto<T>): T[] {
         let res = inputs.list;
@@ -611,10 +716,11 @@ export class Lists {
     }
 
     /**
-     * Clears all items from the list, resulting in an empty list.
-     * Example: From [10, 20, 30, 40], returns []
-     * @param inputs a list
-     * @returns The length is set to 0 and same array memory object is returned
+     * Empties the list it is given, in place: the same array comes back with no items in it.
+     *
+     * Example: [10, 20, 30, 40] -> []
+     * @param inputs - The list to empty
+     * @returns The same list, now empty
      * @group remove
      * @shortname remove all items
      * @drawable false
@@ -625,13 +731,18 @@ export class Lists {
     }
 
     /**
-     * Removes every nth item from the list, starting from an optional offset position.
-     * Example: From [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth=3 and offset=0, returns [1, 2, 4, 5, 7, 8] (removes 0, 3, 6)
-     * @param inputs a list and index
-     * @returns list with removed item
+     * Removes every nth item, starting from an offset.
+     *
+     * Example: [0, 1, 2, 3, 4, 5, 6, 7, 8] with nth 3 and offset 0 -> [1, 2, 4, 5, 7, 8]
+     * @param inputs - The list, the step, the offset to start from and whether to copy
+     * @returns The list without every nth item
      * @group remove
      * @shortname every n-th
      * @drawable false
+     * @example
+     * ```typescript
+     * const thinned = bitbybit.lists.removeNthItem({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8], nth: 3, offset: 0, clone: true });
+     * ```
      */
     removeNthItem<T>(inputs: Inputs.Lists.RemoveNthItemDto<T>): T[] {
         let res = inputs.list;
@@ -648,13 +759,19 @@ export class Lists {
     }
 
     /**
-     * Randomly removes items from the list based on a probability threshold (0 to 1).
-     * Example: From [1, 2, 3, 4, 5] with threshold 0.5, might return [2, 4] (50% chance to remove each item)
-     * @param inputs a list and a threshold for randomization of items to remove
-     * @returns list with removed items
+     * Drops each item of the list with a given probability and keeps the rest, so the result
+     * differs on every call.
+     *
+     * Example: [1, 2, 3, 4, 5] with threshold 0.5 -> perhaps [2, 4]
+     * @param inputs - The list, the probability of dropping an item from 0 to 1, and whether to copy
+     * @returns The items that survived, in their original order
      * @group remove
      * @shortname random remove threshold
      * @drawable false
+     * @example
+     * ```typescript
+     * const some = bitbybit.lists.randomRemoveThreshold({ list: [1, 2, 3, 4, 5], threshold: 0.5, clone: true });
+     * ```
      */
     randomRemoveThreshold<T>(inputs: Inputs.Lists.RandomThresholdDto<T>): T[] {
         let res = inputs.list;
@@ -671,10 +788,11 @@ export class Lists {
     }
 
     /**
-     * Removes duplicate numbers from the list, keeping only the first occurrence of each value.
-     * Example: From [1, 2, 3, 2, 4, 3, 5], returns [1, 2, 3, 4, 5]
-     * @param inputs a list of numbers
-     * @returns list with unique numbers
+     * Removes repeated numbers, keeping the first occurrence of each.
+     *
+     * Example: [1, 2, 3, 2, 4, 3, 5] -> [1, 2, 3, 4, 5]
+     * @param inputs - The numbers and whether to copy
+     * @returns The numbers without repeats, in their original order
      * @group remove
      * @shortname remove duplicate numbers
      * @drawable false
@@ -688,13 +806,19 @@ export class Lists {
     }
 
     /**
-     * Removes duplicate numbers that are within a specified tolerance range of each other.
-     * Example: From [1.0, 1.001, 2.0, 2.002, 3.0] with tolerance 0.01, returns [1.0, 2.0, 3.0]
-     * @param inputs a list of numbers and the tolerance
-     * @returns list with unique numbers
+     * Removes numbers that are within a tolerance of one already kept, so values that differ only
+     * by floating-point noise count as the same.
+     *
+     * Example: [1.0, 1.001, 2.0, 2.002, 3.0] with tolerance 0.01 -> [1.0, 2.0, 3.0]
+     * @param inputs - The numbers, the tolerance and whether to copy
+     * @returns The numbers without near-repeats, in their original order
      * @group remove
      * @shortname remove duplicates tol
      * @drawable false
+     * @example
+     * ```typescript
+     * const distinct = bitbybit.lists.removeDuplicateNumbersTolerance({ list: [1.0, 1.001, 2.0], tolerance: 0.01, clone: true });
+     * ```
      */
     removeDuplicateNumbersTolerance(inputs: Inputs.Lists.RemoveDuplicatesToleranceDto<number>): number[] {
         let res = inputs.list;
@@ -705,10 +829,12 @@ export class Lists {
     }
 
     /**
-     * Removes duplicate items from the list using strict equality comparison (works with any type).
-     * Example: From ['a', 'b', 'c', 'a', 'd', 'b'], returns ['a', 'b', 'c', 'd']
-     * @param inputs a list
-     * @returns list with unique items
+     * Removes repeated items of any kind, keeping the first occurrence of each.
+     *
+     * Items are compared by identity, so two equal-looking objects both stay.
+     * Example: ['a', 'b', 'c', 'a', 'd', 'b'] -> ['a', 'b', 'c', 'd']
+     * @param inputs - The list and whether to copy
+     * @returns The list without repeats, in its original order
      * @group remove
      * @shortname remove duplicates
      * @drawable false
@@ -722,13 +848,18 @@ export class Lists {
     }
 
     /**
-     * Appends an item to the end of the list.
-     * Example: To [10, 20, 30], adding 40 gives [10, 20, 30, 40]
-     * @param inputs a list and an item
-     * @returns list with added item
+     * Adds an item at the end of the list.
+     *
+     * Example: [10, 20, 30] adding 40 -> [10, 20, 30, 40]
+     * @param inputs - The list, the item and whether to copy
+     * @returns The list with the item at its end
      * @group add
      * @shortname add item to list
      * @drawable false
+     * @example
+     * ```typescript
+     * const longer = bitbybit.lists.addItem({ list: [10, 20, 30], item: 40, clone: true });
+     * ```
      */
     addItem<T>(inputs: Inputs.Lists.AddItemDto<T>): T[] {
         let res = inputs.list;
@@ -740,13 +871,18 @@ export class Lists {
     }
 
     /**
-     * Adds an item to the beginning of the list.
-     * Example: To [10, 20, 30], prepending 5 gives [5, 10, 20, 30]
-     * @param inputs a list and an item
-     * @returns list with added item
+     * Adds an item at the start of the list.
+     *
+     * Example: [10, 20, 30] prepending 5 -> [5, 10, 20, 30]
+     * @param inputs - The list, the item and whether to copy
+     * @returns The list with the item at its start
      * @group add
      * @shortname prepend item to list
      * @drawable false
+     * @example
+     * ```typescript
+     * const longer = bitbybit.lists.prependItem({ list: [10, 20, 30], item: 5, clone: true });
+     * ```
      */
     prependItem<T>(inputs: Inputs.Lists.AddItemDto<T>): T[] {
         let res = inputs.list;
@@ -758,13 +894,18 @@ export class Lists {
     }
 
     /**
-     * Adds an item either at the beginning or end of the list based on the position parameter.
-     * Example: To [10, 20, 30], adding 5 at 'first' gives [5, 10, 20, 30], at 'last' gives [10, 20, 30, 5]
-     * @param inputs a list, item and an option for first or last position
-     * @returns list with added item
+     * Adds an item at the start or at the end of the list, as chosen.
+     *
+     * Example: [10, 20, 30] adding 5 first -> [5, 10, 20, 30]; last -> [10, 20, 30, 5]
+     * @param inputs - The list, the item, the position and whether to copy
+     * @returns The list with the item added
      * @group add
      * @shortname item at first or last
      * @drawable false
+     * @example
+     * ```typescript
+     * const longer = bitbybit.lists.addItemFirstLast({ list: [10, 20, 30], item: 5, position: Bit.Inputs.Lists.firstLastEnum.first, clone: true });
+     * ```
      */
     addItemFirstLast<T>(inputs: Inputs.Lists.AddItemFirstLastDto<T>): T[] {
         let res = inputs.list;
@@ -780,13 +921,18 @@ export class Lists {
     }
 
     /**
-     * Combines multiple lists into a single list by joining them end-to-end.
-     * Example: From [[1, 2], [3, 4], [5, 6]], returns [1, 2, 3, 4, 5, 6]
-     * @param inputs lists to concatenate
-     * @returns concatenated list
+     * Joins several lists into one, end to end.
+     *
+     * Example: [[1, 2], [3, 4], [5, 6]] -> [1, 2, 3, 4, 5, 6]
+     * @param inputs - The lists to join and whether to copy
+     * @returns One list with all the items
      * @group add
      * @shortname concatenate lists
      * @drawable false
+     * @example
+     * ```typescript
+     * const all = bitbybit.lists.concatenate({ lists: [[1, 2], [3, 4], [5, 6]], clone: true });
+     * ```
      */
     concatenate<T>(inputs: Inputs.Lists.ConcatenateDto<T>): T[] {
         let result: T[] = [];
@@ -803,9 +949,10 @@ export class Lists {
     }
 
     /**
-     * Creates a new empty list with no items.
-     * Example: Returns []
-     * @returns an empty array list
+     * Makes a new list with nothing in it.
+     *
+     * Example: -> []
+     * @returns An empty list
      * @group create
      * @shortname empty list
      * @drawable false
@@ -815,13 +962,18 @@ export class Lists {
     }
 
     /**
-     * Creates a new list by repeating an item a specified number of times.
-     * Example: Repeating 5 three times returns [5, 5, 5]
-     * @param inputs an item to multiply
-     * @returns list
+     * Makes a list that holds the same item a number of times.
+     *
+     * Example: 5 three times -> [5, 5, 5]
+     * @param inputs - The item and how many times to repeat it
+     * @returns The list of repeats
      * @group create
      * @shortname repeat
      * @drawable false
+     * @example
+     * ```typescript
+     * const fives = bitbybit.lists.repeat({ item: 5, times: 3 });
+     * ```
      */
     repeat<T>(inputs: Inputs.Lists.MultiplyItemDto<T>): T[] {
         const result = [];
@@ -832,13 +984,18 @@ export class Lists {
     }
 
     /**
-     * Repeats a pattern of items cyclically until reaching a target list length.
-     * Example: Pattern [1, 2, 3] with length 7 returns [1, 2, 3, 1, 2, 3, 1]
-     * @param inputs a list to multiply and a length limit
-     * @returns list
+     * Repeats a pattern of items over and over until the list reaches a given length.
+     *
+     * Example: [1, 2, 3] to length 7 -> [1, 2, 3, 1, 2, 3, 1]
+     * @param inputs - The pattern, the length to reach and whether to copy
+     * @returns The repeated pattern, cut to the length
      * @group create
      * @shortname repeat in pattern
      * @drawable false
+     * @example
+     * ```typescript
+     * const cycle = bitbybit.lists.repeatInPattern({ list: [1, 2, 3], lengthLimit: 7, clone: true });
+     * ```
      */
     repeatInPattern<T>(inputs: Inputs.Lists.RepeatInPatternDto<T>): T[] {
         let inpList = inputs.list;
@@ -860,13 +1017,18 @@ export class Lists {
     }
 
     /**
-     * Sorts numbers in ascending (lowest to highest) or descending (highest to lowest) order.
-     * Example: [5, 2, 8, 1, 9] ascending returns [1, 2, 5, 8, 9], descending returns [9, 8, 5, 2, 1]
-     * @param inputs a list of numbers to sort and an option for ascending or descending order
-     * @returns list
+     * Sorts numbers from lowest to highest, or from highest to lowest.
+     *
+     * Example: [5, 2, 8, 1, 9] ascending -> [1, 2, 5, 8, 9]; descending -> [9, 8, 5, 2, 1]
+     * @param inputs - The numbers, the direction and whether to copy
+     * @returns The sorted numbers
      * @group sorting
      * @shortname sort numbers
      * @drawable false
+     * @example
+     * ```typescript
+     * const sorted = bitbybit.lists.sortNumber({ list: [5, 2, 8, 1, 9], orderAsc: true, clone: true });
+     * ```
      */
     sortNumber(inputs: Inputs.Lists.SortDto<number>): number[] {
         let res = inputs.list;
@@ -881,13 +1043,18 @@ export class Lists {
     }
 
     /**
-     * Sorts text strings alphabetically in ascending (A to Z) or descending (Z to A) order.
-     * Example: ['dog', 'apple', 'cat', 'banana'] ascending returns ['apple', 'banana', 'cat', 'dog']
-     * @param inputs a list of texts to sort and an option for ascending or descending order
-     * @returns list
+     * Sorts texts alphabetically, from A to Z or from Z to A.
+     *
+     * Example: ['dog', 'apple', 'cat'] ascending -> ['apple', 'cat', 'dog']
+     * @param inputs - The texts, the direction and whether to copy
+     * @returns The sorted texts
      * @group sorting
      * @shortname sort texts
      * @drawable false
+     * @example
+     * ```typescript
+     * const sorted = bitbybit.lists.sortTexts({ list: ["dog", "apple", "cat"], orderAsc: true, clone: true });
+     * ```
      */
     sortTexts(inputs: Inputs.Lists.SortDto<string>): string[] {
         let res = inputs.list;
@@ -902,13 +1069,19 @@ export class Lists {
     }
 
     /**
-     * Sorts objects by comparing numeric values of a specified property.
-     * Example: [{age: 30}, {age: 20}, {age: 25}] sorted by 'age' ascending returns [{age: 20}, {age: 25}, {age: 30}]
-     * @param inputs a list to sort, a property to sort by and an option for ascending or descending order
-     * @returns list
+     * Sorts objects by the number held in one of their properties.
+     *
+     * Example: [{age: 30}, {age: 20}, {age: 25}] by 'age' ascending -> [{age: 20}, {age: 25}, {age:
+     * 30}]
+     * @param inputs - The objects, the property to sort by, the direction and whether to copy
+     * @returns The sorted objects
      * @group sorting
      * @shortname sort json objects
      * @drawable false
+     * @example
+     * ```typescript
+     * const byAge = bitbybit.lists.sortByPropValue({ list: [{ age: 30 }, { age: 20 }], property: "age", orderAsc: true, clone: true });
+     * ```
      */
     sortByPropValue(inputs: Inputs.Lists.SortJsonDto<any>): any[] {
         let res = inputs.list;
@@ -923,13 +1096,20 @@ export class Lists {
     }
 
     /**
-     * Combines multiple lists by alternating elements from each list (first from list1, first from list2, second from list1, etc.).
-     * Example: From [[0, 1, 2], [3, 4, 5]], returns [0, 3, 1, 4, 2, 5]
-     * @param inputs Lists to interleave
-     * @returns Flattened interleaved list
+     * Weaves several lists into one by taking the first item of each in turn, then the second of
+     * each, and so on.
+     *
+     * A shorter list simply drops out once it runs dry. An empty list of lists throws an error.
+     * Example: [[0, 1, 2], [3, 4, 5]] -> [0, 3, 1, 4, 2, 5]
+     * @param inputs - The lists to weave together and whether to copy
+     * @returns One list with the items alternating
      * @group transform
      * @shortname interleave lists
      * @drawable false
+     * @example
+     * ```typescript
+     * const woven = bitbybit.lists.interleave({ lists: [[0, 1, 2], [3, 4, 5]], clone: true });
+     * ```
      */
     interleave<T>(inputs: Inputs.Lists.InterleaveDto<T>): T[] {
         const lists = inputs.clone ? structuredClone(inputs.lists) : inputs.lists;

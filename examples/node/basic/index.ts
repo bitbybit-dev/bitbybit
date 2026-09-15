@@ -1,4 +1,6 @@
 import { createRequire } from "module";
+import { readdirSync } from "fs";
+import { dirname, join } from "path";
 import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/index.js";
 import { OCCTWire } from "@bitbybit-dev/occt/lib/services/shapes/wire.js";
 import { OccHelper } from "@bitbybit-dev/occt/lib/occ-helper.js";
@@ -10,8 +12,14 @@ const require = createRequire(import.meta.url);
 async function run() {
     console.log("initializing...");
     
-    // For Node.js, we need to specify the path to the WASM file
-    const wasmPath = require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt.a4a6ec2a.wasm");
+    // For Node.js, we need to specify the path to the WASM file. Its name carries a content hash
+    // that changes with every kernel build, so find it beside the loader instead of spelling it out.
+    const kernelDir = dirname(require.resolve("@bitbybit-dev/occt/bitbybit-dev-occt/index.js"));
+    const wasmFile = readdirSync(kernelDir).find((file) => file.endsWith(".wasm"));
+    if (!wasmFile) {
+        throw new Error(`No OCCT kernel found in ${kernelDir}`);
+    }
+    const wasmPath = join(kernelDir, wasmFile);
     
     const occ = await initOpenCascade({
         locateFile: (path: string) => {

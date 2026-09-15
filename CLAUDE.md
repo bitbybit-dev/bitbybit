@@ -11,7 +11,7 @@ tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` bef
 | `packages/dev/*` | the 13 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
 | `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
-| `languages/` | i18n source JSON for the platform |
+| `languages/` | the API help text per locale, keyed by each member's dotted path, and `doc-paths.json`, the map from documentation page names to those keys (`API_DOCS_GUIDE.md`) |
 
 ## Building the packages
 
@@ -163,8 +163,8 @@ fragments beside it, each a slice of the namespace body written as an ordinary m
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
 `check:inputs` fails on a stale assembled file, which being generated is not linted.
 
-`npm test` at the root runs every package suite, after `check:inputs`, `check:worker-api` and
-`check:worker-parity`: each worker package mirrors its kernel by dotted path, and
+`npm test` at the root runs every package suite, after `check:inputs`, `check:worker-api`,
+`check:worker-parity` and `check:api-docs` (the JSDoc ratchet, see `API_DOCS_GUIDE.md`): each worker package mirrors its kernel by dotted path, and
 `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
 has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
 or class reads differently on the two sides, or when the worker's path set differs from the committed
@@ -190,7 +190,7 @@ from `docs/static/llms.template.txt` by `docs/scripts/generate-llms.js` on every
 
 - **Vitest** for every package. Each has a `vitest.config.ts` that calls the shared factory in
   `packages/dev/vitest.shared.ts` and states only what differs from it.
-- `UNIT_TESTING_GUIDE.md` at the root is the testing standard for this repository.
+- `UNIT_TESTING_GUIDE.md` is the testing standard; `API_DOCS_GUIDE.md` the one for the public API's JSDoc.
 - Kernel-heavy suites need a raised heap; the package scripts already set
   `NODE_OPTIONS=--max-old-space-size=8192`. Keep that when adding one. They also run a process per file
   (`pool: "forks"`): the kernel holds global state and two suites sharing one corrupt each other.

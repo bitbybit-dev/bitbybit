@@ -3,37 +3,49 @@
 import { Base } from "@bitbybit-dev/base";
 import { combinationCirclesForFaceEnum, fourSidesStrictEnum, twoSidesStrictEnum, wireFromPointsTypeEnum } from "./enums";
 
+/**
+ * Points and a closing flag for `shapes.wire.createBSpline`, which fits a smooth curve close to the
+ * points.
+ */
 export class BSplineDto {
     constructor(points?: Base.Point3[], closed?: boolean) {
         if (points !== undefined) { this.points = points; }
         if (closed !== undefined) { this.closed = closed; }
     }
     /**
-     * Points through which the BSpline will be created
+     * The points the curve follows closely, in order; it need not pass through them exactly.
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-     * Indicates wether BSpline will be cloed
+     * When true, the first point is appended again so the ends meet.
      * @default false
      */
     closed = false;
 }
+/**
+ * Several B-spline definitions for `shapes.wire.createBSplines`, which builds one wire per
+ * definition.
+ */
 export class BSplinesDto {
     constructor(bSplines?: BSplineDto[], returnCompound?: boolean) {
         if (bSplines !== undefined) { this.bSplines = bSplines; }
         if (returnCompound !== undefined) { this.returnCompound = returnCompound; }
     }
     /**
-     * BSpline definitions
+     * One definition per curve, as `createBSpline` takes them.
      * @default undefined
      */
     bSplines!: BSplineDto[];
     /**
-     * Indicates whether the shapes should be returned as a compound
+     * When true, the wires are packed into one compound instead of a list.
      */
     returnCompound = false;
 }
+/**
+ * Two circles in one plane and which pieces to keep for `shapes.wire.createWireFromTwoCirclesTan`,
+ * a closed outline around both circles.
+ */
 export class WireFromTwoCirclesTanDto<T> {
     constructor(circle1?: T, circle2?: T, keepLines?: twoSidesStrictEnum, circleRemainders?: fourSidesStrictEnum, tolerance?: number) {
         if (circle1 !== undefined) { this.circle1 = circle1; }
@@ -43,27 +55,28 @@ export class WireFromTwoCirclesTanDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The first circle to be encloed with tangential lines
+     * The first circle wire; it must consist of a single edge.
      * @default undefined
      */
     circle1!: T;
     /**
-     * The second circle to be encloed with tangential lines
+     * The second circle wire; it must consist of a single edge.
      * @default undefined
      */
     circle2!: T;
     /**
-     * Choose which side to keep for the wire. Outside gives non-intersecting solution.
+     * Which tangent lines join the circles: `outside` gives the belt that does not cross itself,
+     * `inside` the crossing lines.
      * @default outside
      */
     keepLines: twoSidesStrictEnum = twoSidesStrictEnum.outside;
     /**
-     * Choose which side to keep for the wire. Outside gives non-intersecting solution.
+     * Which arc of each circle stays in the outline: both outside, both inside, or one of each.
      * @default outside
      */
     circleRemainders: fourSidesStrictEnum = fourSidesStrictEnum.outside;
     /**
-     * tolerance
+     * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -71,6 +84,10 @@ export class WireFromTwoCirclesTanDto<T> {
      */
     tolerance = 1e-7;
 }
+/**
+ * Circles in one plane and how to pair them for `shapes.face.createFaceFromMultipleCircleTanWires`,
+ * which joins the pairs with tangent belts.
+ */
 export class FaceFromMultipleCircleTanWiresDto<T> {
     constructor(circles?: T[], combination?: combinationCirclesForFaceEnum, unify?: boolean, tolerance?: number) {
         if (circles !== undefined) { this.circles = circles; }
@@ -79,22 +96,24 @@ export class FaceFromMultipleCircleTanWiresDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The circles that will all be joined into a single face through tangential lines
+     * The circle wires to join, each a single edge.
      * @default undefined
      */
     circles!: T[];
     /**
-     * Indicates how circles should be joined together. Users can choose to join all circles with each other. Alternatively it is possible to respect the order of circles and only join consecutive circles. It is also possible to respect order and close the shape with first circle in the list.
+     * Which pairs get a belt: `allWithAll` every circle with every other, `inOrder` neighbors in
+     * the list, `inOrderClosed` also the last with the first.
      * @default allWithAll
      */
     combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
     /**
-     * Choose whether you want faces to be unifided into a single face or not. Sometimes if you want to get faster result you can set this to false, but in this case faces will be returned as compound.
+     * When true, the belt faces are fused into one shape; when false they come back as a compound,
+     * which is faster.
      * @default true
      */
     unify = true;
     /**
-     * tolerance
+     * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -102,6 +121,11 @@ export class FaceFromMultipleCircleTanWiresDto<T> {
      */
     tolerance = 1e-7;
 }
+/**
+ * Lists of circles and how to pair them for
+ * `shapes.face.createFaceFromMultipleCircleTanWireCollections`, which joins circles of consecutive
+ * lists with tangent belts.
+ */
 export class FaceFromMultipleCircleTanWireCollectionsDto<T> {
     constructor(listsOfCircles?: T[][], combination?: combinationCirclesForFaceEnum, unify?: boolean, tolerance?: number) {
         if (listsOfCircles !== undefined) { this.listsOfCircles = listsOfCircles; }
@@ -110,22 +134,24 @@ export class FaceFromMultipleCircleTanWireCollectionsDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * The two dimensional circle array that can host multiple circle collections.
+     * The lists of circle wires; belts run between one list and the next.
      * @default undefined
      */
     listsOfCircles!: T[][];
     /**
-     * Indicates how circles should be joined together. Users can choose to join all circles with each other. Alternatively it is possible to respect the order of circles and only join consecutive circles. It is also possible to respect order and close the shape with first circle in the list.
+     * Which pairs get a belt: `allWithAll` every circle of a list with every circle of the next,
+     * `inOrder` circles at the same position, `inOrderClosed` also closes each list.
      * @default allWithAll
      */
     combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
     /**
-     * Choose whether you want faces to be unifided into a single face or not. Sometimes if you want to get faster result you can set this to false, but in this case faces will be returned as compound.
+     * When true, the belt faces are fused into one shape; when false they come back as a compound,
+     * which is faster.
      * @default true
      */
     unify = true;
     /**
-     * tolerance
+     * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -133,6 +159,10 @@ export class FaceFromMultipleCircleTanWireCollectionsDto<T> {
      */
     tolerance = 1e-7;
 }
+/**
+ * Two wires and a bounce count for `shapes.wire.createZigZagBetweenTwoWires`, which draws a
+ * polyline bouncing between them.
+ */
 export class ZigZagBetweenTwoWiresDto<T> {
     constructor(wire1?: T, wire2?: T, nrZigZags?: number, inverse?: boolean, divideByEqualDistance?: boolean, zigZagsPerEdge?: boolean) {
         if (wire1 !== undefined) { this.wire1 = wire1; }
@@ -143,17 +173,18 @@ export class ZigZagBetweenTwoWiresDto<T> {
         if (zigZagsPerEdge !== undefined) { this.zigZagsPerEdge = zigZagsPerEdge; }
     }
     /**
-     * The first wire for zig zag
+     * The wire the zig-zag starts on.
      * @default undefined
      */
     wire1!: T;
     /**
-     * The second wire for zig zag
+     * The wire the zig-zag bounces to.
      * @default undefined
      */
     wire2!: T;
     /**
-     * How many zig zags to create between the two wires on each edge. The number of edges should match. Edges will be joined by zigzags in order. One zig zag means two edges forming a corner.
+     * How many bounces to draw, per edge with `zigZagsPerEdge` or over the whole wire without; one
+     * bounce is two segments meeting at a corner.
      * @default 20
      * @minimum 1
      * @maximum Infinity
@@ -161,22 +192,29 @@ export class ZigZagBetweenTwoWiresDto<T> {
      */
     nrZigZags = 20;
     /**
-     * Inverse the the zig zag to go from wire2 to wire1
+     * When true, the zig-zag starts on the second wire instead of the first.
      * @default false
      */
     inverse: boolean = false;
     /**
-     * If true, the zig zags will be spaced equally on each edge. By default we follow parametric subdivision of the edges, which is not always equal to distance based subdivisions.
+     * When true, the bounce points are spaced by length along the wires; when false they follow the
+     * curves' parameters, which can be uneven.
      * @default false
      */
     divideByEqualDistance = false;
 
     /**
-     * By default the number of zig zags is applied to each edge. If this is set to false, the number of zig zags will be applied to the whole wire. This could then skip some corners where edges meet.
+     * When true, each edge of the wires gets `nrZigZags` bounces and the wires need matching edge
+     * counts; when false the count covers the whole wire.
      * @default true
      */
     zigZagsPerEdge = true;
 }
+/**
+ * Wires or edges and wire options for
+ * `shapes.wire.createWiresBetweenStartEndPointsOfWiresAndEdges`, which joins their start points
+ * into one wire and their end points into another.
+ */
 export class WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> {
     constructor(shapes?: T[], wireType?: wireFromPointsTypeEnum, closed?: boolean, tolerance?: number) {
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -185,22 +223,24 @@ export class WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Two or more wires or edges whose start and end points will be connected
+     * Two or more wires or edges, in the order their points are joined.
      * @default undefined
      */
     shapes!: T[];
     /**
-     * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
+     * Whether the points are joined with straight segments or with a smooth interpolated curve.
      * @default polyline
      */
     wireType?: wireFromPointsTypeEnum | undefined = wireFromPointsTypeEnum.polyline;
     /**
-     * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
+     * When true, each new wire loops back to its first point: a polygon, or a periodic curve for
+     * the interpolated kind.
      * @default false
      */
     closed?: boolean | undefined = false;
     /**
-     * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
+     * How far the interpolated curve may stray from the points, in model units; unused for
+     * polylines.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -208,6 +248,11 @@ export class WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> {
      */
     tolerance?: number | undefined = 1e-7;
 }
+/**
+ * Wires or edges, a division count and wire options for
+ * `shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges`, which connects matching division
+ * points like the rungs of a ladder.
+ */
 export class WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> {
     constructor(shapes?: T[], nrOfDivisions?: number, divideByEqualDistance?: boolean, wireType?: wireFromPointsTypeEnum, closed?: boolean, tolerance?: number) {
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -218,12 +263,13 @@ export class WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Two or more wires or edges that will be subdivided and connected through the points at matching subdivision indexes
+     * Two or more wires or edges, in the order their points are joined.
      * @default undefined
      */
     shapes!: T[];
     /**
-     * Into how many segments each wire or edge should be subdivided. The number of resulting wires will be nrOfDivisions + 1.
+     * How many steps each shape is divided into; one rung more than that is drawn, the ends
+     * included.
      * @default 10
      * @minimum 1
      * @maximum Infinity
@@ -231,22 +277,24 @@ export class WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> {
      */
     nrOfDivisions?: number | undefined = 10;
     /**
-     * If true, the subdivision points will be spaced by equal distance along each shape. By default the parametric subdivision is used, which is not always equal to distance based subdivisions.
+     * When true, the division points are spaced by length along each shape; when false they follow
+     * the curves' parameters, which can be uneven.
      * @default false
      */
     divideByEqualDistance?: boolean | undefined = false;
     /**
-     * Whether to connect the points with straight polyline segments or to interpolate a smooth BSpline through them
+     * Whether each rung is a polyline of straight segments or a smooth interpolated curve.
      * @default polyline
      */
     wireType?: wireFromPointsTypeEnum | undefined = wireFromPointsTypeEnum.polyline;
     /**
-     * Whether to close the resulting wires. For polyline wires this creates a polygon, for interpolated wires this creates a periodic (closed) BSpline.
+     * When true, each rung loops back to its first point: a polygon, or a periodic curve for the
+     * interpolated kind.
      * @default false
      */
     closed?: boolean | undefined = false;
     /**
-     * Tolerance used when interpolating the BSpline (only used when wireType is interpolated)
+     * How far an interpolated rung may stray from its points, in model units; unused for polylines.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -263,6 +311,10 @@ export enum bSplineParametrizationEnum {
     /** Spacing proportional to sqrt(chord) - best general default; resists cusps and overshoot. */
     centripetal = "centripetal",
 }
+/**
+ * Points and fitting options for `shapes.wire.interpolatePoints`, which draws a smooth curve
+ * through every point.
+ */
 export class InterpolationDto {
     constructor(points?: Base.Point3[], periodic?: boolean, tolerance?: number, parametrization?: bSplineParametrizationEnum, startTangent?: Base.Vector3, endTangent?: Base.Vector3, tangents?: (Base.Vector3 | undefined)[]) {
         if (points !== undefined) { this.points = points; }
@@ -274,17 +326,17 @@ export class InterpolationDto {
         if (tangents !== undefined) { this.tangents = tangents; }
     }
     /**
-     * Points through which the BSpline will be created
+     * The points the curve passes through, in order.
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-     * Indicates wether BSpline will be periodic (closed, tangent-continuous at the seam)
+     * When true, the curve closes into a loop that is smooth across the seam.
      * @default false
      */
     periodic = false;
     /**
-     * tolerance
+     * How far the curve may stray from the points, in model units.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -292,36 +344,35 @@ export class InterpolationDto {
      */
     tolerance = 1e-7;
     /**
-     * Parametrization controlling point spacing along the curve. When omitted, chord-length is
-     * used (backward-compatible). Centripetal is recommended for uneven spacing as it resists
-     * cusps and overshoot.
+     * How the curve is spaced between points: chord length by default, `centripetal` to resist
+     * cusps and overshoot with uneven points, or `uniform`.
      * @default chordLength
      */
     parametrization?: bSplineParametrizationEnum | undefined;
     /**
-     * Optional tangent direction enforced at the start (non-periodic only).
+     * A direction the curve must leave the first point in; only for open curves.
      * @default undefined
      * @optional true
      */
     startTangent?: Base.Vector3 | undefined;
     /**
-     * Optional tangent direction enforced at the end (non-periodic only).
+     * A direction the curve must arrive at the last point in; only for open curves.
      * @default undefined
      * @optional true
      */
     endTangent?: Base.Vector3 | undefined;
     /**
-     * Optional per-point tangent directions (one per point); entries that are undefined are
-     * left free. When provided, takes precedence over startTangent/endTangent.
+     * One direction per point that the curve must follow there, with undefined entries left free;
+     * when given, the start and end tangents are ignored.
      * @default undefined
      * @optional true
      */
     tangents?: (Base.Vector3 | undefined)[] | undefined;
 }
 /**
- * Options for the symmetric interpolation. This variant is always a closed (periodic) loop and
- * derives its own tangents from the points, so it intentionally exposes only the points and
- * tolerance - periodicity, parametrization and tangent constraints do not apply here.
+ * Points and a tolerance for `shapes.wire.interpolatePointsSymmetric`, a closed smooth curve that
+ * stays mirror-symmetric when the points are; it works out its own tangents, so nothing else is
+ * needed.
  */
 export class InterpolateSymmetricDto {
     constructor(points?: Base.Point3[], tolerance?: number) {
@@ -329,12 +380,12 @@ export class InterpolateSymmetricDto {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Points through which the symmetric closed BSpline will be created (at least 3)
+     * At least three points the closed curve passes through, in order.
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-     * tolerance
+     * How far the curve may stray from the points, in model units.
      * @default 1e-7
      * @minimum 0
      * @maximum Infinity
@@ -342,21 +393,29 @@ export class InterpolateSymmetricDto {
      */
     tolerance = 1e-7;
 }
+/**
+ * Several interpolation definitions for `shapes.wire.interpolateWires`, which builds one wire per
+ * definition.
+ */
 export class InterpolateWiresDto {
     constructor(interpolations?: InterpolationDto[], returnCompound?: boolean) {
         if (interpolations !== undefined) { this.interpolations = interpolations; }
         if (returnCompound !== undefined) { this.returnCompound = returnCompound; }
     }
     /**
-     * Interpolation definitions
+     * One definition per curve, as `interpolatePoints` takes them.
      * @default undefined
      */
     interpolations!: InterpolationDto[];
     /**
-     * Indicates whether the shapes should be returned as a compound
+     * When true, the wires are packed into one compound instead of a list.
      */
     returnCompound = false;
 }
+/**
+ * Control points and shape options for `shapes.wire.createBezier`, a smooth curve pulled toward its
+ * control points.
+ */
 export class BezierDto {
     constructor(points?: Base.Point3[], closed?: boolean, degree?: number, periodic?: boolean) {
         if (points !== undefined) { this.points = points; }
@@ -365,21 +424,19 @@ export class BezierDto {
         if (periodic !== undefined) { this.periodic = periodic; }
     }
     /**
-     * Points through which the Bezier curve will be created
+     * The control points: the curve starts at the first, ends at the last and is pulled toward the
+     * ones between.
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-     * Indicates wether Bezier will be cloed
+     * When true, the first point is appended again so the ends meet, with a corner at the seam.
      * @default false
      */
     closed = false;
     /**
-     * Optional maximum local degree. A classic Bezier has degree (controlPoints - 1), which
-     * oscillates and is hard-capped at 25; when a degree is given (or there are more than 26
-     * control points) a clamped bounded-degree curve is built instead, so it scales to many
-     * control points while still following the control polygon. Left empty, a classic Bezier
-     * (or auto bounded-degree for many points) is used.
+     * How many neighboring control points shape each part of the curve; leave it out for a classic
+     * Bezier, capped at 25 and bounded automatically above 26 points.
      * @default undefined
      * @optional true
      * @minimum 1
@@ -388,14 +445,17 @@ export class BezierDto {
      */
     degree?: number | undefined;
     /**
-     * Build a smooth CLOSED (periodic) curve that wraps the control polygon, continuous across the
-     * seam - unlike `closed`, which only meets C0 by repeating the first point. Uses degree (or a
-     * sensible default) and ignores `closed` when set.
+     * When true, the curve closes into a loop that is smooth across the seam, using `degree` or a
+     * default; it overrides `closed`.
      * @default false
      * @optional true
      */
     periodic?: boolean | undefined = false;
 }
+/**
+ * Control points with a weight each and shape options for `shapes.wire.createBezierWeights`; the
+ * weights say how strongly each point pulls the curve.
+ */
 export class BezierWeightsDto {
     constructor(points?: Base.Point3[], weights?: number[], closed?: boolean, periodic?: boolean, degree?: number) {
         if (points !== undefined) { this.points = points; }
@@ -405,31 +465,31 @@ export class BezierWeightsDto {
         if (degree !== undefined) { this.degree = degree; }
     }
     /**
-     * Points through which the Bezier curve will be created
+     * The control points: the curve starts at the first, ends at the last and is pulled toward the
+     * ones between.
      * @default undefined
      */
     points!: Base.Point3[];
     /**
-    * Weights for beziers that will be used, values should be between 0 and 1
-    * @default undefined
-    */
+     * One weight per control point, plus one more when `closed` is true and `periodic` false; above
+     * 1 pulls harder, below 1 lets go.
+     * @default undefined
+     */
     weights!: number[];
     /**
-     * Indicates wether Bezier will be cloed
+     * When true, the first point is appended again so the ends meet, with a corner at the seam.
      * @default false
      */
     closed = false;
     /**
-     * Build a smooth CLOSED (periodic) rational curve that wraps the weighted control polygon,
-     * continuous across the seam - unlike `closed`, which only meets C0 by repeating the first
-     * point. Requires one weight per point (the points are not duplicated). Ignores `closed` when set.
+     * When true, the curve closes into a loop that is smooth across the seam and needs exactly one
+     * weight per point; it overrides `closed`.
      * @default false
      * @optional true
      */
     periodic?: boolean | undefined = false;
     /**
-     * Maximum local degree used when `periodic` is set (clamped to [1, points-1]); empty uses a
-     * sensible default. Ignored for the non-periodic rational Bezier.
+     * How many neighboring control points shape each part of a periodic curve; ignored otherwise.
      * @default undefined
      * @optional true
      * @minimum 1
@@ -438,7 +498,10 @@ export class BezierWeightsDto {
      */
     degree?: number | undefined;
 }
-/** Rebuild (relax/raise) the polynomial degree of a wire or edge curve. */
+/**
+ * A wire or edge, a degree and a tolerance for `shapes.wire.rebuildWireDegree` and
+ * `shapes.edge.rebuildEdgeDegree`.
+ */
 export class RebuildCurveDegreeDto<T> {
     constructor(shape?: T, degree?: number, tolerance?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -446,13 +509,13 @@ export class RebuildCurveDegreeDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Wire or edge whose curve degree is rebuilt.
+     * The wire or edge whose curve is rebuilt.
      * @default undefined
      */
     shape!: T;
     /**
-     * Target maximum degree. Lowering relaxes the curve to a smoother, lower-order approximation
-     * (within tolerance); raising is exact. The practical lower bound is 3 (cubic).
+     * The degree to rebuild to; lowering smooths the curve within the tolerance, raising keeps it
+     * exact, and 3 is the practical minimum.
      * @default 3
      * @minimum 1
      * @maximum Infinity
@@ -460,7 +523,8 @@ export class RebuildCurveDegreeDto<T> {
      */
     degree = 3;
     /**
-     * Tolerance used when relaxing (approximating) to a lower degree.
+     * How far the rebuilt curve may stray from the old one when the degree is lowered, in model
+     * units.
      * @default 0.0001
      * @minimum 0
      * @maximum Infinity
@@ -468,43 +532,51 @@ export class RebuildCurveDegreeDto<T> {
      */
     tolerance = 1e-4;
 }
-/** Move the seam (origin) of a periodic wire/edge to a given parameter value. */
+/**
+ * A closed periodic wire or edge and a parameter for `moveWireSeamByParameter` and
+ * `moveEdgeSeamByParameter`.
+ */
 export class CurveSeamByParameterDto<T> {
     constructor(shape?: T, parameter?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (parameter !== undefined) { this.parameter = parameter; }
     }
     /**
-     * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
+     * The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged.
      * @default undefined
      */
     shape!: T;
     /**
-     * Parameter value at which to place the new seam (origin).
+     * The curve parameter where the new seam sits, in the curve's own range.
      * @default 0
      * @step 0.1
      */
     parameter = 0;
 }
-/** Move the seam (origin) of a periodic wire/edge by an arc length from the current start. */
+/**
+ * A closed periodic wire or edge and a distance for `moveWireSeamByLength` and
+ * `moveEdgeSeamByLength`.
+ */
 export class CurveSeamByLengthDto<T> {
     constructor(shape?: T, length?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (length !== undefined) { this.length = length; }
     }
     /**
-     * Periodic wire or edge whose seam is moved (non-periodic is returned unchanged).
+     * The periodic wire or edge whose seam moves; a non-periodic one comes back unchanged.
      * @default undefined
      */
     shape!: T;
     /**
-     * Arc length, measured forward from the current start, at which to place the new seam.
+     * How far along the curve from the current start the new seam sits, in model units.
      * @default 0
      * @step 0.1
      */
     length = 0;
 }
-/** Rebuild (relax/raise) the U and V degrees of a face surface. */
+/**
+ * A face, target degrees and a tolerance for `shapes.face.rebuildFaceDegree`.
+ */
 export class RebuildFaceDegreeDto<T> {
     constructor(shape?: T, uDegree?: number, vDegree?: number, tolerance?: number, keepTrim?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -514,12 +586,13 @@ export class RebuildFaceDegreeDto<T> {
         if (keepTrim !== undefined) { this.keepTrim = keepTrim; }
     }
     /**
-     * Face whose surface degree is rebuilt.
+     * The face whose surface is rebuilt.
      * @default undefined
      */
     shape!: T;
     /**
-     * Target maximum U degree (lowering relaxes within tolerance; raising is exact; floor 3).
+     * The degree to rebuild to in U; lowering smooths within the tolerance, raising keeps the
+     * surface exact, and 3 is the practical minimum.
      * @default 3
      * @minimum 1
      * @maximum Infinity
@@ -527,7 +600,7 @@ export class RebuildFaceDegreeDto<T> {
      */
     uDegree = 3;
     /**
-     * Target maximum V degree.
+     * The degree to rebuild to in V, with the same rules as `uDegree`.
      * @default 3
      * @minimum 1
      * @maximum Infinity
@@ -535,7 +608,8 @@ export class RebuildFaceDegreeDto<T> {
      */
     vDegree = 3;
     /**
-     * Tolerance used when relaxing (approximating) to a lower degree.
+     * How far the rebuilt surface may stray from the old one when a degree is lowered, in model
+     * units.
      * @default 0.0001
      * @minimum 0
      * @maximum Infinity
@@ -543,13 +617,15 @@ export class RebuildFaceDegreeDto<T> {
      */
     tolerance = 1e-4;
     /**
-     * Keep the face's boundary wires (reliable for a degree raise, which preserves the UV domain);
-     * otherwise the face is rebuilt from the surface's natural bounds.
+     * When true, the face keeps its boundary wires, which is reliable when raising; when false it
+     * covers the whole rebuilt surface.
      * @default false
      */
     keepTrim = false;
 }
-/** Flip a face's UV parametrization: swap U/V and/or reverse the U or V direction. */
+/**
+ * A face and which flips to apply for `shapes.face.flipFaceUV`.
+ */
 export class FlipFaceUVDto<T> {
     constructor(shape?: T, swapUV?: boolean, reverseU?: boolean, reverseV?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
@@ -558,27 +634,30 @@ export class FlipFaceUVDto<T> {
         if (reverseV !== undefined) { this.reverseV = reverseV; }
     }
     /**
-     * Face whose UV parametrization is flipped.
+     * The face whose UV parameters are changed.
      * @default undefined
      */
     shape!: T;
     /**
-     * Swap the U and V directions.
+     * When true, U and V change places.
      * @default false
      */
     swapUV = false;
     /**
-     * Reverse the U direction.
+     * When true, U runs the other way.
      * @default false
      */
     reverseU = false;
     /**
-     * Reverse the V direction.
+     * When true, V runs the other way.
      * @default false
      */
     reverseV = false;
 }
-/** Reparametrize a face so its U and/or V parameter is ~uniform by arc length (even iso spacing). */
+/**
+ * A face and fitting options for `shapes.face.normalizeFaceParametrization`, which makes equal
+ * parameter steps into roughly equal distances.
+ */
 export class NormalizeFaceParametrizationDto<T> {
     constructor(shape?: T, normalizeU?: boolean, normalizeV?: boolean, samples?: number, tolerance?: number) {
         if (shape !== undefined) { this.shape = shape; }
@@ -588,22 +667,23 @@ export class NormalizeFaceParametrizationDto<T> {
         if (tolerance !== undefined) { this.tolerance = tolerance; }
     }
     /**
-     * Face to reparametrize.
+     * The face to reparametrize.
      * @default undefined
      */
     shape!: T;
     /**
-     * Make the U parameter ~uniform by arc length.
+     * When true, the U parameter is evened out by distance.
      * @default true
      */
     normalizeU = true;
     /**
-     * Make the V parameter ~uniform by arc length.
+     * When true, the V parameter is evened out by distance.
      * @default true
      */
     normalizeV = true;
     /**
-     * Resampling grid resolution per direction (higher = more faithful, slower).
+     * How many points per direction the surface is resampled at; more is closer to the original and
+     * slower.
      * @default 24
      * @minimum 4
      * @maximum Infinity
@@ -611,7 +691,7 @@ export class NormalizeFaceParametrizationDto<T> {
      */
     samples = 24;
     /**
-     * Refit tolerance.
+     * How far the refitted surface may stray from the original, in model units.
      * @default 0.0001
      * @minimum 0
      * @maximum Infinity
@@ -619,18 +699,22 @@ export class NormalizeFaceParametrizationDto<T> {
      */
     tolerance = 1e-4;
 }
+/**
+ * Several Bezier definitions for `shapes.wire.createBezierWires`, which builds one wire per
+ * definition.
+ */
 export class BezierWiresDto {
     constructor(bezierWires?: BezierDto[], returnCompound?: boolean) {
         if (bezierWires !== undefined) { this.bezierWires = bezierWires; }
         if (returnCompound !== undefined) { this.returnCompound = returnCompound; }
     }
     /**
-     * Bezier wires
+     * One definition per curve, as `createBezier` takes them.
      * @default undefined
      */
     bezierWires!: BezierDto[];
     /**
-     * Indicates whether the shapes should be returned as a compound
+     * When true, the wires are packed into one compound instead of a list.
      */
     returnCompound = false;
 }

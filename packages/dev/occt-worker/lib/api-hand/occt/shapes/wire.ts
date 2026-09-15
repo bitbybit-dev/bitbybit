@@ -9,6 +9,31 @@ export class OCCTWire {
     constructor(private readonly occWorkerManager: OCCTWorkerManager) { }
 
     // replaces shapes.wire.textWiresWithData
+    /**
+     * Writes text as stroke wires like `textWires` and packs them into compounds, with the size of
+     * the block alongside.
+     *
+     * The result carries `compound` with the whole text, `characters` with one compound per
+     * character in writing order, `width` and `height` as the extent of the block along X and
+     * along Z, and `center` as the middle of the block.
+     * @param inputs - The text, its size and spacing, the alignment and the placement options
+     * @returns The text compound, the character compounds and the measured size
+     * @group primitives
+     * @shortname text wires deriv
+     * @drawable true
+     * @example
+     * ```typescript
+     * const text = await bitbybit.occt.shapes.wire.textWiresWithData({
+     *     text: "Hi",
+     *     height: 5,
+     *     lineSpacing: 1.5,
+     *     letterSpacing: 0,
+     *     align: Bit.Inputs.Base.horizontalAlignEnum.left,
+     *     centerOnOrigin: false,
+     * });
+     * console.log(text.width, text.height, text.characters.length);
+     * ```
+     */
     async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
         const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
         if (!res.data || !res.shapes) {

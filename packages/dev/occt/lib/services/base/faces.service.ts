@@ -112,23 +112,30 @@ export class FacesService {
     filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
         const face = inputs.shape;
         const points = inputs.points;
-        const tolerance = inputs.tolerance || 1e-6;
+        const tolerance = inputs.tolerance ?? 1e-4;
         const keepOn = inputs.keepOn !== false;
         const keepIn = inputs.keepIn !== false;
         const keepOut = inputs.keepOut === true;
+        const keepUnknown = inputs.keepUnknown === true;
+        const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance ?? 0.1) : undefined;
 
         const result: Base.Point3[] = [];
 
         for (const pt of points) {
             const gpPnt = new this.occ.gp_Pnt(pt[0], pt[1], pt[2]);
             try {
+                if (bounds && this.isOutsideBounds(bounds, pt)) {
+                    if (keepOut) {
+                        result.push(pt);
+                    }
+                    continue;
+                }
                 const classifier = new this.occ.BRepClass_FaceClassifier(face, gpPnt, tolerance);
-                const state = classifier.State();
-                const stateValue = state.value;
-                
+                const stateValue = classifier.State().value;
                 if ((stateValue === 0 && keepIn) ||
                     (stateValue === 1 && keepOut) ||
-                    (stateValue === 2 && keepOn)) {
+                    (stateValue === 2 && keepOn) ||
+                    (stateValue === 3 && keepUnknown)) {
                     result.push(pt);
                 }
                 classifier.delete();
@@ -138,6 +145,25 @@ export class FacesService {
         }
 
         return result;
+    }
+
+    private enlargedBoundingBox(shape: TopoDS_Shape, gap: number): { min: Base.Point3, max: Base.Point3 } {
+        const bbox = new this.occ.Bnd_Box();
+        this.occ.BRepBndLib.Add(shape, bbox, false);
+        const cornerMin = bbox.CornerMin();
+        const cornerMax = bbox.CornerMax();
+        const bounds = {
+            min: [cornerMin.X() - gap, cornerMin.Y() - gap, cornerMin.Z() - gap] as Base.Point3,
+            max: [cornerMax.X() + gap, cornerMax.Y() + gap, cornerMax.Z() + gap] as Base.Point3,
+        };
+        cornerMin.delete();
+        cornerMax.delete();
+        bbox.delete();
+        return bounds;
+    }
+
+    private isOutsideBounds(bounds: { min: Base.Point3, max: Base.Point3 }, pt: Base.Point3): boolean {
+        return pt.some((coordinate, axis) => coordinate < bounds.min[axis]! || coordinate > bounds.max[axis]!);
     }
 
 
@@ -671,13 +697,11 @@ export class FacesService {
     }
 
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        if (inputs.scalePatternU === undefined) {
-            inputs.scalePatternU = [0.5];
-        }
-        if (inputs.scalePatternV === undefined) {
-            inputs.scalePatternV = [0.5];
-        }
-        const wires = this.subdivideToRectangleWires(inputs);
+        const wires = this.subdivideToRectangleWires({
+            ...inputs,
+            scalePatternU: inputs.scalePatternU ?? [0.5],
+            scalePatternV: inputs.scalePatternV ?? [0.5],
+        });
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
         const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
@@ -865,13 +889,11 @@ export class FacesService {
     }
 
     subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
-        if (inputs.scalePatternU === undefined) {
-            inputs.scalePatternU = [0.5];
-        }
-        if (inputs.scalePatternV === undefined) {
-            inputs.scalePatternV = [0.5];
-        }
-        const wires = this.subdivideToHexagonWires(inputs);
+        const wires = this.subdivideToHexagonWires({
+            ...inputs,
+            scalePatternU: inputs.scalePatternU ?? [0.5],
+            scalePatternV: inputs.scalePatternV ?? [0.5],
+        });
         const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
         const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
         const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;

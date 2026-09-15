@@ -4,6 +4,12 @@
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
+/**
+ * Shells in OpenCascade: sets of faces joined along their edges. A shell that closes on itself with
+ * no gaps bounds a volume and can become a solid with `shapes.solid.fromClosedShell`; an open shell
+ * is a surface with a rim. Build one by sewing faces together, check whether it is closed and
+ * measure its area.
+ */
 export class OCCTShell {
     constructor(
         private readonly occWorkerManager: OCCTWorkerManager,
@@ -11,37 +17,55 @@ export class OCCTShell {
     }
 
     /**
-     * Returns debug info about the shell: face/edge counts, total surface area and per-face surface
-     * debug info (type, U/V degree, poles/knots, bounds, area, ...).
-     * @param inputs shell
-     * @returns Shell debug info
+     * Collects diagnostic facts about a shell: whether it is valid, how many faces and edges it
+     * has, its total area and, for every face, the surface type, degrees, control point counts,
+     * bounds and area.
+     *
+     * An empty or null shape gives a report marked invalid with zero counts.
+     * @param inputs - The shell to inspect
+     * @returns The report with counts, area and one entry per face
      * @group debug
      * @shortname shell debug info
      * @drawable false
+     * @example
+     * ```typescript
+     * const info = await bitbybit.occt.shapes.shell.debugInfo({ shape: shell });
+     * ```
      */
     debugInfo(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<Models.OCCT.ShellDebugInfo> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.shell.debugInfo", inputs);
     }
 
     /**
-     * Creates a shell from faces
-     * @param inputs OpenCascade shell and faces
-     * @returns OpenCascade shell
+     * Joins faces into a shell by sewing their edges together where they meet within the tolerance.
+     *
+     * Faces whose edges are further apart than the tolerance stay unjoined, so a shell meant to be
+     * closed may come out open; a larger tolerance sews more, a smaller one is more precise.
+     * @param inputs - The faces and the sewing tolerance
+     * @returns The shell made from the faces
      * @group create
      * @shortname sew
      * @drawable true
+     * @example
+     * ```typescript
+     * const shell = await bitbybit.occt.shapes.shell.sewFaces({ shapes: [top, bottom, side], tolerance: 1e-7 });
+     * ```
      */
     sewFaces(inputs: Inputs.OCCT.SewDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSShellPointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.shell.sewFaces", inputs);
     }
 
     /**
-     * Get shell surface area
-     * @param inputs shell shape
-     * @returns Surface area
+     * Measures the total area of all the faces of a shell, in square model units.
+     * @param inputs - The shell
+     * @returns The surface area
      * @group get
      * @shortname area
      * @drawable false
+     * @example
+     * ```typescript
+     * const area = await bitbybit.occt.shapes.shell.getShellSurfaceArea({ shape: shell });
+     * ```
      */
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShellPointer>): Promise<number> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.shell.getShellSurfaceArea", inputs);

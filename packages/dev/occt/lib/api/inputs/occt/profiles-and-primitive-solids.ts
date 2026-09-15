@@ -3,6 +3,10 @@
 import { Base } from "@bitbybit-dev/base";
 import { directionEnum } from "./enums";
 
+/**
+ * A side length and a placement for `shapes.wire.createSquareWire` and
+ * `shapes.face.createSquareFace`.
+ */
 export class SquareDto {
     constructor(size?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (size !== undefined) { this.size = size; }
@@ -10,7 +14,7 @@ export class SquareDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * size of square
+     * The length of each side, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -18,16 +22,20 @@ export class SquareDto {
      */
     size = 1;
     /**
-     * Center of the square
+     * The point the square is centered on.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the square
+     * The normal of the plane the square lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * A width, a length and a placement for `shapes.wire.createRectangleWire` and
+ * `shapes.face.createRectangleFace`.
+ */
 export class RectangleDto {
     constructor(width?: number, length?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (width !== undefined) { this.width = width; }
@@ -36,7 +44,8 @@ export class RectangleDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * width of the rectangle
+     * The side along X on the ground plane, in model units, before the rectangle is turned to face
+     * `direction`.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -44,7 +53,8 @@ export class RectangleDto {
      */
     width = 1;
     /**
-     * Height of the rectangle
+     * The side along Z on the ground plane, in model units, before the rectangle is turned to face
+     * `direction`.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -52,16 +62,20 @@ export class RectangleDto {
      */
     length = 2;
     /**
-     * Center of the rectangle
+     * The point the rectangle is centered on.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the rectangle
+     * The normal of the plane the rectangle lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * The two legs of an L shape and its placement for `shapes.wire.createLPolygonWire` and
+ * `shapes.face.createLPolygonFace`.
+ */
 export class LPolygonDto {
     constructor(widthFirst?: number, lengthFirst?: number, widthSecond?: number, lengthSecond?: number, align?: directionEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (widthFirst !== undefined) { this.widthFirst = widthFirst; }
@@ -74,7 +88,7 @@ export class LPolygonDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Width of the first side of L polygon
+     * The thickness of the first leg, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -82,7 +96,7 @@ export class LPolygonDto {
      */
     widthFirst = 1;
     /**
-     * Length of the first side of L polygon
+     * The length of the first leg, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -90,7 +104,7 @@ export class LPolygonDto {
      */
     lengthFirst = 2;
     /**
-     * Width of the second side of L polygon
+     * The thickness of the second leg, in model units.
      * @default 0.5
      * @minimum 0
      * @maximum Infinity
@@ -98,7 +112,7 @@ export class LPolygonDto {
      */
     widthSecond = 0.5;
     /**
-     * Length of the second side of L polygon
+     * The length of the second leg, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -106,12 +120,13 @@ export class LPolygonDto {
      */
     lengthSecond = 2;
     /**
-     * Indicates if the L polygon should be aligned inside/outside or middle
+     * Where the corner of the L sits relative to the legs: on their outside, their inside or their
+     * middle.
      * @default outside
      */
     align = directionEnum.outside;
     /**
-     * Rotation of the L polygon
+     * How far the shape is turned in its plane, in degrees.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -119,16 +134,20 @@ export class LPolygonDto {
      */
     rotation = 0;
     /**
-     * Center of the L polygon
+     * The point the shape is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the  L polygon
+     * The normal of the plane the shape lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * The cross-section of an I-beam, two horizontal flanges joined by a vertical web, for
+ * `shapes.wire.createIBeamProfileWire` and `shapes.face.createIBeamProfileFace`.
+ */
 export class IBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (width !== undefined) { this.width = width; }
@@ -141,7 +160,7 @@ export class IBeamProfileDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Width of the I-beam (flange width)
+     * The width of the flanges, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -149,7 +168,7 @@ export class IBeamProfileDto {
      */
     width = 2;
     /**
-     * Height of the I-beam
+     * The total height of the profile, in model units.
      * @default 3
      * @minimum 0
      * @maximum Infinity
@@ -157,7 +176,7 @@ export class IBeamProfileDto {
      */
     height = 3;
     /**
-     * Thickness of the web (vertical part)
+     * The thickness of the vertical web, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -165,7 +184,7 @@ export class IBeamProfileDto {
      */
     webThickness = 0.2;
     /**
-     * Thickness of the flanges (horizontal parts)
+     * The thickness of each horizontal flange, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -173,12 +192,13 @@ export class IBeamProfileDto {
      */
     flangeThickness = 0.3;
     /**
-     * Alignment of the profile origin
+     * Which point of the profile's bounding box sits on `center`, such as its middle or its top
+     * left corner.
      * @default midMid
      */
     alignment = Base.basicAlignmentEnum.midMid;
     /**
-     * Rotation of the I-beam profile in degrees
+     * How far the profile is turned in its plane, in degrees.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -186,16 +206,20 @@ export class IBeamProfileDto {
      */
     rotation = 0;
     /**
-     * Center of the I-beam profile
+     * The point the profile is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the I-beam profile
+     * The normal of the plane the profile lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * The cross-section of an H-beam, two vertical flanges joined by a horizontal web, for
+ * `shapes.wire.createHBeamProfileWire` and `shapes.face.createHBeamProfileFace`.
+ */
 export class HBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (width !== undefined) { this.width = width; }
@@ -208,7 +232,7 @@ export class HBeamProfileDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Width of the H-beam (flange width)
+     * The total width of the profile, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -216,7 +240,7 @@ export class HBeamProfileDto {
      */
     width = 2;
     /**
-     * Height of the H-beam
+     * The height of the flanges, in model units.
      * @default 3
      * @minimum 0
      * @maximum Infinity
@@ -224,7 +248,7 @@ export class HBeamProfileDto {
      */
     height = 3;
     /**
-     * Thickness of the web (vertical part)
+     * The thickness of the horizontal web, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -232,7 +256,7 @@ export class HBeamProfileDto {
      */
     webThickness = 0.2;
     /**
-     * Thickness of the flanges (horizontal parts)
+     * The thickness of each vertical flange, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -240,12 +264,13 @@ export class HBeamProfileDto {
      */
     flangeThickness = 0.3;
     /**
-     * Alignment of the profile origin
+     * Which point of the profile's bounding box sits on `center`, such as its middle or its top
+     * left corner.
      * @default midMid
      */
     alignment = Base.basicAlignmentEnum.midMid;
     /**
-     * Rotation of the H-beam profile in degrees
+     * How far the profile is turned in its plane, in degrees.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -253,16 +278,20 @@ export class HBeamProfileDto {
      */
     rotation = 0;
     /**
-     * Center of the H-beam profile
+     * The point the profile is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the H-beam profile
+     * The normal of the plane the profile lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * The cross-section of a T-beam, a horizontal flange with a vertical web hanging from its middle,
+ * for `shapes.wire.createTBeamProfileWire` and `shapes.face.createTBeamProfileFace`.
+ */
 export class TBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (width !== undefined) { this.width = width; }
@@ -275,7 +304,7 @@ export class TBeamProfileDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Width of the T-beam (flange width)
+     * The width of the flange, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -283,7 +312,7 @@ export class TBeamProfileDto {
      */
     width = 2;
     /**
-     * Height of the T-beam
+     * The total height of the profile, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -291,7 +320,7 @@ export class TBeamProfileDto {
      */
     height = 2;
     /**
-     * Thickness of the web (vertical part)
+     * The thickness of the vertical web, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -299,7 +328,7 @@ export class TBeamProfileDto {
      */
     webThickness = 0.2;
     /**
-     * Thickness of the flange (horizontal part)
+     * The thickness of the flange, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -307,12 +336,13 @@ export class TBeamProfileDto {
      */
     flangeThickness = 0.3;
     /**
-     * Alignment of the profile origin
+     * Which point of the profile's bounding box sits on `center`, such as its middle or its top
+     * left corner.
      * @default midMid
      */
     alignment = Base.basicAlignmentEnum.midMid;
     /**
-     * Rotation of the T-beam profile in degrees
+     * How far the profile is turned in its plane, in degrees.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -320,16 +350,20 @@ export class TBeamProfileDto {
      */
     rotation = 0;
     /**
-     * Center of the T-beam profile
+     * The point the profile is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the T-beam profile
+     * The normal of the plane the profile lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * The cross-section of a U-beam, a channel with two flanges standing up from a web, for
+ * `shapes.wire.createUBeamProfileWire` and `shapes.face.createUBeamProfileFace`.
+ */
 export class UBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (width !== undefined) { this.width = width; }
@@ -343,7 +377,7 @@ export class UBeamProfileDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Overall width of the U-beam
+     * The total width of the profile, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -351,7 +385,7 @@ export class UBeamProfileDto {
      */
     width = 2;
     /**
-     * Height of the U-beam
+     * The total height of the profile, in model units.
      * @default 3
      * @minimum 0
      * @maximum Infinity
@@ -359,7 +393,7 @@ export class UBeamProfileDto {
      */
     height = 3;
     /**
-     * Thickness of the web (back part)
+     * The thickness of the web at the back of the channel, in model units.
      * @default 0.2
      * @minimum 0
      * @maximum Infinity
@@ -367,7 +401,7 @@ export class UBeamProfileDto {
      */
     webThickness = 0.2;
     /**
-     * Thickness of the flanges (side parts)
+     * The thickness of each flange, in model units.
      * @default 0.3
      * @minimum 0
      * @maximum Infinity
@@ -375,7 +409,7 @@ export class UBeamProfileDto {
      */
     flangeThickness = 0.3;
     /**
-     * Width of the flanges (how far they extend inward)
+     * How far each flange reaches inward from the side of the channel, in model units.
      * @default 0.5
      * @minimum 0
      * @maximum Infinity
@@ -383,12 +417,13 @@ export class UBeamProfileDto {
      */
     flangeWidth = 0.5;
     /**
-     * Alignment of the profile origin
+     * Which point of the profile's bounding box sits on `center`, such as its middle or its top
+     * left corner.
      * @default midMid
      */
     alignment = Base.basicAlignmentEnum.midMid;
     /**
-     * Rotation of the U-beam profile in degrees
+     * How far the profile is turned in its plane, in degrees.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -396,16 +431,20 @@ export class UBeamProfileDto {
      */
     rotation = 0;
     /**
-     * Center of the U-beam profile
+     * The point the profile is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the U-beam profile
+     * The normal of the plane the profile lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * How far a flat profile is extruded each way along its normal, the part the beam profile solid
+ * inputs share.
+ */
 export class ExtrudedSolidDto {
     constructor(extrusionLengthFront?: number, extrusionLengthBack?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (extrusionLengthFront !== undefined) { this.extrusionLengthFront = extrusionLengthFront; }
@@ -414,7 +453,7 @@ export class ExtrudedSolidDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the profile grows along its normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -422,7 +461,7 @@ export class ExtrudedSolidDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the profile grows against its normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -430,16 +469,20 @@ export class ExtrudedSolidDto {
      */
     extrusionLengthBack = 0;
     /**
-     * Center of the solid
+     * The point the profile is placed at.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of extrusion
+     * The normal of the profile's plane, which is the direction of the extrusion.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
 }
+/**
+ * An I-beam profile and the extrusion lengths for `shapes.solid.createIBeamProfileSolid`; at least
+ * one length must be above 0.
+ */
 export class IBeamProfileSolidDto extends IBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
@@ -447,7 +490,7 @@ export class IBeamProfileSolidDto extends IBeamProfileDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the profile grows along its normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -455,7 +498,7 @@ export class IBeamProfileSolidDto extends IBeamProfileDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the profile grows against its normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -463,6 +506,10 @@ export class IBeamProfileSolidDto extends IBeamProfileDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * An H-beam profile and the extrusion lengths for `shapes.solid.createHBeamProfileSolid`; at least
+ * one length must be above 0.
+ */
 export class HBeamProfileSolidDto extends HBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
@@ -470,7 +517,7 @@ export class HBeamProfileSolidDto extends HBeamProfileDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the profile grows along its normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -478,7 +525,7 @@ export class HBeamProfileSolidDto extends HBeamProfileDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the profile grows against its normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -486,6 +533,10 @@ export class HBeamProfileSolidDto extends HBeamProfileDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A T-beam profile and the extrusion lengths for `shapes.solid.createTBeamProfileSolid`; at least
+ * one length must be above 0.
+ */
 export class TBeamProfileSolidDto extends TBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(width, height, webThickness, flangeThickness, alignment, rotation, center, direction);
@@ -493,7 +544,7 @@ export class TBeamProfileSolidDto extends TBeamProfileDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the profile grows along its normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -501,7 +552,7 @@ export class TBeamProfileSolidDto extends TBeamProfileDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the profile grows against its normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -509,6 +560,10 @@ export class TBeamProfileSolidDto extends TBeamProfileDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * A U-beam profile and the extrusion lengths for `shapes.solid.createUBeamProfileSolid`; at least
+ * one length must be above 0.
+ */
 export class UBeamProfileSolidDto extends UBeamProfileDto {
     constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number) {
         super(width, height, webThickness, flangeThickness, flangeWidth, alignment, rotation, center, direction);
@@ -516,7 +571,7 @@ export class UBeamProfileSolidDto extends UBeamProfileDto {
         if (extrusionLengthBack !== undefined) { this.extrusionLengthBack = extrusionLengthBack; }
     }
     /**
-     * Extrusion length in the forward direction
+     * How far the profile grows along its normal, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -524,7 +579,7 @@ export class UBeamProfileSolidDto extends UBeamProfileDto {
      */
     extrusionLengthFront = 1;
     /**
-     * Extrusion length in the backward direction
+     * How far the profile grows against its normal, in model units.
      * @default 0
      * @minimum 0
      * @maximum Infinity
@@ -532,6 +587,10 @@ export class UBeamProfileSolidDto extends UBeamProfileDto {
      */
     extrusionLengthBack = 0;
 }
+/**
+ * The three sides of a box and where it sits, for `shapes.solid.createBox`; `width` runs along X,
+ * `height` along Y, which is up, and `length` along Z.
+ */
 export class BoxDto {
     constructor(width?: number, length?: number, height?: number, center?: Base.Point3, originOnCenter?: boolean) {
         if (width !== undefined) { this.width = width; }
@@ -541,7 +600,7 @@ export class BoxDto {
         if (originOnCenter !== undefined) { this.originOnCenter = originOnCenter; }
     }
     /**
-     * Width of the box
+     * The side along X, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -549,7 +608,7 @@ export class BoxDto {
      */
     width = 1;
     /**
-     * Length of the box
+     * The side along Z, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -557,7 +616,7 @@ export class BoxDto {
      */
     length = 2;
     /**
-     * Height of the box
+     * The side along Y, which is up, in model units.
      * @default 3
      * @minimum 0
      * @maximum Infinity
@@ -565,16 +624,20 @@ export class BoxDto {
      */
     height = 3;
     /**
-     * Center of the box
+     * The point the box is centered on, or stands on when `originOnCenter` is false.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Force origin to be on the center of the cube
+     * When true, the box is centered on `center`; when false it stands on it, so `center` is the
+     * middle of the bottom face.
      * @default true
      */
     originOnCenter?: boolean | undefined = true;
 }
+/**
+ * The side of a cube and where it sits, for `shapes.solid.createCube`.
+ */
 export class CubeDto {
     constructor(size?: number, center?: Base.Point3, originOnCenter?: boolean) {
         if (size !== undefined) { this.size = size; }
@@ -582,7 +645,7 @@ export class CubeDto {
         if (originOnCenter !== undefined) { this.originOnCenter = originOnCenter; }
     }
     /**
-     * Size of the cube
+     * The length of every side, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -590,16 +653,21 @@ export class CubeDto {
      */
     size = 1;
     /**
-     * Center of the box
+     * The point the cube is centered on, or stands on when `originOnCenter` is false.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Force origin to be on the center of the cube
+     * When true, the cube is centered on `center`; when false it stands on it, so `center` is the
+     * middle of the bottom face.
      * @default true
      */
     originOnCenter?: boolean | undefined = true;
 }
+/**
+ * The three sides of a box and its corner, for `shapes.solid.createBoxFromCorner`, which grows the
+ * box along the positive axes from there.
+ */
 export class BoxFromCornerDto {
     constructor(width?: number, length?: number, height?: number, corner?: Base.Point3) {
         if (width !== undefined) { this.width = width; }
@@ -608,7 +676,7 @@ export class BoxFromCornerDto {
         if (corner !== undefined) { this.corner = corner; }
     }
     /**
-     * Width of the box
+     * The side along X, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -616,7 +684,7 @@ export class BoxFromCornerDto {
      */
     width = 1;
     /**
-     * Length of the box
+     * The side along Z, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -624,7 +692,7 @@ export class BoxFromCornerDto {
      */
     length = 2;
     /**
-     * Height of the box
+     * The side along Y, which is up, in model units.
      * @default 3
      * @minimum 0
      * @maximum Infinity
@@ -632,18 +700,21 @@ export class BoxFromCornerDto {
      */
     height = 3;
     /**
-     * Corner of the box
+     * The corner with the smallest X, Y and Z; the box extends from it along the positive axes.
      * @default [0, 0, 0]
      */
     corner: Base.Point3 = [0, 0, 0];
 }
+/**
+ * A radius and a center for `shapes.solid.createSphere`.
+ */
 export class SphereDto {
     constructor(radius?: number, center?: Base.Point3) {
         if (radius !== undefined) { this.radius = radius; }
         if (center !== undefined) { this.center = center; }
     }
     /**
-     * Radius of the sphere
+     * The distance from the center to the surface, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -651,11 +722,14 @@ export class SphereDto {
      */
     radius = 1;
     /**
-     * Center of the sphere
+     * The point the sphere is centered on.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
 }
+/**
+ * The two radii, height and placement of a cone or truncated cone for `shapes.solid.createCone`.
+ */
 export class ConeDto {
     constructor(radius1?: number, radius2?: number, height?: number, angle?: number, center?: Base.Point3, direction?: Base.Vector3) {
         if (radius1 !== undefined) { this.radius1 = radius1; }
@@ -666,7 +740,7 @@ export class ConeDto {
         if (direction !== undefined) { this.direction = direction; }
     }
     /**
-     * First radius of the cone
+     * The radius of the base at `center`, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -674,7 +748,7 @@ export class ConeDto {
      */
     radius1 = 2;
     /**
-     * Second radius of the cone
+     * The radius at the top, in model units; 0 makes a pointed cone.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -682,7 +756,7 @@ export class ConeDto {
      */
     radius2 = 1;
     /**
-     * Height of the cone
+     * The distance from the base to the top along `direction`, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -690,7 +764,7 @@ export class ConeDto {
      */
     height = 2;
     /**
-     * Angle of the cone
+     * How much of the full round to build, in degrees; less than 360 cuts a wedge out.
      * @default 360
      * @minimum 0
      * @maximum 360
@@ -698,17 +772,20 @@ export class ConeDto {
      */
     angle = 360;
     /**
-     * Center of the cone
+     * The center of the base.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction of the cone
+     * The direction from the base to the top.
      * @default [0, 1, 0]
      */
     direction: Base.Point3 = [0, 1, 0];
 
 }
+/**
+ * The two radii and placement of a ring for `shapes.solid.createTorus`.
+ */
 export class TorusDto {
     constructor(majorRadius?: number, minorRadius?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number) {
         if (majorRadius !== undefined) { this.majorRadius = majorRadius; }
@@ -718,7 +795,7 @@ export class TorusDto {
         if (angle !== undefined) { this.angle = angle; }
     }
     /**
-     * Major radius (distance from the center of the torus to the center of the pipe)
+     * The distance from the center of the ring to the middle of its tube, in model units.
      * @default 2
      * @minimum 0
      * @maximum Infinity
@@ -726,7 +803,7 @@ export class TorusDto {
      */
     majorRadius = 2;
     /**
-     * Minor radius (radius of the pipe)
+     * The radius of the tube itself, in model units.
      * @default 0.5
      * @minimum 0
      * @maximum Infinity
@@ -734,17 +811,17 @@ export class TorusDto {
      */
     minorRadius = 0.5;
     /**
-     * Center of the torus
+     * The point the ring is centered on.
      * @default [0, 0, 0]
      */
     center: Base.Point3 = [0, 0, 0];
     /**
-     * Direction (axis) of the torus
+     * The axis the ring goes around; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
     direction: Base.Vector3 = [0, 1, 0];
     /**
-     * Angle of the torus segment in degrees (360 for full torus)
+     * How much of the full ring to build, in degrees; less than 360 gives a partial ring.
      * @default 360
      * @minimum 0
      * @maximum 360

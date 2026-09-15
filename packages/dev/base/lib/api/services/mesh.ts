@@ -3,34 +3,49 @@ import { Polyline } from "./polyline";
 import { Vector } from "./vector";
 
 /**
- * Contains various mesh helper methods that are not necessarily present in higher level CAD kernels that
- * bitbybit is using.
+ * Geometry on plain triangle meshes: a mesh is a list of triangles, each three points. The methods
+ * here work out the plane of a triangle, the distance from a point to a plane, and where two meshes
+ * cut through each other, as segments, as polylines or as point lists. They need no CAD kernel, so
+ * they run on any triangulated data.
  */
 export class MeshBitByBit {
     constructor(private readonly vector: Vector, private readonly polyline: Polyline) { }
 
     /**
-     * Calculates signed distance from a point to a plane (positive=above plane, negative=below).
-     * Example: point=[0,5,0], plane={normal:[0,1,0], d:0} → 5 (point is 5 units above XZ plane)
-     * @param inputs a point and a plane
-     * @returns signed distance
+     * Measures how far a point is from a plane, with a sign: positive on the side the normal points
+     * to, negative on the other.
+     *
+     * Example: point [0,5,0] and the XZ plane with normal [0,1,0] -> 5
+     * @param inputs - The point and the plane
+     * @returns The signed distance in model units
      * @group base
      * @shortname signed dist to plane
      * @drawable false
+     * @example
+     * ```typescript
+     * const above = bitbybit.mesh.signedDistanceToPlane({ point: [0, 5, 0], plane: { normal: [0, 1, 0], d: 0 } });
+     * ```
      */
     signedDistanceToPlane(inputs: Inputs.Mesh.SignedDistanceFromPlaneToPointDto): number {
         return this.vector.dot({ first: inputs.plane.normal, second: inputs.point }) - inputs.plane.d;
     }
 
     /**
-     * Calculates plane equation from triangle vertices (normal vector and distance from origin).
-     * Returns undefined if triangle is degenerate (zero area, collinear points).
-     * Example: triangle=[[0,0,0], [1,0,0], [0,1,0]] → {normal:[0,0,1], d:0} (XY plane)
-     * @param inputs triangle and tolerance
-     * @returns triangle plane
+     * Finds the plane a triangle lies in: its unit normal and its distance from the origin along
+     * that normal.
+     *
+     * The normal follows the right-hand rule around the triangle's points. A triangle with no area,
+     * whose points are on one line, has no plane and gives undefined.
+     * Example: [[0,0,0], [1,0,0], [0,1,0]] -> { normal: [0,0,1], d: 0 }
+     * @param inputs - The triangle and the tolerance below which its area counts as zero
+     * @returns The plane, or undefined for a flat triangle
      * @group traingle
      * @shortname triangle plane
      * @drawable false
+     * @example
+     * ```typescript
+     * const plane = bitbybit.mesh.calculateTrianglePlane({ triangle: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], tolerance: 1e-7 });
+     * ```
      */
     calculateTrianglePlane(inputs: Inputs.Mesh.TriangleToleranceDto): Inputs.Base.TrianglePlane3 | undefined {
         const EPSILON_SQ = (inputs.tolerance || 1e-7) ** 2;
@@ -49,14 +64,24 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates intersection segment of two triangles (line segment where they cross).
-     * Returns undefined if triangles don't intersect, are parallel, or are coplanar.
-     * Example: triangle1=[[0,0,0], [2,0,0], [1,2,0]], triangle2=[[1,-1,1], [1,1,1], [1,1,-1]] → [[1,0,0], [1,1,0]]
-     * @param inputs first triangle, second triangle, and tolerance
-     * @returns intersection segment or undefined if no intersection
+     * Finds the segment where two triangles cut through each other.
+     *
+     * Triangles that do not touch, are parallel, or lie in the same plane give undefined.
+     * Example: a triangle in the XY plane and one standing across it -> the segment where they
+     * cross
+     * @param inputs - The two triangles and the tolerance
+     * @returns The crossing segment, or undefined when there is none
      * @group traingle
      * @shortname triangle-triangle int
      * @drawable false
+     * @example
+     * ```typescript
+     * const cut = bitbybit.mesh.triangleTriangleIntersection({
+     *     triangle1: [[0, 0, 0], [2, 0, 0], [1, 2, 0]],
+     *     triangle2: [[1, -1, 1], [1, 1, 1], [1, 1, -1]],
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     triangleTriangleIntersection(inputs: Inputs.Mesh.TriangleTriangleToleranceDto): Inputs.Base.Segment3 | undefined {
         const t1 = inputs.triangle1;
@@ -185,14 +210,20 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates all intersection segments between two triangle meshes (pairwise triangle tests).
-     * Returns array of line segments where mesh surfaces intersect.
-     * Example: cube mesh intersecting with sphere mesh → multiple segments forming intersection curve
-     * @param inputs first mesh, second mesh, and tolerance
-     * @returns array of intersection segments
+     * Finds every segment where the surfaces of two meshes cut through each other, testing each
+     * triangle of one against each triangle of the other.
+     *
+     * Example: a cube mesh and a sphere mesh -> the segments that together trace their intersection
+     * curve
+     * @param inputs - The two meshes and the tolerance
+     * @returns The crossing segments, in no particular order
      * @group mesh
      * @shortname mesh-mesh int segments
      * @drawable false
+     * @example
+     * ```typescript
+     * const segments = bitbybit.mesh.meshMeshIntersectionSegments({ mesh1: cubeTriangles, mesh2: sphereTriangles, tolerance: 1e-7 });
+     * ```
      */
     meshMeshIntersectionSegments(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Segment3[] {
         const mesh1 = inputs.mesh1;
@@ -216,14 +247,19 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates intersection polylines between two meshes by sorting segments into connected paths.
-     * Segments are joined end-to-end to form continuous or closed curves.
-     * Example: cube-sphere intersection → closed polyline loops where surfaces meet
-     * @param inputs first mesh, second mesh, and tolerance
-     * @returns array of intersection polylines
+     * Finds where the surfaces of two meshes cut through each other and joins the pieces into
+     * polylines, closed where the curve loops.
+     *
+     * Example: a cube mesh and a sphere mesh -> closed polylines where the two surfaces meet
+     * @param inputs - The two meshes and the tolerance
+     * @returns The intersection curves as polylines
      * @group mesh
      * @shortname mesh-mesh int polylines
      * @drawable true
+     * @example
+     * ```typescript
+     * const curves = bitbybit.mesh.meshMeshIntersectionPolylines({ mesh1: cubeTriangles, mesh2: sphereTriangles, tolerance: 1e-7 });
+     * ```
      */
     meshMeshIntersectionPolylines(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Polyline3[] {
         const segments = this.meshMeshIntersectionSegments(inputs);
@@ -231,14 +267,20 @@ export class MeshBitByBit {
     }
 
     /**
-     * Calculates intersection points between two meshes as point arrays (one array per polyline).
-     * Closed polylines have first point duplicated at end.
-     * Example: cube-sphere intersection → arrays of points defining intersection curves
-     * @param inputs first mesh, second mesh, and tolerance
-     * @returns array of intersection points
+     * Finds where the surfaces of two meshes cut through each other, as one list of points per
+     * curve.
+     *
+     * A closed curve repeats its first point at the end so the loop is explicit.
+     * Example: a cube mesh and a sphere mesh -> point lists tracing where the two surfaces meet
+     * @param inputs - The two meshes and the tolerance
+     * @returns One point list per intersection curve
      * @group mesh
      * @shortname mesh-mesh int points
      * @drawable false
+     * @example
+     * ```typescript
+     * const curves = bitbybit.mesh.meshMeshIntersectionPoints({ mesh1: cubeTriangles, mesh2: sphereTriangles, tolerance: 1e-7 });
+     * ```
      */
     meshMeshIntersectionPoints(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Point3[][] {
         const polylines = this.meshMeshIntersectionPolylines(inputs);

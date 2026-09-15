@@ -176,7 +176,7 @@ describe("Draw DTO unit tests", () => {
             expect(result.edgeOpacity).toBe(1);
             expect(result.edgeColour).toBe("#ffffff");
             expect(result.faceColour).toBe("#ff0000");
-            expect(result.vertexColour).toBe("#ffaaff");
+            expect(result.vertexColour).toBe("#ff00ff");
             expect(result.faceMaterial).toBeUndefined();
             expect(result.edgeWidth).toBe(2);
             expect(result.vertexSize).toBe(0.03);

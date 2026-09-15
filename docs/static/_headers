@@ -20,6 +20,9 @@
 /llms.template.txt
   X-Robots-Tag: noindex, nofollow
 
+/build-id.json
+  X-Robots-Tag: noindex, nofollow
+
 /LICENSE
   X-Robots-Tag: noindex, nofollow
 

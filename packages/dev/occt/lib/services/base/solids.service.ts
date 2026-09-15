@@ -32,10 +32,7 @@ export class SolidsService {
 
     createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
         let center = [...inputs.center];
-        if (inputs.originOnCenter === undefined) {
-            inputs.originOnCenter = true;
-        }
-        if (!inputs.originOnCenter) {
+        if (inputs.originOnCenter === false) {
             center = [center[0]!, center[1]! + inputs.height / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, center);
@@ -43,10 +40,7 @@ export class SolidsService {
 
     createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
         let center = [...inputs.center];
-        if (inputs.originOnCenter === undefined) {
-            inputs.originOnCenter = true;
-        }
-        if (!inputs.originOnCenter) {
+        if (inputs.originOnCenter === false) {
             center = [center[0]!, center[1]! + inputs.size / 2, center[2]!];
         }
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, center);

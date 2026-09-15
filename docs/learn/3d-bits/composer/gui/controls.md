@@ -72,7 +72,7 @@ For both, the fixed minimum, maximum and step can be replaced by an **expression
 
 **Colour** gives them a colour picker for products where you genuinely offer any colour rather than a chosen range.
 
-**Button** is not a question. It performs an action: the default emits a pulse each click, which a focal or a script can react to, or you can pick **Reset all options to defaults**, **Download the customer PDF report**, or **Download the 3D model (GLB)**. A button carries no value, no price and no order data, and it is never validated.
+**Button** is not a question. It performs an action: the default emits a pulse each click, which a focal or a script can react to, or you can pick **Reset all options to defaults**, **Download the customer PDF report**, or **Download the 3D model (GLB)**. A button carries no value, no price and no order data, and it is never validated. A reset also flies the camera back to its starting view, with the motion set under [Camera motion](../navigation#camera-motion).
 
 The two downloads need the **Pro** plan. On any lesser plan both carry a premium badge in the action list and choosing one opens the upgrade dialog instead of setting it. The PDF download also needs the customer document switched on under [PDF Reports](/learn/3d-bits/composer/gui/pdf-reports) - a button with nothing to generate stays inert.
 

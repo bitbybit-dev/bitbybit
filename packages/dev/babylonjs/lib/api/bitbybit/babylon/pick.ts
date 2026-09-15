@@ -5,15 +5,27 @@ import * as Inputs from "../../inputs";
 import { Base } from "../../inputs";
 
 
+/**
+ * Finding what is under a ray or the pointer: a pick shoots a ray into the scene and reports the
+ * first pickable mesh it hits, where, how far away and on which face. `pickWithPickingRay` uses the
+ * pointer's current position; the other methods read parts of a picking result.
+ */
 export class BabylonPick {
 
     constructor(private readonly context: Context) { }
     /**
-     * Get a hit result of picking with ray
-     * @param inputs ray to use for picking     
+     * Shoots a ray into the scene and reports the first pickable mesh it hits, with the hit point
+     * and distance; read the parts with the other methods here.
+     * @param inputs - The ray
+     * @returns The picking result
      * @group pick
      * @shortname pick with custom ray
-     * @returns Picking info
+     * @example
+     * ```typescript
+     * const ray = bitbybit.babylon.ray.createRay({ origin: [0, 10, 0], direction: [0, -1, 0], length: 100 });
+     * const pick = bitbybit.babylon.pick.pickWithRay({ ray });
+     * const hit = bitbybit.babylon.pick.hit({ pickInfo: pick });
+     * ```
      */
     pickWithRay(inputs: Inputs.BabylonPick.RayDto): BABYLON.PickingInfo {
         const scene = this.context.scene;
@@ -21,10 +33,20 @@ export class BabylonPick {
     }
 
     /**
-     * Pick with picking ray of the current mouse position in the active camera
+     * Shoots a ray from the active camera through the pointer's current position and reports the
+     * first pickable mesh it hits, the way a click selects.
+     * @returns The picking result
      * @group pick
      * @shortname pick with picking ray
-     * @returns Picking info
+     * @example
+     * ```typescript
+     * bitbybit.babylon.scene.onPointerDown({ statement_update: () => {
+     *     const pick = bitbybit.babylon.pick.pickWithPickingRay();
+     *     if (bitbybit.babylon.pick.hit({ pickInfo: pick })) {
+     *         console.log(bitbybit.babylon.pick.getPickedPoint({ pickInfo: pick }));
+     *     }
+     * } });
+     * ```
      */
     pickWithPickingRay(): BABYLON.PickingInfo {
         const scene = this.context.scene;
@@ -33,33 +55,33 @@ export class BabylonPick {
     }
 
     /**
-     * Get the distance to the object if picking result exists
-     * @param inputs picking result
+     * Reads how far along the ray the hit was, in scene units; meaningful only when `hit` is true.
+     * @param inputs - The picking result
+     * @returns The distance to the hit
      * @group get from pick info
      * @shortname pick distance
-     * @returns Distance
      */
     getDistance(inputs: Inputs.BabylonPick.PickInfo): number {
         return inputs.pickInfo.distance;
     }
 
     /**
-     * Get the picked mesh
-     * @param inputs picking result
+     * Reads the mesh a pick hit; meaningful only when `hit` is true.
+     * @param inputs - The picking result
+     * @returns The mesh that was hit
      * @group get from pick info
      * @shortname picked mesh
-     * @returns Picked mesh
      */
     getPickedMesh(inputs: Inputs.BabylonPick.PickInfo): BABYLON.AbstractMesh {
         return inputs.pickInfo.pickedMesh!;
     }
 
     /**
-     * Get the picked point
-     * @param inputs picking result
+     * Reads the point in the scene where a pick hit the mesh; meaningful only when `hit` is true.
+     * @param inputs - The picking result
+     * @returns The hit point
      * @group get from pick info
      * @shortname picked point
-     * @returns Picked point
      */
     getPickedPoint(inputs: Inputs.BabylonPick.PickInfo): Base.Point3 {
         const pt = inputs.pickInfo.pickedPoint!;
@@ -67,66 +89,70 @@ export class BabylonPick {
     }
 
     /**
-     * Check if pick ray hit something in the scene or not
-     * @param inputs picking result
+     * Tells whether a pick hit anything at all; check it before reading the mesh, point or
+     * distance.
+     * @param inputs - The picking result
+     * @returns True when something was hit
      * @group get from pick info
      * @shortname hit
-     * @returns Indication of a hit
      */
     hit(inputs: Inputs.BabylonPick.PickInfo): boolean {
         return inputs.pickInfo.hit;
     }
 
     /**
-     * Gets the unique submesh id if it was picked
-     * @param inputs picking result
+     * Reads the index of the sub-mesh that was hit, for meshes split into several material
+     * sections.
+     * @param inputs - The picking result
+     * @returns The sub-mesh index
      * @group get from pick info
      * @shortname sub mesh id
-     * @returns Submesh id
      */
     getSubMeshId(inputs: Inputs.BabylonPick.PickInfo): number {
         return inputs.pickInfo.subMeshId;
     }
 
     /**
-     * Gets the unique submesh face id if it was picked
-     * @param inputs picking result
+     * Reads the index of the triangle that was hit within its sub-mesh.
+     * @param inputs - The picking result
+     * @returns The face index
      * @group get from pick info
      * @shortname sub mesh face id
-     * @returns Submesh face id
      */
     getSubMeshFaceId(inputs: Inputs.BabylonPick.PickInfo): number {
         return inputs.pickInfo.subMeshFaceId;
     }
 
     /**
-     * Gets the the barycentric U coordinate that is used when calculating the texture coordinates of the collision
-     * @param inputs picking result
+     * Reads the first barycentric coordinate of the hit inside its triangle, the weight of the
+     * triangle's second vertex, used to work out texture coordinates.
+     * @param inputs - The picking result
+     * @returns The barycentric U coordinate
      * @group get from pick info
      * @shortname picked bu
-     * @returns U coordinate
      */
     getBU(inputs: Inputs.BabylonPick.PickInfo): number {
         return inputs.pickInfo.bu;
     }
 
     /**
-     * Gets the the barycentric V coordinate that is used when calculating the texture coordinates of the collision
-     * @param inputs picking result
+     * Reads the second barycentric coordinate of the hit inside its triangle, the weight of the
+     * triangle's third vertex, used to work out texture coordinates.
+     * @param inputs - The picking result
+     * @returns The barycentric V coordinate
      * @group get from pick info
      * @shortname picked bv
-     * @returns V coordinate
      */
     getBV(inputs: Inputs.BabylonPick.PickInfo): number {
         return inputs.pickInfo.bv;
     }
 
     /**
-     * Get the picked sprite
-     * @param inputs picking result
+     * Reads the sprite a pick hit, when sprites rather than meshes were picked.
+     * @param inputs - The picking result
+     * @returns The sprite that was hit
      * @group get from pick info
      * @shortname picked sprite
-     * @returns Picked sprite
      */
     getPickedSprite(inputs: Inputs.BabylonPick.PickInfo): BABYLON.Sprite {
         return inputs.pickInfo.pickedSprite!;

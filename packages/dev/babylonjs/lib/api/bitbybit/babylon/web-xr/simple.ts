@@ -3,6 +3,11 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 
+/**
+ * One-call entry points into virtual and augmented reality on a WebXR-capable browser and headset:
+ * an immersive AR session, or a VR session with teleportation over the ground meshes you name. For
+ * finer control, `webXr.base` creates the experience from full options.
+ */
 export class BabylonWebXRSimple {
 
     constructor(
@@ -11,13 +16,17 @@ export class BabylonWebXRSimple {
     }
 
     /**
-    * Creates default XR experience in immersive-ar mode
-    * @param inputs Creates default XR experience with teleportation
-    * @returns Default XR experience
-    * @group scene
-    * @shortname simple immersive ar experience
-    * @disposableOutput true
-    */
+     * Starts a default WebXR experience in immersive AR mode, showing the scene over the camera
+     * view of the room on a device that supports it.
+     * @returns The default XR experience
+     * @group scene
+     * @shortname simple immersive ar experience
+     * @disposableOutput true
+     * @example
+     * ```typescript
+     * const xr = await bitbybit.babylon.webXr.simple.createImmersiveARExperience();
+     * ```
+     */
     async createImmersiveARExperience(): Promise<BABYLON.WebXRDefaultExperience> {
         const isARSupported = await BABYLON.WebXRSessionManager.IsSessionSupportedAsync("immersive-ar");
         if (isARSupported) {
@@ -41,21 +50,34 @@ export class BabylonWebXRSimple {
     }
 
     /**
-     * Creates default XR experience with teleportation that is very basic and works for simple scenarios
-     * @param inputs Creates default XR experience with teleportation
+     * Starts a default WebXR experience in VR with teleportation over the given ground meshes,
+     * enough for simple walkthroughs; nothing is given back.
+     * @param inputs - The meshes the user can teleport onto
      * @group scene
      * @shortname simple xr with teleportation
+     * @example
+     * ```typescript
+     * await bitbybit.babylon.webXr.simple.createDefaultXRExperienceWithTeleportation({ groundMeshes: [ground] });
+     * ```
      */
     async createDefaultXRExperienceWithTeleportation(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<void> {
         await this.createDefaultXRExperienceWithTeleportationReturn(inputs);
     }
 
     /**
-     * Creates default XR experience with teleportation that is very basic and works for simple scenarios
-     * @param inputs Creates default XR experience with teleportation
+     * Starts a default WebXR experience in VR with teleportation over the given ground meshes, as
+     * `createDefaultXRExperienceWithTeleportation` does, and gives back the experience with the
+     * near menu, button and text it created plus a `dispose` function to end it.
+     * @param inputs - The meshes the user can teleport onto
+     * @returns The experience, its menu parts and a dispose function
      * @group scene
      * @shortname simple xr with teleportation return
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const session = await bitbybit.babylon.webXr.simple.createDefaultXRExperienceWithTeleportationReturn({ groundMeshes: [ground] });
+     * session.dispose();
+     * ```
      */
     async createDefaultXRExperienceWithTeleportationReturn(inputs: Inputs.BabylonWebXR.DefaultWebXRWithTeleportationDto): Promise<{
         xr: BABYLON.WebXRDefaultExperience,

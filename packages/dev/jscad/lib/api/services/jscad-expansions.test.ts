@@ -85,5 +85,20 @@ describe("JSCADExpansions", () => {
 
             expect(kernel.measurements.measureArea(edged)).toBeGreaterThan(kernel.measurements.measureArea(rounded));
         });
+
+        it("should not write the chosen corner style back into the caller's options", () => {
+            // Arrange
+            const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
+            const expandOptions = { geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto;
+            const offsetOptions = { geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto;
+
+            // Act
+            jscad.expansions.expand(expandOptions);
+            jscad.expansions.offset(offsetOptions);
+
+            // Assert
+            expect(Object.keys(expandOptions)).toEqual(["geometry", "delta", "segments"]);
+            expect(Object.keys(offsetOptions)).toEqual(["geometry", "delta", "segments"]);
+        });
     });
 });

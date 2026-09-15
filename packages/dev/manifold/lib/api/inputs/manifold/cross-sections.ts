@@ -3,34 +3,45 @@
 import { Base } from "../base-inputs";
 import { manifoldJoinTypeEnum } from "./pointers-and-enums";
 
+/**
+ * One cross-section for the methods that take nothing else, such as `crossSection.evaluate.area` or
+ * `crossSection.operations.hull`.
+ */
 export class CrossSectionDto<T> {
     constructor(crossSection?: T) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
     }
     /**
-     * Cross section
+     * The cross-section to work on; it is not changed.
      */
     crossSection!: T;
 }
+/**
+ * Several cross-sections for the methods that take a list, such as `crossSection.booleans.union`.
+ */
 export class CrossSectionsDto<T> {
     constructor(crossSections?: T[]) {
         if (crossSections !== undefined) { this.crossSections = crossSections; }
     }
     /**
-     * Cross sections
+     * The cross-sections, in the order the method uses them.
      */
     crossSections!: T[];
 }
+/**
+ * A cross-section and the sweep settings for `crossSection.operations.extrude`, which grows it
+ * along Z into a solid.
+ */
 export class ExtrudeDto<T> {
     constructor(crossSection?: T) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
     }
     /**
-     * Extrude cross section shape
+     * The flat outline to extrude.
      */
     crossSection!: T;
     /**
-     * Height of the extrusion
+     * How far the outline is swept along Z, in model units.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -38,7 +49,8 @@ export class ExtrudeDto<T> {
      */
     height = 1;
     /**
-     * Number of divisions
+     * How many extra copies of the outline are inserted along the way; more keeps a twist or taper
+     * smooth.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -46,7 +58,7 @@ export class ExtrudeDto<T> {
      */
     nDivisions = 1;
     /**
-     * Twist degrees
+     * How far the top is turned against the bottom, in degrees.
      * @default 0
      * @minimum -Infinity
      * @maximum Infinity
@@ -54,7 +66,7 @@ export class ExtrudeDto<T> {
      */
     twistDegrees = 0;
     /**
-     * Scale top
+     * How much the top is scaled along X; 1 keeps it, 0 with `scaleTopY` at 0 makes a cone.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -62,7 +74,7 @@ export class ExtrudeDto<T> {
      */
     scaleTopX = 1;
     /**
-     * Scale top
+     * How much the top is scaled along Y; 1 keeps it, 0 with `scaleTopX` at 0 makes a cone.
      * @default 1
      * @minimum 0
      * @maximum Infinity
@@ -70,12 +82,16 @@ export class ExtrudeDto<T> {
      */
     scaleTopY = 1;
     /**
-     * Center the extrusion
+     * When true, the solid is centered on the XY plane; when false it stands on it.
      * @default true
-    */
+     */
     center = true;
 }
 
+/**
+ * A cross-section and the turn settings for `crossSection.operations.revolve`, which spins it into
+ * a solid.
+ */
 export class RevolveDto<T> {
     constructor(crossSection?: T, revolveDegrees?: number, matchProfile?: boolean, circularSegments?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -84,11 +100,11 @@ export class RevolveDto<T> {
         if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
     }
     /**
-     * Revolve cross section shape
+     * The flat profile to spin; only the part on the positive X side is used.
      */
     crossSection!: T;
     /**
-     * Extrude cross section shape
+     * How far to spin, in degrees; 360 gives a full turn.
      * @default 360
      * @minimum 0
      * @maximum Infinity
@@ -96,12 +112,13 @@ export class RevolveDto<T> {
      */
     revolveDegrees: number = 360;
     /**
-     * Default manifold library will adjust profile when generating revolved shape. We prefer it to be matching the profile by default. Set to false to use default manifold library behavior.
+     * When true, the result is turned back to keep the profile's orientation; when false it stands
+     * along Z as the kernel makes it.
      * @default true
      */
     matchProfile = true;
     /**
-     * Circular segments
+     * How many segments go around the turn; more is rounder.
      * @default 32
      * @minimum 0
      * @maximum Infinity
@@ -109,6 +126,9 @@ export class RevolveDto<T> {
      */
     circularSegments = 32;
 }
+/**
+ * A cross-section and the offset settings for `crossSection.operations.offset`.
+ */
 export class OffsetDto<T> {
     constructor(crossSection?: T, delta?: number, joinType?: manifoldJoinTypeEnum, miterLimit?: number, circularSegments?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -118,13 +138,12 @@ export class OffsetDto<T> {
         if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
     }
     /**
-     * Revolve cross section shape
+     * The outline to offset.
      */
     crossSection!: T;
     /**
-     * Positive deltas will cause the expansion of outlining contours
-     * to expand, and retraction of inner (hole) contours. Negative deltas will
-     * have the opposite effect.
+     * How far the outline moves, in model units: positive grows outer contours and shrinks holes,
+     * negative does the opposite.
      * @default 1
      * @minimum -Infinity
      * @maximum Infinity
@@ -132,18 +151,13 @@ export class OffsetDto<T> {
      */
     delta: number = 1;
     /**
-     * The join type specifying the treatment of contour joins
-     * (corners).
+     * How corners are treated: `round`, `square`, `miter` or `bevel`.
      * @default round
      */
     joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
     /**
-     * The maximum distance in multiples of delta that vertices
-     * can be offset from their original positions with before squaring is
-     * applied, **when the join type is Miter** (default is 2, which is the
-     * minimum allowed). See the [Clipper2
-     * MiterLimit](http://www.angusj.com/clipper2/Docs/Units/Clipper.Offset/Classes/ClipperOffset/Properties/MiterLimit.htm)
-     * page for a visual example.
+     * For `miter` joins, how far a corner may reach as a multiple of `delta` before it is squared
+     * off; 2 is the smallest allowed.
      * @default 2
      * @minimum 2
      * @maximum Infinity
@@ -151,10 +165,7 @@ export class OffsetDto<T> {
      */
     miterLimit = 2;
     /**
-     * Number of segments per 360 degrees of
-     * <B>JoinType::Round</B> corners (roughly, the number of vertices that
-     * will be added to each contour). Default is calculated by the static Quality
-     * defaults according to the radius.
+     * For `round` joins, how many segments a full circle of rounding gets.
      * @default 32
      * @minimum 0
      * @maximum Infinity
@@ -163,17 +174,20 @@ export class OffsetDto<T> {
     circularSegments = 32;
 }
 
+/**
+ * A cross-section and a distance for `crossSection.operations.simplify`.
+ */
 export class SimplifyDto<T> {
     constructor(crossSection?: T, epsilon?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (epsilon !== undefined) { this.epsilon = epsilon; }
     }
     /**
-     * Revolve cross section shape
+     * The outline to simplify.
      */
     crossSection!: T;
     /**
-     * Extrude cross section shape
+     * Points closer than this, in model units, to the line between their neighbors are dropped.
      * @default 1e-6
      * @minimum 0
      * @maximum Infinity
@@ -182,71 +196,87 @@ export class SimplifyDto<T> {
     epsilon = 1e-6;
 }
 
+/**
+ * Cross-sections or polygons for `crossSection.operations.compose`, which packs them into one
+ * cross-section.
+ */
 export class ComposeDto<T> {
     constructor(polygons?: T) {
         if (polygons !== undefined) { this.polygons = polygons; }
     }
     /**
-     * Polygons to compose
+     * The cross-sections or polygons to pack together.
      */
     polygons!: T;
 }
+/**
+ * A cross-section and a direction for `crossSection.transforms.mirror`.
+ */
 export class MirrorCrossSectionDto<T> {
     constructor(crossSection?: T, normal?: Base.Vector2) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (normal !== undefined) { this.normal = normal; }
     }
     /**
-     * Manifold shape
+     * The outline to mirror.
      */
     crossSection!: T;
     /**
-     * The normal vector of the plane to be mirrored over
+     * The normal of the mirror line through the origin; `[1, 0]` mirrors left to right.
      * @default [1,0]
      */
     normal: Base.Vector2 = [1, 0];
 }
+/**
+ * A cross-section and two factors for `crossSection.transforms.scale2D`.
+ */
 export class Scale2DCrossSectionDto<T> {
     constructor(crossSection?: T, vector?: Base.Vector2) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (vector !== undefined) { this.vector = vector; }
     }
     /**
-     * Manifold shape
+     * The outline to scale.
      */
     crossSection!: T;
     /**
-     * The normal vector of the plane to be mirrored over
+     * The factors along X and Y, about the origin; 1 keeps an axis as it is.
      * @default [2,2]
      */
     vector: Base.Vector2 = [2, 2];
 }
+/**
+ * A cross-section and a vector for `crossSection.transforms.translate`.
+ */
 export class TranslateCrossSectionDto<T> {
     constructor(crossSection?: T, vector?: Base.Vector2) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (vector !== undefined) { this.vector = vector; }
     }
     /**
-     * Manifold shape
+     * The outline to move.
      */
     crossSection!: T;
     /**
-     * The translation vector
+     * The 2D vector the outline moves by, in model units.
      * @default undefined
      */
     vector!: Base.Vector2;
 }
+/**
+ * A cross-section and an angle for `crossSection.transforms.rotate`.
+ */
 export class RotateCrossSectionDto<T> {
     constructor(crossSection?: T, degrees?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (degrees !== undefined) { this.degrees = degrees; }
     }
     /**
-     * Manifold shape
+     * The outline to rotate.
      */
     crossSection!: T;
     /**
-     * The rotation vector in eulers
+     * The rotation about the origin, in degrees, counterclockwise.
      * @default 45
      * @minimum -Infinity
      * @maximum Infinity
@@ -254,21 +284,27 @@ export class RotateCrossSectionDto<T> {
      */
     degrees: number = 45;
 }
+/**
+ * A cross-section and a factor for `crossSection.transforms.scale`.
+ */
 export class ScaleCrossSectionDto<T> {
     constructor(crossSection?: T, factor?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (factor !== undefined) { this.factor = factor; }
     }
     /**
-     * Manifold shape
+     * The outline to scale.
      */
     crossSection!: T;
     /**
-     * The normal vector of the plane to be mirrored over
+     * The uniform scale about the origin; 2 doubles every size.
      * @default 2
      */
     factor = 2;
 }
+/**
+ * A cross-section and two distances for `crossSection.transforms.translateXY`.
+ */
 export class TranslateXYCrossSectionDto<T> {
     constructor(crossSection?: T, x?: number, y?: number) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
@@ -276,11 +312,11 @@ export class TranslateXYCrossSectionDto<T> {
         if (y !== undefined) { this.y = y; }
     }
     /**
-     * Manifold shape
+     * The outline to move.
      */
     crossSection!: T;
     /**
-     * The translation X axis
+     * How far to move along X, in model units.
      * @default 0
      * @minimum -Infinity
      * @maximum Infinity
@@ -288,7 +324,7 @@ export class TranslateXYCrossSectionDto<T> {
      */
     x = 0;
     /**
-     * The translation Y axis
+     * How far to move along Y, in model units.
      * @default 0
      * @minimum -Infinity
      * @maximum Infinity
@@ -297,32 +333,38 @@ export class TranslateXYCrossSectionDto<T> {
     y = 0;
 }
 
+/**
+ * A cross-section and a 3x3 matrix for `crossSection.transforms.transform`.
+ */
 export class TransformCrossSectionDto<T> {
     constructor(crossSection?: T, transform?: Base.TransformMatrix3x3) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (transform !== undefined) { this.transform = transform; }
     }
     /**
-     * Cross section
+     * The outline to transform.
      */
     crossSection!: T;
     /**
-     * The transform matrix to apply
+     * The 3x3 matrix as 9 numbers, any combination of move, turn, scale and shear in the plane.
      * @default undefined
      */
     transform!: Base.TransformMatrix3x3;
 }
+/**
+ * A cross-section and a function for `crossSection.transforms.warp`.
+ */
 export class CrossSectionWarpDto<T> {
     constructor(crossSection?: T, warpFunc?: (vert: Base.Vector2) => void) {
         if (crossSection !== undefined) { this.crossSection = crossSection; }
         if (warpFunc !== undefined) { this.warpFunc = warpFunc; }
     }
     /**
-     * Cross section
+     * The outline to warp.
      */
     crossSection!: T;
     /**
-     * A function that modifies a given vertex position
+     * A function that receives each 2D point and changes it in place.
      * @default undefined
      */
     warpFunc!: (vert: Base.Vector2) => void;

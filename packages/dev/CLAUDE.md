@@ -67,6 +67,10 @@ npm run lint
   `@drawable`) that code generation reads. The worker's copy is generated; `check:worker-parity`
   still compares the two and fails on any difference. A kernel method the worker splits into several
   public methods is allow-listed in `scripts/worker-parity.allow.json` under `docs`, with the reason.
+  How the prose is written - the register, the markdown subset, examples by default - is
+  `API_DOCS_GUIDE.md` at the root; `check:api-docs` in `npm test` holds every public method, class,
+  DTO and property to it through `scripts/api-docs-baseline.json` (a count may only fall; record a
+  fix with `npm run api-docs:update`). The checker never rewrites a comment.
 - Kernel suites need the raised heap the scripts already set, and the process per file their
   config asks for. Dropping either makes them fail in ways that look like test bugs.
 - `occt` ships prebuilt wasm alongside the JavaScript (`bitbybit-dev-occt`, plus 64-bit and

@@ -15,6 +15,13 @@ export class BitByBitJSCAD {
         this.jscad = new JSCAD(this.jscadWorkerManager);
     }
 
+    /**
+     * Connects this facade to the web worker that runs the JSCAD kernel.
+     *
+     * Create the worker yourself from the package's worker entry, hand it over here, and wait for the
+     * kernel to report that it is loaded before making calls; without a worker every call would hang.
+     * @param jscad - The worker running the JSCAD kernel
+     */
     init(jscad: Worker) {
         if (jscad) {
             this.jscadWorkerManager.setJscadWorker(jscad);

@@ -1,0 +1,4 @@
+{
+  "note": "Findings of scripts/check-api-docs.mjs per file and rule; a count may only fall. Rewrite with `npm run api-docs:update`.",
+  "files": {}
+}

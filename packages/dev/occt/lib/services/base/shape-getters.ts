@@ -72,18 +72,18 @@ export class ShapeGettersService {
         if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.WIRE) || inputs.shape.IsNull()) {
             throw (new Error("Edge can not be found for shape that is not provided or is of incorrect type"));
         }
-        if (!inputs.index) { inputs.index = 0; }
+        const index = inputs.index || 0;
         let innerEdge = {};
         let foundEdge = false;
         this.iteratorService.forEachEdge(inputs.shape, (i: number, s: TopoDS_Edge) => {
-            if (i === inputs.index) {
+            if (i === index) {
                 innerEdge = s;
                 foundEdge = true;
             }
         });
 
         if (!foundEdge) {
-            throw (new Error(`Edge can not be found for shape on index ${inputs.index}`));
+            throw (new Error(`Edge can not be found for shape on index ${index}`));
         } else {
             return innerEdge as TopoDS_Edge;
         }
@@ -107,10 +107,10 @@ export class ShapeGettersService {
             shapeType === Inputs.OCCT.shapeTypeEnum.vertex)) {
             throw (new Error("Shape is of incorrect type"));
         }
-        if (!inputs.index) { inputs.index = 0; }
+        const index = inputs.index || 0;
         let innerWire: TopoDS_Wire | undefined;
         this.iteratorService.forEachWire(inputs.shape, (i, s) => {
-            if (i === inputs.index) { innerWire = this.occ.CastToWire(s); }
+            if (i === index) { innerWire = this.occ.CastToWire(s); }
         });
         if (!innerWire) {
             throw (Error("Wire not found"));
@@ -144,12 +144,12 @@ export class ShapeGettersService {
             shapeType === Inputs.OCCT.shapeTypeEnum.vertex) {
             throw (new Error("Shape is of incorrect type"));
         }
-        if (!inputs.index) { inputs.index = 0; }
+        const index = inputs.index || 0;
         let innerFace = {}; let facesFound = 0;
         this.iteratorService.forEachFace(inputs.shape, (i, s) => {
-            if (i === inputs.index) { innerFace = this.occ.CastToFace(s); } facesFound++;
+            if (i === index) { innerFace = this.occ.CastToFace(s); } facesFound++;
         });
-        if (facesFound < inputs.index || inputs.index < 0) {
+        if (facesFound < index || index < 0) {
             throw (new Error("Face index is out of range"));
         }
         else {

@@ -3,16 +3,27 @@ import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
 
+/**
+ * Text labels: a block of text with a color, font size, alignment, optional outline, wrapping and
+ * line spacing. Use one for titles and readouts next to other controls.
+ */
 export class BabylonGuiTextBlock {
 
     constructor(_context: Context) { }
 
     /**
-     * Creates text block
-     * @param inputs text block properties
+     * Creates a block of text with a color and font size; sizes are pixel strings or fractions of
+     * the parent, and a size left out is chosen by the engine.
+     * @param inputs - The name, the text, the color, the optional size and the font size
+     * @returns The text block
      * @group create
      * @shortname create text block
      * @disposableOutput true
+     * @example
+     * ```typescript
+     * const title = bitbybit.babylon.gui.textBlock.createTextBlock({ name: "title", text: "Radius", color: "#f0cebb", width: "300px", height: "40px", fontSize: 24 });
+     * panel.addControl(title);
+     * ```
      */
     createTextBlock(inputs: Inputs.BabylonGui.CreateTextBlockDto): BABYLON.GUI.TextBlock {
         const textBlock = new BABYLON.GUI.TextBlock(inputs.name, inputs.text);
@@ -34,11 +45,15 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Change the alignment for the text
-     * @param inputs the text block and the alignment values
-     * @returns control that has changed text alignment
+     * Sets where the text sits inside its block: left, center or right, and top, center or bottom.
+     * @param inputs - The text block and the two alignments
+     * @returns The same text block
      * @group positioning
      * @shortname align text block text
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gui.textBlock.alignText({ control: title, horizontalAlignment: Bit.Inputs.BabylonGui.horizontalAlignmentEnum.left, verticalAlignment: Bit.Inputs.BabylonGui.verticalAlignmentEnum.center });
+     * ```
      */
     alignText(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.TextBlock>): BABYLON.GUI.TextBlock {
         switch (inputs.horizontalAlignment) {
@@ -67,12 +82,17 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-   * Change the text outline for the text
-   * @param inputs the text block and the outline values
-   * @returns control that has changed text outline
-   * @group set
-   * @shortname text outline
-   */
+     * Draws an outline around the letters of a text block, `outlineWidth` pixels wide in
+     * `outlineColor`, which keeps text readable over a busy scene; 0 removes it.
+     * @param inputs - The text block, the outline width and the outline color
+     * @returns The same text block
+     * @group set
+     * @shortname text outline
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gui.textBlock.setTextOutline({ textBlock: title, outlineWidth: 2, outlineColor: "black" });
+     * ```
+     */
     setTextOutline(inputs: Inputs.BabylonGui.SetTextBlockTextOutlineDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.outlineWidth = inputs.outlineWidth;
         inputs.textBlock.outlineColor = inputs.outlineColor;
@@ -80,11 +100,15 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Sets the new text to the text block
-     * @param inputs text block and text
-     * @returns control that has changed text
+     * Changes the text a text block shows to the given text.
+     * @param inputs - The text block and the text
+     * @returns The same text block
      * @group set
      * @shortname set text block text
+     * @example
+     * ```typescript
+     * bitbybit.babylon.gui.textBlock.setText({ textBlock: readout, text: "Radius: 7.5" });
+     * ```
      */
     setText(inputs: Inputs.BabylonGui.SetTextBlockTextDto): BABYLON.GUI.TextBlock {
         inputs.textBlock.text = inputs.text;
@@ -92,9 +116,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Enable or disable resize to fit
-     * @param inputs text block and boolean value
-     * @returns control that has enabled or disabled resize to fit
+     * Lets a text block grow or shrink to fit its text, when true, instead of keeping its set size.
+     * @param inputs - The text block and the flag
+     * @returns The same text block
      * @group set
      * @shortname set resize to fit
      */
@@ -104,9 +128,10 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Sets the new text wrapping to the text block
-     * @param inputs text block and text wrapping
-     * @returns control that has changed text wrapping
+     * Sets how a text block handles text wider than itself: wrap onto new lines when true, clip
+     * when false, or one of the engine's wrapping modes such as ellipsis.
+     * @param inputs - The text block and the wrapping mode
+     * @returns The same text block
      * @group set
      * @shortname set text wrapping
      */
@@ -116,9 +141,10 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Sets the line spacing of the text
-     * @param inputs text block and line spacing
-     * @returns control that has changed line spacing
+     * Sets the extra space between the lines of a wrapped text block, as pixels or a string such as
+     * `4px`.
+     * @param inputs - The text block and the line spacing
+     * @returns The same text block
      * @group set
      * @shortname set line spacing
      */
@@ -128,9 +154,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the text of the text block
-     * @param inputs text block
-     * @returns text of the text block
+     * Reads the text a text block currently shows.
+     * @param inputs - The text block
+     * @returns The text
      * @group get
      * @shortname get text block text
      */
@@ -139,9 +165,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the text wrapping of the text block
-     * @param inputs text block
-     * @returns text wrapping of the text block
+     * Reads how a text block handles text wider than itself.
+     * @param inputs - The text block
+     * @returns The wrapping mode
      * @group get
      * @shortname get text wrapping
      */
@@ -150,9 +176,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the line spacing of the text block
-     * @param inputs text block
-     * @returns line spacing of the text block
+     * Reads the extra space between the lines of a text block.
+     * @param inputs - The text block
+     * @returns The line spacing
      * @group get
      * @shortname get line spacing
      */
@@ -161,9 +187,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the outline width of the text block
-     * @param inputs text block
-     * @returns outline width of the text block
+     * Reads the width of the outline around a text block's letters, 0 meaning none.
+     * @param inputs - The text block
+     * @returns The outline width
      * @group get
      * @shortname get outline width
      */
@@ -172,9 +198,9 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the resize to fit of the text block
-     * @param inputs text block
-     * @returns resize to fit of the text block
+     * Reads whether a text block resizes itself to fit its text.
+     * @param inputs - The text block
+     * @returns True when it resizes to fit
      * @group get
      * @shortname get resize to fit
      */
@@ -183,9 +209,10 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the text horizontal alignment of the text block
-     * @param inputs text block
-     * @returns text horizontal alignment of the text block
+     * Reads where the text sits horizontally in its block, as the engine's number for left, center
+     * or right.
+     * @param inputs - The text block
+     * @returns The horizontal alignment code
      * @group get
      * @shortname get text horizontal alignment
      */
@@ -194,9 +221,10 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-     * Gets the text vertical alignment of the text block
-     * @param inputs text block
-     * @returns text vertical alignment of the text block
+     * Reads where the text sits vertically in its block, as the engine's number for top, center or
+     * bottom.
+     * @param inputs - The text block
+     * @returns The vertical alignment code
      * @group get
      * @shortname get text vertical alignment
      */
@@ -205,11 +233,13 @@ export class BabylonGuiTextBlock {
     }
 
     /**
-    * Creates the selector of an observable for a text block
-    * @param inputs observable name
-    * @group create
-    * @shortname text block observable selector
-    */
+     * Passes through the name of a text block event, its text changing, as a typed selector for
+     * code that subscribes to text block events by name.
+     * @param inputs - The event selector
+     * @returns The same selector
+     * @group create
+     * @shortname text block observable selector
+     */
     createTextBlockObservableSelector(inputs: Inputs.BabylonGui.TextBlockObservableSelectorDto): Inputs.BabylonGui.textBlockObservableSelectorEnum {
         return inputs.selector;
     }

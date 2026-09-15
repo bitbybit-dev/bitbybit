@@ -9,44 +9,54 @@ import { Base } from "./base-inputs";
  * different kernels and the renderer expect.
  */
 export namespace Mesh {
+    /**
+     * A point and a plane for `mesh.signedDistanceToPlane`.
+     */
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3) {
             if (point !== undefined) { this.point = point; }
             if (plane !== undefined) { this.plane = plane; }
         }
         /**
-         * Point from which to find the distance
+         * The point to measure from.
          * @default undefined
          */
         point!: Base.Point3;
         /**
-         * Triangle plane to which the distance is calculated 
+         * The plane as a unit normal and its distance from the origin along that normal, such as
+         * `calculateTrianglePlane` gives.
          * @default undefined
          */
         plane!: Base.TrianglePlane3;
     }
 
+    /**
+     * One triangle as three points, for methods that read it.
+     */
     export class TriangleDto {
         constructor(triangle?: Base.Triangle3) {
             if (triangle !== undefined) { this.triangle = triangle; }
         }
         /**
-         * Triangle to be used
+         * The triangle as three points.
          * @default undefined
          */
         triangle!: Base.Triangle3;
     }
+    /**
+     * A triangle and a tolerance for `mesh.calculateTrianglePlane`.
+     */
     export class TriangleToleranceDto {
         constructor(triangle?: Base.Triangle3) {
             if (triangle !== undefined) { this.triangle = triangle; }
         }
         /**
-         * Triangle to be used
+         * The triangle as three points.
          * @default undefined
          */
         triangle!: Base.Triangle3;
         /**
-         * Tolerance for the calculation
+         * A triangle whose normal is shorter than this counts as having no area.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity
@@ -55,6 +65,9 @@ export namespace Mesh {
         tolerance?: number | undefined = 1e-7;
     }
 
+    /**
+     * Two triangles and a tolerance for `mesh.triangleTriangleIntersection`.
+     */
     export class TriangleTriangleToleranceDto {
         constructor(triangle1?: Base.Triangle3, triangle2?: Base.Triangle3, tolerance?: number) {
             if (triangle1 !== undefined) { this.triangle1 = triangle1; }
@@ -62,17 +75,18 @@ export namespace Mesh {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * First triangle
+         * The first triangle as three points.
          * @default undefined
          */
         triangle1!: Base.Triangle3;
         /**
-         * Second triangle
+         * The second triangle as three points.
          * @default undefined
          */
         triangle2!: Base.Triangle3;
         /**
-         * Tolerance for the calculation
+         * Distances below this, in model units, count as zero when deciding whether the triangles
+         * touch.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity
@@ -80,6 +94,10 @@ export namespace Mesh {
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * Two meshes and a tolerance for `mesh.meshMeshIntersectionSegments`,
+     * `mesh.meshMeshIntersectionPolylines` and `mesh.meshMeshIntersectionPoints`.
+     */
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number) {
             if (mesh1 !== undefined) { this.mesh1 = mesh1; }
@@ -87,17 +105,18 @@ export namespace Mesh {
             if (tolerance !== undefined) { this.tolerance = tolerance; }
         }
         /**
-         * First mesh
+         * The first mesh, as a list of triangles.
          * @default undefined
          */
         mesh1!: Base.Mesh3;
         /**
-         * Second mesh
+         * The second mesh, as a list of triangles.
          * @default undefined
          */
         mesh2!: Base.Mesh3;
         /**
-         * Tolerance for the calculation
+         * Distances below this, in model units, count as zero: when deciding whether triangles
+         * touch and when joining segment ends into polylines.
          * @default 1e-7
          * @minimum -Infinity
          * @maximum Infinity

@@ -10,8 +10,12 @@ import { CrossSectionTransforms } from "./transforms";
 import { CrossSectionEvaluate } from "./evaluate";
 
 /**
- * Contains various functions for Solid meshes from Manifold library https://github.com/elalish/manifold
- * Thanks Manifold community for developing this kernel
+ * Flat outlines in the Manifold kernel, the 2D shapes that `operations.extrude` and
+ * `operations.revolve` turn into solids and that `slice` and `project` cut out of them. A
+ * cross-section is one or more closed polygons in the XY plane, holes included; `shapes` builds
+ * them, `booleans` combines them, `operations` offsets, hulls and extrudes them, `transforms` moves
+ * them and `evaluate` measures them. The methods here convert between cross-sections and plain
+ * point lists, and free the memory a cross-section holds.
  */
 export class ManifoldCrossSection {
     public readonly shapes: CrossSectionShapes;
@@ -31,72 +35,117 @@ export class ManifoldCrossSection {
     }
 
     /**
-     * Creates a cross section from a single polygon points
-     * @param inputs polygon points
-     * @returns cross section
+     * Builds a cross-section from one polygon given as points; only the X and Y of each point are
+     * used.
+     *
+     * `fillRule` decides which regions of a self-crossing polygon count as inside;
+     * `removeDuplicates` drops consecutive repeated points within `tolerance` first.
+     * @param inputs - The polygon points, the fill rule and the duplicate handling
+     * @returns The cross-section
      * @group create
      * @shortname cross section from points
      * @drawable true
+     * @example
+     * ```typescript
+     * const outline = await bitbybit.manifold.crossSection.crossSectionFromPoints({
+     *     points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [0, 10, 0]],
+     *     fillRule: Bit.Inputs.Manifold.fillRuleEnum.positive,
+     *     removeDuplicates: false,
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     crossSectionFromPoints(inputs: Inputs.Manifold.CrossSectionFromPolygonPointsDto): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionFromPoints", inputs);
     }
 
     /**
-     * Creates a cross section from multiple polygons points
-     * @param inputs polygons points
-     * @returns cross section
+     * Builds a cross-section from several polygons given as points, for instance an outline and its
+     * holes; only the X and Y of each point are used.
+     *
+     * `fillRule` decides which regions count as inside where polygons overlap; `removeDuplicates`
+     * drops consecutive repeated points within `tolerance` first.
+     * @param inputs - The polygons as point lists, the fill rule and the duplicate handling
+     * @returns The cross-section
      * @group create
      * @shortname cross section from polygons
      * @drawable true
+     * @example
+     * ```typescript
+     * const plate = await bitbybit.manifold.crossSection.crossSectionFromPolygons({
+     *     polygonPoints: [outerPoints, holePoints],
+     *     fillRule: Bit.Inputs.Manifold.fillRuleEnum.evenOdd,
+     *     removeDuplicates: false,
+     *     tolerance: 1e-7,
+     * });
+     * ```
      */
     crossSectionFromPolygons(inputs: Inputs.Manifold.CrossSectionFromPolygonsPointsDto): Promise<Inputs.Manifold.CrossSectionPointer> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionFromPolygons", inputs);
     }
 
     /**
-     * Turns cross section into polygons
-     * @param inputs cross section
-     * @returns polygons
+     * Reads a cross-section back as its polygons, each a list of 2D points.
+     * @param inputs - The cross-section
+     * @returns One list of 2D points per polygon
      * @group decompose
      * @shortname cross section to polygons
      * @drawable false
+     * @example
+     * ```typescript
+     * const polygons = await bitbybit.manifold.crossSection.crossSectionToPolygons({ crossSection: outline });
+     * ```
      */
     crossSectionToPolygons(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Vector2[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionToPolygons", inputs);
     }
 
     /**
-     * Extracts points from a cross section
-     * @param inputs cross section
-     * @returns points
+     * Reads a cross-section back as its polygons with 3D points, Z set to 0, ready for drawing as
+     * polylines.
+     * @param inputs - The cross-section
+     * @returns One list of points per polygon
      * @group decompose
      * @shortname cross section to points
      * @drawable false
+     * @example
+     * ```typescript
+     * const polylines = await bitbybit.manifold.crossSection.crossSectionToPoints({ crossSection: outline });
+     * ```
      */
     crossSectionToPoints(inputs: Inputs.Manifold.CrossSectionDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Point3[][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionToPoints", inputs);
     }
 
     /**
-     * Turns cross sections into polygons
-     * @param inputs cross sections
-     * @returns polygons
+     * Reads several cross-sections back as their polygons, as `crossSectionToPolygons` does for
+     * one.
+     * @param inputs - The cross-sections
+     * @returns One polygon list per cross-section, in the same order
      * @group decompose
      * @shortname cross sections to polygons
      * @drawable false
+     * @example
+     * ```typescript
+     * const polygons = await bitbybit.manifold.crossSection.crossSectionsToPolygons({ crossSections: [outline, hole] });
+     * ```
      */
     crossSectionsToPolygons(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<Inputs.Base.Vector2[][][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionsToPolygons", inputs);
     }
 
     /**
-     * Extracts points from cross sections
-     * @param inputs cross sections
-     * @returns points
+     * Reads several cross-sections back as polygons with 3D points, as `crossSectionToPoints` does
+     * for one.
+     * @param inputs - The cross-sections
+     * @returns One list of point polygons per cross-section, in the same order
      * @group decompose
      * @shortname cross sections to points
      * @drawable false
+     * @example
+     * ```typescript
+     * const polylines = await bitbybit.manifold.crossSection.crossSectionsToPoints({ crossSections: [outline, hole] });
+     * ```
      */
     crossSectionsToPoints(inputs: Inputs.Manifold.CrossSectionsDto<Inputs.Manifold.CrossSectionPointer>): Promise<number[][][][]> {
         return this.manifoldWorkerManager.genericCallToWorkerPromise("crossSection.crossSectionsToPoints", inputs);

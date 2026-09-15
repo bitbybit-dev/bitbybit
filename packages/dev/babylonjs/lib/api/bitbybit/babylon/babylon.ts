@@ -23,7 +23,10 @@ import { BabylonWebXR } from "./web-xr/web-xr";
 import { BabylonGizmo } from "./gizmo/gizmo";
 
 /**
- * Contains various functions that expose BABYLONJS objects
+ * The BabylonJS side of the library: everything that lives in the rendered scene rather than in a
+ * CAD kernel. Meshes, nodes, cameras, lights, materials, textures, the scene itself, model import
+ * and export, picking with rays, on-screen gizmos, the 2D GUI, decals, Gaussian splats and WebXR
+ * are each behind their own property.
  */
 export class Babylon {
     public mesh: BabylonMesh;
