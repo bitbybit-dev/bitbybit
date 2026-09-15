@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Fokusēšanas animācijas nogludināšanas līkne: easeIn sāk maigi, easeOut beidz maigi, easeInOut dara abus; elastic, back un bounce pārsniedz mērķi.",
     "enableGroundProjection": "iespējot zemes projekciju",
     "projectedGroundRadius": "projicētās zemes rādiuss",
-    "projectedGroundHeight": "projicētās zemes augstums",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "iespējot debesjumu no tekstūras",
     "enableSkyboxFromTexture": "iespējot debesjumu no tekstūras",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Apņem ainu ar debesu kasti, kas izveidota no jūsu pašu ielādētas kuba tekstūras, un izmanto to kā vides apgaismojumu.\n\n`texture` var nākt no `.hdr` vai `.env` faila. `hideSkybox` patur apgaismojumu, slēpjot pašas debesis; `enableGroundProjection` saplacina debesu apakšējo daļu par zemi, uz kuras stāv modelis.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Kuba tekstūra, debesu kastes izmērs, izpludinājums, vides intensitāte, redzamība un zemes projekcija",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Ja true, debesu apakšējā daļa tiek projicēta uz plakanas zemes 0 augstumā, tāpēc modelis šķiet stāvam uz vides un met uz tās ēnas",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Projicētās zemes un ap to esošā debesu kupola rādiuss ainas vienībās; turiet kameru tā iekšpusē",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Debesu kupola centra augstums virs zemes ainas vienībās; mazākas vērtības saplacina horizontu zemes virzienā",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Augstums virs zemes, kurā tika uzņemta vide, ainas vienībās; pati zeme\nvienmēr ir 0 augstumā",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Ja true, debesu apakšējā daļa tiek projicēta uz plakanas zemes 0 augstumā, tāpēc modelis šķiet stāvam uz vides un met uz tās ēnas",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Projicētās zemes un ap to esošā debesu kupola rādiuss ainas vienībās; turiet kameru tā iekšpusē",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Debesu kupola centra augstums virs zemes ainas vienībās; mazākas vērtības saplacina horizontu zemes virzienā",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Augstums virs zemes, kurā tika uzņemta vide, ainas vienībās; pati zeme\nvienmēr ir 0 augstumā",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Baro `babylon.scene.enableSkyboxFromTexture`: jūsu jau ielādēta kuba tekstūra un tās pašas izmēra, izpludinājuma, intensitātes, redzamības un zemes projekcijas opcijas kā iebūvētajām debesīm.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Kuba tekstūra, ar ko apņemt ainu un to apgaismot, piemēram, ielādēta no `.hdr` vai `.env` faila",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Debesu kuba šķautnes garums ainas vienībās; padariet to lielāku par ainu, lai nekas neizlien cauri",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Ja true, debesis netiek zīmētas, bet joprojām apgaismo ainu",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Ja true, debesu apakšējā daļa tiek projicēta uz plakanas zemes 0 augstumā, tāpēc modelis šķiet stāvam uz vides un met uz tās ēnas",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projicētās zemes un ap to esošā debesu kupola rādiuss ainas vienībās; turiet kameru tā iekšpusē",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Debesu kupola centra augstums virs zemes ainas vienībās; mazākas vērtības saplacina horizontu zemes virzienā"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Augstums virs zemes, kurā tika uzņemta vide, ainas vienībās; pati zeme\nvienmēr ir 0 augstumā",
+    "projectedGroundHeight": "horizonta augstums"
 }

@@ -774,6 +774,23 @@ describe("BabylonScene", () => {
             expect(generator!.getShadowMap()!.renderList).not.toContain(skybox);
             expect(skybox.receiveShadows).toBe(true);
         });
+
+        it("should keep a light slot for the shadows of more lights than a material takes by default", () => {
+            // Arrange
+            new BABYLON.HemisphericLight("ambient", new BABYLON.Vector3(0, 1, 0), scene);
+            for (let index = 0; index < 4; index++) {
+                sceneService.drawDirectionalLight(directionalLight((inputs) => { inputs.enableShadows = true; }));
+            }
+
+            // Act
+            sceneService.enableSkybox(new Inputs.BabylonScene.SkyboxDto(Inputs.Base.skyboxEnum.default, 100, 0.1, 1, false, true));
+            const skybox = scene.getMeshByName("bitbybit-hdrSkyBox") as BABYLON.Mesh;
+            const material = skybox.material as BABYLON.BackgroundMaterial;
+
+            // Assert
+            expect(skybox.lightSources).toHaveLength(5);
+            expect(material.maxSimultaneousLights).toBeGreaterThanOrEqual(skybox.lightSources.length);
+        });
     });
 
     describe("enableSkyboxFromTexture", () => {

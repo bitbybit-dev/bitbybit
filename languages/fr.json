@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Courbe d'accélération de l'animation de mise au point : easeIn démarre en douceur, easeOut termine en douceur, easeInOut fait les deux ; elastic, back et bounce dépassent la cible.",
     "enableGroundProjection": "activer la projection au sol",
     "projectedGroundRadius": "rayon du sol projeté",
-    "projectedGroundHeight": "hauteur du sol projeté",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "activer la skybox depuis une texture",
     "enableSkyboxFromTexture": "activer la skybox depuis une texture",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Entoure la scène d'une skybox construite à partir d'une texture cube que vous avez chargée vous-même et l'utilise\ncomme éclairage d'environnement.\n\n`texture` peut provenir d'un fichier `.hdr` ou `.env`. `hideSkybox` garde l'éclairage tout en masquant\nle ciel ; `enableGroundProjection` aplatit le bas du ciel en un sol sur lequel le modèle repose.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "La texture cube, la taille de la skybox, le flou, l'intensité d'environnement, la visibilité et la projection au sol",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Quand vrai, le bas du ciel est projeté sur un sol plat à la hauteur 0, de sorte que le modèle semble\nreposer sur l'environnement et y projette des ombres",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Rayon du sol projeté et du dôme de ciel qui l'entoure, en unités de la scène ; gardez la\ncaméra à l'intérieur",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Hauteur du centre du dôme de ciel au-dessus du sol, en unités de la scène ; des valeurs plus basses aplatissent\nl'horizon vers le sol",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Hauteur à laquelle l'environnement a été capturé, au-dessus du sol, en unités de la scène ; le sol lui-même\nest toujours à la hauteur 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Quand vrai, le bas du ciel est projeté sur un sol plat à la hauteur 0, de sorte que le modèle semble\nreposer sur l'environnement et y projette des ombres",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Rayon du sol projeté et du dôme de ciel qui l'entoure, en unités de la scène ; gardez la\ncaméra à l'intérieur",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Hauteur du centre du dôme de ciel au-dessus du sol, en unités de la scène ; des valeurs plus basses aplatissent\nl'horizon vers le sol",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Hauteur à laquelle l'environnement a été capturé, au-dessus du sol, en unités de la scène ; le sol lui-même\nest toujours à la hauteur 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Alimente `babylon.scene.enableSkyboxFromTexture` : une texture cube que vous avez déjà chargée, et\nles mêmes options de taille, de flou, d'intensité, de visibilité et de projection au sol que les ciels intégrés.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Texture cube dont entourer la scène et par laquelle l'éclairer, par exemple une texture chargée depuis un\nfichier `.hdr` ou `.env`",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Longueur d'arête du cube de ciel, en unités de la scène ; faites-le plus grand que la scène pour que rien\nne dépasse",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Quand vrai, le ciel n'est pas dessiné mais éclaire toujours la scène",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Quand vrai, le bas du ciel est projeté sur un sol plat à la hauteur 0, de sorte que le modèle semble\nreposer sur l'environnement et y projette des ombres",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Rayon du sol projeté et du dôme de ciel qui l'entoure, en unités de la scène ; gardez la\ncaméra à l'intérieur",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Hauteur du centre du dôme de ciel au-dessus du sol, en unités de la scène ; des valeurs plus basses aplatissent\nl'horizon vers le sol"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Hauteur à laquelle l'environnement a été capturé, au-dessus du sol, en unités de la scène ; le sol lui-même\nest toujours à la hauteur 0",
+    "projectedGroundHeight": "hauteur de l'horizon"
 }

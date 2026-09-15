@@ -544,8 +544,8 @@ export namespace BabylonScene {
          */
         projectedGroundRadius?: number | undefined = 20;
         /**
-         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
-         * horizon towards the ground
+         * Height the environment was captured at, above the floor, in scene units; the floor itself
+         * is always at height 0
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -631,8 +631,8 @@ export namespace BabylonScene {
          */
         projectedGroundRadius?: number | undefined = 20;
         /**
-         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
-         * horizon towards the ground
+         * Height the environment was captured at, above the floor, in scene units; the floor itself
+         * is always at height 0
          * @default 3
          * @minimum 0
          * @maximum Infinity
@@ -710,8 +710,8 @@ export namespace BabylonScene {
          */
         projectedGroundRadius?: number | undefined = 20;
         /**
-         * Height of the sky dome centre above the ground, in scene units; lower values flatten the
-         * horizon towards the ground
+         * Height the environment was captured at, above the floor, in scene units; the floor itself
+         * is always at height 0
          * @default 3
          * @minimum 0
          * @maximum Infinity

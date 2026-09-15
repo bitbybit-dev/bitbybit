@@ -118,9 +118,9 @@ Once you add the section, **Type** is required - either pick one or remove the s
 
 **Ground projection** flattens the lower part of the sky into a floor the product stands on, so it looks placed in the environment rather than floating inside it, and the shadows from your lights fall onto that floor. The floor is the horizontal plane at height 0, so position your model to rest on it. It works with every skybox type, built-in or custom.
 
-**Ground radius** is how far that floor and the sky dome reach from the scene's origin, in scene units. Keep the camera inside it - beyond the radius the projected sky breaks up - so match it to the camera's upper radius limit. **Ground height** is how high the horizon sits above the floor; lower values flatten the sky towards it, and a value close to the height the environment was photographed at looks the most natural.
+**Ground radius** is how far that floor and the sky dome reach from the scene's origin, in scene units. Keep the camera inside it - beyond the radius the projected sky breaks up - so match it to the camera's upper radius limit. **Horizon height** is the height the environment was captured at, above the floor - the floor itself is always at height 0. A value close to the real capture height of your panorama, typically 1.5 to 3 in a metre-scale scene, looks the most natural; lower values smear the horizon across the floor.
 
-Keep the camera above the floor with an upper beta limit of 90 degrees, since from below there is nothing to project. Hiding the skybox hides the floor and its shadows too.
+Keep the camera above the floor with an upper beta limit of 90 degrees, since from below there is nothing to project. Hiding the skybox hides the floor and its shadows too. While editing, every light is on regardless of its variant rules, so the floor shows all of their shadows; Play applies the rules.
 
 ### Bringing your own environment, and converting it
 

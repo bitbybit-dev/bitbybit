@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "منحنى التمهيد لحركة التركيز: easeIn يبدأ بلطف، easeOut ينتهي بلطف، easeInOut يفعل الاثنين؛ elastic و back و bounce تتجاوز الهدف.",
     "enableGroundProjection": "تمكين إسقاط الأرضية",
     "projectedGroundRadius": "نصف قطر الأرضية المسقطة",
-    "projectedGroundHeight": "ارتفاع الأرضية المسقطة",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "تمكين صندوق السماء من نسيج",
     "enableSkyboxFromTexture": "تمكين صندوق السماء من نسيج",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "يحيط المشهد بصندوق سماء مبني من نسيج مكعب حمّلته بنفسك ويستخدمه\nكإضاءة البيئة.\n\n`texture` قد يأتي من ملف `.hdr` أو `.env`. `hideSkybox` يحتفظ بالإضاءة مع إخفاء\nالسماء؛ `enableGroundProjection` يسطّح الجزء السفلي من السماء إلى أرضية يقف عليها النموذج.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "النسيج المكعب، وحجم صندوق السماء وضبابيته وشدة البيئة ورؤيته وإسقاط الأرضية",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "عندما يكون true، يُسقط الجزء السفلي من السماء على أرضية مستوية عند الارتفاع 0، فيبدو النموذج\nواقفا على البيئة ويلقي ظلاله عليها",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "نصف قطر الأرضية المسقطة وقبة السماء المحيطة بها، بوحدات المشهد؛ أبقِ\nالكاميرا داخلها",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "ارتفاع مركز قبة السماء فوق الأرضية، بوحدات المشهد؛ القيم الأقل تسطّح\nالأفق نحو الأرضية",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "الارتفاع الذي التُقطت عنده البيئة فوق الأرضية، بوحدات المشهد؛ الأرضية نفسها\nتقع دائما عند الارتفاع 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "عندما يكون true، يُسقط الجزء السفلي من السماء على أرضية مستوية عند الارتفاع 0، فيبدو النموذج\nواقفا على البيئة ويلقي ظلاله عليها",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "نصف قطر الأرضية المسقطة وقبة السماء المحيطة بها، بوحدات المشهد؛ أبقِ\nالكاميرا داخلها",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "ارتفاع مركز قبة السماء فوق الأرضية، بوحدات المشهد؛ القيم الأقل تسطّح\nالأفق نحو الأرضية",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "الارتفاع الذي التُقطت عنده البيئة فوق الأرضية، بوحدات المشهد؛ الأرضية نفسها\nتقع دائما عند الارتفاع 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "يغذي `babylon.scene.enableSkyboxFromTexture`: نسيج مكعب حمّلته مسبقا، وخيارات الحجم\nوالضبابية والشدة والرؤية وإسقاط الأرضية نفسها كالسماوات المدمجة.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "نسيج مكعب يحاط به المشهد ويضاء به، مثل نسيج محمّل من ملف\n`.hdr` أو `.env`",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "طول حافة مكعب السماء، بوحدات المشهد؛ اجعله أكبر من المشهد حتى لا يبرز\nشيء عبره",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "عندما يكون true، لا ترسم السماء لكنها لا تزال تضيء المشهد",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "عندما يكون true، يُسقط الجزء السفلي من السماء على أرضية مستوية عند الارتفاع 0، فيبدو النموذج\nواقفا على البيئة ويلقي ظلاله عليها",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "نصف قطر الأرضية المسقطة وقبة السماء المحيطة بها، بوحدات المشهد؛ أبقِ\nالكاميرا داخلها",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "ارتفاع مركز قبة السماء فوق الأرضية، بوحدات المشهد؛ القيم الأقل تسطّح\nالأفق نحو الأرضية"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "الارتفاع الذي التُقطت عنده البيئة فوق الأرضية، بوحدات المشهد؛ الأرضية نفسها\nتقع دائما عند الارتفاع 0",
+    "projectedGroundHeight": "ارتفاع الأفق"
 }

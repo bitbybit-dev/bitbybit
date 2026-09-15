@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Easing-Kurve der Fokus-Animation: easeIn startet sanft, easeOut endet sanft, easeInOut macht beides; elastic, back und bounce schwingen über.",
     "enableGroundProjection": "Bodenprojektion aktivieren",
     "projectedGroundRadius": "Radius des projizierten Bodens",
-    "projectedGroundHeight": "Höhe des projizierten Bodens",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "Skybox aus Textur aktivieren",
     "enableSkyboxFromTexture": "Skybox aus Textur aktivieren",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Umgibt die Szene mit einer Skybox, die aus einer selbst geladenen Würfeltextur gebaut wird, und verwendet sie\nals Umgebungsbeleuchtung.\n\n`texture` kann aus einer `.hdr`- oder `.env`-Datei stammen. `hideSkybox` behält die Beleuchtung, während der\nHimmel ausgeblendet wird; `enableGroundProjection` flacht den unteren Himmel zu einem Boden ab, auf dem das Modell steht.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Die Würfeltextur, die Skybox-Größe, die Unschärfe, die Umgebungsintensität, die Sichtbarkeit und die Bodenprojektion",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Wenn true, wird der untere Himmel auf einen flachen Boden in Höhe 0 projiziert, sodass das Modell\nauf der Umgebung zu stehen scheint und Schatten darauf wirft",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Radius des projizierten Bodens und der Himmelskuppel darum, in Szeneneinheiten; halten Sie die\nKamera darin",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Höhe des Mittelpunkts der Himmelskuppel über dem Boden, in Szeneneinheiten; niedrigere Werte flachen den\nHorizont zum Boden hin ab",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Höhe, in der die Umgebung über dem Boden aufgenommen wurde, in Szeneneinheiten; der Boden selbst\nliegt immer auf Höhe 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Wenn true, wird der untere Himmel auf einen flachen Boden in Höhe 0 projiziert, sodass das Modell\nauf der Umgebung zu stehen scheint und Schatten darauf wirft",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Radius des projizierten Bodens und der Himmelskuppel darum, in Szeneneinheiten; halten Sie die\nKamera darin",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Höhe des Mittelpunkts der Himmelskuppel über dem Boden, in Szeneneinheiten; niedrigere Werte flachen den\nHorizont zum Boden hin ab",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Höhe, in der die Umgebung über dem Boden aufgenommen wurde, in Szeneneinheiten; der Boden selbst\nliegt immer auf Höhe 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Speist `babylon.scene.enableSkyboxFromTexture`: eine bereits geladene Würfeltextur und dieselben\nOptionen für Größe, Unschärfe, Intensität, Sichtbarkeit und Bodenprojektion wie die eingebauten Himmel.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Würfeltextur, mit der die Szene umgeben und beleuchtet wird, etwa eine aus einer\n`.hdr`- oder `.env`-Datei geladene",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Kantenlänge des Himmelswürfels, in Szeneneinheiten; machen Sie ihn größer als die Szene, damit nichts\ndurchstößt",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Wenn true, wird der Himmel nicht gezeichnet, beleuchtet die Szene aber weiterhin",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Wenn true, wird der untere Himmel auf einen flachen Boden in Höhe 0 projiziert, sodass das Modell\nauf der Umgebung zu stehen scheint und Schatten darauf wirft",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Radius des projizierten Bodens und der Himmelskuppel darum, in Szeneneinheiten; halten Sie die\nKamera darin",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Höhe des Mittelpunkts der Himmelskuppel über dem Boden, in Szeneneinheiten; niedrigere Werte flachen den\nHorizont zum Boden hin ab"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Höhe, in der die Umgebung über dem Boden aufgenommen wurde, in Szeneneinheiten; der Boden selbst\nliegt immer auf Höhe 0",
+    "projectedGroundHeight": "Horizonthöhe"
 }

@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Кривая сглаживания анимации фокусировки: easeIn начинает плавно, easeOut заканчивает плавно, easeInOut делает и то и другое; elastic, back и bounce проскакивают цель.",
     "enableGroundProjection": "включить проекцию земли",
     "projectedGroundRadius": "радиус проецируемой земли",
-    "projectedGroundHeight": "высота проецируемой земли",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "включить скайбокс из текстуры",
     "enableSkyboxFromTexture": "включить скайбокс из текстуры",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Окружает сцену скайбоксом, построенным из кубической текстуры, которую вы загрузили сами, и использует его как освещение окружения.\n\n`texture` может быть получена из файла `.hdr` или `.env`. `hideSkybox` сохраняет освещение, скрывая небо; `enableGroundProjection` сплющивает нижнюю часть неба в землю, на которой стоит модель.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Кубическая текстура, размер скайбокса, размытие, интенсивность окружения, видимость и проекция земли",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Если true, нижняя часть неба проецируется на плоскую землю на высоте 0, так что модель кажется стоящей на окружении и отбрасывает на него тени",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Радиус проецируемой земли и купола неба вокруг нее, в единицах сцены; держите камеру внутри него",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Высота центра купола неба над землей, в единицах сцены; меньшие значения сплющивают горизонт к земле",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Высота над землей, на которой было снято окружение, в единицах сцены; сама земля\nвсегда находится на высоте 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Если true, нижняя часть неба проецируется на плоскую землю на высоте 0, так что модель кажется стоящей на окружении и отбрасывает на него тени",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Радиус проецируемой земли и купола неба вокруг нее, в единицах сцены; держите камеру внутри него",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Высота центра купола неба над землей, в единицах сцены; меньшие значения сплющивают горизонт к земле",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Высота над землей, на которой было снято окружение, в единицах сцены; сама земля\nвсегда находится на высоте 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Подается в `babylon.scene.enableSkyboxFromTexture`: уже загруженная вами кубическая текстура и те же параметры размера, размытия, интенсивности, видимости и проекции земли, что и у встроенных небес.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Кубическая текстура, которой окружить сцену и осветить ее, например загруженная из файла `.hdr` или `.env`",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Длина ребра куба неба, в единицах сцены; сделайте его больше сцены, чтобы ничего не выступало наружу",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Если true, небо не рисуется, но по-прежнему освещает сцену",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Если true, нижняя часть неба проецируется на плоскую землю на высоте 0, так что модель кажется стоящей на окружении и отбрасывает на него тени",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Радиус проецируемой земли и купола неба вокруг нее, в единицах сцены; держите камеру внутри него",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Высота центра купола неба над землей, в единицах сцены; меньшие значения сплющивают горизонт к земле"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Высота над землей, на которой было снято окружение, в единицах сцены; сама земля\nвсегда находится на высоте 0",
+    "projectedGroundHeight": "высота горизонта"
 }

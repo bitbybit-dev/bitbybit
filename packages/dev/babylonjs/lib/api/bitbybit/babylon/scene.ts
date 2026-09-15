@@ -8,6 +8,12 @@ import { GlobalCDNProvider } from "@bitbybit-dev/base";
 type SkyboxMeshInputs = Pick<Inputs.BabylonScene.SkyboxFromTextureDto,
     "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
 
+/**
+ * A projected ground only reads lights for their shadows, yet every scene light takes one of the
+ * material's light slots; the default of four drops the shadow of the fifth light.
+ */
+const PROJECTED_GROUND_MAX_LIGHTS = 8;
+
 
 /**
  * The BabylonJS scene as a whole: the active camera and its limits, lights with shadows, the skybox
@@ -835,6 +841,7 @@ export class BabylonScene {
         material.enableGroundProjection = true;
         material.projectedGroundRadius = inputs.projectedGroundRadius ?? 20;
         material.projectedGroundHeight = inputs.projectedGroundHeight ?? 3;
+        material.maxSimultaneousLights = PROJECTED_GROUND_MAX_LIGHTS;
         skybox.material = material;
         skybox.receiveShadows = true;
         skybox.isPickable = false;

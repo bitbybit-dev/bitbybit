@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Krzywa wygładzania animacji ustawiania ostrości: easeIn zaczyna łagodnie, easeOut kończy łagodnie, easeInOut robi jedno i drugie; elastic, back i bounce przekraczają cel.",
     "enableGroundProjection": "włącz rzutowanie podłoża",
     "projectedGroundRadius": "promień rzutowanego podłoża",
-    "projectedGroundHeight": "wysokość rzutowanego podłoża",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "włącz skybox z tekstury",
     "enableSkyboxFromTexture": "włącz skybox z tekstury",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Otacza scenę skyboxem zbudowanym z samodzielnie wczytanej tekstury sześciennej i używa go\njako oświetlenia środowiska.\n\n`texture` może pochodzić z pliku `.hdr` lub `.env`. `hideSkybox` zachowuje oświetlenie, ukrywając\nsamo niebo; `enableGroundProjection` spłaszcza dolną część nieba w podłoże, na którym stoi model.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Tekstura sześcienna, rozmiar skyboxa, rozmycie, natężenie otoczenia, widoczność i rzutowanie podłoża",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Gdy true, dolna część nieba jest rzutowana na płaskie podłoże na wysokości 0, więc model wydaje się\nstać na środowisku i rzuca na nie cienie",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Promień rzutowanego podłoża i otaczającej je kopuły nieba, w jednostkach sceny; utrzymuj\nkamerę w jego wnętrzu",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Wysokość środka kopuły nieba nad podłożem, w jednostkach sceny; niższe wartości spłaszczają\nhoryzont w stronę podłoża",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Wysokość nad podłożem, na której uchwycono środowisko, w jednostkach sceny; samo podłoże\njest zawsze na wysokości 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Gdy true, dolna część nieba jest rzutowana na płaskie podłoże na wysokości 0, więc model wydaje się\nstać na środowisku i rzuca na nie cienie",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Promień rzutowanego podłoża i otaczającej je kopuły nieba, w jednostkach sceny; utrzymuj\nkamerę w jego wnętrzu",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Wysokość środka kopuły nieba nad podłożem, w jednostkach sceny; niższe wartości spłaszczają\nhoryzont w stronę podłoża",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Wysokość nad podłożem, na której uchwycono środowisko, w jednostkach sceny; samo podłoże\njest zawsze na wysokości 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Zasila `babylon.scene.enableSkyboxFromTexture`: już wczytana tekstura sześcienna i te same\nopcje rozmiaru, rozmycia, natężenia, widoczności i rzutowania podłoża co wbudowane nieba.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Tekstura sześcienna, którą otoczyć scenę i którą ją oświetlić, na przykład wczytana z pliku\n`.hdr` lub `.env`",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Długość krawędzi sześcianu nieba, w jednostkach sceny; zrób go większym niż scena, by nic\nnie wystawało",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Gdy true, niebo nie jest rysowane, ale nadal oświetla scenę",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Gdy true, dolna część nieba jest rzutowana na płaskie podłoże na wysokości 0, więc model wydaje się\nstać na środowisku i rzuca na nie cienie",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Promień rzutowanego podłoża i otaczającej je kopuły nieba, w jednostkach sceny; utrzymuj\nkamerę w jego wnętrzu",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Wysokość środka kopuły nieba nad podłożem, w jednostkach sceny; niższe wartości spłaszczają\nhoryzont w stronę podłoża"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Wysokość nad podłożem, na której uchwycono środowisko, w jednostkach sceny; samo podłoże\njest zawsze na wysokości 0",
+    "projectedGroundHeight": "wysokość horyzontu"
 }

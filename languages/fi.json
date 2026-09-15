@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Tarkennusanimaation pehmennyskäyrä: easeIn alkaa pehmeästi, easeOut päättyy pehmeästi, easeInOut tekee molemmat; elastic, back ja bounce ylittävät kohteen.",
     "enableGroundProjection": "ota maanpinnan projektio käyttöön",
     "projectedGroundRadius": "projisoidun maanpinnan säde",
-    "projectedGroundHeight": "projisoidun maanpinnan korkeus",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "ota skybox tekstuurista käyttöön",
     "enableSkyboxFromTexture": "ota skybox tekstuurista käyttöön",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Ympäröi näkymän taivaslaatikolla, joka on rakennettu itse lataamastasi kuutiotekstuurista, ja käyttää sitä\nympäristövalaistuksena.\n\n`texture` voi tulla `.hdr`- tai `.env`-tiedostosta. `hideSkybox` pitää valaistuksen piilottaen\ntaivaan; `enableGroundProjection` litistää taivaan alaosan maanpinnaksi, jolla malli seisoo.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Kuutiotekstuuri, taivaslaatikon koko, sumennus, ympäristön voimakkuus, näkyvyys ja maanpinnan projektio",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Kun tosi, taivaan alaosa projisoidaan tasaiselle maanpinnalle korkeudelle 0, jolloin malli näyttää\nseisovan ympäristön päällä ja heittää siihen varjoja",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Projisoidun maanpinnan ja sitä ympäröivän taivaskuvun säde, näkymän yksiköissä; pidä\nkamera sen sisällä",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Taivaskuvun keskipisteen korkeus maanpinnan yläpuolella, näkymän yksiköissä; pienemmät arvot litistävät\nhorisontin kohti maanpintaa",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Korkeus maanpinnan yläpuolella, jolla ympäristö kuvattiin, näkymän yksiköissä; maanpinta itse\non aina korkeudella 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Kun tosi, taivaan alaosa projisoidaan tasaiselle maanpinnalle korkeudelle 0, jolloin malli näyttää\nseisovan ympäristön päällä ja heittää siihen varjoja",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Projisoidun maanpinnan ja sitä ympäröivän taivaskuvun säde, näkymän yksiköissä; pidä\nkamera sen sisällä",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Taivaskuvun keskipisteen korkeus maanpinnan yläpuolella, näkymän yksiköissä; pienemmät arvot litistävät\nhorisontin kohti maanpintaa",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Korkeus maanpinnan yläpuolella, jolla ympäristö kuvattiin, näkymän yksiköissä; maanpinta itse\non aina korkeudella 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Syöttää funktiolle `babylon.scene.enableSkyboxFromTexture`: jo lataamasi kuutiotekstuurin sekä samat\nkoko-, sumennus-, voimakkuus-, näkyvyys- ja maanpinnan projektion asetukset kuin sisäänrakennetuilla taivailla.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Kuutiotekstuuri, jolla näkymä ympäröidään ja valaistaan, esimerkiksi `.hdr`- tai\n`.env`-tiedostosta ladattu",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Taivaskuution särmän pituus, näkymän yksiköissä; tee siitä näkymää suurempi, jotta mikään ei\ntyönny sen läpi",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Kun tosi, taivasta ei piirretä, mutta se valaisee näkymää silti",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Kun tosi, taivaan alaosa projisoidaan tasaiselle maanpinnalle korkeudelle 0, jolloin malli näyttää\nseisovan ympäristön päällä ja heittää siihen varjoja",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projisoidun maanpinnan ja sitä ympäröivän taivaskuvun säde, näkymän yksiköissä; pidä\nkamera sen sisällä",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Taivaskuvun keskipisteen korkeus maanpinnan yläpuolella, näkymän yksiköissä; pienemmät arvot litistävät\nhorisontin kohti maanpintaa"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Korkeus maanpinnan yläpuolella, jolla ympäristö kuvattiin, näkymän yksiköissä; maanpinta itse\non aina korkeudella 0",
+    "projectedGroundHeight": "horisontin korkeus"
 }

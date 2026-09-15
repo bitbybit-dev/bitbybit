@@ -14161,17 +14161,16 @@
     "Advanced.Navigation.FocusFromAngleDto.ease_description": "Fookustamise animatsiooni sujuvuskõver: easeIn alustab sujuvalt, easeOut lõpetab sujuvalt, easeInOut teeb mõlemat; elastic, back ja bounce ületavad sihtkoha.",
     "enableGroundProjection": "luba maapinna projektsioon",
     "projectedGroundRadius": "projitseeritud maapinna raadius",
-    "projectedGroundHeight": "projitseeritud maapinna kõrgus",
     "bitbybit.babylon.scene.enableSkyboxFromTexture": "luba taevakast tekstuurist",
     "enableSkyboxFromTexture": "luba taevakast tekstuurist",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_description": "Ümbritseb stseeni taevakastiga, mis on ehitatud sinu enda laaditud kuubitekstuurist, ja kasutab seda\nkeskkonnavalgustusena.\n\n`texture` võib pärineda `.hdr` või `.env` failist. `hideSkybox` säilitab valgustuse, peites\ntaeva; `enableGroundProjection` lamendab taeva alumise osa maapinnaks, millel mudel seisab.",
     "bitbybit.babylon.scene.enableSkyboxFromTexture_param_inputs": "Kuubitekstuur, taevakasti suurus, hägu, keskkonna intensiivsus, nähtavus ja maapinna projektsioon",
     "Inputs.BabylonScene.SkyboxDto.enableGroundProjection_description": "Kui true, projitseeritakse taeva alumine osa tasasele maapinnale kõrgusel 0, nii et mudel näib\nseisvat keskkonnal ja heidab sellele varje",
     "Inputs.BabylonScene.SkyboxDto.projectedGroundRadius_description": "Projitseeritud maapinna ja seda ümbritseva taevakupli raadius, stseeni ühikutes; hoia\nkaamera selle sees",
-    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Taevakupli keskpunkti kõrgus maapinnast, stseeni ühikutes; madalamad väärtused lamendavad\nhorisondi maapinna poole",
+    "Inputs.BabylonScene.SkyboxDto.projectedGroundHeight_description": "Kõrgus maapinna kohal, millel keskkond jäädvustati, stseeni ühikutes; maapind ise\non alati kõrgusel 0",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.enableGroundProjection_description": "Kui true, projitseeritakse taeva alumine osa tasasele maapinnale kõrgusel 0, nii et mudel näib\nseisvat keskkonnal ja heidab sellele varje",
     "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundRadius_description": "Projitseeritud maapinna ja seda ümbritseva taevakupli raadius, stseeni ühikutes; hoia\nkaamera selle sees",
-    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Taevakupli keskpunkti kõrgus maapinnast, stseeni ühikutes; madalamad väärtused lamendavad\nhorisondi maapinna poole",
+    "Inputs.BabylonScene.SkyboxCustomTextureDto.projectedGroundHeight_description": "Kõrgus maapinna kohal, millel keskkond jäädvustati, stseeni ühikutes; maapind ise\non alati kõrgusel 0",
     "Inputs.BabylonScene.SkyboxFromTextureDto_description": "Toidab `babylon.scene.enableSkyboxFromTexture`: kuubitekstuur, mille sa juba laadisid, ning samad\nsuuruse, hägu, intensiivsuse, nähtavuse ja maapinna projektsiooni valikud nagu sisseehitatud taevastel.",
     "Inputs.BabylonScene.SkyboxFromTextureDto.texture_description": "Kuubitekstuur, millega stseeni ümbritseda ja seda valgustada, näiteks selline, mis on laaditud\n`.hdr` või `.env` failist",
     "Inputs.BabylonScene.SkyboxFromTextureDto.size_description": "Taevakuubi serva pikkus, stseeni ühikutes; tee see stseenist suurem, et miski läbi ei ulatuks",
@@ -14180,5 +14179,6 @@
     "Inputs.BabylonScene.SkyboxFromTextureDto.hideSkybox_description": "Kui true, siis taevast ei joonistata, aga see valgustab stseeni endiselt",
     "Inputs.BabylonScene.SkyboxFromTextureDto.enableGroundProjection_description": "Kui true, projitseeritakse taeva alumine osa tasasele maapinnale kõrgusel 0, nii et mudel näib\nseisvat keskkonnal ja heidab sellele varje",
     "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundRadius_description": "Projitseeritud maapinna ja seda ümbritseva taevakupli raadius, stseeni ühikutes; hoia\nkaamera selle sees",
-    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Taevakupli keskpunkti kõrgus maapinnast, stseeni ühikutes; madalamad väärtused lamendavad\nhorisondi maapinna poole"
+    "Inputs.BabylonScene.SkyboxFromTextureDto.projectedGroundHeight_description": "Kõrgus maapinna kohal, millel keskkond jäädvustati, stseeni ühikutes; maapind ise\non alati kõrgusel 0",
+    "projectedGroundHeight": "horisondi kõrgus"
 }
