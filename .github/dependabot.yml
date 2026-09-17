@@ -18,10 +18,33 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # The game engines and the JavaScript-side kernels are versioned from one registry that also
+      # drives the CDN manifests, the lockfiles and the text anchors of every consumer; a bump that
+      # arrives here alone cannot be merged, it has to start from that registry.
+      - dependency-name: "@babylonjs/*"
+      - dependency-name: "three"
+      - dependency-name: "@types/three"
+      - dependency-name: "playcanvas"
+      - dependency-name: "manifold-3d"
+      - dependency-name: "@jscad/*"
+      # The Node typings follow the Node major pinned in .tool-versions, not the registry: typings
+      # for a newer Node let code compile against APIs the pinned runtime does not have.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
+      # The coverage provider only ever peers on the vitest it was released with, so a major of one
+      # without the other cannot install; grouping them lets a vitest major arrive as one change.
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
       workspace-minor-patch:
         patterns:
           - "*"
+        exclude-patterns:
+          - "vitest"
+          - "@vitest/*"
         update-types:
           - minor
           - patch
@@ -35,6 +58,11 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    ignore:
+      # The site's tsconfig is editor-only (@docusaurus/tsconfig drives the build); a TypeScript
+      # major here changes nothing that ships and has already broken that file once.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       docusaurus:
         patterns:
