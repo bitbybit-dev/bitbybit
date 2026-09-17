@@ -110,36 +110,62 @@ Place a control here and you will see its Visibility section point you back at t
 
 By default the whole panel sits together beside the 3D view. Areas let you break that up.
 
-Each top-level element carries an **Area** field, and there are seven built-in choices:
+Each top-level element carries an **Area** field, and there are eleven built-in choices:
 
 | Area | Where it lands |
 |---|---|
 | **Main panel** | The default. The panel beside the 3D view. |
 | **3D canvas - top left, top right, bottom left, bottom right** | Overlaid on the corners of the 3D view. |
-| **3D canvas - centre** | Overlaid in the middle of the 3D view. |
+| **3D canvas - top center, bottom center, left center, right center** | Overlaid on the middle of that edge of the 3D view. |
+| **3D canvas - center** | Overlaid in the middle of the 3D view. |
 | **Near the buy buttons** | Immediately after your theme's add to cart form. |
 
-Canvas corners suit a small control that belongs visually on the product, like a colour switcher sitting over the model. The centre overlay suits something that should interrupt, such as a confirmation after adding to cart. The buy area suits things decided at the last moment, like quantity or a gift note.
+Canvas corners suit a small control that belongs visually on the product, like a colour switcher sitting over the model. The edge midpoints suit something the shopper reads first, like a title or a price along the top edge, or a row of camera buttons along the bottom. The centre overlay suits something that should interrupt, such as a confirmation after adding to cart. The buy area suits things decided at the last moment, like quantity or a gift note.
 
-On a narrow screen the four corner areas stop overlaying the model and stack underneath the panel instead, because a phone has no room for anything floating over the view. The centre overlay stays where it is.
+On a narrow screen the corner and edge areas stop overlaying the model and stack underneath the panel instead, because a phone has no room for anything floating over the view. The centre overlay stays where it is. That is the default; [Where an area goes on a phone](#where-an-area-goes-on-a-phone-and-which-screens-hide-it) below is where you change it.
+
+While you are in Play in the Composer, its own buttons share those two edges with your areas: the toolbar sits on the top edge and the Stop button on the bottom edge. Put something in the top center or bottom center area and it keeps the edge, exactly where the storefront draws it, and the Composer's buttons step inward to make room.
 
 :::warning The Area field is honoured on top-level elements only
 An element nested inside a section, an accordion or a tab renders where it sits, whatever its area says. The field is typed on every element, so nothing stops you setting it deeper in the tree - it simply has no effect there, and Composer only shows it where it will work. If you want a control in a canvas corner, it has to be a top-level element in the panel.
 :::
 
-### Zone behaviour: how wide an area is, and folding it away
+### The areas list: how wide an area is, and folding it away
 
-Above the custom areas there is a **Zone behaviour** block, with a row for each of the seven built-in areas. Each one starts on its default - full width, no fold toggle - behind a **Configure** button, and a **Reset** puts it back there.
+Under the elements there is an **Areas** list, one row per area in play: the main panel, every built-in area that holds at least one element, and your custom areas. An area you have not placed anything in is not listed - place an element in it first, with the Area field - and an area that still carries settings after its last element left stays listed with "no elements yet", so you can see the settings and reset them. Each row's header sums up what is set on it. A built-in area starts on its default - full width, no fold toggle, shown on every screen - behind a **Configure** button, and **Reset to defaults** puts it back there.
 
-This is where the width of the panel column is set, and it is not settable anywhere else. **Width**, **Smallest width** and **Largest width** each take a number and a unit (`px`, `%`, `rem` or `ch`). On the main panel the width sets the controls column. On the four canvas corners it replaces the built-in cap of 60% of the view, which is what you reach for when a corner control is coming out cramped.
+This is where the width of the panel column is set, and it is not settable anywhere else. **Width**, **Smallest width** and **Largest width** each take a number and a unit (`px`, `%`, `rem` or `ch`). On the main panel the width sets the controls column. On the canvas corners and edge midpoints it replaces the built-in cap of 60% of the view, which is what you reach for when a corner control is coming out cramped.
 
-**Shopper can fold it away** adds a toggle that collapses that area's contents, leaving only the toggle over the canvas. It is the answer to a corner control that is useful but keeps covering the product. **Start folded** decides which state it opens in; after that the shopper's own choice sticks as they carry on configuring. **Show the toggle on** limits the toggle to every screen, phones only - 769 pixels and below - or desktop only. **Toggle icon** puts one of the built-in icons in place of the default chevron, and **Toggle corner** pins the toggle to a particular corner instead of following the area's own.
+**Shopper can fold it away** adds a toggle that collapses that area's contents, leaving only the toggle over the canvas. It is the answer to a corner control that is useful but keeps covering the product. The fold settings appear once it is on: **Start folded** decides which state it opens in; after that the shopper's own choice sticks as they carry on configuring. **Show the toggle on** limits the toggle to every screen, phones only - 769 pixels and below - or desktop only. **Toggle icon** puts one of the built-in icons in place of the default chevron, and **Toggle corner** pins the toggle to a particular corner instead of following the area's own.
 
 An area with nothing in it draws nothing, whatever you set here.
 
+### Where an area goes on a phone, and which screens hide it
+
+Shoppers' screens fall into four kinds by width - phone, tablet, laptop and desktop, the same four the app's [Canvas Size](/learn/3d-bits/admin/canvas-sizing) page draws - and on phones, and on tablets unless the merchant chose side by side, the layout is **stacked**: the 3D view on top, the controls below. Two settings in each configured area's **Per screen** group decide what that does to it.
+
+**Hide on** is a checkbox per kind of screen, in the **Per screen** group of every area but the main panel, custom areas included. A hidden area still renders and its controls still count towards the price and the order data; only its box disappears. Use it for a corner control that earns its place on a wide screen and only clutters a phone, or the other way round.
+
+**When stacked**, on the nine canvas areas, says where the area lands once nothing can float over the model:
+
+| Placement | Where it lands |
+| --- | --- |
+| **Below the panel** | In a full-width stack after the controls. The default for the corners and the edge midpoints. |
+| **Above the panel** | Between the 3D view and the controls. |
+| **Pinned under the canvas** | In a strip stuck to the bottom edge of the 3D view, which stays put while the shopper scrolls the controls. This is where a price and an add to cart button belong on a phone. The strip has no background of its own, so the controls scroll visibly behind it - give the area an [area card](./style-and-translations.md#cards-for-anything-outside-the-panel) in the Style tab if that bothers you. It pins only when the merchant's layout is Split, the one that keeps the 3D view itself pinned; in the Inline layout the strip simply sits above the controls. |
+| **Stays on the canvas** | Floating over the model, as it does on a wide screen. The default for the centre. |
+
+:::warning Do not hide your only add to cart
+If the only add to cart button in your GUI lives in an area you hide on some screen, shoppers on that screen keep the theme's own add to cart button instead - the storefront never hides both - but the price shown and the button they press then come from different places. Either keep an add to cart visible on every screen, or hide the area on none.
+:::
+
+**Stacked order** decides the sequence within a placement; lower comes first, and areas without one follow in the built-in order. You rarely type it: the **Order on phones** block under the list draws the phone as the shopper scrolls it - the areas on the canvas, the pinned strip, the above stack, the main panel, the below stack - and you drag a row, or use its arrows, to move it inside its group. Areas hidden on phones are listed underneath.
+
+The 2D preview at phone width and the 3D preview's phone button (see [Previewing as you go](#previewing-as-you-go)) both draw the result, and the app's Canvas Size page draws it on the product page skeleton with your other settings around it.
+
 ### Your own areas
 
-**Custom areas** put elements anywhere else on the product page. Each one is an **id** of your choosing, a **CSS selector** that finds a spot in your theme, and a **Position** saying where to land relative to what the selector matched - append or prepend inside it, or before or after it. Assign an element to that id and it appears there.
+**Custom areas** put elements anywhere else on the product page. **Add custom area** puts a new row in the same list. Each one is an **id** of your choosing, a **CSS selector** that finds a spot in your theme, and a **Position** saying where to land relative to what the selector matched - append or prepend inside it, or before or after it. Assign an element to that id and it appears there. A custom area takes the same size, folding and per-screen settings as a built-in one.
 
 That is how you spread the panel across the product page, with material choices near the title and personalisation near the buy button.
 
@@ -151,7 +177,9 @@ Elements you do not assign go to the main panel, so you only need to think about
 
 ## Previewing as you go
 
-While the GUI section is open, the right side of Composer shows the panel itself rather than the 3D view, at desktop or mobile width. Elements you have sent to other areas are drawn as separate labelled blocks, so you can see what each area actually contains.
+While the GUI section is open, the right side of Composer shows the panel itself rather than the 3D view, at desktop or phone width. At desktop width, elements you have sent to other areas are drawn as separate labelled blocks beneath the panel, so you can see what each area actually contains. At phone width the preview stacks the way a phone does - a placeholder for the 3D view with the areas that stay on it at their corners, then the pinned strip, the areas above the panel, the panel, and the areas below it - with the areas you hid on phones named underneath.
+
+Play has the same switch: the phone button in its toolbar renders the stacked layout around the real 3D view in a phone-wide column, so you can scroll the controls with the pinned strip in place and the model in view. The eye button hides the controls in both previews, and on the phone one the 3D view then takes the whole column, the way a full-canvas phone page would.
 
 The preview has two modes. **Preview** behaves as the page does: use the form, watch conditions react. **Inspect** adds an editing layer - hovering outlines what you are pointing at, clicking still works as it does for a shopper, and **double-clicking** opens and highlights that element in the editor. On a panel with forty elements this saves a lot of scrolling.
 

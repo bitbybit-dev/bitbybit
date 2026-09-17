@@ -29,7 +29,7 @@ flowchart TD
 ```
 
 
-Composer already places elements outside the main panel on its own. The four canvas corners and the canvas centre sit on top of the 3D view, the buy area sits next to your add to cart form, and a custom area anchors to a CSS selector of your theme, so a group of options can land beside the product title or anywhere else you can name. You assign an element to one of those areas in the **Layout** tab and publish, and the app embed does the rest. [Layout](/learn/3d-bits/composer/gui/layout) covers how that works.
+Composer already places elements outside the main panel on its own. The four canvas corners, the four edge midpoints and the canvas centre sit on top of the 3D view, the buy area sits next to your add to cart form, and a custom area anchors to a CSS selector of your theme, so a group of options can land beside the product title or anywhere else you can name. You assign an element to one of those areas in the **Layout** tab and publish, and the app embed does the rest. [Layout](/learn/3d-bits/composer/gui/layout) covers how that works.
 
 Two things genuinely call for a block.
 

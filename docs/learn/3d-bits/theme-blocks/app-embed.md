@@ -30,7 +30,7 @@ To put the viewer somewhere else, enter that element's selector instead. A commo
 
 If the selector matches nothing, 3D Bits falls straight back to your add to cart form - it does not wait first. It only keeps retrying, for about ten seconds, if it cannot find that form either, which is what happens on a theme that renders the product page late. So a typo does not usually leave the page blank, it leaves the viewer in the default place. Check on a real product page after changing it rather than trusting the theme editor preview.
 
-This is also the anchor the Split and Overlay layouts build around, so it affects those layouts as much as the plain inline one.
+This is also the anchor the Split layout builds around, so it affects that layout as much as the plain inline one.
 
 ## Runner CDN Link
 

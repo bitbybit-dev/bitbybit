@@ -15,7 +15,7 @@ It lets you take one area of your option panel and put it somewhere else entirel
 You add it in the theme editor like any other block: **Customize** your theme, open a product template, then **Add block** and choose **BITBYBIT GUI CONTROLS**.
 
 :::tip You may not need a block at all
-The built-in areas are placed for you. The canvas corners and the canvas centre sit on top of the 3D view, the buy area sits next to your add to cart form, and a custom area anchors to a CSS selector of your theme. Assign an element to one of those in Composer's **Layout** tab, publish, and it lands there with no block involved. Reach for this block when you want an area hosted somewhere a selector cannot reach, or you would rather point at the spot in the theme editor.
+The built-in areas are placed for you. The canvas corners, the canvas edge midpoints and the canvas centre sit on top of the 3D view, the buy area sits next to your add to cart form, and a custom area anchors to a CSS selector of your theme. Assign an element to one of those in Composer's **Layout** tab, publish, and it lands there with no block involved. Reach for this block when you want an area hosted somewhere a selector cannot reach, or you would rather point at the spot in the theme editor.
 :::
 
 ## How it fits together
@@ -40,7 +40,7 @@ Which area of the panel this block hosts. Whatever you assigned to that area in 
 
 **Main panel (all unassigned elements)** is the default and holds everything you did not deliberately put elsewhere. Use this when you simply want the whole option panel in a particular place in your template.
 
-**Canvas corner**, in top left, top right, bottom left or bottom right, is the area that would otherwise overlay that corner of the 3D view. Pointing a block at it takes those elements off the canvas and puts them wherever the block sits.
+**Canvas corner**, in top left, top right, bottom left or bottom right, is the area that would otherwise overlay that corner of the 3D view, and **Canvas edge** - top center, bottom center, left center or right center - the one that would overlay the middle of that edge. Pointing a block at either takes those elements off the canvas and puts them wherever the block sits.
 
 **Buy area** is the area that would otherwise sit next to your add to cart button. It suits things a shopper decides right before buying, such as a quantity or a gift note.
 
