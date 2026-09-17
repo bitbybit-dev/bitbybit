@@ -115,7 +115,7 @@
         "@jscad/3mf-serializer": "2.1.17"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.0",
+        "@microsoft/api-extractor": "7.59.1",
         "@vitest/coverage-v8": "4.1.11",
         "shx": "0.4.0",
         "typescript": "5.9.3",
