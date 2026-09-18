@@ -38,13 +38,13 @@ You can also unpublish, which removes the configurator from its products and lea
 
 ### Storefront settings
 
-How this configurator presents itself and behaves on the storefront. The card runs in this order.
+How this configurator presents itself and behaves on the storefront. The card is five sections, each closed to a single line that sums up its current settings; open the one you want to change and it closes the others.
 
-- **Placement on the product page** - App embed, which places everything for you, or theme template blocks, which hands placement to you. This is the setting that decides whether the sizing fields below apply at all.
-- **Show fullscreen button** and **Show loading spinner**, then **Receive input names as variants** and **Input collection mode**, which only matter when the configurator reads your theme's own inputs rather than drawing its own panel, and **Debug mode**, which prints on the product page every input 3D Bits is reading.
-- **Storefront layout** - Inline, Split or Overlay - with **Controls side**, **Controls panel content** and **Theme product controls**, which decides how much of your theme's own product block the configurator replaces.
-- **Canvas size** - heights for desktop and mobile, max width, side offset, mobile side margin, panel width and the top and bottom margins, plus the advanced CSS selectors.
-- **Configured price charging** - the charging method, explained in [Charging methods](/learn/3d-bits/pricing/charging-methods); **How option charges reach the order**, explained in [Charging methods](/learn/3d-bits/pricing/charging-methods#one-line-per-option-or-one-combined-charge); the **Generated product name prefix** that brands the products the app generates; and **Pricing test mode**, which publishes your prices for inspection without taking orders.
+- **Placement and layout** - **Placement on the product page**: App embed, which places everything for you, or theme template blocks, which hands placement to you (this is the setting that decides whether the two sections after it apply at all). Then **Storefront layout** - Inline or Split - with **Controls side**, **Controls panel content** and **Theme product controls**, which decides how much of your theme's own product block the configurator replaces.
+- **Sizes per device** - a drawing of the product page for desktop, laptop, tablet and phone screens, each with the settings that apply to it beside it: the side-by-side and stacked heights, the panel width per kind of screen, whether tablets stack or sit side by side, the max width, side offset and side margin.
+- **Spacing and advanced selectors** - the top and bottom margins, for every screen, and the CSS selectors the Split layout falls back to when a theme's structure is not detected.
+- **Storefront behaviour** - **Show fullscreen button** and **Show loading spinner**, then **Receive input names as variants** and **Input collection mode**, which only matter when the configurator reads your theme's own inputs rather than drawing its own panel, and **Debug mode**, which prints on the product page every input 3D Bits is reading.
+- **Pricing and charging** - the charging method, explained in [Charging methods](/learn/3d-bits/pricing/charging-methods); **How option charges reach the order**, explained in [Charging methods](/learn/3d-bits/pricing/charging-methods#one-line-per-option-or-one-combined-charge); the **Generated product name prefix** that brands the products the app generates; and **Pricing test mode**, which publishes your prices for inspection without taking orders.
 
 **Save settings** puts them onto your published products immediately. Three of them wait for your next publish instead: the charging method, the generated product name prefix and the placement strategy.
 

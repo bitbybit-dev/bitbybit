@@ -102,7 +102,7 @@ A plain background in a colour close to your store's is usually the right choice
 The **Canvas Frame** panel gives the 3D view itself a border, rounded corners and spacing. It is worth a moment, because it is what makes the configurator look built into the page rather than dropped onto it. A hairline border in your theme's border colour, with the same corner radius your product cards use, usually does more than any other single setting here.
 
 - The border takes a colour, a width in pixels, a corner radius and a line style of solid, dashed or dotted. A border only draws once you set a width.
-- The margin is set per side and is measured from the view's **own slot**, not from the page. In the **Split** layout a right margin opens a gap between the 3D view and the options column; in the **Overlay** layout, where the panel floats on top of the view, a right margin insets the view without moving the panel; in the **Inline** layout it simply opens a gap against the page.
+- The margin is set per side and is measured from the view's **own slot**, not from the page. In the **Split** layout a right margin opens a gap between the 3D view and the options column; in the **Inline** layout it simply opens a gap against the page. Areas placed on the canvas corners keep to the framed view, so a margin insets them too.
 
 That is a different thing from the canvas margins in the app's [display settings](/learn/3d-bits/admin/canvas-sizing), which hold the whole block off the edges of the page. Both apply, and they are doing different jobs: this panel travels with the project, that one belongs to the product.
 
