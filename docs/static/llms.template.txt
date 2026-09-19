@@ -306,6 +306,8 @@ Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does n
 
 ### MCP Integration
 
+- Bitbybit MCP server (first party, version-exact API answers): https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp
+- Agentic CAD, where geometry should run when an agent writes the code: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/agentic-cad
 - Context7 MCP Integration: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
 
 Context7 provides live AI context with always up-to-date documentation:

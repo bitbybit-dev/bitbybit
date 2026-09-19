@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Model Context Protocol (MCP)",
-        "description": "The Model Context Protocol lets an AI coding assistant look up Bitbybit documentation while it works, instead of guessing at the API from memory. That is the difference between an assistant that invents plausible function names and one that uses the real ones with the right arguments. These pages cover connecting an MCP server to your assistant, what it exposes, and how to use it while writing Bitbybit scripts in tools that support the protocol. Worth setting up before any serious AI-assisted work with the platform.",
+        "description": "The Model Context Protocol lets an AI coding assistant look up Bitbybit documentation while it works, instead of guessing at the API from memory. That is the difference between an assistant that invents plausible function names and one that uses the real ones with the right arguments. These pages cover connecting an MCP server to your assistant, what it exposes, and how to use it while writing Bitbybit scripts in tools that support the protocol. Worth setting up before any serious AI-assisted work with Bitbybit.",
         "slug": "/using-ai-with-bitbybit/mcp"
     }
 }

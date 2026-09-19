@@ -20,11 +20,13 @@ AI models like Claude, ChatGPT, and GitHub Copilot are trained on public code, b
 
 ## The Solution
 
-We provide two ways to give AI assistants deep knowledge of our APIs:
+We provide three ways to give AI assistants deep knowledge of our APIs:
 
 1. **[Context Files](./prompt-contexts)** - Download a markdown file containing our complete API reference. Attach it to your AI conversation and get accurate code generation.
 
-2. **[Context7 MCP](./mcp/context-7)** - Use the Model Context Protocol to give AI agents like Claude live access to our documentation.
+2. **[MCP servers](./mcp/bitbybit-mcp)** - Our own Model Context Protocol server answers version-exact questions about every function, its parameters, defaults and examples, remotely or from a local `npx` command; [Context7](./mcp/context-7) indexes the documentation site as a third-party alternative.
+
+3. **[Agentic CAD - our approach](./agentic-cad)** - Where geometry should run when an agent writes the code: the open-source packages first, CAD Cloud only for what needs it.
 
 ## What You Can Do
 

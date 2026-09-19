@@ -1192,6 +1192,16 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "The same bytes were uploaded and confirmed under this key before (matched by sha256): the existing confirmed file, ready to reference. No PUT is needed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmResponse"
+                }
+              }
+            }
+          },
           "201": {
             "description": "Upload URL and file ID",
             "content": {
@@ -3907,6 +3917,56 @@
         "additionalProperties": false,
         "description": "Success envelope containing a single model's definition"
       },
+      "ConfirmResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/ConfirmResult"
+          }
+        },
+        "required": [
+          "ok",
+          "data"
+        ],
+        "additionalProperties": false,
+        "description": "Success envelope confirming a file upload was verified"
+      },
+      "ConfirmResult": {
+        "type": "object",
+        "properties": {
+          "fileId": {
+            "type": "string",
+            "description": "File identifier that was confirmed",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "const": "confirmed"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Actual file size in bytes as stored on the server"
+          },
+          "contentType": {
+            "type": "string",
+            "description": "MIME type of the confirmed file"
+          }
+        },
+        "required": [
+          "fileId",
+          "status",
+          "bytes",
+          "contentType"
+        ],
+        "additionalProperties": false,
+        "description": "Returned after a file upload is verified. The file is now ready to be used in CAD operations."
+      },
       "UploadResponse": {
         "type": "object",
         "properties": {
@@ -4151,56 +4211,6 @@
         ],
         "additionalProperties": false,
         "description": "Confirmation that a resource was successfully deleted"
-      },
-      "ConfirmResponse": {
-        "type": "object",
-        "properties": {
-          "ok": {
-            "type": "boolean",
-            "const": true
-          },
-          "data": {
-            "$ref": "#/components/schemas/ConfirmResult"
-          }
-        },
-        "required": [
-          "ok",
-          "data"
-        ],
-        "additionalProperties": false,
-        "description": "Success envelope confirming a file upload was verified"
-      },
-      "ConfirmResult": {
-        "type": "object",
-        "properties": {
-          "fileId": {
-            "type": "string",
-            "description": "File identifier that was confirmed",
-            "format": "uuid"
-          },
-          "status": {
-            "type": "string",
-            "const": "confirmed"
-          },
-          "bytes": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 9007199254740991,
-            "description": "Actual file size in bytes as stored on the server"
-          },
-          "contentType": {
-            "type": "string",
-            "description": "MIME type of the confirmed file"
-          }
-        },
-        "required": [
-          "fileId",
-          "status",
-          "bytes",
-          "contentType"
-        ],
-        "additionalProperties": false,
-        "description": "Returned after a file upload is verified. The file is now ready to be used in CAD operations."
       },
       "TaskListResponse": {
         "type": "object",

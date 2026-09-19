@@ -1370,6 +1370,15 @@ export interface paths {
                 };
             };
             responses: {
+                /** @description The same bytes were uploaded and confirmed under this key before (matched by sha256): the existing confirmed file, ready to reference. No PUT is needed. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ConfirmResponse"];
+                    };
+                };
                 /** @description Upload URL and file ID */
                 201: {
                     headers: {
@@ -2728,6 +2737,26 @@ export interface components {
             ok: true;
             data: components["schemas"]["ModelDefinition"];
         };
+        /** @description Success envelope confirming a file upload was verified */
+        ConfirmResponse: {
+            /** @constant */
+            ok: true;
+            data: components["schemas"]["ConfirmResult"];
+        };
+        /** @description Returned after a file upload is verified. The file is now ready to be used in CAD operations. */
+        ConfirmResult: {
+            /**
+             * Format: uuid
+             * @description File identifier that was confirmed
+             */
+            fileId: string;
+            /** @constant */
+            status: "confirmed";
+            /** @description Actual file size in bytes as stored on the server */
+            bytes: number;
+            /** @description MIME type of the confirmed file */
+            contentType: string;
+        };
         /** @description Success envelope containing the pre-signed upload URL and file metadata */
         UploadResponse: {
             /** @constant */
@@ -2810,26 +2839,6 @@ export interface components {
         DeleteResult: {
             /** @constant */
             deleted: true;
-        };
-        /** @description Success envelope confirming a file upload was verified */
-        ConfirmResponse: {
-            /** @constant */
-            ok: true;
-            data: components["schemas"]["ConfirmResult"];
-        };
-        /** @description Returned after a file upload is verified. The file is now ready to be used in CAD operations. */
-        ConfirmResult: {
-            /**
-             * Format: uuid
-             * @description File identifier that was confirmed
-             */
-            fileId: string;
-            /** @constant */
-            status: "confirmed";
-            /** @description Actual file size in bytes as stored on the server */
-            bytes: number;
-            /** @description MIME type of the confirmed file */
-            contentType: string;
         };
         /** @description Success envelope containing a paginated task list */
         TaskListResponse: {

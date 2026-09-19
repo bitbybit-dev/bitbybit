@@ -1,8 +1,8 @@
 # CLAUDE.md - the published `@bitbybit-dev/*` packages
 
-Thirteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`, `jscad-worker`,
+Fourteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`, `jscad-worker`,
 `manifold`, `manifold-worker`, `core`, `babylonjs`, `threejs`, `playcanvas`, `cad-cloud-sdk`,
-`create-app`.
+`create-app`, `mcp`.
 
 They form a DAG. `base` is the root and depends on nothing; `core` sits on `base` and the three
 workers; `babylonjs`, `threejs` and `playcanvas` each sit on `core` and carry their engine as a peer
@@ -79,9 +79,11 @@ npm run lint
   verifying what is present (`npm run kernels:fetch` at the root does the same). A build that skips
   it produces a package that resolves but cannot run. The tarball also carries `NOTICE` and the
   OCCT and Draco license texts.
-- `cad-cloud-sdk` and `create-app` compile as **NodeNext at ES2022** where their siblings target a
-  browser bundle - the only compiler settings either states on top of the shared base. Part of the
-  SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit those by hand.
+- `cad-cloud-sdk`, `create-app` and `mcp` compile as **NodeNext at ES2022** where their siblings
+  target a browser bundle - the only compiler settings any of them states on top of the shared base.
+  Part of the SDK's `src/types/` is **generated** from the CAD Cloud API's schemas; do not edit
+  those by hand. `mcp` is the MCP server that documents the API for coding agents; its
+  `src/guides.generated.ts` is generated from the docs page it serves (`npm run sync:guides`).
 - **A JSCAD entity is one of three unrelated shapes, and the types say so.** `JSCADEntity` is
   `JSCADGeom2 | JSCADGeom3 | JSCADPath2` - a 2D region held as its edges, a solid held as its
   polygons, and a path. They share only a transform, so narrow before reading: `"polygons" in x` for

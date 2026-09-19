@@ -81,8 +81,8 @@ export default defineConfig([
         extends: [...tseslint.configs.recommendedTypeChecked],
         languageOptions: {
             parserOptions: {
-                // Three tooling files sit in no package's compilation: the shared vitest factory,
-                // and the two configs of the packages whose tsconfig covers `src` alone. Every
+                // Four tooling files sit in no package's compilation: the shared vitest factory,
+                // and the three configs of the packages whose tsconfig covers `src` alone. Every
                 // other vitest config is already inside its package's project, and naming one here
                 // that the service can place is itself an error - so this list is exact, not a glob.
                 projectService: {
@@ -90,6 +90,7 @@ export default defineConfig([
                         "packages/dev/vitest.shared.ts",
                         "packages/dev/cad-cloud-sdk/vitest.config.ts",
                         "packages/dev/create-app/vitest.config.ts",
+                        "packages/dev/mcp/vitest.config.ts",
                     ],
                 },
                 tsconfigRootDir: import.meta.dirname,

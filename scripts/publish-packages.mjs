@@ -16,8 +16,8 @@
  *     fresh publish can lag resolution, and only then does the next tier start;
  *   - the eleven dist-model packages publish their dist/ (the manifest copied there by
  *     scripts/dist-manifest.mjs, which refuses a workspace: specifier or a wrong repository field);
- *     cad-cloud-sdk and create-app publish their package root through their files allowlist and
- *     their prepublishOnly build.
+ *     cad-cloud-sdk, create-app and mcp publish their package root through their files allowlist
+ *     and their prepublishOnly build.
  *
  * Authentication comes from where it runs: publish.yml publishes through npm trusted publishing,
  * a local run through the logged-in npm, and --dry-run publishes nothing.
