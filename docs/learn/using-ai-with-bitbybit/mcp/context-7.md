@@ -1,15 +1,19 @@
 ---
 id: context-7
-title: Using Context7 MCP with Bitbybit
-sidebar_label: Context7 Integration
-description: Learn how to connect your AI coding assistant to up-to-date Bitbybit documentation and examples using Context7 and the Model Context Protocol (MCP).
+sidebar_position: 3
+title: Context7, a third-party alternative
+sidebar_label: Context7 (third party)
+description: Context7 indexes the Bitbybit documentation site for AI assistants. It is a reasonable addition when you already use it; the Bitbybit CAD MCP server knows the API more exactly.
 tags: [ai]
 ---
 
-# Using Context7 MCP with Bitbybit
+# Context7, a third-party alternative
 
-We are pleased to announce that Bitbybit documentation and example applications are now available via Context7 MCP servers.  
-You can explore our [GitHub Monorepo](https://github.com/bitbybit-dev/bitbybit) or [find Bitbybit on Context7](https://context7.com/bitbybit-dev/bitbybit).
+:::info Prefer the Bitbybit servers
+The [Bitbybit CAD MCP](./bitbybit-mcp) answers from the API index of the exact version you use: every function, parameter and default, with nothing scraped or summarised. Connect it first. Context7 indexes this documentation site, which is broader but less exact, and it is run by a third party. Use it in addition when you already have it, not instead.
+:::
+
+Bitbybit documentation and example applications are also indexed by Context7. You can explore our [GitHub monorepo](https://github.com/bitbybit-dev/bitbybit) or [find Bitbybit on Context7](https://context7.com/bitbybit-dev/bitbybit).
 
 ---
 

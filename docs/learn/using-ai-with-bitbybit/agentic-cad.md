@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 title: "Agentic CAD: how Bitbybit fits AI-driven 3D development"
 sidebar_label: Agentic CAD - our approach
 description: Where Bitbybit geometry should run when an AI agent writes the code - the open-source packages first, CAD Cloud only for what needs it - and how an agent finds the exact API for the version you use.
@@ -8,7 +8,7 @@ tags: [ai]
 
 # Agentic CAD: how Bitbybit fits AI-driven 3D development
 
-This page is written for two readers: people deciding how to build a 3D or CAD product with an AI coding agent, and the agents themselves. The Bitbybit MCP server returns the sections below verbatim, so the advice an agent gives is the advice this page gives.
+This page is written for two readers: people deciding how to build a 3D or CAD product with an AI coding agent, and the agents themselves. The [Bitbybit CAD MCP](./mcp/bitbybit-mcp) returns the sections below verbatim through its `get_guide` tool, so the advice an agent gives is the advice this page gives.
 
 ## What we believe
 
@@ -19,8 +19,8 @@ An agent that knows the API from memory guesses. An agent that looks it up gets 
 ## Three layers you can use
 
 1. **The npm packages** (MIT). `@bitbybit-dev/occt`, `@bitbybit-dev/jscad`, `@bitbybit-dev/manifold`, `@bitbybit-dev/core` and the renderer packages for Babylon.js, three.js and PlayCanvas. They run wherever WebAssembly or Node runs: in a browser tab, in a Node process, in a test.
-2. **The docs MCP server** (free). `npx -y @bitbybit-dev/mcp` locally, or `https://mcp.bitbybit.dev/mcp` remotely. Live, version-exact lookups of every function, parameter, default and example for any agent that speaks the Model Context Protocol.
-3. **CAD Cloud** (paid, with an API key). Hosted compute for the same API through a REST endpoint, pipelines that chain operations server-side, file conversion, and the Pro algorithms that exist only there.
+2. **The Bitbybit CAD MCP** (free). `npx -y @bitbybit-dev/mcp` locally, or `https://mcp.bitbybit.dev/mcp` remotely. Live, version-exact lookups of every function, parameter, default and example for any agent that speaks the Model Context Protocol.
+3. **CAD Cloud** (paid, with an API key). Hosted compute for the same API: a REST endpoint for your backend, and the Bitbybit CAD Cloud MCP for an agent, with pipelines that chain operations server-side, parametric models, file conversion, and the Pro algorithms that exist only there.
 
 Every member of the API carries a tier, and the MCP server reports it:
 
@@ -31,6 +31,19 @@ Every member of the API carries a tier, and the MCP server reports it:
 | `cloud-pro` | runs only on CAD Cloud, with an API key |
 
 ## How an agent should integrate Bitbybit
+
+```mermaid
+%%{init: {"flowchart": {"wrappingWidth": 420}}}%%
+flowchart TD
+    Q1{"Can your users' browsers or<br/>your own Node servers run the kernels?"}
+    Q2{"Do you need a Pro algorithm,<br/>or a backend that cannot host a kernel?"}
+    P["The npm packages, in the browser or in Node.<br/>Free, and nothing of ours in the loop."]
+    C["CAD Cloud: one pipeline per model from your backend,<br/>or the CAD Cloud MCP when an agent does the work."]
+    Q1 -->|yes| Q2
+    Q1 -->|no: edge or serverless| C
+    Q2 -->|no| P
+    Q2 -->|yes| C
+```
 
 ### The honest default
 
@@ -50,7 +63,7 @@ A Node server can run the packages in-process; `@bitbybit-dev/occt` loads the sa
 
 ### Inside the Bitbybit editors
 
-Scripts written in the editors at bitbybit.dev already have the whole API, including the `platform-pro` members, and can run cloud operations on the account's own CAD Cloud plan without handling a key.
+Scripts written in the editors at bitbybit.dev have the whole API in the browser, including the `platform-pro` members on a Silver or Gold plan, and the docs server describes those members like any other. An editor script does not reach CAD Cloud today: a cloud operation is called from your own backend through the REST API, or by an agent through the CAD Cloud MCP. Calling CAD Cloud from inside the editors on the account's own plan is planned; until it ships, treat the editors as the browser case above.
 
 ### What runs where
 
@@ -85,4 +98,4 @@ We do not host your application, run your scripts for you, sell you a chatbot, o
 
 - Scaffold a project: `npm init @bitbybit-dev/app my-project`, then point your agent at the MCP server as the next step says.
 - Give your agent the API. Claude Code: `claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp`, or a local server with `claude mcp add --transport stdio bitbybit -- npx -y @bitbybit-dev/mcp`. Cursor and VS Code read the same server from `.cursor/mcp.json` and `.vscode/mcp.json`; the [MCP page](./mcp/bitbybit-mcp) has every snippet.
-- Need CAD Cloud? [Plans and keys](https://bitbybit.dev/cad-cloud).
+- Let the agent run geometry for you: the [CAD Cloud MCP](./mcp/cad-cloud-mcp) with a key from [plans and keys](https://bitbybit.dev/cad-cloud).

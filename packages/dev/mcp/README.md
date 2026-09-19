@@ -1,4 +1,4 @@
-# @bitbybit-dev/mcp
+# @bitbybit-dev/mcp: the Bitbybit CAD MCP server
 
 An [MCP](https://modelcontextprotocol.io) server that documents the [Bitbybit](https://bitbybit.dev) 3D CAD API for AI coding agents: every function, its parameters, defaults, return type and examples, for the exact version your project uses. An agent with this server looks the API up instead of guessing it.
 

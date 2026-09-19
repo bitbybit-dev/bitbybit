@@ -129,6 +129,18 @@
     font-weight: 600;
 }
 
+/* Mermaid: text drawn on the page background rather than inside a filled shape (a sequence
+   diagram's messages and loop labels) inherits the dark shape text colour from the shared
+   palette, which the dark page swallows. It follows the page's own text colour instead, so it
+   reads in both modes; the filled shapes keep their palette text. */
+.docusaurus-mermaid-container .messageText,
+.docusaurus-mermaid-container .loopText,
+.docusaurus-mermaid-container .loopText > tspan,
+.docusaurus-mermaid-container .labelText,
+.docusaurus-mermaid-container .labelText > tspan {
+    fill: var(--ifm-font-color-base) !important;
+}
+
 .docusaurus-mermaid-container {
     display: flex;
     justify-content: center;

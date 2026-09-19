@@ -41,6 +41,7 @@ We serve a wide range of users. Pick the path that matches your goals and we wil
 | **Computational Designer** | Explore parametric geometry with visual or code tools | [Designer path](./paths/designer) |
 | **Shopify Merchant** | Add 3D product viewers to your storefront | [Shopify Merchant path](./paths/shopify-merchant) |
 | **Educator or Teacher** | Bring geometry programming into the classroom | [Educator path](./paths/educator) |
+| **AI coding agent, or the person driving one** | Give the agent the exact API and, with a key, hosted CAD compute | [AI path](./paths/ai-agent) |
 
 Not sure where you fit? Keep reading for a quick overview, then explore at your own pace.
 
@@ -87,6 +88,10 @@ Install our open-source packages directly into your frontend build (React, Angul
 ### Option 4: REST API (CAD Cloud)
 
 For server-side workflows, your backend (Node.js, Cloudflare Workers, .NET, or any HTTP client) calls our CAD Cloud API - directly or through our TypeScript SDK. The heavy geometry processing runs on our managed infrastructure and results are returned to your application. You can prototype operations, manage API keys, and preview results through [Bitbybit Studio](https://studio.bitbybit.dev). [Learn more](/api/cloud-api)
+
+### Option 5: Let an AI agent do it
+
+Claude Code, Cursor, VS Code, claude.ai and ChatGPT can connect to the free [Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp) and look up the exact API of the version you use while they write; with a key, the [Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets the agent run the geometry on CAD Cloud and hand you the files. The [AI section](./using-ai-with-bitbybit/intro) explains both.
 
 ### Visual IDEs
 

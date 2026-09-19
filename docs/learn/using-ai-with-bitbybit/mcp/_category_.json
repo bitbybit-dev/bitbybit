@@ -1,10 +1,10 @@
 {
-    "label": "Model Context Protocol (MCP)",
-    "position": 10,
+    "label": "MCP servers",
+    "position": 2,
     "link": {
         "type": "generated-index",
-        "title": "Model Context Protocol (MCP)",
-        "description": "The Model Context Protocol lets an AI coding assistant look up Bitbybit documentation while it works, instead of guessing at the API from memory. That is the difference between an assistant that invents plausible function names and one that uses the real ones with the right arguments. These pages cover connecting an MCP server to your assistant, what it exposes, and how to use it while writing Bitbybit scripts in tools that support the protocol. Worth setting up before any serious AI-assisted work with Bitbybit.",
+        "title": "MCP servers",
+        "description": "The Model Context Protocol lets an AI coding agent look things up and run tools while it works, instead of guessing from memory. Bitbybit runs two servers: the free Bitbybit CAD MCP, which documents the exact API of the version you use, and the Bitbybit CAD Cloud MCP, which runs geometry on CAD Cloud for an API key. These pages connect them to Claude Code, Cursor, VS Code, claude.ai, ChatGPT and the Claude API, and describe what each tool answers. Context7 is covered as a third-party alternative.",
         "slug": "/using-ai-with-bitbybit/mcp"
     }
 }

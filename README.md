@@ -108,7 +108,7 @@ Beyond these open-source NPM packages, the Bitbybit platform includes:
 - **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
 - **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for your Shopify store. [Documentation](https://learn.bitbybit.dev/learn/3d-bits/intro).  
 - **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute Rete/Blockly/TypeScript scripts directly on your website without writing code  
-- **[AI-Assisted Development](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - Context files for GitHub Copilot, Claude, and ChatGPT. [MCP integration](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7) available.  
+- **[Built for AI Coding Agents](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - The free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) gives Claude Code, Cursor, VS Code, claude.ai and ChatGPT the exact API of the version you use; the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets an agent run geometry on CAD Cloud with a key. Context files cover assistants without MCP.  
 - **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
 
 ## Community

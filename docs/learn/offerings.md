@@ -144,6 +144,21 @@ Comprehensive modules covering 3D programming, mathematics, parametric design, a
 
 ---
 
+## 9. MCP Servers - Bitbybit for AI Coding Agents
+
+**Free docs server · CAD Cloud server included with any CAD Cloud plan**
+
+AI coding agents are a first-class audience for Bitbybit. Two Model Context Protocol servers give them what they need at the moment they need it:
+
+- **[Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp)** - free, no account. Every function, parameter, default and example of the exact version you use, answered live to Claude Code, Cursor, VS Code, claude.ai, ChatGPT or the Claude API.
+- **[Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp)** - with an API key, the agent runs operations, pipelines, parametric models and STEP conversions on CAD Cloud and hands you the files. It can answer "what is the volume of this STEP file" without you hosting anything.
+
+**Use when:** An agent writes your Bitbybit code, or you want an agent to produce geometry and files for you directly.
+
+[AI section →](./using-ai-with-bitbybit/intro)
+
+---
+
 ## Quick Decision Matrix
 
 | Your goal | Recommended product | Cost |
@@ -156,6 +171,8 @@ Comprehensive modules covering 3D programming, mathematics, parametric design, a
 | Automate CAD processing on a server | CAD Cloud API + Studio | Paid (usage-based) |
 | Add 3D products to a Shopify store | 3D Bits App | Paid (Base/Standard/Pro) |
 | Get a custom CAD solution built for you | Enterprise Services | Custom pricing |
+| Let an AI agent write Bitbybit code | Bitbybit CAD MCP | Free |
+| Let an AI agent run geometry and hand you files | Bitbybit CAD Cloud MCP | Paid (a CAD Cloud plan) |
 
 ---
 

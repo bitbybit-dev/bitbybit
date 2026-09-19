@@ -254,6 +254,10 @@ const config: Config = {
                     tertiaryTextColor: "#1a1c1f",
                     tertiaryBorderColor: "#dc966e",
                     lineColor: "#dc966e",
+                    // Sequence diagrams take their arrow colour from textColor, which is the dark
+                    // shape text above; on the page background that is invisible, so the arrows
+                    // follow the line colour like every other connector.
+                    signalColor: "#dc966e",
                     clusterBkg: "transparent",
                     clusterBorder: "#dc966e",
                     edgeLabelBackground: "#f0cebb",
@@ -281,6 +285,7 @@ const config: Config = {
                 },
                 { to: "/learn/code/intro", label: "Code", position: "left" },
                 { to: "/learn/3d-bits/intro", label: "3D Bits", position: "left" },
+                { to: "/learn/using-ai-with-bitbybit/intro", label: "AI", position: "left" },
                 { to: "/learn/getting-started/engines/threejs", label: "ThreeJS", position: "left" },
                 { to: "/learn/getting-started/engines/babylonjs", label: "BabylonJS", position: "left" },
                 { to: "/learn/getting-started/engines/playcanvas", label: "PlayCanvas", position: "left" },

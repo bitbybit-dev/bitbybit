@@ -23,7 +23,6 @@ import {
   TypeScriptEditorIcon,
   TerminalIcon,
   AIRobotIcon,
-  Context7Icon,
 } from "@site/src/components/Icons";
 import { useState } from "react";
 
@@ -186,7 +185,7 @@ function HeroSection() {
             <span className={styles.statLabel}>CAD Kernels</span>
           </div>
           <div className={styles.stat}>
-            <span className={styles.statNumber}>1400+</span>
+            <span className={styles.statNumber}>1725</span>
             <span className={styles.statLabel}>API Functions</span>
           </div>
           <div className={styles.stat}>
@@ -468,24 +467,36 @@ function AICodingSection() {
               <span className={styles.aiBadgeIcon}>✦</span>
               <span>AI-Powered Development</span>
             </div>
-            <Heading as="h2">Code with AI Assistants</Heading>
+            <Heading as="h2">Built for AI Coding Agents</Heading>
             <p>
-              Supercharge your 3D development workflow by leveraging AI coding assistants like GitHub Copilot, 
-              Claude, and ChatGPT. Use our specialized context files to help AI understand Bitbybit's APIs.
+              Claude Code, Cursor, VS Code, claude.ai and ChatGPT can look up the exact Bitbybit API while they work,
+              and run geometry on CAD Cloud when you give them a key. Two MCP servers, one dotted API, no guessing.
             </p>
           </div>
           <div className={styles.aiCardsGrid}>
-            <Link to="/learn/using-ai-with-bitbybit/intro" className={styles.aiCard}>
+            <Link to="/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp" className={styles.aiCard}>
               <div className={styles.aiCardGlow}></div>
               <div className={styles.aiCardIcon}>
                 <AIRobotIcon size={56} />
               </div>
-              <h3>Getting Started with AI</h3>
+              <h3>Bitbybit CAD MCP</h3>
               <p>
-                Learn how to effectively prompt AI assistants to generate Bitbybit code, understand our patterns, 
-                and accelerate your 3D development.
+                Free. Every function, parameter, default and example for the exact version you use, answered live
+                to your agent. Remote at mcp.bitbybit.dev or local with one npx command.
               </p>
-              <span className={styles.aiCardCta}>Learn More →</span>
+              <span className={styles.aiCardCta}>Connect Your Agent →</span>
+            </Link>
+            <Link to="/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp" className={styles.aiCard}>
+              <div className={styles.aiCardGlow}></div>
+              <div className={styles.aiCardIcon}>
+                <CadIcon size={56} />
+              </div>
+              <h3>Bitbybit CAD Cloud MCP</h3>
+              <p>
+                With an API key, your agent runs operations, pipelines, parametric models and STEP conversions on
+                CAD Cloud and hands you the files. Ask for the volume of a STEP file and get a number back.
+              </p>
+              <span className={styles.aiCardCta}>Run Geometry From Your Agent →</span>
             </Link>
             <Link to="/learn/using-ai-with-bitbybit/prompt-contexts" className={styles.aiCard}>
               <div className={styles.aiCardGlow}></div>
@@ -494,27 +505,17 @@ function AICodingSection() {
               </div>
               <h3>Context Files</h3>
               <p>
-                Download engine-specific context files for BabylonJS, Three.js, and PlayCanvas to enhance 
-                AI understanding of your development environment.
+                For assistants that cannot connect to an MCP server: the whole API as one Markdown or .d.ts file
+                per engine, to attach to a conversation.
               </p>
               <span className={styles.aiCardCta}>Get Contexts →</span>
-            </Link>
-            <Link to="/learn/using-ai-with-bitbybit/mcp/context-7" className={styles.aiCard}>
-              <div className={styles.aiCardGlow}></div>
-              <div className={styles.aiCardIcon}>
-                <Context7Icon size={56} />
-              </div>
-              <h3>Context7 MCP</h3>
-              <p>
-                Use the Context7 Model Context Protocol server to automatically provide Bitbybit documentation 
-                to AI models like Claude.
-              </p>
-              <span className={styles.aiCardCta}>Setup MCP →</span>
             </Link>
           </div>
           <div className={styles.aiFooter}>
             <p>
-              Works with popular AI assistants including GitHub Copilot, Claude, ChatGPT, and any MCP-compatible tool.
+              Start with the <Link to="/learn/using-ai-with-bitbybit/intro">AI introduction</Link>, read where geometry
+              should run in <Link to="/learn/using-ai-with-bitbybit/agentic-cad">Agentic CAD</Link>, or add{" "}
+              <Link to="/learn/using-ai-with-bitbybit/mcp/context-7">Context7</Link> as a third-party index of this site.
             </p>
           </div>
         </div>

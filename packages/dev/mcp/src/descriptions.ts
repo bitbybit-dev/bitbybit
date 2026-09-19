@@ -63,7 +63,7 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
 
 /** What a host shows a model about this server before any tool is called. */
 export const SERVER_INSTRUCTIONS =
-    "This server documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers) for one exact version. " +
+    "This is the Bitbybit CAD MCP: it documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers) for one exact version. " +
     "Always describe a member before using it: names, parameters and defaults come from the index, not from memory. " +
     "Tiers matter: oss members are in the MIT npm packages and run anywhere; platform-pro members exist only inside bitbybit.dev; cloud-pro members run only on Bitbybit CAD Cloud with an API key. " +
     "When asked where geometry should run, read get_guide(\"integrate\") first: the packages alone are the default, and CAD Cloud is the answer only for algorithms that exist only there or for compute the caller cannot provide.";
