@@ -13,8 +13,12 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
 ## Shape
 
 - `src/registry.ts` describes a tool once, independent of any transport (`ToolDefinition`,
-  `Registry`, `toHttp`). `src/server.ts` binds a registry to the MCP SDK; `src/stdio.ts` is the
-  executable. Nothing else imports the SDK, and the dependency test asserts it.
+  `Registry`, `toHttp`). `src/server.ts` binds a registry to the MCP SDK: `createMcpServer` for
+  a connection that lives (stdio), `createRequestHandler` for stateless HTTP, one handler built
+  once whose `fetch(request, context)` serves each request with the context that request carries.
+  `src/stdio.ts` is the executable. Nothing else imports the SDK, and the dependency test asserts it.
+- `src/json-schema.ts` is the one inliner of local `$ref` pointers in the JSON schema zod renders,
+  used for every advertised tool schema and exported for anyone who renders the same convention.
 - The seven tools live in `src/tools/`; every title and description is in `src/descriptions.ts`,
   because a description is what a model reads to choose a tool, so a change there changes
   behaviour and is made deliberately.
@@ -45,11 +49,11 @@ or a line here is where an explanation goes.
   them most authoritative first; disagreeing versions are reported and the first wins), then this
   package's own version. When the detected version has no published index, the package's own
   version is served with a note on stderr; an explicit flag or variable is never second-guessed.
-- `registry.ts` caps a server at eight tools (`MAX_TOOLS`): past that, agents pick the wrong tool
+- `registry.ts` caps a server at eight tools (`TOOL_CEILING`): past that, agents pick the wrong tool
   more often than the right one. Its `inputJsonSchema` inlines every local `$ref` of the schema zod
-  renders, because the hosts that read a tool's arguments (the Claude API among them) want the
-  object at every position; a cyclic reference stays in place with the table it needs. The schema
-  is rendered for input, so a field with a default is optional. `toHttp` serves only tools with a
+  renders (`json-schema.ts`), because the hosts that read a tool's arguments (the Claude API among
+  them) want the object at every position; a cyclic reference stays in place with the table it
+  needs. The schema is rendered for input, so a field with a default is optional. `toHttp` serves only tools with a
   handler, and arguments that fail the schema come back as an error result, never as a throw.
 - `index-reader.ts` answers an unknown path with the members it most plausibly meant, in this
   order: a case difference, siblings under the same parent a few edits away, members sharing the

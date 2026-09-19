@@ -6,9 +6,13 @@ export function isExactVersion(version: string): boolean {
     return VERSION.test(version);
 }
 
+export function indexPath(version: string): string {
+    return `/v${version}/ai-context/index.json`;
+}
+
 export function indexUrl(version: string, host: string = INDEX_HOST): string {
     if (!isExactVersion(version)) throw new Error(`"${version}" is not an exact version; the index is published per release and never under a moving name`);
-    return `${host}/v${version}/ai-context/index.json`;
+    return `${host}${indexPath(version)}`;
 }
 
 export class IndexNotPublishedError extends Error {

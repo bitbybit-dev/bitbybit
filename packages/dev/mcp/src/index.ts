@@ -1,5 +1,6 @@
 export type { ApiIndex, Engine, IndexEnum, IndexExample, IndexField, IndexMember, IndexParam, MemberKind, Tier } from "./index-types.js";
 export { Registry, TOOL_CEILING, inputJsonSchema, toHttp } from "./registry.js";
+export { inlineJsonSchemaReferences } from "./json-schema.js";
 export type { AnyToolDefinition, HttpTool, ToolAnnotations, ToolDefinition, ToolHandler, ToolInput, ToolLink, ToolResult, ToolWhere } from "./registry.js";
 export { fail, failFor, ok } from "./results.js";
 export { IndexReader, editDistance, tokenize } from "./index-reader.js";
@@ -14,4 +15,4 @@ export { renderLine, renderMember } from "./render.js";
 export { splitGuides, slugify } from "./guides-split.js";
 export type { GuideSection } from "./guides-split.js";
 export { GUIDES, GUIDE_PAGE_URL } from "./guides.generated.js";
-export { INDEX_HOST, IndexNotPublishedError, indexUrl, isExactVersion } from "./index-url.js";
+export { INDEX_HOST, IndexNotPublishedError, indexPath, indexUrl, isExactVersion } from "./index-url.js";

@@ -1,5 +1,5 @@
-import { McpServer } from "@modelcontextprotocol/server";
-import type { StandardSchemaWithJSON } from "@modelcontextprotocol/server";
+import { McpServer, createMcpHandler } from "@modelcontextprotocol/server";
+import type { AuthInfo, StandardSchemaWithJSON } from "@modelcontextprotocol/server";
 import type { z } from "zod";
 import { inputJsonSchema } from "./registry.js";
 import type { AnyToolDefinition, Registry, ToolInput, ToolResult } from "./registry.js";
@@ -10,6 +10,19 @@ export interface McpServerOptions<TContext> {
     instructions?: string;
     filter?: (definition: AnyToolDefinition<TContext>) => boolean;
 }
+
+export interface RequestHandlerOptions<TContext> {
+    name: string;
+    version: string;
+    instructions?: string;
+    filterFor?: (context: TContext) => (definition: AnyToolDefinition<TContext>) => boolean;
+}
+
+export interface RequestHandler<TContext> {
+    fetch(request: Request, context: TContext): Promise<Response>;
+}
+
+const REQUEST_CONTEXT = "dev.bitbybit/request-context";
 
 type TextContent = { type: "text"; text: string };
 type LinkContent = { type: "resource_link"; uri: string; name: string; mimeType?: string; description?: string };
@@ -74,4 +87,30 @@ export function createMcpServer<TContext>(registry: Registry<TContext>, context:
     );
     bindRegistry(server, registry, context, options.filter);
     return server;
+}
+
+function carrying<TContext>(context: TContext): AuthInfo {
+    return { token: "", clientId: "", scopes: [], extra: { [REQUEST_CONTEXT]: context } };
+}
+
+function carried<TContext>(authInfo: AuthInfo | undefined): TContext {
+    const context = authInfo?.extra?.[REQUEST_CONTEXT];
+    if (context === undefined) throw new Error("The request carries no context; serve it through the request handler's own fetch");
+    return context as TContext;
+}
+
+export function createRequestHandler<TContext>(registry: Registry<TContext>, options: RequestHandlerOptions<TContext>): RequestHandler<TContext> {
+    const handler = createMcpHandler(
+        ({ authInfo }) => {
+            const context = carried<TContext>(authInfo);
+            const server = new McpServer(
+                { name: options.name, version: options.version },
+                options.instructions === undefined ? {} : { instructions: options.instructions },
+            );
+            bindRegistry(server, registry, context, options.filterFor?.(context));
+            return server;
+        },
+        { legacy: "stateless", responseMode: "json" },
+    );
+    return { fetch: (request, context) => handler.fetch(request, { authInfo: carrying(context) }) };
 }

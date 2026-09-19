@@ -5,7 +5,7 @@ import type { ApiIndex } from "./index-types.js";
 
 import { IndexNotPublishedError, indexUrl } from "./index-url.js";
 
-export { INDEX_HOST, IndexNotPublishedError, indexUrl, isExactVersion } from "./index-url.js";
+export { INDEX_HOST, IndexNotPublishedError, indexPath, indexUrl, isExactVersion } from "./index-url.js";
 
 const NOT_FOUND = 404;
 

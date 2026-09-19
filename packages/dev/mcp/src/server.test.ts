@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { Client, InMemoryTransport } from "@modelcontextprotocol/client";
-import { createMcpServer } from "./server.js";
+import { createMcpServer, createRequestHandler } from "./server.js";
 import { createDocsRegistry } from "./tools/index.js";
 import { z } from "zod";
 import { Registry, toHttp } from "./registry.js";
+import { ok } from "./results.js";
 import { DESCRIPTIONS, SERVER_INSTRUCTIONS, TOOL_NAMES } from "./descriptions.js";
 import { FIXTURE_VERSION, fixtureContext } from "./__fixtures__/load.js";
 
@@ -134,5 +135,79 @@ describe("the MCP binding", () => {
 
         // Assert
         expect(instructions).toBe(SERVER_INSTRUCTIONS);
+    });
+});
+
+interface Caller {
+    who: string;
+}
+
+function callerRegistry(): Registry<Caller> {
+    return new Registry<Caller>()
+        .register({
+            name: "whoami",
+            description: "Names the caller",
+            annotations: { title: "Who am I", readOnlyHint: true, destructiveHint: false },
+            input: z.object({}),
+            where: "server",
+            handler: (_args, context) => ok(context.who),
+        })
+        .register({
+            name: "secret",
+            description: "Members only",
+            annotations: { title: "Secret", readOnlyHint: true, destructiveHint: false },
+            input: z.object({}),
+            where: "server",
+            handler: () => ok("the secret"),
+        });
+}
+
+function rpc(method: string, params: Record<string, unknown> = {}): Request {
+    return new Request("https://mcp.test/mcp", {
+        method: "POST",
+        headers: { "content-type": "application/json", accept: "application/json, text/event-stream" },
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+    });
+}
+
+async function reply(response: Response): Promise<{ result?: Record<string, unknown>; error?: { message: string } }> {
+    const text = await response.text();
+    const data = text.split("\n").find((line) => line.startsWith("data: "));
+    return JSON.parse(data === undefined ? text : data.slice("data: ".length)) as { result?: Record<string, unknown>; error?: { message: string } };
+}
+
+describe("the request handler", () => {
+    it("serves every request through one handler with the context that request carries", async () => {
+        // Arrange
+        const handler = createRequestHandler(callerRegistry(), {
+            name: "t",
+            version: "0.0.0",
+            filterFor: (context) => (definition) => context.who !== "guest" || definition.name !== "secret",
+        });
+
+        // Act
+        const member = await reply(await handler.fetch(rpc("tools/list"), { who: "member" }));
+        const guest = await reply(await handler.fetch(rpc("tools/list"), { who: "guest" }));
+        const named = await reply(await handler.fetch(rpc("tools/call", { name: "whoami", arguments: {} }), { who: "alice" }));
+        const hidden = await reply(await handler.fetch(rpc("tools/call", { name: "secret", arguments: {} }), { who: "guest" }));
+
+        // Assert
+        const names = (listed: Record<string, unknown> | undefined): string[] => ((listed?.["tools"] ?? []) as { name: string }[]).map((tool) => tool.name);
+        expect(names(member.result)).toEqual(["whoami", "secret"]);
+        expect(names(guest.result)).toEqual(["whoami"]);
+        expect((named.result?.["content"] as { text: string }[])[0]?.text).toBe("alice");
+        expect(hidden.error?.message).toContain("secret");
+    });
+
+    it("carries the server name, version and instructions", async () => {
+        // Arrange
+        const handler = createRequestHandler(callerRegistry(), { name: "bitbybit", version: FIXTURE_VERSION, instructions: SERVER_INSTRUCTIONS });
+
+        // Act
+        const initialized = await reply(await handler.fetch(rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test-client", version: "0.0.0" } }), { who: "member" }));
+
+        // Assert
+        expect(initialized.result?.["serverInfo"]).toMatchObject({ name: "bitbybit", version: FIXTURE_VERSION });
+        expect(initialized.result?.["instructions"]).toBe(SERVER_INSTRUCTIONS);
     });
 });
