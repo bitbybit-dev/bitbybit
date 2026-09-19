@@ -11,7 +11,6 @@ const input = z.object({
     query: z.string().min(1).max(MAX_QUERY_LENGTH).describe("Search terms"),
 });
 
-/** The search tool in the shape ChatGPT's connectors require: results of id, title and url. */
 export const search: ToolDefinition<typeof input, DocsContext> = {
     name: "search",
     description: DESCRIPTIONS.search.description,

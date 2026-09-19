@@ -28,6 +28,41 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   by `npm run sync:guides`; `npm run check:guides` and `src/guides.test.ts` fail when the page and
   the file disagree. Edit the page, then regenerate.
 
+## What the code does not say
+
+The source carries no comments, JSDoc included: `bitbybit/no-loose-comments` runs here with
+`allowJsDoc: false`, because nothing reads a comment in this package. A name, an extracted function
+or a line here is where an explanation goes.
+
+- The index is addressed by exact version only, never by `latest`: `index-url.ts` refuses
+  anything that is not a release version, and `IndexNotPublishedError` names the newest version
+  known to have an index when the caller knows it. A published index is immutable, so a cached copy
+  is never revalidated. The cache directory is `$XDG_CACHE_HOME/bitbybit-mcp` or
+  `~/.cache/bitbybit-mcp` (an empty variable counts as unset); a failed cache write is ignored,
+  because the cache is a convenience and a read-only home directory must not stop the server.
+- `stdio.ts` picks the version to serve in this order: `--version`, `BITBYBIT_VERSION`, the
+  `@bitbybit-dev/*` packages installed around the working directory (`installed-version.ts` lists
+  them most authoritative first; disagreeing versions are reported and the first wins), then this
+  package's own version. When the detected version has no published index, the package's own
+  version is served with a note on stderr; an explicit flag or variable is never second-guessed.
+- `registry.ts` caps a server at eight tools (`MAX_TOOLS`): past that, agents pick the wrong tool
+  more often than the right one. Its `inputJsonSchema` inlines every local `$ref` of the schema zod
+  renders, because the hosts that read a tool's arguments (the Claude API among them) want the
+  object at every position; a cyclic reference stays in place with the table it needs. The schema
+  is rendered for input, so a field with a default is optional. `toHttp` serves only tools with a
+  handler, and arguments that fail the schema come back as an error result, never as a throw.
+- `index-reader.ts` answers an unknown path with the members it most plausibly meant, in this
+  order: a case difference, siblings under the same parent a few edits away, members sharing the
+  last segment anywhere (closest whole path first), then a lexical match.
+- `render.ts` writes a member as the facts first, the prose after, the examples last; the one-line
+  form is what a list shows.
+- `search` and `fetch` are the shapes ChatGPT's connectors require: results of id, title and url;
+  one document with id, title, text, url and metadata.
+- `guides-split.ts` splits the guide page into its `##` and `###` sections; a `##` body runs to
+  the next `##` and so contains its subsections, the frontmatter and anything before the first
+  heading are dropped, and a heading becomes its id as lower-case words joined by dashes.
+  `get-guide.ts` maps the short names agents reach for onto those ids.
+
 ## Tests
 
 Unit tests run against `src/__fixtures__/index.sample.json`, a small index at version `9.9.9`, so

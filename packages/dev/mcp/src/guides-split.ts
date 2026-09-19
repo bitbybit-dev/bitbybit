@@ -1,4 +1,3 @@
-/** One section of the integration guide, as `get_guide` serves it. */
 export interface GuideSection {
     id: string;
     title: string;
@@ -9,7 +8,6 @@ export interface GuideSection {
 const FRONTMATTER = /^---\n[\s\S]*?\n---\n/;
 const HEADING = /^(##|###) (.+)$/;
 
-/** A heading as a stable id: lower case, words joined by dashes, nothing else. */
 export function slugify(title: string): string {
     return title
         .toLowerCase()
@@ -17,11 +15,6 @@ export function slugify(title: string): string {
         .replace(/^-+|-+$/g, "");
 }
 
-/**
- * Splits a guide page into its `##` and `###` sections. A `##` section's body runs to the next
- * `##` and so contains its subsections; a `###` section's body is its own text. Everything before
- * the first heading, and the page's frontmatter, is left out.
- */
 export function splitGuides(markdown: string): GuideSection[] {
     const lines = markdown.replace(FRONTMATTER, "").split("\n");
     const sections: GuideSection[] = [];

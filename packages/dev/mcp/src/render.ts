@@ -21,7 +21,6 @@ function renderExample(example: IndexExample): string {
     return ["```typescript", example.code, "```"].join("\n");
 }
 
-/** A member as markdown a model reads well: the facts first, the prose after, the examples last. */
 export function renderMember(member: IndexMember, version: string, examples: IndexExample[]): string {
     const lines: string[] = [`# ${member.path}`, ""];
     const facts = [`kind: ${member.kind}`, `tier: ${member.tier} (${TIER_MEANING[member.tier]})`, `version: ${version}`];
@@ -51,7 +50,6 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
     return lines.join("\n").trimEnd() + "\n";
 }
 
-/** The one-line form a list shows. */
 export function renderLine(member: IndexMember): string {
     const tier = member.tier === "oss" ? "" : ` [${member.tier}]`;
     return `- ${member.path} (${member.kind})${tier}${member.summary ? `: ${member.summary}` : ""}`;

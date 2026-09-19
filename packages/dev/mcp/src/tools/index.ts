@@ -8,7 +8,6 @@ import { getGuide } from "./get-guide.js";
 import { search } from "./search.js";
 import { fetchTool } from "./fetch.js";
 
-/** The docs server's registry: the seven read-only tools, in the order hosts list them. */
 export function createDocsRegistry(): Registry<DocsContext> {
     return new Registry<DocsContext>()
         .register(searchApi)

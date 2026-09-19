@@ -1,21 +1,15 @@
 import type { Tier } from "./index-types.js";
 
-/** The seven tools, in the order hosts list them. */
 export const TOOL_NAMES = ["search_api", "describe", "list_namespace", "get_examples", "get_guide", "search", "fetch"] as const;
 
 export type ToolName = (typeof TOOL_NAMES)[number];
 
-/** What each tier means, in the words every answer uses. */
 export const TIER_MEANING: Readonly<Record<Tier, string>> = {
     oss: "in the @bitbybit-dev npm packages, MIT licensed, runs wherever WebAssembly or Node runs",
     "platform-pro": "only when scripting inside bitbybit.dev; not in any npm package",
     "cloud-pro": "only on Bitbybit CAD Cloud through its REST API, with an API key",
 };
 
-/**
- * Every title and description in one place. A description is what a model reads to pick a tool,
- * so a change here changes behaviour and is made deliberately, never in passing.
- */
 export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; description: string }>> = {
     search_api: {
         title: "Search the Bitbybit API",
@@ -61,7 +55,6 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
     },
 };
 
-/** What a host shows a model about this server before any tool is called. */
 export const SERVER_INSTRUCTIONS =
     "This is the Bitbybit CAD MCP: it documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers) for one exact version. " +
     "Always describe a member before using it: names, parameters and defaults come from the index, not from memory. " +

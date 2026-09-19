@@ -71,11 +71,11 @@ your machine and nowhere else, which is how one reached CI.
 type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
 local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
 widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; what the code cannot say belongs in JSDoc or a `CLAUDE.md`, and in a
-test in the name of the `it` - a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each on
-its own, and no other comment at all). Findings that predate a rule sit in `eslint-suppressions.json`;
-a new one fails, as does a stale suppression, so the count only falls. Never load
-`eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
+stay, free-form comments do not; a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each
+on its own, and nothing else; the MCP server package runs it with `allowJsDoc: false`, since nothing
+reads a comment there, and keeps what the code cannot say in its `CLAUDE.md`). Findings that predate
+a rule sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count
+only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and

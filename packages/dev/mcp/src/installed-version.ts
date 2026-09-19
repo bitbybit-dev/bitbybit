@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 
-/** The packages whose installed version says which API version a project uses, most authoritative first. */
 export const VERSION_PACKAGES = ["core", "babylonjs", "threejs", "playcanvas", "occt"] as const;
 
 export type VersionSource = "flag" | "env" | "installed" | "own";
@@ -12,13 +11,11 @@ export interface DetectedVersion {
 }
 
 export interface DetectVersionOptions {
-    /** The version of this package, which is also the newest API version it was released with. */
     ownVersion: string;
     cwd?: string;
     env?: Record<string, string | undefined>;
     argv?: readonly string[];
     warn?: (message: string) => void;
-    /** Reads a file's text, or nothing when it does not exist. Injected by tests. */
     readFile?: (path: string) => string | undefined;
 }
 
@@ -37,7 +34,6 @@ function versionOf(text: string | undefined): string | undefined {
     return undefined;
 }
 
-/** The value after a flag, or of its `--flag=value` spelling; a following flag is not a value. */
 export function flagValue(argv: readonly string[], flag: string): string | undefined {
     const index = argv.indexOf(flag);
     if (index !== -1) {
@@ -48,7 +44,6 @@ export function flagValue(argv: readonly string[], flag: string): string | undef
     return inline?.slice(flag.length + 1);
 }
 
-/** The installed `@bitbybit-dev/*` versions found walking up from a directory, keyed by package. */
 export function installedVersions(cwd: string, readFile: (path: string) => string | undefined = readTextIfPresent): Map<string, string> {
     const found = new Map<string, string>();
     let directory = cwd;
@@ -65,11 +60,6 @@ export function installedVersions(cwd: string, readFile: (path: string) => strin
     return found;
 }
 
-/**
- * Which API version to serve: `--version` on the command line, then `BITBYBIT_VERSION`, then the
- * version of the `@bitbybit-dev` packages installed around the working directory, then this
- * package's own version. Installed packages that disagree are reported and the first wins.
- */
 export function detectVersion(options: DetectVersionOptions): DetectedVersion {
     const flag = flagValue(options.argv ?? [], "--version");
     if (flag !== undefined && flag !== "") return { version: flag, source: "flag" };

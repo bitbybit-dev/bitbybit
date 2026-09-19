@@ -11,7 +11,6 @@ const input = z.object({
     id: z.string().min(1).max(MAX_ID_LENGTH).describe("A dotted API path returned by search"),
 });
 
-/** The fetch tool in the shape ChatGPT's connectors require: one document with id, title, text, url and metadata. */
 export const fetchTool: ToolDefinition<typeof input, DocsContext> = {
     name: "fetch",
     description: DESCRIPTIONS.fetch.description,

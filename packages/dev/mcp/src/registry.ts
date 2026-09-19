@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-/** The hints MCP hosts read to decide how a tool may be called. Every tool here is read-only. */
 export interface ToolAnnotations {
     title: string;
     readOnlyHint: boolean;
@@ -9,7 +8,6 @@ export interface ToolAnnotations {
     openWorldHint?: boolean;
 }
 
-/** A file a tool produced, handed over as a link that expires with its URL; never inlined. */
 export interface ToolLink {
     uri: string;
     name: string;
@@ -17,7 +15,6 @@ export interface ToolLink {
     description?: string;
 }
 
-/** What a tool answers: text for the model, optionally the same answer as structured data, and links to files. */
 export interface ToolResult {
     text: string;
     structured?: Record<string, unknown>;
@@ -25,19 +22,12 @@ export interface ToolResult {
     isError?: boolean;
 }
 
-/** Where a tool's handler runs. A browser tool is declared here and answered by the client application that owns the page. */
 export type ToolWhere = "server" | "browser";
 
-/** Every tool takes one object argument, described by a zod object schema. */
 export type ToolInput = z.ZodObject<z.ZodRawShape>;
 
 export type ToolHandler<TInput extends ToolInput, TContext> = (args: z.output<TInput>, context: TContext) => Promise<ToolResult> | ToolResult;
 
-/**
- * One tool, described once and independent of any transport: the MCP binding in `server.ts` and the
- * plain HTTP binding in `toHttp` both render it, so a name, a description or a schema can never
- * differ between the two.
- */
 export interface ToolDefinition<TInput extends ToolInput, TContext> {
     name: string;
     description: string;
@@ -50,10 +40,8 @@ export interface ToolDefinition<TInput extends ToolInput, TContext> {
 
 export type AnyToolDefinition<TContext> = ToolDefinition<ToolInput, TContext>;
 
-/** The most tools one server exposes: past it, agents pick the wrong tool more often than the right one. */
 export const TOOL_CEILING = 8;
 
-/** The tools of one server, in registration order. */
 export class Registry<TContext> {
     private readonly tools = new Map<string, AnyToolDefinition<TContext>>();
 
@@ -97,12 +85,6 @@ function resolvePointer(root: unknown, pointer: string): unknown {
     return node;
 }
 
-/**
- * Inlines every local `$ref`. A schema registered under an id comes out of zod as a reference
- * into a `$defs` table, and a sub-schema used twice as a pointer to its first occurrence; the
- * hosts that read a tool's arguments (the Claude API among them) want the object itself at every
- * position. A cyclic reference is left in place with the table it needs.
- */
 function inlineReferences(schema: Record<string, unknown>): Record<string, unknown> {
     const inline = (node: unknown, seen: readonly string[]): unknown => {
         if (Array.isArray(node)) return node.map((item) => inline(item, seen));
@@ -127,15 +109,10 @@ function inlineReferences(schema: Record<string, unknown>): Record<string, unkno
     return inlined;
 }
 
-/**
- * The JSON Schema (draft 2020-12) of a tool's argument object, as MCP hosts and the HTTP binding
- * advertise it: definitions inlined, and rendered for input, so a field with a default is optional.
- */
 export function inputJsonSchema(input: ToolInput): Record<string, unknown> {
     return inlineReferences(z.toJSONSchema(input, { target: "draft-2020-12", io: "input" }));
 }
 
-/** A tool as the plain HTTP binding serves it: its advertised shape and a call that validates first. */
 export interface HttpTool {
     name: string;
     description: string;
@@ -144,10 +121,6 @@ export interface HttpTool {
     call(args: unknown): Promise<ToolResult>;
 }
 
-/**
- * Renders the registry for a plain HTTP endpoint. Only tools with a handler are served; arguments
- * that fail the schema are answered with an error result rather than thrown.
- */
 export function toHttp<TContext>(
     registry: Registry<TContext>,
     context: TContext,

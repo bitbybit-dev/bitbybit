@@ -28,11 +28,6 @@ function ownVersion(): string {
     throw new Error("The package manifest carries no version");
 }
 
-/**
- * The index of the detected version; when that version was found among the installed packages and
- * has no published index, the package's own version instead, with a note on stderr. An explicit
- * flag or environment variable is never second-guessed.
- */
 async function loadServed(detected: DetectedVersion, own: string, cacheDir: string | null): Promise<{ index: ApiIndex; served: DetectedVersion }> {
     try {
         return { index: await loadIndex({ version: detected.version, cacheDir }), served: detected };

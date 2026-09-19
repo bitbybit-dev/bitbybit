@@ -5,12 +5,9 @@ import { inputJsonSchema } from "./registry.js";
 import type { AnyToolDefinition, Registry, ToolInput, ToolResult } from "./registry.js";
 
 export interface McpServerOptions<TContext> {
-    /** The server name hosts show; `bitbybit` for the docs server. */
     name: string;
-    /** The package version, which is also the API version the docs server holds. */
     version: string;
     instructions?: string;
-    /** Serve only the tools this returns true for, for example the ones a caller's key allows. */
     filter?: (definition: AnyToolDefinition<TContext>) => boolean;
 }
 
@@ -32,22 +29,12 @@ function toCallToolResult(result: ToolResult): { content: (TextContent | LinkCon
     };
 }
 
-/**
- * The argument schema as the SDK wants it: zod's own validation (refinements and defaults
- * included), and for `tools/list` the JSON Schema every other binding advertises, definitions
- * inlined, instead of the reference-laden rendering the SDK would derive itself.
- */
 function advertised<TInput extends ToolInput>(input: TInput): StandardSchemaWithJSON<z.input<TInput>, z.output<TInput>> {
     const json = inputJsonSchema(input);
     const standard = input["~standard"] as StandardSchemaWithJSON<z.input<TInput>, z.output<TInput>>["~standard"];
     return { "~standard": { ...standard, jsonSchema: { input: () => json, output: () => json } } };
 }
 
-/**
- * Registers every served tool of a registry on an MCP server. This module and the stdio entry are
- * the only places that import the MCP SDK: the tools know nothing about the transport they run on.
- * Returns the names bound, in order.
- */
 export function bindRegistry<TContext>(
     server: McpServer,
     registry: Registry<TContext>,
@@ -80,7 +67,6 @@ export function bindRegistry<TContext>(
     return bound;
 }
 
-/** An MCP server over a registry, ready to connect to any transport. */
 export function createMcpServer<TContext>(registry: Registry<TContext>, context: TContext, options: McpServerOptions<TContext>): McpServer {
     const server = new McpServer(
         { name: options.name, version: options.version },

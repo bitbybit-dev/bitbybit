@@ -10,7 +10,6 @@ export function fail(text: string, structured?: Record<string, unknown>): ToolRe
     return structured ? { text, structured, isError: true } : { text, isError: true };
 }
 
-/** Answers a resolve failure as a result the model can act on instead of a thrown error. */
 export function failFor(error: unknown): ToolResult {
     if (error instanceof VersionNotLoadedError) {
         return fail(error.message, { code: "VERSION_NOT_LOADED", requested: error.requested, loaded: error.loaded });

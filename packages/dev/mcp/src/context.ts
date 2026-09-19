@@ -3,20 +3,17 @@ import { IndexReader } from "./index-reader.js";
 import type { GuideSection } from "./guides-split.js";
 import { isExactVersion } from "./index-url.js";
 
-/** The index a request resolved to, with the version it describes. */
 export interface ResolvedIndex {
     version: string;
     reader: IndexReader;
 }
 
-/** What every docs tool needs: an index for the requested version, and the guide sections. */
 export interface DocsContext {
     resolve(version?: string): Promise<ResolvedIndex>;
     guides: readonly GuideSection[];
     guideUrl: string;
 }
 
-/** Thrown when a caller asks for a version this context does not hold. */
 export class VersionNotLoadedError extends Error {
     constructor(readonly requested: string, readonly loaded: string) {
         super(
@@ -28,7 +25,6 @@ export class VersionNotLoadedError extends Error {
     }
 }
 
-/** A context over one loaded index, the shape a stdio server runs with. */
 export function contextForIndex(index: ApiIndex, guides: readonly GuideSection[], guideUrl: string): DocsContext {
     const resolved: ResolvedIndex = { version: index.version, reader: new IndexReader(index) };
     return {

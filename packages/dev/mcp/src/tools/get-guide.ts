@@ -6,7 +6,6 @@ import { DESCRIPTIONS } from "../descriptions.js";
 import { ok } from "../results.js";
 import { tokenize } from "../index-reader.js";
 
-/** Short names agents reach for, mapped onto the guide's section ids. */
 export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     integrate: "how-an-agent-should-integrate-bitbybit",
     deploy: "how-an-agent-should-integrate-bitbybit",

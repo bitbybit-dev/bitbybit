@@ -1,6 +1,5 @@
 import type { ApiIndex, Engine, IndexExample, IndexMember } from "./index-types.js";
 
-/** A member with the score the query gave it. */
 export interface SearchHit {
     member: IndexMember;
     score: number;
@@ -26,7 +25,6 @@ const NEAREST_LIMIT = 5;
 const MIN_EDIT_TOLERANCE = 2;
 const EDIT_TOLERANCE_DIVISOR = 3;
 
-/** Lower-case words of a text, camelCase split apart, punctuation dropped. */
 export function tokenize(text: string): string[] {
     return text
         .replace(CAMEL_BOUNDARY, "$1 $2")
@@ -44,7 +42,6 @@ interface MemberTokens {
 const byPathThenLength = (a: SearchHit, b: SearchHit): number =>
     b.score - a.score || a.member.path.length - b.member.path.length || (a.member.path < b.member.path ? -1 : 1);
 
-/** Reads one version of the index: exact lookups, children, lexical search, nearest paths and examples. */
 export class IndexReader {
     readonly version: string;
     private readonly byPath = new Map<string, IndexMember>();
@@ -70,7 +67,6 @@ export class IndexReader {
         return this.index.members;
     }
 
-    /** The members one level below a path; without a path, the roots. */
     children(path?: string): IndexMember[] {
         const prefix = path ? `${path}.` : "";
         const depth = path ? path.split(".").length + 1 : 1;
@@ -90,11 +86,6 @@ export class IndexReader {
         return hits.sort(byPathThenLength).slice(0, limit);
     }
 
-    /**
-     * Members an unknown path most plausibly meant: a case difference, then siblings under the
-     * same parent whose name is a few edits away, then members sharing the last segment anywhere
-     * (the closest whole path first), then a lexical match.
-     */
     nearest(path: string, limit = NEAREST_LIMIT): IndexMember[] {
         const lower = path.toLowerCase();
         const segments = lower.split(".");
@@ -135,7 +126,6 @@ export class IndexReader {
         });
     }
 
-    /** Examples of every member under a namespace, in path order. */
     examplesUnder(path: string, limit: number): IndexExample[] {
         const prefix = `${path}.`;
         const examples: IndexExample[] = [];
@@ -165,7 +155,6 @@ export class IndexReader {
     }
 }
 
-/** The Levenshtein distance of two strings, or `cap + 1` once it is known to exceed the cap. */
 export function editDistance(a: string, b: string, cap: number): number {
     if (Math.abs(a.length - b.length) > cap) return cap + 1;
     let previous = Array.from({ length: b.length + 1 }, (_, index) => index);

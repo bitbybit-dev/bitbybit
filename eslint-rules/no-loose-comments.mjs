@@ -23,6 +23,10 @@
  * `catch { }` whose only content is why the error is ignored has no code beside it to drift from,
  * and the alternative is a bare empty block that says nothing at all.
  *
+ * With `allowJsDoc: false`, JSDoc is reported too. That is for a package whose comments no tool
+ * reads - nothing generates from them and nothing persists their values - so a JSDoc block there is
+ * ordinary prose that drifts like any other, and the reasoning above for keeping it does not apply.
+ *
  * With `allowArrangeActAssert`, the three step markers of a test are allowed and nothing else is.
  * They are structure rather than description: they say which part of the test a line belongs to, and
  * a marker cannot drift from the code because it makes no claim about it. The marker must be the
@@ -43,7 +47,7 @@ export default {
         docs: { description: "Allow JSDoc and tool directives; report free-form comments." },
         schema: [{
             type: "object",
-            properties: { allowArrangeActAssert: { type: "boolean" } },
+            properties: { allowArrangeActAssert: { type: "boolean" }, allowJsDoc: { type: "boolean" } },
             additionalProperties: false,
         }],
         messages: {
@@ -53,11 +57,12 @@ export default {
     },
     create(context) {
         const allowSteps = context.options[0]?.allowArrangeActAssert === true;
+        const allowJsDoc = context.options[0]?.allowJsDoc !== false;
         return {
             Program() {
                 for (const comment of context.sourceCode.getAllComments()) {
                     if (comment.type === "Hashbang" || comment.type === "Shebang") continue;
-                    if (comment.type === "Block" && comment.value.startsWith("*")) continue;
+                    if (allowJsDoc && comment.type === "Block" && comment.value.startsWith("*")) continue;
                     if (DIRECTIVE.test(comment.value)) continue;
                     if (NOTICE.test(comment.value)) continue;
                     if (allowSteps && comment.type === "Line" && STEP_MARKER.test(comment.value)) continue;
