@@ -1,8 +1,10 @@
 # Bitbybit Monorepo
 
-> Open-source 3D CAD algorithms and NPM packages for web-based parametric modeling and visualization. Build once, run anywhere—no installation required.
+> Open-source 3D CAD algorithms and NPM packages for web-based parametric modeling and visualization. Build once, run anywhere - no installation required.
 
 This monorepo contains the open-source core of Bitbybit platform, including multiple NPM packages for integrating 3D CAD capabilities into web applications using BabylonJS, Three.js, or PlayCanvas game engines.
+
+It is written for people and for AI coding agents alike: the whole API is published as an MCP server, as context files and as TypeScript declarations, addressed by exact version. See "AI Context" below.
 
 ## Repository
 
@@ -58,6 +60,14 @@ These packages run geometry computations in web workers for non-blocking UI. Sam
 | @bitbybit-dev/jscad-worker | JSCAD via web worker | https://www.npmjs.com/package/@bitbybit-dev/jscad-worker |
 | @bitbybit-dev/manifold-worker | Manifold via web worker | https://www.npmjs.com/package/@bitbybit-dev/manifold-worker |
 
+### Tooling Packages
+
+| Package | Description | NPM |
+|---------|-------------|-----|
+| @bitbybit-dev/create-app | CLI that scaffolds a frontend or full-stack CAD Cloud project | https://www.npmjs.com/package/@bitbybit-dev/create-app |
+| @bitbybit-dev/cad-cloud-sdk | TypeScript SDK for the CAD Cloud REST API | https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk |
+| @bitbybit-dev/mcp | MCP server documenting this API for AI coding agents, version-exact | https://www.npmjs.com/package/@bitbybit-dev/mcp |
+
 ## Package Structure
 
 ```
@@ -74,12 +84,75 @@ packages/
     ├── jscad-worker/      # JSCAD web worker
     ├── manifold/          # Manifold wrapper
     ├── manifold-worker/   # Manifold web worker
-    └── create-app/        # Project scaffolding CLI
+    ├── create-app/        # Project scaffolding CLI
+    ├── cad-cloud-sdk/     # TypeScript SDK for the CAD Cloud REST API
+    └── mcp/               # MCP server documenting the API for AI agents
 ```
 
 ## AI Context
 
-For AI coding assistants, use these resources to get comprehensive Bitbybit API knowledge.
+For AI coding assistants, use these resources to get comprehensive Bitbybit API knowledge. An agent
+working from memory invents plausible function names that do not exist, so give it one of these.
+The MCP servers are the best answer where the host supports them; the context files below are for
+assistants that cannot connect to one.
+
+### Bitbybit CAD MCP (first party, free, no account) - start here
+
+Answers every question about the API - full signature, parameter defaults, return type, examples -
+for the exact version your project has installed, from the index published with each release.
+Read-only; it never runs geometry.
+
+- Remote (Streamable HTTP): https://mcp.bitbybit.dev/mcp
+- Local (stdio): npx -y @bitbybit-dev/mcp
+- Package: https://www.npmjs.com/package/@bitbybit-dev/mcp
+- Guide: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp
+
+Claude Code:
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+VS Code (`.vscode/mcp.json`) - the `type` is required:
+```json
+{
+    "servers": {
+        "bitbybit": { "type": "http", "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+Cursor (`.cursor/mcp.json`):
+```json
+{
+    "mcpServers": {
+        "bitbybit": { "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+Every answer carries a tier: `oss` runs in these MIT packages anywhere, `platform-pro` inside the
+bitbybit.dev editors, `cloud-pro` only on CAD Cloud with a key.
+
+### Bitbybit CAD Cloud MCP (first party, API key)
+
+Runs the geometry instead of only describing it: operations, pipelines, parametric models, STEP to
+glTF conversion and the Pro algorithms, on CAD Cloud, with the results returned as download links.
+
+- Remote: https://api.bitbybit.dev/mcp
+- Guide: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp
+
+```bash
+claude mcp add --transport http bitbybit-cloud https://api.bitbybit.dev/mcp --header "X-API-Key: <your key>"
+```
+
+### Where geometry should run
+
+Guidance an agent should follow when it chooses between the packages and CAD Cloud:
+https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/agentic-cad
+
+### Overview of all AI options
+
+https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro
 
 ### AI Prompt Context Files (v1.3.1)
 
@@ -115,9 +188,10 @@ For AI agents that struggle with dictionary translation, use these full TypeScri
 - With Comments (~420k tokens): https://git-cdn.bitbybit.dev/v1.3.1/ai-context/bitbybit-playcanvas-formatted.d.ts
 - Without Comments (~150k tokens): https://git-cdn.bitbybit.dev/v1.3.1/ai-context/bitbybit-playcanvas-formatted-no-comments.d.ts
 
-### Context7 MCP (Recommended)
+### Context7 MCP (third party)
 
-Live AI context with always up-to-date documentation. Works with Claude, Gemini, Grok.
+Indexes the documentation site and works with Claude, Gemini and Grok. A reasonable addition when
+you already use Context7; it does not know the API as exactly as the two first-party servers above.
 
 Add to your `.vscode/mcp.json`:
 

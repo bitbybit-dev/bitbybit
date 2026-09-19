@@ -132,10 +132,23 @@ my-cloud-project/
     └── package.json
 ```
 
+## Use It With an AI Agent
+
+Scaffolding is the first half; the second is writing the geometry. An agent that does not know an API invents plausible names for it, and Bitbybit has more functions across its three CAD kernels than any model holds in memory. Connect the free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** server in the project this CLI just created, and your agent looks up the exact signature, parameter defaults, return type and examples for the `@bitbybit-dev` versions it installed, instead of guessing them.
+
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+Cursor, VS Code, claude.ai, ChatGPT and the Claude API connect to the same endpoint; [`npx -y @bitbybit-dev/mcp`](https://www.npmjs.com/package/@bitbybit-dev/mcp) runs the same server locally, pinned to the versions in your new project's `package.json`. [Every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+
+With a [CAD Cloud](https://bitbybit.dev/cad-cloud) key, the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) goes further and lets the agent run the geometry for you - measure a STEP file, run a pipeline, convert to glTF - and hand back the results as files. For assistants that cannot speak MCP, the whole API is also published as [context files](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/prompt-contexts). The [AI section of the documentation](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro) explains all of it.
+
 ## Links
 
 - 🌐 **Website**: [https://bitbybit.dev](https://bitbybit.dev)
-- 📚 **Documentation**: [https://bitbybit.dev/docs](https://bitbybit.dev/docs)
+- 📚 **Documentation**: [https://learn.bitbybit.dev](https://learn.bitbybit.dev)
+- 🤖 **Using AI with Bitbybit**: [https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)
 - 💬 **Discord Community**: [https://discord.gg/GSe3VMe](https://discord.gg/GSe3VMe)
 - 🐛 **Issues**: [https://github.com/bitbybit-dev/bitbybit/issues](https://github.com/bitbybit-dev/bitbybit/issues)
 - 📦 **Monorepo**: [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit)

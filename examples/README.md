@@ -10,8 +10,19 @@ Visit https://bitbybit.dev to use our full cloud platform.
 # App Example Frameworks
 We present examples with full integration for the most popular frameworks, such as Angular, React, NextJS, Nuxt, NodeJS with Express. Whenever possible we try to build a valid 3D model configurator, using either babylonjs or threejs game enegines for representation.
 
+# Building One Of These With An AI Agent
+
+These examples are the shape an agent should copy, but it still has to get the geometry calls right, and no model remembers an API this large. Connect the free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** and it looks up the exact signature, defaults and examples for the version an example has installed, instead of guessing:
+
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+Cursor, VS Code, claude.ai and ChatGPT connect to the same endpoint, and `npx -y @bitbybit-dev/mcp` runs it locally against the example's own `@bitbybit-dev` versions. With a [CAD Cloud](https://bitbybit.dev/cad-cloud) key, the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) also lets the agent run the geometry and hand back files. [More on using AI with Bitbybit](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro).
+
 # Github
-https://github.com/bitbybit-dev/app-examples
+These examples live in the Bitbybit monorepo:
+https://github.com/bitbybit-dev/bitbybit/tree/master/examples
 
 # NPM
 BABYLONJS   

@@ -1,6 +1,6 @@
 # Bitbybit Documentation
 
-> Learn how to use the Bitbybit 3D creative coding platform—from visual programming to TypeScript APIs and NPM package integration. Build parametric 3D models, product configurators, and CAD applications directly in the browser.
+> Learn how to use the Bitbybit 3D creative coding platform - from visual programming to TypeScript APIs and NPM package integration. Build parametric 3D models, product configurators, and CAD applications directly in the browser.
 
 This is the official documentation site for Bitbybit. The platform enables designers and developers to create 3D geometry using visual programming or TypeScript code, with integration for BabylonJS, Three.js, and PlayCanvas game engines.
 
@@ -81,7 +81,7 @@ This section explains:
 - Editor-specific differences (e.g., Blockly has Functions/Variables categories, Rete uses dataflow approach)
 - The DRY (Don't Repeat Yourself) principle in algorithm design
 
-Key insight: The fundamental algorithms are identical regardless of editor choice—only the method of interaction differs.
+Key insight: The fundamental algorithms are identical regardless of editor choice - only the method of interaction differs.
 
 ## NPM Packages
 
@@ -126,6 +126,11 @@ Web Worker Packages (Non-blocking, Recommended):
 - @bitbybit-dev/occt-worker - OpenCascade via web worker
 - @bitbybit-dev/jscad-worker - JSCAD via web worker
 - @bitbybit-dev/manifold-worker - Manifold via web worker
+
+Tooling Packages:
+- @bitbybit-dev/create-app - CLI that scaffolds a frontend or full-stack CAD Cloud project
+- @bitbybit-dev/cad-cloud-sdk - TypeScript SDK for the CAD Cloud REST API
+- @bitbybit-dev/mcp - MCP server that documents this API for AI coding agents, version-exact
 
 ## Runners
 
@@ -294,7 +299,7 @@ Authentication is an `x-api-key` header on every endpoint except `/health`.
 
 ## AI Integration
 
-Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does not provide proprietary LLMs—instead, it integrates with leading third-party AI services.
+Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does not provide proprietary LLMs - instead, it integrates with leading third-party AI services.
 
 - AI Introduction: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro
 
@@ -314,7 +319,42 @@ Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does n
 Context7 provides live AI context with always up-to-date documentation:
 - Context7 Library: https://context7.com/bitbybit-dev/bitbybit
 
-VS Code MCP Setup:
+Bitbybit CAD MCP setup (start here - free, no account):
+
+Claude Code, remote:
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+Claude Code, local, pinned to the @bitbybit-dev version installed in the project:
+```bash
+claude mcp add --transport stdio bitbybit -- npx -y @bitbybit-dev/mcp
+```
+
+VS Code (.vscode/mcp.json) - the `type` is required:
+```json
+{
+    "servers": {
+        "bitbybit": { "type": "http", "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+Cursor (.cursor/mcp.json):
+```json
+{
+    "mcpServers": {
+        "bitbybit": { "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+Bitbybit CAD Cloud MCP setup (API key, runs the geometry):
+```bash
+claude mcp add --transport http bitbybit-cloud https://api.bitbybit.dev/mcp --header "X-API-Key: <your key>"
+```
+
+Context7 MCP setup (third party, indexes the documentation site):
 ```json
 {
     "servers": [
