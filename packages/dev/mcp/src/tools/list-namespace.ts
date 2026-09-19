@@ -27,7 +27,7 @@ export const listNamespace: ToolDefinition<typeof input, DocsContext> = {
         }
         const path = args.path?.replace(/^bitbybit\./, "");
         const parent = path ? resolved.reader.get(path) : undefined;
-        if (path && !parent) {
+        if (path && !parent && resolved.reader.children(path).length === 0) {
             const nearest = resolved.reader.nearest(path);
             return ok(
                 [`${path} is not a namespace of the Bitbybit API ${resolved.version}.`, ...nearest.map(renderLine)].join("\n"),

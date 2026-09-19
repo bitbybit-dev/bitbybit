@@ -18,9 +18,11 @@ export function indexUrl(version: string, host: string = INDEX_HOST): string {
 export class IndexNotPublishedError extends Error {
     constructor(readonly version: string, readonly url: string, readonly latest?: string) {
         super(
-            `No API index is published for Bitbybit ${version} (${url}): the version was never released, or predates the index` +
-            (latest === undefined ? "" : `; the newest published is ${latest}`) +
-            ". Check the version, or ask for a released one.",
+            latest === version
+                ? `No API index is published for Bitbybit ${version} yet (${url}): this server's default version has no index until its release carries one. Ask for an earlier released version.`
+                : `No API index is published for Bitbybit ${version} (${url}): the version was never released, or predates the index` +
+                  (latest === undefined ? "" : `; the newest published is ${latest}`) +
+                  ". Check the version, or ask for a released one.",
         );
         this.name = "IndexNotPublishedError";
     }

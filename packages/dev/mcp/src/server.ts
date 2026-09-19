@@ -16,6 +16,7 @@ export interface RequestHandlerOptions<TContext> {
     version: string;
     instructions?: string;
     filterFor?: (context: TContext) => (definition: AnyToolDefinition<TContext>) => boolean;
+    onError?: (error: Error) => void;
 }
 
 export interface RequestHandler<TContext> {
@@ -110,7 +111,7 @@ export function createRequestHandler<TContext>(registry: Registry<TContext>, opt
             bindRegistry(server, registry, context, options.filterFor?.(context));
             return server;
         },
-        { legacy: "stateless", responseMode: "json" },
+        { legacy: "stateless", responseMode: "json", ...(options.onError === undefined ? {} : { onerror: options.onError }) },
     );
     return { fetch: (request, context) => handler.fetch(request, { authInfo: carrying(context) }) };
 }

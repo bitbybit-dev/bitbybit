@@ -6,7 +6,7 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
 - Vitest (`npm test`, `npm run test:coverage`), NodeNext at ES2022, published from its own root
   through the `files` allowlist, with a `prepublishOnly` build
 - a `bin` (`bitbybit-mcp`, `dist/stdio.js`) beside the library exports (`.`, `./server`,
-  `./index-loader`, `./installed-version`, `./package.json`)
+  `./index-loader`, `./installed-version`, `./json-schema`, `./package.json`)
 - it depends on none of the other `@bitbybit-dev` packages; its runtime dependencies are exactly
   `@modelcontextprotocol/server` and `zod`, and `src/dependencies.test.ts` holds it there
 

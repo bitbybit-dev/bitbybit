@@ -93,7 +93,7 @@ const context = contextForIndex(index, GUIDES, GUIDE_PAGE_URL);
 const server = createMcpServer(createDocsRegistry(), context, { name: "bitbybit", version });
 ```
 
-`toHttp(registry, context)` renders the same tools for a plain HTTP endpoint. The package root imports no Node built-in, so a bundler can take it into an edge runtime; the loader and the version detector, which read the file system, are the separate `index-loader` and `installed-version` entries.
+`toHttp(registry, context)` renders the same tools for a plain HTTP endpoint, and `guarded(registry, report)` is the error boundary every server puts around a registry: a handler that throws answers a generic error result and the throw goes to `report`, so no internal message reaches a client. `Registry.map(wrap)` re-wraps every handler for such concerns of your own. The package root imports no Node built-in, so a bundler can take it into an edge runtime; the loader and the version detector, which read the file system, are the separate `index-loader` and `installed-version` entries, and the `$ref` inliner the tool schemas go through is the dependency-free `json-schema` entry.
 
 ## Privacy
 

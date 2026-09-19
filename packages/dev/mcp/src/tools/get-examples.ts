@@ -39,7 +39,7 @@ export const getExamples: ToolDefinition<typeof input, DocsContext> = {
         let examples: IndexExample[] = [];
         if (args.path !== undefined) {
             const path = args.path.replace(/^bitbybit\./, "");
-            if (!reader.get(path)) return fail(`${path} is not a member of the Bitbybit API ${resolved.version}; call describe to see the nearest paths.`);
+            if (!reader.get(path) && reader.children(path).length === 0) return fail(`${path} is not a member of the Bitbybit API ${resolved.version}; call describe to see the nearest paths.`);
             examples = reader.examplesOf(path);
             if (examples.length < limit) examples = [...examples, ...reader.examplesUnder(path, limit - examples.length)];
         } else if (args.topic !== undefined) {

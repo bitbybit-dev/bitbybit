@@ -48,6 +48,8 @@ export interface IndexMember {
     drawable?: boolean;
     deprecated?: string;
     engineSignatures?: Partial<Record<Engine, string | null>>;
+    cloudSummary?: string;
+    cloudParams?: IndexParam[];
 }
 
 export interface IndexEnum {

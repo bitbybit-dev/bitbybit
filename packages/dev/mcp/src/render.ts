@@ -28,7 +28,7 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
     if (member.onApi3d) facts.push("runs on CAD Cloud: yes");
     if (member.endpoint) facts.push(`endpoint: ${member.httpMethod ?? "POST"} ${member.endpoint}`);
     if (member.scope) facts.push(`API key scope: ${member.scope}`);
-    if (member.deprecated) facts.push(`deprecated: ${member.deprecated}`);
+    if (member.deprecated !== undefined) facts.push(member.deprecated ? `deprecated: ${member.deprecated}` : "deprecated");
     if (member.drawable) facts.push("drawable: the result can be drawn directly");
     lines.push(...facts.map((fact) => `- ${fact}`), "");
     if (member.signature) lines.push("```typescript", member.signature, "```", "");
@@ -40,6 +40,12 @@ export function renderMember(member: IndexMember, version: string, examples: Ind
     if (member.params.length > 0) {
         lines.push("## Parameters", "");
         for (const param of member.params) lines.push(...renderParam(param));
+        lines.push("");
+    }
+    if (member.cloudParams) {
+        lines.push("## Parameters on CAD Cloud", "", "The signature above is the browser one; a cad_execute or pipeline step takes these inputs instead.", "");
+        if (member.cloudSummary) lines.push(member.cloudSummary, "");
+        for (const param of member.cloudParams) lines.push(...renderParam(param));
         lines.push("");
     }
     if (member.returns) lines.push(`## Returns`, "", `\`${member.returns}\`${member.async ? " (async)" : ""}`, "");

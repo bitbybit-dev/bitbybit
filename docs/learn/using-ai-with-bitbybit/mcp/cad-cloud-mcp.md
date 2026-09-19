@@ -149,7 +149,7 @@ Any MCP client library that can set a request header works: connect to `https://
 | `run_model` | `models` | runs a model with parameters and output formats |
 | `convert_step_to_gltf` | `convert` | converts an uploaded STEP file to glTF, optionally with Draco compression and conversion options |
 | `upload_file` | `files` | requests an upload URL for a file, then confirms the upload; the file id feeds pipelines and conversions |
-| `task_status` | `tasks` | the state of a task and, once it is done, its result links |
+| `task_status` | `tasks` | the state of a task and, once it is done, its result links; give it `waitMs` (up to 25000) to wait for the task before it answers |
 
 Results are always links, never inlined: a STEP, glTF, STL or JSON file the agent hands to you, valid for one hour. A task that outlives the 25 second wait comes back with its id, and `task_status` collects it later.
 

@@ -16,9 +16,12 @@ export class FilesEndpoint {
 
     /**
      * Request a pre-signed upload URL.
-     * After receiving the result, PUT the file bytes to `uploadUrl`, then call `confirm()`.
+     * After receiving a pending result, PUT the file bytes to `uploadUrl`, then call `confirm()`.
+     * When the body carries a `sha256` the API already holds confirmed under this key, the answer
+     * is that file's `ConfirmResult` instead (`status` is `"confirmed"` and there is no
+     * `uploadUrl`): nothing needs uploading or confirming.
      */
-    async upload(body: FileUploadBody): Promise<UploadResult> {
+    async upload(body: FileUploadBody): Promise<UploadResult | ConfirmResult> {
         return unwrap(await this.fetch("POST", "/api/v1/files/upload", body));
     }
 
@@ -69,6 +72,7 @@ export class FilesEndpoint {
             contentType,
             bytes: data.byteLength,
         });
+        if (uploadResult.status === "confirmed") return uploadResult;
 
         const putRes = await fetch(uploadResult.uploadUrl, {
             method: "PUT",

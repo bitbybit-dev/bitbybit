@@ -10638,21 +10638,23 @@ export interface OperationParams {
      * `shapes.wire.createStarWire` builds it.
      */
     "occt.shapes.solid.createStarSolid": {
-        /** Direction of the first tip, in degrees counter-clockwise from the X axis */
-        startAngle?: number | PipelineRef;
-        /** Distance from the center to each notch, in model units; 0 lets `density` decide it */
-        innerRadius?: number | PipelineRef;
-        /** Distance from the center to each tip, in model units */
-        outerRadius?: number | PipelineRef;
+        /** When true, only the first half of the rays are built, as an open wire. */
+        half?: boolean | PipelineRef;
         /**
-         * Read only when `innerRadius` is 0: how many tips apart the edges connect, 2 for a pentagram,
-         * from which the notch radius is derived
+         * Lifts the ray tips out of the plane along the normal, in model units, making a 3D star; keep
+         * it 0 for a face.
          */
-        density?: number | PipelineRef;
-        /** Number of tips; the star has as many notches between them */
-        vertices?: number | PipelineRef;
-        /** The 2D center point, as X and Y in the plane */
-        center?: [number, number] | PipelineRef;
+        offsetOuterEdges?: number | PipelineRef;
+        /** The distance from the center to the notch between two rays, in model units. */
+        innerRadius?: number | PipelineRef;
+        /** The distance from the center to the tip of each ray, in model units. */
+        outerRadius?: number | PipelineRef;
+        /** How many points the star has. */
+        numRays?: number | PipelineRef;
+        /** The normal of the plane the star lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
+        /** The point the star is centered on. */
+        center?: [number, number, number] | PipelineRef;
         /** How far the star grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the star grows against its plane normal, in model units. */

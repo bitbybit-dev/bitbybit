@@ -24,8 +24,9 @@ export const fetchTool: ToolDefinition<typeof input, DocsContext> = {
         } catch (error) {
             return failFor(error);
         }
-        const member = resolved.reader.get(args.id);
-        if (!member) return fail(`No document has the id ${args.id}; ids are dotted API paths returned by search.`);
+        const id = args.id.replace(/^bitbybit\./, "");
+        const member = resolved.reader.get(id);
+        if (!member) return fail(`No document has the id ${id}; ids are dotted API paths returned by search.`);
         const document = {
             id: member.path,
             title: member.path,

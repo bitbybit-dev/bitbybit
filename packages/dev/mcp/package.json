@@ -28,6 +28,10 @@
             "types": "./dist/installed-version.d.ts",
             "default": "./dist/installed-version.js"
         },
+        "./json-schema": {
+            "types": "./dist/json-schema.d.ts",
+            "default": "./dist/json-schema.js"
+        },
         "./package.json": "./package.json"
     },
     "files": [

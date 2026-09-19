@@ -56,6 +56,15 @@ export class Registry<TContext> {
         return this;
     }
 
+    map(wrap: (handler: ToolHandler<ToolInput, TContext>, definition: AnyToolDefinition<TContext>) => ToolHandler<ToolInput, TContext>): Registry<TContext> {
+        const mapped = new Registry<TContext>();
+        for (const definition of this.list()) {
+            const { handler } = definition;
+            mapped.register(handler ? { ...definition, handler: wrap(handler, definition) } : definition);
+        }
+        return mapped;
+    }
+
     list(): AnyToolDefinition<TContext>[] {
         return [...this.tools.values()];
     }
@@ -69,8 +78,30 @@ export class Registry<TContext> {
     }
 }
 
+const JSON_SCHEMAS = new WeakMap<ToolInput, Record<string, unknown>>();
+
 export function inputJsonSchema(input: ToolInput): Record<string, unknown> {
-    return inlineJsonSchemaReferences(z.toJSONSchema(input, { target: "draft-2020-12", io: "input" }));
+    const known = JSON_SCHEMAS.get(input);
+    if (known) return known;
+    const rendered = inlineJsonSchemaReferences(z.toJSONSchema(input, { target: "draft-2020-12", io: "input" }));
+    JSON_SCHEMAS.set(input, rendered);
+    return rendered;
+}
+
+export const INTERNAL_ERROR_CODE = "INTERNAL_ERROR";
+export const INTERNAL_ERROR_TEXT = "An unexpected error occurred";
+
+export type ErrorReporter<TContext> = (error: unknown, tool: string, context: TContext) => void;
+
+export function guarded<TContext>(registry: Registry<TContext>, report: ErrorReporter<TContext>): Registry<TContext> {
+    return registry.map((handler, definition) => async (args, context): Promise<ToolResult> => {
+        try {
+            return await handler(args, context);
+        } catch (error) {
+            report(error, definition.name, context);
+            return { text: INTERNAL_ERROR_TEXT, structured: { code: INTERNAL_ERROR_CODE }, isError: true };
+        }
+    });
 }
 
 export interface HttpTool {

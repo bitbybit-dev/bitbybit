@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { createDocsRegistry } from "./tools/index.js";
 import { createMcpServer } from "./server.js";
+import { guarded } from "./registry.js";
 import { contextForIndex } from "./context.js";
 import { defaultCacheDir, IndexNotPublishedError, loadIndex } from "./index-loader.js";
 import { detectVersion, flagValue } from "./installed-version.js";
@@ -54,7 +55,8 @@ async function main(): Promise<void> {
     const detected = detectVersion({ ownVersion: own, cwd: process.cwd(), env: process.env, argv, warn: (message) => console.error(`bitbybit-mcp: ${message}`) });
     const { index, served } = await loadServed(detected, own, argv.includes("--no-cache") ? null : defaultCacheDir());
     const context = contextForIndex(index, GUIDES, GUIDE_PAGE_URL);
-    const server = createMcpServer(createDocsRegistry(), context, { name: "bitbybit", version: own, instructions: SERVER_INSTRUCTIONS });
+    const registry = guarded(createDocsRegistry(), (error, tool) => console.error(`bitbybit-mcp: ${tool} failed: ${error instanceof Error ? error.message : String(error)}`));
+    const server = createMcpServer(registry, context, { name: "bitbybit", version: own, instructions: SERVER_INSTRUCTIONS });
     await server.connect(new StdioServerTransport());
     console.error(`bitbybit-mcp: serving the Bitbybit API index for version ${served.version} (from ${served.source})`);
 }

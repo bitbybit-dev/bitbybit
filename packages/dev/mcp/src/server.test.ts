@@ -199,6 +199,26 @@ describe("the request handler", () => {
         expect(hidden.error?.message).toContain("secret");
     });
 
+    it("reports a failure of its own to onError and still answers an internal error", async () => {
+        // Arrange
+        const reported: Error[] = [];
+        const handler = createRequestHandler(callerRegistry(), {
+            name: "t",
+            version: "0.0.0",
+            filterFor: () => { throw new Error("the filter broke"); },
+            onError: (error) => reported.push(error),
+        });
+
+        // Act
+        const response = await handler.fetch(rpc("tools/list"), { who: "member" });
+        const answer = await reply(response);
+
+        // Assert
+        expect(response.status).toBe(500);
+        expect(answer.error?.message).toContain("Internal server error");
+        expect(reported.map((error) => error.message)).toEqual(["the filter broke"]);
+    });
+
     it("carries the server name, version and instructions", async () => {
         // Arrange
         const handler = createRequestHandler(callerRegistry(), { name: "bitbybit", version: FIXTURE_VERSION, instructions: SERVER_INSTRUCTIONS });

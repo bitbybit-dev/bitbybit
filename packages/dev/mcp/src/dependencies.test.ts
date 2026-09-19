@@ -2,9 +2,12 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import * as root from "./index.js";
+import * as jsonSchema from "./json-schema.js";
+import * as server from "./server.js";
 
 const packageDirectory = fileURLToPath(new URL("..", import.meta.url));
-const manifest = JSON.parse(readFileSync(join(packageDirectory, "package.json"), "utf8")) as { dependencies: Record<string, string>; devDependencies: Record<string, string>; mcpName: string; name: string };
+const manifest = JSON.parse(readFileSync(join(packageDirectory, "package.json"), "utf8")) as { dependencies: Record<string, string>; devDependencies: Record<string, string>; exports: Record<string, { types: string; default: string }>; mcpName: string; name: string };
 const sourceFiles = (): string[] =>
     readdirSync(join(packageDirectory, "src"), { recursive: true, withFileTypes: true })
         .filter((entry) => entry.isFile() && entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.parentPath.includes("__fixtures__"))
@@ -47,5 +50,23 @@ describe("the package boundary", () => {
         expect(manifest.name).toBe("@bitbybit-dev/mcp");
         expect(manifest.mcpName).toBe("dev.bitbybit/mcp");
         expect((JSON.parse(readFileSync(join(packageDirectory, "server.json"), "utf8")) as { name: string }).name).toBe(manifest.mcpName);
+    });
+});
+
+describe("the public surface a host builds on", () => {
+    it("exports from the root the pieces a host needs to guard a registry, validate an index and wrap a cloud tool set", () => {
+        // Assert
+        for (const name of ["guarded", "isApiIndex", "inlineJsonSchemaReferences", "inputJsonSchema", "toHttp", "Registry", "INTERNAL_ERROR_CODE", "INTERNAL_ERROR_TEXT", "TOOL_CEILING", "contextForIndex", "createDocsRegistry", "renderMember", "renderLine", "IndexReader", "IndexNotPublishedError", "INDEX_HOST", "indexUrl", "isExactVersion", "GUIDES", "GUIDE_PAGE_URL"]) {
+            expect(root, name).toHaveProperty(name);
+        }
+    });
+
+    it("publishes the $ref inliner and the request handler under their own subpaths, so a generator script and a server bind to them without the root", () => {
+        // Assert
+        expect(Object.keys(manifest.exports)).toEqual([".", "./server", "./index-loader", "./installed-version", "./json-schema", "./package.json"]);
+        expect(manifest.exports["./json-schema"]).toEqual({ types: "./dist/json-schema.d.ts", default: "./dist/json-schema.js" });
+        expect(typeof jsonSchema.inlineJsonSchemaReferences).toBe("function");
+        expect(jsonSchema.inlineJsonSchemaReferences).toBe(root.inlineJsonSchemaReferences);
+        expect(typeof server.createRequestHandler).toBe("function");
     });
 });

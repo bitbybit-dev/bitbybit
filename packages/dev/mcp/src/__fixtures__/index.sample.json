@@ -21,6 +21,8 @@
     "occt.fillets",
     "occt.shapes",
     "occt.shapes.solid",
+    "occtPro",
+    "occtPro.sheetMetal",
     "verb",
     "verb.curve"
   ],
@@ -1010,7 +1012,35 @@
         "occt.shapes.solid.createBoxFromCorner#1"
       ],
       "group": "primitives",
-      "drawable": true
+      "drawable": true,
+      "cloudSummary": "On CAD Cloud the corner is given as three numbers.",
+      "cloudParams": [
+        {
+          "name": "inputs",
+          "type": "object",
+          "optional": false,
+          "fields": [
+            {
+              "name": "corner",
+              "type": "number[]",
+              "optional": false,
+              "doc": "The corner as [x, y, z]",
+              "default": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "name": "width",
+              "type": "number",
+              "optional": true,
+              "doc": "The side along X",
+              "default": 1
+            }
+          ]
+        }
+      ]
     },
     {
       "path": "occt.shapes.solid.createChristmasTreeSolid",
@@ -1630,6 +1660,42 @@
       "drawable": true
     },
     {
+      "path": "occtPro",
+      "kind": "namespace",
+      "name": "occtPro",
+      "className": null,
+      "signature": null,
+      "async": false,
+      "params": [],
+      "returns": null,
+      "summary": "Pro OCCT algorithms that run on CAD Cloud as pipeline steps",
+      "doc": "Pro OCCT algorithms that run on CAD Cloud as pipeline steps",
+      "docUrl": null,
+      "engines": [],
+      "tier": "cloud-pro",
+      "onApi3d": false,
+      "weight": null,
+      "examples": []
+    },
+    {
+      "path": "occtPro.sheetMetal",
+      "kind": "namespace",
+      "name": "sheetMetal",
+      "className": null,
+      "signature": null,
+      "async": false,
+      "params": [],
+      "returns": null,
+      "summary": "Sheet-metal unfolding as pipeline steps",
+      "doc": "Sheet-metal unfolding as pipeline steps",
+      "docUrl": null,
+      "engines": [],
+      "tier": "cloud-pro",
+      "onApi3d": false,
+      "weight": null,
+      "examples": []
+    },
+    {
       "path": "occtPro.sheetMetal.unfoldSolidToFlat",
       "kind": "cloud-operation",
       "name": "unfoldSolidToFlat",
@@ -1726,7 +1792,7 @@
       "onApi3d": false,
       "weight": null,
       "examples": [],
-      "deprecated": "Verbnurbs is not maintained upstream and this API is removed in the next major\nversion. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working\nuntil the removal."
+      "deprecated": ""
     }
   ],
   "enums": {

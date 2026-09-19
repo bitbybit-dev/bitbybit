@@ -2151,6 +2151,7 @@
         "required": [
           "outputs"
         ],
+        "additionalProperties": false,
         "description": "Submit a parametric model for generation with specified parameters and output formats"
       },
       "OutputOptions": {

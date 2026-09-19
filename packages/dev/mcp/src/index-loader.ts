@@ -4,8 +4,10 @@ import { join } from "node:path";
 import type { ApiIndex } from "./index-types.js";
 
 import { IndexNotPublishedError, indexUrl } from "./index-url.js";
+import { isApiIndex } from "./index-shape.js";
 
 export { INDEX_HOST, IndexNotPublishedError, indexPath, indexUrl, isExactVersion } from "./index-url.js";
+export { isApiIndex } from "./index-shape.js";
 
 const NOT_FOUND = 404;
 
@@ -18,22 +20,6 @@ export interface LoadIndexOptions {
     version: string;
     fetch?: typeof fetch;
     cacheDir?: string | null;
-}
-
-function isMemberLike(value: unknown): boolean {
-    if (typeof value !== "object" || value === null) return false;
-    const candidate = value as { path?: unknown; name?: unknown; engines?: unknown; examples?: unknown };
-    return typeof candidate.path === "string" && typeof candidate.name === "string" && Array.isArray(candidate.engines) && Array.isArray(candidate.examples);
-}
-
-export function isApiIndex(value: unknown, version: string): value is ApiIndex {
-    if (typeof value !== "object" || value === null) return false;
-    const candidate = value as { version?: unknown; members?: unknown; examples?: unknown };
-    return candidate.version === version
-        && Array.isArray(candidate.members)
-        && candidate.members.every(isMemberLike)
-        && typeof candidate.examples === "object"
-        && candidate.examples !== null;
 }
 
 export async function loadIndex(options: LoadIndexOptions): Promise<ApiIndex> {

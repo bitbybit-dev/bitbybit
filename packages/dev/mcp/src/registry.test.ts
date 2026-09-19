@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import { Registry, TOOL_CEILING, inputJsonSchema, toHttp } from "./registry.js";
+import { INTERNAL_ERROR_CODE, INTERNAL_ERROR_TEXT, Registry, TOOL_CEILING, guarded, inputJsonSchema, toHttp } from "./registry.js";
 import type { ToolDefinition } from "./registry.js";
 
 interface EchoContext {
@@ -47,6 +47,40 @@ describe("Registry", () => {
 
         // Act & Assert
         expect(() => registry.register(echo)).toThrow("already registered");
+    });
+
+    it("maps every handler into a new registry, leaving handler-less tools and the definitions as they are", async () => {
+        // Arrange
+        const registry = new Registry<EchoContext>().register(echo).register(declaredOnly);
+
+        // Act
+        const shouting = registry.map((handler) => async (args, context) => {
+            const result = await handler(args, context);
+            return { ...result, text: result.text.toUpperCase() };
+        });
+        const result = await shouting.get("echo")?.handler?.({ text: "hi", times: 2 }, { prefix: "> " });
+
+        // Assert
+        expect(result).toEqual({ text: "> HIHI", structured: { times: 2 } });
+        expect(shouting.list().map((definition) => definition.name)).toEqual(["echo", "browser_only"]);
+        expect(shouting.get("browser_only")?.handler).toBeUndefined();
+        expect(registry.get("echo")?.description).toBe("Repeats the text");
+    });
+
+    it("guards a throwing handler into a generic error result and reports the throw with the tool's name", async () => {
+        // Arrange
+        const reports: { error: unknown; tool: string }[] = [];
+        const broken: ToolDefinition<typeof echoInput, EchoContext> = { ...echo, name: "broken", handler: () => { throw new Error("Fetching https://internal.test failed"); } };
+        const safe = guarded(new Registry<EchoContext>().register(echo).register(broken), (error, tool) => reports.push({ error, tool }));
+
+        // Act
+        const failed = await safe.get("broken")?.handler?.({ text: "x" }, { prefix: "" });
+        const fine = await safe.get("echo")?.handler?.({ text: "x" }, { prefix: "" });
+
+        // Assert
+        expect(failed).toEqual({ text: INTERNAL_ERROR_TEXT, structured: { code: INTERNAL_ERROR_CODE }, isError: true });
+        expect(reports).toEqual([{ error: expect.objectContaining({ message: "Fetching https://internal.test failed" }), tool: "broken" }]);
+        expect(fine?.text).toBe("x");
     });
 
     it("keeps the ceiling at eight tools", () => {
@@ -103,6 +137,16 @@ describe("toHttp", () => {
 
         // Assert
         expect(tools).toEqual([]);
+    });
+
+    it("renders the JSON schema of an input once and answers the same object afterwards", () => {
+        // Act
+        const first = inputJsonSchema(echoInput);
+        const second = inputJsonSchema(echoInput);
+
+        // Assert
+        expect(second).toBe(first);
+        expect(toHttp(new Registry<EchoContext>().register(echo), { prefix: "" })[0]?.inputSchema).toBe(first);
     });
 
     it("renders draft 2020-12 JSON schema for an input", () => {

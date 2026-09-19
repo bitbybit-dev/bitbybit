@@ -1,5 +1,7 @@
 export type { ApiIndex, Engine, IndexEnum, IndexExample, IndexField, IndexMember, IndexParam, MemberKind, Tier } from "./index-types.js";
-export { Registry, TOOL_CEILING, inputJsonSchema, toHttp } from "./registry.js";
+export { INTERNAL_ERROR_CODE, INTERNAL_ERROR_TEXT, Registry, TOOL_CEILING, guarded, inputJsonSchema, toHttp } from "./registry.js";
+export type { ErrorReporter } from "./registry.js";
+export { isApiIndex } from "./index-shape.js";
 export { inlineJsonSchemaReferences } from "./json-schema.js";
 export type { AnyToolDefinition, HttpTool, ToolAnnotations, ToolDefinition, ToolHandler, ToolInput, ToolLink, ToolResult, ToolWhere } from "./registry.js";
 export { fail, failFor, ok } from "./results.js";

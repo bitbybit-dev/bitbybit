@@ -159,6 +159,25 @@ describe("describe", () => {
         expect(result.text).toContain("deprecated:");
     });
 
+    it("shows a bare deprecation without a reason", async () => {
+        // Act
+        const result = await call("describe", { path: "verb.curve" });
+
+        // Assert
+        expect(result.text).toContain("- deprecated\n");
+    });
+
+    it("documents the CAD Cloud inputs beside the browser signature when they differ", async () => {
+        // Act
+        const result = await call("describe", { path: "occt.shapes.solid.createBoxFromCorner" });
+
+        // Assert
+        expect(result.text).toContain("## Parameters on CAD Cloud");
+        expect(result.text).toContain("On CAD Cloud the corner is given as three numbers.");
+        expect(result.text).toContain("- corner: number[]; default [0,0,0] - The corner as [x, y, z]");
+        expect((await call("describe", { path: "occt.shapes.solid.createBox" })).text).not.toContain("Parameters on CAD Cloud");
+    });
+
     it("refuses another version than the one it holds, naming both", async () => {
         // Act
         const result = await call("describe", { path: "occt", version: "1.0.0" });
@@ -178,7 +197,18 @@ describe("list_namespace", () => {
         const listed = paths(structured(result)["members"]);
         expect(listed).toContain("occt");
         expect(listed).toContain("math");
+        expect(listed).toContain("occtPro");
         expect(listed).not.toContain("cloud.unfold.solidToFlat");
+    });
+
+    it("lists a namespace the index carries only through its members", async () => {
+        // Act
+        const result = await call("list_namespace", { path: "cloud.unfold" });
+
+        // Assert
+        expect(paths(structured(result)["members"])).toEqual(["cloud.unfold.solidToFlat"]);
+        expect(structured(result)["notFound"]).toBeUndefined();
+        expect(paths(structured(await call("list_namespace", { path: "occtPro" }))["members"])).toEqual(["occtPro.sheetMetal"]);
     });
 
     it("lists the children of a namespace", async () => {
@@ -230,6 +260,14 @@ describe("get_examples", () => {
         const rows = structured(result)["examples"] as { path: string }[];
         expect(rows.length).toBeGreaterThan(0);
         expect(rows.every((row) => row.path.startsWith("occt.shapes.solid."))).toBe(true);
+    });
+
+    it("collects examples under a namespace the index carries only through its members", async () => {
+        // Act
+        const result = await call("get_examples", { path: "cloud.unfold" });
+
+        // Assert
+        expect(result.isError).toBeUndefined();
     });
 
     it("finds examples by topic", async () => {
@@ -316,6 +354,15 @@ describe("search and fetch, the connector shape", () => {
         expect(structured(result)).toMatchObject({ id: "occt.shapes.solid.createBox", title: "occt.shapes.solid.createBox", metadata: { tier: "oss", version: FIXTURE_VERSION } });
         expect(structured(result)["text"]).toContain("# occt.shapes.solid.createBox");
         expect(JSON.parse(result.text)).toEqual(structured(result));
+    });
+
+    it("fetch accepts the bitbybit. prefix like every other tool", async () => {
+        // Act
+        const result = await call("fetch", { id: "bitbybit.occt.shapes.solid.createBox" });
+
+        // Assert
+        expect(result.isError).toBeUndefined();
+        expect(structured(result)["id"]).toBe("occt.shapes.solid.createBox");
     });
 
     it("fetch reports an unknown id as an error", async () => {
