@@ -82,10 +82,16 @@ jobs:
       - name: Tests and mocks typecheck
         run: npm run typecheck:tests
 
-      # The two packages outside the aggregate: the SDK's typecheck, tests with coverage and build,
-      # and the scaffolder's build - their only gate used to be prepublishOnly at publish time.
+      # The three packages outside the aggregate: the SDK's typecheck, tests with coverage and build,
+      # the MCP server's, and the scaffolder's build - their only gate used to be prepublishOnly at
+      # publish time.
       - name: cad-cloud-sdk
         run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test:coverage && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
+
+      # The MCP server: typecheck, tests with coverage against its fixture index, build, and the
+      # guide sections it serves regenerated from the docs page and compared with the committed file.
+      - name: mcp
+        run: pnpm --filter @bitbybit-dev/mcp run typecheck && pnpm --filter @bitbybit-dev/mcp run test:coverage && pnpm --filter @bitbybit-dev/mcp run check:guides
 
       # The scaffolder: built, then run as a user runs it - every template scaffolded into a
       # temporary directory and the tree it wrote checked, including that the packages it pins are

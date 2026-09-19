@@ -8,7 +8,7 @@ tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` bef
 
 | Directory | What it is |
 |---|---|
-| `packages/dev/*` | the 13 published npm packages - see `packages/dev/CLAUDE.md` |
+| `packages/dev/*` | the 14 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
 | `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | the API help text per locale, keyed by each member's dotted path, and `doc-paths.json`, the map from documentation page names to those keys (`API_DOCS_GUIDE.md`) |
@@ -37,7 +37,7 @@ directory out of the project - a stale one reads the built `dist` back in as sou
 
 ## The workspace
 
-The thirteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
+The fourteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
 `pnpm install` at the root - `npm run ci-packages` is exactly that, frozen to the lockfile - installs
 all of them, and a sibling dependency whose exact pin matches the sibling's version becomes a symlink
 instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the per-package
@@ -71,15 +71,15 @@ your machine and nowhere else, which is how one reached CI.
 type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
 local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
 widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; what the code cannot say belongs in JSDoc or a `CLAUDE.md`, and in a
-test in the name of the `it` - a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each on
-its own, and no other comment at all). Findings that predate a rule sit in `eslint-suppressions.json`;
-a new one fails, as does a stale suppression, so the count only falls. Never load
-`eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
+stay, free-form comments do not; a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each
+on its own, and nothing else; the MCP server package runs it with `allowJsDoc: false`, since nothing
+reads a comment there, and keeps what the code cannot say in its `CLAUDE.md`). Findings that predate
+a rule sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count
+only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and
-`tsconfig.bitbybit.json` (the build) extends - the SDK and the scaffolder included, which state only
+`tsconfig.bitbybit.json` (the build) extends - the SDK, the scaffolder and the MCP server included, which state only
 their NodeNext settings on top. `tsconfig.strict.json` is the typecheck-only view: the build config
 with nothing emitted, and with the build's references, because references are not inherited through
 `extends` and a view without them once followed a sibling's declarations into another package's
@@ -107,8 +107,8 @@ Only `typecheck:tests` compiles a `*.test.ts`, and every column of `coverage-bas
 
 `.github/workflows/verify.yml` proves the repository builds and tests from a bare clone with nothing
 above it, on every push to `develop` and every pull request into `develop` or `master`: the four above
-plus `check:references`, `check:exports`, `rebuild-all-packages`, `check:strict-baselines`, the SDK's
-and the scaffolder's own builds and tests, `check:openapi`, `api:check`, `check:tarballs`, and last -
+plus `check:references`, `check:exports`, `rebuild-all-packages`, `check:strict-baselines`, the SDK's,
+the scaffolder's and the MCP server's own builds and tests, `check:openapi`, `api:check`, `check:tarballs`, and last -
 on a red run too - `test:report`, which puts every suite's results on the summary page. It needs no
 secrets and must never gain any. `nightly.yml` runs the build and tests on every Node line the
 packages should keep working on. Neither publishes.
@@ -133,7 +133,7 @@ carry a report - all but `occt-worker`, whose `BitbybitOcctModule` comes from em
 cannot follow, and which `check:worker-api` and `check:worker-parity` pin harder instead - against its
 built `dist/index.d.ts`, and fails when the public surface differs from the report in that package's
 `etc/`: the dotted API is persisted in users' saved scripts, so a change lands only with a deliberate
-`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all thirteen,
+`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all fourteen,
 installs the library ones into an empty project and probes each as a consumer would, then reads what
 every tarball carries: a credential, an absolute build path, a source map naming excluded sources.
 

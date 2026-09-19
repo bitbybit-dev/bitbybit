@@ -78,6 +78,24 @@ Full guides with examples for every endpoint:
 - **[Files](https://learn.bitbybit.dev/api/sdk/typescript/files)** - file upload and management
 - **[API Reference](https://learn.bitbybit.dev/api/openapi-docs/bitbybit-cad-cloud-api)** - full OpenAPI endpoint reference
 
+## Use It With an AI Agent
+
+Two MCP servers put this API in front of an AI coding agent, and they answer different questions.
+
+The free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** documents the geometry API: every operation you can name in a pipeline, with its parameters, defaults, return type and examples, for the exact version you use. Connect it while the agent writes SDK calls, so it stops inventing operation names:
+
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+The **[Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp)** takes your API key and runs the same work this SDK runs - operations, pipelines, models, STEP to glTF conversions - straight from the conversation, returning the results as download links:
+
+```bash
+claude mcp add --transport http bitbybit-cloud https://api.bitbybit.dev/mcp --header "X-API-Key: <your key>"
+```
+
+Every execution is metered on the key's plan exactly as an SDK call would be, and the key's scopes decide which tools the agent even sees. Cursor, VS Code, claude.ai and ChatGPT connect to both - [every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp), and the [AI section of the documentation](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro) explains when each server is the right one.
+
 ## Working examples
 
 - [Node.js + SDK](https://github.com/bitbybit-dev/bitbybit/tree/master/examples/api/nodejs-sdk) - Express server with Three.js frontend

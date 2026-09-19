@@ -81,8 +81,8 @@ export default defineConfig([
         extends: [...tseslint.configs.recommendedTypeChecked],
         languageOptions: {
             parserOptions: {
-                // Three tooling files sit in no package's compilation: the shared vitest factory,
-                // and the two configs of the packages whose tsconfig covers `src` alone. Every
+                // Four tooling files sit in no package's compilation: the shared vitest factory,
+                // and the three configs of the packages whose tsconfig covers `src` alone. Every
                 // other vitest config is already inside its package's project, and naming one here
                 // that the service can place is itself an error - so this list is exact, not a glob.
                 projectService: {
@@ -90,6 +90,7 @@ export default defineConfig([
                         "packages/dev/vitest.shared.ts",
                         "packages/dev/cad-cloud-sdk/vitest.config.ts",
                         "packages/dev/create-app/vitest.config.ts",
+                        "packages/dev/mcp/vitest.config.ts",
                     ],
                 },
                 tsconfigRootDir: import.meta.dirname,
@@ -160,6 +161,15 @@ export default defineConfig([
             "packages/dev/vitest.shared.ts",
         ],
         rules: { "bitbybit/no-loose-comments": "error" },
+    },
+    // The MCP server package carries no JSDoc at all. Nothing reads a comment there: no generator
+    // derives a component or a catalog from it, and no saved script persists a value it names, so a
+    // JSDoc block would be ordinary prose beside the logic. What the code cannot say goes to the
+    // CLAUDE.md of the package. Its generated guides file is the text of the docs page, not source.
+    {
+        files: ["packages/dev/mcp/src/**/*.ts"],
+        ignores: ["**/*.test.ts", "packages/dev/mcp/src/guides.generated.ts"],
+        rules: { "bitbybit/no-loose-comments": ["error", { allowJsDoc: false }] },
     },
     // A kernel service is called again and again on the same parameter object, so it never writes
     // into it: a default goes into a local or a spread copy. The renderers' draw helpers are not

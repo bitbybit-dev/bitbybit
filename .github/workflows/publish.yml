@@ -87,9 +87,10 @@ jobs:
       - run: npm run rebuild-all-packages
       - run: npm test
       - run: pnpm --filter @bitbybit-dev/cad-cloud-sdk run typecheck && pnpm --filter @bitbybit-dev/cad-cloud-sdk run test && pnpm --filter @bitbybit-dev/cad-cloud-sdk run build
+      - run: pnpm --filter @bitbybit-dev/mcp run typecheck && pnpm --filter @bitbybit-dev/mcp run test && pnpm --filter @bitbybit-dev/mcp run build
       - run: pnpm --filter @bitbybit-dev/create-app run build
-      # after both root-published packages are built: it packs them too, and a package it cannot
-      # find reads as one that was never staged
+      # after the three root-published packages are built: it packs them too, and a package it
+      # cannot find reads as one that was never staged
       - run: npm run check:tarballs
       - run: npm run check:openapi
 
@@ -102,8 +103,8 @@ jobs:
         run: |
           VERSION=$(node -p "require('./packages/dev/threejs/package.json').version")
           mkdir -p /tmp/smoke && cd /tmp/smoke && npm init -y > /dev/null
-          npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps "@bitbybit-dev/threejs@$VERSION" "@bitbybit-dev/babylonjs@$VERSION" "@bitbybit-dev/playcanvas@$VERSION" "@bitbybit-dev/cad-cloud-sdk@$VERSION"
-          for p in base occt occt-worker jscad jscad-worker manifold manifold-worker core threejs babylonjs playcanvas cad-cloud-sdk; do
+          npm install --ignore-scripts --no-audit --no-fund --legacy-peer-deps "@bitbybit-dev/threejs@$VERSION" "@bitbybit-dev/babylonjs@$VERSION" "@bitbybit-dev/playcanvas@$VERSION" "@bitbybit-dev/cad-cloud-sdk@$VERSION" "@bitbybit-dev/mcp@$VERSION"
+          for p in base occt occt-worker jscad jscad-worker manifold manifold-worker core threejs babylonjs playcanvas cad-cloud-sdk mcp; do
             # Read the manifest off disk, not through module resolution: a package with a correct
             # exports map need not expose ./package.json, and asking for it through the resolver
             # then fails on the packaging rather than on the version this is checking.

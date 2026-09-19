@@ -39,6 +39,13 @@ const upload = await client.files.upload({
     sha256: "abc123...", // optional - enables deduplication
 });
 
+// With a sha256 the API already holds confirmed under your key, the answer is that file's
+// ConfirmResult: status "confirmed", no uploadUrl, nothing left to upload or confirm.
+if (upload.status === "confirmed") {
+    console.log(upload.fileId);  // reuse the existing file
+    return;
+}
+
 console.log(upload.fileId);    // assigned file ID
 console.log(upload.uploadUrl); // pre-signed PUT URL
 console.log(upload.expiresIn); // seconds until URL expires

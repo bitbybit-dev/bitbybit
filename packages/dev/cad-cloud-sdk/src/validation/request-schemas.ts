@@ -516,7 +516,8 @@ export const schemaBundle = {
       },
       "required": [
         "outputs"
-      ]
+      ],
+      "additionalProperties": false
     },
     "OutputFormat": {
       "type": "string",

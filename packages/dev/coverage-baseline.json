@@ -161,6 +161,15 @@
             "functions": 100,
             "statements": 100
         },
+        "mcp": {
+            "runner": "vitest",
+            "tests": 79,
+            "suites": 9,
+            "lines": 96.65,
+            "branches": 79.54,
+            "functions": 95.23,
+            "statements": 94.03
+        },
         "occt": {
             "runner": "vitest",
             "tests": 1263,

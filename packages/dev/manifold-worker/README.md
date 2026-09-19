@@ -33,6 +33,18 @@ npx @bitbybit-dev/create-app my-cloud-project --type cloud
 
 Choose from 5 backend templates: Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST. Each includes ready-to-run examples with model generation, batch operations, and [CAD pipelines](https://learn.bitbybit.dev/api/sdk/typescript/pipelines). [Learn more](https://learn.bitbybit.dev/api/cloud-api).
 
+## Use It With an AI Agent
+
+An agent that does not know an API invents plausible names for it, and Bitbybit has more functions across its three CAD kernels than any model holds in memory. The free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** server removes the guesswork: your agent looks up the exact signature, parameter defaults, return type and examples for the version of `@bitbybit-dev/manifold-worker` your project has installed, and writes code that compiles the first time.
+
+```bash
+claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+Cursor, VS Code, claude.ai, ChatGPT and the Claude API connect to the same endpoint; [`npx -y @bitbybit-dev/mcp`](https://www.npmjs.com/package/@bitbybit-dev/mcp) runs the same server locally, pinned to your installed version. [Every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+
+With a [CAD Cloud](https://bitbybit.dev/cad-cloud) key, the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) goes further and lets the agent run the geometry for you - measure a STEP file, run a pipeline, convert to glTF - and hand back the results as files. For assistants that cannot speak MCP, the whole API is also published as [context files](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/prompt-contexts). The [AI section of the documentation](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro) explains all of it.
+
 ## Links
 
 | Resource | URL |
@@ -83,7 +95,7 @@ Beyond NPM packages, Bitbybit offers:
 - **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
 - **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for e-commerce  
 - **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute visual scripts directly on your website  
-- **[AI-Assisted Development](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - Context files for GitHub Copilot, Claude, and ChatGPT  
+- **[Built for AI Coding Agents](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - The free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) gives Claude Code, Cursor, VS Code, claude.ai and ChatGPT the exact API of the version you use; with a key, the [CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) runs the geometry too  
 - **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
 
 ## Support the Project

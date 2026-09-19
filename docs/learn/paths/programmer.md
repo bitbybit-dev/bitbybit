@@ -41,8 +41,10 @@ When geometry jobs are too large for a browser - batch file conversions, paramet
 
 ## Using AI With Bitbybit
 
-We provide MCP integrations and prompt context files to help AI assistants generate Bitbybit code more effectively.
+Your agent can look up the exact API while it writes, and run geometry on CAD Cloud when you give it a key: two MCP servers, one dotted API. Context files cover the assistants that cannot speak MCP.
 
+- [Bitbybit CAD MCP](../using-ai-with-bitbybit/mcp/bitbybit-mcp) - free, version-exact API answers for Claude Code, Cursor, VS Code, claude.ai and ChatGPT
+- [Bitbybit CAD Cloud MCP](../using-ai-with-bitbybit/mcp/cad-cloud-mcp) - let the agent run operations, pipelines and conversions on CAD Cloud
 - [AI Integration Guide](../using-ai-with-bitbybit/intro)
 
 ## Level Up

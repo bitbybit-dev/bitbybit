@@ -23,6 +23,22 @@ describe("FilesEndpoint", () => {
         });
     });
 
+    describe("upload of bytes the key already holds", () => {
+        it("answers the confirmed file the sha256 matched instead of an upload url", async () => {
+            // Arrange
+            const confirmed = { fileId: "f-existing", status: "confirmed", bytes: 1024, contentType: "application/step" };
+            const { fn } = spyFetcher(okResponse(confirmed));
+            const files = new FilesEndpoint(fn);
+
+            // Act
+            const result = await files.upload({ filename: "test.step", contentType: "application/step", bytes: 1024, sha256: "abc" });
+
+            // Assert
+            expect(result).toStrictEqual(confirmed);
+            expect(result.status).toBe("confirmed");
+        });
+    });
+
     describe("confirm", () => {
         it("sends POST to /api/v1/files/{id}/confirm", async () => {
             // Arrange
@@ -130,6 +146,25 @@ describe("FilesEndpoint", () => {
             expect(calls[0]!.body).toStrictEqual({ filename: "part.step", contentType: "application/step", bytes: 3 });
             expect(puts[0]!.url).toBe("https://store.test/put");
             expect(result).toStrictEqual({ fileId: "f-1", status: "ready" });
+        });
+
+        it("returns the confirmed file without a put or a confirm when the api already holds the bytes", async () => {
+            // Arrange
+            const puts: string[] = [];
+            vi.stubGlobal("fetch", (url: string) => {
+                puts.push(url);
+                return Promise.resolve(new Response(null, { status: 200 }));
+            });
+            const { fn, calls } = spyFetcher(okResponse({ fileId: "f-existing", status: "confirmed", bytes: 3, contentType: "application/step" }));
+            const files = new FilesEndpoint(fn);
+
+            // Act
+            const result = await files.uploadBytes("part.step", new Uint8Array([1, 2, 3]), "application/step");
+
+            // Assert
+            expect(result).toStrictEqual({ fileId: "f-existing", status: "confirmed", bytes: 3, contentType: "application/step" });
+            expect(puts).toEqual([]);
+            expect(calls).toHaveLength(1);
         });
 
         it("puts the bytes as the content type it was given", async () => {

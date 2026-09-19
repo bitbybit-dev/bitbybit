@@ -1,6 +1,6 @@
 ---
 id: prompt-contexts
-sidebar_position: 2
+sidebar_position: 4
 title: AI Prompt Context Files
 sidebar_label: Prompt Context Files
 description: Learn how to use AI Prompt Context files to give your AI coding assistant comprehensive knowledge of the Bitbybit API for more accurate code generation.
@@ -109,7 +109,11 @@ export function DeclarationDownloadButtons() {
 
 # AI Prompt Context Files
 
-Modern AI assistants like Claude, Gemini, Grok, or ChatGPT are remarkably capable at writing code. However, they can struggle with specialized libraries and APIs they weren't extensively trained on. That's where **AI Prompt Contexts** come in - specially crafted documentation files that give your AI assistant deep knowledge of the Bitbybit API.
+Modern AI assistants like Claude, Gemini, Grok, or ChatGPT are remarkably capable at writing code. However, they can struggle with specialized libraries and APIs they weren't extensively trained on. **AI Prompt Contexts** are documentation files that give your AI assistant deep knowledge of the Bitbybit API in one attachment.
+
+:::tip If your tool speaks MCP, connect the server instead
+Claude Code, Cursor, VS Code, claude.ai, ChatGPT and the Claude API can connect to the free [Bitbybit CAD MCP](./mcp/bitbybit-mcp). It answers from the API index of the exact version you use, costs no context window until a question is asked, and never goes stale. Context files are for assistants that cannot connect to an MCP server, for a one-off conversation, or for working offline.
+:::
 
 ---
 
@@ -240,14 +244,14 @@ Use `.d.ts` files when:
 
 ---
 
-## Combining with Context7 MCP
+## Combining with the MCP servers
 
-For the best experience, we recommend combining a **Lite context** with our **[Context7 MCP Server](./mcp/context-7.md)**:
+When a host can do both, a **Lite context** and the **[Bitbybit CAD MCP](./mcp/bitbybit-mcp)** complement each other:
 
-- **Context7 MCP** provides live access to full documentation and stays current with the latest changes
-- **Lite context** ensures the AI knows precise API signatures
+- the **context file** gives the model the big picture in one read: how a project is set up, the conventions, the shape of the API
+- the **MCP server** answers the exact question at the moment of writing: the signature, defaults and examples of the one member the model is about to call, for your version
 
-Together, they create a powerful coding assistant that understands both the big picture and the fine details.
+If the agent also has to produce geometry, the **[Bitbybit CAD Cloud MCP](./mcp/cad-cloud-mcp)** runs it on CAD Cloud with an API key. [Context7](./mcp/context-7) is a third-party index of this documentation site that some teams add on top.
 
 ---
 

@@ -51,7 +51,7 @@ const VIRTUAL_HOME = "/home/web_user";
 
 const distProjects = JSON.parse(noComments(readFileSync(join(ROOT, "tsconfig.build.json"), "utf8"))).references
     .map((r) => ({ dir: join(ROOT, dirname(r.path)), fromDist: true }));
-const rootProjects = ["cad-cloud-sdk", "create-app"].map((n) => ({ dir: join(ROOT, "packages/dev", n), fromDist: false }));
+const rootProjects = ["cad-cloud-sdk", "create-app", "mcp"].map((n) => ({ dir: join(ROOT, "packages/dev", n), fromDist: false }));
 const packDir = mkdtempSync(join(tmpdir(), "bitbybit-tarballs-"));
 const probeDir = mkdtempSync(join(tmpdir(), "bitbybit-tarball-probe-"));
 const cleanup = () => { rmSync(packDir, { recursive: true, force: true }); rmSync(probeDir, { recursive: true, force: true }); };
