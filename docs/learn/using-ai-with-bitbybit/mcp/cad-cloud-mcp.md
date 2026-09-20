@@ -134,6 +134,50 @@ For a project, a `.mcp.json` that reads the key from the environment, so the fil
 }
 ```
 
+### Codex
+
+In `~/.codex/config.toml`, with the key read from the environment so the file can be committed:
+
+```toml
+[mcp_servers.bitbybit-cloud]
+url = "https://api.bitbybit.dev/mcp"
+env_http_headers = { "X-API-Key" = "BITBYBIT_API_KEY" }
+```
+
+### Gemini CLI
+
+```bash
+gemini mcp add -t http -H "X-API-Key: <your key>" bitbybit-cloud https://api.bitbybit.dev/mcp
+```
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json` reads the key from the environment with `${env:...}`:
+
+```json
+{
+    "mcpServers": {
+        "bitbybit-cloud": {
+            "serverUrl": "https://api.bitbybit.dev/mcp",
+            "headers": { "X-API-Key": "${env:BITBYBIT_API_KEY}" }
+        }
+    }
+}
+```
+
+### Zed
+
+```json
+{
+    "context_servers": {
+        "bitbybit-cloud": {
+            "url": "https://api.bitbybit.dev/mcp",
+            "headers": { "X-API-Key": "<your key>" }
+        }
+    }
+}
+```
+
 ### Your own agent
 
 Any MCP client library that can set a request header works: connect to `https://api.bitbybit.dev/mcp` over Streamable HTTP and send `X-API-Key` on every request. Hosts that can only send a bearer token (claude.ai's custom connectors and the Claude API's hosted MCP connector among them) cannot reach this server yet, because it authenticates with the API key header. Connect the free [docs server](./bitbybit-mcp) there, and run geometry from Claude Code, Cursor, VS Code or your own agent.

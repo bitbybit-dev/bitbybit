@@ -12,6 +12,8 @@ The diagram shows what an agent is writing code *for*. The MIT-licensed [npm pac
 
 The same server runs two ways. Hosted at `https://mcp.bitbybit.dev/mcp` over Streamable HTTP, which needs nothing installed and serves the newest release; or locally over stdio with `npx`, which needs Node 20 and serves the version your project has installed. Start with the remote.
 
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/link/mcp/install?name=bitbybit&config=eyJ1cmwiOiJodHRwczovL21jcC5iaXRieWJpdC5kZXYvbWNwIn0=) [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=bitbybit&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D) [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=bitbybit&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D&quality=insiders)
+
 **Claude Code**
 
 ```bash
@@ -42,7 +44,17 @@ For a project, commit a `.mcp.json` at its root so every collaborator's Claude C
 { "servers": { "bitbybit": { "type": "http", "url": "https://mcp.bitbybit.dev/mcp" } } }
 ```
 
-Either form takes the local server instead: `{ "command": "npx", "args": ["-y", "@bitbybit-dev/mcp"] }`, with `"type": "stdio"` in VS Code. claude.ai, ChatGPT and the Claude API connect to the remote as a custom connector - [every configuration is documented here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+Either form takes the local server instead: `{ "command": "npx", "args": ["-y", "@bitbybit-dev/mcp"] }`, with `"type": "stdio"` in VS Code.
+
+**Codex**
+
+```bash
+codex mcp add bitbybit --url https://mcp.bitbybit.dev/mcp
+```
+
+or `codex mcp add bitbybit -- npx -y @bitbybit-dev/mcp` for the local server. In `~/.codex/config.toml` that is `[mcp_servers.bitbybit]` with `url = "https://mcp.bitbybit.dev/mcp"`.
+
+Gemini CLI (`gemini mcp add -t http bitbybit https://mcp.bitbybit.dev/mcp`), Windsurf (`serverUrl` in `~/.codeium/windsurf/mcp_config.json`), Zed (`context_servers` in its settings) and the JetBrains IDEs (AI Assistant, MCP, a JSON entry with `url`) take the same address. claude.ai, ChatGPT and the Claude API connect to the remote as a custom connector - [every configuration is documented here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
 
 ## Which version it serves
 
@@ -75,6 +87,8 @@ This server answers questions; it never runs geometry. When you want the agent t
 ```bash
 claude mcp add --transport http bitbybit-cloud https://api.bitbybit.dev/mcp --header "X-API-Key: <your key>"
 ```
+
+In Codex the same is `[mcp_servers.bitbybit-cloud]` with `url = "https://api.bitbybit.dev/mcp"` and `env_http_headers = { "X-API-Key" = "BITBYBIT_API_KEY" }`, the key read from the environment.
 
 The two are designed to work together: the agent learns a member here and calls it there with the same dotted path and the same argument object.
 

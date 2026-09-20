@@ -8,7 +8,7 @@ tags: [ai, developer, integration]
 
 # For AI Coding Agents, and the People Driving Them
 
-You let Claude Code, Cursor, VS Code, claude.ai, ChatGPT or an agent of your own write the 3D code, or produce the geometry outright. Bitbybit treats that agent as a first-class user: the API is published in the form it can read at the moment it needs it.
+You let Claude Code, Codex, Cursor, VS Code, claude.ai, ChatGPT or an agent of your own write the 3D code, or produce the geometry outright. Bitbybit treats that agent as a first-class user: the API is published in the form it can read at the moment it needs it.
 
 ## Give the agent the API
 

@@ -349,6 +349,16 @@ Cursor (.cursor/mcp.json):
 }
 ```
 
+Codex (`codex mcp add bitbybit --url https://mcp.bitbybit.dev/mcp`, or in ~/.codex/config.toml):
+```toml
+[mcp_servers.bitbybit]
+url = "https://mcp.bitbybit.dev/mcp"
+```
+
+Gemini CLI: `gemini mcp add -t http bitbybit https://mcp.bitbybit.dev/mcp` (settings.json field "httpUrl").
+Windsurf: "serverUrl" in ~/.codeium/windsurf/mcp_config.json. Zed: "context_servers" with "url" in settings.json.
+JetBrains AI Assistant: an MCP server entry with "url".
+
 Bitbybit CAD Cloud MCP setup (API key, runs the geometry):
 ```bash
 claude mcp add --transport http bitbybit-cloud https://api.bitbybit.dev/mcp --header "X-API-Key: <your key>"

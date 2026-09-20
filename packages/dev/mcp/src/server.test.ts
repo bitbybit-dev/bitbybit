@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Registry, toHttp } from "./registry.js";
 import { ok } from "./results.js";
 import { DESCRIPTIONS, SERVER_INSTRUCTIONS, TOOL_NAMES } from "./descriptions.js";
+import { SERVER_IDENTITY } from "./identity.js";
 import { FIXTURE_VERSION, fixtureContext } from "./__fixtures__/load.js";
 
 async function connectedClient(): Promise<Client> {
@@ -219,15 +220,15 @@ describe("the request handler", () => {
         expect(reported.map((error) => error.message)).toEqual(["the filter broke"]);
     });
 
-    it("carries the server name, version and instructions", async () => {
+    it("carries the server name, version, instructions and identity", async () => {
         // Arrange
-        const handler = createRequestHandler(callerRegistry(), { name: "bitbybit", version: FIXTURE_VERSION, instructions: SERVER_INSTRUCTIONS });
+        const handler = createRequestHandler(callerRegistry(), { name: "bitbybit", version: FIXTURE_VERSION, instructions: SERVER_INSTRUCTIONS, ...SERVER_IDENTITY });
 
         // Act
         const initialized = await reply(await handler.fetch(rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "test-client", version: "0.0.0" } }), { who: "member" }));
 
         // Assert
-        expect(initialized.result?.["serverInfo"]).toMatchObject({ name: "bitbybit", version: FIXTURE_VERSION });
+        expect(initialized.result?.["serverInfo"]).toEqual({ name: "bitbybit", version: FIXTURE_VERSION, ...SERVER_IDENTITY });
         expect(initialized.result?.["instructions"]).toBe(SERVER_INSTRUCTIONS);
     });
 });

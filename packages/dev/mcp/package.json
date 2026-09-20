@@ -1,11 +1,11 @@
 {
     "name": "@bitbybit-dev/mcp",
-    "version": "1.3.2-rc.0",
+    "version": "1.3.2-rc.1",
     "description": "MCP server for the Bitbybit 3D CAD API: version-exact lookups of every function, its parameters, defaults and examples, for AI coding agents",
     "author": "Bit By Bit Developers",
     "license": "MIT",
     "type": "module",
-    "mcpName": "dev.bitbybit/mcp",
+    "mcpName": "dev.bitbybit/cad",
     "bin": {
         "bitbybit-mcp": "./dist/stdio.js"
     },

@@ -19,6 +19,10 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   `src/stdio.ts` is the executable. Nothing else imports the SDK, and the dependency test asserts it.
 - `src/json-schema.ts` is the one inliner of local `$ref` pointers in the JSON schema zod renders,
   used for every advertised tool schema and exported for anyone who renders the same convention.
+- `src/identity.ts` is what the server says about itself on `initialize` beside its name and
+  version: the title, the docs page and the icon, in the shape the protocol's implementation
+  info takes, so a client that renders icons shows one. `server.json` repeats them for the
+  registry and `dependencies.test.ts` keeps the two equal.
 - The seven tools live in `src/tools/`; every title and description is in `src/descriptions.ts`,
   because a description is what a model reads to choose a tool, so a change there changes
   behaviour and is made deliberately.

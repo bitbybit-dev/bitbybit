@@ -3,15 +3,16 @@ import type { AuthInfo, StandardSchemaWithJSON } from "@modelcontextprotocol/ser
 import type { z } from "zod";
 import { inputJsonSchema } from "./registry.js";
 import type { AnyToolDefinition, Registry, ToolInput, ToolResult } from "./registry.js";
+import type { ServerBranding } from "./identity.js";
 
-export interface McpServerOptions<TContext> {
+export interface McpServerOptions<TContext> extends ServerBranding {
     name: string;
     version: string;
     instructions?: string;
     filter?: (definition: AnyToolDefinition<TContext>) => boolean;
 }
 
-export interface RequestHandlerOptions<TContext> {
+export interface RequestHandlerOptions<TContext> extends ServerBranding {
     name: string;
     version: string;
     instructions?: string;
@@ -24,6 +25,16 @@ export interface RequestHandler<TContext> {
 }
 
 const REQUEST_CONTEXT = "dev.bitbybit/request-context";
+
+function implementationOf(options: ServerBranding & { name: string; version: string }): { name: string; version: string; title?: string; websiteUrl?: string; icons?: ServerBranding["icons"] } {
+    return {
+        name: options.name,
+        version: options.version,
+        ...(options.title === undefined ? {} : { title: options.title }),
+        ...(options.websiteUrl === undefined ? {} : { websiteUrl: options.websiteUrl }),
+        ...(options.icons === undefined ? {} : { icons: options.icons }),
+    };
+}
 
 type TextContent = { type: "text"; text: string };
 type LinkContent = { type: "resource_link"; uri: string; name: string; mimeType?: string; description?: string };
@@ -82,10 +93,7 @@ export function bindRegistry<TContext>(
 }
 
 export function createMcpServer<TContext>(registry: Registry<TContext>, context: TContext, options: McpServerOptions<TContext>): McpServer {
-    const server = new McpServer(
-        { name: options.name, version: options.version },
-        options.instructions === undefined ? {} : { instructions: options.instructions },
-    );
+    const server = new McpServer(implementationOf(options), options.instructions === undefined ? {} : { instructions: options.instructions });
     bindRegistry(server, registry, context, options.filter);
     return server;
 }
@@ -104,10 +112,7 @@ export function createRequestHandler<TContext>(registry: Registry<TContext>, opt
     const handler = createMcpHandler(
         ({ authInfo }) => {
             const context = carried<TContext>(authInfo);
-            const server = new McpServer(
-                { name: options.name, version: options.version },
-                options.instructions === undefined ? {} : { instructions: options.instructions },
-            );
+            const server = new McpServer(implementationOf(options), options.instructions === undefined ? {} : { instructions: options.instructions });
             bindRegistry(server, registry, context, options.filterFor?.(context));
             return server;
         },

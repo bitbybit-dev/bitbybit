@@ -15,7 +15,7 @@ This section explains the ways to give an agent that knowledge, in the order we 
 ```mermaid
 %%{init: {"flowchart": {"wrappingWidth": 420, "nodeSpacing": 40, "rankSpacing": 60}}}%%
 flowchart LR
-    Agent["Your agent<br/>Claude Code, Cursor, VS Code,<br/>claude.ai, ChatGPT, Claude API"]
+    Agent["Your agent<br/>Claude Code, Codex, Cursor, VS Code,<br/>claude.ai, ChatGPT, Claude API"]
     Docs["Bitbybit CAD MCP<br/>free, no account<br/>describe, search, examples, guide"]
     Cloud["Bitbybit CAD Cloud MCP<br/>API key<br/>run operations, pipelines, models,<br/>conversions, get results as files"]
     Files["Context files<br/>for tools without MCP"]

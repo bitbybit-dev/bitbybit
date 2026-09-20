@@ -4,7 +4,7 @@
     "link": {
         "type": "generated-index",
         "title": "Using AI With Bitbybit",
-        "description": "Bitbybit is built to be used by AI coding agents as much as by people. Two MCP servers give an agent the exact API of the version you use and, with a key, hosted CAD compute; context files and Context7 cover the assistants that cannot speak MCP. These pages connect the servers to Claude Code, Cursor, VS Code, claude.ai and ChatGPT, explain where geometry should run when an agent writes the code, and say what AI-assisted 3D development is realistically good at today.",
+        "description": "Bitbybit is built to be used by AI coding agents as much as by people. Two MCP servers give an agent the exact API of the version you use and, with a key, hosted CAD compute; context files and Context7 cover the assistants that cannot speak MCP. These pages connect the servers to Claude Code, Codex, Cursor, VS Code, claude.ai and ChatGPT, explain where geometry should run when an agent writes the code, and say what AI-assisted 3D development is realistically good at today.",
         "slug": "/using-ai-with-bitbybit"
     }
 }
