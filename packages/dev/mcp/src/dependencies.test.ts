@@ -1,4 +1,5 @@
 import { readdirSync, readFileSync } from "node:fs";
+import { SERVER_IDENTITY } from "./identity.js";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
@@ -48,8 +49,19 @@ describe("the package boundary", () => {
     it("names itself the same way for npm and for the MCP registry", () => {
         // Assert
         expect(manifest.name).toBe("@bitbybit-dev/mcp");
-        expect(manifest.mcpName).toBe("dev.bitbybit/mcp");
+        expect(manifest.mcpName).toBe("dev.bitbybit/cad");
         expect((JSON.parse(readFileSync(join(packageDirectory, "server.json"), "utf8")) as { name: string }).name).toBe(manifest.mcpName);
+    });
+
+    it("tells the registry the same title, page and icon it tells a client on initialize", () => {
+        // Act
+        const registryManifest = JSON.parse(readFileSync(join(packageDirectory, "server.json"), "utf8")) as { title: string; websiteUrl: string; icons: unknown; packages: { runtimeHint?: string }[] };
+
+        // Assert
+        expect(registryManifest.title).toBe(SERVER_IDENTITY.title);
+        expect(registryManifest.websiteUrl).toBe(SERVER_IDENTITY.websiteUrl);
+        expect(registryManifest.icons).toEqual(SERVER_IDENTITY.icons);
+        expect(registryManifest.packages[0]?.runtimeHint).toBe("npx");
     });
 });
 

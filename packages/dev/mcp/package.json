@@ -5,7 +5,7 @@
     "author": "Bit By Bit Developers",
     "license": "MIT",
     "type": "module",
-    "mcpName": "dev.bitbybit/mcp",
+    "mcpName": "dev.bitbybit/cad",
     "bin": {
         "bitbybit-mcp": "./dist/stdio.js"
     },

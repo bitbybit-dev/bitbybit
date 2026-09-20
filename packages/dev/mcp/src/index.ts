@@ -18,3 +18,5 @@ export { splitGuides, slugify } from "./guides-split.js";
 export type { GuideSection } from "./guides-split.js";
 export { GUIDES, GUIDE_PAGE_URL } from "./guides.generated.js";
 export { INDEX_HOST, IndexNotPublishedError, indexPath, indexUrl, isExactVersion } from "./index-url.js";
+export { SERVER_IDENTITY } from "./identity.js";
+export type { ServerBranding, ServerIcon } from "./identity.js";

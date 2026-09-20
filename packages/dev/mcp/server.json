@@ -1,8 +1,8 @@
 {
     "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-    "name": "dev.bitbybit/mcp",
+    "name": "dev.bitbybit/cad",
     "title": "Bitbybit CAD MCP",
-    "description": "The Bitbybit 3D CAD API, version-exact, for coding agents: search, describe, examples, guide",
+    "description": "Bitbybit 3D parametric CAD API, version-exact, for coding agents: search, describe, examples, guide",
     "version": "1.3.2-rc.0",
     "repository": {
         "url": "https://github.com/bitbybit-dev/bitbybit",
@@ -10,11 +10,15 @@
         "subfolder": "packages/dev/mcp"
     },
     "websiteUrl": "https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp",
+    "icons": [
+        { "src": "https://learn.bitbybit.dev/img/favicon-192x192.png", "mimeType": "image/png", "sizes": ["192x192"] }
+    ],
     "packages": [
         {
             "registryType": "npm",
             "registryBaseUrl": "https://registry.npmjs.org",
             "identifier": "@bitbybit-dev/mcp",
+            "runtimeHint": "npx",
             "version": "1.3.2-rc.0",
             "transport": {
                 "type": "stdio"
