@@ -91,7 +91,7 @@ For server-side workflows, your backend (Node.js, Cloudflare Workers, .NET, or a
 
 ### Option 5: Let an AI agent do it
 
-Claude Code, Cursor, VS Code, claude.ai and ChatGPT can connect to the free [Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp) and look up the exact API of the version you use while they write; with a key, the [Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets the agent run the geometry on CAD Cloud and hand you the files. The [AI section](./using-ai-with-bitbybit/intro) explains both.
+Claude Code, Codex, Cursor, VS Code, claude.ai and ChatGPT can connect to the free [Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp) and look up the exact API of the version you use while they write; with a key, the [Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets the agent run the geometry on CAD Cloud and hand you the files. The [AI section](./using-ai-with-bitbybit/intro) explains both.
 
 ### Visual IDEs
 

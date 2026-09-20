@@ -150,7 +150,7 @@ Comprehensive modules covering 3D programming, mathematics, parametric design, a
 
 AI coding agents are a first-class audience for Bitbybit. Two Model Context Protocol servers give them what they need at the moment they need it:
 
-- **[Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp)** - free, no account. Every function, parameter, default and example of the exact version you use, answered live to Claude Code, Cursor, VS Code, claude.ai, ChatGPT or the Claude API.
+- **[Bitbybit CAD MCP](./using-ai-with-bitbybit/mcp/bitbybit-mcp)** - free, no account. Every function, parameter, default and example of the exact version you use, answered live to Claude Code, Codex, Cursor, VS Code, claude.ai, ChatGPT or the Claude API.
 - **[Bitbybit CAD Cloud MCP](./using-ai-with-bitbybit/mcp/cad-cloud-mcp)** - with an API key, the agent runs operations, pipelines, parametric models and STEP conversions on CAD Cloud and hands you the files. It can answer "what is the volume of this STEP file" without you hosting anything.
 
 **Use when:** An agent writes your Bitbybit code, or you want an agent to produce geometry and files for you directly.

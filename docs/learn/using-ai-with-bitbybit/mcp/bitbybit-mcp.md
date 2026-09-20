@@ -3,7 +3,7 @@ id: bitbybit-mcp
 sidebar_position: 1
 title: Bitbybit CAD MCP
 sidebar_label: Bitbybit CAD MCP
-description: The free MCP server that documents the exact Bitbybit API for AI coding agents. Connect Claude Code, Cursor, VS Code, claude.ai, ChatGPT or the Claude API, remotely or with one npx command.
+description: The free MCP server that documents the exact Bitbybit API for AI coding agents. Connect Claude Code, Codex, Cursor, VS Code, Gemini CLI, Windsurf, Zed, the JetBrains IDEs, claude.ai, ChatGPT or the Claude API, remotely or with one npx command.
 tags: [ai]
 ---
 
@@ -86,6 +86,71 @@ For a project, commit a `.mcp.json` at its root instead, so every collaborator's
 ```
 
 MCP works in agent mode; check that `chat.mcp.enabled` is on.
+
+### Codex
+
+```bash
+codex mcp add bitbybit --url https://mcp.bitbybit.dev/mcp
+```
+
+or the local server with `codex mcp add bitbybit -- npx -y @bitbybit-dev/mcp`. The same entry in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.bitbybit]
+url = "https://mcp.bitbybit.dev/mcp"
+```
+
+### Gemini CLI
+
+```bash
+gemini mcp add -t http bitbybit https://mcp.bitbybit.dev/mcp
+```
+
+or in `~/.gemini/settings.json`, where `httpUrl` is the Streamable HTTP field (`url` would mean SSE):
+
+```json
+{
+    "mcpServers": {
+        "bitbybit": { "httpUrl": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+### Windsurf
+
+In `~/.codeium/windsurf/mcp_config.json` a remote server takes `serverUrl`:
+
+```json
+{
+    "mcpServers": {
+        "bitbybit": { "serverUrl": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+### Zed
+
+In Zed's `settings.json`:
+
+```json
+{
+    "context_servers": {
+        "bitbybit": { "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
+
+### JetBrains IDEs
+
+Settings, Tools, AI Assistant, Model Context Protocol (MCP), add a server with this JSON configuration:
+
+```json
+{
+    "mcpServers": {
+        "bitbybit": { "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}
+```
 
 ### claude.ai and Claude Desktop
 

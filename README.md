@@ -41,7 +41,9 @@ Bitbybit has 1725 functions across three CAD kernels - more than any model remem
 claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
 ```
 
-Cursor, VS Code, claude.ai, ChatGPT and the Claude API connect to the same endpoint, and [`npx -y @bitbybit-dev/mcp`](https://www.npmjs.com/package/@bitbybit-dev/mcp) runs it locally against the `@bitbybit-dev` packages in your project - [every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+Codex, Cursor, VS Code, Gemini CLI, Windsurf, Zed, the JetBrains IDEs, claude.ai, ChatGPT and the Claude API connect to the same endpoint, and [`npx -y @bitbybit-dev/mcp`](https://www.npmjs.com/package/@bitbybit-dev/mcp) runs it locally against the `@bitbybit-dev` packages in your project - [every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+
+[![Add to Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/link/mcp/install?name=bitbybit&config=eyJ1cmwiOiJodHRwczovL21jcC5iaXRieWJpdC5kZXYvbWNwIn0=) [![Install in VS Code](https://img.shields.io/badge/VS_Code-Install_Server-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=bitbybit&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D) [![Install in VS Code Insiders](https://img.shields.io/badge/VS_Code_Insiders-Install_Server-24bfa5?style=flat-square&logo=visualstudiocode&logoColor=white)](https://insiders.vscode.dev/redirect/mcp/install?name=bitbybit&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D&quality=insiders)
 
 | | What it gives an agent | Cost |
 |---|---|---|
@@ -143,7 +145,7 @@ Beyond these open-source NPM packages, the Bitbybit platform includes:
 - **[Bitbybit Studio](https://studio.bitbybit.dev)** - A growing visual dashboard where API Key users can generate models, convert files, build [pipelines with a GUI](https://learn.bitbybit.dev/api/studio/intro), inspect tasks, and preview 3D results  
 - **[3D Bits for Shopify](https://apps.shopify.com/3d-bits-1)** - Interactive 3D product configurators for your Shopify store. [Documentation](https://learn.bitbybit.dev/learn/3d-bits/intro).  
 - **[Script Runners](https://learn.bitbybit.dev/learn/runners/intro)** - Execute Rete/Blockly/TypeScript scripts directly on your website without writing code  
-- **[Built for AI Coding Agents](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - The free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) gives Claude Code, Cursor, VS Code, claude.ai and ChatGPT the exact API of the version you use; the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets an agent run geometry on CAD Cloud with a key. Context files cover assistants without MCP.  
+- **[Built for AI Coding Agents](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)** - The free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) gives Claude Code, Codex, Cursor, VS Code, claude.ai and ChatGPT the exact API of the version you use; the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) lets an agent run geometry on CAD Cloud with a key. Context files cover assistants without MCP.  
 - **[Business & Enterprise](https://bitbybit.dev/b2b)** - We help businesses and enterprises develop custom applications and spin up optimized CAD tenant workflows on our managed servers  
 
 ## Community

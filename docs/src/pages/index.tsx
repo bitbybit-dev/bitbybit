@@ -469,7 +469,7 @@ function AICodingSection() {
             </div>
             <Heading as="h2">Built for AI Coding Agents</Heading>
             <p>
-              Claude Code, Cursor, VS Code, claude.ai and ChatGPT can look up the exact Bitbybit API while they work,
+              Claude Code, Codex, Cursor, VS Code, claude.ai and ChatGPT can look up the exact Bitbybit API while they work,
               and run geometry on CAD Cloud when you give them a key. Two MCP servers, one dotted API, no guessing.
             </p>
           </div>
