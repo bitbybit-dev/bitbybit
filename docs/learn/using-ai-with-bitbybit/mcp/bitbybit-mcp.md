@@ -63,7 +63,7 @@ For a project, commit a `.mcp.json` at its root instead, so every collaborator's
 
 ### Cursor
 
-Create `.cursor/mcp.json` in the project (or `~/.cursor/mcp.json` for every project):
+[Add to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=bitbybit&config=eyJ1cmwiOiJodHRwczovL21jcC5iaXRieWJpdC5kZXYvbWNwIn0=) installs it with one click. Or create `.cursor/mcp.json` in the project (or `~/.cursor/mcp.json` for every project):
 
 ```json
 {
@@ -75,7 +75,7 @@ Create `.cursor/mcp.json` in the project (or `~/.cursor/mcp.json` for every proj
 
 ### VS Code
 
-Create `.vscode/mcp.json`; the `type` is required, or VS Code tries to start the URL as a program:
+[Install in VS Code](vscode:mcp/install?%7B%22name%22%3A%22bitbybit%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D) (or [in VS Code Insiders](vscode-insiders:mcp/install?%7B%22name%22%3A%22bitbybit%22%2C%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fmcp.bitbybit.dev%2Fmcp%22%7D)) adds it with one click. Or create `.vscode/mcp.json`; the `type` is required, or VS Code tries to start the URL as a program:
 
 ```json
 {
