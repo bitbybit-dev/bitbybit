@@ -99,6 +99,21 @@ describe("loadIndex", () => {
         expect(readdirSync(cacheDir).filter((name) => name.endsWith(".partial"))).toEqual([]);
     });
 
+    it("answers the index when the cache directory cannot be created, and writes nothing", async () => {
+        // Arrange
+        const blocker = join(temporaryDirectory(), "not-a-directory");
+        writeFileSync(blocker, "");
+        const cacheDir = join(blocker, "cache");
+        const { fetch } = fetchAnswering(200, JSON.stringify(fixtureIndex()));
+
+        // Act
+        const index = await loadIndex({ version: "9.9.9", fetch, cacheDir });
+
+        // Assert
+        expect(index.version).toBe("9.9.9");
+        expect(existsSync(cacheDir)).toBe(false);
+    });
+
     it("reads a cached index without fetching", async () => {
         // Arrange
         const cacheDir = temporaryDirectory();
