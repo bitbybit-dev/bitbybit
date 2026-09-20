@@ -1,5 +1,7 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { detectVersion, flagValue, installedVersions } from "./installed-version.js";
 
 const manifest = (version: string): string => JSON.stringify({ version });
@@ -9,6 +11,27 @@ function filesystem(files: Record<string, string>): (path: string) => string | u
 }
 
 describe("installedVersions", () => {
+    const temporaryDirectories: string[] = [];
+
+    afterEach(() => {
+        for (const directory of temporaryDirectories.splice(0)) rmSync(directory, { recursive: true, force: true });
+    });
+
+    it("reads the manifests from disk when no reader is given, and skips a package that is not installed", () => {
+        // Arrange
+        const project = mkdtempSync(join(tmpdir(), "bitbybit-mcp-test-"));
+        temporaryDirectories.push(project);
+        const core = join(project, "node_modules", "@bitbybit-dev", "core");
+        mkdirSync(core, { recursive: true });
+        writeFileSync(join(core, "package.json"), manifest("1.2.0"));
+
+        // Act
+        const found = installedVersions(project);
+
+        // Assert
+        expect([...found.entries()]).toEqual([["core", "1.2.0"]]);
+    });
+
     it("walks up from the working directory and reads each package once", () => {
         // Arrange
         const project = join("/", "work", "app", "packages", "web");
