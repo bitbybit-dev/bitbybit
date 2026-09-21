@@ -94,7 +94,7 @@
     },
     "devDependencies": {
         "@modelcontextprotocol/client": "2.0.0",
-        "@types/node": "^22.10.2",
+        "@types/node": "^22.20.3",
         "@vitest/coverage-v8": "4.1.11",
         "typescript": "5.9.3",
         "vitest": "4.1.11"

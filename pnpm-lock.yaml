@@ -15,8 +15,8 @@ importers:
         specifier: 10.0.1
         version: 10.0.1(eslint@10.10.0(supports-color@10.2.2))
       '@types/node':
-        specifier: 22.20.1
-        version: 22.20.1
+        specifier: 22.20.3
+        version: 22.20.3
       eslint:
         specifier: 10.10.0
         version: 10.10.0(supports-color@10.2.2)
@@ -37,7 +37,7 @@ importers:
         version: 8.70.0(eslint@10.10.0(supports-color@10.2.2))(supports-color@10.2.2)(typescript@5.9.3)
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/babylonjs:
     dependencies:
@@ -86,7 +86,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@types/earcut':
         specifier: 3.0.0
         version: 3.0.0
@@ -104,13 +104,13 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/base:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -122,7 +122,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/cad-cloud-sdk:
     dependencies:
@@ -141,7 +141,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/core:
     dependencies:
@@ -178,7 +178,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -193,7 +193,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/create-app:
     dependencies:
@@ -211,7 +211,7 @@ importers:
         version: 3.0.0
       inquirer:
         specifier: 13.4.3
-        version: 13.4.3(@types/node@22.20.1)
+        version: 13.4.3(@types/node@22.20.3)
       ora:
         specifier: 9.4.1
         version: 9.4.1
@@ -226,14 +226,14 @@ importers:
         specifier: 9.0.9
         version: 9.0.9
       '@types/node':
-        specifier: ^22.10.2
-        version: 22.20.1
+        specifier: ^22.20.3
+        version: 22.20.3
       typescript:
         specifier: ~5.8.3
         version: 5.8.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/jscad:
     dependencies:
@@ -258,7 +258,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -270,7 +270,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/jscad-worker:
     dependencies:
@@ -283,7 +283,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -295,7 +295,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/manifold:
     dependencies:
@@ -304,11 +304,11 @@ importers:
         version: link:../base
       manifold-3d:
         specifier: 3.5.3
-        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
+        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.3))(esbuild-wasm@0.27.7)
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -320,7 +320,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/manifold-worker:
     dependencies:
@@ -333,7 +333,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -348,7 +348,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/mcp:
     dependencies:
@@ -363,8 +363,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0
       '@types/node':
-        specifier: ^22.10.2
-        version: 22.20.1
+        specifier: ^22.20.3
+        version: 22.20.3
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -373,7 +373,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/occt:
     dependencies:
@@ -383,7 +383,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -395,7 +395,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/occt-worker:
     dependencies:
@@ -420,7 +420,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/playcanvas:
     dependencies:
@@ -451,7 +451,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@vitest/coverage-v8':
         specifier: 4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -466,7 +466,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   packages/dev/threejs:
     dependencies:
@@ -497,7 +497,7 @@ importers:
     devDependencies:
       '@microsoft/api-extractor':
         specifier: 7.59.1
-        version: 7.59.1(@types/node@22.20.1)
+        version: 7.59.1(@types/node@22.20.3)
       '@types/three':
         specifier: 0.186.0
         version: 0.186.0
@@ -515,7 +515,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.11
-        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+        version: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
 packages:
 
@@ -1390,8 +1390,8 @@ packages:
   '@types/ndarray@1.1.0':
     resolution: {integrity: sha512-go+C6vHBUuO9jH6Tj6qEZ63JEGoMSxFdmd+6QAtthGD6xumBfIz3RbNDDs2aoRVLf9naH8lk5jnWy2UHHKgYQQ==}
 
-  '@types/node@22.20.1':
-    resolution: {integrity: sha512-EANqOCF9QFyra+4pfxUcX9STKJpCLjMbObVzljIJomAWSnuSIEAvyzEU53GaajbXJEgdh0iEcPL+DGvpUd4k1Q==}
+  '@types/node@22.20.3':
+    resolution: {integrity: sha512-DZmzkmwHzXrLPAXPyKNDzlIwMMUZCVacoD25ywdy5YTKGbOx/2ld+Q38Im2zJ0vBuZP5Prd3VZutKZyXwkOS8A==}
 
   '@types/stats.js@0.17.4':
     resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
@@ -3067,14 +3067,14 @@ snapshots:
       '@gltf-transform/core': 4.5.0
       ktx-parse: 1.1.0
 
-  '@gltf-transform/functions@4.5.0(@types/node@22.20.1)':
+  '@gltf-transform/functions@4.5.0(@types/node@22.20.3)':
     dependencies:
       '@gltf-transform/core': 4.5.0
       '@gltf-transform/extensions': 4.5.0
       ktx-parse: 1.1.0
       ndarray: 1.1.1
       ndarray-lanczos: 0.3.0
-      ndarray-pixels: 5.2.0(@types/node@22.20.1)
+      ndarray-pixels: 5.2.0(@types/node@22.20.3)
     transitivePeerDependencies:
       - '@types/node'
 
@@ -3202,134 +3202,134 @@ snapshots:
 
   '@inquirer/ansi@2.0.8': {}
 
-  '@inquirer/checkbox@5.2.4(@types/node@22.20.1)':
+  '@inquirer/checkbox@5.2.4(@types/node@22.20.3)':
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/confirm@6.3.1(@types/node@22.20.1)':
+  '@inquirer/confirm@6.3.1(@types/node@22.20.3)':
     dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/core@11.2.1(@types/node@22.20.1)':
+  '@inquirer/core@11.2.1(@types/node@22.20.3)':
     dependencies:
       '@inquirer/ansi': 2.0.8
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.2
       mute-stream: 3.0.0
       signal-exit: 4.1.0
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/core@12.0.2(@types/node@22.20.1)':
+  '@inquirer/core@12.0.2(@types/node@22.20.3)':
     dependencies:
       '@inquirer/ansi': 2.0.8
       '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
       cli-width: 4.1.0
       fast-wrap-ansi: 0.2.2
       mute-stream: 3.0.0
       signal-exit: 4.1.0
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/editor@5.3.2(@types/node@22.20.1)':
+  '@inquirer/editor@5.3.2(@types/node@22.20.3)':
     dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/external-editor': 3.0.5(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/external-editor': 3.0.5(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/expand@5.1.4(@types/node@22.20.1)':
+  '@inquirer/expand@5.1.4(@types/node@22.20.3)':
     dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/external-editor@3.0.5(@types/node@22.20.1)':
+  '@inquirer/external-editor@3.0.5(@types/node@22.20.3)':
     dependencies:
       chardet: 2.2.0
       iconv-lite: 0.7.3
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   '@inquirer/figures@2.0.9': {}
 
-  '@inquirer/input@5.1.5(@types/node@22.20.1)':
+  '@inquirer/input@5.1.5(@types/node@22.20.3)':
     dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/number@4.2.2(@types/node@22.20.1)':
+  '@inquirer/number@4.2.2(@types/node@22.20.3)':
     dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/password@5.2.1(@types/node@22.20.1)':
-    dependencies:
-      '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
-    optionalDependencies:
-      '@types/node': 22.20.1
-
-  '@inquirer/prompts@8.7.1(@types/node@22.20.1)':
-    dependencies:
-      '@inquirer/checkbox': 5.2.4(@types/node@22.20.1)
-      '@inquirer/confirm': 6.3.1(@types/node@22.20.1)
-      '@inquirer/editor': 5.3.2(@types/node@22.20.1)
-      '@inquirer/expand': 5.1.4(@types/node@22.20.1)
-      '@inquirer/input': 5.1.5(@types/node@22.20.1)
-      '@inquirer/number': 4.2.2(@types/node@22.20.1)
-      '@inquirer/password': 5.2.1(@types/node@22.20.1)
-      '@inquirer/rawlist': 5.3.4(@types/node@22.20.1)
-      '@inquirer/search': 4.3.2(@types/node@22.20.1)
-      '@inquirer/select': 5.2.4(@types/node@22.20.1)
-    optionalDependencies:
-      '@types/node': 22.20.1
-
-  '@inquirer/rawlist@5.3.4(@types/node@22.20.1)':
-    dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
-    optionalDependencies:
-      '@types/node': 22.20.1
-
-  '@inquirer/search@4.3.2(@types/node@22.20.1)':
-    dependencies:
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
-    optionalDependencies:
-      '@types/node': 22.20.1
-
-  '@inquirer/select@5.2.4(@types/node@22.20.1)':
+  '@inquirer/password@5.2.1(@types/node@22.20.3)':
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 12.0.2(@types/node@22.20.1)
-      '@inquirer/figures': 2.0.9
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@inquirer/type@4.1.1(@types/node@22.20.1)':
+  '@inquirer/prompts@8.7.1(@types/node@22.20.3)':
+    dependencies:
+      '@inquirer/checkbox': 5.2.4(@types/node@22.20.3)
+      '@inquirer/confirm': 6.3.1(@types/node@22.20.3)
+      '@inquirer/editor': 5.3.2(@types/node@22.20.3)
+      '@inquirer/expand': 5.1.4(@types/node@22.20.3)
+      '@inquirer/input': 5.1.5(@types/node@22.20.3)
+      '@inquirer/number': 4.2.2(@types/node@22.20.3)
+      '@inquirer/password': 5.2.1(@types/node@22.20.3)
+      '@inquirer/rawlist': 5.3.4(@types/node@22.20.3)
+      '@inquirer/search': 4.3.2(@types/node@22.20.3)
+      '@inquirer/select': 5.2.4(@types/node@22.20.3)
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
+
+  '@inquirer/rawlist@5.3.4(@types/node@22.20.3)':
+    dependencies:
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
+    optionalDependencies:
+      '@types/node': 22.20.3
+
+  '@inquirer/search@4.3.2(@types/node@22.20.3)':
+    dependencies:
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
+    optionalDependencies:
+      '@types/node': 22.20.3
+
+  '@inquirer/select@5.2.4(@types/node@22.20.3)':
+    dependencies:
+      '@inquirer/ansi': 2.0.8
+      '@inquirer/core': 12.0.2(@types/node@22.20.3)
+      '@inquirer/figures': 2.0.9
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
+    optionalDependencies:
+      '@types/node': 22.20.3
+
+  '@inquirer/type@4.1.1(@types/node@22.20.3)':
+    optionalDependencies:
+      '@types/node': 22.20.3
 
   '@jridgewell/resolve-uri@3.1.2': {}
 
@@ -3381,23 +3381,23 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@microsoft/api-extractor-model@7.33.12(@types/node@22.20.1)':
+  '@microsoft/api-extractor-model@7.33.12(@types/node@22.20.3)':
     dependencies:
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.1)
+      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.3)
     transitivePeerDependencies:
       - '@types/node'
 
-  '@microsoft/api-extractor@7.59.1(@types/node@22.20.1)':
+  '@microsoft/api-extractor@7.59.1(@types/node@22.20.3)':
     dependencies:
-      '@microsoft/api-extractor-model': 7.33.12(@types/node@22.20.1)
+      '@microsoft/api-extractor-model': 7.33.12(@types/node@22.20.3)
       '@microsoft/tsdoc': 0.16.0
       '@microsoft/tsdoc-config': 0.18.1
-      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.1)
+      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.3)
       '@rushstack/rig-package': 0.7.3
-      '@rushstack/terminal': 0.24.4(@types/node@22.20.1)
-      '@rushstack/ts-command-line': 5.3.14(@types/node@22.20.1)
+      '@rushstack/terminal': 0.24.4(@types/node@22.20.3)
+      '@rushstack/ts-command-line': 5.3.14(@types/node@22.20.3)
       diff: 8.0.4
       minimatch: 10.2.3
       resolve: 1.22.12
@@ -3578,7 +3578,7 @@ snapshots:
 
   '@rolldown/pluginutils@1.0.1': {}
 
-  '@rushstack/node-core-library@5.24.1(@types/node@22.20.1)':
+  '@rushstack/node-core-library@5.24.1(@types/node@22.20.3)':
     dependencies:
       ajv: 8.20.0
       ajv-draft-04: 1.0.0(ajv@8.20.0)
@@ -3589,28 +3589,28 @@ snapshots:
       resolve: 1.22.12
       semver: 7.7.4
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@rushstack/problem-matcher@0.2.1(@types/node@22.20.1)':
+  '@rushstack/problem-matcher@0.2.1(@types/node@22.20.3)':
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   '@rushstack/rig-package@0.7.3':
     dependencies:
       jju: 1.4.0
       resolve: 1.22.12
 
-  '@rushstack/terminal@0.24.4(@types/node@22.20.1)':
+  '@rushstack/terminal@0.24.4(@types/node@22.20.3)':
     dependencies:
-      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.1)
-      '@rushstack/problem-matcher': 0.2.1(@types/node@22.20.1)
+      '@rushstack/node-core-library': 5.24.1(@types/node@22.20.3)
+      '@rushstack/problem-matcher': 0.2.1(@types/node@22.20.3)
       supports-color: 8.1.1
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
-  '@rushstack/ts-command-line@5.3.14(@types/node@22.20.1)':
+  '@rushstack/ts-command-line@5.3.14(@types/node@22.20.3)':
     dependencies:
-      '@rushstack/terminal': 0.24.4(@types/node@22.20.1)
+      '@rushstack/terminal': 0.24.4(@types/node@22.20.3)
       '@types/argparse': 1.0.38
       argparse: 1.0.10
       string-argv: 0.3.2
@@ -3641,7 +3641,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   '@types/gradient-string@1.1.6':
     dependencies:
@@ -3656,11 +3656,11 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   '@types/ndarray@1.1.0': {}
 
-  '@types/node@22.20.1':
+  '@types/node@22.20.3':
     dependencies:
       undici-types: 6.21.0
 
@@ -3677,7 +3677,7 @@ snapshots:
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   '@types/tinycolor2@1.4.6': {}
 
@@ -3786,7 +3786,7 @@ snapshots:
       obug: 2.1.4
       std-env: 4.2.0
       tinyrainbow: 3.1.1
-      vitest: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+      vitest: 4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
 
   '@vitest/expect@4.1.11':
     dependencies:
@@ -3797,13 +3797,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.1.1
 
-  '@vitest/mocker@4.1.11(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))':
+  '@vitest/mocker@4.1.11(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))':
     dependencies:
       '@vitest/spy': 4.1.11
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 8.2.2(@types/node@22.20.1)(sass@1.104.1)
+      vite: 8.2.2(@types/node@22.20.3)(sass@1.104.1)
 
   '@vitest/pretty-format@4.1.11':
     dependencies:
@@ -4311,17 +4311,17 @@ snapshots:
   ini@1.3.8:
     optional: true
 
-  inquirer@13.4.3(@types/node@22.20.1):
+  inquirer@13.4.3(@types/node@22.20.3):
     dependencies:
       '@inquirer/ansi': 2.0.8
-      '@inquirer/core': 11.2.1(@types/node@22.20.1)
-      '@inquirer/prompts': 8.7.1(@types/node@22.20.1)
-      '@inquirer/type': 4.1.1(@types/node@22.20.1)
+      '@inquirer/core': 11.2.1(@types/node@22.20.3)
+      '@inquirer/prompts': 8.7.1(@types/node@22.20.3)
+      '@inquirer/type': 4.1.1(@types/node@22.20.3)
       mute-stream: 3.0.0
       run-async: 4.0.6
       rxjs: 7.8.2
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   interpret@1.4.0: {}
 
@@ -4513,11 +4513,11 @@ snapshots:
     dependencies:
       semver: 7.8.5
 
-  manifold-3d@3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7):
+  manifold-3d@3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.3))(esbuild-wasm@0.27.7):
     dependencies:
       '@gltf-transform/core': 4.5.0
       '@gltf-transform/extensions': 4.5.0
-      '@gltf-transform/functions': 4.5.0(@types/node@22.20.1)
+      '@gltf-transform/functions': 4.5.0(@types/node@22.20.3)
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/trace-mapping': 0.3.31
       '@jscadui/3mf-export': 0.5.0
@@ -4584,12 +4584,12 @@ snapshots:
     dependencies:
       cwise-compiler: 1.1.3
 
-  ndarray-pixels@5.2.0(@types/node@22.20.1):
+  ndarray-pixels@5.2.0(@types/node@22.20.3):
     dependencies:
       '@types/ndarray': 1.1.0
       ndarray: 1.1.1
       ndarray-ops: 1.2.2
-      sharp: 0.35.4(@types/node@22.20.1)
+      sharp: 0.35.4(@types/node@22.20.3)
     transitivePeerDependencies:
       - '@types/node'
 
@@ -4837,7 +4837,7 @@ snapshots:
 
   semver@7.8.5: {}
 
-  sharp@0.35.4(@types/node@22.20.1):
+  sharp@0.35.4(@types/node@22.20.3):
     dependencies:
       '@img/colour': 1.1.0
       detect-libc: 2.1.2
@@ -4868,7 +4868,7 @@ snapshots:
       '@img/sharp-win32-arm64': 0.35.4
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
 
   shebang-command@1.2.0:
     dependencies:
@@ -5074,7 +5074,7 @@ snapshots:
     optionalDependencies:
       webworker-threads: 0.7.17
 
-  vite@8.2.2(@types/node@22.20.1)(sass@1.104.1):
+  vite@8.2.2(@types/node@22.20.3)(sass@1.104.1):
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
@@ -5082,14 +5082,14 @@ snapshots:
       rolldown: 1.2.7
       tinyglobby: 0.2.17
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
       fsevents: 2.3.3
       sass: 1.104.1
 
-  vitest@4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1)):
+  vitest@4.1.11(@types/node@22.20.3)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1)):
     dependencies:
       '@vitest/expect': 4.1.11
-      '@vitest/mocker': 4.1.11(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+      '@vitest/mocker': 4.1.11(vite@8.2.2(@types/node@22.20.3)(sass@1.104.1))
       '@vitest/pretty-format': 4.1.11
       '@vitest/runner': 4.1.11
       '@vitest/snapshot': 4.1.11
@@ -5106,10 +5106,10 @@ snapshots:
       tinyexec: 1.3.1
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.1
-      vite: 8.2.2(@types/node@22.20.1)(sass@1.104.1)
+      vite: 8.2.2(@types/node@22.20.3)(sass@1.104.1)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 22.20.1
+      '@types/node': 22.20.3
       '@vitest/coverage-v8': 4.1.11(vitest@4.1.11)
       jsdom: 29.0.1(canvas@3.2.3)
     transitivePeerDependencies:
