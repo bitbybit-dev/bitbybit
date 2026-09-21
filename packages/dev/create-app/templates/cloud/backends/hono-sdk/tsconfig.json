@@ -1,16 +1,27 @@
 {
     "compilerOptions": {
         "target": "ES2022",
-        "module": "ES2022",
+        "module": "ESNext",
         "moduleResolution": "bundler",
-        "strict": true,
-        "skipLibCheck": true,
         "lib": ["ES2022"],
         "types": ["@cloudflare/workers-types"],
-        "outDir": "dist",
-        "rootDir": "src",
-        "resolveJsonModule": true,
-        "isolatedModules": true
+        "noEmit": true,
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "useUnknownInCatchVariables": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "verbatimModuleSyntax": true,
+        "erasableSyntaxOnly": true,
+        "noUncheckedSideEffectImports": true,
+        "skipLibCheck": true
     },
-    "include": ["src/**/*.ts"]
+    "include": ["src"]
 }

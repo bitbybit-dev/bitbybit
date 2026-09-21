@@ -47,11 +47,12 @@ export default defineConfig([
         "docs/",
         "examples/",
         "packages/dev/create-app/templates/",
+        "packages/dev/create-app/.local/",
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
         "**/*.d.ts",
         ...targets.map((t) => t.out),
-    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
+    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users and the projects its smoke lanes keep under .local for running by hand, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],

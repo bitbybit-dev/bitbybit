@@ -8,9 +8,13 @@ import ora from "ora";
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
+import { AGENT_SECTION_FILE, applyAgentLayer, listFiles, restoreTemplateDotfiles } from "./scaffold.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const CLI_VERSION = "1.3.2";
+const TEMPLATES_ROOT = path.join(__dirname, "..", "templates");
 
 const BITBYBIT_LOGO = `
 ╭──────────────────────────────────────────────────────────────────────╮
@@ -36,7 +40,50 @@ interface CloudProjectOptions {
     backend: "hono-sdk" | "hono-rest" | "nodejs-sdk" | "nodejs-rest" | "dotnet-rest";
 }
 
-type AppType = "frontend" | "cloud";
+type AppType = "frontend" | "cloud" | "app";
+
+type AppTemplateId = "product-configurator" | "laser-cut-box" | "sheet-metal-unfold" | "step-to-gltf-cli" | "drone-assembly";
+
+interface AppTemplate {
+    name: string;
+    description: string;
+    cloud: boolean;
+}
+
+const APP_TEMPLATES: Record<AppTemplateId, AppTemplate> = {
+    "product-configurator": {
+        name: "Product configurator",
+        description: "A parametric planter with its own form, a live price from the measured solid, presets and STEP, STL and GLB downloads",
+        cloud: false,
+    },
+    "laser-cut-box": {
+        name: "Laser-cut box",
+        description: "A finger-jointed box from one sheet: thickness, kerf and finger width, the assembled box and the cutting layout, DXF, SVG and STEP downloads",
+        cloud: false,
+    },
+    "sheet-metal-unfold": {
+        name: "Sheet-metal unfold",
+        description: "A channel built in the browser and unfolded on CAD Cloud, a Pro algorithm: flat pattern with bend lines, DXF and STEP; a small backend keeps the key",
+        cloud: true,
+    },
+    "step-to-gltf-cli": {
+        name: "STEP to glTF command line",
+        description: "Batch STEP and IGES to GLB and STL in-process on the open-source kernel, with a JSON of facts per file; --cloud for serverless or volume",
+        cloud: false,
+    },
+    "drone-assembly": {
+        name: "Drone assembly",
+        description: "A multirotor built as a real assembly: twenty-seven parts placed through sub-assemblies, physically based materials, spinning propellers, a bill of materials, STEP and GLB exports that keep the tree",
+        cloud: false,
+    },
+};
+
+const APP_TEMPLATE_IDS = Object.keys(APP_TEMPLATES) as AppTemplateId[];
+
+interface AppProjectOptions {
+    projectName: string;
+    template: AppTemplateId;
+}
 
 type EngineType = "threejs" | "babylonjs" | "playcanvas";
 type OcctArchitectureType = "32" | "64" | "64-mt";
@@ -88,6 +135,14 @@ const BACKEND_DESCRIPTIONS: Record<BackendType, string> = {
     "dotnet-rest": "HttpClient calls on ASP.NET Core minimal API (.NET 10)",
 };
 
+const BACKEND_SECRET_FILES: Record<BackendType, string> = {
+    "hono-sdk": ".dev.vars",
+    "hono-rest": ".dev.vars",
+    "nodejs-sdk": ".env",
+    "nodejs-rest": ".env",
+    "dotnet-rest": "appsettings.Development.json",
+};
+
 const BACKEND_COLORS: Record<BackendType, (text: string) => string> = {
     "hono-sdk": chalk.hex("#FF6633"),
     "hono-rest": chalk.hex("#FF6633"),
@@ -135,6 +190,11 @@ async function promptAppType(): Promise<AppType> {
                     name: `${chalk.hex("#FF6633")("● CAD Cloud App")}       ${chalk.gray("- Backend + Frontend using managed Bitbybit CAD Cloud servers")}`,
                     value: "cloud" as AppType,
                     short: "CAD Cloud App"
+                },
+                {
+                    name: `${chalk.hex("#F0CEBB")("● App Template")}        ${chalk.gray("- A complete, agent-ready product on the packages: a configurator, a laser-cut box, ...")}`,
+                    value: "app" as AppType,
+                    short: "App Template"
                 },
             ],
             default: "frontend"
@@ -216,6 +276,47 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
         projectName: projectNameArg || answers.projectName!,
         backend: answers.backend,
     };
+}
+
+async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOptions> {
+    interface AppAnswers {
+        projectName?: string;
+        template: AppTemplateId;
+    }
+
+    const choices = APP_TEMPLATE_IDS.map((id) => {
+        const template = APP_TEMPLATES[id];
+        const marker = template.cloud ? chalk.hex("#FF6633")(" (needs CAD Cloud)") : "";
+        return {
+            name: `${chalk.hex("#F0CEBB")(`● ${template.name}`)}${marker}  ${chalk.gray(`- ${template.description}`)}`,
+            value: id,
+            short: template.name,
+        };
+    });
+
+    const questions = [
+        ...(projectNameArg ? [] : [{
+            type: "input" as const,
+            name: "projectName",
+            message: chalk.cyan("📁 What is your project name?"),
+            default: "my-bitbybit-app",
+            validate: (input: string) => {
+                if (!input.trim()) return "Project name is required";
+                if (!/^[a-z0-9-_]+$/i.test(input)) return "Project name can only contain letters, numbers, hyphens, and underscores";
+                return true;
+            }
+        }]),
+        {
+            type: "list" as const,
+            name: "template",
+            message: chalk.cyan("🧩 Which app template would you like to start from?"),
+            choices,
+            default: APP_TEMPLATE_IDS[0],
+        },
+    ];
+
+    const answers = await inquirer.prompt<AppAnswers>(questions);
+    return { projectName: projectNameArg || answers.projectName!, template: answers.template };
 }
 
 async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOptions> {
@@ -337,18 +438,6 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
     };
 }
 
-/**
- * npm strips every file named .gitignore out of a package tarball, so the templates carry theirs as
- * _gitignore and each copied template restores the name here. Without it a scaffolded backend
- * arrives with the .env this CLI writes for it and nothing ignoring that file.
- */
-async function restoreTemplateDotfiles(dir: string): Promise<void> {
-    const staged = path.join(dir, "_gitignore");
-    if (await fs.pathExists(staged)) {
-        await fs.move(staged, path.join(dir, ".gitignore"), { overwrite: true });
-    }
-}
-
 async function createProject(options: ProjectOptions): Promise<void> {
     const { projectName, engine, bundler, language, occtArchitecture } = options;
     const targetDir = path.resolve(process.cwd(), projectName);
@@ -399,7 +488,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
     }).start();
 
     try {
-        const templateDir = path.join(__dirname, "..", "templates", bundler, engine, language);
+        const templateDir = path.join(TEMPLATES_ROOT, bundler, engine, language);
         
         if (!fs.existsSync(templateDir)) {
             spinner.fail("Template not found");
@@ -409,7 +498,7 @@ async function createProject(options: ProjectOptions): Promise<void> {
         }
 
         await fs.copy(templateDir, targetDir);
-        await restoreTemplateDotfiles(targetDir);
+        await applyAgentLayer(TEMPLATES_ROOT, targetDir, { PROJECT_NAME: projectName, TEMPLATE_ID: `vite-${engine}`, CLI_VERSION });
         spinner.succeed("Project structure created");
 
         const packageJsonPath = path.join(targetDir, "package.json");
@@ -486,6 +575,12 @@ export default defineConfig({
         console.log();
         console.log(chalk.gray("  3. Start the development server:"));
         console.log(chalk.cyan("     npm run dev"));
+        console.log();
+        console.log(chalk.gray("  4. Build the model headlessly and read its summary:"));
+        console.log(chalk.cyan("     npm run smoke"));
+        console.log();
+        console.log(chalk.gray("  Your coding agent is set up: AGENTS.md explains the project, and the"));
+        console.log(chalk.gray("  Bitbybit CAD MCP is configured for Claude Code, Cursor and VS Code."));
         console.log();
 
         if (occtArchitecture === "64") {
@@ -652,6 +747,22 @@ ${backend === "dotnet-rest" ? `    ├── Program.cs
 | \`POST\` | \`/api/pipeline/file-input\` | Pipeline: file upload + fillet |
 | \`GET\` | \`/api/proxy-download?url=...\` | Proxy glTF downloads (avoids CORS) |
 
+## What Needs CAD Cloud and Where to Get It
+
+Everything this app renders is computed on CAD Cloud. That is the point of this template: it is the hosted-compute case, for a backend that cannot host the CAD kernels (a Cloudflare Worker, a .NET server) or chooses not to. If your geometry could run in your users' browsers, or in a Node server with the memory for a kernel, the free open-source packages are the whole answer and \`npm init @bitbybit-dev/app\` has Vite templates for that; nothing of Bitbybit's sits in the loop there.
+
+| | |
+|---|---|
+| What goes to the cloud | every backend route that creates a task, runs a pipeline, uploads a file or fetches a result |
+| Plan needed | any [CAD Cloud plan](https://bitbybit.dev/cad-cloud); the key needs the \`cad\`, \`files\` and \`tasks\` scopes |
+| Where keys live | [Bitbybit Studio](https://studio.bitbybit.dev/keys/billing), which also shows the tasks this app ran and what they cost |
+| Where the key goes | \`backend/${BACKEND_SECRET_FILES[backend]}\`, already covered by \`backend/.gitignore\`; never anywhere else |
+| Without a key | every \`/api/*\` route answers 503 and the frontend explains this with the links above; the app is not broken, it is waiting for a key |
+
+## Use It With an Agent
+
+\`AGENTS.md\` (which \`CLAUDE.md\` points at) explains the project to a coding agent, and the free Bitbybit CAD MCP server is configured in \`.mcp.json\` (Claude Code), \`.cursor/mcp.json\` (Cursor) and \`.vscode/mcp.json\` (VS Code), so the agent looks the API up instead of guessing it. \`npm run smoke\` in \`frontend/\` and \`backend/\` typechecks each against the pinned packages; that is the loop an agent iterates against without a key.
+
 ## Getting an API Key
 
 1. Create an account on [bitbybit.dev](https://bitbybit.dev)
@@ -711,7 +822,7 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     }).start();
 
     try {
-        const cloudTemplatesDir = path.join(__dirname, "..", "templates", "cloud");
+        const cloudTemplatesDir = path.join(TEMPLATES_ROOT, "cloud");
 
         const frontendTemplateDir = path.join(cloudTemplatesDir, "frontend");
         const frontendTargetDir = path.join(targetDir, "frontend");
@@ -766,6 +877,16 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
 
         await fs.writeFile(path.join(targetDir, "README.md"), generateCloudReadme(projectName, backend), "utf-8");
 
+        await applyAgentLayer(TEMPLATES_ROOT, targetDir, {
+            PROJECT_NAME: projectName,
+            TEMPLATE_ID: `cloud-${backend}`,
+            CLI_VERSION,
+            BACKEND_NAME: BACKEND_DISPLAY_NAMES[backend],
+            SECRET_FILE: BACKEND_SECRET_FILES[backend],
+            BACKEND_START: backend === "dotnet-rest" ? "cd backend && dotnet run" : "cd backend && npm install && npm run dev",
+            BACKEND_SMOKE: backend === "dotnet-rest" ? "dotnet build" : "npm run smoke",
+        }, path.join(cloudTemplatesDir, AGENT_SECTION_FILE));
+
         spinner.succeed("Project structure created");
 
         console.log();
@@ -810,6 +931,9 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
         console.log();
         console.log(chalk.gray("  5. Open ") + chalk.cyan("http://localhost:5173") + chalk.gray(" in your browser"));
         console.log();
+        console.log(chalk.gray("  Your coding agent is set up: AGENTS.md explains the project and what needs"));
+        console.log(chalk.gray("  CAD Cloud, and the Bitbybit CAD MCP is configured for Claude Code, Cursor and VS Code."));
+        console.log();
         console.log(chalk.gray("─".repeat(72)));
         console.log();
         console.log(chalk.yellow.bold("  🔑 You need a Bitbybit API key to use CAD Cloud:"));
@@ -829,34 +953,171 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     }
 }
 
+/**
+ * A template that needs a secret ships an .env.example beside the code that reads it; the scaffold
+ * gets an .env copied from it so the first run finds the file and the variable, empty. The same
+ * probe the cloud templates use, for any depth.
+ */
+async function writeEnvFromExamples(dir: string): Promise<void> {
+    for (const example of await listFiles(dir)) {
+        if (path.basename(example) !== ".env.example") continue;
+        const env = path.join(path.dirname(example), ".env");
+        if (!(await fs.pathExists(env))) await fs.copy(example, env);
+    }
+}
+
+async function createAppProject(options: AppProjectOptions): Promise<void> {
+    const { projectName, template } = options;
+    const targetDir = path.resolve(process.cwd(), projectName);
+    const meta = APP_TEMPLATES[template];
+
+    console.log();
+    console.log(chalk.gray("─".repeat(72)));
+    console.log();
+    console.log(chalk.white.bold("  📋 Project Configuration:"));
+    console.log();
+    console.log(`  ${chalk.gray("Project:")}     ${chalk.white.bold(projectName)}`);
+    console.log(`  ${chalk.gray("Type:")}        ${chalk.hex("#F0CEBB")("App Template")}`);
+    console.log(`  ${chalk.gray("Template:")}    ${chalk.hex("#F0CEBB")(meta.name)} ${chalk.gray(`(${template})`)}`);
+    console.log(`  ${chalk.gray("Runs on:")}     ${meta.cloud ? chalk.hex("#FF6633")("the packages + CAD Cloud (API key needed)") : chalk.green("the open-source packages, in the browser")}`);
+    console.log();
+    console.log(chalk.gray("─".repeat(72)));
+    console.log();
+
+    if (fs.existsSync(targetDir)) {
+        const { overwrite } = await inquirer.prompt([
+            {
+                type: "confirm",
+                name: "overwrite",
+                message: chalk.yellow(`⚠️  Directory "${projectName}" already exists. Do you want to overwrite it?`),
+                default: false
+            }
+        ]);
+
+        if (!overwrite) {
+            console.log(chalk.red("\n  ✖ Project creation cancelled.\n"));
+            process.exit(0);
+        }
+
+        const spinner = ora("Removing existing directory...").start();
+        await fs.remove(targetDir);
+        spinner.succeed("Existing directory removed");
+    }
+
+    const spinner = ora({ text: "Creating project structure...", color: "cyan" }).start();
+
+    try {
+        const templateDir = path.join(TEMPLATES_ROOT, "apps", template);
+        if (!fs.existsSync(templateDir)) {
+            throw new Error(`The ${template} template is listed but its files are not at ${templateDir}.`);
+        }
+
+        await fs.copy(templateDir, targetDir);
+        await applyAgentLayer(TEMPLATES_ROOT, targetDir, { PROJECT_NAME: projectName, TEMPLATE_ID: template, CLI_VERSION });
+        await writeEnvFromExamples(targetDir);
+
+        const packageJsonPath = path.join(targetDir, "package.json");
+        if (fs.existsSync(packageJsonPath)) {
+            const packageJson = await fs.readJson(packageJsonPath);
+            packageJson.name = projectName;
+            await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
+        }
+
+        spinner.succeed("Project structure created");
+
+        console.log();
+        console.log(chalk.gray("─".repeat(72)));
+        console.log();
+        console.log(chalk.gray("  Home:          ") + chalk.underline.cyan("https://bitbybit.dev"));
+        console.log(chalk.gray("  Learn:         ") + chalk.underline.cyan("https://learn.bitbybit.dev"));
+        console.log(chalk.gray("  Community:     ") + chalk.underline.cyan("https://discord.gg/GSe3VMe"));
+        console.log(chalk.gray("  GitHub:        ") + chalk.underline.cyan("https://github.com/bitbybit-dev/bitbybit"));
+        console.log();
+        console.log(chalk.green.bold(`  ✔ ${meta.name} created successfully! 🎉`));
+        console.log();
+        console.log(chalk.white("  Next steps:"));
+        console.log();
+        console.log(chalk.gray("  1. Navigate to your project:"));
+        console.log(chalk.cyan(`     cd ${projectName}`));
+        console.log();
+        console.log(chalk.gray("  2. Install dependencies:"));
+        console.log(chalk.cyan("     npm install"));
+        console.log();
+        console.log(chalk.gray("  3. Start the development server:"));
+        console.log(chalk.cyan("     npm run dev"));
+        console.log();
+        console.log(chalk.gray("  4. Build the model headlessly and read its summary:"));
+        console.log(chalk.cyan("     npm run smoke"));
+        console.log();
+        console.log(chalk.gray("  README.md explains the app; AGENTS.md explains it to your coding agent, and the"));
+        console.log(chalk.gray("  Bitbybit CAD MCP is configured for Claude Code, Cursor and VS Code."));
+        console.log();
+        if (meta.cloud) {
+            console.log(chalk.yellow.bold("  🔑 This template runs part of its work on CAD Cloud and needs an API key:"));
+            console.log(chalk.yellow("     README.md says what needs the cloud and why; plans and keys are at"));
+            console.log(chalk.underline.yellow("        https://bitbybit.dev/cad-cloud"));
+            console.log();
+        }
+        console.log(chalk.gray("─".repeat(72)));
+        console.log();
+        console.log(chalk.white("  Happy coding! 💻✨"));
+        console.log();
+    } catch (error) {
+        spinner.fail("Failed to create project");
+        console.error(chalk.red("\n  ✖ Error creating project:"), error);
+        process.exit(1);
+    }
+}
+
 async function main(): Promise<void> {
     const program = new Command();
 
     program
         .name("@bitbybit-dev/create-app")
         .description("Scaffold a new Bit By Bit Developers 3D/CAD project")
-        .version("1.3.2")
+        .version(CLI_VERSION)
         .argument("[project-name]", "Name of the project to create")
         .option("-e, --engine <engine>", "Game engine to use (threejs, babylonjs, playcanvas)")
         .option("-o, --occt-architecture <arch>", "OCCT worker architecture (32, 64, 64-mt). Default: 32")
-        .option("-t, --type <type>", "App type (frontend, cloud)")
+        .option("-t, --type <type>", "App type (frontend, cloud, app)")
         .option("-b, --backend <backend>", "Backend for cloud app (hono-sdk, hono-rest, nodejs-sdk, nodejs-rest, dotnet-rest)")
-        .action(async (projectName: string | undefined, cmdOptions: { engine?: string; occtArchitecture?: string; type?: string; backend?: string }) => {
+        .option("-T, --template <template>", `App template for --type app (${APP_TEMPLATE_IDS.join(", ")})`)
+        .action(async (projectName: string | undefined, cmdOptions: { engine?: string; occtArchitecture?: string; type?: string; backend?: string; template?: string }) => {
             await displayWelcome();
 
             let appType: AppType;
             if (cmdOptions.type) {
-                if (cmdOptions.type !== "frontend" && cmdOptions.type !== "cloud") {
+                if (cmdOptions.type !== "frontend" && cmdOptions.type !== "cloud" && cmdOptions.type !== "app") {
                     console.error(chalk.red(`\n  ✖ Invalid app type: ${cmdOptions.type}`));
-                    console.error(chalk.gray(`    Valid options: frontend, cloud`));
+                    console.error(chalk.gray(`    Valid options: frontend, cloud, app`));
                     process.exit(1);
                 }
                 appType = cmdOptions.type;
+            } else if (cmdOptions.template) {
+                appType = "app";
             } else {
                 appType = await promptAppType();
             }
 
-            if (appType === "cloud") {
+            if (appType === "app") {
+                if (cmdOptions.template && !APP_TEMPLATE_IDS.includes(cmdOptions.template as AppTemplateId)) {
+                    console.error(chalk.red(`\n  ✖ Invalid app template: ${cmdOptions.template}`));
+                    console.error(chalk.gray(`    Valid options: ${APP_TEMPLATE_IDS.join(", ")}`));
+                    process.exit(1);
+                }
+                if (cmdOptions.engine || cmdOptions.occtArchitecture) {
+                    console.log(chalk.yellow("  Note: --engine and --occt-architecture do not apply to an app template (each ships its own engine and kernel) and are ignored."));
+                }
+
+                let appOptions: AppProjectOptions;
+                if (projectName && cmdOptions.template) {
+                    appOptions = { projectName, template: cmdOptions.template as AppTemplateId };
+                } else {
+                    appOptions = await promptAppTemplate(projectName);
+                    if (cmdOptions.template) appOptions.template = cmdOptions.template as AppTemplateId;
+                }
+                await createAppProject(appOptions);
+            } else if (appType === "cloud") {
                 if (cmdOptions.backend) {
                     const validBackends = ["hono-sdk", "hono-rest", "nodejs-sdk", "nodejs-rest", "dotnet-rest"];
                     if (!validBackends.includes(cmdOptions.backend)) {

@@ -4,7 +4,6 @@ import { createDragonCup, createDragonCupBatch, getTaskResult, runTranslateUnion
 
 const app = new Hono<{ Bindings: Env }>();
 
-// Check for missing API key and return a helpful error
 app.use("/api/*", async (c, next) => {
     if (!c.env.BITBYBIT_API_KEY) {
         return c.json({
@@ -12,10 +11,9 @@ app.use("/api/*", async (c, next) => {
             help: "You need a Bitbybit API key to use this service. Create an account on https://bitbybit.dev and purchase an API key plan at https://bitbybit.dev/auth/pick-plan?api-keys=true to get access to managed CAD cloud servers.",
         }, 503);
     }
-    await next();
+    return next();
 });
 
-// Backend endpoint — calls bitbybit API with server-side API key
 app.post("/api/generate", async (c) => {
     try {
         const result = await createDragonCup(c.env);
@@ -26,7 +24,6 @@ app.post("/api/generate", async (c) => {
     }
 });
 
-// Batch generation — creates 3 dragon cup variations in parallel
 app.post("/api/generate-batch", async (c) => {
     try {
         const result = await createDragonCupBatch(c.env);
@@ -37,7 +34,6 @@ app.post("/api/generate-batch", async (c) => {
     }
 });
 
-// Fetch result for an existing task
 app.get("/api/task/:id", async (c) => {
     try {
         const taskId = c.req.param("id");
@@ -49,7 +45,6 @@ app.get("/api/task/:id", async (c) => {
     }
 });
 
-// Pipeline: translate → union → fillet
 app.post("/api/pipeline/translate-union-fillet", async (c) => {
     try {
         const result = await runTranslateUnionFilletPipeline(c.env);
@@ -60,7 +55,6 @@ app.post("/api/pipeline/translate-union-fillet", async (c) => {
     }
 });
 
-// Pipeline: map cylinders at positions
 app.post("/api/pipeline/map-cylinders", async (c) => {
     try {
         const result = await runMapCylindersPipeline(c.env);
@@ -71,7 +65,6 @@ app.post("/api/pipeline/map-cylinders", async (c) => {
     }
 });
 
-// Pipeline: map spheres at different radii
 app.post("/api/pipeline/map-spheres", async (c) => {
     try {
         const result = await runMapSpheresPipeline(c.env);
@@ -82,7 +75,6 @@ app.post("/api/pipeline/map-spheres", async (c) => {
     }
 });
 
-// Pipeline: choice conditional
 app.post("/api/pipeline/choice", async (c) => {
     try {
         const result = await runChoicePipeline(c.env);
@@ -93,7 +85,6 @@ app.post("/api/pipeline/choice", async (c) => {
     }
 });
 
-// Pipeline: file input (upload STEP → fillet)
 app.post("/api/pipeline/file-input", async (c) => {
     try {
         const formData = await c.req.formData();
@@ -110,7 +101,6 @@ app.post("/api/pipeline/file-input", async (c) => {
     }
 });
 
-// Proxy download — fetches a remote file through the backend to avoid CORS issues with GLTFLoader
 app.get("/api/proxy-download", async (c) => {
     const url = c.req.query("url");
     if (!url) return c.json({ error: "Missing url parameter" }, 400);

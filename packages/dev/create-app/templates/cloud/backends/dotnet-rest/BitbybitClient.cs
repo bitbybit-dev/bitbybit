@@ -3,12 +3,15 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace dotnet_rest;
+namespace DotnetRest;
 
 public class BitbybitClient
 {
     private const int PollIntervalMs = 2_000;
-    private const int MaxPollAttempts = 120; // 4 minutes max
+    private const int PollTimeoutMs = 4 * 60 * 1000;
+    private const int MaxPollAttempts = PollTimeoutMs / PollIntervalMs;
+
+    private static readonly JsonSerializerOptions SerializerOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     private readonly HttpClient _http;
     private readonly string _apiKey;
@@ -25,10 +28,6 @@ public class BitbybitClient
             "Then add your key to appsettings.Development.json under Bitbybit:ApiKey.");
         _apiUrl = config["Bitbybit:ApiUrl"] ?? "https://api.bitbybit.dev";
     }
-
-    // -----------------------------------------------------------------------
-    // Dragon cup — single model
-    // -----------------------------------------------------------------------
 
     public async Task<DownloadResult> CreateDragonCupAsync()
     {
@@ -57,10 +56,6 @@ public class BitbybitClient
         var downloads = await PollAndGetResultAsync(taskId);
         return new DownloadResult(taskId, downloads);
     }
-
-    // -----------------------------------------------------------------------
-    // Dragon cup — batch
-    // -----------------------------------------------------------------------
 
     public async Task<BatchResult> CreateDragonCupBatchAsync()
     {
@@ -112,36 +107,32 @@ public class BitbybitClient
         };
 
         var json = await ApiPostAsync("/api/v1/models/dragon-cup/batch", body);
-        var taskId = json["data"]?["taskId"]?.GetValue<string>() ?? throw new Exception("No taskId in response");
-        var subTasks = json["data"]?["subTasks"]?.AsArray() ?? throw new Exception("No subTasks in response");
+        var taskId = json["data"]?["taskId"]?.GetValue<string>() ?? throw new InvalidOperationException("No taskId in response");
+        var subTasks = json["data"]?["subTasks"]?.AsArray() ?? throw new InvalidOperationException("No subTasks in response");
 
         await PollUntilDoneAsync(taskId);
 
         var downloadUrls = new List<string>();
         foreach (var sub in subTasks)
         {
-            var subId = sub?["taskId"]?.GetValue<string>() ?? throw new Exception("No sub taskId");
+            var subId = sub?["taskId"]?.GetValue<string>() ?? throw new InvalidOperationException("No sub taskId");
             var resultJson = await ApiGetAsync($"/api/v1/tasks/{subId}/result/glb");
-            var url = resultJson["data"]?["downloadUrl"]?.GetValue<string>() ?? throw new Exception("No downloadUrl");
+            var url = resultJson["data"]?["downloadUrl"]?.GetValue<string>() ?? throw new InvalidOperationException("No downloadUrl");
             downloadUrls.Add(url);
         }
 
         return new BatchResult(taskId, downloadUrls);
     }
 
-    // -----------------------------------------------------------------------
-    // Get task result
-    // -----------------------------------------------------------------------
-
     public async Task<TaskStatusResult> GetTaskResultAsync(string taskId)
     {
         var json = await ApiGetAsync($"/api/v1/tasks/{taskId}");
-        var status = json["data"]?["status"]?.GetValue<string>() ?? throw new Exception("No status");
+        var status = json["data"]?["status"]?.GetValue<string>() ?? throw new InvalidOperationException("No status");
 
         if (status is "failed" or "cancelled" or "expired")
         {
             var error = json["data"]?["error"]?.GetValue<string>() ?? "no details";
-            throw new Exception($"Task {status}: {error}");
+            throw new InvalidOperationException($"Task {status}: {error}");
         }
 
         if (status != "completed")
@@ -151,10 +142,6 @@ public class BitbybitClient
         var downloads = ParseDownloads(resultJson);
         return new TaskStatusResult("completed", downloads);
     }
-
-    // -----------------------------------------------------------------------
-    // Pipelines
-    // -----------------------------------------------------------------------
 
     public Task<DownloadResult> RunTranslateUnionFilletPipelineAsync()
     {
@@ -244,13 +231,8 @@ public class BitbybitClient
         return SubmitPipelineAsync(body);
     }
 
-    // -----------------------------------------------------------------------
-    // File upload (3-step presigned URL flow)
-    // -----------------------------------------------------------------------
-
     public async Task<string> UploadFileAsync(byte[] fileBytes, string filename)
     {
-        // 1. Request presigned upload URL
         var uploadJson = await ApiPostAsync("/api/v1/files/upload", new
         {
             filename,
@@ -258,24 +240,18 @@ public class BitbybitClient
             bytes = fileBytes.Length,
         });
 
-        var fileId = uploadJson["data"]?["fileId"]?.GetValue<string>() ?? throw new Exception("No fileId");
-        var uploadUrl = uploadJson["data"]?["uploadUrl"]?.GetValue<string>() ?? throw new Exception("No uploadUrl");
+        var fileId = uploadJson["data"]?["fileId"]?.GetValue<string>() ?? throw new InvalidOperationException("No fileId");
+        var uploadUrl = uploadJson["data"]?["uploadUrl"]?.GetValue<string>() ?? throw new InvalidOperationException("No uploadUrl");
 
-        // 2. PUT raw bytes to presigned URL
         using var putContent = new ByteArrayContent(fileBytes);
         putContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
         var putRes = await _http.PutAsync(uploadUrl, putContent);
         putRes.EnsureSuccessStatusCode();
 
-        // 3. Confirm
         await ApiPostAsync($"/api/v1/files/{Uri.EscapeDataString(fileId)}/confirm", null);
 
         return fileId;
     }
-
-    // -----------------------------------------------------------------------
-    // Internals
-    // -----------------------------------------------------------------------
 
     private async Task<DownloadResult> SubmitPipelineAsync(object body)
     {
@@ -287,7 +263,7 @@ public class BitbybitClient
     private async Task<string> SubmitAndGetTaskIdAsync(string path, object body)
     {
         var json = await ApiPostAsync(path, body);
-        return json["data"]?["taskId"]?.GetValue<string>() ?? throw new Exception("No taskId in response");
+        return json["data"]?["taskId"]?.GetValue<string>() ?? throw new InvalidOperationException("No taskId in response");
     }
 
     private async Task<List<FileDownload>> PollAndGetResultAsync(string taskId)
@@ -305,13 +281,13 @@ public class BitbybitClient
             await Task.Delay(PollIntervalMs);
 
             var json = await ApiGetAsync($"/api/v1/tasks/{taskId}");
-            var status = json["data"]?["status"]?.GetValue<string>() ?? throw new Exception("No status");
+            var status = json["data"]?["status"]?.GetValue<string>() ?? throw new InvalidOperationException("No status");
 
             if (status == "completed") return;
             if (status is "failed" or "cancelled" or "expired")
             {
                 var error = json["data"]?["error"]?.GetValue<string>() ?? "no details";
-                throw new Exception($"Task {status}: {error}");
+                throw new InvalidOperationException($"Task {status}: {error}");
             }
         }
 
@@ -325,8 +301,8 @@ public class BitbybitClient
         var res = await _http.SendAsync(req);
         var body = await res.Content.ReadAsStringAsync();
         if (!res.IsSuccessStatusCode && (int)res.StatusCode != 202)
-            throw new Exception($"API error {(int)res.StatusCode}: {body}");
-        return JsonNode.Parse(body) ?? throw new Exception("Empty response");
+            throw new HttpRequestException($"API error {(int)res.StatusCode}: {body}", null, res.StatusCode);
+        return JsonNode.Parse(body) ?? throw new InvalidOperationException("Empty response");
     }
 
     private async Task<JsonNode> ApiPostAsync(string path, object? body)
@@ -335,19 +311,19 @@ public class BitbybitClient
         req.Headers.Add("x-api-key", _apiKey);
         if (body != null)
         {
-            var jsonStr = JsonSerializer.Serialize(body, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            var jsonStr = JsonSerializer.Serialize(body, SerializerOptions);
             req.Content = new StringContent(jsonStr, Encoding.UTF8, "application/json");
         }
         var res = await _http.SendAsync(req);
         var responseBody = await res.Content.ReadAsStringAsync();
         if (!res.IsSuccessStatusCode && (int)res.StatusCode != 202)
-            throw new Exception($"API error {(int)res.StatusCode}: {responseBody}");
-        return JsonNode.Parse(responseBody) ?? throw new Exception("Empty response");
+            throw new HttpRequestException($"API error {(int)res.StatusCode}: {responseBody}", null, res.StatusCode);
+        return JsonNode.Parse(responseBody) ?? throw new InvalidOperationException("Empty response");
     }
 
     private static List<FileDownload> ParseDownloads(JsonNode json)
     {
-        var arr = json["data"]?["downloads"]?.AsArray() ?? throw new Exception("No downloads");
+        var arr = json["data"]?["downloads"]?.AsArray() ?? throw new InvalidOperationException("No downloads");
         var downloads = new List<FileDownload>();
         foreach (var item in arr)
         {
@@ -360,10 +336,6 @@ public class BitbybitClient
         return downloads;
     }
 }
-
-// -----------------------------------------------------------------------
-// DTOs
-// -----------------------------------------------------------------------
 
 public record FileDownload(string Format, string DownloadUrl, string Filename);
 public record DownloadResult(string TaskId, List<FileDownload> Downloads);

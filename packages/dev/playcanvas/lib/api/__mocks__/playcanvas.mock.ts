@@ -142,6 +142,11 @@ export class MockBoundingBox {
     halfExtents = new MockVec3();
     add() { }
     compute() { }
+    copy(other: MockBoundingBox) {
+        this.center.copy(other.center);
+        this.halfExtents.copy(other.halfExtents);
+        return this;
+    }
 }
 
 export class MockColor {

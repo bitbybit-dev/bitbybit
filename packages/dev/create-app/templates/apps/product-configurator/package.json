@@ -1,0 +1,30 @@
+{
+  "name": "bitbybit-product-configurator",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && vite build",
+    "preview": "vite preview",
+    "smoke": "npm run typecheck && npm run lint && tsx scripts/smoke.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@bitbybit-dev/threejs": "1.3.2",
+    "three": "0.186.0"
+  },
+  "devDependencies": {
+    "@bitbybit-dev/occt": "1.3.2",
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.1",
+    "@types/three": "0.186.0",
+    "eslint": "10.10.0",
+    "eslint-plugin-no-comments": "1.2.1",
+    "tsx": "^4.19.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.0",
+    "vite": "^6.3.2"
+  }
+}

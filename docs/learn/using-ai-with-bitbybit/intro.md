@@ -58,7 +58,7 @@ The first seven need the [CAD Cloud MCP](./mcp/cad-cloud-mcp) and a key; the las
 ## What an agent can do with this
 
 - Write a parametric model from a description, with the right function names, argument objects and defaults for your version.
-- Scaffold a project on the packages with `npm init @bitbybit-dev/app` and iterate against a smoke test.
+- Scaffold a project on the packages with `npm init @bitbybit-dev/app` and iterate against a smoke test. Every scaffold, including the [complete app templates](../npm-packages/create-app), ships with an `AGENTS.md`, the docs server configured for Claude Code, Cursor and VS Code, and `npm run smoke`, the headless check an agent iterates against.
 - Explain any member of the API, or find the one you mean when you only remember half of its name.
 - With the cloud server: run an operation and hand you a STEP or glTF file, unfold a sheet-metal part, or answer "what is the volume of this BREP" by uploading the file and running a pipeline, with no backend of your own.
 

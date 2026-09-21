@@ -5,7 +5,10 @@
     "type": "module",
     "scripts": {
         "dev": "wrangler dev",
-        "deploy": "wrangler deploy"
+        "deploy": "wrangler deploy",
+        "smoke": "npm run typecheck && npm run lint",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint . --max-warnings 0"
     },
     "dependencies": {
         "hono": "^4.7.0",
@@ -13,7 +16,11 @@
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^5.20260903.1",
-        "wrangler": "^4.129.0",
-        "typescript": "^5.8.0"
+        "@eslint/js": "10.0.1",
+        "eslint": "10.10.0",
+        "eslint-plugin-no-comments": "1.2.1",
+        "typescript": "5.9.3",
+        "typescript-eslint": "8.70.0",
+        "wrangler": "^4.129.0"
     }
 }

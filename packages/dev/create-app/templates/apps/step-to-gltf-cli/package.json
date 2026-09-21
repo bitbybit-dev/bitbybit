@@ -1,0 +1,26 @@
+{
+  "name": "bitbybit-step-to-gltf-cli",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "convert": "tsx src/cli.ts",
+    "build": "npm run typecheck",
+    "smoke": "npm run typecheck && npm run lint && tsx scripts/smoke.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@bitbybit-dev/cad-cloud-sdk": "1.3.2",
+    "@bitbybit-dev/occt": "1.3.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "22.20.1",
+    "eslint": "10.10.0",
+    "eslint-plugin-no-comments": "1.2.1",
+    "tsx": "^4.19.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.70.0"
+  }
+}

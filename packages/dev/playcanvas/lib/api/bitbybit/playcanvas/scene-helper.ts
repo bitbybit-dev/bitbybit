@@ -130,14 +130,10 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
     if (config.enableOrbitCamera) {
         const camOpts = config.orbitCameraOptions ?? new PlayCanvasCamera.OrbitCameraDto();
 
-        const referenceSize = 20;
-        const sizeRatio = config.sceneSize / referenceSize;
-
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
         const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
         const effectiveDistanceMax = userProvidedCameraOptions ? camOpts.distanceMax : config.sceneSize * 10;
-        const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
 
         const cameraEntity = new pc.Entity("OrbitCamera");
         cameraEntity.addComponent("camera", {
@@ -162,7 +158,7 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
             pitch: camOpts.pitch,
             yaw: camOpts.yaw,
             orbitSensitivity: camOpts.orbitSensitivity,
-            distanceSensitivity: effectiveDistanceSensitivity,
+            distanceSensitivity: camOpts.distanceSensitivity,
         });
     }
 

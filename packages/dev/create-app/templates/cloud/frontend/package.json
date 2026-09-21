@@ -5,8 +5,11 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
-        "preview": "vite preview"
+        "build": "npm run typecheck && vite build",
+        "preview": "vite preview",
+        "smoke": "npm run typecheck && npm run lint",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint . --max-warnings 0"
     },
     "dependencies": {
         "react": "^19.1.0",
@@ -14,11 +17,17 @@
         "three": "0.186.0"
     },
     "devDependencies": {
+        "@eslint/js": "10.0.1",
         "@types/react": "^19.1.0",
         "@types/react-dom": "^19.1.0",
         "@types/three": "0.186.0",
         "@vitejs/plugin-react": "^4.4.0",
-        "typescript": "^5.8.0",
+        "eslint": "10.10.0",
+        "eslint-plugin-no-comments": "1.2.1",
+        "eslint-plugin-react-hooks": "7.1.1",
+        "eslint-plugin-react-refresh": "0.5.7",
+        "typescript": "5.9.3",
+        "typescript-eslint": "8.70.0",
         "vite": "^6.3.0"
     }
 }

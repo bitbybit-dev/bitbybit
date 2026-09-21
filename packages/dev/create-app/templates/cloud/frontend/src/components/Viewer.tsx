@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactElement } from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -8,15 +8,18 @@ interface ViewerProps {
     urls: string[] | null;
 }
 
-export function Viewer({ url, urls }: ViewerProps) {
+interface ViewerScene {
+    scene: THREE.Scene;
+    camera: THREE.PerspectiveCamera;
+    renderer: THREE.WebGLRenderer;
+    controls: OrbitControls;
+}
+
+const MODEL_SPACING = 15;
+
+export function Viewer({ url, urls }: ViewerProps): ReactElement {
     const containerRef = useRef<HTMLDivElement>(null);
-    const sceneRef = useRef<{
-        scene: THREE.Scene;
-        camera: THREE.PerspectiveCamera;
-        renderer: THREE.WebGLRenderer;
-        controls: OrbitControls;
-        animationId: number;
-    } | null>(null);
+    const sceneRef = useRef<ViewerScene | null>(null);
 
     useEffect(() => {
         const container = containerRef.current;
@@ -38,7 +41,6 @@ export function Viewer({ url, urls }: ViewerProps) {
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
 
-        // Lighting — matches old working frontend
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
         scene.add(ambientLight);
 
@@ -50,20 +52,20 @@ export function Viewer({ url, urls }: ViewerProps) {
         fillLight.position.set(-10, 5, -10);
         scene.add(fillLight);
 
-        // Grid
         const grid = new THREE.GridHelper(30, 30, 0x2e3136, 0x24272c);
         scene.add(grid);
 
-        const animate = () => {
-            sceneRef.current!.animationId = requestAnimationFrame(animate);
+        let animationId = 0;
+        const animate = (): void => {
+            animationId = requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         };
 
-        sceneRef.current = { scene, camera, renderer, controls, animationId: 0 };
+        sceneRef.current = { scene, camera, renderer, controls };
         animate();
 
-        const handleResize = () => {
+        const handleResize = (): void => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
@@ -72,7 +74,7 @@ export function Viewer({ url, urls }: ViewerProps) {
 
         return () => {
             window.removeEventListener("resize", handleResize);
-            cancelAnimationFrame(sceneRef.current!.animationId);
+            cancelAnimationFrame(animationId);
             renderer.dispose();
             container.removeChild(renderer.domElement);
             sceneRef.current = null;
@@ -83,72 +85,50 @@ export function Viewer({ url, urls }: ViewerProps) {
         if (!sceneRef.current) return;
         const { scene, camera, controls } = sceneRef.current;
 
-        // Clear existing models (keep lights and grid)
-        const toRemove = scene.children.filter((c) => c.type === "Group");
-        toRemove.forEach((c) => scene.remove(c));
+        for (const group of scene.children.filter((child) => child.type === "Group")) scene.remove(group);
 
         const allUrls = urls ?? (url ? [url] : []);
         if (allUrls.length === 0) return;
+        const startX = -MODEL_SPACING * (allUrls.length - 1) / 2;
 
-        allUrls.forEach(async (modelUrl, i) => {
-            try {
-                const proxyUrl = `/api/proxy-download?url=${encodeURIComponent(modelUrl)}`;
-                const res = await fetch(proxyUrl);
-                if (!res.ok) {
-                    console.error("[Viewer] proxy fetch failed:", res.status);
-                    return;
-                }
-                const buffer = await res.arrayBuffer();
-
-                const loader = new GLTFLoader();
-                loader.parse(
-                    buffer,
-                    "",
-                    (gltf) => {
-                        // Offset models side-by-side when loading multiple
-                        if (allUrls.length > 1) {
-                            const spacing = 15;
-                            const startX = -spacing * (allUrls.length - 1) / 2;
-                            gltf.scene.position.x += startX + i * spacing;
-                        }
-
-                        // Apply porcelain material
-                        gltf.scene.traverse((child) => {
-                            if ((child as THREE.Mesh).isMesh) {
-                                (child as THREE.Mesh).material = new THREE.MeshPhysicalMaterial({
-                                    color: 0xffffff,
-                                    metalness: 0.0,
-                                    roughness: 0.15,
-                                    clearcoat: 0.8,
-                                    clearcoatRoughness: 0.1,
-                                });
-                            }
-                        });
-
-                        scene.add(gltf.scene);
-
-                        // Fit camera to model
-                        const box = new THREE.Box3().setFromObject(gltf.scene);
-                        const center = box.getCenter(new THREE.Vector3());
-                        const size = box.getSize(new THREE.Vector3());
-                        const maxDim = Math.max(size.x, size.y, size.z);
-
-                        controls.target.copy(center);
-                        camera.position.set(
-                            center.x + maxDim * 1.5,
-                            center.y + maxDim,
-                            center.z + maxDim * 1.5,
-                        );
-                        controls.update();
-                    },
-                    (err) => {
-                        console.error("[Viewer] GLTFLoader.parse error:", err);
-                    },
-                );
-            } catch (err) {
-                console.error("[Viewer] fetch error for:", modelUrl, err);
+        const show = async (modelUrl: string, index: number): Promise<void> => {
+            const response = await fetch(`/api/proxy-download?url=${encodeURIComponent(modelUrl)}`);
+            if (!response.ok) {
+                console.error("[Viewer] proxy fetch failed:", response.status);
+                return;
             }
-        });
+            const gltf = await new GLTFLoader().parseAsync(await response.arrayBuffer(), "");
+            if (allUrls.length > 1) gltf.scene.position.x += startX + index * MODEL_SPACING;
+
+            gltf.scene.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.material = new THREE.MeshPhysicalMaterial({
+                        color: 0xffffff,
+                        metalness: 0.0,
+                        roughness: 0.15,
+                        clearcoat: 0.8,
+                        clearcoatRoughness: 0.1,
+                    });
+                }
+            });
+
+            scene.add(gltf.scene);
+
+            const box = new THREE.Box3().setFromObject(gltf.scene);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+
+            controls.target.copy(center);
+            camera.position.set(center.x + maxDim * 1.5, center.y + maxDim, center.z + maxDim * 1.5);
+            controls.update();
+        };
+
+        for (const [index, modelUrl] of allUrls.entries()) {
+            show(modelUrl, index).catch((error: unknown) => {
+                console.error("[Viewer] could not show", modelUrl, error);
+            });
+        }
     }, [url, urls]);
 
     return <div ref={containerRef} style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 1 }} />;

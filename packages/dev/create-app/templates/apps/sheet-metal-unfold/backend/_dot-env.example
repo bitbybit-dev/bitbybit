@@ -1,0 +1,5 @@
+# The CAD Cloud API key this backend unfolds with. Keys come from Bitbybit Studio:
+# https://studio.bitbybit.dev/keys/billing (any plan: https://bitbybit.dev/cad-cloud)
+BITBYBIT_API_KEY=
+BITBYBIT_API_URL=https://api.bitbybit.dev
+PORT=3000

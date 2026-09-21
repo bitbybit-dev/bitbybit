@@ -276,6 +276,68 @@ describe("initPlayCanvas unit tests", () => {
             result.dispose();
         });
 
+        it("should frame the focus entity on start when the options name one", () => {
+            // Arrange
+            const focusEntity = new pc.Entity("model");
+            const aabb = new pc.BoundingBox();
+            aabb.center.set(5, 6, 7);
+            aabb.halfExtents.set(2, 4, 3);
+            focusEntity.addComponent("model", { meshInstances: [{ visible: true, aabb }] });
+            const config = new PlayCanvasScene.InitPlayCanvasDto();
+            config.canvasId = "test-canvas";
+            config.orbitCameraOptions = new PlayCanvasCamera.OrbitCameraDto();
+            config.orbitCameraOptions.distance = 100;
+            config.orbitCameraOptions.focusEntity = focusEntity;
+            config.orbitCameraOptions.frameOnStart = true;
+
+            // Act
+            const result = initPlayCanvas(config);
+
+            // Assert
+            const camera = result.orbitCamera!.cameraEntity.camera!;
+            const halfFovRad = 0.5 * camera.fov * camera.aspectRatio * Math.PI / 180;
+            const framed = 2 * 4 / Math.tan(halfFovRad);
+            expect(result.orbitCamera!.orbitCamera.distance).toBeCloseTo(framed, 5);
+            expect(result.orbitCamera!.orbitCamera.distance).not.toBe(100);
+
+            result.dispose();
+        });
+
+        it("should keep the given distance when a focus entity is named but frameOnStart is off", () => {
+            // Arrange
+            const focusEntity = new pc.Entity("model");
+            const config = new PlayCanvasScene.InitPlayCanvasDto();
+            config.canvasId = "test-canvas";
+            config.orbitCameraOptions = new PlayCanvasCamera.OrbitCameraDto();
+            config.orbitCameraOptions.distance = 100;
+            config.orbitCameraOptions.focusEntity = focusEntity;
+            config.orbitCameraOptions.frameOnStart = false;
+
+            // Act
+            const result = initPlayCanvas(config);
+
+            // Assert
+            expect(result.orbitCamera!.orbitCamera.distance).toBe(100);
+
+            result.dispose();
+        });
+
+        it("should resize the application canvas on a window resize and stop once disposed", () => {
+            // Arrange
+            const config = new PlayCanvasScene.InitPlayCanvasDto();
+            config.canvasId = "test-canvas";
+            const result = initPlayCanvas(config);
+            const resizeSpy = vi.spyOn(result.app, "resizeCanvas");
+
+            // Act
+            window.dispatchEvent(new Event("resize"));
+            result.dispose();
+            window.dispatchEvent(new Event("resize"));
+
+            // Assert
+            expect(resizeSpy).toHaveBeenCalledTimes(1);
+        });
+
         it("should create camera entity with name OrbitCamera", () => {
             // Arrange
             const config = new PlayCanvasScene.InitPlayCanvasDto();
@@ -696,6 +758,33 @@ describe("the orbit camera's input handling", () => {
 
             // Assert
             expect(result.orbitCamera!.orbitCamera.distance).toBeGreaterThan(before);
+        });
+
+        it("should zoom by the same fraction of the camera distance in a scene thirty times larger", () => {
+            // Arrange
+            const largeCanvas = document.createElement("canvas");
+            largeCanvas.id = "large-canvas";
+            document.body.appendChild(largeCanvas);
+            const largeConfig = new PlayCanvasScene.InitPlayCanvasDto();
+            largeConfig.canvasId = "large-canvas";
+            largeConfig.sceneSize = 600;
+            const large = initPlayCanvas(largeConfig);
+            const smallBefore = result.orbitCamera!.orbitCamera.distance;
+            const largeBefore = large.orbitCamera!.orbitCamera.distance;
+
+            // Act
+            mouseHandler("mousewheel")(mouseEvent({ wheelDelta: 1 }));
+            handlerFor(asMockApp(large.app).mouse!, "mousewheel")(mouseEvent({ wheelDelta: 1 }));
+
+            // Assert
+            const smallRatio = result.orbitCamera!.orbitCamera.distance / smallBefore;
+            const largeRatio = large.orbitCamera!.orbitCamera.distance / largeBefore;
+            const defaults = new PlayCanvasCamera.OrbitCameraDto();
+            expect(largeRatio).toBeCloseTo(smallRatio, 10);
+            expect(largeRatio).toBeCloseTo(1 + defaults.distanceSensitivity * 0.1, 10);
+
+            large.dispose();
+            largeCanvas.remove();
         });
 
         it("should forget the buttons when the pointer leaves the window", () => {

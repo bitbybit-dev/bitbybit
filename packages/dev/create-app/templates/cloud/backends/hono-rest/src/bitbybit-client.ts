@@ -1,7 +1,8 @@
 import type { Env } from "./types";
 
 const POLL_INTERVAL_MS = 2_000;
-const MAX_POLL_ATTEMPTS = 120; // 4 minutes max
+const POLL_TIMEOUT_MS = 4 * 60 * 1000;
+const MAX_POLL_ATTEMPTS = POLL_TIMEOUT_MS / POLL_INTERVAL_MS;
 
 interface TaskResponse {
     ok: boolean;
@@ -39,24 +40,39 @@ interface ResultResponse {
     error?: { code: string; message: string };
 }
 
+interface Download {
+    format: string;
+    downloadUrl: string;
+    filename: string;
+}
+
+interface DownloadsResponse {
+    ok: boolean;
+    data?: { downloads: Download[] };
+    error?: { code: string; message: string };
+}
+
+interface UploadResponse {
+    ok: boolean;
+    data?: { fileId: string; uploadUrl: string };
+    error?: { code: string; message: string };
+}
+
 async function apiRequest(env: Env, method: string, path: string, body?: unknown): Promise<Response> {
     const url = `${env.BITBYBIT_API_URL}${path}`;
     const headers: Record<string, string> = {
         "x-api-key": env.BITBYBIT_API_KEY,
     };
-    if (body != null) {
+    const init: RequestInit = { method, headers };
+    if (body !== undefined) {
         headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
     }
 
-    return fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-    });
+    return fetch(url, init);
 }
 
 export async function createDragonCup(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
-    // 1. Create dragon cup model — returns 202 with taskId
     const createRes = await apiRequest(env, "POST", "/api/v1/models/dragon-cup", {
         params: {
             height: 8,
@@ -83,7 +99,7 @@ export async function createDragonCup(env: Env): Promise<{ taskId: string; downl
         throw new Error(`Failed to create dragon cup: ${createRes.status} ${err}`);
     }
 
-    const createData: TaskResponse = await createRes.json();
+    const createData = await createRes.json<TaskResponse>();
     if (!createData.ok || !createData.data?.taskId) {
         throw new Error(`API error: ${createData.error?.message ?? "unknown"}`);
     }
@@ -140,21 +156,19 @@ export async function createDragonCupBatch(
         throw new Error(`Failed to create batch: ${createRes.status} ${err}`);
     }
 
-    const createData: CompoundTaskResponse = await createRes.json();
+    const createData = await createRes.json<CompoundTaskResponse>();
     if (!createData.ok || !createData.data?.taskId) {
         throw new Error(`API error: ${createData.error?.message ?? "unknown"}`);
     }
 
     const { taskId, subTasks } = createData.data;
 
-    // Poll compound task until all sub-tasks complete
     await pollUntilDone(env, taskId);
 
-    // Fetch each sub-task result
     const downloadUrls: string[] = [];
     for (const sub of subTasks) {
         const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${sub.taskId}/result/glb`);
-        const resultData: ResultResponse = await resultRes.json();
+        const resultData = await resultRes.json<ResultResponse>();
         if (!resultData.ok || !resultData.data?.downloadUrl) {
             throw new Error(`Sub-task ${sub.index} result error: ${resultData.error?.message ?? "no download URL"}`);
         }
@@ -166,7 +180,7 @@ export async function createDragonCupBatch(
 
 export async function getTaskResult(env: Env, taskId: string): Promise<{ status: string; downloads?: { format: string; downloadUrl: string; filename: string }[] }> {
     const statusRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}`);
-    const statusData: TaskResponse = await statusRes.json();
+    const statusData = await statusRes.json<TaskResponse>();
 
     if (!statusData.ok || !statusData.data) {
         throw new Error(`Task error: ${statusData.error?.message ?? "unknown"}`);
@@ -183,7 +197,7 @@ export async function getTaskResult(env: Env, taskId: string): Promise<{ status:
     }
 
     const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/results`);
-    const resultData = await resultRes.json() as { ok: boolean; data?: { downloads: { format: string; downloadUrl: string; filename: string }[] }; error?: { message: string } };
+    const resultData = await resultRes.json<DownloadsResponse>();
 
     if (!resultData.ok || !resultData.data?.downloads) {
         throw new Error(`Result error: ${resultData.error?.message ?? "no downloads"}`);
@@ -197,7 +211,7 @@ async function pollUntilDone(env: Env, taskId: string): Promise<void> {
         await sleep(POLL_INTERVAL_MS);
 
         const statusRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}`);
-        const statusData: TaskResponse = await statusRes.json();
+        const statusData = await statusRes.json<TaskResponse>();
 
         if (!statusData.ok || !statusData.data) {
             throw new Error(`Task poll error: ${statusData.error?.message ?? "unknown"}`);
@@ -215,11 +229,11 @@ async function pollUntilDone(env: Env, taskId: string): Promise<void> {
     throw new Error("Polling timed out");
 }
 
-async function pollAndGetResult(env: Env, taskId: string): Promise<{ format: string; downloadUrl: string; filename: string }[]> {
+async function pollAndGetResult(env: Env, taskId: string): Promise<Download[]> {
     await pollUntilDone(env, taskId);
 
     const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${taskId}/results`);
-    const resultData = await resultRes.json() as { ok: boolean; data?: { downloads: { format: string; downloadUrl: string; filename: string }[] }; error?: { message: string } };
+    const resultData = await resultRes.json<DownloadsResponse>();
 
     if (!resultData.ok || !resultData.data?.downloads) {
         throw new Error(`Result error: ${resultData.error?.message ?? "no downloads"}`);
@@ -228,10 +242,6 @@ async function pollAndGetResult(env: Env, taskId: string): Promise<{ format: str
     return resultData.data.downloads;
 }
 
-// ---------------------------------------------------------------------------
-// Pipeline examples
-// ---------------------------------------------------------------------------
-
 async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const createRes = await apiRequest(env, "POST", "/api/v1/cad/pipeline", body);
     if (!createRes.ok && createRes.status !== 202) {
@@ -239,7 +249,7 @@ async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string
         throw new Error(`Pipeline failed: ${createRes.status} ${err}`);
     }
 
-    const createData: TaskResponse = await createRes.json();
+    const createData = await createRes.json<TaskResponse>();
     if (!createData.ok || !createData.data?.taskId) {
         throw new Error(`API error: ${createData.error?.message ?? "unknown"}`);
     }
@@ -249,9 +259,6 @@ async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string
     return { taskId, downloads };
 }
 
-/**
- * Translate, Union + Fillet: createBox → translate → union → fillet
- */
 export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -264,9 +271,6 @@ export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskI
     });
 }
 
-/**
- * Map: Cylinders at Positions
- */
 export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -282,9 +286,6 @@ export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: strin
     });
 }
 
-/**
- * Map: Spheres at Different Radii
- */
 export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -303,9 +304,6 @@ export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string;
     });
 }
 
-/**
- * Choice: Conditional Shape Size
- */
 export async function runChoicePipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -324,9 +322,6 @@ export async function runChoicePipeline(env: Env): Promise<{ taskId: string; dow
     });
 }
 
-/**
- * File-input pipeline: upload a STEP file, fillet all edges, export.
- */
 export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -338,11 +333,7 @@ export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ 
     });
 }
 
-/**
- * Upload a file to the Bitbybit API, returns a fileId for use in pipelines.
- */
 export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: string): Promise<string> {
-    // 1. Request a pre-signed upload URL
     const uploadRes = await apiRequest(env, "POST", "/api/v1/files/upload", {
         filename,
         contentType: "application/octet-stream",
@@ -354,14 +345,13 @@ export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: st
         throw new Error(`File upload request failed: ${uploadRes.status} ${err}`);
     }
 
-    const uploadData = await uploadRes.json() as { ok: boolean; data?: { fileId: string; uploadUrl: string }; error?: { message: string } };
+    const uploadData = await uploadRes.json<UploadResponse>();
     if (!uploadData.ok || !uploadData.data?.uploadUrl) {
         throw new Error(`Upload error: ${uploadData.error?.message ?? "no uploadUrl"}`);
     }
 
     const { fileId, uploadUrl } = uploadData.data;
 
-    // 2. PUT raw bytes to the pre-signed URL
     const putRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": "application/octet-stream" },
@@ -372,7 +362,6 @@ export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: st
         throw new Error(`PUT to upload URL failed: ${putRes.status} ${putRes.statusText}`);
     }
 
-    // 3. Confirm the upload
     const confirmRes = await apiRequest(env, "POST", `/api/v1/files/${encodeURIComponent(fileId)}/confirm`);
     if (!confirmRes.ok) {
         const err = await confirmRes.text();

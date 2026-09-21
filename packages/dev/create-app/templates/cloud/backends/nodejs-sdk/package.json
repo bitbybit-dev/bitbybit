@@ -5,8 +5,11 @@
     "type": "module",
     "scripts": {
         "dev": "tsx watch --env-file=.env src/index.ts",
-        "build": "tsc",
-        "start": "node --env-file=.env dist/index.js"
+        "build": "tsc -p tsconfig.build.json",
+        "start": "node --env-file=.env dist/index.js",
+        "smoke": "npm run typecheck && npm run lint",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint . --max-warnings 0"
     },
     "dependencies": {
         "express": "^5.1.0",
@@ -14,10 +17,14 @@
         "@bitbybit-dev/cad-cloud-sdk": "1.3.2"
     },
     "devDependencies": {
+        "@eslint/js": "10.0.1",
         "@types/express": "^5.0.2",
         "@types/multer": "^2.2.0",
-        "@types/node": "^22.15.0",
+        "@types/node": "22.20.1",
+        "eslint": "10.10.0",
+        "eslint-plugin-no-comments": "1.2.1",
         "tsx": "^4.19.0",
-        "typescript": "^5.8.0"
+        "typescript": "5.9.3",
+        "typescript-eslint": "8.70.0"
     }
 }

@@ -7,9 +7,8 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 
 const app = express();
 app.use(express.json());
 
-// Check for missing API key and return a helpful error
 app.use("/api", (_req, res, next) => {
-    if (!process.env.BITBYBIT_API_KEY) {
+    if (!process.env["BITBYBIT_API_KEY"]) {
         res.status(503).json({
             error: "BITBYBIT_API_KEY is not configured.",
             help: "You need a Bitbybit API key to use this service. Create an account on https://bitbybit.dev and purchase an API key plan at https://bitbybit.dev/auth/pick-plan?api-keys=true to get access to managed CAD cloud servers.",
@@ -19,7 +18,6 @@ app.use("/api", (_req, res, next) => {
     next();
 });
 
-// Backend endpoint — calls bitbybit API with server-side API key
 app.post("/api/generate", async (_req, res) => {
     try {
         const result = await createDragonCup();
@@ -34,7 +32,6 @@ app.post("/api/generate", async (_req, res) => {
     }
 });
 
-// Batch generation — creates 3 dragon cup variations in parallel
 app.post("/api/generate-batch", async (_req, res) => {
     try {
         const result = await createDragonCupBatch();
@@ -45,7 +42,6 @@ app.post("/api/generate-batch", async (_req, res) => {
     }
 });
 
-// Validation demo — intentionally sends invalid params to show client-side validation
 app.post("/api/validate-demo", async (_req, res) => {
     try {
         await createInvalidCup();
@@ -64,7 +60,6 @@ app.post("/api/validate-demo", async (_req, res) => {
     }
 });
 
-// Fetch result for an existing task
 app.get("/api/task/:id", async (req, res) => {
     try {
         const taskId = req.params.id;
@@ -76,7 +71,6 @@ app.get("/api/task/:id", async (req, res) => {
     }
 });
 
-// Pipeline: translate → union → fillet
 app.post("/api/pipeline/translate-union-fillet", async (_req, res) => {
     try {
         const result = await runTranslateUnionFilletPipeline();
@@ -87,7 +81,6 @@ app.post("/api/pipeline/translate-union-fillet", async (_req, res) => {
     }
 });
 
-// Pipeline: map cylinders at positions
 app.post("/api/pipeline/map-cylinders", async (_req, res) => {
     try {
         const result = await runMapCylindersPipeline();
@@ -98,7 +91,6 @@ app.post("/api/pipeline/map-cylinders", async (_req, res) => {
     }
 });
 
-// Pipeline: map spheres at different radii
 app.post("/api/pipeline/map-spheres", async (_req, res) => {
     try {
         const result = await runMapSpheresPipeline();
@@ -109,7 +101,6 @@ app.post("/api/pipeline/map-spheres", async (_req, res) => {
     }
 });
 
-// Pipeline: choice conditional
 app.post("/api/pipeline/choice", async (_req, res) => {
     try {
         const result = await runChoicePipeline();
@@ -120,7 +111,6 @@ app.post("/api/pipeline/choice", async (_req, res) => {
     }
 });
 
-// Pipeline: file input (upload STEP → fillet)
 app.post("/api/pipeline/file-input", upload.single("file"), async (req, res) => {
     try {
         const file = req.file;
@@ -135,10 +125,9 @@ app.post("/api/pipeline/file-input", upload.single("file"), async (req, res) => 
     }
 });
 
-// Proxy download — streams a remote file through the backend to avoid CORS issues with GLTFLoader
 app.get("/api/proxy-download", async (req, res) => {
-    const url = req.query.url as string | undefined;
-    if (!url) { res.status(400).json({ error: "Missing url parameter" }); return; }
+    const url = req.query["url"];
+    if (typeof url !== "string" || url.length === 0) { res.status(400).json({ error: "Missing url parameter" }); return; }
 
     try {
         const response = await fetch(url);
@@ -146,7 +135,7 @@ app.get("/api/proxy-download", async (req, res) => {
             res.status(502).json({ error: `Upstream error: ${response.status}` });
             return;
         }
-        res.setHeader("Content-Type", response.headers.get("Content-Type") || "model/gltf-binary");
+        res.setHeader("Content-Type", response.headers.get("Content-Type") ?? "model/gltf-binary");
         const arrayBuffer = await response.arrayBuffer();
         res.send(Buffer.from(arrayBuffer));
     } catch (e: unknown) {
@@ -155,7 +144,7 @@ app.get("/api/proxy-download", async (req, res) => {
     }
 });
 
-const PORT = parseInt(process.env.PORT ?? "3000", 10);
+const PORT = parseInt(process.env["PORT"] ?? "3000", 10);
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
 });

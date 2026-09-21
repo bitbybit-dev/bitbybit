@@ -1,3 +1,4 @@
+import type { ReactElement } from "react";
 import type { TabId } from "../App";
 
 interface TabsProps {
@@ -5,18 +6,18 @@ interface TabsProps {
     onTabChange: (tab: TabId) => void;
 }
 
-export function Tabs({ activeTab, onTabChange }: TabsProps) {
+export function Tabs({ activeTab, onTabChange }: TabsProps): ReactElement {
     return (
         <nav className="tabs">
             <button
                 className={`tab ${activeTab === "models" ? "active" : ""}`}
-                onClick={() => onTabChange("models")}
+                onClick={() => { onTabChange("models"); }}
             >
                 Models
             </button>
             <button
                 className={`tab ${activeTab === "pipelines" ? "active" : ""}`}
-                onClick={() => onTabChange("pipelines")}
+                onClick={() => { onTabChange("pipelines"); }}
             >
                 Pipelines
             </button>

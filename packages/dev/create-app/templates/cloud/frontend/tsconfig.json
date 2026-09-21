@@ -1,17 +1,29 @@
 {
     "compilerOptions": {
         "target": "ES2022",
-        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "strict": true,
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
         "jsx": "react-jsx",
-        "esModuleInterop": true,
-        "skipLibCheck": true,
+        "allowImportingTsExtensions": true,
+        "moduleDetection": "force",
+        "noEmit": true,
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "useUnknownInCatchVariables": true,
         "forceConsistentCasingInFileNames": true,
-        "resolveJsonModule": true,
         "isolatedModules": true,
-        "noEmit": true
+        "verbatimModuleSyntax": true,
+        "erasableSyntaxOnly": true,
+        "noUncheckedSideEffectImports": true,
+        "skipLibCheck": true
     },
-    "include": ["src"]
+    "include": ["src", "vite.config.ts"]
 }

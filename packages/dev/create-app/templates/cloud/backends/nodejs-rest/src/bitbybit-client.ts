@@ -1,7 +1,8 @@
 import type { Env } from "./types.js";
 
 const POLL_INTERVAL_MS = 2_000;
-const MAX_POLL_ATTEMPTS = 120; // 4 minutes max
+const POLL_TIMEOUT_MS = 4 * 60 * 1000;
+const MAX_POLL_ATTEMPTS = POLL_TIMEOUT_MS / POLL_INTERVAL_MS;
 
 interface TaskResponse {
     ok: boolean;
@@ -44,19 +45,16 @@ async function apiRequest(env: Env, method: string, path: string, body?: unknown
     const headers: Record<string, string> = {
         "x-api-key": env.BITBYBIT_API_KEY,
     };
-    if (body != null) {
+    const init: RequestInit = { method, headers };
+    if (body !== undefined) {
         headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
     }
 
-    return fetch(url, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-    });
+    return fetch(url, init);
 }
 
 export async function createDragonCup(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
-    // 1. Create dragon cup model — returns 202 with taskId
     const createRes = await apiRequest(env, "POST", "/api/v1/models/dragon-cup", {
         params: {
             height: 8,
@@ -147,10 +145,8 @@ export async function createDragonCupBatch(
 
     const { taskId, subTasks } = createData.data;
 
-    // Poll compound task until all sub-tasks complete
     await pollUntilDone(env, taskId);
 
-    // Fetch each sub-task result
     const downloadUrls: string[] = [];
     for (const sub of subTasks) {
         const resultRes = await apiRequest(env, "GET", `/api/v1/tasks/${sub.taskId}/result/glb`);
@@ -228,10 +224,6 @@ async function pollAndGetResult(env: Env, taskId: string): Promise<{ format: str
     return resultData.data.downloads;
 }
 
-// ---------------------------------------------------------------------------
-// Pipeline examples
-// ---------------------------------------------------------------------------
-
 async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const createRes = await apiRequest(env, "POST", "/api/v1/cad/pipeline", body);
     if (!createRes.ok && createRes.status !== 202) {
@@ -249,9 +241,6 @@ async function submitPipeline(env: Env, body: unknown): Promise<{ taskId: string
     return { taskId, downloads };
 }
 
-/**
- * Translate, Union + Fillet: createBox → translate → union → fillet
- */
 export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -264,9 +253,6 @@ export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskI
     });
 }
 
-/**
- * Map: Cylinders at Positions
- */
 export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -282,9 +268,6 @@ export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: strin
     });
 }
 
-/**
- * Map: Spheres at Different Radii
- */
 export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -303,9 +286,6 @@ export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string;
     });
 }
 
-/**
- * Choice: Conditional Shape Size
- */
 export async function runChoicePipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -324,9 +304,6 @@ export async function runChoicePipeline(env: Env): Promise<{ taskId: string; dow
     });
 }
 
-/**
- * File-input pipeline: upload a STEP file, fillet all edges, export.
- */
 export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     return submitPipeline(env, {
         steps: [
@@ -338,11 +315,7 @@ export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ 
     });
 }
 
-/**
- * Upload a file to the Bitbybit API, returns a fileId for use in pipelines.
- */
 export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: string): Promise<string> {
-    // 1. Request a pre-signed upload URL
     const uploadRes = await apiRequest(env, "POST", "/api/v1/files/upload", {
         filename,
         contentType: "application/octet-stream",
@@ -361,7 +334,6 @@ export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: st
 
     const { fileId, uploadUrl } = uploadData.data;
 
-    // 2. PUT raw bytes to the pre-signed URL
     const putRes = await fetch(uploadUrl, {
         method: "PUT",
         headers: { "Content-Type": "application/octet-stream" },
@@ -372,7 +344,6 @@ export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: st
         throw new Error(`PUT to upload URL failed: ${putRes.status} ${putRes.statusText}`);
     }
 
-    // 3. Confirm the upload
     const confirmRes = await apiRequest(env, "POST", `/api/v1/files/${encodeURIComponent(fileId)}/confirm`);
     if (!confirmRes.ok) {
         const err = await confirmRes.text();
