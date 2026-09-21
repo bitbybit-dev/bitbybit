@@ -55,7 +55,7 @@
         "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false"
     },
     "dependencies": {
-        "chalk": "5.6.2",
+        "chalk": "6.0.0",
         "commander": "15.0.0",
         "fs-extra": "11.4.0",
         "gradient-string": "3.0.0",
