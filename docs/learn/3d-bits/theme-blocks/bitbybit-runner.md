@@ -28,7 +28,7 @@ Write the same parametric program as a **Script** in the 3D Bits admin, then lin
 
 If your product does not actually need calculated geometry, you probably do not need a script at all. Most configurators swap between models you prepared in advance, which is faster and needs no code. See [Composer](/learn/3d-bits/composer/intro).
 
-![An example of a customisable Shopify product page featuring a 3D table. The BITBYBIT RUNNER block powers the interactive 3D model.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-dev-3d-bits-app-configurable-table-product.jpeg "Customisable product page using the RUNNER block")
+![An example of a customisable Shopify product page featuring a 3D table. The BITBYBIT RUNNER block powers the interactive 3D model.](https://bitbybit.dev/files/site/start/shopify/bitbybit-dev-3d-bits-app-configurable-table-product.jpeg "Customisable product page using the RUNNER block")
 *Example of a customisable product page with a 3D table, where the RUNNER block is being used.*
 
 ## How Does the BITBYBIT RUNNER Block Work?

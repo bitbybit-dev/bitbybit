@@ -30,7 +30,7 @@ You have the option to make your project **public**. Once public, it will appear
 *   **Open Scripts:** Scripts within public projects also become publicly accessible. Anyone online, even those without a Bitbybit account, can run your public scripts and use any preview links you share.
 *   **Share Your Work:** This is a fantastic way to share your creations with the world, get feedback, or showcase your skills to potential employers or clients.
 
-![A preview of the Bitbybit public projects gallery, showing various user-created 3D projects.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/public-projects-gallery.jpeg "Public projects gallery")
+![A preview of the Bitbybit public projects gallery, showing various user-created 3D projects.](https://bitbybit.dev/files/site/start/general/projects/public-projects-gallery.jpeg "Public projects gallery")
 *Public projects gallery*
 
 When you publish a project, it typically appears at the top of the "latest projects" list. We encourage our community to publish projects that include a preview image and have scripts that are functional. This helps ensure the gallery remains a valuable resource, free of empty or non-working projects.
@@ -59,7 +59,7 @@ When you decide to publish a project (making it visible beyond just yourself), y
     *   Projects are also visible in the public projects gallery, but only Gold plan subscribers can open and run their scripts.
     *   (The icon for Gold projects may vary or be similar to Silver, specific visual cues in the gallery will distinguish them).
 
-![A dialog showing the project visibility options available when publishing: Public, Silver Community, and Gold Community.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/project-publishing-options.jpeg "Project visibility options available when publishing")
+![A dialog showing the project visibility options available when publishing: Public, Silver Community, and Gold Community.](https://bitbybit.dev/files/site/start/general/projects/project-publishing-options.jpeg "Project visibility options available when publishing")
 *Project visibility options available when publishing*
 
 **Important Note on Community Projects:**

@@ -18,7 +18,7 @@ The **BITBYBIT PREVIEW** is a theme app extension block provided by our "3D Bits
 **Live Example:**
 You can see an example of the BITBYBIT PREVIEW block in action on our [Demo Store Product Page](https://bitbybit-dev-3d-configurators.myshopify.com/products/towel-buckets-3dgs) (password: `3d-bits-demo`). This product directly embeds a script from this [public Bitbybit project](https://bitbybit.dev/projects/public/fA0SjbTlMGRei2zMuHuG/project-baskets-gaussian-splatting-by-author-bitbybit).
 
-![A Shopify product page showing an embedded 3D scene of towel buckets, powered by the BITBYBIT PREVIEW block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-embed-towel-bucket.jpeg "Demo store product using the PREVIEW block")
+![A Shopify product page showing an embedded 3D scene of towel buckets, powered by the BITBYBIT PREVIEW block.](https://bitbybit.dev/files/site/start/shopify/bitbybit-embed-towel-bucket.jpeg "Demo store product using the PREVIEW block")
 *Demo store product that uses an embed of a Bitbybit public script.*
 
 ## How Does the BITBYBIT PREVIEW Block Work?
@@ -43,7 +43,7 @@ Assuming you have already installed the "3D Bits" app in your Shopify store:
     2.  Add the **BITBYBIT PREVIEW** block from the "3D Bits" app to this template.
     3.  In the block's settings, you need to dynamically link the **"Model Preview URL"** setting of the block to the product metafield named **"3D Bits Model Url"**. This metafield is provided by our app.
 
-    ![The BITBYBIT PREVIEW block settings in the Shopify theme editor, showing the "Model Preview URL" field dynamically linked to a product metafield.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-preview-block.jpeg "Configured BITBYBIT PREVIEW block")
+    ![The BITBYBIT PREVIEW block settings in the Shopify theme editor, showing the "Model Preview URL" field dynamically linked to a product metafield.](https://bitbybit.dev/files/site/start/shopify/bitbybit-preview-block.jpeg "Configured BITBYBIT PREVIEW block")
     *After you configure the PREVIEW block, its settings should look similar to this.*
 
 *   **Enter the Preview URL in Product Metafields:**
@@ -52,7 +52,7 @@ Assuming you have already installed the "3D Bits" app in your Shopify store:
     3.  Locate the **"3D Bits Model Url"** metafield.
     4.  Copy the preview URL you obtained from Bitbybit and paste it into this metafield.
 
-    ![The Shopify product admin page showing the "3D Bits Model Url" metafield with a Bitbybit preview URL pasted into it.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-model-preview-url-metafield.jpeg "Entering the preview URL in the product metafield")
+    ![The Shopify product admin page showing the "3D Bits Model Url" metafield with a Bitbybit preview URL pasted into it.](https://bitbybit.dev/files/site/start/shopify/bitbybit-model-preview-url-metafield.jpeg "Entering the preview URL in the product metafield")
     *Use the "3D Bits Model Url" metafield to enter the preview URL from Bitbybit.*
 
     The other metafields provided by the "3D Bits" app (like those for GLB files or script content) are generally not relevant for the BITBYBIT PREVIEW block, so you can ignore them when using this specific block.

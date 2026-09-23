@@ -4,7 +4,7 @@ title: "Preparing GLTF 3D Assets"
 sidebar_label: Preparing GLTF 3D Assets
 description: Learn about the best practices and solutions when preparing 3D GLTF assets for your 3D configurators.
 tags: [shopify, 3d-bits, configurators]
-image: https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg
+image: https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg
 ---
 
 # Where to Start
@@ -17,7 +17,7 @@ If you arrived here from a size warning in Composer, the numbers you want are on
 
 If your brand already designs and manufactures physical goods, there's a good chance you already have detailed, good-looking 3D models on hand. Resellers can often get these from manufacturers - many keep accurate CAD files of their products for engineering or marketing purposes. Not all manufacturers will share them, though, so sometimes you'll need to commission a 3D artist or designer to create them from scratch in professional CAD software.
 
-![Preparing GLTF Assets](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg "Learn How to prepare GLTF assets")
+![Preparing GLTF Assets](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/preparing-gltf-assets-for-3d-bits-app-for-shopify.jpeg "Learn How to prepare GLTF assets")
 
 # What Formats Merchants Usually Have
 
@@ -49,7 +49,7 @@ When you do triangulate, you’ll usually be able to choose how dense the mesh w
 
 Once you have a triangulated model, you’ll probably need to make adjustments. We recommend Blender for this. It’s free, open source, and maintained by some of the most experienced 3D professionals in the industry. Of course, it’s not the only option - commercial tools like 3ds Max can also handle triangulated models perfectly well.
 
-[![Blender Logo](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/blender-logo.jpg "Blender Logo")](https://blender.org)      
+[![Blender Logo](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/blender-logo.jpg "Blender Logo")](https://blender.org)      
 [Download Blender Here](https://www.blender.org/download/)
 
 # Understanding Meshes
@@ -58,7 +58,7 @@ In the context of 3D assets, a “mesh” is simply a triangulated section of yo
 
 In order to understand how many triangles or polygon faces your model contains, you should enable "Scene Stats" in Blender. Click right mouse button in the bottom right corner of Blender and enable it.
 
-![Understand how many triangles your 3D assets contain in Blender](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/blender-scene-stats.jpeg "Blender scene stats")
+![Understand how many triangles your 3D assets contain in Blender](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/blender-scene-stats.jpeg "Blender scene stats")
 *Enable Scene stats to understand how many triangles your 3D assets contain in Blender.*
 
 # GLTF and Why We Use It
@@ -73,7 +73,7 @@ The reason comes down to something called **draw calls**. Every mesh in your sce
 
 If you’re working in CAD, you can often merge parts by material before exporting. In Blender, you can select multiple meshes and use **Object → Join** to combine them into a single mesh. The specifics vary from one tool to another, but the principle is always the same: merge what you can.
 
-![Join objects in Blender](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/blender-join-mesh-objects.jpeg "Join separate mesh objects together in Blender")
+![Join objects in Blender](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/blender-join-mesh-objects.jpeg "Join separate mesh objects together in Blender")
 *Join separate mesh objects together in Blender.*
 
 # Textures and Why They Matter
@@ -92,7 +92,7 @@ The good news is that GLTF files compress very well. You should always export to
 
 GLB has a second advantage that only shows up on a phone. The size check 3D Bits runs on iPhone Safari reads the size your server reports for the transfer, and a compressed text `.gltf` under-reports badly - see [Size and Performance Limits](/learn/3d-bits/3d-assets/size-and-performance). A binary GLB is already close to its real size on the wire, so what the check sees is what the browser gets.
 
-![Blender Compression Options](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/blender-compress.jpeg "Blender Compression Options")
+![Blender Compression Options](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/blender-compress.jpeg "Blender Compression Options")
 
 ## Shopify's glTF Compressor
 
@@ -119,7 +119,7 @@ For even more compression options or if you're hosting outside Shopify, try the 
 
 Khronos compressor tool also will show you the split screen view of original vs compressed file with a nice separator line - it makes it super easy to compare before and after quality of the model.
 
-![Khronos GLTF Compressor](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/khronos-gltf-compressor.jpeg "Khronos compressor tool comparison mode")
+![Khronos GLTF Compressor](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/khronos-gltf-compressor.jpeg "Khronos compressor tool comparison mode")
 *Khronos compressor allows to compare original model with compressed.*
 
 [Read More About The Compressor](https://www.khronos.org/blog/optimize-3d-assets-with-khronos-new-gltf-compressor-tool)
@@ -158,7 +158,7 @@ GLTF files need to be valid to be properly loaded into any 3D software, 3D Bits 
 
 3D Bits is built on top of BabylonJS, which comes with a fantastic [Sandbox Viewer](https://sandbox.babylonjs.com/). Drop your GLTF file in there to preview it before uploading. You’ll spot missing textures, strange triangulation issues, or other export problems immediately. If you see a problem in the Sandbox, you’ll likely see it in 3D Bits as well.
 
-![BabylonJS Sandbox](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/preparing-gltf-assets/babylonjs-sandbox.jpeg "BabylonJS Sandbox can be used to test loading your compressed 3D assets, inspect contents")
+![BabylonJS Sandbox](https://bitbybit.dev/files/site/start/shopify/preparing-gltf-assets/babylonjs-sandbox.jpeg "BabylonJS Sandbox can be used to test loading your compressed 3D assets, inspect contents")
 *BabylonJS Sandbox can be used to test loading your compressed 3D assets, inspect contents.*
 
 :::caution Mobile Phone Considerations

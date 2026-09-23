@@ -1,13 +1,13 @@
 ---
 slug: threejs-support
 title: "ANNOUNCING ThreeJS Support: Expanding Bitbybit.dev's CAD Capabilities"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/threejs-support/bitbybit-two-engines-babylonjs-threejs.jpeg
+image: https://bitbybit.dev/files/site/blog/threejs-support/bitbybit-two-engines-babylonjs-threejs.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Introducing new open-source NPM packages, @bitbybit-dev/threejs and @bitbybit-dev/babylonjs, to make 3D CAD accessible and adaptable for a broader community, including ThreeJS developers."
 ---
 
-![A muscle car with two powerful engines under its hood - one representing BabylonJS and the other ThreeJS, both driven by the Bitbybit.dev platform.](https://ik.imagekit.io/bitbybit/app/assets/blog/threejs-support/bitbybit-two-engines-babylonjs-threejs.jpeg "The muscle car with two engines under the gigantic hood - BabylonJS and ThreeJS driven by Bitbybit.")
+![A muscle car with two powerful engines under its hood - one representing BabylonJS and the other ThreeJS, both driven by the Bitbybit.dev platform.](https://bitbybit.dev/files/site/blog/threejs-support/bitbybit-two-engines-babylonjs-threejs.jpeg "The muscle car with two engines under the gigantic hood - BabylonJS and ThreeJS driven by Bitbybit.")
 
 We are thrilled to announce the release of two new open-source NPM packages designed to advance our core mission: making 3D CAD (Computer-Aided Design) accessible and adaptable for a broader community of developers. These packages, **`@bitbybit-dev/threejs`** and **`@bitbybit-dev/babylonjs`**, are critical steps toward our strategic goal of democratizing access to 3D CAD technologies, and they offer significantly greater flexibility for our users.
 
@@ -60,6 +60,6 @@ Both of these engine-specific packages rely on our **`@bitbybit-dev/core`** pack
 
 Our updated platform architecture reflects a more flexible, modular setup. Each game engine-specific package now connects through the common `@bitbybit-dev/core` layer, creating a streamlined, extensible structure that supports a wider range of integrations and future possibilities.
 
-![Overview of Bitbybit.dev platform architecture, showing open-source NPM packages (@bitbybit-dev/core, @bitbybit-dev/threejs, @bitbybit-dev/babylonjs) and their relation to proprietary application levels.](https://ik.imagekit.io/bitbybit/app/assets/blog/threejs-support/npm-packages-scheme.jpeg "Overview of Bitbybit platform architecture, indicating open-source layers accessible via NPM packages and proprietary application levels.")
+![Overview of Bitbybit.dev platform architecture, showing open-source NPM packages (@bitbybit-dev/core, @bitbybit-dev/threejs, @bitbybit-dev/babylonjs) and their relation to proprietary application levels.](https://bitbybit.dev/files/site/blog/threejs-support/npm-packages-scheme.jpeg "Overview of Bitbybit platform architecture, indicating open-source layers accessible via NPM packages and proprietary application levels.")
 
 With these new packages, we’re excited to expand the possibilities for our users, offering them a truly flexible, developer-friendly CAD solution that empowers them to create, innovate, and build amazing 3D experiences on the web, regardless of their preferred rendering engine.

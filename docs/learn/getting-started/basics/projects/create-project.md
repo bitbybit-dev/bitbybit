@@ -28,7 +28,7 @@ However, you can always access and manage all your projects from the **[My Proje
 1.  Navigate to your **[My Projects](https://bitbybit.dev/projects/my)** dashboard.
 2.  Click the **"New Project"** button, as shown in the image below:
 
-    ![The "My Projects" dashboard showing a list of existing projects and a "New Project" button.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/my-projects.jpeg "The 'My Projects' dashboard")
+    ![The "My Projects" dashboard showing a list of existing projects and a "New Project" button.](https://bitbybit.dev/files/site/start/general/projects/my-projects.jpeg "The 'My Projects' dashboard")
     *The overview showing all your projects and your used quota*
 
     Each project in this overview is displayed as an accordion (an expandable UI element). Expanding a project will show you a list of scripts within that particular project.
@@ -41,7 +41,7 @@ However, you can always access and manage all your projects from the **[My Proje
 
     Here's what the form looks like:
 
-    ![The "New Project" form with fields for project name, description, first script name, and script type.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/new-project-form.jpeg "The form for creating a new project")
+    ![The "New Project" form with fields for project name, description, first script name, and script type.](https://bitbybit.dev/files/site/start/general/projects/new-project-form.jpeg "The form for creating a new project")
     *The form for creating a new project*
 
 4.  Once you fill in the details, click **"Start Coding!"**. You'll be redirected to the editor corresponding to your chosen Script Type. Each editor type comes with some default "Hello World" style code to get you started, which you can modify or delete as needed.
@@ -53,19 +53,19 @@ To make things more convenient, we also allow you to manage projects and scripts
 **Steps:**
 1.  While in an editor, click on the button located in the top-left corner. This button usually displays the name of your current script and has a settings icon.
 
-    ![A button in the editor's top-left corner, typically showing the script name and a settings icon, used to open project management.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/enter-project-management.jpeg "Button to open project management in the editor")
+    ![A button in the editor's top-left corner, typically showing the script name and a settings icon, used to open project management.](https://bitbybit.dev/files/site/start/general/projects/enter-project-management.jpeg "Button to open project management in the editor")
     *Button that will open project management environment in the editor*
 
 2.  Clicking this button will open the project management panel:
 
-    ![The project management panel opened within the editor, showing current project/script and options to create new ones.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/management-panel.jpeg "Opened project management panel in the editor")
+    ![The project management panel opened within the editor, showing current project/script and options to create new ones.](https://bitbybit.dev/files/site/start/general/projects/management-panel.jpeg "Opened project management panel in the editor")
     *Opened project management environment in the editor*
 
     This panel shows your currently open project and script. From here, you can create a new project or add a new script to the existing project.
 
 3.  To create a new project, click the **`+` (plus) button** next to "Projects." A modal with the new project form will appear:
 
-    ![The "New Project" form displayed as a modal within the editor interface.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/new-project-in-editor.jpeg "New project form inside the editor")
+    ![The "New Project" form displayed as a modal within the editor interface.](https://bitbybit.dev/files/site/start/general/projects/new-project-in-editor.jpeg "New project form inside the editor")
     *New project form inside the editor*
 
     As you can see, this is the exact same form you encountered when creating a project from the dashboard. Creating projects directly from the editor is often more convenient and might become your preferred method.

@@ -4,10 +4,10 @@ title: "STEP Assembly Support: Load, Parse, and Export Professional CAD Files"
 authors: [ubarevicius]
 tags: [occt, assembly, step, gltf, cad, freecad]
 description: "Bitbybit v1.0.0 introduces STEP assembly support - load complex CAD files, parse part hierarchies, extract components, preserve colors, and export to GLTF or STEP formats."
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/step-assembly-support-occt-bitbybit.webp
+image: https://bitbybit.dev/files/site/blog/step-assembly-support/step-assembly-support-occt-bitbybit.webp
 ---
 
-![Bitbybit STEP Assembly Support](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/step-assembly-support-occt-bitbybit.webp "Bitbybit STEP Assembly Support")
+![Bitbybit STEP Assembly Support](https://bitbybit.dev/files/site/blog/step-assembly-support/step-assembly-support-occt-bitbybit.webp "Bitbybit STEP Assembly Support")
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -22,14 +22,14 @@ With **Bitbybit v1.0.0**, that changes. You can now load STEP assemblies directl
 
 You can load a STEP file and see its full assembly tree, just like you would in FreeCAD or SolidWorks. Each part has a label (something like `0:1:1:3`) that you can use to extract that specific piece.
 
-![FarmBot STEP Assembly of Soil Sensor in FreeCAD](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/freecad-step-assembly.webp "FarmBot STEP Assembly of Soil Sensor in FreeCAD")
-![FarmBot STEP Assembly of Soil Sensor in Bitbybit](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/farmbot-soil-sensor-step-assembly-in-bitbybit.webp "FarmBot STEP Assembly of Soil Sensor in Bitbybit")
+![FarmBot STEP Assembly of Soil Sensor in FreeCAD](https://bitbybit.dev/files/site/blog/step-assembly-support/freecad-step-assembly.webp "FarmBot STEP Assembly of Soil Sensor in FreeCAD")
+![FarmBot STEP Assembly of Soil Sensor in Bitbybit](https://bitbybit.dev/files/site/blog/step-assembly-support/farmbot-soil-sensor-step-assembly-in-bitbybit.webp "FarmBot STEP Assembly of Soil Sensor in Bitbybit")
 
 Colors are parsed too. Regular STEP exports lose color data, but we use OCCT's XCAF format to embed colors into the assembly structure. This also works if users export a colored model from Bitbybit and open it in FreeCAD or other CAD software.
 
 You can also convert assemblies to GLTF/GLB format for use in games, web viewers, or AR applications. And since everything happens in your browser, your files never leave your computer.
 
-![Simple Workflow to convert STEP to GLTF](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/step-to-gltf-in-bitbybit-rete-editor.webp "Simple Workflow to convert STEP to GLTF")
+![Simple Workflow to convert STEP to GLTF](https://bitbybit.dev/files/site/blog/step-assembly-support/step-to-gltf-in-bitbybit-rete-editor.webp "Simple Workflow to convert STEP to GLTF")
 
 ## Parametric Scripts to STEP Assemblies
 
@@ -39,9 +39,9 @@ Imagine a product configurator where customers adjust dimensions, then download 
 
 Furthermore - part instances and colors are supported, so users of third party CAD applications will be able to load these optimized assets in efficient manner.
 
-![Create OCCT STEP Assembly in Bitbybit](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/create-occt-step-assembly-in-bitbybit.webp "Create OCCT STEP Assembly in Bitbybit")
+![Create OCCT STEP Assembly in Bitbybit](https://bitbybit.dev/files/site/blog/step-assembly-support/create-occt-step-assembly-in-bitbybit.webp "Create OCCT STEP Assembly in Bitbybit")
 
-![Open Bitbybit OCCT STEP Assembly in FreeCAD](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/bitbybit-assembly-opened-in-freecad-with-structure.webp "Open Bitbybit OCCT STEP Assembly in FreeCAD")
+![Open Bitbybit OCCT STEP Assembly in FreeCAD](https://bitbybit.dev/files/site/blog/step-assembly-support/bitbybit-assembly-opened-in-freecad-with-structure.webp "Open Bitbybit OCCT STEP Assembly in FreeCAD")
 
 ## Why Does This Matter?
 
@@ -55,7 +55,7 @@ There are two groups of methods. The **Manager** methods let you build and expor
 
 The **Query** methods let you inspect existing documents: `getDocumentParts`, `getAssemblyHierarchy`, `getShapeFromLabel`, `getLabelColor`, `getLabelTransform`, and `getLabelInfo`.
 
-![Create STEP Assemblies in Rete](https://ik.imagekit.io/bitbybit/app/assets/blog/step-assembly-support/occt-step-assembly-creation-components.webp "Create STEP Assemblies in Rete")
+![Create STEP Assemblies in Rete](https://bitbybit.dev/files/site/blog/step-assembly-support/occt-step-assembly-creation-components.webp "Create STEP Assemblies in Rete")
 
 ## Visual Programming
 

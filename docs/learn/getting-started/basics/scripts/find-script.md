@@ -24,7 +24,7 @@ The most straightforward way to find and manage your scripts is through the **[M
 
 Here's what the expanded project view with its scripts looks like in the dashboard:
 
-![The "My Projects" dashboard showing an expanded project with a list of its scripts, each with options to edit or manage.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/example-of-scripts-overview.jpeg "Example of the script overview in 'My Projects' dashboard")
+![The "My Projects" dashboard showing an expanded project with a list of its scripts, each with options to edit or manage.](https://bitbybit.dev/files/site/start/general/projects/scripts/example-of-scripts-overview.jpeg "Example of the script overview in 'My Projects' dashboard")
 *Example of the script overview page in the "My Projects" dashboard*
 
 ### Method 2: Using the In-Editor Project Management Panel
@@ -33,7 +33,7 @@ You can also access an overview of all your projects and scripts without leaving
 
 1.  **Open Project Management:** While in any editor, click on the button located in the top-left corner. This button usually displays the name of your current script and has a settings icon.
 
-    ![The button in the editor's top-left corner (often showing the script name and a settings icon) used to open the project management panel.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/project-overview-button.jpeg "Button to open the project overview and management panel")
+    ![The button in the editor's top-left corner (often showing the script name and a settings icon) used to open the project management panel.](https://bitbybit.dev/files/site/start/general/projects/scripts/project-overview-button.jpeg "Button to open the project overview and management panel")
     *Button to open the project overview and management page in the editor*
 
 2.  **Navigate Projects and Scripts:** This will open a project management panel directly within the editor interface. Here, you can:
@@ -44,7 +44,7 @@ You can also access an overview of all your projects and scripts without leaving
 
 Here's an example of this in-editor project management dashboard:
 
-![The in-editor project management panel showing a list of projects and their scripts, allowing users to navigate without leaving the editor.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/project-management.jpeg "In-editor project management dashboard")
+![The in-editor project management panel showing a list of projects and their scripts, allowing users to navigate without leaving the editor.](https://bitbybit.dev/files/site/start/general/projects/scripts/project-management.jpeg "In-editor project management dashboard")
 *Find all your projects and scripts without leaving the currently active editor*
 
 Both methods provide convenient ways to access and manage your cloud scripts. The in-editor panel is great for quick navigation while you're already working, while the "My Projects" dashboard offers a more comprehensive overview.

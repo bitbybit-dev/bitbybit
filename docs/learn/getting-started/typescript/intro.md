@@ -22,7 +22,7 @@ Despite these additions, TypeScript code compiles down to plain JavaScript. This
 
 TypeScript also understands existing JavaScript code and uses type inference to provide much of its tooling benefits even without explicit type annotations.
 
-![Logo of TypeScript](https://ik.imagekit.io/bitbybit/app/assets/start/typescript/typescript-logo.png)
+![Logo of TypeScript](https://bitbybit.dev/files/site/start/typescript/typescript-logo.png)
 *TypeScript Logo*
 
 ## Monaco Editor: Your Gateway to TypeScript on Bitbybit

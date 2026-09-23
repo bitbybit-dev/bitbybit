@@ -31,13 +31,13 @@ The Rete editor is highly interactive, so you often see errors very quickly. If 
 
 Here's an example of an error in the Rete editor:
 
-![A Rete editor component highlighted in red, indicating an error.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/rete-error-component.jpeg "Example of a component with an error in Rete editor")
+![A Rete editor component highlighted in red, indicating an error.](https://bitbybit.dev/files/site/start/general/running-code/rete-error-component.jpeg "Example of a component with an error in Rete editor")
 *Example of a component with an error in Rete editor*
 
 In this specific case, the "chirpy chalet" component has its `width` set to `0`. The underlying algorithm can't compute geometry with a zero width.
 To see the detailed error message, click the button marked with an exclamation mark (`!`) on the component. This will open a modal like the one below:
 
-![An error modal in Rete, showing details about why a component failed.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/rete-error.jpeg "Example of an error modal in Rete editor")
+![An error modal in Rete, showing details about why a component failed.](https://bitbybit.dev/files/site/start/general/running-code/rete-error.jpeg "Example of an error modal in Rete editor")
 *Example of an error modal containing information about the error that happened in Rete editor*
 
 This error message clearly states that the interior width cannot be 0. To fix this, you would change the width input on the component to a valid, non-zero value. The Rete component will then re-trigger its execution immediately. If the fix is correct, the component will return to its normal color.
@@ -46,7 +46,7 @@ This error message clearly states that the interior width cannot be 0. To fix th
 
 The Blockly editor also highlights components that cause errors. Here's an example of an error modal you might see in Blockly:
 
-![An error modal in Blockly, listing errors that occurred after running the script.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/blockly-error-modal.jpeg "Example of an error modal in Blockly editor")
+![An error modal in Blockly, listing errors that occurred after running the script.](https://bitbybit.dev/files/site/start/general/running-code/blockly-error-modal.jpeg "Example of an error modal in Blockly editor")
 *Example of an error modal containing information about the error that happened in Blockly editor*
 
 A key difference between Rete and Blockly regarding errors is:
@@ -66,7 +66,7 @@ This real-time error reporting can sometimes feel a bit strict, but it ultimatel
 
 Here's what an error might look like in the Monaco editor:
 
-![The Monaco editor showing TypeScript code with a red underline, indicating an error, and a tooltip with the error message.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/typescript-error.jpeg "Example of an error in Monaco editor")
+![The Monaco editor showing TypeScript code with a red underline, indicating an error, and a tooltip with the error message.](https://bitbybit.dev/files/site/start/general/running-code/typescript-error.jpeg "Example of an error in Monaco editor")
 *Example of an error in Monaco editor*
 
 ### When All Else Fails: Check the Browser Console

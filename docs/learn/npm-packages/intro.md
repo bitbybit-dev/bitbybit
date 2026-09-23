@@ -72,7 +72,7 @@ For frontend projects, your browser opens with a live 3D preview at `http://loca
 
 The following diagram illustrates the architecture of our NPM packages. Each game engine-specific package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`, `@bitbybit-dev/playcanvas`) connects through the `@bitbybit-dev/core` layer. This creates a streamlined, extensible structure that supports a range of integrations with various geometry kernels like OCCT, JSCAD, and Manifold.
 
-![Architecture of Bitbybit NPM packages](https://ik.imagekit.io/bitbybit/app/assets/npm-package-architecture.jpeg)
+![Architecture of Bitbybit NPM packages](https://bitbybit.dev/files/site/npm-package-architecture.jpeg)
 *Architecture of Bitbybit NPM packages*
 
 ## Available Packages

@@ -25,13 +25,13 @@ Follow these steps to export your current script:
 1.  **Open the "More Actions" Menu:**
     While in any of our editors, locate the "More Actions" menu button. This button often looks like three dots (`...`) or a similar icon indicating additional options. Depending on your screen size and layout, this menu might appear in a vertical or horizontal orientation within the editor's interface.
 
-    ![The "More Actions" menu button in the Bitbybit editor interface.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
+    ![The "More Actions" menu button in the Bitbybit editor interface.](https://bitbybit.dev/files/site/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
     *Button To Open More Actions*
 
 2.  **Click the "Export" Button:**
     Once the "More Actions" menu is open, find and click the **"Export"** button.
 
-    ![The "Export" button within the "More Actions" menu, used to save the current script to a file.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/export.jpeg "Export button that saves script to a file")
+    ![The "Export" button within the "More Actions" menu, used to save the current script to a file.](https://bitbybit.dev/files/site/start/general/projects/scripts/export.jpeg "Export button that saves script to a file")
     *Export button that saves script to a file*
 
     This will trigger your browser to download the script as a file.

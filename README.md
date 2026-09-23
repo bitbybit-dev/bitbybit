@@ -12,7 +12,7 @@ Source code in `packages/`, `languages/`, and `examples/` is [MIT licensed](./LI
 # [LEARN BITBYBIT](https://learn.bitbybit.dev)   
 # [TYPESCRIPT API REFERENCE](https://docs.bitbybit.dev)   
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Quick Start
 
@@ -120,7 +120,7 @@ The [full walkthrough of the diagram](https://learn.bitbybit.dev/learn/intro) is
 
 ## NPM Package Architecture
 
-<img src="https://app.bitbybit.dev/assets/npm-package-architecture.jpeg" alt="Schematic diagram showing the architecture of all NPM packages">
+<img src="https://bitbybit.dev/files/site/npm-package-architecture.jpeg" alt="Schematic diagram showing the architecture of all NPM packages">
 
 ## Example Applications
 

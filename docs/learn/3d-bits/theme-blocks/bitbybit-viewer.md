@@ -14,7 +14,7 @@ The **BITBYBIT VIEWER** is a theme app extension block provided by the `3D Bits`
 
 Nearly everything about the scene itself is built in **Composer**, the app's visual editor, and published from there. The block's job today is placement, not configuration.
 
-![A Shopify product page showcasing a 3D model using the BITBYBIT VIEWER block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-viewer-theme-app-extension-block-shopify-3d-bits.jpeg "Demo store product using the BITBYBIT VIEWER block")
+![A Shopify product page showcasing a 3D model using the BITBYBIT VIEWER block.](https://bitbybit.dev/files/site/start/shopify/bitbybit-viewer-theme-app-extension-block-shopify-3d-bits.jpeg "Demo store product using the BITBYBIT VIEWER block")
 *Demo store product that uses the BITBYBIT VIEWER block.*
 
 ## The route most stores use now
@@ -70,7 +70,7 @@ The app embed only renders products that carry a project published from the app.
         2.  Add the **BITBYBIT VIEWER** block from the "3D Bits" app to this template.
         3.  In the block's settings, dynamically link the **"Model URL"** setting of the block to the product metafield named **"3D Bits Model Url"**. This metafield is provided by our app - see [Metafields](/learn/3d-bits/admin/metafields).
 
-        ![The BITBYBIT VIEWER block settings in the Shopify theme editor, with various settings dynamically linked to product metafields.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/3d-bits-bitbybit-viewer-theme-app-extension-configuration-dynamic-links.jpeg "BITBYBIT VIEWER block with dynamically linked settings")
+        ![The BITBYBIT VIEWER block settings in the Shopify theme editor, with various settings dynamically linked to product metafields.](https://bitbybit.dev/files/site/start/shopify/3d-bits-bitbybit-viewer-theme-app-extension-configuration-dynamic-links.jpeg "BITBYBIT VIEWER block with dynamically linked settings")
         *BITBYBIT VIEWER block after dynamically linking settings to metafields.*
 
     *   **Enter the model URL in the product's metafields:**
@@ -79,7 +79,7 @@ The app embed only renders products that carry a project published from the app.
         3.  Locate the **"3D Bits Model Url"** metafield.
         4.  Paste the public URL of your 3D model file into this metafield.
 
-        ![The Shopify product admin page showing the "3D Bits Model Url" metafield with a URL to a 3D model file.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-model-preview-url-metafield.jpeg "Pasting the file URL into the metafield")
+        ![The Shopify product admin page showing the "3D Bits Model Url" metafield with a URL to a 3D model file.](https://bitbybit.dev/files/site/start/shopify/bitbybit-model-preview-url-metafield.jpeg "Pasting the file URL into the metafield")
         *Paste your file URL into this metafield.*
 
     After completing these steps and previewing your product page, you should see the 3D model displayed.
@@ -114,7 +114,7 @@ This tutorial walks through Composer and an interactive 3D chair configurator:
 **Composer interface:**
 Here is how Composer looks within the "3D Bits" app:
 
-![The Composer interface within the Shopify "3D Bits" app, showing tools for configuring a 3D scene.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/3d-bits-viewer-editor-on-shopify-by-bitbybit.jpeg "Composer for scene configurations")
+![The Composer interface within the Shopify "3D Bits" app, showing tools for configuring a 3D scene.](https://bitbybit.dev/files/site/start/shopify/3d-bits-viewer-editor-on-shopify-by-bitbybit.jpeg "Composer for scene configurations")
 *Composer, where 3D scene configurations are built.*
 
 **Using the scene configuration by hand:**
@@ -122,13 +122,13 @@ Here is how Composer looks within the "3D Bits" app:
 2.  Download or copy the JSON it produces.
 3.  In your Shopify product admin, paste it into the product metafield named **"3D Bits Scene Config"**.
 
-    ![The Shopify product admin page showing the "3D Bits Scene Config" metafield where the JSON configuration is pasted.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/shopify-3d-bits-viewer-scene-config-json.jpeg "Pasting Scene Configuration JSON into the metafield")
+    ![The Shopify product admin page showing the "3D Bits Scene Config" metafield where the JSON configuration is pasted.](https://bitbybit.dev/files/site/start/shopify/shopify-3d-bits-viewer-scene-config-json.jpeg "Pasting Scene Configuration JSON into the metafield")
     *Paste your Scene Configuration JSON into this metafield.*
 
     The block picks this up on its own as long as its **Scene JSON Configuration** setting is left empty. You can also link that setting to the metafield explicitly, which older setups did.
 
     **Example output with a scene configuration:**
-    ![A Shopify product page showing a 3D model of vases rendered with custom lighting and shadows, configured via Scene Config JSON using the BITBYBIT VIEWER block.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/product-page-viewer-serenity-swirl-shopify.jpeg "Product page using VIEWER block and Scene Config JSON")
+    ![A Shopify product page showing a 3D model of vases rendered with custom lighting and shadows, configured via Scene Config JSON using the BITBYBIT VIEWER block.](https://bitbybit.dev/files/site/start/shopify/product-page-viewer-serenity-swirl-shopify.jpeg "Product page using VIEWER block and Scene Config JSON")
     *Demo store product that uses the BITBYBIT VIEWER block and Scene Configuration metafield.*
 
 ### What if JSON is too large for the metafield?

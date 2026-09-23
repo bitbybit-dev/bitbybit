@@ -14,7 +14,7 @@ tags: [getting-started, rete, occt]
 
 This is precisely what we've done at Bitbybit. We've taken the Rete.js framework and used it to expose our unique 3D algorithms and components through a visual, node-based interface. We proudly call our editor "Rete" to honor the original framework, as we believe it's an amazing open-source technology that everyone in the visual programming space should explore.
 
-![Logo of Rete](https://ik.imagekit.io/bitbybit/app/assets/start/rete/rete-logo.png)
+![Logo of Rete](https://bitbybit.dev/files/site/start/rete/rete-logo.png)
 *Rete.js Logo*
 
 ## Why Rete?

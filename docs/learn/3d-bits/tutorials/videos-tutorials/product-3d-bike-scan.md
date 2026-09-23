@@ -24,7 +24,7 @@ By the end of this tutorial, you'll be able to showcase a detailed, interactive 
 *   Check out the live example on our [Demo Store: Bike 3D Scan Product Page](https://bitbybit-dev-3d-configurators.myshopify.com/products/3d-bike-scan).
 *   Demo store password: `3d-bits-demo`
 
-![A screenshot of the 3D scanned bike model as it appears in the Shopify store.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bike.jpeg "3D Bike Scan Screenshot")
+![A screenshot of the 3D scanned bike model as it appears in the Shopify store.](https://bitbybit.dev/files/site/start/shopify/bike.jpeg "3D Bike Scan Screenshot")
 *3D Bike Scan Example*
 
 ## Video Tutorial: Working with 3D Scans (Gaussian Splatting)

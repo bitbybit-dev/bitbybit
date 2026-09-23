@@ -2,7 +2,7 @@
 
 Core assembly layer for [Bitbybit](https://bitbybit.dev) CAD platform - combines all geometry kernels (OCCT, JSCAD, Manifold) into a unified API and provides additional cross-kernel features.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

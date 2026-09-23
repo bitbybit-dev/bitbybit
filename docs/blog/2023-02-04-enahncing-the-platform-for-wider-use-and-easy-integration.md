@@ -1,12 +1,12 @@
 ---
 slug: enahncing-the-platform-for-wider-use-and-easy-integration
 title: ENHANCING THE PLATFORM FOR WIDER USE AND EASY INTEGRATION
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/cad-democratisation/bitbybit-npm-packages-web-technologies.png
+image: https://bitbybit.dev/files/site/blog/cad-democratisation/bitbybit-npm-packages-web-technologies.png
 authors: [ubarevicius]
 tags: [bitbybit, cloud]
 ---
 
-![Example of the THREEJS app using our opensource libraries](https://ik.imagekit.io/bitbybit/app/assets/blog/cad-democratisation/bitbybit-npm-packages-web-technologies.png)
+![Example of the THREEJS app using our opensource libraries](https://bitbybit.dev/files/site/blog/cad-democratisation/bitbybit-npm-packages-web-technologies.png)
 
 In our recent platform update we split our codebase into reusable packages and published them under MIT License for everyone to use. This article will introduce you to the packages and show you how you can use them to create your own 3D applications.
 
@@ -24,7 +24,7 @@ In line with this trend, we aim to continue promoting the values of openness and
 
 We have released three NPM packages: bitbybit-occt, bitbybit-occt-worker, and bitbybit-core. These open-source packages are available for anyone to use. Below you will find a description of each package and an accompanying matrix image that displays the compatibility of each package with various web technologies.
 
-![Picture showing compatibility matrix of Bit By Bit Developers NPM packages](https://ik.imagekit.io/bitbybit/app/assets/compatibility-matrix-npm.png)
+![Picture showing compatibility matrix of Bit By Bit Developers NPM packages](https://bitbybit.dev/files/site/compatibility-matrix-npm.png)
 
 Compatibility Matrix Of Bit By Bit Developers NPM Packages
 
@@ -44,7 +44,7 @@ The code in this package is used to execute the functionality of our online edit
 
 [Run this app](https://app-store.bitbybit.dev/laptop-holder)
 
-![Picture showing laptop holder configurator example](https://ik.imagekit.io/bitbybit/app/assets/laptop-holder.png)
+![Picture showing laptop holder configurator example](https://bitbybit.dev/files/site/laptop-holder.png)
 
 Laptop Holder Configurator Example
 
@@ -82,7 +82,7 @@ In addition to the main functionality, we have also tried to make the library us
 
 [Run this app](https://app-store.bitbybit.dev/bitbybit-threejs)
 
-![Picture showing bitbybit threejs example app](https://ik.imagekit.io/bitbybit/app/assets/bitbybit-threejs.png)
+![Picture showing bitbybit threejs example app](https://bitbybit.dev/files/site/bitbybit-threejs.png)
 
 Vase Configurator App Example
 

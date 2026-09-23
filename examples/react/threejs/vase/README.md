@@ -1,6 +1,6 @@
 # THREEJS Example Applicaiton of 3D printable vase
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 This application demonstrates the basic setup that can be used to build 3D react apps by using Bit By Bit Developers libraries and THREEJS web based game engine.
 
@@ -8,7 +8,7 @@ This application demonstrates the basic setup that can be used to build 3D react
 https://app-store.bitbybit.dev/vase  
 Github Source Code - https://github.com/bitbybit-dev/app-examples/tree/main/react/threejs/vase 
 
-<img src="https://app.bitbybit.dev/assets/bitbybit-threejs.png" alt="ThreeJS Vase Configurator">
+<img src="https://bitbybit.dev/files/site/bitbybit-threejs.png" alt="ThreeJS Vase Configurator">
 
 Visit https://bitbybit.dev to use our full cloud platform.
 

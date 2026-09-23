@@ -1,6 +1,6 @@
 # Bit By Bit Developers App Examples
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 These app examples are meant to show how bitbybit npm packages can be used to create 3D models on the browser and on the server.
 Core, babylonjs and threejs libraries work only on the browser and are dependant on many great 3D libraries. bitbybit-occt library is much more versatile and can be used both on the nodejs and browser applications.
@@ -49,7 +49,7 @@ https://app-store.bitbybit.dev
 | Cup Configurator | BabylonJS | https://app-store.bitbybit.dev/cup | [react/babylonjs/cup](./react/babylonjs/cup) |
 | Cup Configurator | Three.js | https://app-store.bitbybit.dev/cup-three | [vite/threejs/cup](./vite/threejs/cup), [webpack/threejs/src/code/cup.ts](./webpack/threejs/src/code/cup.ts) |
 
-<img src="https://app.bitbybit.dev/assets/laptop-holder.png" alt="Laptop Holder Configurator">
+<img src="https://bitbybit.dev/files/site/laptop-holder.png" alt="Laptop Holder Configurator">
 
 Other closed-source apps we built: Terrace Furniture (BabylonJS), https://app-store.bitbybit.dev/terrace-furniture
 

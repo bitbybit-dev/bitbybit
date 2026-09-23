@@ -27,13 +27,13 @@ Follow these steps to import a `.bitbybit` file into your current editor:
 1.  **Open the "More Actions" Menu:**
     While in the appropriate editor (Rete, Blockly, or TypeScript), locate the "More Actions" menu button. This button often looks like three dots (`...`) or a similar icon indicating additional options. Depending on your screen size and layout, this menu might appear in a vertical or horizontal orientation within the editor's interface.
 
-    ![The "More Actions" menu button in the Bitbybit editor interface.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
+    ![The "More Actions" menu button in the Bitbybit editor interface.](https://bitbybit.dev/files/site/start/general/projects/scripts/more-actions.jpeg "Button To Open More Actions")
     *Button To Open More Actions*
 
 2.  **Click the "Import" Button:**
     Once the "More Actions" menu is open, find and click the **"Import"** button.
 
-    ![The "Import" button within the "More Actions" menu, used to load a script from a local file.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/import.jpeg "Import button that loads script from a file")
+    ![The "Import" button within the "More Actions" menu, used to load a script from a local file.](https://bitbybit.dev/files/site/start/general/projects/scripts/import.jpeg "Import button that loads script from a file")
     *Import button that loads script from a file*
 
 3.  **Select Your File:**

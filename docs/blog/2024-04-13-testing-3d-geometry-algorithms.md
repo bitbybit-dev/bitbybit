@@ -1,13 +1,13 @@
 ---
 slug: testing-3d-geometry-algorithms-in-occt
 title: "TESTING 3D GEOMETRY ALGORITHMS IN OCCT"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/testing-3d-geometry-algorithms-in-occt/testing-3d-geometry-algorithms-in-occt.jpeg
+image: https://bitbybit.dev/files/site/blog/testing-3d-geometry-algorithms-in-occt/testing-3d-geometry-algorithms-in-occt.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "An introduction to recent improvements in code quality for the @bitbybit-dev/occt layer, focusing on unit testing and refactoring to benefit our platform's users."
 ---
 
-![Looking for the best way to test 3D geometry algorithms. A girl is shown coding geometry in a room full of 3D printed objects.](https://ik.imagekit.io/bitbybit/app/assets/blog/testing-3d-geometry-algorithms-in-occt/testing-3d-geometry-algorithms-in-occt.jpeg "Looking for the best way to test 3D geometry algorithms")
+![Looking for the best way to test 3D geometry algorithms. A girl is shown coding geometry in a room full of 3D printed objects.](https://bitbybit.dev/files/site/blog/testing-3d-geometry-algorithms-in-occt/testing-3d-geometry-algorithms-in-occt.jpeg "Looking for the best way to test 3D geometry algorithms")
 
 We've been working on improving the quality of our core codebase by adding new unit tests and restructuring the code in the `@bitbybit-dev/occt` layer. In this article, we'll explain why these changes were necessary and how they benefit our platform's users.
 

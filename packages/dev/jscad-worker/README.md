@@ -2,7 +2,7 @@
 
 Non-blocking WebWorker wrapper for [@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad) - run JSCAD solid modeling operations asynchronously without freezing the UI.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

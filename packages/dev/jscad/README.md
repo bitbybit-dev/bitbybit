@@ -2,7 +2,7 @@
 
 [JSCAD](https://github.com/jscad) solid modeling integration for [Bitbybit](https://bitbybit.dev) - programmatic CSG operations, extrusions, hulls, and more for creating precise 3D geometry through code.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 
