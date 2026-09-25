@@ -1003,13 +1003,13 @@ export interface OperationParams {
      * Example: '#FF5733' -> '#00a8cc'; with blackAndWhite -> '#ffffff'
      */
     "color.invert": {
+        /** The color to invert, as a hex text such as `#ff5733`. */
+        color?: unknown | PipelineRef;
         /**
          * When true, the result is black for a light color and white for a dark one instead of the
          * exact inverse; useful for readable text.
          */
-        blackAndWhite: boolean | PipelineRef;
-        /** The color to invert, as a hex text such as `#ff5733`. */
-        color?: unknown | PipelineRef;
+        blackAndWhite?: boolean | PipelineRef;
     };
     /**
      * Passes an `{ r, g, b }` color with channels from 0 to 1 through unchanged, so it can be
@@ -9737,15 +9737,15 @@ export interface OperationParams {
     "occt.shapes.face.subdivideToHexagonHoles": {
         /** The face to cut the holes into. */
         shape: unknown | PipelineRef;
-        /**
-         * When true, the hexagons turn a flat side toward the U direction; when false a corner points
-         * that way.
-         */
-        flatU: boolean | PipelineRef;
         /** How many hexagons across the U range. */
         nrHexagonsU?: number | PipelineRef;
         /** How many hexagons across the V range. */
         nrHexagonsV?: number | PipelineRef;
+        /**
+         * When true, the hexagons turn a flat side toward the U direction; when false a corner points
+         * that way.
+         */
+        flatU?: boolean | PipelineRef;
         /** When true, the result also carries one face per hole after the perforated face. */
         holesToFaces?: boolean | PipelineRef;
         /**
@@ -9790,15 +9790,15 @@ export interface OperationParams {
     "occt.shapes.face.subdivideToHexagonWires": {
         /** The face to draw the hexagons on. */
         shape: unknown | PipelineRef;
-        /**
-         * When true, the hexagons turn a flat side toward the U direction; when false a corner points
-         * that way.
-         */
-        flatU: boolean | PipelineRef;
         /** How many hexagons across the U range. */
         nrHexagonsU?: number | PipelineRef;
         /** How many hexagons across the V range. */
         nrHexagonsV?: number | PipelineRef;
+        /**
+         * When true, the hexagons turn a flat side toward the U direction; when false a corner points
+         * that way.
+         */
+        flatU?: boolean | PipelineRef;
         /**
          * Sizes of the hexagons along U as fractions of their full size, applied in turn about each
          * hexagon's center; 1 or no list means no scaling.
@@ -11001,7 +11001,7 @@ export interface OperationParams {
         /** One definition per curve, as `createBezier` takes them. */
         bezierWires: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /**
      * Makes a smooth B-spline wire that approximates a list of points: it follows them closely but
@@ -11026,7 +11026,7 @@ export interface OperationParams {
         /** One definition per curve, as `createBSpline` takes them. */
         bSplines: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /**
      * Makes a closed wire shaped like a stylized Christmas tree: `nrSkirts` layers of branches,
@@ -11247,7 +11247,7 @@ export interface OperationParams {
         /** One start and end point pair per line. */
         lines: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /** Makes a straight single-edge wire between two points. */
     "occt.shapes.wire.createLineWire": {
@@ -11350,7 +11350,7 @@ export interface OperationParams {
         /** One list of corner points per polygon. */
         polygons: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /**
      * Makes a closed wire of straight edges through a list of corner points, adding the edge from
@@ -11371,7 +11371,7 @@ export interface OperationParams {
         /** One list of points per polyline. */
         polylines: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /**
      * Makes an open wire of straight edges through a list of points, in order.
@@ -11972,7 +11972,7 @@ export interface OperationParams {
         /** One definition per curve, as `interpolatePoints` takes them. */
         interpolations: unknown[] | PipelineRef;
         /** When true, the wires are packed into one compound instead of a list. */
-        returnCompound: boolean | PipelineRef;
+        returnCompound?: boolean | PipelineRef;
     };
     /**
      * Tells whether a wire is closed, which is when its start and end points coincide within a
@@ -12503,10 +12503,10 @@ export interface OperationParams {
     "occt.transforms.alignAndTranslate": {
         /** The shape to place. */
         shape: unknown | PipelineRef;
-        /** The point the shape's origin is moved to, in model units. */
-        center: [number, number, number] | PipelineRef;
         /** The direction the shape's Y axis should point along after placing. */
         direction?: [number, number, number] | PipelineRef;
+        /** The point the shape's origin is moved to, in model units. */
+        center?: [number, number, number] | PipelineRef;
     };
     /**
      * Applies `alignAndTranslate` to several shapes, each with its own direction and center.
@@ -12516,10 +12516,10 @@ export interface OperationParams {
     "occt.transforms.alignAndTranslateShapes": {
         /** The shapes to place. */
         shapes: unknown[] | PipelineRef;
-        /** One point per shape for its origin to move to, in model units. */
-        centers: [number, number, number][] | PipelineRef;
         /** One direction per shape for its Y axis to point along. */
         directions?: [number, number, number][] | PipelineRef;
+        /** One point per shape for its origin to move to, in model units. */
+        centers?: [number, number, number][] | PipelineRef;
     };
     /**
      * Moves a shape so that a full frame on it lands on another frame: a point, its normal and one
@@ -13319,13 +13319,13 @@ export interface OperationParams {
     "point.removeConsecutiveDuplicates": {
         /** The points to filter; their order is kept. */
         points: [number, number, number][] | PipelineRef;
+        /** Two points count as the same when every coordinate differs by less than this. */
+        tolerance?: number | PipelineRef;
         /**
          * When true, a last point that repeats the first is dropped as well, which closes a loop
          * cleanly.
          */
-        checkFirstAndLast: boolean | PipelineRef;
-        /** Two points count as the same when every coordinate differs by less than this. */
-        tolerance?: number | PipelineRef;
+        checkFirstAndLast?: boolean | PipelineRef;
     };
     /**
      * Rotates points around an axis that passes through a center.
