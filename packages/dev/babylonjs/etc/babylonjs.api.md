@@ -27,31 +27,31 @@ namespace Asset {
     class AssetFileByUrlDto {
         constructor(assetFile?: string, rootUrl?: string, hidden?: boolean);
         assetFile: string;
-        hidden: boolean;
+        hidden?: boolean | undefined;
         rootUrl: string;
     }
     class AssetFileDto {
         constructor(assetFile?: File, hidden?: boolean);
         assetFile: File;
-        hidden: boolean;
+        hidden?: boolean | undefined;
     }
     class AssetGlbDataDto {
         constructor(glbData?: Uint8Array, fileName?: string, hidden?: boolean);
-        fileName: string;
+        fileName?: string | undefined;
         glbData: Uint8Array;
-        hidden: boolean;
+        hidden?: boolean | undefined;
     }
     class BlobToFileDto {
         constructor(blob?: Blob, fileName?: string, mimeType?: string);
         blob: Blob;
-        fileName: string;
+        fileName?: string | undefined;
         mimeType?: string | undefined;
     }
     class DownloadDto {
         constructor(fileName?: string, content?: string | Blob, extension?: string, contentType?: string);
         content: string | Blob;
-        contentType: string;
-        extension: string;
+        contentType?: string | undefined;
+        extension?: string | undefined;
         fileName: string;
     }
     class FetchDto {
@@ -77,29 +77,59 @@ namespace Asset {
 }
 
 // @public
+namespace Asset_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_3" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type ArrayBufferToUint8ArrayDto = Inputs_3.Asset.ArrayBufferToUint8ArrayDto;
+    // Warning: (ae-forgotten-export) The symbol "WithDefaults" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type AssetFileByUrlDto = WithDefaults<Inputs_3.Asset.AssetFileByUrlDto, "hidden">;
+    // (undocumented)
+    type AssetFileDto = WithDefaults<Inputs_3.Asset.AssetFileDto, "hidden">;
+    // (undocumented)
+    type AssetGlbDataDto = WithDefaults<Inputs_3.Asset.AssetGlbDataDto, "fileName" | "hidden">;
+    // (undocumented)
+    type BlobToFileDto = WithDefaults<Inputs_3.Asset.BlobToFileDto, "fileName">;
+    // (undocumented)
+    type DownloadDto = WithDefaults<Inputs_3.Asset.DownloadDto, "extension" | "contentType">;
+    // (undocumented)
+    type FetchDto = Inputs_3.Asset.FetchDto;
+    // (undocumented)
+    type FileDto = Inputs_3.Asset.FileDto;
+    // (undocumented)
+    type FilesDto = Inputs_3.Asset.FilesDto;
+    // (undocumented)
+    type GetAssetDto = Inputs_3.Asset.GetAssetDto;
+    // (undocumented)
+    type Uint8ArrayToArrayBufferDto = Inputs_3.Asset.Uint8ArrayToArrayBufferDto;
+}
+
+// @public
 export class Babylon {
-    // Warning: (ae-forgotten-export) The symbol "Color_2" needs to be exported by the entry point index.d.ts
-    constructor(context: Context, drawHelper: DrawHelper, color: Color_2);
+    // Warning: (ae-forgotten-export) The symbol "Color_3" needs to be exported by the entry point index.d.ts
+    constructor(context: Context, drawHelper: DrawHelper, color: Color_3);
     // (undocumented)
     camera: BabylonCamera;
     // (undocumented)
     decal: BabylonDecal;
     // (undocumented)
     engine: BabylonEngine;
-    // Warning: (ae-forgotten-export) The symbol "BabylonGaussianSplatting_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BabylonGaussianSplatting_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    gaussianSplatting: BabylonGaussianSplatting_2;
-    // Warning: (ae-forgotten-export) The symbol "BabylonGizmo_2" needs to be exported by the entry point index.d.ts
+    gaussianSplatting: BabylonGaussianSplatting_3;
+    // Warning: (ae-forgotten-export) The symbol "BabylonGizmo_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    gizmo: BabylonGizmo_2;
+    gizmo: BabylonGizmo_3;
     // (undocumented)
     gltf: BabylonGltf;
-    // Warning: (ae-forgotten-export) The symbol "BabylonGui_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BabylonGui_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    gui: BabylonGui_2;
+    gui: BabylonGui_3;
     // (undocumented)
     io: BabylonIO;
     // Warning: (ae-forgotten-export) The symbol "BabylonLights" needs to be exported by the entry point index.d.ts
@@ -110,10 +140,10 @@ export class Babylon {
     material: BabylonMaterial;
     // (undocumented)
     mesh: BabylonMesh;
-    // Warning: (ae-forgotten-export) The symbol "BabylonMeshBuilder_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BabylonMeshBuilder_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    meshBuilder: BabylonMeshBuilder_2;
+    meshBuilder: BabylonMeshBuilder_3;
     // (undocumented)
     node: BabylonNode;
     // (undocumented)
@@ -122,14 +152,14 @@ export class Babylon {
     ray: BabylonRay;
     // (undocumented)
     scene: BabylonScene;
-    // Warning: (ae-forgotten-export) The symbol "BabylonTexture_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "BabylonTexture_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    texture: BabylonTexture_2;
-    // Warning: (ae-forgotten-export) The symbol "BabylonTools_2" needs to be exported by the entry point index.d.ts
+    texture: BabylonTexture_3;
+    // Warning: (ae-forgotten-export) The symbol "BabylonTools_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    tools: BabylonTools_2;
+    tools: BabylonTools_3;
     // (undocumented)
     transforms: BabylonTransforms;
     // (undocumented)
@@ -170,21 +200,21 @@ export class BabylonCamera {
 namespace BabylonCamera_2 {
     class ArcRotateCameraDto {
         constructor(radius?: number, alpha?: number, beta?: number, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, panningSensibility?: number, wheelPrecision?: number, maxZ?: number);
-        alpha: number;
-        angularSensibilityX: number;
-        angularSensibilityY: number;
-        beta: number;
+        alpha?: number | undefined;
+        angularSensibilityX?: number | undefined;
+        angularSensibilityY?: number | undefined;
+        beta?: number | undefined;
         lowerAlphaLimit?: number | undefined;
-        lowerBetaLimit: number;
+        lowerBetaLimit?: number | undefined;
         lowerRadiusLimit?: number | undefined;
-        maxZ: number;
-        panningSensibility: number;
-        radius: number;
-        target: Base_3.Point3;
+        maxZ?: number | undefined;
+        panningSensibility?: number | undefined;
+        radius?: number | undefined;
+        target?: Base_3.Point3 | undefined;
         upperAlphaLimit?: number | undefined;
-        upperBetaLimit: number;
+        upperBetaLimit?: number | undefined;
         upperRadiusLimit?: number | undefined;
-        wheelPrecision: number;
+        wheelPrecision?: number | undefined;
     }
     class CameraDto {
         constructor(camera?: BABYLON_2.Camera);
@@ -192,47 +222,71 @@ namespace BabylonCamera_2 {
     }
     class FreeCameraDto {
         constructor(position?: Base_3.Point3, target?: Base_3.Point3);
-        position: Base_3.Point3;
-        target: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
+        target?: Base_3.Point3 | undefined;
     }
     class MaxZDto {
         constructor(camera?: BABYLON_2.Camera, maxZ?: number);
         camera: BABYLON_2.Camera;
-        maxZ: number;
+        maxZ?: number | undefined;
     }
     class MinZDto {
         constructor(camera?: BABYLON_2.Camera, minZ?: number);
         camera: BABYLON_2.Camera;
-        minZ: number;
+        minZ?: number | undefined;
     }
     class OrthographicDto {
         constructor(camera?: BABYLON_2.Camera, orthoLeft?: number, orthoRight?: number, orthoTop?: number, orthoBottom?: number);
         camera: BABYLON_2.Camera;
-        orthoBottom: number;
-        orthoLeft: number;
-        orthoRight: number;
-        orthoTop: number;
+        orthoBottom?: number | undefined;
+        orthoLeft?: number | undefined;
+        orthoRight?: number | undefined;
+        orthoTop?: number | undefined;
     }
     class PositionDto {
         constructor(camera?: BABYLON_2.TargetCamera, position?: Base_3.Point3);
         camera: BABYLON_2.TargetCamera;
-        position: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
     }
     class SpeedDto {
         constructor(camera?: BABYLON_2.TargetCamera, speed?: number);
         camera: BABYLON_2.TargetCamera;
-        speed: number;
+        speed?: number | undefined;
     }
     class TargetCameraDto {
         constructor(position?: Base_3.Point3, target?: Base_3.Point3);
-        position: Base_3.Point3;
-        target: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
+        target?: Base_3.Point3 | undefined;
     }
     class TargetDto {
         constructor(camera?: BABYLON_2.TargetCamera, target?: Base_3.Point3);
         camera: BABYLON_2.TargetCamera;
-        target: Base_3.Point3;
+        target?: Base_3.Point3 | undefined;
     }
+}
+
+// @public
+namespace BabylonCamera_3 {
+    // (undocumented)
+    type ArcRotateCameraDto = WithDefaults<Inputs_2.BabylonCamera.ArcRotateCameraDto, "radius" | "target" | "alpha" | "beta" | "lowerBetaLimit" | "upperBetaLimit" | "angularSensibilityX" | "angularSensibilityY" | "panningSensibility" | "wheelPrecision" | "maxZ">;
+    // (undocumented)
+    type CameraDto = Inputs_2.BabylonCamera.CameraDto;
+    // (undocumented)
+    type FreeCameraDto = WithDefaults<Inputs_2.BabylonCamera.FreeCameraDto, "position" | "target">;
+    // (undocumented)
+    type MaxZDto = WithDefaults<Inputs_2.BabylonCamera.MaxZDto, "maxZ">;
+    // (undocumented)
+    type MinZDto = WithDefaults<Inputs_2.BabylonCamera.MinZDto, "minZ">;
+    // (undocumented)
+    type OrthographicDto = WithDefaults<Inputs_2.BabylonCamera.OrthographicDto, "orthoLeft" | "orthoRight" | "orthoBottom" | "orthoTop">;
+    // (undocumented)
+    type PositionDto = WithDefaults<Inputs_2.BabylonCamera.PositionDto, "position">;
+    // (undocumented)
+    type SpeedDto = WithDefaults<Inputs_2.BabylonCamera.SpeedDto, "speed">;
+    // (undocumented)
+    type TargetCameraDto = WithDefaults<Inputs_2.BabylonCamera.TargetCameraDto, "position" | "target">;
+    // (undocumented)
+    type TargetDto = WithDefaults<Inputs_2.BabylonCamera.TargetDto, "target">;
 }
 
 // @public
@@ -248,15 +302,15 @@ export class BabylonDecal {
 namespace BabylonDecal_2 {
     class CreateMeshDecalDto {
         constructor(sourceMesh?: BABYLON_2.AbstractMesh, texture?: BABYLON_2.BaseTexture, position?: Base_3.Point3, normal?: Base_3.Vector3, size?: Base_3.Vector3, angle?: number, cullBackFaces?: boolean, localMode?: boolean, zOffset?: number);
-        angle: number;
-        cullBackFaces: boolean;
-        localMode: boolean;
-        normal: Base_3.Vector3;
-        position: Base_3.Point3;
-        size: Base_3.Vector3;
+        angle?: number | undefined;
+        cullBackFaces?: boolean | undefined;
+        localMode?: boolean | undefined;
+        normal?: Base_3.Vector3 | undefined;
+        position?: Base_3.Point3 | undefined;
+        size?: Base_3.Vector3 | undefined;
         sourceMesh: BABYLON_2.AbstractMesh;
         texture: BABYLON_2.BaseTexture;
-        zOffset: number;
+        zOffset?: number | undefined;
     }
     class DecalMapDto {
         constructor(decalMap?: BABYLON_2.MeshUVSpaceRenderer);
@@ -264,20 +318,32 @@ namespace BabylonDecal_2 {
     }
     class EnableDecalMapDto {
         constructor(mesh?: BABYLON_2.AbstractMesh, material?: BABYLON_2.Material, width?: number, height?: number);
-        height: number;
+        height?: number | undefined;
         material: BABYLON_2.Material;
         mesh: BABYLON_2.AbstractMesh;
-        width: number;
+        width?: number | undefined;
     }
     class ProjectDecalDto {
         constructor(decalMap?: BABYLON_2.MeshUVSpaceRenderer, texture?: BABYLON_2.BaseTexture, position?: Base_3.Point3, normal?: Base_3.Vector3, size?: Base_3.Vector3, angle?: number);
-        angle: number;
+        angle?: number | undefined;
         decalMap: BABYLON_2.MeshUVSpaceRenderer;
-        normal: Base_3.Vector3;
-        position: Base_3.Point3;
-        size: Base_3.Vector3;
+        normal?: Base_3.Vector3 | undefined;
+        position?: Base_3.Point3 | undefined;
+        size?: Base_3.Vector3 | undefined;
         texture: BABYLON_2.BaseTexture;
     }
+}
+
+// @public
+namespace BabylonDecal_3 {
+    // (undocumented)
+    type CreateMeshDecalDto = WithDefaults<Inputs_2.BabylonDecal.CreateMeshDecalDto, "position" | "normal" | "size" | "angle" | "cullBackFaces" | "localMode" | "zOffset">;
+    // (undocumented)
+    type DecalMapDto = Inputs_2.BabylonDecal.DecalMapDto;
+    // (undocumented)
+    type EnableDecalMapDto = WithDefaults<Inputs_2.BabylonDecal.EnableDecalMapDto, "width" | "height">;
+    // (undocumented)
+    type ProjectDecalDto = WithDefaults<Inputs_2.BabylonDecal.ProjectDecalDto, "position" | "normal" | "size" | "angle">;
 }
 
 // @public
@@ -303,6 +369,14 @@ namespace BabylonGaussianSplatting {
         constructor(babylonMesh?: BABYLON_2.GaussianSplattingMesh);
         babylonMesh: BABYLON_2.GaussianSplattingMesh;
     }
+}
+
+// @public
+namespace BabylonGaussianSplatting_2 {
+    // (undocumented)
+    type CreateGaussianSplattingMeshDto = Inputs_2.BabylonGaussianSplatting.CreateGaussianSplattingMeshDto;
+    // (undocumented)
+    type GaussianSplattingMeshDto = Inputs_2.BabylonGaussianSplatting.GaussianSplattingMeshDto;
 }
 
 // @public
@@ -339,13 +413,13 @@ namespace BabylonGizmo {
     class CreateGizmoDto {
         constructor(positionGizmoEnabled?: boolean, rotationGizmoEnabled?: boolean, scaleGizmoEnabled?: boolean, boundingBoxGizmoEnabled?: boolean, attachableMeshes?: BABYLON_2.AbstractMesh[], clearGizmoOnEmptyPointerEvent?: boolean, scaleRatio?: number, usePointerToAttachGizmos?: boolean);
         attachableMeshes?: BABYLON_2.AbstractMesh[] | undefined;
-        boundingBoxGizmoEnabled: boolean;
-        clearGizmoOnEmptyPointerEvent: boolean;
-        positionGizmoEnabled: boolean;
-        rotationGizmoEnabled: boolean;
-        scaleGizmoEnabled: boolean;
-        scaleRatio: number;
-        usePointerToAttachGizmos: boolean;
+        boundingBoxGizmoEnabled?: boolean | undefined;
+        clearGizmoOnEmptyPointerEvent?: boolean | undefined;
+        positionGizmoEnabled?: boolean | undefined;
+        rotationGizmoEnabled?: boolean | undefined;
+        scaleGizmoEnabled?: boolean | undefined;
+        scaleRatio?: number | undefined;
+        usePointerToAttachGizmos?: boolean | undefined;
     }
     class GizmoDto {
         constructor(gizmo?: BABYLON_2.IGizmo);
@@ -413,42 +487,42 @@ namespace BabylonGizmo {
     class SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, fixedDragMeshBoundsSize?: boolean);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        fixedDragMeshBoundsSize: boolean;
+        fixedDragMeshBoundsSize?: boolean | undefined;
     }
     class SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, fixedDragMeshScreenSizeDistanceFactor?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        fixedDragMeshScreenSizeDistanceFactor: number;
+        fixedDragMeshScreenSizeDistanceFactor?: number | undefined;
     }
     class SetBoundingBoxGizmoFixedDragMeshScreenSizeDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, fixedDragMeshScreenSize?: boolean);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        fixedDragMeshScreenSize: boolean;
+        fixedDragMeshScreenSize?: boolean | undefined;
     }
     class SetBoundingBoxGizmoIncrementalSnapDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, incrementalSnap?: boolean);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        incrementalSnap: boolean;
+        incrementalSnap?: boolean | undefined;
     }
     class SetBoundingBoxGizmoRotationSnapDistanceDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, rotationSnapDistance?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        rotationSnapDistance: number;
+        rotationSnapDistance?: number | undefined;
     }
     class SetBoundingBoxGizmoRotationSphereSizeDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, rotationSphereSize?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        rotationSphereSize: number;
+        rotationSphereSize?: number | undefined;
     }
     class SetBoundingBoxGizmoScaleBoxSizeDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, scaleBoxSize?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        scaleBoxSize: number;
+        scaleBoxSize?: number | undefined;
     }
     class SetBoundingBoxGizmoScaleDragSpeedDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, scaleDragSpeed?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        scaleDragSpeed: number;
+        scaleDragSpeed?: number | undefined;
     }
     class SetBoundingBoxGizmoScalePivotDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, scalePivot?: Base_3.Vector3);
@@ -458,68 +532,150 @@ namespace BabylonGizmo {
     class SetBoundingBoxGizmoScalingSnapDistanceDto {
         constructor(boundingBoxGizmo?: BABYLON_2.BoundingBoxGizmo, scalingSnapDistance?: number);
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
-        scalingSnapDistance: number;
+        scalingSnapDistance?: number | undefined;
     }
     class SetGizmoScaleRatioDto {
         constructor(gizmo?: BABYLON_2.IGizmo, scaleRatio?: number);
         gizmo: BABYLON_2.IGizmo;
-        scaleRatio: number;
+        scaleRatio?: number | undefined;
     }
     class SetIsEnabledAxisDragGizmoDto {
         constructor(axisDragGizmo?: BABYLON_2.IAxisDragGizmo, isEnabled?: boolean);
         axisDragGizmo: BABYLON_2.IAxisDragGizmo;
-        isEnabled: boolean;
+        isEnabled?: boolean | undefined;
     }
     class SetIsEnabledAxisScaleGizmoDto {
         constructor(axisScaleGizmo?: BABYLON_2.IAxisScaleGizmo, isEnabled?: boolean);
         axisScaleGizmo: BABYLON_2.IAxisScaleGizmo;
-        isEnabled: boolean;
+        isEnabled?: boolean | undefined;
     }
     class SetIsEnabledPlaneDragGizmoDto {
         constructor(planeDragGizmo?: BABYLON_2.IPlaneDragGizmo, isEnabled?: boolean);
-        isEnabled: boolean;
+        isEnabled?: boolean | undefined;
         planeDragGizmo: BABYLON_2.IPlaneDragGizmo;
     }
     class SetIsEnabledPlaneRotationGizmoDto {
         constructor(planeRotationGizmo?: BABYLON_2.IPlaneRotationGizmo, isEnabled?: boolean);
-        isEnabled: boolean;
+        isEnabled?: boolean | undefined;
         planeRotationGizmo: BABYLON_2.IPlaneRotationGizmo;
     }
     class SetPlanarGizmoEnabled {
         constructor(positionGizmo?: BABYLON_2.IPositionGizmo, planarGizmoEnabled?: boolean);
-        planarGizmoEnabled: boolean;
+        planarGizmoEnabled?: boolean | undefined;
         positionGizmo: BABYLON_2.IPositionGizmo;
     }
     class SetPositionGizmoSnapDistanceDto {
         constructor(positionGizmo?: BABYLON_2.IPositionGizmo, snapDistance?: number);
         positionGizmo: BABYLON_2.IPositionGizmo;
-        snapDistance: number;
+        snapDistance?: number | undefined;
     }
     class SetRotationGizmoSensitivityDto {
         constructor(rotationGizmo?: BABYLON_2.IRotationGizmo, sensitivity?: number);
         rotationGizmo: BABYLON_2.IRotationGizmo;
-        sensitivity: number;
+        sensitivity?: number | undefined;
     }
     class SetRotationGizmoSnapDistanceDto {
         constructor(rotationGizmo?: BABYLON_2.IRotationGizmo, snapDistance?: number);
         rotationGizmo: BABYLON_2.IRotationGizmo;
-        snapDistance: number;
+        snapDistance?: number | undefined;
     }
     class SetScaleGizmoIncrementalSnapDto {
         constructor(scaleGizmo?: BABYLON_2.IScaleGizmo, incrementalSnap?: boolean);
-        incrementalSnap: boolean;
+        incrementalSnap?: boolean | undefined;
         scaleGizmo: BABYLON_2.IScaleGizmo;
     }
     class SetScaleGizmoSensitivityDto {
         constructor(scaleGizmo?: BABYLON_2.IScaleGizmo, sensitivity?: number);
         scaleGizmo: BABYLON_2.IScaleGizmo;
-        sensitivity: number;
+        sensitivity?: number | undefined;
     }
     class SetScaleGizmoSnapDistanceDto {
         constructor(scaleGizmo?: BABYLON_2.IScaleGizmo, snapDistance?: number);
         scaleGizmo: BABYLON_2.IScaleGizmo;
-        snapDistance: number;
+        snapDistance?: number | undefined;
     }
+}
+
+// @public
+namespace BabylonGizmo_2 {
+    // (undocumented)
+    type AttachToMeshDto = Inputs_2.BabylonGizmo.AttachToMeshDto;
+    // (undocumented)
+    type AxisDragGizmoDto = Inputs_2.BabylonGizmo.AxisDragGizmoDto;
+    // (undocumented)
+    type AxisScaleGizmoDto = Inputs_2.BabylonGizmo.AxisScaleGizmoDto;
+    // (undocumented)
+    type BoundingBoxGizmoDto = Inputs_2.BabylonGizmo.BoundingBoxGizmoDto;
+    // (undocumented)
+    type BoundingBoxGizmoObservableSelectorDto = Inputs_2.BabylonGizmo.BoundingBoxGizmoObservableSelectorDto;
+    // (undocumented)
+    type CreateGizmoDto = WithDefaults<Inputs_2.BabylonGizmo.CreateGizmoDto, "positionGizmoEnabled" | "rotationGizmoEnabled" | "scaleGizmoEnabled" | "boundingBoxGizmoEnabled" | "usePointerToAttachGizmos" | "clearGizmoOnEmptyPointerEvent" | "scaleRatio">;
+    // (undocumented)
+    type GizmoDto = Inputs_2.BabylonGizmo.GizmoDto;
+    // (undocumented)
+    type GizmoManagerDto = Inputs_2.BabylonGizmo.GizmoManagerDto;
+    // (undocumented)
+    type PlaneDragGizmoDto = Inputs_2.BabylonGizmo.PlaneDragGizmoDto;
+    // (undocumented)
+    type PlaneRotationGizmoDto = Inputs_2.BabylonGizmo.PlaneRotationGizmoDto;
+    // (undocumented)
+    type PositionGizmoDto = Inputs_2.BabylonGizmo.PositionGizmoDto;
+    // (undocumented)
+    type PositionGizmoObservableSelectorDto = Inputs_2.BabylonGizmo.PositionGizmoObservableSelectorDto;
+    // (undocumented)
+    type RotationGizmoDto = Inputs_2.BabylonGizmo.RotationGizmoDto;
+    // (undocumented)
+    type RotationGizmoObservableSelectorDto = Inputs_2.BabylonGizmo.RotationGizmoObservableSelectorDto;
+    // (undocumented)
+    type ScaleGizmoDto = Inputs_2.BabylonGizmo.ScaleGizmoDto;
+    // (undocumented)
+    type ScaleGizmoObservableSelectorDto = Inputs_2.BabylonGizmo.ScaleGizmoObservableSelectorDto;
+    // (undocumented)
+    type SetBoundingBoxGizmoAxisFactorDto = Inputs_2.BabylonGizmo.SetBoundingBoxGizmoAxisFactorDto;
+    // (undocumented)
+    type SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto, "fixedDragMeshBoundsSize">;
+    // (undocumented)
+    type SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto, "fixedDragMeshScreenSizeDistanceFactor">;
+    // (undocumented)
+    type SetBoundingBoxGizmoFixedDragMeshScreenSizeDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDto, "fixedDragMeshScreenSize">;
+    // (undocumented)
+    type SetBoundingBoxGizmoIncrementalSnapDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoIncrementalSnapDto, "incrementalSnap">;
+    // (undocumented)
+    type SetBoundingBoxGizmoRotationSnapDistanceDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoRotationSnapDistanceDto, "rotationSnapDistance">;
+    // (undocumented)
+    type SetBoundingBoxGizmoRotationSphereSizeDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoRotationSphereSizeDto, "rotationSphereSize">;
+    // (undocumented)
+    type SetBoundingBoxGizmoScaleBoxSizeDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoScaleBoxSizeDto, "scaleBoxSize">;
+    // (undocumented)
+    type SetBoundingBoxGizmoScaleDragSpeedDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoScaleDragSpeedDto, "scaleDragSpeed">;
+    // (undocumented)
+    type SetBoundingBoxGizmoScalePivotDto = Inputs_2.BabylonGizmo.SetBoundingBoxGizmoScalePivotDto;
+    // (undocumented)
+    type SetBoundingBoxGizmoScalingSnapDistanceDto = WithDefaults<Inputs_2.BabylonGizmo.SetBoundingBoxGizmoScalingSnapDistanceDto, "scalingSnapDistance">;
+    // (undocumented)
+    type SetGizmoScaleRatioDto = WithDefaults<Inputs_2.BabylonGizmo.SetGizmoScaleRatioDto, "scaleRatio">;
+    // (undocumented)
+    type SetIsEnabledAxisDragGizmoDto = WithDefaults<Inputs_2.BabylonGizmo.SetIsEnabledAxisDragGizmoDto, "isEnabled">;
+    // (undocumented)
+    type SetIsEnabledAxisScaleGizmoDto = WithDefaults<Inputs_2.BabylonGizmo.SetIsEnabledAxisScaleGizmoDto, "isEnabled">;
+    // (undocumented)
+    type SetIsEnabledPlaneDragGizmoDto = WithDefaults<Inputs_2.BabylonGizmo.SetIsEnabledPlaneDragGizmoDto, "isEnabled">;
+    // (undocumented)
+    type SetIsEnabledPlaneRotationGizmoDto = WithDefaults<Inputs_2.BabylonGizmo.SetIsEnabledPlaneRotationGizmoDto, "isEnabled">;
+    // (undocumented)
+    type SetPlanarGizmoEnabled = WithDefaults<Inputs_2.BabylonGizmo.SetPlanarGizmoEnabled, "planarGizmoEnabled">;
+    // (undocumented)
+    type SetPositionGizmoSnapDistanceDto = WithDefaults<Inputs_2.BabylonGizmo.SetPositionGizmoSnapDistanceDto, "snapDistance">;
+    // (undocumented)
+    type SetRotationGizmoSensitivityDto = WithDefaults<Inputs_2.BabylonGizmo.SetRotationGizmoSensitivityDto, "sensitivity">;
+    // (undocumented)
+    type SetRotationGizmoSnapDistanceDto = WithDefaults<Inputs_2.BabylonGizmo.SetRotationGizmoSnapDistanceDto, "snapDistance">;
+    // (undocumented)
+    type SetScaleGizmoIncrementalSnapDto = WithDefaults<Inputs_2.BabylonGizmo.SetScaleGizmoIncrementalSnapDto, "incrementalSnap">;
+    // (undocumented)
+    type SetScaleGizmoSensitivityDto = WithDefaults<Inputs_2.BabylonGizmo.SetScaleGizmoSensitivityDto, "sensitivity">;
+    // (undocumented)
+    type SetScaleGizmoSnapDistanceDto = WithDefaults<Inputs_2.BabylonGizmo.SetScaleGizmoSnapDistanceDto, "snapDistance">;
 }
 
 // @public
@@ -556,8 +712,8 @@ namespace BabylonGltf_2 {
     class PlayAnimationGroupDto {
         constructor(animationGroup?: BABYLON_2.AnimationGroup, loop?: boolean, speedRatio?: number);
         animationGroup: BABYLON_2.AnimationGroup;
-        loop: boolean;
-        speedRatio: number;
+        loop?: boolean | undefined;
+        speedRatio?: number | undefined;
     }
     class SelectVariantDto {
         constructor(rootNode?: BABYLON_2.TransformNode, variantName?: string);
@@ -567,18 +723,32 @@ namespace BabylonGltf_2 {
 }
 
 // @public
+namespace BabylonGltf_3 {
+    // (undocumented)
+    type AnimationGroupDto = Inputs_2.BabylonGltf.AnimationGroupDto;
+    // (undocumented)
+    type AssetContainerDto = Inputs_2.BabylonGltf.AssetContainerDto;
+    // (undocumented)
+    type GltfRootNodeDto = Inputs_2.BabylonGltf.GltfRootNodeDto;
+    // (undocumented)
+    type PlayAnimationGroupDto = WithDefaults<Inputs_2.BabylonGltf.PlayAnimationGroupDto, "loop" | "speedRatio">;
+    // (undocumented)
+    type SelectVariantDto = Inputs_2.BabylonGltf.SelectVariantDto;
+}
+
+// @public
 namespace BabylonGui {
     class AddControlsToContainerDto {
         constructor(container?: BABYLON_3.GUI.StackPanel, controls?: BABYLON_3.GUI.Control[], clearControlsFirst?: boolean);
-        clearControlsFirst: boolean;
+        clearControlsFirst?: boolean | undefined;
         container: BABYLON_3.GUI.Container;
         controls: BABYLON_3.GUI.Control[];
     }
     class AlignmentDto<T> {
         constructor(control?: T, horizontalAlignment?: horizontalAlignmentEnum, verticalAlignment?: verticalAlignmentEnum);
         control: T;
-        horizontalAlignment: horizontalAlignmentEnum;
-        verticalAlignment: verticalAlignmentEnum;
+        horizontalAlignment?: horizontalAlignmentEnum | undefined;
+        verticalAlignment?: verticalAlignmentEnum | undefined;
     }
     class ButtonDto {
         constructor(button?: BABYLON_3.GUI.Button);
@@ -590,7 +760,7 @@ namespace BabylonGui {
     }
     class CheckboxObservableSelectorDto {
         constructor(selector?: checkboxObservableSelectorEnum);
-        selector: checkboxObservableSelectorEnum;
+        selector?: checkboxObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum checkboxObservableSelectorEnum {
@@ -601,7 +771,7 @@ namespace BabylonGui {
         container?: BABYLON_3.GUI.Container | undefined;
         control: BABYLON_3.GUI.Control;
         host?: BABYLON_3.GUI.AdvancedDynamicTexture | undefined;
-        name: string;
+        name?: string | undefined;
     }
     class ColorPickerDto {
         constructor(colorPicker?: BABYLON_3.GUI.ColorPicker);
@@ -609,7 +779,7 @@ namespace BabylonGui {
     }
     class ColorPickerObservableSelectorDto {
         constructor(selector?: colorPickerObservableSelectorEnum);
-        selector: colorPickerObservableSelectorEnum;
+        selector?: colorPickerObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum colorPickerObservableSelectorEnum {
@@ -625,7 +795,7 @@ namespace BabylonGui {
     }
     class ControlObservableSelectorDto {
         constructor(selector?: controlObservableSelectorEnum);
-        selector: controlObservableSelectorEnum;
+        selector?: controlObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum controlObservableSelectorEnum {
@@ -650,30 +820,30 @@ namespace BabylonGui {
     }
     class CreateButtonDto {
         constructor(name?: string, label?: string, color?: string, background?: string, width?: number | string, height?: number | string, fontSize?: number);
-        background: string;
-        color: string;
-        fontSize: number;
+        background?: string | undefined;
+        color?: string | undefined;
+        fontSize?: number | undefined;
         height?: number | string | undefined;
-        label: string;
-        name: string;
+        label?: string | undefined;
+        name?: string | undefined;
         width?: number | string | undefined;
     }
     class CreateCheckboxDto {
         constructor(name?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string);
-        background: string;
-        checkSizeRatio: number;
-        color: string;
+        background?: string | undefined;
+        checkSizeRatio?: number | undefined;
+        color?: string | undefined;
         height?: number | string | undefined;
-        isChecked: boolean;
-        name: string;
+        isChecked?: boolean | undefined;
+        name?: string | undefined;
         width?: number | string | undefined;
     }
     class CreateColorPickerDto {
         constructor(name?: string, defaultColor?: string, color?: string, width?: number | string, height?: number | string, size?: number | string);
-        color: string;
-        defaultColor: string;
+        color?: string | undefined;
+        defaultColor?: string | undefined;
         height?: number | string | undefined;
-        name: string;
+        name?: string | undefined;
         size?: number | string | undefined;
         width?: number | string | undefined;
     }
@@ -681,85 +851,85 @@ namespace BabylonGui {
         // Warning: (ae-forgotten-export) The symbol "BABYLON_3" needs to be exported by the entry point index.d.ts
         constructor(mesh?: BABYLON_3.AbstractMesh, width?: number, height?: number, supportPointerMove?: boolean, onlyAlphaTesting?: boolean, invertY?: boolean, sampling?: BabylonTexture.samplingModeEnum);
         height?: number | undefined;
-        invertY: boolean;
+        invertY?: boolean | undefined;
         mesh: BABYLON_3.AbstractMesh;
-        onlyAlphaTesting: boolean;
-        sampling: BabylonTexture.samplingModeEnum;
-        supportPointerMove: boolean;
+        onlyAlphaTesting?: boolean | undefined;
+        sampling?: BabylonTexture.samplingModeEnum | undefined;
+        supportPointerMove?: boolean | undefined;
         width?: number | undefined;
     }
     class CreateFullScreenUIDto {
         constructor(name?: string, foreground?: boolean, adaptiveScaling?: boolean);
         adaptiveScaling?: boolean | undefined;
         foreground?: boolean | undefined;
-        name: string;
+        name?: string | undefined;
     }
     class CreateImageDto {
         constructor(name?: string, url?: string, color?: string, width?: number | string, height?: number | string);
-        color: string;
+        color?: string | undefined;
         height?: number | string | undefined;
-        name: string;
+        name?: string | undefined;
         url: string;
         width?: number | string | undefined;
     }
     class CreateInputTextDto {
         constructor(name?: string, color?: string, background?: string, width?: number | string, height?: number | string);
-        background: string;
-        color: string;
+        background?: string | undefined;
+        color?: string | undefined;
         height?: number | string | undefined;
-        name: string;
-        placeholder: string;
-        text: string;
+        name?: string | undefined;
+        placeholder?: string | undefined;
+        text?: string | undefined;
         width?: number | string | undefined;
     }
     class CreateRadioButtonDto {
         constructor(name?: string, group?: string, isChecked?: boolean, checkSizeRatio?: number, color?: string, background?: string, width?: number | string, height?: number | string);
-        background: string;
-        checkSizeRatio: number;
-        color: string;
+        background?: string | undefined;
+        checkSizeRatio?: number | undefined;
+        color?: string | undefined;
         group?: string | undefined;
         height?: number | string | undefined;
-        isChecked: boolean;
-        name: string;
+        isChecked?: boolean | undefined;
+        name?: string | undefined;
         width?: number | string | undefined;
     }
     class CreateSliderDto {
         constructor(name?: string, minimum?: number, maximum?: number, value?: number, step?: number, isVertical?: boolean, color?: string, background?: string, width?: number | string, height?: number | string, displayThumb?: boolean);
-        background: string;
-        color: string;
-        displayThumb: boolean;
+        background?: string | undefined;
+        color?: string | undefined;
+        displayThumb?: boolean | undefined;
         height?: number | string | undefined;
-        isVertical: boolean;
-        maximum: number;
-        minimum: number;
-        name: string;
-        step: number;
-        value: number;
+        isVertical?: boolean | undefined;
+        maximum?: number | undefined;
+        minimum?: number | undefined;
+        name?: string | undefined;
+        step?: number | undefined;
+        value?: number | undefined;
         width?: number | string | undefined;
     }
     class CreateStackPanelDto {
         constructor(name?: string, isVertical?: boolean, spacing?: number, width?: number | string, height?: number | string, color?: string, background?: string);
-        background: string;
-        color: string;
+        background?: string | undefined;
+        color?: string | undefined;
         height?: number | string | undefined;
-        isVertical: boolean;
-        name: string;
-        spacing: number;
+        isVertical?: boolean | undefined;
+        name?: string | undefined;
+        spacing?: number | undefined;
         width?: number | string | undefined;
     }
     class CreateTextBlockDto {
         constructor(name?: string, text?: string, color?: string, width?: number | string, height?: number | string);
-        color: string;
-        fontSize: number;
+        color?: string | undefined;
+        fontSize?: number | undefined;
         height?: number | string | undefined;
-        name: string;
-        text: string;
+        name?: string | undefined;
+        text?: string | undefined;
         width?: number | string | undefined;
     }
     class GetControlByNameDto {
         constructor(container?: BABYLON_3.GUI.Container, name?: string);
         container: BABYLON_3.GUI.Container;
-        name: string;
+        name?: string | undefined;
     }
     enum horizontalAlignmentEnum {
         // (undocumented)
@@ -779,7 +949,7 @@ namespace BabylonGui {
     }
     class InputTextObservableSelectorDto {
         constructor(selector?: inputTextObservableSelectorEnum);
-        selector: inputTextObservableSelectorEnum;
+        selector?: inputTextObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum inputTextObservableSelectorEnum {
@@ -804,7 +974,7 @@ namespace BabylonGui {
     }
     class RadioButtonObservableSelectorDto {
         constructor(selector?: radioButtonObservableSelectorEnum);
-        selector: radioButtonObservableSelectorEnum;
+        selector?: radioButtonObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum radioButtonObservableSelectorEnum {
@@ -813,22 +983,22 @@ namespace BabylonGui {
     class SetButtonTextDto {
         constructor(button?: BABYLON_3.GUI.Button, text?: string);
         button: BABYLON_3.GUI.Button;
-        text: string;
+        text?: string | undefined;
     }
     class SetCheckboxBackgroundDto {
         constructor(checkbox?: BABYLON_3.GUI.Checkbox, background?: string);
-        background: string;
+        background?: string | undefined;
         checkbox: BABYLON_3.GUI.Checkbox;
     }
     class SetCheckboxCheckSizeRatioDto {
         constructor(checkbox?: BABYLON_3.GUI.Checkbox, checkSizeRatio?: number);
         checkbox: BABYLON_3.GUI.Checkbox;
-        checkSizeRatio: number;
+        checkSizeRatio?: number | undefined;
     }
     class SetCheckboxIsCheckedDto {
         constructor(checkbox?: BABYLON_3.GUI.Checkbox, isChecked?: boolean);
         checkbox: BABYLON_3.GUI.Checkbox;
-        isChecked: boolean;
+        isChecked?: boolean | undefined;
     }
     class SetColorPickerSizeDto {
         constructor(colorPicker?: BABYLON_3.GUI.ColorPicker, size?: number | string);
@@ -842,23 +1012,23 @@ namespace BabylonGui {
     }
     class SetContainerBackgroundDto {
         constructor(container?: BABYLON_3.GUI.Container, background?: string);
-        background: string;
+        background?: string | undefined;
         container: BABYLON_3.GUI.Container;
     }
     class SetContainerIsReadonlyDto {
         constructor(container?: BABYLON_3.GUI.Container, isReadOnly?: boolean);
         container: BABYLON_3.GUI.Container;
-        isReadOnly: boolean;
+        isReadOnly?: boolean | undefined;
     }
     class SetControlColorDto {
         constructor(control?: BABYLON_3.GUI.Control, color?: string);
-        color: string;
+        color?: string | undefined;
         control: BABYLON_3.GUI.Control;
     }
     class SetControlFontSizeDto {
         constructor(control?: BABYLON_3.GUI.Control, fontSize?: number);
         control: BABYLON_3.GUI.Control;
-        fontSize: number;
+        fontSize?: number | undefined;
     }
     class SetControlHeightDto {
         constructor(control?: BABYLON_3.GUI.Control, height?: number | string);
@@ -868,17 +1038,17 @@ namespace BabylonGui {
     class SetControlIsEnabledDto {
         constructor(control?: BABYLON_3.GUI.Control, isEnabled?: boolean);
         control: BABYLON_3.GUI.Control;
-        isEnabled: boolean;
+        isEnabled?: boolean | undefined;
     }
     class SetControlIsReadonlyDto {
         constructor(control?: BABYLON_3.GUI.Control, isReadOnly?: boolean);
         control: BABYLON_3.GUI.Control;
-        isReadOnly: boolean;
+        isReadOnly?: boolean | undefined;
     }
     class SetControlIsVisibleDto {
         constructor(control?: BABYLON_3.GUI.Control, isVisible?: boolean);
         control: BABYLON_3.GUI.Control;
-        isVisible: boolean;
+        isVisible?: boolean | undefined;
     }
     class SetControlWidthDto {
         constructor(control?: BABYLON_3.GUI.Control, width?: number | string);
@@ -892,38 +1062,38 @@ namespace BabylonGui {
     }
     class SetInputTextBackgroundDto {
         constructor(inputText?: BABYLON_3.GUI.InputText, background?: string);
-        background: string;
+        background?: string | undefined;
         inputText: BABYLON_3.GUI.InputText;
     }
     class SetInputTextPlaceholderDto {
         constructor(inputText?: BABYLON_3.GUI.InputText, placeholder?: string);
         inputText: BABYLON_3.GUI.InputText;
-        placeholder: string;
+        placeholder?: string | undefined;
     }
     class SetInputTextTextDto {
         constructor(inputText?: BABYLON_3.GUI.InputText, text?: string);
         inputText: BABYLON_3.GUI.InputText;
-        text: string;
+        text?: string | undefined;
     }
     class SetRadioButtonBackgroundDto {
         constructor(radioButton?: BABYLON_3.GUI.RadioButton, background?: string);
-        background: string;
+        background?: string | undefined;
         radioButton: BABYLON_3.GUI.RadioButton;
     }
     class SetRadioButtonCheckSizeRatioDto {
         constructor(radioButton?: BABYLON_3.GUI.RadioButton, checkSizeRatio?: number);
-        checkSizeRatio: number;
+        checkSizeRatio?: number | undefined;
         radioButton: BABYLON_3.GUI.RadioButton;
     }
     class SetRadioButtonGroupDto {
         constructor(radioButton?: BABYLON_3.GUI.RadioButton, group?: string);
-        group: string;
+        group?: string | undefined;
         radioButton: BABYLON_3.GUI.RadioButton;
     }
     class SetSliderValueDto {
         constructor(slider?: BABYLON_3.GUI.Slider, value?: number);
         slider: BABYLON_3.GUI.Slider;
-        value: number;
+        value?: number | undefined;
     }
     class SetStackPanelHeightDto {
         constructor(stackPanel?: BABYLON_3.GUI.StackPanel, height?: number | string);
@@ -932,12 +1102,12 @@ namespace BabylonGui {
     }
     class SetStackPanelIsVerticalDto {
         constructor(stackPanel?: BABYLON_3.GUI.StackPanel, isVertical?: boolean);
-        isVertical: boolean;
+        isVertical?: boolean | undefined;
         stackPanel: BABYLON_3.GUI.StackPanel;
     }
     class SetStackPanelSpacingDto {
         constructor(stackPanel?: BABYLON_3.GUI.StackPanel, spacing?: number);
-        spacing: number;
+        spacing?: number | undefined;
         stackPanel: BABYLON_3.GUI.StackPanel;
     }
     class SetStackPanelWidthDto {
@@ -952,7 +1122,7 @@ namespace BabylonGui {
     }
     class SetTextBlockResizeToFitDto {
         constructor(textBlock?: BABYLON_3.GUI.TextBlock, resizeToFit?: boolean);
-        resizeToFit: boolean;
+        resizeToFit?: boolean | undefined;
         textBlock: BABYLON_3.GUI.TextBlock;
     }
     class SetTextBlockTextDto {
@@ -962,8 +1132,8 @@ namespace BabylonGui {
     }
     class SetTextBlockTextOutlineDto {
         constructor(textBlock?: BABYLON_3.GUI.TextBlock, outlineWidth?: number, outlineColor?: string);
-        outlineColor: string;
-        outlineWidth: number;
+        outlineColor?: string | undefined;
+        outlineWidth?: number | undefined;
         textBlock: BABYLON_3.GUI.TextBlock;
     }
     class SetTextBlockTextWrappingDto {
@@ -973,12 +1143,12 @@ namespace BabylonGui {
     }
     class SliderBackgroundColorDto {
         constructor(slider?: BABYLON_3.GUI.Slider, backgroundColor?: string);
-        backgroundColor: string;
+        backgroundColor?: string | undefined;
         slider: BABYLON_3.GUI.Slider;
     }
     class SliderBorderColorDto {
         constructor(slider?: BABYLON_3.GUI.Slider, borderColor?: string);
-        borderColor: string;
+        borderColor?: string | undefined;
         slider: BABYLON_3.GUI.Slider;
     }
     class SliderDto {
@@ -987,7 +1157,7 @@ namespace BabylonGui {
     }
     class SliderObservableSelectorDto {
         constructor(selector?: sliderObservableSelectorEnum);
-        selector: sliderObservableSelectorEnum;
+        selector?: sliderObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum sliderObservableSelectorEnum {
@@ -995,11 +1165,11 @@ namespace BabylonGui {
     }
     class SliderThumbDto {
         constructor(slider?: BABYLON_3.GUI.Slider, isThumbCircle?: boolean, thumbColor?: string, thumbWidth?: string | number, isThumbClamped?: boolean, displayThumb?: boolean);
-        displayThumb: boolean;
-        isThumbCircle: boolean;
-        isThumbClamped: boolean;
+        displayThumb?: boolean | undefined;
+        isThumbCircle?: boolean | undefined;
+        isThumbClamped?: boolean | undefined;
         slider: BABYLON_3.GUI.Slider;
-        thumbColor: string;
+        thumbColor?: string | undefined;
         thumbWidth?: string | number | undefined;
     }
     class StackPanelDto {
@@ -1012,7 +1182,7 @@ namespace BabylonGui {
     }
     class TextBlockObservableSelectorDto {
         constructor(selector?: textBlockObservableSelectorEnum);
-        selector: textBlockObservableSelectorEnum;
+        selector?: textBlockObservableSelectorEnum | undefined;
     }
     // (undocumented)
     enum textBlockObservableSelectorEnum {
@@ -1026,6 +1196,148 @@ namespace BabylonGui {
         // (undocumented)
         top = "top"
     }
+}
+
+// @public
+namespace BabylonGui_2 {
+    // (undocumented)
+    type AddControlsToContainerDto = WithDefaults<Inputs_2.BabylonGui.AddControlsToContainerDto, "clearControlsFirst">;
+    // (undocumented)
+    type AlignmentDto<T> = WithDefaults<Inputs_2.BabylonGui.AlignmentDto<T>, "horizontalAlignment" | "verticalAlignment">;
+    // (undocumented)
+    type ButtonDto = Inputs_2.BabylonGui.ButtonDto;
+    // (undocumented)
+    type CheckboxDto = Inputs_2.BabylonGui.CheckboxDto;
+    // (undocumented)
+    type CheckboxObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.CheckboxObservableSelectorDto, "selector">;
+    // (undocumented)
+    type CloneControlDto = WithDefaults<Inputs_2.BabylonGui.CloneControlDto, "name">;
+    // (undocumented)
+    type ColorPickerDto = Inputs_2.BabylonGui.ColorPickerDto;
+    // (undocumented)
+    type ColorPickerObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.ColorPickerObservableSelectorDto, "selector">;
+    // (undocumented)
+    type ContainerDto = Inputs_2.BabylonGui.ContainerDto;
+    // (undocumented)
+    type ControlDto = Inputs_2.BabylonGui.ControlDto;
+    // (undocumented)
+    type ControlObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.ControlObservableSelectorDto, "selector">;
+    // (undocumented)
+    type CreateButtonDto = WithDefaults<Inputs_2.BabylonGui.CreateButtonDto, "name" | "label" | "color" | "background" | "fontSize">;
+    // (undocumented)
+    type CreateCheckboxDto = WithDefaults<Inputs_2.BabylonGui.CreateCheckboxDto, "name" | "isChecked" | "checkSizeRatio" | "color" | "background">;
+    // (undocumented)
+    type CreateColorPickerDto = WithDefaults<Inputs_2.BabylonGui.CreateColorPickerDto, "name" | "defaultColor" | "color">;
+    // (undocumented)
+    type CreateForMeshDto = WithDefaults<Inputs_2.BabylonGui.CreateForMeshDto, "supportPointerMove" | "onlyAlphaTesting" | "invertY" | "sampling">;
+    // (undocumented)
+    type CreateFullScreenUIDto = WithDefaults<Inputs_2.BabylonGui.CreateFullScreenUIDto, "name" | "foreground" | "adaptiveScaling">;
+    // (undocumented)
+    type CreateImageDto = WithDefaults<Inputs_2.BabylonGui.CreateImageDto, "name" | "color">;
+    // (undocumented)
+    type CreateInputTextDto = WithDefaults<Inputs_2.BabylonGui.CreateInputTextDto, "name" | "text" | "placeholder" | "color" | "background">;
+    // (undocumented)
+    type CreateRadioButtonDto = WithDefaults<Inputs_2.BabylonGui.CreateRadioButtonDto, "name" | "isChecked" | "checkSizeRatio" | "color" | "background">;
+    // (undocumented)
+    type CreateSliderDto = WithDefaults<Inputs_2.BabylonGui.CreateSliderDto, "name" | "minimum" | "maximum" | "value" | "step" | "isVertical" | "color" | "background" | "displayThumb">;
+    // (undocumented)
+    type CreateStackPanelDto = WithDefaults<Inputs_2.BabylonGui.CreateStackPanelDto, "name" | "isVertical" | "spacing" | "color" | "background">;
+    // (undocumented)
+    type CreateTextBlockDto = WithDefaults<Inputs_2.BabylonGui.CreateTextBlockDto, "name" | "text" | "color" | "fontSize">;
+    // (undocumented)
+    type GetControlByNameDto = WithDefaults<Inputs_2.BabylonGui.GetControlByNameDto, "name">;
+    // (undocumented)
+    type ImageDto = Inputs_2.BabylonGui.ImageDto;
+    // (undocumented)
+    type InputTextDto = Inputs_2.BabylonGui.InputTextDto;
+    // (undocumented)
+    type InputTextObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.InputTextObservableSelectorDto, "selector">;
+    // (undocumented)
+    type PaddingLeftRightTopBottomDto = Inputs_2.BabylonGui.PaddingLeftRightTopBottomDto;
+    // (undocumented)
+    type RadioButtonDto = Inputs_2.BabylonGui.RadioButtonDto;
+    // (undocumented)
+    type RadioButtonObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.RadioButtonObservableSelectorDto, "selector">;
+    // (undocumented)
+    type SetButtonTextDto = WithDefaults<Inputs_2.BabylonGui.SetButtonTextDto, "text">;
+    // (undocumented)
+    type SetCheckboxBackgroundDto = WithDefaults<Inputs_2.BabylonGui.SetCheckboxBackgroundDto, "background">;
+    // (undocumented)
+    type SetCheckboxCheckSizeRatioDto = WithDefaults<Inputs_2.BabylonGui.SetCheckboxCheckSizeRatioDto, "checkSizeRatio">;
+    // (undocumented)
+    type SetCheckboxIsCheckedDto = WithDefaults<Inputs_2.BabylonGui.SetCheckboxIsCheckedDto, "isChecked">;
+    // (undocumented)
+    type SetColorPickerSizeDto = WithDefaults<Inputs_2.BabylonGui.SetColorPickerSizeDto, "size">;
+    // (undocumented)
+    type SetColorPickerValueDto = Inputs_2.BabylonGui.SetColorPickerValueDto;
+    // (undocumented)
+    type SetContainerBackgroundDto = WithDefaults<Inputs_2.BabylonGui.SetContainerBackgroundDto, "background">;
+    // (undocumented)
+    type SetContainerIsReadonlyDto = WithDefaults<Inputs_2.BabylonGui.SetContainerIsReadonlyDto, "isReadOnly">;
+    // (undocumented)
+    type SetControlColorDto = WithDefaults<Inputs_2.BabylonGui.SetControlColorDto, "color">;
+    // (undocumented)
+    type SetControlFontSizeDto = WithDefaults<Inputs_2.BabylonGui.SetControlFontSizeDto, "fontSize">;
+    // (undocumented)
+    type SetControlHeightDto = Inputs_2.BabylonGui.SetControlHeightDto;
+    // (undocumented)
+    type SetControlIsEnabledDto = WithDefaults<Inputs_2.BabylonGui.SetControlIsEnabledDto, "isEnabled">;
+    // (undocumented)
+    type SetControlIsReadonlyDto = WithDefaults<Inputs_2.BabylonGui.SetControlIsReadonlyDto, "isReadOnly">;
+    // (undocumented)
+    type SetControlIsVisibleDto = WithDefaults<Inputs_2.BabylonGui.SetControlIsVisibleDto, "isVisible">;
+    // (undocumented)
+    type SetControlWidthDto = Inputs_2.BabylonGui.SetControlWidthDto;
+    // (undocumented)
+    type SetImageUrlDto = Inputs_2.BabylonGui.SetImageUrlDto;
+    // (undocumented)
+    type SetInputTextBackgroundDto = WithDefaults<Inputs_2.BabylonGui.SetInputTextBackgroundDto, "background">;
+    // (undocumented)
+    type SetInputTextPlaceholderDto = WithDefaults<Inputs_2.BabylonGui.SetInputTextPlaceholderDto, "placeholder">;
+    // (undocumented)
+    type SetInputTextTextDto = WithDefaults<Inputs_2.BabylonGui.SetInputTextTextDto, "text">;
+    // (undocumented)
+    type SetRadioButtonBackgroundDto = WithDefaults<Inputs_2.BabylonGui.SetRadioButtonBackgroundDto, "background">;
+    // (undocumented)
+    type SetRadioButtonCheckSizeRatioDto = WithDefaults<Inputs_2.BabylonGui.SetRadioButtonCheckSizeRatioDto, "checkSizeRatio">;
+    // (undocumented)
+    type SetRadioButtonGroupDto = WithDefaults<Inputs_2.BabylonGui.SetRadioButtonGroupDto, "group">;
+    // (undocumented)
+    type SetSliderValueDto = WithDefaults<Inputs_2.BabylonGui.SetSliderValueDto, "value">;
+    // (undocumented)
+    type SetStackPanelHeightDto = Inputs_2.BabylonGui.SetStackPanelHeightDto;
+    // (undocumented)
+    type SetStackPanelIsVerticalDto = WithDefaults<Inputs_2.BabylonGui.SetStackPanelIsVerticalDto, "isVertical">;
+    // (undocumented)
+    type SetStackPanelSpacingDto = WithDefaults<Inputs_2.BabylonGui.SetStackPanelSpacingDto, "spacing">;
+    // (undocumented)
+    type SetStackPanelWidthDto = Inputs_2.BabylonGui.SetStackPanelWidthDto;
+    // (undocumented)
+    type SetTextBlockLineSpacingDto = Inputs_2.BabylonGui.SetTextBlockLineSpacingDto;
+    // (undocumented)
+    type SetTextBlockResizeToFitDto = WithDefaults<Inputs_2.BabylonGui.SetTextBlockResizeToFitDto, "resizeToFit">;
+    // (undocumented)
+    type SetTextBlockTextDto = Inputs_2.BabylonGui.SetTextBlockTextDto;
+    // (undocumented)
+    type SetTextBlockTextOutlineDto = WithDefaults<Inputs_2.BabylonGui.SetTextBlockTextOutlineDto, "outlineWidth" | "outlineColor">;
+    // (undocumented)
+    type SetTextBlockTextWrappingDto = Inputs_2.BabylonGui.SetTextBlockTextWrappingDto;
+    // (undocumented)
+    type SliderBackgroundColorDto = WithDefaults<Inputs_2.BabylonGui.SliderBackgroundColorDto, "backgroundColor">;
+    // (undocumented)
+    type SliderBorderColorDto = WithDefaults<Inputs_2.BabylonGui.SliderBorderColorDto, "borderColor">;
+    // (undocumented)
+    type SliderDto = Inputs_2.BabylonGui.SliderDto;
+    // (undocumented)
+    type SliderObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.SliderObservableSelectorDto, "selector">;
+    // (undocumented)
+    type SliderThumbDto = WithDefaults<Inputs_2.BabylonGui.SliderThumbDto, "isThumbCircle" | "thumbColor" | "isThumbClamped" | "displayThumb">;
+    // (undocumented)
+    type StackPanelDto = Inputs_2.BabylonGui.StackPanelDto;
+    // (undocumented)
+    type TextBlockDto = Inputs_2.BabylonGui.TextBlockDto;
+    // (undocumented)
+    type TextBlockObservableSelectorDto = WithDefaults<Inputs_2.BabylonGui.TextBlockObservableSelectorDto, "selector">;
 }
 
 // @public
@@ -1048,17 +1360,17 @@ export class BabylonIO {
 namespace BabylonIO_2 {
     class ExportMeshesToStlDto {
         constructor(meshes?: BABYLON_2.Mesh[], fileName?: string);
-        fileName: string;
+        fileName?: string | undefined;
         meshes: BABYLON_2.Mesh[];
     }
     class ExportMeshToStlDto {
         constructor(mesh?: BABYLON_2.Mesh, fileName?: string);
-        fileName: string;
+        fileName?: string | undefined;
         mesh: BABYLON_2.Mesh;
     }
     class ExportSceneDto {
         constructor(fileName?: string);
-        fileName: string;
+        fileName?: string | undefined;
     }
     class ExportSceneGlbBytesDto {
         constructor(nodes?: BABYLON_2.Node[], discardSkyboxAndGrid?: boolean, compressWithDraco?: boolean);
@@ -1069,8 +1381,22 @@ namespace BabylonIO_2 {
     class ExportSceneGlbDto {
         constructor(fileName?: string, discardSkyboxAndGrid?: boolean);
         discardSkyboxAndGrid?: boolean | undefined;
-        fileName: string;
+        fileName?: string | undefined;
     }
+}
+
+// @public
+namespace BabylonIO_3 {
+    // (undocumented)
+    type ExportMeshesToStlDto = WithDefaults<Inputs_2.BabylonIO.ExportMeshesToStlDto, "fileName">;
+    // (undocumented)
+    type ExportMeshToStlDto = WithDefaults<Inputs_2.BabylonIO.ExportMeshToStlDto, "fileName">;
+    // (undocumented)
+    type ExportSceneDto = WithDefaults<Inputs_2.BabylonIO.ExportSceneDto, "fileName">;
+    // (undocumented)
+    type ExportSceneGlbBytesDto = WithDefaults<Inputs_2.BabylonIO.ExportSceneGlbBytesDto, "discardSkyboxAndGrid" | "compressWithDraco">;
+    // (undocumented)
+    type ExportSceneGlbDto = WithDefaults<Inputs_2.BabylonIO.ExportSceneGlbDto, "fileName" | "discardSkyboxAndGrid">;
 }
 
 // @public
@@ -1078,23 +1404,29 @@ namespace BabylonJSScene {
     class InitBabylonJSDto {
         constructor(canvasId?: string, sceneSize?: number, backgroundColor?: string, enableShadows?: boolean, enableGround?: boolean, groundCenter?: Base_3.Point3, groundScaleFactor?: number, groundColor?: string, groundOpacity?: number, hemisphereLightSkyColor?: string, hemisphereLightGroundColor?: string, hemisphereLightIntensity?: number, directionalLightColor?: string, directionalLightIntensity?: number, shadowMapSize?: number);
         arcRotateCameraOptions?: BabylonCamera_2.ArcRotateCameraDto | undefined;
-        backgroundColor: string;
+        backgroundColor?: string | undefined;
         canvasId?: string | undefined;
-        directionalLightColor: string;
-        directionalLightIntensity: number;
-        enableArcRotateCamera: boolean;
-        enableGround: boolean;
-        enableShadows: boolean;
-        groundCenter: Base_3.Point3;
-        groundColor: string;
-        groundOpacity: number;
-        groundScaleFactor: number;
-        hemisphereLightGroundColor: string;
-        hemisphereLightIntensity: number;
-        hemisphereLightSkyColor: string;
-        sceneSize: number;
-        shadowMapSize: number;
+        directionalLightColor?: string | undefined;
+        directionalLightIntensity?: number | undefined;
+        enableArcRotateCamera?: boolean | undefined;
+        enableGround?: boolean | undefined;
+        enableShadows?: boolean | undefined;
+        groundCenter?: Base_3.Point3 | undefined;
+        groundColor?: string | undefined;
+        groundOpacity?: number | undefined;
+        groundScaleFactor?: number | undefined;
+        hemisphereLightGroundColor?: string | undefined;
+        hemisphereLightIntensity?: number | undefined;
+        hemisphereLightSkyColor?: string | undefined;
+        sceneSize?: number | undefined;
+        shadowMapSize?: number | undefined;
     }
+}
+
+// @public
+namespace BabylonJSScene_2 {
+    // (undocumented)
+    type InitBabylonJSDto = WithDefaults<Inputs_2.BabylonJSScene.InitBabylonJSDto, "sceneSize" | "backgroundColor" | "enableShadows" | "enableGround" | "groundCenter" | "groundScaleFactor" | "groundColor" | "groundOpacity" | "hemisphereLightSkyColor" | "hemisphereLightGroundColor" | "hemisphereLightIntensity" | "directionalLightColor" | "directionalLightIntensity" | "shadowMapSize" | "enableArcRotateCamera">;
 }
 
 // @public
@@ -1112,8 +1444,16 @@ namespace BabylonLight {
 }
 
 // @public
+namespace BabylonLight_2 {
+    // (undocumented)
+    type ShadowLightDirectionToTargetDto = Inputs_2.BabylonLight.ShadowLightDirectionToTargetDto;
+    // (undocumented)
+    type ShadowLightPositionDto = Inputs_2.BabylonLight.ShadowLightPositionDto;
+}
+
+// @public
 export class BabylonMaterial {
-    constructor(context: Context, color: Color_2);
+    constructor(context: Context, color: Color_3);
     // Warning: (ae-forgotten-export) The symbol "BabylonMaterialPbrMetallicRoughness" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -1197,14 +1537,14 @@ namespace BabylonMaterial_2 {
     }
     class PBRMetallicRoughnessDto {
         constructor(name?: string, baseColor?: Base_3.Color, emissiveColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, backFaceCulling?: boolean, zOffset?: number);
-        alpha: number;
-        backFaceCulling: boolean;
-        baseColor: Base_3.Color;
+        alpha?: number | undefined;
+        backFaceCulling?: boolean | undefined;
+        baseColor?: Base_3.Color | undefined;
         emissiveColor?: Base_3.Color | undefined;
-        metallic: number;
-        name: string;
-        roughness: number;
-        zOffset: number;
+        metallic?: number | undefined;
+        name?: string | undefined;
+        roughness?: number | undefined;
+        zOffset?: number | undefined;
     }
     class RayleighDto {
         constructor(material?: MATERIALS.SkyMaterial, rayleigh?: number);
@@ -1218,19 +1558,19 @@ namespace BabylonMaterial_2 {
     }
     class SkyMaterialDto {
         constructor(luminance?: number, turbidity?: number, rayleigh?: number, mieCoefficient?: number, mieDirectionalG?: number, distance?: number, inclination?: number, azimuth?: number, sunPosition?: Base_3.Vector3, useSunPosition?: boolean, cameraOffset?: Base_3.Vector3, up?: Base_3.Vector3, dithering?: boolean);
-        azimuth: number;
+        azimuth?: number | undefined;
         cameraOffset?: Base_3.Vector3 | undefined;
-        distance: number;
-        dithering: boolean;
-        inclination: number;
-        luminance: number;
-        mieCoefficient: number;
-        mieDirectionalG: number;
-        rayleigh: number;
+        distance?: number | undefined;
+        dithering?: boolean | undefined;
+        inclination?: number | undefined;
+        luminance?: number | undefined;
+        mieCoefficient?: number | undefined;
+        mieDirectionalG?: number | undefined;
+        rayleigh?: number | undefined;
         sunPosition?: Base_3.Vector3 | undefined;
-        turbidity: number;
-        up: number[];
-        useSunPosition: boolean;
+        turbidity?: number | undefined;
+        up?: number[] | undefined;
+        useSunPosition?: boolean | undefined;
     }
     class SkyMaterialPropDto {
         constructor(skyMaterial?: MATERIALS.SkyMaterial);
@@ -1256,6 +1596,56 @@ namespace BabylonMaterial_2 {
         material: MATERIALS.SkyMaterial;
         useSunPosition?: boolean | undefined;
     }
+}
+
+// @public
+namespace BabylonMaterial_3 {
+    // (undocumented)
+    type AlphaDto = WithDefaults<Inputs_2.BabylonMaterial.AlphaDto, "alpha">;
+    // (undocumented)
+    type AzimuthDto = WithDefaults<Inputs_2.BabylonMaterial.AzimuthDto, "azimuth">;
+    // (undocumented)
+    type BackFaceCullingDto = WithDefaults<Inputs_2.BabylonMaterial.BackFaceCullingDto, "backFaceCulling">;
+    // (undocumented)
+    type BaseColorDto = WithDefaults<Inputs_2.BabylonMaterial.BaseColorDto, "baseColor">;
+    // (undocumented)
+    type BaseTextureDto = Inputs_2.BabylonMaterial.BaseTextureDto;
+    // (undocumented)
+    type CameraOffsetDto = Inputs_2.BabylonMaterial.CameraOffsetDto;
+    // (undocumented)
+    type DistanceDto = WithDefaults<Inputs_2.BabylonMaterial.DistanceDto, "distance">;
+    // (undocumented)
+    type DitheringDto = WithDefaults<Inputs_2.BabylonMaterial.DitheringDto, "dithering">;
+    // (undocumented)
+    type InclinationDto = WithDefaults<Inputs_2.BabylonMaterial.InclinationDto, "inclination">;
+    // (undocumented)
+    type LuminanceDto = WithDefaults<Inputs_2.BabylonMaterial.LuminanceDto, "luminance">;
+    // (undocumented)
+    type MaterialPropDto = Inputs_2.BabylonMaterial.MaterialPropDto;
+    // (undocumented)
+    type MetallicDto = WithDefaults<Inputs_2.BabylonMaterial.MetallicDto, "metallic">;
+    // (undocumented)
+    type MieCoefficientDto = WithDefaults<Inputs_2.BabylonMaterial.MieCoefficientDto, "mieCoefficient">;
+    // (undocumented)
+    type MieDirectionalGDto = WithDefaults<Inputs_2.BabylonMaterial.MieDirectionalGDto, "mieDirectionalG">;
+    // (undocumented)
+    type PBRMetallicRoughnessDto = WithDefaults<Inputs_2.BabylonMaterial.PBRMetallicRoughnessDto, "name" | "baseColor" | "emissiveColor" | "metallic" | "roughness" | "alpha" | "backFaceCulling" | "zOffset">;
+    // (undocumented)
+    type RayleighDto = WithDefaults<Inputs_2.BabylonMaterial.RayleighDto, "rayleigh">;
+    // (undocumented)
+    type RoughnessDto = WithDefaults<Inputs_2.BabylonMaterial.RoughnessDto, "roughness">;
+    // (undocumented)
+    type SkyMaterialDto = WithDefaults<Inputs_2.BabylonMaterial.SkyMaterialDto, "luminance" | "turbidity" | "rayleigh" | "mieCoefficient" | "mieDirectionalG" | "distance" | "inclination" | "azimuth" | "useSunPosition" | "up" | "dithering">;
+    // (undocumented)
+    type SkyMaterialPropDto = Inputs_2.BabylonMaterial.SkyMaterialPropDto;
+    // (undocumented)
+    type SunPositionDto = Inputs_2.BabylonMaterial.SunPositionDto;
+    // (undocumented)
+    type TurbidityDto = WithDefaults<Inputs_2.BabylonMaterial.TurbidityDto, "turbidity">;
+    // (undocumented)
+    type UpDto = Inputs_2.BabylonMaterial.UpDto;
+    // (undocumented)
+    type UseSunPositionDto = WithDefaults<Inputs_2.BabylonMaterial.UseSunPositionDto, "useSunPosition">;
 }
 
 // @public
@@ -1326,7 +1716,7 @@ namespace BabylonMesh_2 {
     class BabylonMeshWithChildrenDto {
         constructor(babylonMesh?: BABYLON_2.Mesh);
         babylonMesh: BABYLON_2.Mesh;
-        includeChildren: boolean;
+        includeChildren?: boolean | undefined;
     }
     class ByIdBabylonMeshDto {
         constructor(id?: string);
@@ -1339,13 +1729,13 @@ namespace BabylonMesh_2 {
     class CheckCollisionsBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, checkCollisions?: boolean, includeChildren?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        checkCollisions: boolean;
-        includeChildren: boolean;
+        checkCollisions?: boolean | undefined;
+        includeChildren?: boolean | undefined;
     }
     class ChildMeshesBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, directDescendantsOnly?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        directDescendantsOnly: boolean;
+        directDescendantsOnly?: boolean | undefined;
     }
     class CloneBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh);
@@ -1354,7 +1744,7 @@ namespace BabylonMesh_2 {
     class CloneToPositionsDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, positions?: Base_3.Point3[]);
         babylonMesh: BABYLON_2.Mesh;
-        positions: Base_3.Point3[];
+        positions?: Base_3.Point3[] | undefined;
     }
     class IdBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, id?: string);
@@ -1365,8 +1755,8 @@ namespace BabylonMesh_2 {
         constructor(babylonMesh?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh, babylonMesh2?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh, precise?: boolean, includeDescendants?: boolean);
         babylonMesh: BABYLON_2.Mesh | BABYLON_2.InstancedMesh;
         babylonMesh2: BABYLON_2.Mesh | BABYLON_2.InstancedMesh;
-        includeDescendants: boolean;
-        precise: boolean;
+        includeDescendants?: boolean | undefined;
+        precise?: boolean | undefined;
     }
     class IntersectsPointDto {
         constructor(babylonMesh?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh, point?: Base_3.Point3);
@@ -1376,17 +1766,17 @@ namespace BabylonMesh_2 {
     class MaterialBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, material?: BABYLON_2.Material, includeChildren?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        includeChildren: boolean;
+        includeChildren?: boolean | undefined;
         material: BABYLON_2.Material;
     }
     class MergeMeshesDto {
         constructor(arrayOfMeshes?: BABYLON_2.Mesh[], disposeSource?: boolean, allow32BitsIndices?: boolean, meshSubclass?: BABYLON_2.Mesh, subdivideWithSubMeshes?: boolean, multiMultiMaterials?: boolean);
-        allow32BitsIndices: boolean;
+        allow32BitsIndices?: boolean | undefined;
         arrayOfMeshes: BABYLON_2.Mesh[];
-        disposeSource: boolean;
+        disposeSource?: boolean | undefined;
         meshSubclass?: BABYLON_2.Mesh | undefined;
-        multiMultiMaterials: boolean;
-        subdivideWithSubMeshes: boolean;
+        multiMultiMaterials?: boolean | undefined;
+        subdivideWithSubMeshes?: boolean | undefined;
     }
     class MeshInstanceAndTransformDto {
         constructor(mesh?: BABYLON_2.Mesh, position?: Base_3.Point3, rotation?: Base_3.Vector3, scaling?: Base_3.Vector3);
@@ -1408,31 +1798,31 @@ namespace BabylonMesh_2 {
     class PickableBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, pickable?: boolean, includeChildren?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        includeChildren: boolean;
-        pickable: boolean;
+        includeChildren?: boolean | undefined;
+        pickable?: boolean | undefined;
     }
     class RotateAroundAxisNodeDto {
         constructor(mesh?: BABYLON_2.Mesh, position?: Base_3.Point3, axis?: Base_3.Vector3, angle?: number);
-        angle: number;
-        axis: Base_3.Vector3;
+        angle?: number | undefined;
+        axis?: Base_3.Vector3 | undefined;
         mesh: BABYLON_2.Mesh;
-        position: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
     }
     class RotateBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, rotate?: number);
         babylonMesh: BABYLON_2.Mesh;
-        rotate: number;
+        rotate?: number | undefined;
     }
     class ScaleInPlaceDto {
         constructor(babylonMesh?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh, scale?: number);
         babylonMesh: BABYLON_2.Mesh | BABYLON_2.InstancedMesh;
-        scale: number;
+        scale?: number | undefined;
     }
     class SetMeshVisibilityDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, visibility?: number, includeChildren?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        includeChildren: boolean;
-        visibility: number;
+        includeChildren?: boolean | undefined;
+        visibility?: number | undefined;
     }
     class SetParentDto {
         constructor(babylonMesh?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh | BABYLON_2.AbstractMesh, parentMesh?: BABYLON_2.Mesh | BABYLON_2.InstancedMesh | BABYLON_2.AbstractMesh);
@@ -1442,7 +1832,7 @@ namespace BabylonMesh_2 {
     class ShowHideMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, includeChildren?: boolean);
         babylonMesh: BABYLON_2.Mesh;
-        includeChildren: boolean;
+        includeChildren?: boolean | undefined;
     }
     enum sideOrientationEnum {
         // (undocumented)
@@ -1455,11 +1845,11 @@ namespace BabylonMesh_2 {
     class TranslateBabylonMeshDto {
         constructor(babylonMesh?: BABYLON_2.Mesh, distance?: number);
         babylonMesh: BABYLON_2.Mesh;
-        distance: number;
+        distance?: number | undefined;
     }
     class UniqueIdBabylonMeshDto {
         constructor(uniqueId?: number);
-        uniqueId: number;
+        uniqueId?: number | undefined;
     }
     class UpdateDrawnBabylonMesh {
         constructor(babylonMesh?: BABYLON_2.Mesh, position?: Base_3.Point3, rotation?: Base_3.Vector3, scaling?: Base_3.Vector3, colours?: string | string[]);
@@ -1487,210 +1877,318 @@ namespace BabylonMesh_2 {
 }
 
 // @public
+namespace BabylonMesh_3 {
+    // (undocumented)
+    type BabylonMeshDto = Inputs_2.BabylonMesh.BabylonMeshDto;
+    // (undocumented)
+    type BabylonMeshWithChildrenDto = WithDefaults<Inputs_2.BabylonMesh.BabylonMeshWithChildrenDto, "includeChildren">;
+    // (undocumented)
+    type ByIdBabylonMeshDto = Inputs_2.BabylonMesh.ByIdBabylonMeshDto;
+    // (undocumented)
+    type ByNameBabylonMeshDto = Inputs_2.BabylonMesh.ByNameBabylonMeshDto;
+    // (undocumented)
+    type CheckCollisionsBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.CheckCollisionsBabylonMeshDto, "checkCollisions" | "includeChildren">;
+    // (undocumented)
+    type ChildMeshesBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.ChildMeshesBabylonMeshDto, "directDescendantsOnly">;
+    // (undocumented)
+    type CloneBabylonMeshDto = Inputs_2.BabylonMesh.CloneBabylonMeshDto;
+    // (undocumented)
+    type CloneToPositionsDto = WithDefaults<Inputs_2.BabylonMesh.CloneToPositionsDto, "positions">;
+    // (undocumented)
+    type IdBabylonMeshDto = Inputs_2.BabylonMesh.IdBabylonMeshDto;
+    // (undocumented)
+    type IntersectsMeshDto = WithDefaults<Inputs_2.BabylonMesh.IntersectsMeshDto, "precise" | "includeDescendants">;
+    // (undocumented)
+    type IntersectsPointDto = Inputs_2.BabylonMesh.IntersectsPointDto;
+    // (undocumented)
+    type MaterialBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.MaterialBabylonMeshDto, "includeChildren">;
+    // (undocumented)
+    type MergeMeshesDto = WithDefaults<Inputs_2.BabylonMesh.MergeMeshesDto, "disposeSource" | "allow32BitsIndices" | "subdivideWithSubMeshes" | "multiMultiMaterials">;
+    // (undocumented)
+    type MeshInstanceAndTransformDto = Inputs_2.BabylonMesh.MeshInstanceAndTransformDto;
+    // (undocumented)
+    type MeshInstanceDto = Inputs_2.BabylonMesh.MeshInstanceDto;
+    // (undocumented)
+    type NameBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.NameBabylonMeshDto, "includeChildren">;
+    // (undocumented)
+    type PickableBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.PickableBabylonMeshDto, "pickable" | "includeChildren">;
+    // (undocumented)
+    type RotateAroundAxisNodeDto = WithDefaults<Inputs_2.BabylonMesh.RotateAroundAxisNodeDto, "position" | "axis" | "angle">;
+    // (undocumented)
+    type RotateBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.RotateBabylonMeshDto, "rotate">;
+    // (undocumented)
+    type ScaleInPlaceDto = WithDefaults<Inputs_2.BabylonMesh.ScaleInPlaceDto, "scale">;
+    // (undocumented)
+    type SetMeshVisibilityDto = WithDefaults<Inputs_2.BabylonMesh.SetMeshVisibilityDto, "visibility" | "includeChildren">;
+    // (undocumented)
+    type SetParentDto = Inputs_2.BabylonMesh.SetParentDto;
+    // (undocumented)
+    type ShowHideMeshDto = WithDefaults<Inputs_2.BabylonMesh.ShowHideMeshDto, "includeChildren">;
+    // (undocumented)
+    type TranslateBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.TranslateBabylonMeshDto, "distance">;
+    // (undocumented)
+    type UniqueIdBabylonMeshDto = WithDefaults<Inputs_2.BabylonMesh.UniqueIdBabylonMeshDto, "uniqueId">;
+    // (undocumented)
+    type UpdateDrawnBabylonMesh = Inputs_2.BabylonMesh.UpdateDrawnBabylonMesh;
+    // (undocumented)
+    type UpdateDrawnBabylonMeshPositionDto = Inputs_2.BabylonMesh.UpdateDrawnBabylonMeshPositionDto;
+    // (undocumented)
+    type UpdateDrawnBabylonMeshRotationDto = Inputs_2.BabylonMesh.UpdateDrawnBabylonMeshRotationDto;
+    // (undocumented)
+    type UpdateDrawnBabylonMeshScaleDto = Inputs_2.BabylonMesh.UpdateDrawnBabylonMeshScaleDto;
+}
+
+// @public
 namespace BabylonMeshBuilder {
     class CreateBoxDto {
         constructor(width?: number, depth?: number, height?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        depth: number;
-        enableShadows: boolean;
-        height: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        width: number;
+        depth?: number | undefined;
+        enableShadows?: boolean | undefined;
+        height?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        width?: number | undefined;
     }
     class CreateCapsuleDto {
         constructor(orientation?: Base_3.Vector3, subdivisions?: number, tessellation?: number, height?: number, radius?: number, capSubdivisions?: number, radiusTop?: number, radiusBottom?: number, topCapSubdivisions?: number, bottomCapSubdivisions?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        bottomCapSubdivisions: number;
-        capSubdivisions: number;
-        enableShadows: boolean;
-        height: number;
+        bottomCapSubdivisions?: number | undefined;
+        capSubdivisions?: number | undefined;
+        enableShadows?: boolean | undefined;
+        height?: number | undefined;
         orientation: Base_3.Vector3;
-        radius: number;
-        radiusBottom: number;
-        radiusTop: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        subdivisions: number;
-        tessellation: number;
-        topCapSubdivisions: number;
+        radius?: number | undefined;
+        radiusBottom?: number | undefined;
+        radiusTop?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        subdivisions?: number | undefined;
+        tessellation?: number | undefined;
+        topCapSubdivisions?: number | undefined;
     }
     class CreateCubeDto {
         constructor(size?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        size: number;
+        enableShadows?: boolean | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        size?: number | undefined;
     }
     class CreateCylinderDto {
         constructor(height?: number, diameterTop?: number, diameterBottom?: number, tessellation?: number, subdivisions?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        diameterBottom: number;
-        diameterTop: number;
-        enableShadows: boolean;
-        height: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        subdivisions: number;
-        tessellation: number;
+        diameterBottom?: number | undefined;
+        diameterTop?: number | undefined;
+        enableShadows?: boolean | undefined;
+        height?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        subdivisions?: number | undefined;
+        tessellation?: number | undefined;
     }
     class CreateDiscDto {
         constructor(radius?: number, tessellation?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        arc: number;
-        enableShadows: boolean;
-        radius: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        tessellation: number;
+        arc?: number | undefined;
+        enableShadows?: boolean | undefined;
+        radius?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        tessellation?: number | undefined;
     }
     class CreateExtrudedShapeDto {
         constructor(shape?: Base_3.Vector3[], path?: Base_3.Vector3[], scale?: number, rotation?: number, cap?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        cap: number;
-        closePath: boolean;
-        closeShape: boolean;
-        enableShadows: boolean;
+        cap?: number | undefined;
+        closePath?: boolean | undefined;
+        closeShape?: boolean | undefined;
+        enableShadows?: boolean | undefined;
         path: Base_3.Vector3[];
-        rotation: number;
-        scale: number;
+        rotation?: number | undefined;
+        scale?: number | undefined;
         shape: Base_3.Vector3[];
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
     }
     class CreateGeodesicDto {
         constructor(m?: number, n?: number, size?: number, sizeX?: number, sizeY?: number, sizeZ?: number, flat?: boolean, subdivisions?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        flat: boolean;
-        m: number;
-        n: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        size: number;
-        sizeX: number;
-        sizeY: number;
-        sizeZ: number;
-        subdivisions: number;
+        enableShadows?: boolean | undefined;
+        flat?: boolean | undefined;
+        m?: number | undefined;
+        n?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        size?: number | undefined;
+        sizeX?: number | undefined;
+        sizeY?: number | undefined;
+        sizeZ?: number | undefined;
+        subdivisions?: number | undefined;
     }
     class CreateGoldbergDto {
         constructor(m?: number, n?: number, size?: number, sizeX?: number, sizeY?: number, sizeZ?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        m: number;
-        n: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        size: number;
-        sizeX: number;
-        sizeY: number;
-        sizeZ: number;
+        enableShadows?: boolean | undefined;
+        m?: number | undefined;
+        n?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        size?: number | undefined;
+        sizeX?: number | undefined;
+        sizeY?: number | undefined;
+        sizeZ?: number | undefined;
     }
     class CreateGroundDto {
         constructor(width?: number, height?: number, subdivisionsX?: number, subdivisionsY?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        height: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        subdivisionsX: number;
-        subdivisionsY: number;
-        width: number;
+        enableShadows?: boolean | undefined;
+        height?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        subdivisionsX?: number | undefined;
+        subdivisionsY?: number | undefined;
+        width?: number | undefined;
     }
     class CreateIcoSphereDto {
         constructor(radius?: number, radiusX?: number, radiusY?: number, radiusZ?: number, flat?: boolean, subdivisions?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        flat: boolean;
-        radius: number;
-        radiusX: number;
-        radiusY: number;
-        radiusZ: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        subdivisions: number;
+        enableShadows?: boolean | undefined;
+        flat?: boolean | undefined;
+        radius?: number | undefined;
+        radiusX?: number | undefined;
+        radiusY?: number | undefined;
+        radiusZ?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        subdivisions?: number | undefined;
     }
     class CreateLatheDto {
         constructor(shape?: Base_3.Vector3[], radius?: number, tessellation?: number, arc?: number, closed?: boolean, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        arc: number;
-        closed: boolean;
-        enableShadows: boolean;
-        radius: number;
+        arc?: number | undefined;
+        closed?: boolean | undefined;
+        enableShadows?: boolean | undefined;
+        radius?: number | undefined;
         shape: Base_3.Vector3[];
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        tessellation: number;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        tessellation?: number | undefined;
     }
     class CreatePolygonDto {
         constructor(shape?: Base_3.Vector3[], holes?: Base_3.Vector3[][], depth?: number, smoothingThreshold?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, wrap?: boolean, enableShadows?: boolean);
-        depth: number;
-        enableShadows: boolean;
+        depth?: number | undefined;
+        enableShadows?: boolean | undefined;
         holes?: Base_3.Vector3[][] | undefined;
         shape: Base_3.Vector3[];
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        smoothingThreshold: number;
-        wrap: boolean;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        smoothingThreshold?: number | undefined;
+        wrap?: boolean | undefined;
     }
     class CreatePolyhedronDto {
         constructor(size?: number, type?: number, sizeX?: number, sizeY?: number, sizeZ?: number, custom?: number[], flat?: boolean, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
         custom?: number[] | undefined;
-        enableShadows: boolean;
-        flat: boolean;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        size: number;
-        sizeX: number;
-        sizeY: number;
-        sizeZ: number;
-        type: number;
+        enableShadows?: boolean | undefined;
+        flat?: boolean | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        size?: number | undefined;
+        sizeX?: number | undefined;
+        sizeY?: number | undefined;
+        sizeZ?: number | undefined;
+        type?: number | undefined;
     }
     class CreateRectanglePlaneDto {
         constructor(width?: number, height?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        height: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        width: number;
+        enableShadows?: boolean | undefined;
+        height?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        width?: number | undefined;
     }
     class CreateRibbonDto {
         constructor(pathArray?: Base_3.Vector3[][], closeArray?: boolean, closePath?: boolean, offset?: number, updatable?: boolean, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        closeArray: boolean;
-        closePath: boolean;
-        enableShadows: boolean;
-        offset: number;
+        closeArray?: boolean | undefined;
+        closePath?: boolean | undefined;
+        enableShadows?: boolean | undefined;
+        offset?: number | undefined;
         pathArray: Base_3.Vector3[][];
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        updatable: boolean;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        updatable?: boolean | undefined;
     }
     class CreateSphereDto {
         constructor(diameter?: number, segments?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        diameter: number;
-        enableShadows: boolean;
-        segments: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
+        diameter?: number | undefined;
+        enableShadows?: boolean | undefined;
+        segments?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
     }
     class CreateSquarePlaneDto {
         constructor(size?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        size: number;
+        enableShadows?: boolean | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        size?: number | undefined;
     }
     class CreateTorusDto {
         constructor(diameter?: number, thickness?: number, tessellation?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        diameter: number;
-        enableShadows: boolean;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        tessellation: number;
-        thickness: number;
+        diameter?: number | undefined;
+        enableShadows?: boolean | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        tessellation?: number | undefined;
+        thickness?: number | undefined;
     }
     class CreateTorusKnotDto {
         constructor(radius?: number, tube?: number, radialSegments?: number, tubularSegments?: number, p?: number, q?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        enableShadows: boolean;
-        p: number;
-        q: number;
-        radialSegments: number;
-        radius: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        tube: number;
-        tubularSegments: number;
+        enableShadows?: boolean | undefined;
+        p?: number | undefined;
+        q?: number | undefined;
+        radialSegments?: number | undefined;
+        radius?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        tube?: number | undefined;
+        tubularSegments?: number | undefined;
     }
     class CreateTubeDto {
         constructor(path?: Base_3.Vector3[], radius?: number, tessellation?: number, cap?: number, arc?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, enableShadows?: boolean);
-        arc: number;
-        cap: number;
-        enableShadows: boolean;
+        arc?: number | undefined;
+        cap?: number | undefined;
+        enableShadows?: boolean | undefined;
         path: Base_3.Vector3[];
-        radius: number;
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        tessellation: number;
+        radius?: number | undefined;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        tessellation?: number | undefined;
     }
     class ExtrudePolygonDto {
         constructor(shape?: Base_3.Vector3[], holes?: Base_3.Vector3[][], depth?: number, sideOrientation?: BabylonMesh_2.sideOrientationEnum, wrap?: boolean, enableShadows?: boolean);
-        depth: number;
-        enableShadows: boolean;
+        depth?: number | undefined;
+        enableShadows?: boolean | undefined;
         holes?: Base_3.Vector3[][] | undefined;
         shape: Base_3.Vector3[];
-        sideOrientation: BabylonMesh_2.sideOrientationEnum;
-        wrap: boolean;
+        sideOrientation?: BabylonMesh_2.sideOrientationEnum | undefined;
+        wrap?: boolean | undefined;
     }
+}
+
+// @public
+namespace BabylonMeshBuilder_2 {
+    // (undocumented)
+    type CreateBoxDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateBoxDto, "width" | "depth" | "height" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateCapsuleDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateCapsuleDto, "subdivisions" | "tessellation" | "height" | "radius" | "capSubdivisions" | "radiusTop" | "radiusBottom" | "topCapSubdivisions" | "bottomCapSubdivisions" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateCubeDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateCubeDto, "size" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateCylinderDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateCylinderDto, "height" | "diameterTop" | "diameterBottom" | "tessellation" | "subdivisions" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateDiscDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateDiscDto, "radius" | "tessellation" | "arc" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateExtrudedShapeDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateExtrudedShapeDto, "scale" | "rotation" | "closeShape" | "closePath" | "cap" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateGeodesicDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateGeodesicDto, "m" | "n" | "size" | "sizeX" | "sizeY" | "sizeZ" | "flat" | "subdivisions" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateGoldbergDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateGoldbergDto, "m" | "n" | "size" | "sizeX" | "sizeY" | "sizeZ" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateGroundDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateGroundDto, "width" | "height" | "subdivisionsX" | "subdivisionsY" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateIcoSphereDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateIcoSphereDto, "radius" | "radiusX" | "radiusY" | "radiusZ" | "flat" | "subdivisions" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateLatheDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateLatheDto, "radius" | "tessellation" | "arc" | "closed" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreatePolygonDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreatePolygonDto, "depth" | "smoothingThreshold" | "sideOrientation" | "wrap" | "enableShadows">;
+    // (undocumented)
+    type CreatePolyhedronDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreatePolyhedronDto, "size" | "type" | "sizeX" | "sizeY" | "sizeZ" | "flat" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateRectanglePlaneDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateRectanglePlaneDto, "width" | "height" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateRibbonDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateRibbonDto, "closeArray" | "closePath" | "offset" | "updatable" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateSphereDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateSphereDto, "diameter" | "segments" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateSquarePlaneDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateSquarePlaneDto, "size" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateTorusDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateTorusDto, "diameter" | "thickness" | "tessellation" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateTorusKnotDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateTorusKnotDto, "radius" | "tube" | "radialSegments" | "tubularSegments" | "p" | "q" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type CreateTubeDto = WithDefaults<Inputs_2.BabylonMeshBuilder.CreateTubeDto, "radius" | "tessellation" | "cap" | "arc" | "sideOrientation" | "enableShadows">;
+    // (undocumented)
+    type ExtrudePolygonDto = WithDefaults<Inputs_2.BabylonMeshBuilder.ExtrudePolygonDto, "depth" | "sideOrientation" | "wrap" | "enableShadows">;
 }
 
 // @public
@@ -1723,25 +2221,25 @@ export class BabylonNode {
 namespace BabylonNode_2 {
     class CreateNodeFromRotationDto {
         constructor(parent?: BABYLON_2.TransformNode, origin?: Base_3.Point3, rotation?: Base_3.Vector3);
-        origin: Base_3.Point3;
+        origin?: Base_3.Point3 | undefined;
         parent: BABYLON_2.TransformNode | null;
-        rotation: Base_3.Vector3;
+        rotation?: Base_3.Vector3 | undefined;
     }
     class DrawNodeDto {
         constructor(node?: BABYLON_2.TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number);
-        colorX: string;
-        colorY: string;
-        colorZ: string;
+        colorX?: string | undefined;
+        colorY?: string | undefined;
+        colorZ?: string | undefined;
         node: BABYLON_2.TransformNode;
-        size: number;
+        size?: number | undefined;
     }
     class DrawNodesDto {
         constructor(nodes?: BABYLON_2.TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number);
-        colorX: string;
-        colorY: string;
-        colorZ: string;
+        colorX?: string | undefined;
+        colorY?: string | undefined;
+        colorZ?: string | undefined;
         nodes: BABYLON_2.TransformNode[];
-        size: number;
+        size?: number | undefined;
     }
     class NodeDirectionDto {
         constructor(node?: BABYLON_2.TransformNode, direction?: Base_3.Vector3);
@@ -1770,17 +2268,41 @@ namespace BabylonNode_2 {
     }
     class RotateAroundAxisNodeDto {
         constructor(node?: BABYLON_2.TransformNode, position?: Base_3.Point3, axis?: Base_3.Vector3, angle?: number);
-        angle: number;
-        axis: Base_3.Vector3;
+        angle?: number | undefined;
+        axis?: Base_3.Vector3 | undefined;
         node: BABYLON_2.TransformNode;
-        position: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
     }
     class RotateNodeDto {
         constructor(node?: BABYLON_2.TransformNode, axis?: Base_3.Vector3, angle?: number);
-        angle: number;
-        axis: Base_3.Vector3;
+        angle?: number | undefined;
+        axis?: Base_3.Vector3 | undefined;
         node: BABYLON_2.TransformNode;
     }
+}
+
+// @public
+namespace BabylonNode_3 {
+    // (undocumented)
+    type CreateNodeFromRotationDto = WithDefaults<Inputs_2.BabylonNode.CreateNodeFromRotationDto, "origin" | "rotation">;
+    // (undocumented)
+    type DrawNodeDto = WithDefaults<Inputs_2.BabylonNode.DrawNodeDto, "colorX" | "colorY" | "colorZ" | "size">;
+    // (undocumented)
+    type DrawNodesDto = WithDefaults<Inputs_2.BabylonNode.DrawNodesDto, "colorX" | "colorY" | "colorZ" | "size">;
+    // (undocumented)
+    type NodeDirectionDto = Inputs_2.BabylonNode.NodeDirectionDto;
+    // (undocumented)
+    type NodeDto = Inputs_2.BabylonNode.NodeDto;
+    // (undocumented)
+    type NodeParentDto = Inputs_2.BabylonNode.NodeParentDto;
+    // (undocumented)
+    type NodePositionDto = Inputs_2.BabylonNode.NodePositionDto;
+    // (undocumented)
+    type NodeTranslationDto = Inputs_2.BabylonNode.NodeTranslationDto;
+    // (undocumented)
+    type RotateAroundAxisNodeDto = WithDefaults<Inputs_2.BabylonNode.RotateAroundAxisNodeDto, "position" | "axis" | "angle">;
+    // (undocumented)
+    type RotateNodeDto = WithDefaults<Inputs_2.BabylonNode.RotateNodeDto, "axis" | "angle">;
 }
 
 // @public
@@ -1812,6 +2334,14 @@ namespace BabylonPick_2 {
 }
 
 // @public
+namespace BabylonPick_3 {
+    // (undocumented)
+    type PickInfo = Inputs_2.BabylonPick.PickInfo;
+    // (undocumented)
+    type RayDto = Inputs_2.BabylonPick.RayDto;
+}
+
+// @public
 export class BabylonRay {
     constructor(context: Context);
     createPickingRay(): BABYLON_2.Ray;
@@ -1839,6 +2369,16 @@ namespace BabylonRay_2 {
         constructor(ray?: BABYLON_2.Ray);
         ray: BABYLON_2.Ray;
     }
+}
+
+// @public
+namespace BabylonRay_3 {
+    // (undocumented)
+    type BaseRayDto = Inputs_2.BabylonRay.BaseRayDto;
+    // (undocumented)
+    type FromToDto = Inputs_2.BabylonRay.FromToDto;
+    // (undocumented)
+    type RayDto = Inputs_2.BabylonRay.RayDto;
 }
 
 // @public
@@ -1903,89 +2443,89 @@ namespace BabylonScene_2 {
     }
     class CameraConfigurationDto {
         constructor(position?: Base_3.Point3, lookAt?: Base_3.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number);
-        angularSensibilityX: number;
-        angularSensibilityY: number;
-        lookAt: Base_3.Point3;
+        angularSensibilityX?: number | undefined;
+        angularSensibilityY?: number | undefined;
+        lookAt?: Base_3.Point3 | undefined;
         lowerAlphaLimit?: number | undefined;
-        lowerBetaLimit: number;
+        lowerBetaLimit?: number | undefined;
         lowerRadiusLimit?: number | undefined;
-        maxZ: number;
-        panningSensibility: number;
-        position: Base_3.Point3;
+        maxZ?: number | undefined;
+        panningSensibility?: number | undefined;
+        position?: Base_3.Point3 | undefined;
         upperAlphaLimit?: number | undefined;
-        upperBetaLimit: number;
+        upperBetaLimit?: number | undefined;
         upperRadiusLimit?: number | undefined;
-        wheelPrecision: number;
+        wheelPrecision?: number | undefined;
     }
     class DirectionalLightDto {
         constructor(direction?: Base_3.Vector3, intensity?: number, diffuse?: Base_3.Color, specular?: Base_3.Color, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number);
-        diffuse: Base_3.Color;
-        direction: Base_3.Vector3;
+        diffuse?: Base_3.Color | undefined;
+        direction?: Base_3.Vector3 | undefined;
         enableShadows?: boolean | undefined;
-        intensity: number;
-        shadowBias: number;
-        shadowContactHardeningLightSizeUVRatio: number;
+        intensity?: number | undefined;
+        shadowBias?: number | undefined;
+        shadowContactHardeningLightSizeUVRatio?: number | undefined;
         shadowDarkness?: number | undefined;
         shadowGeneratorMapSize?: number | undefined;
-        shadowMaxZ: number;
-        shadowMinZ: number;
-        shadowNormalBias: number;
-        shadowRefreshRate: number;
-        shadowUsePercentageCloserFiltering: boolean;
-        specular: Base_3.Color;
-        transparencyShadow: boolean;
+        shadowMaxZ?: number | undefined;
+        shadowMinZ?: number | undefined;
+        shadowNormalBias?: number | undefined;
+        shadowRefreshRate?: number | undefined;
+        shadowUsePercentageCloserFiltering?: boolean | undefined;
+        specular?: Base_3.Color | undefined;
+        transparencyShadow?: boolean | undefined;
     }
     class EnablePhysicsDto {
         constructor(vector?: Base_3.Vector3);
-        vector: Base_3.Vector3;
+        vector?: Base_3.Vector3 | undefined;
     }
     class FogDto {
         constructor(mode?: Base_3.fogModeEnum, color?: Base_3.Color, density?: number, start?: number, end?: number);
-        color: Base_3.Color;
-        density: number;
-        end: number;
-        mode: Base_3.fogModeEnum;
-        start: number;
+        color?: Base_3.Color | undefined;
+        density?: number | undefined;
+        end?: number | undefined;
+        mode?: Base_3.fogModeEnum | undefined;
+        start?: number | undefined;
     }
     class PointerDto {
         statement_update: () => void;
     }
     class PointLightDto {
         constructor(position?: Base_3.Point3, intensity?: number, diffuse?: Base_3.Color, specular?: Base_3.Color, radius?: number, shadowGeneratorMapSize?: number, enableShadows?: boolean, shadowDarkness?: number, transparencyShadow?: boolean, shadowUsePercentageCloserFiltering?: boolean, shadowContactHardeningLightSizeUVRatio?: number, shadowBias?: number, shadowNormalBias?: number, shadowMaxZ?: number, shadowMinZ?: number, shadowRefreshRate?: number);
-        diffuse: Base_3.Color;
+        diffuse?: Base_3.Color | undefined;
         enableShadows?: boolean | undefined;
-        intensity: number;
-        position: Base_3.Point3;
-        radius: number;
-        shadowBias: number;
-        shadowContactHardeningLightSizeUVRatio: number;
+        intensity?: number | undefined;
+        position?: Base_3.Point3 | undefined;
+        radius?: number | undefined;
+        shadowBias?: number | undefined;
+        shadowContactHardeningLightSizeUVRatio?: number | undefined;
         shadowDarkness?: number | undefined;
         shadowGeneratorMapSize?: number | undefined;
-        shadowMaxZ: number;
-        shadowMinZ: number;
-        shadowNormalBias: number;
-        shadowRefreshRate: number;
-        shadowUsePercentageCloserFiltering: boolean;
-        specular: Base_3.Color;
-        transparencyShadow: boolean;
+        shadowMaxZ?: number | undefined;
+        shadowMinZ?: number | undefined;
+        shadowNormalBias?: number | undefined;
+        shadowRefreshRate?: number | undefined;
+        shadowUsePercentageCloserFiltering?: boolean | undefined;
+        specular?: Base_3.Color | undefined;
+        transparencyShadow?: boolean | undefined;
     }
     class SceneBackgroundColourDto {
         constructor(colour?: string);
-        colour: Base_3.Color;
+        colour?: Base_3.Color | undefined;
     }
     class SceneCanvasBackgroundImageDto {
         constructor(imageUrl?: string, repeat?: Base_3.backgroundRepeatEnum, size?: Base_3.backgroundSizeEnum, position?: Base_3.gradientPositionEnum, attachment?: Base_3.backgroundAttachmentEnum, origin?: Base_3.backgroundOriginClipEnum, clip?: Base_3.backgroundOriginClipEnum);
-        attachment: Base_3.backgroundAttachmentEnum;
-        clip: Base_3.backgroundOriginClipEnum;
+        attachment?: Base_3.backgroundAttachmentEnum | undefined;
+        clip?: Base_3.backgroundOriginClipEnum | undefined;
         imageUrl?: string | undefined;
-        origin: Base_3.backgroundOriginClipEnum;
-        position: Base_3.gradientPositionEnum;
-        repeat: Base_3.backgroundRepeatEnum;
-        size: Base_3.backgroundSizeEnum;
+        origin?: Base_3.backgroundOriginClipEnum | undefined;
+        position?: Base_3.gradientPositionEnum | undefined;
+        repeat?: Base_3.backgroundRepeatEnum | undefined;
+        size?: Base_3.backgroundSizeEnum | undefined;
     }
     class SceneCanvasCSSBackgroundImageDto {
         constructor(cssBackgroundImage?: string);
-        cssBackgroundImage: string;
+        cssBackgroundImage?: string | undefined;
     }
     class SceneDto {
         constructor(scene?: BABYLON_2.Scene);
@@ -1993,72 +2533,114 @@ namespace BabylonScene_2 {
     }
     class SceneMultiColorLinearGradientDto {
         constructor(colors?: Base_3.Color[], stops?: number[], direction?: Base_3.gradientDirectionEnum);
-        colors: Base_3.Color[];
-        direction: Base_3.gradientDirectionEnum;
-        stops: number[];
+        colors?: Base_3.Color[] | undefined;
+        direction?: Base_3.gradientDirectionEnum | undefined;
+        stops?: number[] | undefined;
     }
     class SceneMultiColorRadialGradientDto {
         constructor(colors?: Base_3.Color[], stops?: number[], position?: Base_3.gradientPositionEnum, shape?: Base_3.gradientShapeEnum);
-        colors: Base_3.Color[];
-        position: Base_3.gradientPositionEnum;
-        shape: Base_3.gradientShapeEnum;
-        stops: number[];
+        colors?: Base_3.Color[] | undefined;
+        position?: Base_3.gradientPositionEnum | undefined;
+        shape?: Base_3.gradientShapeEnum | undefined;
+        stops?: number[] | undefined;
     }
     class SceneTwoColorLinearGradientDto {
         constructor(colorFrom?: Base_3.Color, colorTo?: Base_3.Color, direction?: Base_3.gradientDirectionEnum, stopFrom?: number, stopTo?: number);
-        colorFrom: Base_3.Color;
-        colorTo: Base_3.Color;
-        direction: Base_3.gradientDirectionEnum;
-        stopFrom: number;
-        stopTo: number;
+        colorFrom?: Base_3.Color | undefined;
+        colorTo?: Base_3.Color | undefined;
+        direction?: Base_3.gradientDirectionEnum | undefined;
+        stopFrom?: number | undefined;
+        stopTo?: number | undefined;
     }
     class SceneTwoColorRadialGradientDto {
         constructor(colorFrom?: Base_3.Color, colorTo?: Base_3.Color, position?: Base_3.gradientPositionEnum, stopFrom?: number, stopTo?: number, shape?: Base_3.gradientShapeEnum);
-        colorFrom: Base_3.Color;
-        colorTo: Base_3.Color;
-        position: Base_3.gradientPositionEnum;
-        shape: Base_3.gradientShapeEnum;
-        stopFrom: number;
-        stopTo: number;
+        colorFrom?: Base_3.Color | undefined;
+        colorTo?: Base_3.Color | undefined;
+        position?: Base_3.gradientPositionEnum | undefined;
+        shape?: Base_3.gradientShapeEnum | undefined;
+        stopFrom?: number | undefined;
+        stopTo?: number | undefined;
     }
     class SkyboxCustomTextureDto {
         constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
-        blur: number;
+        blur?: number | undefined;
         enableGroundProjection?: boolean | undefined;
-        environmentIntensity: number;
+        environmentIntensity?: number | undefined;
         hideSkybox?: boolean | undefined;
         projectedGroundHeight?: number | undefined;
         projectedGroundRadius?: number | undefined;
-        size: number;
+        size?: number | undefined;
         textureSize?: number | undefined;
         textureUrl?: string | undefined;
     }
     class SkyboxDto {
         constructor(skybox?: Base_3.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
-        blur: number;
+        blur?: number | undefined;
         enableGroundProjection?: boolean | undefined;
-        environmentIntensity: number;
+        environmentIntensity?: number | undefined;
         hideSkybox?: boolean | undefined;
         projectedGroundHeight?: number | undefined;
         projectedGroundRadius?: number | undefined;
-        size: number;
-        skybox: Base_3.skyboxEnum;
+        size?: number | undefined;
+        skybox?: Base_3.skyboxEnum | undefined;
     }
     class SkyboxFromTextureDto {
         constructor(texture?: BABYLON_2.BaseTexture, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number);
-        blur: number;
+        blur?: number | undefined;
         enableGroundProjection?: boolean | undefined;
-        environmentIntensity: number;
+        environmentIntensity?: number | undefined;
         hideSkybox?: boolean | undefined;
         projectedGroundHeight?: number | undefined;
         projectedGroundRadius?: number | undefined;
-        size: number;
+        size?: number | undefined;
         texture: BABYLON_2.BaseTexture;
     }
     class UseRightHandedSystemDto {
         constructor(use?: boolean);
-        use: boolean;
+        use?: boolean | undefined;
     }
+}
+
+// @public
+namespace BabylonScene_3 {
+    // (undocumented)
+    type ActiveCameraDto = Inputs_2.BabylonScene.ActiveCameraDto;
+    // (undocumented)
+    type CameraConfigurationDto = WithDefaults<Inputs_2.BabylonScene.CameraConfigurationDto, "position" | "lookAt" | "lowerBetaLimit" | "upperBetaLimit" | "angularSensibilityX" | "angularSensibilityY" | "maxZ" | "panningSensibility" | "wheelPrecision">;
+    // (undocumented)
+    type DirectionalLightDto = WithDefaults<Inputs_2.BabylonScene.DirectionalLightDto, "direction" | "intensity" | "diffuse" | "specular" | "shadowGeneratorMapSize" | "enableShadows" | "shadowDarkness" | "shadowUsePercentageCloserFiltering" | "transparencyShadow" | "shadowContactHardeningLightSizeUVRatio" | "shadowBias" | "shadowNormalBias" | "shadowMaxZ" | "shadowMinZ" | "shadowRefreshRate">;
+    // (undocumented)
+    type EnablePhysicsDto = WithDefaults<Inputs_2.BabylonScene.EnablePhysicsDto, "vector">;
+    // (undocumented)
+    type FogDto = WithDefaults<Inputs_2.BabylonScene.FogDto, "mode" | "color" | "density" | "start" | "end">;
+    // (undocumented)
+    type PointerDto = Inputs_2.BabylonScene.PointerDto;
+    // (undocumented)
+    type PointLightDto = WithDefaults<Inputs_2.BabylonScene.PointLightDto, "position" | "intensity" | "diffuse" | "specular" | "radius" | "shadowGeneratorMapSize" | "enableShadows" | "shadowDarkness" | "transparencyShadow" | "shadowUsePercentageCloserFiltering" | "shadowContactHardeningLightSizeUVRatio" | "shadowBias" | "shadowNormalBias" | "shadowMaxZ" | "shadowMinZ" | "shadowRefreshRate">;
+    // (undocumented)
+    type SceneBackgroundColourDto = WithDefaults<Inputs_2.BabylonScene.SceneBackgroundColourDto, "colour">;
+    // (undocumented)
+    type SceneCanvasBackgroundImageDto = WithDefaults<Inputs_2.BabylonScene.SceneCanvasBackgroundImageDto, "repeat" | "size" | "position" | "attachment" | "origin" | "clip">;
+    // (undocumented)
+    type SceneCanvasCSSBackgroundImageDto = WithDefaults<Inputs_2.BabylonScene.SceneCanvasCSSBackgroundImageDto, "cssBackgroundImage">;
+    // (undocumented)
+    type SceneDto = Inputs_2.BabylonScene.SceneDto;
+    // (undocumented)
+    type SceneMultiColorLinearGradientDto = WithDefaults<Inputs_2.BabylonScene.SceneMultiColorLinearGradientDto, "colors" | "stops" | "direction">;
+    // (undocumented)
+    type SceneMultiColorRadialGradientDto = WithDefaults<Inputs_2.BabylonScene.SceneMultiColorRadialGradientDto, "colors" | "stops" | "position" | "shape">;
+    // (undocumented)
+    type SceneTwoColorLinearGradientDto = WithDefaults<Inputs_2.BabylonScene.SceneTwoColorLinearGradientDto, "colorFrom" | "colorTo" | "direction" | "stopFrom" | "stopTo">;
+    // (undocumented)
+    type SceneTwoColorRadialGradientDto = WithDefaults<Inputs_2.BabylonScene.SceneTwoColorRadialGradientDto, "colorFrom" | "colorTo" | "position" | "stopFrom" | "stopTo" | "shape">;
+    // (undocumented)
+    type SkyboxCustomTextureDto = WithDefaults<Inputs_2.BabylonScene.SkyboxCustomTextureDto, "textureSize" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    // (undocumented)
+    type SkyboxDto = WithDefaults<Inputs_2.BabylonScene.SkyboxDto, "skybox" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    // (undocumented)
+    type SkyboxFromTextureDto = WithDefaults<Inputs_2.BabylonScene.SkyboxFromTextureDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    // (undocumented)
+    type UseRightHandedSystemDto = WithDefaults<Inputs_2.BabylonScene.UseRightHandedSystemDto, "use">;
 }
 
 // @public
@@ -2079,25 +2661,33 @@ namespace BabylonTexture {
     }
     class TextureImageDto {
         constructor(name?: string, url?: string, hasAlpha?: boolean, invertY?: boolean, samplingMode?: samplingModeEnum);
-        hasAlpha: boolean;
-        invertY: boolean;
-        name: string;
-        samplingMode: samplingModeEnum;
+        hasAlpha?: boolean | undefined;
+        invertY?: boolean | undefined;
+        name?: string | undefined;
+        samplingMode?: BabylonTexture.samplingModeEnum | undefined;
         url: string;
     }
     class TextureSimpleDto {
         constructor(name?: string, url?: string, invertY?: boolean, invertZ?: boolean, wAng?: number, uScale?: number, vScale?: number, uOffset?: number, vOffset?: number, samplingMode?: samplingModeEnum);
-        invertY: boolean;
-        invertZ: boolean;
-        name: string;
-        samplingMode: samplingModeEnum;
-        uOffset: number;
+        invertY?: boolean | undefined;
+        invertZ?: boolean | undefined;
+        name?: string | undefined;
+        samplingMode?: BabylonTexture.samplingModeEnum | undefined;
+        uOffset?: number | undefined;
         url: string;
-        uScale: number;
-        vOffset: number;
-        vScale: number;
-        wAng: number;
+        uScale?: number | undefined;
+        vOffset?: number | undefined;
+        vScale?: number | undefined;
+        wAng?: number | undefined;
     }
+}
+
+// @public
+namespace BabylonTexture_2 {
+    // (undocumented)
+    type TextureImageDto = WithDefaults<Inputs_2.BabylonTexture.TextureImageDto, "name" | "hasAlpha" | "invertY" | "samplingMode">;
+    // (undocumented)
+    type TextureSimpleDto = WithDefaults<Inputs_2.BabylonTexture.TextureSimpleDto, "name" | "invertY" | "invertZ" | "wAng" | "uScale" | "vScale" | "uOffset" | "vOffset" | "samplingMode">;
 }
 
 // @public
@@ -2105,11 +2695,17 @@ namespace BabylonTools {
     class ScreenshotDto {
         constructor(camera?: BABYLON_2.Camera, width?: number, height?: number, mimeType?: string, quality?: number);
         camera?: BABYLON_2.Camera | undefined;
-        height: number;
-        mimeType: string;
-        quality: number;
-        width: number;
+        height?: number | undefined;
+        mimeType?: string | undefined;
+        quality?: number | undefined;
+        width?: number | undefined;
     }
+}
+
+// @public
+namespace BabylonTools_2 {
+    // (undocumented)
+    type ScreenshotDto = WithDefaults<Inputs_2.BabylonTools.ScreenshotDto, "width" | "height" | "mimeType" | "quality">;
 }
 
 // @public
@@ -2131,30 +2727,30 @@ export class BabylonTransforms {
 namespace BabylonTransforms_2 {
     class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base_3.Vector3, center?: Base_3.Point3);
-        angle: number;
-        axis: Base_3.Vector3;
-        center: Base_3.Point3;
+        angle?: number | undefined;
+        axis?: Base_3.Vector3 | undefined;
+        center?: Base_3.Point3 | undefined;
     }
     class RotationCenterDto {
         constructor(angle?: number, center?: Base_3.Point3);
-        angle: number;
-        center: Base_3.Point3;
+        angle?: number | undefined;
+        center?: Base_3.Point3 | undefined;
     }
     class RotationCenterYawPitchRollDto {
         constructor(yaw?: number, pitch?: number, roll?: number, center?: Base_3.Point3);
-        center: Base_3.Point3;
-        pitch: number;
-        roll: number;
-        yaw: number;
+        center?: Base_3.Point3 | undefined;
+        pitch?: number | undefined;
+        roll?: number | undefined;
+        yaw?: number | undefined;
     }
     class ScaleCenterXYZDto {
         constructor(center?: Base_3.Point3, scaleXyz?: Base_3.Vector3);
-        center: Base_3.Point3;
-        scaleXyz: Base_3.Vector3;
+        center?: Base_3.Point3 | undefined;
+        scaleXyz?: Base_3.Vector3 | undefined;
     }
     class ScaleXYZDto {
         constructor(scaleXyz?: Base_3.Vector3);
-        scaleXyz: Base_3.Vector3;
+        scaleXyz?: Base_3.Vector3 | undefined;
     }
     class TransformBabylonMeshDto {
         constructor(mesh?: BABYLON_2.Mesh, transformation?: Base_3.TransformMatrixes);
@@ -2167,17 +2763,41 @@ namespace BabylonTransforms_2 {
     }
     class TranslationXYZDto {
         constructor(translation?: Base_3.Vector3);
-        translation: Base_3.Vector3;
+        translation?: Base_3.Vector3 | undefined;
     }
     class UniformScaleDto {
         constructor(scale?: number);
-        scale: number;
+        scale?: number | undefined;
     }
     class UniformScaleFromCenterDto {
         constructor(scale?: number, center?: Base_3.Point3);
-        center: Base_3.Point3;
-        scale: number;
+        center?: Base_3.Point3 | undefined;
+        scale?: number | undefined;
     }
+}
+
+// @public
+namespace BabylonTransforms_3 {
+    // (undocumented)
+    type RotationCenterAxisDto = WithDefaults<Inputs_2.BabylonTransforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type RotationCenterDto = WithDefaults<Inputs_2.BabylonTransforms.RotationCenterDto, "angle" | "center">;
+    // (undocumented)
+    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_2.BabylonTransforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
+    // (undocumented)
+    type ScaleCenterXYZDto = WithDefaults<Inputs_2.BabylonTransforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type ScaleXYZDto = WithDefaults<Inputs_2.BabylonTransforms.ScaleXYZDto, "scaleXyz">;
+    // (undocumented)
+    type TransformBabylonMeshDto = Inputs_2.BabylonTransforms.TransformBabylonMeshDto;
+    // (undocumented)
+    type TranslationsXYZDto = Inputs_2.BabylonTransforms.TranslationsXYZDto;
+    // (undocumented)
+    type TranslationXYZDto = WithDefaults<Inputs_2.BabylonTransforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type UniformScaleDto = WithDefaults<Inputs_2.BabylonTransforms.UniformScaleDto, "scale">;
+    // (undocumented)
+    type UniformScaleFromCenterDto = WithDefaults<Inputs_2.BabylonTransforms.UniformScaleFromCenterDto, "scale" | "center">;
 }
 
 // @public
@@ -2223,6 +2843,18 @@ namespace BabylonWebXR_2 {
         constructor(baseExperience?: BABYLON_2.WebXRExperienceHelper);
         baseExperience: BABYLON_2.WebXRExperienceHelper;
     }
+}
+
+// @public
+namespace BabylonWebXR_3 {
+    // (undocumented)
+    type DefaultWebXRWithTeleportationDto = Inputs_2.BabylonWebXR.DefaultWebXRWithTeleportationDto;
+    // (undocumented)
+    type WebXRDefaultExperienceDto = Inputs_2.BabylonWebXR.WebXRDefaultExperienceDto;
+    // (undocumented)
+    type WebXRDefaultExperienceOptions = Inputs_2.BabylonWebXR.WebXRDefaultExperienceOptions;
+    // (undocumented)
+    type WebXRExperienceHelperDto = Inputs_2.BabylonWebXR.WebXRExperienceHelperDto;
 }
 
 // @public
@@ -2443,31 +3075,31 @@ namespace Base_3 {
 // @public
 export class BitByBitBase {
     constructor();
-    // Warning: (ae-forgotten-export) The symbol "Asset_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Asset_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    asset: Asset_2;
+    asset: Asset_3;
     // (undocumented)
     babylon: Babylon;
     // (undocumented)
-    color: Color_2;
+    color: Color_3;
     // (undocumented)
     context: Context;
     // Warning: (ae-forgotten-export) The symbol "CSVBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     csv: CSVBitByBit;
-    // Warning: (ae-forgotten-export) The symbol "Dates_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Dates_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    dates: Dates_2;
+    dates: Dates_3;
     // (undocumented)
     draw: Draw;
     init(scene: BABYLON_2.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker, havokPlugin?: BABYLON_2.HavokPlugin): void;
-    // Warning: (ae-forgotten-export) The symbol "JSCAD_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "JSCAD_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    jscad: JSCAD_2;
+    jscad: JSCAD_3;
     // Warning: (ae-forgotten-export) The symbol "JSCADWorkerManager" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -2476,18 +3108,18 @@ export class BitByBitBase {
     //
     // (undocumented)
     json: JSONBitByBit;
-    // Warning: (ae-forgotten-export) The symbol "Line_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Line_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    line: Line_2;
-    // Warning: (ae-forgotten-export) The symbol "Lists_2" needs to be exported by the entry point index.d.ts
+    line: Line_3;
+    // Warning: (ae-forgotten-export) The symbol "Lists_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    lists: Lists_2;
-    // Warning: (ae-forgotten-export) The symbol "Logic_2" needs to be exported by the entry point index.d.ts
+    lists: Lists_3;
+    // Warning: (ae-forgotten-export) The symbol "Logic_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    logic: Logic_2;
+    logic: Logic_3;
     // Warning: (ae-forgotten-export) The symbol "ManifoldBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -2505,46 +3137,46 @@ export class BitByBitBase {
     // (undocumented)
     mesh: MeshBitByBit;
     // Warning: (ae-forgotten-export) The symbol "OCCTW" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "OCCT_3" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    occt: OCCTW & OCCT_3;
+    occt: OCCTW & OCCT_4;
     // Warning: (ae-forgotten-export) The symbol "OCCTWorkerManager" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     occtWorkerManager: OCCTWorkerManager;
-    // Warning: (ae-forgotten-export) The symbol "Point_3" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Point_4" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    point: Point_3;
-    // Warning: (ae-forgotten-export) The symbol "Polyline_2" needs to be exported by the entry point index.d.ts
+    point: Point_4;
+    // Warning: (ae-forgotten-export) The symbol "Polyline_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    polyline: Polyline_2;
-    // Warning: (ae-forgotten-export) The symbol "Tag_2" needs to be exported by the entry point index.d.ts
+    polyline: Polyline_3;
+    // Warning: (ae-forgotten-export) The symbol "Tag_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    tag: Tag_2;
+    tag: Tag_3;
     // Warning: (ae-forgotten-export) The symbol "TextBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     text: TextBitByBit;
-    // Warning: (ae-forgotten-export) The symbol "Time_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Time_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    time: Time_2;
-    // Warning: (ae-forgotten-export) The symbol "Transforms_2" needs to be exported by the entry point index.d.ts
+    time: Time_3;
+    // Warning: (ae-forgotten-export) The symbol "Transforms_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transforms: Transforms_2;
-    // Warning: (ae-forgotten-export) The symbol "Vector_2" needs to be exported by the entry point index.d.ts
+    transforms: Transforms_3;
+    // Warning: (ae-forgotten-export) The symbol "Vector_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    vector: Vector_2;
-    // Warning: (ae-forgotten-export) The symbol "Verb_2" needs to be exported by the entry point index.d.ts
+    vector: Vector_3;
+    // Warning: (ae-forgotten-export) The symbol "Verb_3" needs to be exported by the entry point index.d.ts
     //
     // @deprecated
-    verb: Verb_2;
+    verb: Verb_3;
 }
 
 // @public
@@ -2627,6 +3259,40 @@ namespace Color {
     }
 }
 
+// @public
+namespace Color_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_7" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type HexDto = WithDefaults<Inputs_7.Color.HexDto, "color">;
+    // (undocumented)
+    type HexDtoMapped = WithDefaults<Inputs_7.Color.HexDtoMapped, "color" | "from" | "to">;
+    // (undocumented)
+    type InvertHexDto = WithDefaults<Inputs_7.Color.InvertHexDto, "color" | "blackAndWhite">;
+    // (undocumented)
+    type Rgb1Dto = WithDefaults<Inputs_7.Color.Rgb1Dto, "colorRgb">;
+    // (undocumented)
+    type Rgb255Dto = WithDefaults<Inputs_7.Color.Rgb255Dto, "colorRgb">;
+    // (undocumented)
+    type Rgba1Dto = WithDefaults<Inputs_7.Color.Rgba1Dto, "colorRgba">;
+    // (undocumented)
+    type Rgba255Dto = WithDefaults<Inputs_7.Color.Rgba255Dto, "colorRgba">;
+    // (undocumented)
+    type RgbaAttomic1Dto = WithDefaults<Inputs_7.Color.RgbaAttomic1Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbaAttomic255Dto = WithDefaults<Inputs_7.Color.RgbaAttomic255Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbAttomic1Dto = WithDefaults<Inputs_7.Color.RgbAttomic1Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RgbAttomic255Dto = WithDefaults<Inputs_7.Color.RgbAttomic255Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RGBMinMaxDto = WithDefaults<Inputs_7.Color.RGBMinMaxDto, "r" | "g" | "b" | "min" | "max">;
+    // (undocumented)
+    type RGBObjectDto = Inputs_7.Color.RGBObjectDto;
+    // (undocumented)
+    type RGBObjectMaxDto = WithDefaults<Inputs_7.Color.RGBObjectMaxDto, "min" | "max">;
+}
+
 // Warning: (ae-forgotten-export) The symbol "ContextBase" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -2666,21 +3332,21 @@ export function createWorkersFromUrls(workerUrls: {
 namespace CSV {
     class ArrayToCsvDto {
         constructor(array?: (string | number | boolean | null | undefined)[][], rowSeparator?: string, columnSeparator?: string);
-        array: (string | number | boolean | null | undefined)[][];
+        array?: (string | number | boolean | null | undefined)[][] | undefined;
         columnSeparator?: string | undefined;
         rowSeparator?: string | undefined;
     }
     class GetHeadersDto {
         constructor(csv?: string, headerRow?: number, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         headerRow?: number | undefined;
         rowSeparator?: string | undefined;
     }
     class GetRowCountDto {
         constructor(csv?: string, hasHeaders?: boolean, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         hasHeaders?: boolean | undefined;
         rowSeparator?: string | undefined;
@@ -2689,27 +3355,27 @@ namespace CSV {
         constructor(json?: T[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
         includeHeaders?: boolean | undefined;
-        json: T[];
+        json?: T[] | undefined;
         rowSeparator?: string | undefined;
     }
     class JsonToCsvDto<T = Record<string, unknown>> {
         constructor(json?: T[], headers?: string[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        headers: string[];
+        headers?: string[] | undefined;
         includeHeaders?: boolean | undefined;
-        json: T[];
+        json?: T[] | undefined;
         rowSeparator?: string | undefined;
     }
     class ParseToArrayDto {
         constructor(csv?: string, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         rowSeparator?: string | undefined;
     }
     class ParseToJsonDto {
         constructor(csv?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         numberColumns?: string[] | undefined;
@@ -2718,33 +3384,57 @@ namespace CSV {
     class ParseToJsonWithHeadersDto {
         constructor(csv?: string, headers?: string[], dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
-        headers: string[];
+        headers?: string[] | undefined;
         numberColumns?: string[] | undefined;
         rowSeparator?: string | undefined;
     }
     class QueryColumnDto {
         constructor(csv?: string, column?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, asNumber?: boolean);
         asNumber?: boolean | undefined;
-        column: string;
+        column?: string | undefined;
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         rowSeparator?: string | undefined;
     }
     class QueryRowsByValueDto {
         constructor(csv?: string, column?: string, value?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
-        column: string;
+        column?: string | undefined;
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         numberColumns?: string[] | undefined;
         rowSeparator?: string | undefined;
-        value: string;
+        value?: string | undefined;
     }
+}
+
+// @public
+namespace CSV_2 {
+    // (undocumented)
+    type ArrayToCsvDto = WithDefaults<Inputs_3.CSV.ArrayToCsvDto, "array" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type GetHeadersDto = WithDefaults<Inputs_3.CSV.GetHeadersDto, "csv" | "headerRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type GetRowCountDto = WithDefaults<Inputs_3.CSV.GetRowCountDto, "csv" | "hasHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type JsonToCsvAutoDto<T = Record<string, unknown>> = WithDefaults<Inputs_3.CSV.JsonToCsvAutoDto<T>, "json" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type JsonToCsvDto<T = Record<string, unknown>> = WithDefaults<Inputs_3.CSV.JsonToCsvDto<T>, "json" | "headers" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToArrayDto = WithDefaults<Inputs_3.CSV.ParseToArrayDto, "csv" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToJsonDto = WithDefaults<Inputs_3.CSV.ParseToJsonDto, "csv" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToJsonWithHeadersDto = WithDefaults<Inputs_3.CSV.ParseToJsonWithHeadersDto, "csv" | "headers" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type QueryColumnDto = WithDefaults<Inputs_3.CSV.QueryColumnDto, "csv" | "column" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator" | "asNumber">;
+    // (undocumented)
+    type QueryRowsByValueDto = WithDefaults<Inputs_3.CSV.QueryRowsByValueDto, "csv" | "column" | "value" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
 }
 
 // @public
@@ -2813,6 +3503,34 @@ namespace Dates {
     }
 }
 
+// @public
+namespace Dates_2 {
+    // (undocumented)
+    type CreateDateDto = WithDefaults<Inputs_7.Dates.CreateDateDto, "year" | "month" | "day" | "hours" | "minutes" | "seconds" | "milliseconds">;
+    // (undocumented)
+    type CreateFromUnixTimeStampDto = WithDefaults<Inputs_7.Dates.CreateFromUnixTimeStampDto, "unixTimeStamp">;
+    // (undocumented)
+    type DateDayDto = WithDefaults<Inputs_7.Dates.DateDayDto, "day">;
+    // (undocumented)
+    type DateDto = Inputs_7.Dates.DateDto;
+    // (undocumented)
+    type DateHoursDto = WithDefaults<Inputs_7.Dates.DateHoursDto, "hours">;
+    // (undocumented)
+    type DateMillisecondsDto = WithDefaults<Inputs_7.Dates.DateMillisecondsDto, "milliseconds">;
+    // (undocumented)
+    type DateMinutesDto = WithDefaults<Inputs_7.Dates.DateMinutesDto, "minutes">;
+    // (undocumented)
+    type DateMonthDto = WithDefaults<Inputs_7.Dates.DateMonthDto, "month">;
+    // (undocumented)
+    type DateSecondsDto = WithDefaults<Inputs_7.Dates.DateSecondsDto, "seconds">;
+    // (undocumented)
+    type DateStringDto = Inputs_7.Dates.DateStringDto;
+    // (undocumented)
+    type DateTimeDto = WithDefaults<Inputs_7.Dates.DateTimeDto, "time">;
+    // (undocumented)
+    type DateYearDto = WithDefaults<Inputs_7.Dates.DateYearDto, "year">;
+}
+
 // Warning: (ae-forgotten-export) The symbol "DrawCore" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -2820,7 +3538,7 @@ export class Draw extends DrawCore {
     constructor(
     drawHelper: DrawHelper,
     node: BabylonNode,
-    tag: Tag_2,
+    tag: Tag_3,
     context: Context);
     readonly context: Context;
     createPBRMaterial(inputs: Inputs_2.Draw.GenericPBRMaterialDto): BABYLON_2.PBRMetallicRoughnessMaterial;
@@ -2843,7 +3561,7 @@ export class Draw extends DrawCore {
     optionsOcctShapeMaterial(inputs: Inputs_2.Draw.DrawOcctShapeMaterialOptions): Inputs_2.Draw.DrawOcctShapeMaterialOptions;
     optionsOcctShapeSimple(inputs: Inputs_2.Draw.DrawOcctShapeSimpleOptions): Inputs_2.Draw.DrawOcctShapeSimpleOptions;
     optionsSimple(inputs: Inputs_2.Draw.DrawBasicGeometryOptions): Inputs_2.Draw.DrawBasicGeometryOptions;
-    readonly tag: Tag_2;
+    readonly tag: Tag_3;
 }
 
 // @public
@@ -2876,17 +3594,17 @@ namespace Draw_2 {
     }
     class DrawBasicGeometryOptions {
         constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, colorMapStrategy?: Base_3.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number);
-        arrowAngle: number;
-        arrowSize: number;
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        colorMapStrategy: Base_3.colorMapStrategyEnum;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
-        opacity: number;
-        size: number;
-        updatable: boolean;
+        arrowAngle?: number | undefined;
+        arrowSize?: number | undefined;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        colorMapStrategy?: Base_3.colorMapStrategyEnum | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
+        opacity?: number | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     enum drawingTypes {
         // (undocumented)
@@ -2934,25 +3652,25 @@ namespace Draw_2 {
     }
     class DrawManifoldOrCrossSectionOptions {
         constructor(faceOpacity?: number, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, crossSectionColour?: Base_3.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number);
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base_3.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base_3.Color;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base_3.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base_3.Color | undefined;
         faceMaterial?: Base_3.Material | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
     }
     type Drawn<E, T> = E extends readonly unknown[] ? ([E[number]] extends [never] ? undefined : E[number] extends Inputs_2.Tag.TagDto ? DrawnTags : E[number] extends BABYLON_2.TransformNode ? BABYLON_2.TransformNode[] : T) : E extends Inputs_2.Tag.TagDto ? DrawnTag : E extends CustomOverlayDrawable ? DrawnOverlay : E extends BABYLON_2.Mesh ? T : E extends BABYLON_2.TransformNode ? BABYLON_2.TransformNode : T;
     type DrawnAny<T> = T | BABYLON_2.TransformNode | BABYLON_2.TransformNode[] | DrawnTag | DrawnTags | DrawnOverlay | undefined;
     class DrawNodeOptions {
         constructor(colorX?: Base_3.Color, colorY?: Base_3.Color, colorZ?: Base_3.Color, size?: number);
-        colorX: Base_3.Color;
-        colorY: Base_3.Color;
-        colorZ: Base_3.Color;
-        size: number;
+        colorX?: Base_3.Color | undefined;
+        colorY?: Base_3.Color | undefined;
+        colorZ?: Base_3.Color | undefined;
+        size?: number | undefined;
     }
     interface DrawnOverlay {
         // (undocumented)
@@ -2974,89 +3692,89 @@ namespace Draw_2 {
     };
     class DrawOcctShapeMaterialOptions {
         constructor(precision?: number, faceMaterial?: any, drawEdges?: boolean, edgeColour?: Base_3.Color, edgeWidth?: number);
-        drawEdges: boolean;
-        edgeColour: Base_3.Color;
-        edgeWidth: number;
+        drawEdges?: boolean | undefined;
+        edgeColour?: Base_3.Color | undefined;
+        edgeWidth?: number | undefined;
         faceMaterial: any;
-        precision: number;
+        precision?: number | undefined;
     }
     class DrawOcctShapeOptions {
         constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeArrowAngle: number;
-        edgeArrowSize: number;
-        edgeColour: Base_3.Color;
-        edgeIndexColour: Base_3.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base_3.Color;
-        faceIndexColour: Base_3.Color;
-        faceIndexHeight: number;
+        allowQualityDecrease?: boolean | undefined;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeArrowAngle?: number | undefined;
+        edgeArrowSize?: number | undefined;
+        edgeColour?: Base_3.Color | undefined;
+        edgeIndexColour?: Base_3.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base_3.Color | undefined;
+        faceIndexColour?: Base_3.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base_3.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
-        vertexColour: Base_3.Color;
-        vertexSize: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
+        vertexColour?: Base_3.Color | undefined;
+        vertexSize?: number | undefined;
     }
     class DrawOcctShapeSimpleOptions {
         constructor(precision?: number, drawFaces?: boolean, faceColour?: Base_3.Color, drawEdges?: boolean, edgeColour?: Base_3.Color, edgeWidth?: number, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number);
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        drawEdges: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        edgeColour: Base_3.Color;
-        edgeWidth: number;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        edgeColour?: Base_3.Color | undefined;
+        edgeWidth?: number | undefined;
         faceColour?: Base_3.Color | undefined;
-        precision: number;
+        precision?: number | undefined;
     }
     type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
     type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | CustomOverlayDrawable | BABYLON_2.TransformNode | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[] | BABYLON_2.TransformNode[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
-        alpha: number;
-        alphaCutoff: number;
-        alphaMode: alphaModeEnum;
-        baseColor: Base_3.Color;
+        alpha?: number | undefined;
+        alphaCutoff?: number | undefined;
+        alphaMode?: alphaModeEnum | undefined;
+        baseColor?: Base_3.Color | undefined;
         baseColorTexture?: Base_3.Texture | undefined;
-        doubleSided: boolean;
+        doubleSided?: boolean | undefined;
         emissiveColor?: Base_3.Color | undefined;
-        emissiveIntensity: number;
+        emissiveIntensity?: number | undefined;
         emissiveTexture?: Base_3.Texture | undefined;
-        metallic: number;
+        metallic?: number | undefined;
         metallicRoughnessTexture?: Base_3.Texture | undefined;
-        name: string;
+        name?: string | undefined;
         normalTexture?: Base_3.Texture | undefined;
         occlusionTexture?: Base_3.Texture | undefined;
-        roughness: number;
-        unlit: boolean;
-        wireframe: boolean;
-        zOffset: number;
-        zOffsetUnits: number;
+        roughness?: number | undefined;
+        unlit?: boolean | undefined;
+        wireframe?: boolean | undefined;
+        zOffset?: number | undefined;
+        zOffsetUnits?: number | undefined;
     }
     class GenericTextureDto {
         constructor(url?: string, name?: string, uScale?: number, vScale?: number, uOffset?: number, vOffset?: number, wAng?: number, invertY?: boolean, invertZ?: boolean, samplingMode?: samplingModeEnum);
-        invertY: boolean;
-        invertZ: boolean;
-        name: string;
-        samplingMode: samplingModeEnum;
-        uOffset: number;
+        invertY?: boolean | undefined;
+        invertZ?: boolean | undefined;
+        name?: string | undefined;
+        samplingMode?: samplingModeEnum | undefined;
+        uOffset?: number | undefined;
         url: string;
-        uScale: number;
-        vOffset: number;
-        vScale: number;
-        wAng: number;
+        uScale?: number | undefined;
+        vOffset?: number | undefined;
+        vScale?: number | undefined;
+        wAng?: number | undefined;
     }
     enum samplingModeEnum {
         // (undocumented)
@@ -3068,17 +3786,41 @@ namespace Draw_2 {
     }
     class SceneDrawGridMeshDto {
         constructor(width?: number, height?: number, subdivisions?: number, majorUnitFrequency?: number, minorUnitVisibility?: number, gridRatio?: number, opacity?: number, backFaceCulling?: boolean, mainColor?: Base_3.Color, secondaryColor?: Base_3.Color);
-        backFaceCulling: boolean;
-        gridRatio: number;
-        height: number;
-        mainColor: Base_3.Color;
-        majorUnitFrequency: number;
-        minorUnitVisibility: number;
-        opacity: number;
-        secondaryColor: Base_3.Color;
-        subdivisions: number;
-        width: number;
+        backFaceCulling?: boolean | undefined;
+        gridRatio?: number | undefined;
+        height?: number | undefined;
+        mainColor?: Base_3.Color | undefined;
+        majorUnitFrequency?: number | undefined;
+        minorUnitVisibility?: number | undefined;
+        opacity?: number | undefined;
+        secondaryColor?: Base_3.Color | undefined;
+        subdivisions?: number | undefined;
+        width?: number | undefined;
     }
+}
+
+// @public
+namespace Draw_3 {
+    // (undocumented)
+    type DrawAny<E extends Inputs_2.Draw.Entity = Inputs_2.Draw.Entity> = Inputs_2.Draw.DrawAny<E>;
+    // (undocumented)
+    type DrawBasicGeometryOptions = WithDefaults<Inputs_2.Draw.DrawBasicGeometryOptions, "colours" | "colorMapStrategy" | "size" | "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "arrowSize" | "arrowAngle">;
+    // (undocumented)
+    type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs_2.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawNodeOptions = WithDefaults<Inputs_2.Draw.DrawNodeOptions, "colorX" | "colorY" | "colorZ" | "size">;
+    // (undocumented)
+    type DrawOcctShapeMaterialOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeMaterialOptions, "precision" | "drawEdges" | "edgeColour" | "edgeWidth">;
+    // (undocumented)
+    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DrawOcctShapeSimpleOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeSimpleOptions, "precision" | "drawFaces" | "faceColour" | "drawEdges" | "edgeColour" | "edgeWidth" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type GenericPBRMaterialDto = WithDefaults<Inputs_2.Draw.GenericPBRMaterialDto, "name" | "baseColor" | "metallic" | "roughness" | "alpha" | "emissiveColor" | "emissiveIntensity" | "zOffset" | "zOffsetUnits" | "alphaMode" | "alphaCutoff" | "doubleSided" | "wireframe" | "unlit">;
+    // (undocumented)
+    type GenericTextureDto = WithDefaults<Inputs_2.Draw.GenericTextureDto, "name" | "uScale" | "vScale" | "uOffset" | "vOffset" | "wAng" | "invertY" | "invertZ" | "samplingMode">;
+    // (undocumented)
+    type SceneDrawGridMeshDto = WithDefaults<Inputs_2.Draw.SceneDrawGridMeshDto, "width" | "height" | "subdivisions" | "majorUnitFrequency" | "minorUnitVisibility" | "gridRatio" | "opacity" | "backFaceCulling" | "mainColor" | "secondaryColor">;
 }
 
 // Warning: (ae-forgotten-export) The symbol "DrawHelperCore" needs to be exported by the entry point index.d.ts
@@ -3086,7 +3828,7 @@ namespace Draw_2 {
 // @public (undocumented)
 export class DrawHelper extends DrawHelperCore {
     // Warning: (ae-forgotten-export) The symbol "JSCADText" needs to be exported by the entry point index.d.ts
-    constructor(context: Context, solidText: JSCADText, vector: Vector_2, jscadWorkerManager: JSCADWorkerManager, manifoldWorkerManager: ManifoldWorkerManager, occWorkerManager: OCCTWorkerManager);
+    constructor(context: Context, solidText: JSCADText, vector: Vector_3, jscadWorkerManager: JSCADWorkerManager, manifoldWorkerManager: ManifoldWorkerManager, occWorkerManager: OCCTWorkerManager);
     // (undocumented)
     createGreasedPolylines(updatable: boolean, lines: number[][], width: number, colors: BABYLON_2.Color3[], visibility: number): BABYLON_2.GreasedLineMesh;
     // (undocumented)
@@ -3113,22 +3855,22 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs_2.Point.DrawPointDto<BABYLON_2.Mesh>): BABYLON_2.Mesh;
     // (undocumented)
     drawPoints(inputs: Inputs_2.Point.DrawPointsDto<BABYLON_2.Mesh> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
     }): BABYLON_2.Mesh;
     // (undocumented)
     drawPolyline(mesh: BABYLON_2.GreasedLineMesh | undefined, pointsToDraw: number[][], updatable: boolean, size: number, opacity: number, colours: string | string[], arrowSize?: number, arrowAngle?: number): BABYLON_2.GreasedLineMesh;
     // (undocumented)
     drawPolylineClose(inputs: Inputs_2.Polyline.DrawPolylineDto<BABYLON_2.GreasedLineMesh> & {
-        arrowSize?: number;
-        arrowAngle?: number;
+        arrowSize?: number | undefined;
+        arrowAngle?: number | undefined;
     }): BABYLON_2.GreasedLineMesh;
     // (undocumented)
     drawPolylines(mesh: BABYLON_2.GreasedLineMesh | undefined, polylinePoints: number[][][], updatable: boolean, size: number, opacity: number, colours: string | string[], tolerance?: number, segmentize?: boolean, colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number): BABYLON_2.GreasedLineMesh | undefined;
     // (undocumented)
     drawPolylinesWithColours(inputs: Inputs_2.Polyline.DrawPolylinesDto<BABYLON_2.GreasedLineMesh> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
-        arrowSize?: number;
-        arrowAngle?: number;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
+        arrowSize?: number | undefined;
+        arrowAngle?: number | undefined;
     }): BABYLON_2.GreasedLineMesh | undefined;
     // (undocumented)
     drawShape(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>): Promise<BABYLON_2.Mesh>;
@@ -3144,7 +3886,7 @@ export class DrawHelper extends DrawHelperCore {
     drawSurfaces(inputs: Inputs_2.Verb.DrawSurfacesDto<BABYLON_2.Mesh>): BABYLON_2.Mesh;
     // (undocumented)
     drawSurfacesMultiColour(inputs: Inputs_2.Verb.DrawSurfacesColoursDto<BABYLON_2.Mesh> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
     }): BABYLON_2.Mesh;
     // (undocumented)
     edgesRendering(mesh: BABYLON_2.LinesMesh, size: number, opacity: number, colours: string | string[]): void;
@@ -3158,7 +3900,7 @@ export class DrawHelper extends DrawHelperCore {
     // (undocumented)
     updatePointsInstances(mesh: BABYLON_2.Mesh, positions: Inputs_2.Base.Point3[]): void;
     // (undocumented)
-    readonly vector: Vector_2;
+    readonly vector: Vector_3;
 }
 
 // @public
@@ -3295,6 +4037,26 @@ namespace IO {
 }
 
 // @public
+namespace IO_2 {
+    // (undocumented)
+    type DxfArcSegmentDto = Inputs_7.IO.DxfArcSegmentDto;
+    // (undocumented)
+    type DxfCircleSegmentDto = Inputs_7.IO.DxfCircleSegmentDto;
+    // (undocumented)
+    type DxfLineSegmentDto = Inputs_7.IO.DxfLineSegmentDto;
+    // (undocumented)
+    type DxfModelDto = WithDefaults<Inputs_7.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    // (undocumented)
+    type DxfPathDto = Inputs_7.IO.DxfPathDto;
+    // (undocumented)
+    type DxfPathsPartDto = WithDefaults<Inputs_7.IO.DxfPathsPartDto, "layer" | "color">;
+    // (undocumented)
+    type DxfPolylineSegmentDto = WithDefaults<Inputs_7.IO.DxfPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DxfSplineSegmentDto = WithDefaults<Inputs_7.IO.DxfSplineSegmentDto, "degree" | "closed">;
+}
+
+// @public
 namespace JSCAD {
     class BooleanObjectsDto {
         constructor(meshes?: JSCADEntity[]);
@@ -3411,36 +4173,36 @@ namespace JSCAD {
     }
     class DrawPathDto<T> {
         constructor(path?: JSCADEntity, colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T);
-        colour: string;
-        opacity: number;
+        colour?: string | undefined;
+        opacity?: number | undefined;
         path: JSCADEntity;
         pathMesh?: T | undefined;
-        updatable: boolean;
-        width: number;
+        updatable?: boolean | undefined;
+        width?: number | undefined;
     }
     class DrawSolidMeshDto<T> {
         constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         mesh: JSCADEntity;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class DrawSolidMeshesDto<T> {
         constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         meshes?: JSCADEntity[] | undefined;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class EllipseDto {
         constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number);
@@ -3765,17 +4527,147 @@ namespace JSCAD {
 }
 
 // @public
+namespace JSCAD_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_4" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type BooleanObjectsDto = Inputs_4.JSCAD.BooleanObjectsDto;
+    // (undocumented)
+    type BooleanObjectsFromDto = Inputs_4.JSCAD.BooleanObjectsFromDto;
+    // (undocumented)
+    type BooleanTwoObjectsDto = Inputs_4.JSCAD.BooleanTwoObjectsDto;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_4.JSCAD.CircleDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type ColorizeDto = WithDefaults<Inputs_4.JSCAD.ColorizeDto, "color">;
+    // (undocumented)
+    type CubeCentersDto = WithDefaults<Inputs_4.JSCAD.CubeCentersDto, "size">;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_4.JSCAD.CubeDto, "center" | "size">;
+    // (undocumented)
+    type CuboidCentersDto = WithDefaults<Inputs_4.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
+    // (undocumented)
+    type CuboidDto = WithDefaults<Inputs_4.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
+    // (undocumented)
+    type CurveDto = Inputs_4.JSCAD.CurveDto;
+    // (undocumented)
+    type CylidnerCentersDto = WithDefaults<Inputs_4.JSCAD.CylidnerCentersDto, "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerCentersEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylidnerDto = WithDefaults<Inputs_4.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylinderTextDto = WithDefaults<Inputs_4.JSCAD.CylinderTextDto, "text" | "extrusionHeight" | "extrusionSize" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type DownloadGeometryDto = WithDefaults<Inputs_4.JSCAD.DownloadGeometryDto, "fileName">;
+    // (undocumented)
+    type DownloadSolidDto = Inputs_4.JSCAD.DownloadSolidDto;
+    // (undocumented)
+    type DownloadSolidsDto = Inputs_4.JSCAD.DownloadSolidsDto;
+    // (undocumented)
+    type DrawPathDto<T> = WithDefaults<Inputs_4.JSCAD.DrawPathDto<T>, "colour" | "opacity" | "width" | "updatable">;
+    // (undocumented)
+    type DrawSolidMeshDto<T> = WithDefaults<Inputs_4.JSCAD.DrawSolidMeshDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSolidMeshesDto<T> = WithDefaults<Inputs_4.JSCAD.DrawSolidMeshesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type EllipseDto = WithDefaults<Inputs_4.JSCAD.EllipseDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidCentersDto = WithDefaults<Inputs_4.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidDto = WithDefaults<Inputs_4.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type ExpansionDto = WithDefaults<Inputs_4.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
+    // (undocumented)
+    type ExtrudeLinearDto = WithDefaults<Inputs_4.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
+    // (undocumented)
+    type ExtrudeRectangularDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRectangularPointsDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularPointsDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRotateDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRotateDto, "angle" | "startAngle" | "segments">;
+    // (undocumented)
+    type FromPolygonPoints = Inputs_4.JSCAD.FromPolygonPoints;
+    // (undocumented)
+    type GeodesicSphereCentersDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
+    // (undocumented)
+    type GeodesicSphereDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
+    // (undocumented)
+    type HullDto = Inputs_4.JSCAD.HullDto;
+    // (undocumented)
+    type MeshDto = Inputs_4.JSCAD.MeshDto;
+    // (undocumented)
+    type MeshesDto = Inputs_4.JSCAD.MeshesDto;
+    // (undocumented)
+    type MinkowskiSumDto = Inputs_4.JSCAD.MinkowskiSumDto;
+    // (undocumented)
+    type PathAppendArcDto = WithDefaults<Inputs_4.JSCAD.PathAppendArcDto, "endPoint" | "xAxisRotation" | "clockwise" | "large" | "segments" | "radiusX" | "radiusY">;
+    // (undocumented)
+    type PathAppendPointsDto = Inputs_4.JSCAD.PathAppendPointsDto;
+    // (undocumented)
+    type PathAppendPolylineDto = Inputs_4.JSCAD.PathAppendPolylineDto;
+    // (undocumented)
+    type PathDto = Inputs_4.JSCAD.PathDto;
+    // (undocumented)
+    type PathFromPointsDto = WithDefaults<Inputs_4.JSCAD.PathFromPointsDto, "closed">;
+    // (undocumented)
+    type PathFromPolylineDto = WithDefaults<Inputs_4.JSCAD.PathFromPolylineDto, "closed">;
+    // (undocumented)
+    type PathsFromPointsDto = Inputs_4.JSCAD.PathsFromPointsDto;
+    // (undocumented)
+    type PointsDto = Inputs_4.JSCAD.PointsDto;
+    // (undocumented)
+    type PolylineDto = Inputs_4.JSCAD.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs_4.JSCAD.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_4.JSCAD.RectangleDto, "center" | "width" | "length">;
+    // (undocumented)
+    type RoundedCuboidCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCuboidDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedRectangleDto = WithDefaults<Inputs_4.JSCAD.RoundedRectangleDto, "center" | "roundRadius" | "segments" | "width" | "length">;
+    // (undocumented)
+    type SolidDto = Inputs_4.JSCAD.SolidDto;
+    // (undocumented)
+    type SphereCentersDto = WithDefaults<Inputs_4.JSCAD.SphereCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_4.JSCAD.SphereDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type SphereTextDto = WithDefaults<Inputs_4.JSCAD.SphereTextDto, "text" | "radius" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_4.JSCAD.SquareDto, "center" | "size">;
+    // (undocumented)
+    type StarDto = WithDefaults<Inputs_4.JSCAD.StarDto, "center" | "vertices" | "density" | "outerRadius" | "innerRadius" | "startAngle">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs_4.JSCAD.TextDto, "text" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type TorusDto = WithDefaults<Inputs_4.JSCAD.TorusDto, "center" | "innerRadius" | "outerRadius" | "innerSegments" | "outerSegments" | "innerRotation" | "outerRotation" | "startAngle">;
+    // (undocumented)
+    type TransformSolidDto = Inputs_4.JSCAD.TransformSolidDto;
+    // (undocumented)
+    type TransformSolidsDto = Inputs_4.JSCAD.TransformSolidsDto;
+}
+
+// @public
 namespace JSON_2 {
     class GetJsonFromArrayByFirstPropMatchDto {
         constructor(jsonArray?: unknown[], property?: string, match?: unknown);
         jsonArray: unknown[];
         match: unknown;
-        property: string;
+        property?: string | undefined;
     }
     class GetValueOnPropDto {
         constructor(json?: unknown, property?: string);
         json: unknown;
-        property: string;
+        property?: string | undefined;
     }
     class JsonDto {
         constructor(json?: unknown);
@@ -3783,7 +4675,7 @@ namespace JSON_2 {
     }
     class ParseDto {
         constructor(text?: string);
-        text: string;
+        text?: string | undefined;
     }
     class PathsDto {
         constructor(json?: unknown, query?: string);
@@ -3798,14 +4690,14 @@ namespace JSON_2 {
     class SetValueDto {
         constructor(json?: unknown, value?: unknown, path?: string, prop?: string);
         json: unknown;
-        path: string;
-        prop: string;
+        path?: string | undefined;
+        prop?: string | undefined;
         value: unknown;
     }
     class SetValueOnPropDto {
         constructor(json?: unknown, value?: unknown, property?: string);
         json: unknown;
-        property: string;
+        property?: string | undefined;
         value: unknown;
     }
     class SetValuesOnPathsDto {
@@ -3819,6 +4711,30 @@ namespace JSON_2 {
         constructor(json?: unknown);
         json: unknown;
     }
+}
+
+// @public
+namespace JSON_3 {
+    // (undocumented)
+    type GetJsonFromArrayByFirstPropMatchDto = WithDefaults<Inputs_3.JSON.GetJsonFromArrayByFirstPropMatchDto, "property">;
+    // (undocumented)
+    type GetValueOnPropDto = WithDefaults<Inputs_3.JSON.GetValueOnPropDto, "property">;
+    // (undocumented)
+    type JsonDto = Inputs_3.JSON.JsonDto;
+    // (undocumented)
+    type ParseDto = WithDefaults<Inputs_3.JSON.ParseDto, "text">;
+    // (undocumented)
+    type PathsDto = Inputs_3.JSON.PathsDto;
+    // (undocumented)
+    type QueryDto = Inputs_3.JSON.QueryDto;
+    // (undocumented)
+    type SetValueDto = WithDefaults<Inputs_3.JSON.SetValueDto, "path" | "prop">;
+    // (undocumented)
+    type SetValueOnPropDto = WithDefaults<Inputs_3.JSON.SetValueOnPropDto, "property">;
+    // (undocumented)
+    type SetValuesOnPathsDto = Inputs_3.JSON.SetValuesOnPathsDto;
+    // (undocumented)
+    type StringifyDto = Inputs_3.JSON.StringifyDto;
 }
 
 // @public
@@ -3898,6 +4814,38 @@ namespace Line {
         lines: LinePointsDto[];
         transformation: Base.TransformMatrixes[];
     }
+}
+
+// @public
+namespace Line_2 {
+    // (undocumented)
+    type DrawLineDto<T> = WithDefaults<Inputs_7.Line.DrawLineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawLinesDto<T> = WithDefaults<Inputs_7.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type LineDto = Inputs_7.Line.LineDto;
+    // (undocumented)
+    type LineLineIntersectionDto = WithDefaults<Inputs_7.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointsDto = Inputs_7.Line.LinePointsDto;
+    // (undocumented)
+    type LinesDto = Inputs_7.Line.LinesDto;
+    // (undocumented)
+    type LineStartEndPointsDto = Inputs_7.Line.LineStartEndPointsDto;
+    // (undocumented)
+    type PointOnLineDto = WithDefaults<Inputs_7.Line.PointOnLineDto, "param">;
+    // (undocumented)
+    type PointsLinesDto = Inputs_7.Line.PointsLinesDto;
+    // (undocumented)
+    type SegmentDto = Inputs_7.Line.SegmentDto;
+    // (undocumented)
+    type SegmentsDto = Inputs_7.Line.SegmentsDto;
+    // (undocumented)
+    type TransformLineDto = Inputs_7.Line.TransformLineDto;
+    // (undocumented)
+    type TransformLinesDto = Inputs_7.Line.TransformLinesDto;
+    // (undocumented)
+    type TransformsLinesDto = Inputs_7.Line.TransformsLinesDto;
 }
 
 // @public
@@ -4069,6 +5017,64 @@ namespace Lists {
 }
 
 // @public
+namespace Lists_2 {
+    // (undocumented)
+    type AddItemAtIndexDto<T> = WithDefaults<Inputs_7.Lists.AddItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type AddItemAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.AddItemAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type AddItemDto<T> = WithDefaults<Inputs_7.Lists.AddItemDto<T>, "clone">;
+    // (undocumented)
+    type AddItemFirstLastDto<T> = WithDefaults<Inputs_7.Lists.AddItemFirstLastDto<T>, "position" | "clone">;
+    // (undocumented)
+    type AddItemsAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.AddItemsAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type ConcatenateDto<T> = WithDefaults<Inputs_7.Lists.ConcatenateDto<T>, "clone">;
+    // (undocumented)
+    type GetByPatternDto<T> = WithDefaults<Inputs_7.Lists.GetByPatternDto<T>, "pattern">;
+    // (undocumented)
+    type GetLongestListLength<T> = Inputs_7.Lists.GetLongestListLength<T>;
+    // (undocumented)
+    type GetNthItemDto<T> = WithDefaults<Inputs_7.Lists.GetNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type GroupListDto<T> = WithDefaults<Inputs_7.Lists.GroupListDto<T>, "nrElements" | "keepRemainder">;
+    // (undocumented)
+    type IncludesDto<T> = Inputs_7.Lists.IncludesDto<T>;
+    // (undocumented)
+    type InterleaveDto<T> = WithDefaults<Inputs_7.Lists.InterleaveDto<T>, "clone">;
+    // (undocumented)
+    type ListCloneDto<T> = WithDefaults<Inputs_7.Lists.ListCloneDto<T>, "clone">;
+    // (undocumented)
+    type ListDto<T> = Inputs_7.Lists.ListDto<T>;
+    // (undocumented)
+    type ListItemDto<T> = WithDefaults<Inputs_7.Lists.ListItemDto<T>, "index" | "clone">;
+    // (undocumented)
+    type MergeElementsOfLists<T> = WithDefaults<Inputs_7.Lists.MergeElementsOfLists<T>, "level">;
+    // (undocumented)
+    type MultiplyItemDto<T> = WithDefaults<Inputs_7.Lists.MultiplyItemDto<T>, "times">;
+    // (undocumented)
+    type RandomThresholdDto<T> = WithDefaults<Inputs_7.Lists.RandomThresholdDto<T>, "threshold" | "clone">;
+    // (undocumented)
+    type RemoveDuplicatesDto<T> = WithDefaults<Inputs_7.Lists.RemoveDuplicatesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveDuplicatesToleranceDto<T> = WithDefaults<Inputs_7.Lists.RemoveDuplicatesToleranceDto<T>, "tolerance" | "clone">;
+    // (undocumented)
+    type RemoveItemAtIndexDto<T> = WithDefaults<Inputs_7.Lists.RemoveItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type RemoveItemsAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.RemoveItemsAtIndexesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveNthItemDto<T> = WithDefaults<Inputs_7.Lists.RemoveNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type RepeatInPatternDto<T> = WithDefaults<Inputs_7.Lists.RepeatInPatternDto<T>, "clone" | "lengthLimit">;
+    // (undocumented)
+    type SortDto<T> = WithDefaults<Inputs_7.Lists.SortDto<T>, "clone" | "orderAsc">;
+    // (undocumented)
+    type SortJsonDto<T> = WithDefaults<Inputs_7.Lists.SortJsonDto<T>, "clone" | "orderAsc" | "property">;
+    // (undocumented)
+    type SubListDto<T> = WithDefaults<Inputs_7.Lists.SubListDto<T>, "indexStart" | "indexEnd" | "clone">;
+}
+
+// @public
 namespace Logic {
     class BooleanDto {
         constructor(boolean?: boolean);
@@ -4133,6 +5139,28 @@ namespace Logic {
         boolean?: boolean | undefined;
         value: T;
     }
+}
+
+// @public
+namespace Logic_2 {
+    // (undocumented)
+    type BooleanDto = WithDefaults<Inputs_7.Logic.BooleanDto, "boolean">;
+    // (undocumented)
+    type BooleanListDto = Inputs_7.Logic.BooleanListDto;
+    // (undocumented)
+    type ComparisonDto<T> = WithDefaults<Inputs_7.Logic.ComparisonDto<T>, "operator">;
+    // (undocumented)
+    type RandomBooleansDto = WithDefaults<Inputs_7.Logic.RandomBooleansDto, "length" | "trueThreshold">;
+    // (undocumented)
+    type ThresholdBooleanListDto = WithDefaults<Inputs_7.Logic.ThresholdBooleanListDto, "threshold" | "inverse">;
+    // (undocumented)
+    type ThresholdGapsBooleanListDto = WithDefaults<Inputs_7.Logic.ThresholdGapsBooleanListDto, "inverse">;
+    // (undocumented)
+    type TwoThresholdRandomGradientDto = WithDefaults<Inputs_7.Logic.TwoThresholdRandomGradientDto, "thresholdTotalTrue" | "thresholdTotalFalse" | "nrLevels">;
+    // (undocumented)
+    type TwoValueGateDto<T, U> = Inputs_7.Logic.TwoValueGateDto<T, U>;
+    // (undocumented)
+    type ValueGateDto<T> = WithDefaults<Inputs_7.Logic.ValueGateDto<T>, "boolean">;
 }
 
 // @public
@@ -4239,30 +5267,30 @@ namespace Manifold {
     }
     class DrawManifoldOrCrossSectionDto<T, M> {
         constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldOrCrossSection?: T | undefined;
     }
     class DrawManifoldsOrCrossSectionsDto<T, M> {
         constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldsOrCrossSections?: T[] | undefined;
     }
     class ExtrudeDto<T> {
@@ -4486,7 +5514,7 @@ namespace Manifold {
     }
     class ScaleDto<T> {
         constructor(manifold?: T, factor?: number);
-        factor: number;
+        factor?: number | undefined;
         manifold: T;
     }
     class SimplifyDto<T> {
@@ -4585,6 +5613,158 @@ namespace Manifold {
         manifold1: T;
         manifold2: T;
     }
+}
+
+// @public
+namespace Manifold_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_5" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type CalculateCurvatureDto<T> = WithDefaults<Inputs_5.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
+    // (undocumented)
+    type CalculateNormalsDto<T> = WithDefaults<Inputs_5.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_5.Manifold.CircleDto, "radius" | "circularSegments">;
+    // (undocumented)
+    type ComposeDto<T> = Inputs_5.Manifold.ComposeDto<T>;
+    // (undocumented)
+    type CountDto = Inputs_5.Manifold.CountDto;
+    // (undocumented)
+    type CreateContourSectionDto = WithDefaults<Inputs_5.Manifold.CreateContourSectionDto, "fillRule">;
+    // (undocumented)
+    type CreateFromMeshDto = Inputs_5.Manifold.CreateFromMeshDto;
+    // (undocumented)
+    type CrossSectionDto<T> = Inputs_5.Manifold.CrossSectionDto<T>;
+    // (undocumented)
+    type CrossSectionFromPolygonPointsDto = WithDefaults<Inputs_5.Manifold.CrossSectionFromPolygonPointsDto, "fillRule" | "removeDuplicates" | "tolerance">;
+    // (undocumented)
+    type CrossSectionFromPolygonsPointsDto = WithDefaults<Inputs_5.Manifold.CrossSectionFromPolygonsPointsDto, "fillRule" | "removeDuplicates" | "tolerance">;
+    // (undocumented)
+    type CrossSectionsDto<T> = Inputs_5.Manifold.CrossSectionsDto<T>;
+    // (undocumented)
+    type CrossSectionWarpDto<T> = Inputs_5.Manifold.CrossSectionWarpDto<T>;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_5.Manifold.CubeDto, "center" | "size">;
+    // (undocumented)
+    type CylinderDto = WithDefaults<Inputs_5.Manifold.CylinderDto, "height" | "radiusLow" | "radiusHigh" | "circularSegments" | "center">;
+    // (undocumented)
+    type DecomposedManifoldMeshDto = Inputs_5.Manifold.DecomposedManifoldMeshDto;
+    // (undocumented)
+    type DecomposeManifoldOrCrossSectionDto<T> = Inputs_5.Manifold.DecomposeManifoldOrCrossSectionDto<T>;
+    // (undocumented)
+    type DecomposeManifoldsOrCrossSectionsDto<T> = Inputs_5.Manifold.DecomposeManifoldsOrCrossSectionsDto<T>;
+    // (undocumented)
+    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs_5.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs_5.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type ExtrudeDto<T> = WithDefaults<Inputs_5.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
+    // (undocumented)
+    type FromPolygonPointsDto = Inputs_5.Manifold.FromPolygonPointsDto;
+    // (undocumented)
+    type HullPointsDto<T> = Inputs_5.Manifold.HullPointsDto<T>;
+    // (undocumented)
+    type ManifoldDto<T> = Inputs_5.Manifold.ManifoldDto<T>;
+    // (undocumented)
+    type ManifoldOrCrossSectionDto<T> = Inputs_5.Manifold.ManifoldOrCrossSectionDto<T>;
+    // (undocumented)
+    type ManifoldRefineDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineDto<T>, "number">;
+    // (undocumented)
+    type ManifoldRefineLengthDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineLengthDto<T>, "length">;
+    // (undocumented)
+    type ManifoldRefineToleranceDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineToleranceDto<T>, "tolerance">;
+    // (undocumented)
+    type ManifoldsDto<T> = Inputs_5.Manifold.ManifoldsDto<T>;
+    // (undocumented)
+    type ManifoldSetPropertiesDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSetPropertiesDto<T>, "numProp">;
+    // (undocumented)
+    type ManifoldSimplifyDto<T> = Inputs_5.Manifold.ManifoldSimplifyDto<T>;
+    // (undocumented)
+    type ManifoldsMinGapDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldsMinGapDto<T>, "searchLength">;
+    // (undocumented)
+    type ManifoldSmoothByNormalsDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSmoothByNormalsDto<T>, "normalIdx">;
+    // (undocumented)
+    type ManifoldSmoothOutDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSmoothOutDto<T>, "minSharpAngle" | "minSmoothness">;
+    // (undocumented)
+    type ManifoldsOrCrossSectionsDto<T> = Inputs_5.Manifold.ManifoldsOrCrossSectionsDto<T>;
+    // (undocumented)
+    type ManifoldsToMeshesDto<T> = Inputs_5.Manifold.ManifoldsToMeshesDto<T>;
+    // (undocumented)
+    type ManifoldToMeshDto<T> = Inputs_5.Manifold.ManifoldToMeshDto<T>;
+    // (undocumented)
+    type ManifoldWarpDto<T> = Inputs_5.Manifold.ManifoldWarpDto<T>;
+    // (undocumented)
+    type MeshDto<T> = Inputs_5.Manifold.MeshDto<T>;
+    // (undocumented)
+    type MeshHalfEdgeIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshHalfEdgeIndexDto<T>, "halfEdgeIndex">;
+    // (undocumented)
+    type MeshTriangleIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshTriangleIndexDto<T>, "triangleIndex">;
+    // (undocumented)
+    type MeshTriangleRunIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshTriangleRunIndexDto<T>, "triangleRunIndex">;
+    // (undocumented)
+    type MeshVertexIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshVertexIndexDto<T>, "vertexIndex">;
+    // (undocumented)
+    type MirrorCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.MirrorCrossSectionDto<T>, "normal">;
+    // (undocumented)
+    type MirrorDto<T> = WithDefaults<Inputs_5.Manifold.MirrorDto<T>, "normal">;
+    // (undocumented)
+    type OffsetDto<T> = WithDefaults<Inputs_5.Manifold.OffsetDto<T>, "delta" | "joinType" | "miterLimit" | "circularSegments">;
+    // (undocumented)
+    type RayCastDto<T> = WithDefaults<Inputs_5.Manifold.RayCastDto<T>, "origin" | "endpoint">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_5.Manifold.RectangleDto, "length" | "height" | "center">;
+    // (undocumented)
+    type RevolveDto<T> = WithDefaults<Inputs_5.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
+    // (undocumented)
+    type RotateCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.RotateCrossSectionDto<T>, "degrees">;
+    // (undocumented)
+    type RotateDto<T> = Inputs_5.Manifold.RotateDto<T>;
+    // (undocumented)
+    type RotateXYZDto<T> = WithDefaults<Inputs_5.Manifold.RotateXYZDto<T>, "x" | "y" | "z">;
+    // (undocumented)
+    type Scale2DCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.Scale2DCrossSectionDto<T>, "vector">;
+    // (undocumented)
+    type Scale3DDto<T> = WithDefaults<Inputs_5.Manifold.Scale3DDto<T>, "vector">;
+    // (undocumented)
+    type ScaleCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.ScaleCrossSectionDto<T>, "factor">;
+    // (undocumented)
+    type ScaleDto<T> = WithDefaults<Inputs_5.Manifold.ScaleDto<T>, "factor">;
+    // (undocumented)
+    type SimplifyDto<T> = WithDefaults<Inputs_5.Manifold.SimplifyDto<T>, "epsilon">;
+    // (undocumented)
+    type SliceDto<T> = WithDefaults<Inputs_5.Manifold.SliceDto<T>, "height">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_5.Manifold.SphereDto, "radius" | "circularSegments">;
+    // (undocumented)
+    type SplitByPlaneDto<T> = WithDefaults<Inputs_5.Manifold.SplitByPlaneDto<T>, "normal" | "originOffset">;
+    // (undocumented)
+    type SplitByPlaneOnOffsetsDto<T> = WithDefaults<Inputs_5.Manifold.SplitByPlaneOnOffsetsDto<T>, "normal" | "originOffsets">;
+    // (undocumented)
+    type SplitManifoldsDto<T> = Inputs_5.Manifold.SplitManifoldsDto<T>;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_5.Manifold.SquareDto, "center" | "size">;
+    // (undocumented)
+    type TransformCrossSectionDto<T> = Inputs_5.Manifold.TransformCrossSectionDto<T>;
+    // (undocumented)
+    type TransformDto<T> = Inputs_5.Manifold.TransformDto<T>;
+    // (undocumented)
+    type TransformsDto<T> = Inputs_5.Manifold.TransformsDto<T>;
+    // (undocumented)
+    type TranslateByVectorsDto<T> = Inputs_5.Manifold.TranslateByVectorsDto<T>;
+    // (undocumented)
+    type TranslateCrossSectionDto<T> = Inputs_5.Manifold.TranslateCrossSectionDto<T>;
+    // (undocumented)
+    type TranslateDto<T> = Inputs_5.Manifold.TranslateDto<T>;
+    // (undocumented)
+    type TranslateXYCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.TranslateXYCrossSectionDto<T>, "x" | "y">;
+    // (undocumented)
+    type TranslateXYZDto<T> = WithDefaults<Inputs_5.Manifold.TranslateXYZDto<T>, "x" | "y" | "z">;
+    // (undocumented)
+    type TrimByPlaneDto<T> = WithDefaults<Inputs_5.Manifold.TrimByPlaneDto<T>, "normal" | "originOffset">;
+    // (undocumented)
+    type TwoCrossSectionsDto<T> = Inputs_5.Manifold.TwoCrossSectionsDto<T>;
+    // (undocumented)
+    type TwoManifoldsDto<T> = Inputs_5.Manifold.TwoManifoldsDto<T>;
 }
 
 // @public
@@ -4808,6 +5988,46 @@ namespace Math_2 {
 }
 
 // @public
+namespace Math_3 {
+    // (undocumented)
+    type ActionOnOneNumberDto = WithDefaults<Inputs_7.Math.ActionOnOneNumberDto, "number" | "operation">;
+    // (undocumented)
+    type ActionOnTwoNumbersDto = WithDefaults<Inputs_7.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
+    // (undocumented)
+    type ClampDto = WithDefaults<Inputs_7.Math.ClampDto, "number" | "min" | "max">;
+    // (undocumented)
+    type EaseDto = WithDefaults<Inputs_7.Math.EaseDto, "x" | "min" | "max" | "ease">;
+    // (undocumented)
+    type EvalArithmeticDto = WithDefaults<Inputs_7.Math.EvalArithmeticDto, "expression">;
+    // (undocumented)
+    type InverseLerpDto = WithDefaults<Inputs_7.Math.InverseLerpDto, "start" | "end" | "value">;
+    // (undocumented)
+    type LerpDto = WithDefaults<Inputs_7.Math.LerpDto, "start" | "end" | "t">;
+    // (undocumented)
+    type ModulusDto = WithDefaults<Inputs_7.Math.ModulusDto, "number" | "modulus">;
+    // (undocumented)
+    type MoveTowardsDto = WithDefaults<Inputs_7.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    // (undocumented)
+    type NumberDto = WithDefaults<Inputs_7.Math.NumberDto, "number">;
+    // (undocumented)
+    type PingPongDto = WithDefaults<Inputs_7.Math.PingPongDto, "t" | "length">;
+    // (undocumented)
+    type RandomNumberDto = WithDefaults<Inputs_7.Math.RandomNumberDto, "low" | "high">;
+    // (undocumented)
+    type RandomNumbersDto = WithDefaults<Inputs_7.Math.RandomNumbersDto, "low" | "high" | "count">;
+    // (undocumented)
+    type RemapNumberDto = WithDefaults<Inputs_7.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
+    // (undocumented)
+    type RoundToDecimalsDto = WithDefaults<Inputs_7.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    // (undocumented)
+    type ToFixedDto = WithDefaults<Inputs_7.Math.ToFixedDto, "decimalPlaces">;
+    // (undocumented)
+    type TwoNumbersDto = WithDefaults<Inputs_7.Math.TwoNumbersDto, "first" | "second">;
+    // (undocumented)
+    type WrapDto = WithDefaults<Inputs_7.Math.WrapDto, "number" | "min" | "max">;
+}
+
+// @public
 namespace Mesh {
     class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
@@ -4835,6 +6055,20 @@ namespace Mesh {
         triangle1: Base.Triangle3;
         triangle2: Base.Triangle3;
     }
+}
+
+// @public
+namespace Mesh_2 {
+    // (undocumented)
+    type MeshMeshToleranceDto = WithDefaults<Inputs_7.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type SignedDistanceFromPlaneToPointDto = Inputs_7.Mesh.SignedDistanceFromPlaneToPointDto;
+    // (undocumented)
+    type TriangleDto = Inputs_7.Mesh.TriangleDto;
+    // (undocumented)
+    type TriangleToleranceDto = WithDefaults<Inputs_7.Mesh.TriangleToleranceDto, "tolerance">;
+    // (undocumented)
+    type TriangleTriangleToleranceDto = WithDefaults<Inputs_7.Mesh.TriangleTriangleToleranceDto, "tolerance">;
 }
 
 // @public
@@ -5534,59 +6768,59 @@ namespace OCCT {
     }
     class DrawShapeDto<T> {
         constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
+        allowQualityDecrease?: boolean | undefined;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeColour?: Base.Color | undefined;
+        edgeIndexColour?: Base.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base.Color | undefined;
+        faceIndexColour?: Base.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
         shape?: T | undefined;
-        vertexColour: string;
-        vertexSize: number;
+        vertexColour?: string | undefined;
+        vertexSize?: number | undefined;
     }
     class DrawShapesDto<T> {
         constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
+        allowQualityDecrease?: boolean | undefined;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeColour?: Base.Color | undefined;
+        edgeIndexColour?: Base.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base.Color | undefined;
+        faceIndexColour?: Base.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
         shapes: T[];
-        vertexColour: string;
-        vertexSize: number;
+        vertexColour?: string | undefined;
+        vertexSize?: number | undefined;
     }
     enum dxfAcadVersionEnum {
         // (undocumented)
@@ -6173,13 +7407,13 @@ namespace OCCT {
     }
     class ImportStepIgesDto {
         constructor(assetFile?: File, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
+        adjustZtoY?: boolean | undefined;
         assetFile: File;
     }
     class ImportStepIgesFromTextDto {
         constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
-        fileType: fileTypeEnum;
+        adjustZtoY?: boolean | undefined;
+        fileType?: fileTypeEnum | undefined;
         text: string;
     }
     class InterpolateSymmetricDto {
@@ -7299,6 +8533,586 @@ namespace OCCT {
 }
 
 // @public
+namespace OCCT_3 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_6" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type AlignAndTranslateDto<T> = WithDefaults<Inputs_6.OCCT.AlignAndTranslateDto<T>, "direction" | "center">;
+    // (undocumented)
+    type AlignAndTranslateShapesDto<T> = WithDefaults<Inputs_6.OCCT.AlignAndTranslateShapesDto<T>, "directions" | "centers">;
+    // (undocumented)
+    type AlignDto<T> = WithDefaults<Inputs_6.OCCT.AlignDto<T>, "fromOrigin" | "fromDirection" | "toOrigin" | "toDirection">;
+    // (undocumented)
+    type AlignNormAndAxisDto<T> = WithDefaults<Inputs_6.OCCT.AlignNormAndAxisDto<T>, "fromOrigin" | "fromNorm" | "fromAx" | "toOrigin" | "toNorm" | "toAx">;
+    // (undocumented)
+    type AlignShapesDto<T> = WithDefaults<Inputs_6.OCCT.AlignShapesDto<T>, "fromOrigins" | "fromDirections" | "toOrigins" | "toDirections">;
+    // (undocumented)
+    type ArcEdgeCirclePointAngleDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCirclePointAngleDto<T>, "alphaAngle" | "sense">;
+    // (undocumented)
+    type ArcEdgeCircleTwoAnglesDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCircleTwoAnglesDto<T>, "alphaAngle1" | "alphaAngle2" | "sense">;
+    // (undocumented)
+    type ArcEdgeCircleTwoPointsDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCircleTwoPointsDto<T>, "start" | "end" | "sense">;
+    // (undocumented)
+    type ArcEdgeThreePointsDto = WithDefaults<Inputs_6.OCCT.ArcEdgeThreePointsDto, "start" | "middle" | "end">;
+    // (undocumented)
+    type ArcEdgeTwoPointsTangentDto = WithDefaults<Inputs_6.OCCT.ArcEdgeTwoPointsTangentDto, "start" | "tangentVec" | "end">;
+    // (undocumented)
+    type BasicShapeRepairDto<T> = WithDefaults<Inputs_6.OCCT.BasicShapeRepairDto<T>, "precision" | "maxTolerance" | "minTolerance">;
+    // (undocumented)
+    type BezierDto = WithDefaults<Inputs_6.OCCT.BezierDto, "closed" | "periodic">;
+    // (undocumented)
+    type BezierWeightsDto = WithDefaults<Inputs_6.OCCT.BezierWeightsDto, "closed" | "periodic">;
+    // (undocumented)
+    type BezierWiresDto = WithDefaults<Inputs_6.OCCT.BezierWiresDto, "returnCompound">;
+    // (undocumented)
+    type BoundingBoxDto = Inputs_6.OCCT.BoundingBoxDto;
+    // (undocumented)
+    type BoundingBoxPropsDto = WithDefaults<Inputs_6.OCCT.BoundingBoxPropsDto, "min" | "max" | "center" | "size">;
+    // (undocumented)
+    type BoundingSpherePropsDto = WithDefaults<Inputs_6.OCCT.BoundingSpherePropsDto, "center" | "radius">;
+    // (undocumented)
+    type BoxDto = WithDefaults<Inputs_6.OCCT.BoxDto, "width" | "length" | "height" | "center" | "originOnCenter">;
+    // (undocumented)
+    type BoxFromCornerDto = WithDefaults<Inputs_6.OCCT.BoxFromCornerDto, "width" | "length" | "height" | "corner">;
+    // (undocumented)
+    type BRepGraphNodeOfShapeDto<T> = Inputs_6.OCCT.BRepGraphNodeOfShapeDto<T>;
+    // (undocumented)
+    type BRepGraphReconstructDto<T> = WithDefaults<Inputs_6.OCCT.BRepGraphReconstructDto<T>, "kind" | "index">;
+    // (undocumented)
+    type BSplineDto = WithDefaults<Inputs_6.OCCT.BSplineDto, "closed">;
+    // (undocumented)
+    type BSplinesDto = WithDefaults<Inputs_6.OCCT.BSplinesDto, "returnCompound">;
+    // (undocumented)
+    type BuildAssemblyDocumentDto<T, D> = Inputs_6.OCCT.BuildAssemblyDocumentDto<T, D>;
+    // (undocumented)
+    type Chamfer2dVertexDto<T> = WithDefaults<Inputs_6.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
+    // (undocumented)
+    type ChamferDto<T> = WithDefaults<Inputs_6.OCCT.ChamferDto<T>, "distance">;
+    // (undocumented)
+    type ChamferEdgeDistAngleDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgeDistAngleDto<T, U, F>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferEdgesDistAngleDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgesDistAngleDto<T, U, F>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferEdgesDistsAnglesDto<T, U, F> = Inputs_6.OCCT.ChamferEdgesDistsAnglesDto<T, U, F>;
+    // (undocumented)
+    type ChamferEdgesListDto<T, U> = Inputs_6.OCCT.ChamferEdgesListDto<T, U>;
+    // (undocumented)
+    type ChamferEdgesTwoDistancesDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgesTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    // (undocumented)
+    type ChamferEdgesTwoDistancesListsDto<T, U, F> = Inputs_6.OCCT.ChamferEdgesTwoDistancesListsDto<T, U, F>;
+    // (undocumented)
+    type ChamferEdgeTwoDistancesDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgeTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    // (undocumented)
+    type ChristmasTreeDto = WithDefaults<Inputs_6.OCCT.ChristmasTreeDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction">;
+    // (undocumented)
+    type ChristmasTreeSolidDto = WithDefaults<Inputs_6.OCCT.ChristmasTreeSolidDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_6.OCCT.CircleDto, "radius" | "center" | "direction">;
+    // (undocumented)
+    type ClassifyCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.ClassifyCornerByPointDto<T>, "points" | "snapTolerance">;
+    // (undocumented)
+    type ClosestPointsBetweenTwoShapesDto<T> = Inputs_6.OCCT.ClosestPointsBetweenTwoShapesDto<T>;
+    // (undocumented)
+    type ClosestPointsOnShapeFromPointsDto<T> = Inputs_6.OCCT.ClosestPointsOnShapeFromPointsDto<T>;
+    // (undocumented)
+    type ClosestPointsOnShapesFromPointsDto<T> = Inputs_6.OCCT.ClosestPointsOnShapesFromPointsDto<T>;
+    // (undocumented)
+    type CombineAssemblyStructureDto<T> = WithDefaults<Inputs_6.OCCT.CombineAssemblyStructureDto<T>, "parts" | "nodes" | "clearDocument">;
+    // (undocumented)
+    type CompareShapesDto<T> = Inputs_6.OCCT.CompareShapesDto<T>;
+    // (undocumented)
+    type ComposeTransformDto = WithDefaults<Inputs_6.OCCT.ComposeTransformDto, "translation" | "rotation" | "scale">;
+    // (undocumented)
+    type CompoundShapesDto<T> = Inputs_6.OCCT.CompoundShapesDto<T>;
+    // (undocumented)
+    type ConeDto = WithDefaults<Inputs_6.OCCT.ConeDto, "radius1" | "radius2" | "height" | "angle" | "center" | "direction">;
+    // (undocumented)
+    type ConstraintTanCirclesOnCircleAndPntDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanCirclesOnCircleAndPntDto<T>, "tolerance" | "radius">;
+    // (undocumented)
+    type ConstraintTanCirclesOnTwoCirclesDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanCirclesOnTwoCirclesDto<T>, "tolerance" | "radius">;
+    // (undocumented)
+    type ConstraintTanLinesFromPtToCircleDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesFromPtToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    // (undocumented)
+    type ConstraintTanLinesFromTwoPtsToCircleDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    // (undocumented)
+    type ConstraintTanLinesOnTwoCirclesDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesOnTwoCirclesDto<T>, "tolerance" | "positionResult" | "circleRemainders">;
+    // (undocumented)
+    type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale">;
+    // (undocumented)
+    type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type ConvertStepToGltfDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection">;
+    // (undocumented)
+    type ConvertStepToGltfWithDracoDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfWithDracoDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type CreateAssemblyNodeDto = WithDefaults<Inputs_6.OCCT.CreateAssemblyNodeDto, "colorRgba">;
+    // (undocumented)
+    type CreateAssemblyPartDto<T> = Inputs_6.OCCT.CreateAssemblyPartDto<T>;
+    // (undocumented)
+    type CreateImportedPartDto = WithDefaults<Inputs_6.OCCT.CreateImportedPartDto, "sourceDocumentIndex">;
+    // (undocumented)
+    type CreateInstanceNodeDto = WithDefaults<Inputs_6.OCCT.CreateInstanceNodeDto, "translation" | "rotation" | "scale">;
+    // (undocumented)
+    type CreatePartUpdateDto<T> = Inputs_6.OCCT.CreatePartUpdateDto<T>;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_6.OCCT.CubeDto, "size" | "center" | "originOnCenter">;
+    // (undocumented)
+    type CurveAndSurfaceDto<T, U> = Inputs_6.OCCT.CurveAndSurfaceDto<T, U>;
+    // (undocumented)
+    type CurveSeamByLengthDto<T> = WithDefaults<Inputs_6.OCCT.CurveSeamByLengthDto<T>, "length">;
+    // (undocumented)
+    type CurveSeamByParameterDto<T> = WithDefaults<Inputs_6.OCCT.CurveSeamByParameterDto<T>, "parameter">;
+    // (undocumented)
+    type CylinderDto = WithDefaults<Inputs_6.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
+    // (undocumented)
+    type CylindersOnLinesDto = WithDefaults<Inputs_6.OCCT.CylindersOnLinesDto, "radius">;
+    // (undocumented)
+    type DataOnGeometryAtLengthDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryAtLengthDto<T>, "length">;
+    // (undocumented)
+    type DataOnGeometryAtLengthsDto<T> = Inputs_6.OCCT.DataOnGeometryAtLengthsDto<T>;
+    // (undocumented)
+    type DataOnGeometryAtParamDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryAtParamDto<T>, "param">;
+    // (undocumented)
+    type DataOnGeometryesAtLengthDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryesAtLengthDto<T>, "length">;
+    // (undocumented)
+    type DataOnGeometryesAtParamDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryesAtParamDto<T>, "param">;
+    // (undocumented)
+    type DataOnUVDto<T> = WithDefaults<Inputs_6.OCCT.DataOnUVDto<T>, "paramU" | "paramV">;
+    // (undocumented)
+    type DataOnUVsDto<T> = WithDefaults<Inputs_6.OCCT.DataOnUVsDto<T>, "paramsUV">;
+    // (undocumented)
+    type DecomposedEdgeDto = Inputs_6.OCCT.DecomposedEdgeDto;
+    // (undocumented)
+    type DecomposedFaceDto = Inputs_6.OCCT.DecomposedFaceDto;
+    // (undocumented)
+    type DecomposedMeshDto = Inputs_6.OCCT.DecomposedMeshDto;
+    // (undocumented)
+    type DifferenceDto<T> = WithDefaults<Inputs_6.OCCT.DifferenceDto<T>, "keepEdges">;
+    // (undocumented)
+    type DivideDto<T> = WithDefaults<Inputs_6.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type DivideShapesDto<T> = WithDefaults<Inputs_6.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type DocToMeshDto<U> = WithDefaults<Inputs_6.OCCT.DocToMeshDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DocToMeshesDto<U> = WithDefaults<Inputs_6.OCCT.DocToMeshesDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DocumentLabelQueryDto<T> = Inputs_6.OCCT.DocumentLabelQueryDto<T>;
+    // (undocumented)
+    type DocumentQueryDto<T> = Inputs_6.OCCT.DocumentQueryDto<T>;
+    // (undocumented)
+    type DraftAngleDto<T, U> = WithDefaults<Inputs_6.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    // (undocumented)
+    type DrawShapeDto<T> = WithDefaults<Inputs_6.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DrawShapesDto<T> = WithDefaults<Inputs_6.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DxfPathsPartsListDto = WithDefaults<Inputs_6.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type DxfPathsWithLayerDto = WithDefaults<Inputs_6.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
+    // (undocumented)
+    type EdgeIndexDto<T> = WithDefaults<Inputs_6.OCCT.EdgeIndexDto<T>, "index">;
+    // (undocumented)
+    type EdgesToPointsDto<T> = WithDefaults<Inputs_6.OCCT.EdgesToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type EllipseDto = WithDefaults<Inputs_6.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
+    // (undocumented)
+    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type ExportDocumentToStepDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToStepDto<T>, "fileName" | "author" | "organization" | "compress" | "tryDownload">;
+    // (undocumented)
+    type ExtrudedSolidDto = WithDefaults<Inputs_6.OCCT.ExtrudedSolidDto, "extrusionLengthFront" | "extrusionLengthBack" | "center" | "direction">;
+    // (undocumented)
+    type ExtrudeDto<T> = WithDefaults<Inputs_6.OCCT.ExtrudeDto<T>, "direction">;
+    // (undocumented)
+    type ExtrudeShapesDto<T> = WithDefaults<Inputs_6.OCCT.ExtrudeShapesDto<T>, "direction">;
+    // (undocumented)
+    type FaceFromMultipleCircleTanWireCollectionsDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<T>, "combination" | "unify" | "tolerance">;
+    // (undocumented)
+    type FaceFromMultipleCircleTanWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromMultipleCircleTanWiresDto<T>, "combination" | "unify" | "tolerance">;
+    // (undocumented)
+    type FaceFromSurfaceAndWireDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromSurfaceAndWireDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceFromWireDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromWireDto<T>, "planar">;
+    // (undocumented)
+    type FaceFromWireOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromWireOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceFromWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromWiresDto<T>, "planar">;
+    // (undocumented)
+    type FaceFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromWiresOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceLinearSubdivisionDto<T> = WithDefaults<Inputs_6.OCCT.FaceLinearSubdivisionDto<T>, "isU" | "param" | "nrPoints" | "shiftHalfStep" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type FacesFromWiresDto<T> = WithDefaults<Inputs_6.OCCT.FacesFromWiresDto<T>, "planar">;
+    // (undocumented)
+    type FacesFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FacesFromWiresOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceSubdivideToHexagonHolesDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToHexagonHolesDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivideToHexagonWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToHexagonWiresDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "offsetFromBorderU" | "offsetFromBorderV" | "extendUUp" | "extendUBottom" | "extendVUp" | "extendVBottom">;
+    // (undocumented)
+    type FaceSubdivideToRectangleHolesDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToRectangleHolesDto<T>, "nrRectanglesU" | "nrRectanglesV" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivideToRectangleWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToRectangleWiresDto<T>, "nrRectanglesU" | "nrRectanglesV" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivisionControlledDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionControlledDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepNthU" | "shiftHalfStepUOffsetN" | "removeStartEdgeNthU" | "removeStartEdgeUOffsetN" | "removeEndEdgeNthU" | "removeEndEdgeUOffsetN" | "shiftHalfStepNthV" | "shiftHalfStepVOffsetN" | "removeStartEdgeNthV" | "removeStartEdgeVOffsetN" | "removeEndEdgeNthV" | "removeEndEdgeVOffsetN">;
+    // (undocumented)
+    type FaceSubdivisionDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
+    // (undocumented)
+    type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    // (undocumented)
+    type Fillet3DWireDto<T> = WithDefaults<Inputs_6.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
+    // (undocumented)
+    type Fillet3DWiresDto<T> = WithDefaults<Inputs_6.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
+    // (undocumented)
+    type FilletCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.FilletCornerByPointDto<T>, "points" | "radius" | "taperFactor" | "snapTolerance" | "mode">;
+    // (undocumented)
+    type FilletDto<T> = WithDefaults<Inputs_6.OCCT.FilletDto<T>, "radius">;
+    // (undocumented)
+    type FilletEdgesListDto<T, U> = Inputs_6.OCCT.FilletEdgesListDto<T, U>;
+    // (undocumented)
+    type FilletEdgesListOneRadiusDto<T, U> = WithDefaults<Inputs_6.OCCT.FilletEdgesListOneRadiusDto<T, U>, "radius">;
+    // (undocumented)
+    type FilletEdgesSameVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgesSameVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletEdgesVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgesVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletEdgeVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgeVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletShapesDto<T> = WithDefaults<Inputs_6.OCCT.FilletShapesDto<T>, "radius">;
+    // (undocumented)
+    type FilletTwoEdgesInPlaneDto<T> = WithDefaults<Inputs_6.OCCT.FilletTwoEdgesInPlaneDto<T>, "planeOrigin" | "planeDirection" | "radius" | "solution">;
+    // (undocumented)
+    type FilterFacePointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterFacePointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    // (undocumented)
+    type FilterFacesPointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterFacesPointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown" | "flatPointsArray">;
+    // (undocumented)
+    type FilterSolidPointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterSolidPointsDto<T>, "tolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    // (undocumented)
+    type FixSmallEdgesInWireDto<T> = WithDefaults<Inputs_6.OCCT.FixSmallEdgesInWireDto<T>, "lockvtx" | "precsmall">;
+    // (undocumented)
+    type FlatSpiralWireDto = WithDefaults<Inputs_6.OCCT.FlatSpiralWireDto, "startRadius" | "endRadius" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type FlipFaceUVDto<T> = WithDefaults<Inputs_6.OCCT.FlipFaceUVDto<T>, "swapUV" | "reverseU" | "reverseV">;
+    // (undocumented)
+    type Geom2dCircleDto = WithDefaults<Inputs_6.OCCT.Geom2dCircleDto, "center" | "direction" | "radius" | "sense">;
+    // (undocumented)
+    type Geom2dEllipseDto = WithDefaults<Inputs_6.OCCT.Geom2dEllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor" | "sense">;
+    // (undocumented)
+    type Geom2dSegmentDto = WithDefaults<Inputs_6.OCCT.Geom2dSegmentDto, "start" | "end">;
+    // (undocumented)
+    type Geom2dTrimmedCurveDto<T> = WithDefaults<Inputs_6.OCCT.Geom2dTrimmedCurveDto<T>, "u1" | "u2" | "sense" | "adjustPeriodic">;
+    // (undocumented)
+    type GeomCylindricalSurfaceDto = WithDefaults<Inputs_6.OCCT.GeomCylindricalSurfaceDto, "radius" | "center" | "direction">;
+    // (undocumented)
+    type HBeamProfileDto = WithDefaults<Inputs_6.OCCT.HBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type HBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.HBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type Heart2DDto = WithDefaults<Inputs_6.OCCT.Heart2DDto, "center" | "direction" | "rotation" | "sizeApprox">;
+    // (undocumented)
+    type HeartSolidDto = WithDefaults<Inputs_6.OCCT.HeartSolidDto, "center" | "direction" | "rotation" | "sizeApprox" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type HelixWireByTurnsDto = WithDefaults<Inputs_6.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type HelixWireDto = WithDefaults<Inputs_6.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type HexagonsInGridDto = WithDefaults<Inputs_6.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
+    // (undocumented)
+    type IBeamProfileDto = WithDefaults<Inputs_6.OCCT.IBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type IBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type ImportStepIgesDto = WithDefaults<Inputs_6.OCCT.ImportStepIgesDto, "adjustZtoY">;
+    // (undocumented)
+    type ImportStepIgesFromTextDto = WithDefaults<Inputs_6.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY">;
+    // (undocumented)
+    type InterpolateSymmetricDto = WithDefaults<Inputs_6.OCCT.InterpolateSymmetricDto, "tolerance">;
+    // (undocumented)
+    type InterpolateWiresDto = WithDefaults<Inputs_6.OCCT.InterpolateWiresDto, "returnCompound">;
+    // (undocumented)
+    type InterpolationDto = WithDefaults<Inputs_6.OCCT.InterpolationDto, "periodic" | "tolerance" | "parametrization">;
+    // (undocumented)
+    type IntersectionDto<T> = WithDefaults<Inputs_6.OCCT.IntersectionDto<T>, "keepEdges">;
+    // (undocumented)
+    type InvertTransformDto = Inputs_6.OCCT.InvertTransformDto;
+    // (undocumented)
+    type LineBaseDto = Inputs_6.OCCT.LineBaseDto;
+    // (undocumented)
+    type LineDto = WithDefaults<Inputs_6.OCCT.LineDto, "start" | "end">;
+    // (undocumented)
+    type LinesBaseDto = Inputs_6.OCCT.LinesBaseDto;
+    // (undocumented)
+    type LinesDto = WithDefaults<Inputs_6.OCCT.LinesDto, "returnCompound">;
+    // (undocumented)
+    type LineWithExtensionsDto = WithDefaults<Inputs_6.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
+    // (undocumented)
+    type LoadStepOrIgesDto = WithDefaults<Inputs_6.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY">;
+    // (undocumented)
+    type LoadStepToDocDto = Inputs_6.OCCT.LoadStepToDocDto;
+    // (undocumented)
+    type LoadSVGDto = WithDefaults<Inputs_6.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
+    // (undocumented)
+    type LoftAdvancedDto<T> = WithDefaults<Inputs_6.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
+    // (undocumented)
+    type LoftDto<T> = WithDefaults<Inputs_6.OCCT.LoftDto<T>, "makeSolid">;
+    // (undocumented)
+    type LPolygonDto = WithDefaults<Inputs_6.OCCT.LPolygonDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type LPolygonSolidDto = WithDefaults<Inputs_6.OCCT.LPolygonSolidDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type MakeDraftDto<T> = WithDefaults<Inputs_6.OCCT.MakeDraftDto<T>, "direction" | "angle" | "lengthMax" | "internal">;
+    // (undocumented)
+    type MakeDraftToShapeDto<T> = WithDefaults<Inputs_6.OCCT.MakeDraftToShapeDto<T>, "direction" | "angle" | "keepOut" | "internal">;
+    // (undocumented)
+    type MeshBaseDto = Inputs_6.OCCT.MeshBaseDto;
+    // (undocumented)
+    type MeshMeshesIntersectionOfShapesDto<T> = WithDefaults<Inputs_6.OCCT.MeshMeshesIntersectionOfShapesDto<T>, "precision">;
+    // (undocumented)
+    type MeshMeshIntersectionTwoShapesDto<T> = WithDefaults<Inputs_6.OCCT.MeshMeshIntersectionTwoShapesDto<T>, "precision1" | "precision2">;
+    // (undocumented)
+    type MirrorAboutPointDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAboutPointDto<T>, "point">;
+    // (undocumented)
+    type MirrorAlongNormalDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAlongNormalDto<T>, "origin" | "normal">;
+    // (undocumented)
+    type MirrorAlongNormalShapesDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAlongNormalShapesDto<T>, "origins" | "normals">;
+    // (undocumented)
+    type MirrorAxisToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorAxisToMatrixDto, "origin" | "direction">;
+    // (undocumented)
+    type MirrorDto<T> = WithDefaults<Inputs_6.OCCT.MirrorDto<T>, "origin" | "direction">;
+    // (undocumented)
+    type MirrorPlaneToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorPlaneToMatrixDto, "origin" | "normal">;
+    // (undocumented)
+    type MirrorPointToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorPointToMatrixDto, "point">;
+    // (undocumented)
+    type MirrorShapesDto<T> = WithDefaults<Inputs_6.OCCT.MirrorShapesDto<T>, "origins" | "directions">;
+    // (undocumented)
+    type MultiplyTransformsDto = Inputs_6.OCCT.MultiplyTransformsDto;
+    // (undocumented)
+    type NGonSolidDto = WithDefaults<Inputs_6.OCCT.NGonSolidDto, "center" | "direction" | "nrCorners" | "radius" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type NGonWireDto = WithDefaults<Inputs_6.OCCT.NGonWireDto, "center" | "direction" | "nrCorners" | "radius">;
+    // (undocumented)
+    type NormalizeFaceParametrizationDto<T> = WithDefaults<Inputs_6.OCCT.NormalizeFaceParametrizationDto<T>, "normalizeU" | "normalizeV" | "samples" | "tolerance">;
+    // (undocumented)
+    type Offset3DWireDto<T> = WithDefaults<Inputs_6.OCCT.Offset3DWireDto<T>, "offset" | "direction">;
+    // (undocumented)
+    type OffsetAdvancedDto<T, U> = WithDefaults<Inputs_6.OCCT.OffsetAdvancedDto<T, U>, "distance" | "tolerance" | "joinType" | "removeIntEdges">;
+    // (undocumented)
+    type OffsetDto<T, U> = WithDefaults<Inputs_6.OCCT.OffsetDto<T, U>, "distance" | "tolerance">;
+    // (undocumented)
+    type ParallelogramDto = WithDefaults<Inputs_6.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
+    // (undocumented)
+    type ParallelogramSolidDto = WithDefaults<Inputs_6.OCCT.ParallelogramSolidDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type ParseStepAssemblyToJsonDto = Inputs_6.OCCT.ParseStepAssemblyToJsonDto;
+    // (undocumented)
+    type PathArcSegment = WithDefaults<Inputs_6.OCCT.PathArcSegment, "type" | "rx" | "ry" | "xAxisRotation" | "startAngle" | "deltaAngle">;
+    // (undocumented)
+    type PathCubicSegment = WithDefaults<Inputs_6.OCCT.PathCubicSegment, "type">;
+    // (undocumented)
+    type PathLineSegment = WithDefaults<Inputs_6.OCCT.PathLineSegment, "type">;
+    // (undocumented)
+    type PathPlacementDto = WithDefaults<Inputs_6.OCCT.PathPlacementDto, "scale" | "flipY" | "origin">;
+    // (undocumented)
+    type PathQuadraticSegment = WithDefaults<Inputs_6.OCCT.PathQuadraticSegment, "type">;
+    // (undocumented)
+    type PathSubpath = WithDefaults<Inputs_6.OCCT.PathSubpath, "closed">;
+    // (undocumented)
+    type PinWithLabelDto = WithDefaults<Inputs_6.OCCT.PinWithLabelDto, "startPoint" | "endPoint" | "direction" | "offsetFromStart" | "label" | "labelOffset" | "labelSize" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical">;
+    // (undocumented)
+    type PipePolygonWireNGonDto<T> = WithDefaults<Inputs_6.OCCT.PipePolygonWireNGonDto<T>, "radius" | "nrCorners" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PipeWireCylindricalDto<T> = WithDefaults<Inputs_6.OCCT.PipeWireCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PipeWiresCylindricalDto<T> = WithDefaults<Inputs_6.OCCT.PipeWiresCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PointDto = WithDefaults<Inputs_6.OCCT.PointDto, "point">;
+    // (undocumented)
+    type PointsDto = Inputs_6.OCCT.PointsDto;
+    // (undocumented)
+    type PointsOnWireAtEqualLengthDto<T> = WithDefaults<Inputs_6.OCCT.PointsOnWireAtEqualLengthDto<T>, "length" | "tryNext" | "includeFirst" | "includeLast">;
+    // (undocumented)
+    type PointsOnWireAtPatternOfLengthsDto<T> = WithDefaults<Inputs_6.OCCT.PointsOnWireAtPatternOfLengthsDto<T>, "tryNext" | "includeFirst" | "includeLast">;
+    // (undocumented)
+    type PolygonDto = Inputs_6.OCCT.PolygonDto;
+    // (undocumented)
+    type PolygonsDto = WithDefaults<Inputs_6.OCCT.PolygonsDto, "returnCompound">;
+    // (undocumented)
+    type PolylineBaseDto = Inputs_6.OCCT.PolylineBaseDto;
+    // (undocumented)
+    type PolylineDto = Inputs_6.OCCT.PolylineDto;
+    // (undocumented)
+    type PolylinesBaseDto = Inputs_6.OCCT.PolylinesBaseDto;
+    // (undocumented)
+    type PolylinesDto = WithDefaults<Inputs_6.OCCT.PolylinesDto, "returnCompound">;
+    // (undocumented)
+    type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_6.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    // (undocumented)
+    type ProjectWireDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectWireDto<T, U>, "direction">;
+    // (undocumented)
+    type ProjectWiresDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectWiresDto<T, U>, "direction">;
+    // (undocumented)
+    type QuaternionToMatrixDto = WithDefaults<Inputs_6.OCCT.QuaternionToMatrixDto, "quaternion">;
+    // (undocumented)
+    type RebuildCurveDegreeDto<T> = WithDefaults<Inputs_6.OCCT.RebuildCurveDegreeDto<T>, "degree" | "tolerance">;
+    // (undocumented)
+    type RebuildFaceDegreeDto<T> = WithDefaults<Inputs_6.OCCT.RebuildFaceDegreeDto<T>, "uDegree" | "vDegree" | "tolerance" | "keepTrim">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_6.OCCT.RectangleDto, "width" | "length" | "center" | "direction">;
+    // (undocumented)
+    type RevolveDto<T> = WithDefaults<Inputs_6.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
+    // (undocumented)
+    type RotateAroundCenterDto<T> = WithDefaults<Inputs_6.OCCT.RotateAroundCenterDto<T>, "angle" | "center" | "axis">;
+    // (undocumented)
+    type RotateAroundCenterShapesDto<T> = WithDefaults<Inputs_6.OCCT.RotateAroundCenterShapesDto<T>, "angles" | "centers" | "axes">;
+    // (undocumented)
+    type RotateByQuaternionDto<T> = WithDefaults<Inputs_6.OCCT.RotateByQuaternionDto<T>, "quaternion">;
+    // (undocumented)
+    type RotateDto<T> = WithDefaults<Inputs_6.OCCT.RotateDto<T>, "axis" | "angle">;
+    // (undocumented)
+    type RotateShapesDto<T> = WithDefaults<Inputs_6.OCCT.RotateShapesDto<T>, "axes" | "angles">;
+    // (undocumented)
+    type RotationAxisAngleToMatrixDto = WithDefaults<Inputs_6.OCCT.RotationAxisAngleToMatrixDto, "axis" | "angle" | "center">;
+    // (undocumented)
+    type RotationExtrudeDto<T> = WithDefaults<Inputs_6.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
+    // (undocumented)
+    type SaveStepDto<T> = WithDefaults<Inputs_6.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload">;
+    // (undocumented)
+    type SaveStlDto<T> = WithDefaults<Inputs_6.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
+    // (undocumented)
+    type Scale3DDto<T> = WithDefaults<Inputs_6.OCCT.Scale3DDto<T>, "scale" | "center">;
+    // (undocumented)
+    type Scale3DShapesDto<T> = WithDefaults<Inputs_6.OCCT.Scale3DShapesDto<T>, "scales" | "centers">;
+    // (undocumented)
+    type ScaleDto<T> = WithDefaults<Inputs_6.OCCT.ScaleDto<T>, "factor">;
+    // (undocumented)
+    type ScaleFromCenterDto<T> = WithDefaults<Inputs_6.OCCT.ScaleFromCenterDto<T>, "factor" | "center">;
+    // (undocumented)
+    type ScaleShapesDto<T> = WithDefaults<Inputs_6.OCCT.ScaleShapesDto<T>, "factors">;
+    // (undocumented)
+    type ScaleUniformToMatrixDto = WithDefaults<Inputs_6.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    // (undocumented)
+    type SegmentBaseDto = Inputs_6.OCCT.SegmentBaseDto;
+    // (undocumented)
+    type SegmentsBaseDto = Inputs_6.OCCT.SegmentsBaseDto;
+    // (undocumented)
+    type SetDocLabelColorDto<T> = WithDefaults<Inputs_6.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type SetDocLabelNameDto<T> = WithDefaults<Inputs_6.OCCT.SetDocLabelNameDto<T>, "name">;
+    // (undocumented)
+    type SewDto<T> = WithDefaults<Inputs_6.OCCT.SewDto<T>, "tolerance">;
+    // (undocumented)
+    type ShapeDto<T> = Inputs_6.OCCT.ShapeDto<T>;
+    // (undocumented)
+    type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs_6.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "adjustYtoZ" | "reversedPoints">;
+    // (undocumented)
+    type ShapeFromPathDto = WithDefaults<Inputs_6.OCCT.ShapeFromPathDto, "makeFaces" | "joinSegments" | "tolerance" | "scale" | "flipY" | "origin">;
+    // (undocumented)
+    type ShapeIndexDto<T> = WithDefaults<Inputs_6.OCCT.ShapeIndexDto<T>, "index">;
+    // (undocumented)
+    type ShapesDto<T> = Inputs_6.OCCT.ShapesDto<T>;
+    // (undocumented)
+    type ShapeShapesDto<T, U> = Inputs_6.OCCT.ShapeShapesDto<T, U>;
+    // (undocumented)
+    type ShapesToMeshesDto<T> = WithDefaults<Inputs_6.OCCT.ShapesToMeshesDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_6.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type ShapeToMeshDto<T> = WithDefaults<Inputs_6.OCCT.ShapeToMeshDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type ShapeTransformQueryDto<T> = Inputs_6.OCCT.ShapeTransformQueryDto<T>;
+    // (undocumented)
+    type ShapeWithToleranceDto<T> = WithDefaults<Inputs_6.OCCT.ShapeWithToleranceDto<T>, "tolerance">;
+    // (undocumented)
+    type SimpleAngularDimensionDto = WithDefaults<Inputs_6.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    // (undocumented)
+    type SimpleLinearLengthDimensionDto = WithDefaults<Inputs_6.OCCT.SimpleLinearLengthDimensionDto, "offsetFromPoints" | "crossingSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "labelRotation" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    // (undocumented)
+    type SliceDto<T> = WithDefaults<Inputs_6.OCCT.SliceDto<T>, "step" | "direction">;
+    // (undocumented)
+    type SliceInStepPatternDto<T> = WithDefaults<Inputs_6.OCCT.SliceInStepPatternDto<T>, "steps" | "direction">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_6.OCCT.SphereDto, "radius" | "center">;
+    // (undocumented)
+    type SplitDto<T> = WithDefaults<Inputs_6.OCCT.SplitDto<T>, "localFuzzyTolerance" | "nonDestructive">;
+    // (undocumented)
+    type SplitWireOnPointsDto<T> = Inputs_6.OCCT.SplitWireOnPointsDto<T>;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_6.OCCT.SquareDto, "size" | "center" | "direction">;
+    // (undocumented)
+    type StarDto = WithDefaults<Inputs_6.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
+    // (undocumented)
+    type StarSolidDto = WithDefaults<Inputs_6.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type SVGResult<T> = Inputs_6.OCCT.SVGResult<T>;
+    // (undocumented)
+    type SVGShape<T> = Inputs_6.OCCT.SVGShape<T>;
+    // (undocumented)
+    type TaperedHelixWireDto = WithDefaults<Inputs_6.OCCT.TaperedHelixWireDto, "startRadius" | "endRadius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type TBeamProfileDto = WithDefaults<Inputs_6.OCCT.TBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type TBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.TBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type TextWiresDto = WithDefaults<Inputs_6.OCCT.TextWiresDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+    // (undocumented)
+    type ThickSolidByJoinDto<T> = WithDefaults<Inputs_6.OCCT.ThickSolidByJoinDto<T>, "offset" | "tolerance" | "intersection" | "selfIntersection" | "joinType" | "removeIntEdges">;
+    // (undocumented)
+    type ThisckSolidSimpleDto<T> = WithDefaults<Inputs_6.OCCT.ThisckSolidSimpleDto<T>, "offset">;
+    // (undocumented)
+    type TorusDto = WithDefaults<Inputs_6.OCCT.TorusDto, "majorRadius" | "minorRadius" | "center" | "direction" | "angle">;
+    // (undocumented)
+    type TransformByMatrixDto<T> = Inputs_6.OCCT.TransformByMatrixDto<T>;
+    // (undocumented)
+    type TransformDto<T> = WithDefaults<Inputs_6.OCCT.TransformDto<T>, "translation" | "rotationAxis" | "rotationAngle" | "scaleFactor">;
+    // (undocumented)
+    type TransformShapesByMatrixDto<T> = Inputs_6.OCCT.TransformShapesByMatrixDto<T>;
+    // (undocumented)
+    type TransformShapesDto<T> = WithDefaults<Inputs_6.OCCT.TransformShapesDto<T>, "translations" | "rotationAxes" | "rotationAngles" | "scaleFactors">;
+    // (undocumented)
+    type TranslateDto<T> = WithDefaults<Inputs_6.OCCT.TranslateDto<T>, "translation">;
+    // (undocumented)
+    type TranslateShapesDto<T> = WithDefaults<Inputs_6.OCCT.TranslateShapesDto<T>, "translations">;
+    // (undocumented)
+    type TranslationToMatrixDto = WithDefaults<Inputs_6.OCCT.TranslationToMatrixDto, "translation">;
+    // (undocumented)
+    type TriangleBaseDto = Inputs_6.OCCT.TriangleBaseDto;
+    // (undocumented)
+    type UBeamProfileDto = WithDefaults<Inputs_6.OCCT.UBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type UBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.UBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type UnifySameDomainDto<T> = WithDefaults<Inputs_6.OCCT.UnifySameDomainDto<T>, "unifyEdges" | "unifyFaces" | "concatBSplines">;
+    // (undocumented)
+    type UnionDto<T> = WithDefaults<Inputs_6.OCCT.UnionDto<T>, "keepEdges">;
+    // (undocumented)
+    type WireAlongParamDto<T> = WithDefaults<Inputs_6.OCCT.WireAlongParamDto<T>, "isU" | "param">;
+    // (undocumented)
+    type WireFromTwoCirclesTanDto<T> = WithDefaults<Inputs_6.OCCT.WireFromTwoCirclesTanDto<T>, "keepLines" | "circleRemainders" | "tolerance">;
+    // (undocumented)
+    type WireOnFaceDto<T, U> = Inputs_6.OCCT.WireOnFaceDto<T, U>;
+    // (undocumented)
+    type WiresAlongParamsDto<T> = WithDefaults<Inputs_6.OCCT.WiresAlongParamsDto<T>, "isU">;
+    // (undocumented)
+    type WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_6.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<T>, "wireType" | "closed" | "tolerance">;
+    // (undocumented)
+    type WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_6.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T>, "nrOfDivisions" | "divideByEqualDistance" | "wireType" | "closed" | "tolerance">;
+    // (undocumented)
+    type WiresOnFaceDto<T, U> = Inputs_6.OCCT.WiresOnFaceDto<T, U>;
+    // (undocumented)
+    type WiresToPointsDto<T> = WithDefaults<Inputs_6.OCCT.WiresToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type XYZDto = WithDefaults<Inputs_6.OCCT.XYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type ZigZagBetweenTwoWiresDto<T> = WithDefaults<Inputs_6.OCCT.ZigZagBetweenTwoWiresDto<T>, "nrZigZags" | "inverse" | "divideByEqualDistance" | "zigZagsPerEdge">;
+}
+
+// @public
 namespace Point_2 {
     class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
@@ -7307,21 +9121,21 @@ namespace Point_2 {
     }
     class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         point: Base.Point3;
         pointMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         points: Base.Point3[];
         pointsMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);
@@ -7479,6 +9293,66 @@ namespace Point_2 {
 }
 
 // @public
+namespace Point_3 {
+    // (undocumented)
+    type ClosestPointFromPointsDto = Inputs_7.Point.ClosestPointFromPointsDto;
+    // (undocumented)
+    type DrawPointDto<T> = WithDefaults<Inputs_7.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type DrawPointsDto<T> = WithDefaults<Inputs_7.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type HexGridCentersDto = WithDefaults<Inputs_7.Point.HexGridCentersDto, "nrHexagonsY" | "nrHexagonsX" | "radiusHexagon" | "orientOnCenter" | "pointsOnGround">;
+    // (undocumented)
+    type HexGridScaledToFitDto = WithDefaults<Inputs_7.Point.HexGridScaledToFitDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight" | "centerGrid" | "pointsOnGround">;
+    // (undocumented)
+    type MultiplyPointDto = Inputs_7.Point.MultiplyPointDto;
+    // (undocumented)
+    type PointDto = Inputs_7.Point.PointDto;
+    // (undocumented)
+    type PointsDto = Inputs_7.Point.PointsDto;
+    // (undocumented)
+    type PointsMaxFilletsHalfLineDto = WithDefaults<Inputs_7.Point.PointsMaxFilletsHalfLineDto, "checkLastWithFirst" | "tolerance">;
+    // (undocumented)
+    type PointXYDto = WithDefaults<Inputs_7.Point.PointXYDto, "x" | "y">;
+    // (undocumented)
+    type PointXYZDto = WithDefaults<Inputs_7.Point.PointXYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicatesDto = WithDefaults<Inputs_7.Point.RemoveConsecutiveDuplicatesDto, "tolerance" | "checkFirstAndLast">;
+    // (undocumented)
+    type RotatePointsCenterAxisDto = WithDefaults<Inputs_7.Point.RotatePointsCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type ScalePointsCenterXYZDto = WithDefaults<Inputs_7.Point.ScalePointsCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type SpiralDto = WithDefaults<Inputs_7.Point.SpiralDto, "phi" | "numberPoints" | "widening" | "radius" | "factor">;
+    // (undocumented)
+    type StartEndPointsDto = Inputs_7.Point.StartEndPointsDto;
+    // (undocumented)
+    type StartEndPointsListDto = Inputs_7.Point.StartEndPointsListDto;
+    // (undocumented)
+    type StretchPointsDirFromCenterDto = WithDefaults<Inputs_7.Point.StretchPointsDirFromCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type ThreePointsNormalDto = WithDefaults<Inputs_7.Point.ThreePointsNormalDto, "reverseNormal">;
+    // (undocumented)
+    type ThreePointsToleranceDto = WithDefaults<Inputs_7.Point.ThreePointsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPointDto = Inputs_7.Point.TransformPointDto;
+    // (undocumented)
+    type TransformPointsDto = Inputs_7.Point.TransformPointsDto;
+    // (undocumented)
+    type TransformsForPointsDto = Inputs_7.Point.TransformsForPointsDto;
+    // (undocumented)
+    type TranslatePointsDto = Inputs_7.Point.TranslatePointsDto;
+    // (undocumented)
+    type TranslatePointsWithVectorsDto = Inputs_7.Point.TranslatePointsWithVectorsDto;
+    // (undocumented)
+    type TranslateXYZPointsDto = WithDefaults<Inputs_7.Point.TranslateXYZPointsDto, "x" | "y" | "z">;
+    // (undocumented)
+    type TwoPointsDto = Inputs_7.Point.TwoPointsDto;
+    // (undocumented)
+    type TwoPointsToleranceDto = WithDefaults<Inputs_7.Point.TwoPointsToleranceDto, "tolerance">;
+}
+
+// @public
 namespace Polyline {
     class DrawPolylineDto<T> {
         constructor(polyline?: PolylinePropertiesDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, polylineMesh?: T);
@@ -7540,6 +9414,30 @@ namespace Polyline {
     }
 }
 
+// @public
+namespace Polyline_2 {
+    // (undocumented)
+    type DrawPolylineDto<T> = WithDefaults<Inputs_7.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawPolylinesDto<T> = WithDefaults<Inputs_7.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type PolylineCreateDto = WithDefaults<Inputs_7.Polyline.PolylineCreateDto, "isClosed">;
+    // (undocumented)
+    type PolylineDto = Inputs_7.Polyline.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs_7.Polyline.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type PolylinesDto = Inputs_7.Polyline.PolylinesDto;
+    // (undocumented)
+    type PolylineToleranceDto = WithDefaults<Inputs_7.Polyline.PolylineToleranceDto, "tolerance">;
+    // (undocumented)
+    type SegmentsToleranceDto = WithDefaults<Inputs_7.Polyline.SegmentsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPolylineDto = Inputs_7.Polyline.TransformPolylineDto;
+    // (undocumented)
+    type TwoPolylinesToleranceDto = WithDefaults<Inputs_7.Polyline.TwoPolylinesToleranceDto, "tolerance">;
+}
+
 // @public (undocumented)
 export interface PrintSaveInterface {
     // (undocumented)
@@ -7550,30 +9448,88 @@ export interface PrintSaveInterface {
     text: string;
 }
 
+declare namespace Resolved {
+    export {
+        Asset_2 as Asset,
+        CSV_2 as CSV,
+        JSON_3 as JSON,
+        JSCAD_2 as JSCAD,
+        Manifold_2 as Manifold,
+        OCCT_3 as OCCT,
+        Tag_2 as Tag,
+        Time_2 as Time,
+        Verb_2 as Verb,
+        Color_2 as Color,
+        Dates_2 as Dates,
+        IO_2 as IO,
+        Line_2 as Line,
+        Lists_2 as Lists,
+        Logic_2 as Logic,
+        Math_3 as Math,
+        Mesh_2 as Mesh,
+        Point_3 as Point,
+        Polyline_2 as Polyline,
+        Text_4 as Text,
+        Transforms_2 as Transforms,
+        Vector_2 as Vector,
+        BabylonCamera_3 as BabylonCamera,
+        BabylonDecal_3 as BabylonDecal,
+        BabylonGaussianSplatting_2 as BabylonGaussianSplatting,
+        BabylonGizmo_2 as BabylonGizmo,
+        BabylonGltf_3 as BabylonGltf,
+        BabylonGui_2 as BabylonGui,
+        BabylonIO_3 as BabylonIO,
+        BabylonJSScene_2 as BabylonJSScene,
+        BabylonLight_2 as BabylonLight,
+        BabylonMaterial_3 as BabylonMaterial,
+        BabylonMesh_3 as BabylonMesh,
+        BabylonMeshBuilder_2 as BabylonMeshBuilder,
+        BabylonNode_3 as BabylonNode,
+        BabylonPick_3 as BabylonPick,
+        BabylonRay_3 as BabylonRay,
+        BabylonScene_3 as BabylonScene,
+        BabylonTexture_2 as BabylonTexture,
+        BabylonTools_2 as BabylonTools,
+        BabylonTransforms_3 as BabylonTransforms,
+        BabylonWebXR_3 as BabylonWebXR,
+        Draw_3 as Draw
+    }
+}
+
 // @public
 namespace Tag {
     class DrawTagDto {
         constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto);
         tag: TagDto;
         tagVariable?: TagDto | undefined;
-        updatable: boolean;
+        updatable?: boolean | undefined;
     }
     class DrawTagsDto {
         constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]);
         tags: TagDto[];
         tagsVariable?: TagDto[] | undefined;
-        updatable: boolean;
+        updatable?: boolean | undefined;
     }
     class TagDto {
         constructor(text?: string, position?: Base_2.Point3, colour?: string, size?: number, adaptDepth?: boolean, needsUpdate?: boolean, id?: string);
-        adaptDepth: boolean;
-        colour: string;
+        adaptDepth?: boolean | undefined;
+        colour?: string | undefined;
         id?: string | undefined;
         needsUpdate?: boolean | undefined;
-        position: Base_2.Point3;
-        size: number;
+        position?: Base_2.Point3 | undefined;
+        size?: number | undefined;
         text: string;
     }
+}
+
+// @public
+namespace Tag_2 {
+    // (undocumented)
+    type DrawTagDto = WithDefaults<Inputs_3.Tag.DrawTagDto, "updatable">;
+    // (undocumented)
+    type DrawTagsDto = WithDefaults<Inputs_3.Tag.DrawTagsDto, "updatable">;
+    // (undocumented)
+    type TagDto = WithDefaults<Inputs_3.Tag.TagDto, "position" | "colour" | "size" | "adaptDepth">;
 }
 
 // @public (undocumented)
@@ -7700,12 +9656,56 @@ namespace Text_3 {
 }
 
 // @public
+namespace Text_4 {
+    // (undocumented)
+    type TextConcatDto = WithDefaults<Inputs_7.Text.TextConcatDto, "texts">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs_7.Text.TextDto, "text">;
+    // (undocumented)
+    type TextFormatDto = WithDefaults<Inputs_7.Text.TextFormatDto, "text" | "values">;
+    // (undocumented)
+    type TextIndexDto = WithDefaults<Inputs_7.Text.TextIndexDto, "text" | "index">;
+    // (undocumented)
+    type TextJoinDto = WithDefaults<Inputs_7.Text.TextJoinDto, "separator">;
+    // (undocumented)
+    type TextPadDto = WithDefaults<Inputs_7.Text.TextPadDto, "text" | "length" | "padString">;
+    // (undocumented)
+    type TextRegexDto = WithDefaults<Inputs_7.Text.TextRegexDto, "text" | "pattern" | "flags">;
+    // (undocumented)
+    type TextRegexReplaceDto = WithDefaults<Inputs_7.Text.TextRegexReplaceDto, "text" | "pattern" | "flags" | "replaceWith">;
+    // (undocumented)
+    type TextRepeatDto = WithDefaults<Inputs_7.Text.TextRepeatDto, "text" | "count">;
+    // (undocumented)
+    type TextReplaceDto = WithDefaults<Inputs_7.Text.TextReplaceDto, "text" | "search" | "replaceWith">;
+    // (undocumented)
+    type TextSearchDto = WithDefaults<Inputs_7.Text.TextSearchDto, "text" | "search">;
+    // (undocumented)
+    type TextSplitDto = WithDefaults<Inputs_7.Text.TextSplitDto, "text" | "separator">;
+    // (undocumented)
+    type TextSubstringDto = WithDefaults<Inputs_7.Text.TextSubstringDto, "text" | "start">;
+    // (undocumented)
+    type ToStringDto<T> = Inputs_7.Text.ToStringDto<T>;
+    // (undocumented)
+    type ToStringEachDto<T> = Inputs_7.Text.ToStringEachDto<T>;
+    // (undocumented)
+    type VectorCharDto = WithDefaults<Inputs_7.Text.VectorCharDto, "char" | "xOffset" | "yOffset" | "height" | "extrudeOffset">;
+    // (undocumented)
+    type VectorTextDto = WithDefaults<Inputs_7.Text.VectorTextDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+}
+
+// @public
 namespace Time {
     class PostFromIframe {
         constructor(data?: any, targetOrigin?: string);
         data: any;
         targetOrigin: string;
     }
+}
+
+// @public
+namespace Time_2 {
+    // (undocumented)
+    type PostFromIframe = Inputs_3.Time.PostFromIframe;
 }
 
 // @public
@@ -7760,6 +9760,30 @@ namespace Transforms {
         center?: Base.Point3 | undefined;
         scale?: number | undefined;
     }
+}
+
+// @public
+namespace Transforms_2 {
+    // (undocumented)
+    type RotationCenterAxisDto = WithDefaults<Inputs_7.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type RotationCenterDto = WithDefaults<Inputs_7.Transforms.RotationCenterDto, "angle" | "center">;
+    // (undocumented)
+    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_7.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
+    // (undocumented)
+    type ScaleCenterXYZDto = WithDefaults<Inputs_7.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type ScaleXYZDto = WithDefaults<Inputs_7.Transforms.ScaleXYZDto, "scaleXyz">;
+    // (undocumented)
+    type StretchDirCenterDto = WithDefaults<Inputs_7.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type TranslationsXYZDto = Inputs_7.Transforms.TranslationsXYZDto;
+    // (undocumented)
+    type TranslationXYZDto = WithDefaults<Inputs_7.Transforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type UniformScaleDto = WithDefaults<Inputs_7.Transforms.UniformScaleDto, "scale">;
+    // (undocumented)
+    type UniformScaleFromCenterDto = WithDefaults<Inputs_7.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }
 
 // @public
@@ -7864,6 +9888,48 @@ namespace Vector {
         y?: number | undefined;
         z?: number | undefined;
     }
+}
+
+// @public
+namespace Vector_2 {
+    // (undocumented)
+    type FractionTwoVectorsDto = WithDefaults<Inputs_7.Vector.FractionTwoVectorsDto, "fraction">;
+    // (undocumented)
+    type RangeMaxDto = WithDefaults<Inputs_7.Vector.RangeMaxDto, "max">;
+    // (undocumented)
+    type RayPointDto = WithDefaults<Inputs_7.Vector.RayPointDto, "distance">;
+    // (undocumented)
+    type RemoveAllDuplicateVectorsDto = WithDefaults<Inputs_7.Vector.RemoveAllDuplicateVectorsDto, "tolerance">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicateVectorsDto = WithDefaults<Inputs_7.Vector.RemoveConsecutiveDuplicateVectorsDto, "checkFirstAndLast" | "tolerance">;
+    // (undocumented)
+    type SpanDto = WithDefaults<Inputs_7.Vector.SpanDto, "step" | "min" | "max">;
+    // (undocumented)
+    type SpanEaseItemsDto = WithDefaults<Inputs_7.Vector.SpanEaseItemsDto, "nrItems" | "min" | "max" | "ease" | "intervals">;
+    // (undocumented)
+    type SpanLinearItemsDto = WithDefaults<Inputs_7.Vector.SpanLinearItemsDto, "nrItems" | "min" | "max">;
+    // (undocumented)
+    type TwoVectorsDto = Inputs_7.Vector.TwoVectorsDto;
+    // (undocumented)
+    type TwoVectorsReferenceDto = Inputs_7.Vector.TwoVectorsReferenceDto;
+    // (undocumented)
+    type Vector3Dto = Inputs_7.Vector.Vector3Dto;
+    // (undocumented)
+    type VectorBoolDto = Inputs_7.Vector.VectorBoolDto;
+    // (undocumented)
+    type VectorDto = Inputs_7.Vector.VectorDto;
+    // (undocumented)
+    type VectorScalarDto = WithDefaults<Inputs_7.Vector.VectorScalarDto, "scalar">;
+    // (undocumented)
+    type VectorsDto = Inputs_7.Vector.VectorsDto;
+    // (undocumented)
+    type VectorsTheSameDto = WithDefaults<Inputs_7.Vector.VectorsTheSameDto, "tolerance">;
+    // (undocumented)
+    type VectorStringDto = Inputs_7.Vector.VectorStringDto;
+    // (undocumented)
+    type VectorXYDto = WithDefaults<Inputs_7.Vector.VectorXYDto, "x" | "y">;
+    // (undocumented)
+    type VectorXYZDto = WithDefaults<Inputs_7.Vector.VectorXYZDto, "x" | "y" | "z">;
 }
 
 // @public
@@ -8282,6 +10348,132 @@ namespace Verb {
         profile: any;
         rail: any;
     }
+}
+
+// @public
+namespace Verb_2 {
+    // (undocumented)
+    type ArcDto = Inputs_3.Verb.ArcDto;
+    // (undocumented)
+    type ArcParametersDto = Inputs_3.Verb.ArcParametersDto;
+    // (undocumented)
+    type BezierCurveDto = Inputs_3.Verb.BezierCurveDto;
+    // (undocumented)
+    type CircleDto = Inputs_3.Verb.CircleDto;
+    // (undocumented)
+    type CircleParametersDto = Inputs_3.Verb.CircleParametersDto;
+    // (undocumented)
+    type ClosestPointDto = Inputs_3.Verb.ClosestPointDto;
+    // (undocumented)
+    type ClosestPointsDto = Inputs_3.Verb.ClosestPointsDto;
+    // (undocumented)
+    type ConeAndCylinderParametersDto = WithDefaults<Inputs_3.Verb.ConeAndCylinderParametersDto, "axis" | "xAxis" | "base" | "height" | "radius">;
+    // (undocumented)
+    type ConeDto = Inputs_3.Verb.ConeDto;
+    // (undocumented)
+    type CornersDto = Inputs_3.Verb.CornersDto;
+    // (undocumented)
+    type CurveCurveDto = Inputs_3.Verb.CurveCurveDto;
+    // (undocumented)
+    type CurveCurveIntersectionsDto = Inputs_3.Verb.CurveCurveIntersectionsDto;
+    // (undocumented)
+    type CurveDerivativesDto = Inputs_3.Verb.CurveDerivativesDto;
+    // (undocumented)
+    type CurveDivideLengthDto = Inputs_3.Verb.CurveDivideLengthDto;
+    // (undocumented)
+    type CurveDto = Inputs_3.Verb.CurveDto;
+    // (undocumented)
+    type CurveLengthToleranceDto = Inputs_3.Verb.CurveLengthToleranceDto;
+    // (undocumented)
+    type CurveNurbsDataDto = Inputs_3.Verb.CurveNurbsDataDto;
+    // (undocumented)
+    type CurveParameterDto = Inputs_3.Verb.CurveParameterDto;
+    // (undocumented)
+    type CurvePathDataDto = Inputs_3.Verb.CurvePathDataDto;
+    // (undocumented)
+    type CurvesDivideLengthDto = Inputs_3.Verb.CurvesDivideLengthDto;
+    // (undocumented)
+    type CurvesDto = Inputs_3.Verb.CurvesDto;
+    // (undocumented)
+    type CurvesParameterDto = Inputs_3.Verb.CurvesParameterDto;
+    // (undocumented)
+    type CurvesSubdivisionsDto = Inputs_3.Verb.CurvesSubdivisionsDto;
+    // (undocumented)
+    type CurvesTransformDto = Inputs_3.Verb.CurvesTransformDto;
+    // (undocumented)
+    type CurveSubdivisionsDto = Inputs_3.Verb.CurveSubdivisionsDto;
+    // (undocumented)
+    type CurveSurfaceDto = Inputs_3.Verb.CurveSurfaceDto;
+    // (undocumented)
+    type CurveSurfaceIntersectionsDto = Inputs_3.Verb.CurveSurfaceIntersectionsDto;
+    // (undocumented)
+    type CurveToleranceDto = Inputs_3.Verb.CurveToleranceDto;
+    // (undocumented)
+    type CurveTransformDto = Inputs_3.Verb.CurveTransformDto;
+    // (undocumented)
+    type CylinderDto = Inputs_3.Verb.CylinderDto;
+    // (undocumented)
+    type DerivativesDto = Inputs_3.Verb.DerivativesDto;
+    // (undocumented)
+    type DrawCurveDto<T> = WithDefaults<Inputs_3.Verb.DrawCurveDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawCurvesDto<T> = WithDefaults<Inputs_3.Verb.DrawCurvesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawSurfaceDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfaceDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSurfacesColoursDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfacesColoursDto<T>, "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSurfacesDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfacesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type EllipseArcParametersDto = Inputs_3.Verb.EllipseArcParametersDto;
+    // (undocumented)
+    type EllipseDto = Inputs_3.Verb.EllipseDto;
+    // (undocumented)
+    type EllipseParametersDto = Inputs_3.Verb.EllipseParametersDto;
+    // (undocumented)
+    type ExtrusionDto = Inputs_3.Verb.ExtrusionDto;
+    // (undocumented)
+    type ExtrusionParametersDto = Inputs_3.Verb.ExtrusionParametersDto;
+    // (undocumented)
+    type IsocurvesParametersDto = Inputs_3.Verb.IsocurvesParametersDto;
+    // (undocumented)
+    type IsocurveSubdivisionDto = WithDefaults<Inputs_3.Verb.IsocurveSubdivisionDto, "useV" | "includeLast" | "includeFirst">;
+    // (undocumented)
+    type KnotsControlPointsWeightsDto = Inputs_3.Verb.KnotsControlPointsWeightsDto;
+    // (undocumented)
+    type LineDto = Inputs_3.Verb.LineDto;
+    // (undocumented)
+    type LinesDto = Inputs_3.Verb.LinesDto;
+    // (undocumented)
+    type LoftCurvesDto = Inputs_3.Verb.LoftCurvesDto;
+    // (undocumented)
+    type PolylineDto = Inputs_3.Verb.PolylineDto;
+    // (undocumented)
+    type PolylinesDto = Inputs_3.Verb.PolylinesDto;
+    // (undocumented)
+    type RevolutionDto = Inputs_3.Verb.RevolutionDto;
+    // (undocumented)
+    type RevolutionParametersDto = Inputs_3.Verb.RevolutionParametersDto;
+    // (undocumented)
+    type SphereDto = Inputs_3.Verb.SphereDto;
+    // (undocumented)
+    type SphericalParametersDto = Inputs_3.Verb.SphericalParametersDto;
+    // (undocumented)
+    type SurfaceDto = Inputs_3.Verb.SurfaceDto;
+    // (undocumented)
+    type SurfaceLocationDto = Inputs_3.Verb.SurfaceLocationDto;
+    // (undocumented)
+    type SurfaceParamDto = Inputs_3.Verb.SurfaceParamDto;
+    // (undocumented)
+    type SurfaceParameterDto = Inputs_3.Verb.SurfaceParameterDto;
+    // (undocumented)
+    type SurfaceSurfaceDto = Inputs_3.Verb.SurfaceSurfaceDto;
+    // (undocumented)
+    type SurfaceTransformDto = Inputs_3.Verb.SurfaceTransformDto;
+    // (undocumented)
+    type SweepDto = Inputs_3.Verb.SweepDto;
+    // (undocumented)
+    type SweepParametersDto = Inputs_3.Verb.SweepParametersDto;
 }
 
 // @public

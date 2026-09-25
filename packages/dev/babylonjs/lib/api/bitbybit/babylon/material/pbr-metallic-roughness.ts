@@ -2,7 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
-import { Color } from "@bitbybit-dev/base";
+import { Color, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Physically based materials of the metallic-roughness kind, the standard way to describe a real
@@ -32,16 +33,17 @@ export class BabylonMaterialPbrMetallicRoughness {
      * ```
      */
     create(inputs: Inputs.BabylonMaterial.PBRMetallicRoughnessDto): BABYLON.PBRMetallicRoughnessMaterial {
-        const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
-        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor ?? "#0000ff");
-        mat.metallic = inputs.metallic ?? 0.5;
-        mat.roughness = inputs.roughness ?? 0.5;
-        mat.alpha = inputs.alpha ?? 0.5;
-        mat.backFaceCulling = inputs.backFaceCulling ?? true;
-        mat.zOffset = inputs.zOffset;
+        const resolved = resolveDto(Inputs.BabylonMaterial.PBRMetallicRoughnessDto, inputs) as Resolved.BabylonMaterial.PBRMetallicRoughnessDto;
+        const mat = new BABYLON.PBRMetallicRoughnessMaterial(resolved.name, this.context.scene);
+        mat.baseColor = BABYLON.Color3.FromHexString(resolved.baseColor);
+        mat.metallic = resolved.metallic;
+        mat.roughness = resolved.roughness;
+        mat.alpha = resolved.alpha;
+        mat.backFaceCulling = resolved.backFaceCulling;
+        mat.zOffset = resolved.zOffset;
         mat.alphaMode = 1;
-        if(inputs.emissiveColor){
-            mat.emissiveColor = BABYLON.Color3.FromHexString(inputs.emissiveColor);
+        if(resolved.emissiveColor){
+            mat.emissiveColor = BABYLON.Color3.FromHexString(resolved.emissiveColor);
         }
         return mat;
     }
@@ -54,8 +56,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname set base color
      */
     setBaseColor(inputs: Inputs.BabylonMaterial.BaseColorDto): void {
-        const mat = inputs.material;
-        mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor ?? "#0000ff");
+        const resolved = resolveDto(Inputs.BabylonMaterial.BaseColorDto, inputs) as Resolved.BabylonMaterial.BaseColorDto;
+        const mat = resolved.material;
+        mat.baseColor = BABYLON.Color3.FromHexString(resolved.baseColor);
     }
     /**
      * Changes how metallic a material looks, from 0 for paint or plastic to 1 for bare metal.
@@ -64,8 +67,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname set metallic
      */
     setMetallic(inputs: Inputs.BabylonMaterial.MetallicDto): void {
-        const mat = inputs.material;
-        mat.metallic = inputs.metallic ?? 0.5;
+        const resolved = resolveDto(Inputs.BabylonMaterial.MetallicDto, inputs) as Resolved.BabylonMaterial.MetallicDto;
+        const mat = resolved.material;
+        mat.metallic = resolved.metallic;
     }
     /**
      * Changes how rough a material's surface is, from 0 for a mirror finish to 1 for fully matte.
@@ -74,8 +78,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname set roughness
      */
     setRoughness(inputs: Inputs.BabylonMaterial.RoughnessDto): void {
-        const mat = inputs.material;
-        mat.roughness = inputs.roughness ?? 0.5;
+        const resolved = resolveDto(Inputs.BabylonMaterial.RoughnessDto, inputs) as Resolved.BabylonMaterial.RoughnessDto;
+        const mat = resolved.material;
+        mat.roughness = resolved.roughness;
     }
     /**
      * Changes the opacity of a material, from 0 for invisible to 1 for solid; values between make
@@ -85,8 +90,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname set alpha
      */
     setAlpha(inputs: Inputs.BabylonMaterial.AlphaDto): void {
-        const mat = inputs.material;
-        mat.alpha = inputs.alpha ?? 0.5;
+        const resolved = resolveDto(Inputs.BabylonMaterial.AlphaDto, inputs) as Resolved.BabylonMaterial.AlphaDto;
+        const mat = resolved.material;
+        mat.alpha = resolved.alpha;
     }
     /**
      * Sets whether the back of each face is skipped when drawing; culling is faster, while drawing
@@ -96,8 +102,9 @@ export class BabylonMaterialPbrMetallicRoughness {
      * @shortname set back face culling
      */
     setBackFaceCulling(inputs: Inputs.BabylonMaterial.BackFaceCullingDto): void {
-        const mat = inputs.material;
-        mat.backFaceCulling = inputs.backFaceCulling ?? true;
+        const resolved = resolveDto(Inputs.BabylonMaterial.BackFaceCullingDto, inputs) as Resolved.BabylonMaterial.BackFaceCullingDto;
+        const mat = resolved.material;
+        mat.backFaceCulling = resolved.backFaceCulling;
     }
 
     /**

@@ -28,12 +28,12 @@ export namespace BabylonMaterial {
          * Name the material is known by in the scene
          * @default Custom Material
          */
-        name = "Custom Material";
+        name?: string | undefined = "Custom Material";
         /**
          * Hex color of the surface under white light
          * @default #0000ff
          */
-        baseColor: Base.Color = "#0000ff";
+        baseColor?: Base.Color | undefined = "#0000ff";
         /**
          * Hex color the surface glows with on its own, regardless of lighting; black glows not at
          * all
@@ -47,7 +47,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        metallic = 0.6;
+        metallic?: number | undefined = 0.6;
         /**
          * How rough the surface is, from 0 for a mirror finish to 1 for fully matte
          * @default 0.5
@@ -55,7 +55,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        roughness = 0.5;
+        roughness?: number | undefined = 0.5;
         /**
          * Opacity from 0 for invisible to 1 for solid; values between make the surface see-through
          * @default 1
@@ -63,13 +63,13 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.1
          */
-        alpha = 1;
+        alpha?: number | undefined = 1;
         /**
          * When true, the back of each face is skipped, which is faster; false shows both sides of
          * open meshes
          * @default false
          */
-        backFaceCulling = false;
+        backFaceCulling?: boolean | undefined = false;
         /**
          * Depth offset that pulls the surface toward or away from the camera when it fights with
          * another at the same depth; 0 for none
@@ -78,7 +78,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 0.1
          */
-        zOffset = 0;
+        zOffset?: number | undefined = 0;
     }
 
     /**
@@ -264,7 +264,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.01
          */
-        luminance = 1;
+        luminance?: number | undefined = 1;
         /**
          * How hazy the air is; more haze whitens the sky and spreads the glow of the sun
          * @default 10
@@ -272,7 +272,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 1
          */
-        turbidity = 10;
+        turbidity?: number | undefined = 10;
         /**
          * How strongly light scatters the way that makes a clear sky blue; higher is a deeper blue
          * @default 2
@@ -280,7 +280,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 1
          */
-        rayleigh = 2;
+        rayleigh?: number | undefined = 2;
         /**
          * How much haze gathers around the sun, between 0 and 0.1; more makes a wider, whiter glow
          * @default 0.005
@@ -288,7 +288,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 0.001
          */
-        mieCoefficient = 0.005;
+        mieCoefficient?: number | undefined = 0.005;
         /**
          * How tightly the haze glow gathers around the sun; near 1 gives a small bright halo, lower
          * spreads it
@@ -297,7 +297,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 0.1
          */
-        mieDirectionalG = 0.8;
+        mieDirectionalG?: number | undefined = 0.8;
         /**
          * How far the sky dome sits from the camera, which changes how the horizon reads
          * @default 500
@@ -305,7 +305,7 @@ export namespace BabylonMaterial {
          * @maximum Infinity
          * @step 10
          */
-        distance = 500;
+        distance?: number | undefined = 500;
         /**
          * How high the sun stands, from -0.5 below the horizon through 0 at the horizon to 0.5
          * overhead
@@ -314,7 +314,7 @@ export namespace BabylonMaterial {
          * @maximum 0.5
          * @step 0.01
          */
-        inclination = 0.49;
+        inclination?: number | undefined = 0.49;
         /**
          * Where around the horizon the sun stands, from 0 to 1 for a full turn
          * @default 0.25
@@ -322,7 +322,7 @@ export namespace BabylonMaterial {
          * @maximum 1
          * @step 0.01
          */
-        azimuth = 0.25;
+        azimuth?: number | undefined = 0.25;
         /**
          * An explicit direction to the sun, used only while `useSunPosition` is true; otherwise it
          * is derived from the inclination and azimuth
@@ -334,7 +334,7 @@ export namespace BabylonMaterial {
          * When true, the sun is placed from `sunPosition`; when false, from inclination and azimuth
          * @default false
          */
-        useSunPosition = false;
+        useSunPosition?: boolean | undefined = false;
         /**
          * An offset vector that shifts the horizon relative to the camera
          * @default undefined
@@ -345,12 +345,12 @@ export namespace BabylonMaterial {
          * The direction the sky treats as up; `[0, 1, 0]` for the usual Y-up scene
          * @default [0, 1, 0]
          */
-        up = [0, 1, 0];
+        up?: number[] | undefined = [0, 1, 0];
         /**
          * When true, fine noise hides color banding in the smooth gradients of the sky
          * @default false
          */
-        dithering = false;
+        dithering?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.material.skyMaterial.setLuminance` with a sky material and its new brightness.

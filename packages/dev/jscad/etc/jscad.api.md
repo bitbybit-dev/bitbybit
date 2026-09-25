@@ -514,36 +514,36 @@ export namespace JSCAD {
     }
     export class DrawPathDto<T> {
         constructor(path?: JSCADEntity, colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T);
-        colour: string;
-        opacity: number;
+        colour?: string | undefined;
+        opacity?: number | undefined;
         path: JSCADEntity;
         pathMesh?: T | undefined;
-        updatable: boolean;
-        width: number;
+        updatable?: boolean | undefined;
+        width?: number | undefined;
     }
     export class DrawSolidMeshDto<T> {
         constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         mesh: JSCADEntity;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class DrawSolidMeshesDto<T> {
         constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         meshes?: JSCADEntity[] | undefined;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class EllipseDto {
         constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number);
@@ -1801,21 +1801,21 @@ export namespace Point {
     }
     export class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         point: Base.Point3;
         pointMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         points: Base.Point3[];
         pointsMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);

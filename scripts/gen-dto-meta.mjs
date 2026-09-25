@@ -39,8 +39,12 @@ const KERNELS = [
 
 const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
 
-/** `Namespace.Class` -> { props: [{ name, type }], extends } for every class inside an exported namespace of the files. */
-function dtoClasses(files) {
+/**
+ * `Namespace.Class` -> { props: [{ name, type }], extends } for every class inside an exported namespace
+ * of the files, and on the side every name each namespace declares, for qualifying a type parameter's
+ * constraint outside the namespace.
+ */
+function dtoClasses(files, declared = new Map()) {
     const classes = new Map();
     for (const file of files) {
         const sf = parse(file);
@@ -48,6 +52,10 @@ function dtoClasses(files) {
             if (ts.isModuleDeclaration(node) && node.body && ts.isModuleBlock(node.body)) {
                 for (const statement of node.body.statements) visit(statement, node.name.text);
                 return;
+            }
+            if (namespace && (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node) || ts.isEnumDeclaration(node) || ts.isClassDeclaration(node)) && node.name) {
+                if (!declared.has(namespace)) declared.set(namespace, new Set());
+                declared.get(namespace).add(node.name.text);
             }
             if (namespace && ts.isClassDeclaration(node) && node.name) {
                 const heritage = (node.heritageClauses || []).find((c) => c.token === ts.SyntaxKind.ExtendsKeyword);
@@ -129,36 +137,74 @@ function generate(kernel) {
 
 /**
  * The packages whose inputs DTOs get a `Resolved` mirror: each DTO as a caller's inputs look once
- * its defaults are laid over them, every defaulted property present. `base` names where the base
- * package's own mirror lives, re-exported by a kernel as its `Inputs` re-exports base's inputs.
+ * its defaults are laid over them, every defaulted property present. A package's `Inputs` also
+ * re-exports namespaces of the packages below it, and its mirror re-exports their mirrors the same
+ * way: the re-exports are read from the package's `inputs/index.ts`, so the two cannot drift. The
+ * order is the dependency order, a mirror's re-exports naming only namespaces a lower mirror has.
  */
 const RESOLVED = [
-    { name: "base", inputsDir: BASE_INPUTS, out: "packages/dev/base/lib/api/resolved-inputs/index.ts", withDefaults: "../kernel-calls", reexportBase: false },
-    { name: "occt", inputsDir: "packages/dev/occt/lib/api/inputs", out: "packages/dev/occt/lib/api/resolved-inputs/index.ts", withDefaults: "@bitbybit-dev/base", reexportBase: true },
-    { name: "jscad", inputsDir: "packages/dev/jscad/lib/api/inputs", out: "packages/dev/jscad/lib/api/resolved-inputs/index.ts", withDefaults: "@bitbybit-dev/base", reexportBase: true },
-    { name: "manifold", inputsDir: "packages/dev/manifold/lib/api/inputs", out: "packages/dev/manifold/lib/api/resolved-inputs/index.ts", withDefaults: "@bitbybit-dev/base", reexportBase: true },
-];
+    { name: "base", inputsDir: BASE_INPUTS, withDefaults: "../kernel-calls" },
+    { name: "occt", inputsDir: "packages/dev/occt/lib/api/inputs" },
+    { name: "jscad", inputsDir: "packages/dev/jscad/lib/api/inputs" },
+    { name: "manifold", inputsDir: "packages/dev/manifold/lib/api/inputs" },
+    { name: "core", inputsDir: "packages/dev/core/lib/api/inputs" },
+    { name: "babylonjs", inputsDir: "packages/dev/babylonjs/lib/api/inputs" },
+    { name: "threejs", inputsDir: "packages/dev/threejs/lib/api/inputs" },
+    { name: "playcanvas", inputsDir: "packages/dev/playcanvas/lib/api/inputs" },
+].map((target) => ({ withDefaults: "@bitbybit-dev/base", ...target, out: target.inputsDir.replace(/inputs$/, "resolved-inputs/index.ts") }));
+
+/** The namespaces each package's mirror exports, filled in as the mirrors are generated in order. */
+const mirrorNamespaces = new Map();
+
+/** What a package's inputs index re-exports from other packages, as lines of its mirror. */
+function mirrorReexports(target) {
+    const sf = parse(path.join(ROOT, target.inputsDir, "index.ts"));
+    const lines = [];
+    for (const statement of sf.statements) {
+        if (!ts.isExportDeclaration(statement) || !statement.moduleSpecifier) continue;
+        const specifier = statement.moduleSpecifier.text;
+        const match = /^(@bitbybit-dev\/[\w-]+)\/lib\/api\/inputs$/.exec(specifier);
+        if (!match) continue;
+        const available = mirrorNamespaces.get(match[1]);
+        if (!available) throw new Error(`${target.name}: its inputs re-export ${specifier}, which has no mirror generated before it`);
+        const from = `${match[1]}/lib/api/resolved-inputs`;
+        if (!statement.exportClause) {
+            lines.push(`export * from "${from}";`);
+            available.forEach((n) => target.namespaces.add(n));
+            continue;
+        }
+        const names = statement.exportClause.elements.map((e) => e.name.text).filter((n) => available.has(n));
+        if (names.length) {
+            lines.push(`export type { ${names.join(", ")} } from "${from}";`);
+            names.forEach((n) => target.namespaces.add(n));
+        }
+    }
+    return lines;
+}
 
 function generateResolved(target) {
-    const classes = dtoClasses(sourceFiles(path.join(ROOT, target.inputsDir)));
+    const declared = new Map();
+    const classes = dtoClasses(sourceFiles(path.join(ROOT, target.inputsDir)), declared);
+    const qualify = (text, namespace) => text.replace(/(^|[^.\w])([A-Za-z_]\w*)\b/g, (whole, lead, name) => (declared.get(namespace)?.has(name) ? `${lead}Inputs.${namespace}.${name}` : whole));
     const byNamespace = new Map();
     for (const [key, entry] of classes) {
         const defaulted = [...new Set(allProps(classes, key).filter((p) => p.defaulted).map((p) => p.name))];
-        const params = entry.typeParams.length ? `<${entry.typeParams.map((t) => t.text).join(", ")}>` : "";
+        const params = entry.typeParams.length ? `<${entry.typeParams.map((t) => qualify(t.text, entry.namespace)).join(", ")}>` : "";
         const args = entry.typeParams.length ? `<${entry.typeParams.map((t) => t.name).join(", ")}>` : "";
         const source = `Inputs.${entry.namespace}.${entry.name}${args}`;
         const alias = defaulted.length ? `WithDefaults<${source}, ${defaulted.map((d) => `"${d}"`).join(" | ")}>` : source;
         if (!byNamespace.has(entry.namespace)) byNamespace.set(entry.namespace, []);
         byNamespace.get(entry.namespace).push([entry.name, `    export type ${entry.name}${params} = ${alias};`]);
     }
+    target.namespaces = new Set(byNamespace.keys());
     const lines = [
         "// GENERATED by scripts/gen-dto-meta.mjs from the inputs DTOs - do not edit.",
         "// Regenerate with `npm run gen:dto-meta` at the repository root.",
         "/* eslint-disable @typescript-eslint/no-namespace */",
         `import { WithDefaults } from "${target.withDefaults}";`,
         "import * as Inputs from \"../inputs\";",
+        ...mirrorReexports(target),
     ];
-    if (target.reexportBase) lines.push("export * from \"@bitbybit-dev/base/lib/api/resolved-inputs\";");
     for (const namespace of [...byNamespace.keys()].sort()) {
         lines.push(
             "",
@@ -171,6 +217,7 @@ function generateResolved(target) {
             "}",
         );
     }
+    mirrorNamespaces.set(`@bitbybit-dev/${target.name}`, target.namespaces);
     return lines.join("\n") + "\n";
 }
 

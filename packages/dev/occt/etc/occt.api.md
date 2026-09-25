@@ -5965,59 +5965,59 @@ namespace OCCT {
     }
     class DrawShapeDto<T> {
         constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
+        allowQualityDecrease?: boolean | undefined;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeColour?: Base.Color | undefined;
+        edgeIndexColour?: Base.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base.Color | undefined;
+        faceIndexColour?: Base.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
         shape?: T | undefined;
-        vertexColour: string;
-        vertexSize: number;
+        vertexColour?: string | undefined;
+        vertexSize?: number | undefined;
     }
     class DrawShapesDto<T> {
         constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
+        allowQualityDecrease?: boolean | undefined;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeColour?: Base.Color | undefined;
+        edgeIndexColour?: Base.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base.Color | undefined;
+        faceIndexColour?: Base.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
         shapes: T[];
-        vertexColour: string;
-        vertexSize: number;
+        vertexColour?: string | undefined;
+        vertexSize?: number | undefined;
     }
     enum dxfAcadVersionEnum {
         // (undocumented)
@@ -6604,13 +6604,13 @@ namespace OCCT {
     }
     class ImportStepIgesDto {
         constructor(assetFile?: File, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
+        adjustZtoY?: boolean | undefined;
         assetFile: File;
     }
     class ImportStepIgesFromTextDto {
         constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
-        fileType: fileTypeEnum;
+        adjustZtoY?: boolean | undefined;
+        fileType?: fileTypeEnum | undefined;
         text: string;
     }
     class InterpolateSymmetricDto {
@@ -8974,21 +8974,21 @@ namespace Point_2 {
     }
     class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         point: Base.Point3;
         pointMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         points: Base.Point3[];
         pointsMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);

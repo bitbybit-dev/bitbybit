@@ -7,6 +7,8 @@ import { Tag, DrawCore } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import { DrawHelper } from "../draw-helper";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Drawing anything into the scene: kernel shapes, points, lines, polylines, curves, meshes and tags
@@ -115,12 +117,32 @@ export class Draw extends DrawCore {
         return Promise.resolve(this.drawResolved(inputs));
     }
 
-    private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawOcctShapeOptions {
+    private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Resolved.Draw.DrawOcctShapeOptions {
         let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        return { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+        return this.occtOptions(options);
+    }
+
+    /**
+     * The options a draw call was given, laid over the defaults of the options class for the kind
+     * being drawn: a partial object gets the same values the matching `options` method would give it.
+     */
+    private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
+    }
+
+    private occtOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions {
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+    }
+
+    private manifoldOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawManifoldOrCrossSectionOptions {
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+    }
+
+    private nodeOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawNodeOptions {
+        return resolveDto(Inputs.Draw.DrawNodeOptions, options) as Resolved.Draw.DrawNodeOptions;
     }
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny) {
@@ -351,7 +373,8 @@ export class Draw extends DrawCore {
      * ```
      */
     drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
-        this.drawGridMesh(inputs);
+        const resolved = resolveDto(Inputs.Draw.SceneDrawGridMeshDto, inputs) as Resolved.Draw.SceneDrawGridMeshDto;
+        this.drawGridMesh(resolved);
     }
 
     /**
@@ -368,21 +391,22 @@ export class Draw extends DrawCore {
      * ```
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.Draw.SceneDrawGridMeshDto, inputs) as Resolved.Draw.SceneDrawGridMeshDto;
         try {
             const groundMaterial = new GridMaterial(uniqueName("groundMaterial"), this.context.scene);
-            groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
-            groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
-            groundMaterial.gridRatio = inputs.gridRatio;
-            groundMaterial.backFaceCulling = inputs.backFaceCulling;
-            groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
-            groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
-            groundMaterial.opacity = inputs.opacity;
+            groundMaterial.majorUnitFrequency = resolved.majorUnitFrequency;
+            groundMaterial.minorUnitVisibility = resolved.minorUnitVisibility;
+            groundMaterial.gridRatio = resolved.gridRatio;
+            groundMaterial.backFaceCulling = resolved.backFaceCulling;
+            groundMaterial.mainColor = BABYLON.Color3.FromHexString(resolved.mainColor);
+            groundMaterial.lineColor = BABYLON.Color3.FromHexString(resolved.secondaryColor);
+            groundMaterial.opacity = resolved.opacity;
             groundMaterial.linesOnly = true;
             const ground = BABYLON.MeshBuilder.CreateGround(uniqueName("bitbybit-ground"),
                 {
-                    width: inputs.width,
-                    height: inputs.height,
-                    subdivisions: inputs.subdivisions,
+                    width: resolved.width,
+                    height: resolved.height,
+                    subdivisions: resolved.subdivisions,
                     updatable: false,
 
                 },
@@ -411,7 +435,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
     }
 
     /**
@@ -428,7 +452,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
     }
 
     /**
@@ -444,7 +468,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShapeSimple(inputs: Inputs.Draw.DrawOcctShapeSimpleOptions): Inputs.Draw.DrawOcctShapeSimpleOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeSimpleOptions, inputs);
     }
 
     /**
@@ -461,7 +485,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShapeMaterial(inputs: Inputs.Draw.DrawOcctShapeMaterialOptions): Inputs.Draw.DrawOcctShapeMaterialOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeMaterialOptions, inputs);
     }
 
     /**
@@ -478,7 +502,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Inputs.Draw.DrawManifoldOrCrossSectionOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, inputs);
     }
 
     /**
@@ -495,7 +519,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawNodeOptions, inputs);
     }
 
     /**
@@ -512,21 +536,22 @@ export class Draw extends DrawCore {
      * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): BABYLON.Texture {
-        const samplingMode = this.getSamplingMode(inputs.samplingMode);
+        const resolved = resolveDto(Inputs.Draw.GenericTextureDto, inputs) as Resolved.Draw.GenericTextureDto;
+        const samplingMode = this.getSamplingMode(resolved.samplingMode);
         const texture = new BABYLON.Texture(
-            inputs.url,
+            resolved.url,
             this.context.scene,
             false,
-            inputs.invertY,
+            resolved.invertY,
             samplingMode
         );
 
-        texture.name = inputs.name;
-        texture.uOffset = inputs.uOffset || 0;
-        texture.vOffset = inputs.vOffset || 0;
-        texture.uScale = inputs.uScale || 1;
-        texture.vScale = inputs.vScale || 1;
-        texture.wAng = inputs.wAng || 0;
+        texture.name = resolved.name;
+        texture.uOffset = resolved.uOffset;
+        texture.vOffset = resolved.vOffset;
+        texture.uScale = resolved.uScale || 1;
+        texture.vScale = resolved.vScale || 1;
+        texture.wAng = resolved.wAng;
 
         return texture;
     }
@@ -547,63 +572,54 @@ export class Draw extends DrawCore {
      * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): BABYLON.PBRMetallicRoughnessMaterial {
-        const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
+        const resolved = resolveDto(Inputs.Draw.GenericPBRMaterialDto, inputs) as Resolved.Draw.GenericPBRMaterialDto;
+        const mat = new BABYLON.PBRMetallicRoughnessMaterial(resolved.name, this.context.scene);
 
-        if (inputs.baseColor) {
-            mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
+        if (resolved.baseColor) {
+            mat.baseColor = BABYLON.Color3.FromHexString(resolved.baseColor);
         }
-        mat.metallic = inputs.metallic || 1;
-        mat.roughness = inputs.roughness || 1;
-        mat.alpha = inputs.alpha;
+        mat.metallic = resolved.metallic;
+        mat.roughness = resolved.roughness;
+        mat.alpha = resolved.alpha;
 
-        if (inputs.emissiveColor) {
-            const emissive = BABYLON.Color3.FromHexString(inputs.emissiveColor);
-            if (inputs.emissiveIntensity !== undefined) {
-                mat.emissiveColor = emissive.scale(inputs.emissiveIntensity);
-            } else {
-                mat.emissiveColor = emissive;
-            }
+        if (resolved.emissiveColor) {
+            const emissive = BABYLON.Color3.FromHexString(resolved.emissiveColor);
+            mat.emissiveColor = emissive.scale(resolved.emissiveIntensity);
         }
 
-        if (inputs.baseColorTexture) {
-            mat.baseTexture = inputs.baseColorTexture as BABYLON.BaseTexture;
+        if (resolved.baseColorTexture) {
+            mat.baseTexture = resolved.baseColorTexture as BABYLON.BaseTexture;
         }
-        if (inputs.metallicRoughnessTexture) {
-            mat.metallicRoughnessTexture = inputs.metallicRoughnessTexture as BABYLON.BaseTexture;
+        if (resolved.metallicRoughnessTexture) {
+            mat.metallicRoughnessTexture = resolved.metallicRoughnessTexture as BABYLON.BaseTexture;
         }
-        if (inputs.normalTexture) {
-            mat.normalTexture = inputs.normalTexture as BABYLON.BaseTexture;
+        if (resolved.normalTexture) {
+            mat.normalTexture = resolved.normalTexture as BABYLON.BaseTexture;
         }
-        if (inputs.emissiveTexture) {
-            mat.emissiveTexture = inputs.emissiveTexture as BABYLON.BaseTexture;
+        if (resolved.emissiveTexture) {
+            mat.emissiveTexture = resolved.emissiveTexture as BABYLON.BaseTexture;
         }
-        if (inputs.occlusionTexture) {
-            mat.occlusionTexture = inputs.occlusionTexture as BABYLON.BaseTexture;
-        }
-
-        if (inputs.alphaCutoff !== undefined) {
-            mat.alphaCutOff = inputs.alphaCutoff;
+        if (resolved.occlusionTexture) {
+            mat.occlusionTexture = resolved.occlusionTexture as BABYLON.BaseTexture;
         }
 
-        if (inputs.alphaMode !== undefined) {
-            switch (inputs.alphaMode) {
-                case Inputs.Draw.alphaModeEnum.opaque:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
-                    break;
-                case Inputs.Draw.alphaModeEnum.mask:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST;
-                    break;
-                case Inputs.Draw.alphaModeEnum.blend:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
-                    break;
-            }
+        mat.alphaCutOff = resolved.alphaCutoff;
+
+        switch (resolved.alphaMode) {
+            case Inputs.Draw.alphaModeEnum.opaque:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
+                break;
+            case Inputs.Draw.alphaModeEnum.mask:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST;
+                break;
+            case Inputs.Draw.alphaModeEnum.blend:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
+                break;
         }
 
-        if (inputs.doubleSided !== undefined) {
-            mat.doubleSided = inputs.doubleSided;
-        }
+        mat.doubleSided = resolved.doubleSided;
 
-        if (inputs.unlit) {
+        if (resolved.unlit) {
             mat.disableLighting = true;
         }
 
@@ -665,7 +681,7 @@ export class Draw extends DrawCore {
         const result = this.drawHelper.drawSurfacesMultiColour({
             surfacesMesh: inputs.babylonMesh,
             surfaces: inputs.entity as Inputs.Base.VerbSurface[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...this.basicOptions(options)
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurfaces, options, result);
         return result;
@@ -680,7 +696,7 @@ export class Draw extends DrawCore {
         const result = this.drawHelper.drawCurves({
             curvesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curves: inputs.entity as Inputs.Base.VerbCurve[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...this.basicOptions(options)
         });
 
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbCurves, options, result);
@@ -696,7 +712,7 @@ export class Draw extends DrawCore {
         const existing = new Map(result.map(node => [node, new Set(node.getChildMeshes())]));
         this.node.drawNodes({
             nodes: result,
-            ...options as Inputs.Draw.DrawNodeOptions
+            ...this.nodeOptions(options)
         });
         result.forEach(node => {
             const before = existing.get(node)!;
@@ -767,7 +783,7 @@ export class Draw extends DrawCore {
         const result = this.drawHelper.drawSurface({
             surfaceMesh: inputs.babylonMesh,
             surface: inputs.entity,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...this.basicOptions(options)
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurface, options, result);
         return result;
@@ -781,7 +797,7 @@ export class Draw extends DrawCore {
         const result = this.drawHelper.drawCurve({
             curveMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curve: inputs.entity,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
+            ...this.basicOptions(options)
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbCurve, options, result);
         return result;
@@ -796,7 +812,7 @@ export class Draw extends DrawCore {
         const existing = new Set(result.getChildMeshes());
         this.node.drawNode({
             node: result,
-            ...options as Inputs.Draw.DrawNodeOptions
+            ...this.nodeOptions(options)
         });
         const triad = result.getChildMeshes().filter(m => !existing.has(m));
         this.applyNodeSettingsAndMetadata(Inputs.Draw.drawingTypes.node, options, result, triad);
@@ -886,14 +902,13 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawManifoldOrCrossSection({
+            ...this.manifoldOptions(options),
             manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer,
-            ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r as BABYLON.Mesh;
@@ -901,14 +916,13 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawManifoldsOrCrossSections({
+            ...this.manifoldOptions(options),
             manifoldsOrCrossSections: inputs.entity as Inputs.Manifold.ManifoldPointer[],
-            ...new Inputs.Manifold.DrawManifoldOrCrossSectionDto(),
-            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r;
@@ -922,8 +936,7 @@ export class Draw extends DrawCore {
         }
         return this.drawHelper.drawShape({
             shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-            ...new Inputs.Draw.DrawOcctShapeOptions(),
-            ...options as Inputs.Draw.DrawOcctShapeOptions
+            ...this.occtOptions(options)
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;
@@ -937,8 +950,7 @@ export class Draw extends DrawCore {
         }
         return this.drawHelper.drawShapes({
             shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-            ...new Inputs.Draw.DrawOcctShapeOptions(),
-            ...options as Inputs.Draw.DrawOcctShapeOptions
+            ...this.occtOptions(options)
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;

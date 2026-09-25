@@ -26,28 +26,28 @@ export namespace BabylonMeshBuilder {
          * Full size along X, in scene units
          * @default 1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Z, in scene units
          * @default 1
          */
-        depth = 1;
+        depth?: number | undefined = 1;
         /**
          * Full size along Y, in scene units
          * @default 1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -63,18 +63,18 @@ export namespace BabylonMeshBuilder {
          * Length of every edge, in scene units
          * @default 1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createSquarePlane` with the side of a flat square in the XY plane.
@@ -89,18 +89,18 @@ export namespace BabylonMeshBuilder {
          * Length of each side, in scene units
          * @default 1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createSphere` with the diameter of a sphere centered on the origin
@@ -120,7 +120,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        diameter = 1;
+        diameter?: number | undefined = 1;
         /**
          * Number of divisions around and over the sphere; more is rounder and heavier
          * @default 32
@@ -128,18 +128,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        segments = 32;
+        segments?: number | undefined = 32;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createIcoSphere`: the radius of a triangle-based sphere, optional
@@ -163,7 +163,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Radius along X, in scene units; 0 falls back to `radius`
          * @default 0
@@ -171,7 +171,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusX = 0;
+        radiusX?: number | undefined = 0;
         /**
          * Radius along Y, in scene units; 0 falls back to `radius`
          * @default 0
@@ -179,7 +179,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusY = 0;
+        radiusY?: number | undefined = 0;
         /**
          * Radius along Z, in scene units; 0 falls back to `radius`
          * @default 0
@@ -187,12 +187,12 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusZ = 0;
+        radiusZ?: number | undefined = 0;
         /**
          * When true, each triangle is shaded flat, showing facets instead of a smooth surface
          * @default false
          */
-        flat = false;
+        flat?: boolean | undefined = false;
         /**
          * How many times the starting icosahedron is subdivided; more is rounder and heavier
          * @default 4
@@ -200,18 +200,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisions = 4;
+        subdivisions?: number | undefined = 4;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -232,7 +232,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of straight sides around the rim; more is rounder
          * @default 32
@@ -240,7 +240,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 32;
+        tessellation?: number | undefined = 32;
         /**
          * How much of the full circle is drawn, from 0 to 1; 0.5 gives a half disc
          * @default 1
@@ -248,18 +248,18 @@ export namespace BabylonMeshBuilder {
          * @maximum 1
          * @step 0.1
          */
-        arc: number = 1;
+        arc?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createRibbon`: the paths a surface is stretched over, how they
@@ -283,34 +283,34 @@ export namespace BabylonMeshBuilder {
          * When true, the last path is joined back to the first, closing the surface around
          * @default false
          */
-        closeArray = false;
+        closeArray?: boolean | undefined = false;
         /**
          * When true, each path is joined end to start, closing the surface along
          * @default false
          */
-        closePath = false;
+        closePath?: boolean | undefined = false;
         /**
          * When only one path is given, how many points apart the pairs that form triangles are
          * taken
          * @default 0
          */
-        offset = 0;
+        offset?: number | undefined = 0;
         /**
          * When true, the vertices of the mesh can be changed later without rebuilding it
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createTorus`: the overall diameter of a ring in the XZ plane, the
@@ -331,7 +331,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        diameter = 1;
+        diameter?: number | undefined = 1;
         /**
          * Diameter of the tube, in scene units
          * @default 0.5
@@ -339,7 +339,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        thickness = 0.5;
+        thickness?: number | undefined = 0.5;
         /**
          * Number of divisions around the ring and the tube; more is rounder
          * @default 32
@@ -347,18 +347,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 32;
+        tessellation?: number | undefined = 32;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -383,7 +383,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 2;
+        radius?: number | undefined = 2;
         /**
          * Radius of the tube, in scene units
          * @default 0.5
@@ -391,7 +391,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        tube = 0.5;
+        tube?: number | undefined = 0.5;
         /**
          * Number of segments along the length of the tube; more is smoother
          * @default 128
@@ -399,7 +399,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        radialSegments = 128;
+        radialSegments?: number | undefined = 128;
         /**
          * Number of segments around the tube; more is rounder
          * @default 32
@@ -407,7 +407,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tubularSegments = 32;
+        tubularSegments?: number | undefined = 32;
         /**
          * How many times the tube winds around the axis of the ring; 2 with `q` 3 gives a trefoil
          * @default 2
@@ -415,7 +415,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        p = 2;
+        p?: number | undefined = 2;
         /**
          * How many times the tube winds through the hole of the ring; 3 with `p` 2 gives a trefoil
          * @default 3
@@ -423,18 +423,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        q = 3;
+        q?: number | undefined = 3;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -467,7 +467,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        depth = 0;
+        depth?: number | undefined = 0;
         /**
          * How close two face normals must be for the edge between them to be shaded smooth
          * @default 0.01
@@ -475,23 +475,23 @@ export namespace BabylonMeshBuilder {
          * @maximum 1
          * @step 0.01
          */
-        smoothingThreshold = 0.01;
+        smoothingThreshold?: number | undefined = 0.01;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the sides of an extruded polygon get texture coordinates that wrap around it
          * @default false
          */
-        wrap = false;
+        wrap?: boolean | undefined = false;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.extrudePolygon`: the outline of a flat polygon in the XZ plane,
@@ -522,23 +522,23 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        depth = 1;
+        depth?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the sides get texture coordinates that wrap around the extrusion
          * @default false
          */
-        wrap = false;
+        wrap?: boolean | undefined = false;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createPolyhedron`: which of the built-in polyhedra to build or
@@ -563,7 +563,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * Which built-in shape, 0 to 14: 0 tetrahedron, 1 octahedron, 2 dodecahedron, 3
          * icosahedron, 4 rhombicuboctahedron, then prisms, pyramids, dipyramids and a cupola
@@ -572,7 +572,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        type = 0;
+        type?: number | undefined = 0;
         /**
          * Size along X, in scene units; 0 falls back to `size`
          * @default 0
@@ -580,7 +580,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeX = 0;
+        sizeX?: number | undefined = 0;
         /**
          * Size along Y, in scene units; 0 falls back to `size`
          * @default 0
@@ -588,7 +588,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeY = 0;
+        sizeY?: number | undefined = 0;
         /**
          * Size along Z, in scene units; 0 falls back to `size`
          * @default 0
@@ -596,7 +596,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeZ = 0;
+        sizeZ?: number | undefined = 0;
         /**
          * Your own polyhedron as the data the engine expects, used instead of `type` when given
          * @optional true
@@ -606,18 +606,18 @@ export namespace BabylonMeshBuilder {
          * When true, each face is shaded flat, showing facets instead of a smooth surface
          * @default false
          */
-        flat = false;
+        flat?: boolean | undefined = false;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createGeodesic`: how finely the twenty faces of the sphere are
@@ -643,7 +643,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        m = 4;
+        m?: number | undefined = 4;
         /**
          * The second subdivision number; with `m` it sets how many triangles each face is split
          * into
@@ -652,7 +652,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        n = 4;
+        n?: number | undefined = 4;
         /**
          * Size on every axis, in scene units, unless a per-axis size overrides it
          * @default 1
@@ -660,7 +660,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * Size along X, in scene units; 0 falls back to `size`
          * @default 0
@@ -668,7 +668,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeX = 0;
+        sizeX?: number | undefined = 0;
         /**
          * Size along Y, in scene units; 0 falls back to `size`
          * @default 0
@@ -676,7 +676,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeY = 0;
+        sizeY?: number | undefined = 0;
         /**
          * Size along Z, in scene units; 0 falls back to `size`
          * @default 0
@@ -684,12 +684,12 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeZ = 0;
+        sizeZ?: number | undefined = 0;
         /**
          * When true, each triangle is shaded flat, showing facets instead of a smooth surface
          * @default false
          */
-        flat = false;
+        flat?: boolean | undefined = false;
         /**
          * Kept for compatibility; the geodesic is built from `m` and `n`
          * @default 4
@@ -697,18 +697,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisions = 4;
+        subdivisions?: number | undefined = 4;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default frontside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.frontside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.frontside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -742,7 +742,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisions = 2;
+        subdivisions?: number | undefined = 2;
         /**
          * Number of divisions around the capsule; more is rounder
          * @default 16
@@ -750,7 +750,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 16;
+        tessellation?: number | undefined = 16;
         /**
          * Full length from end to end, rounded caps included, in scene units
          * @default 2
@@ -758,7 +758,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 2;
+        height?: number | undefined = 2;
         /**
          * Radius of the middle part, in scene units, unless the cap radii override it
          * @default 1
@@ -766,7 +766,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of divisions over each rounded end; more is smoother
          * @default 6
@@ -774,7 +774,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        capSubdivisions = 6;
+        capSubdivisions?: number | undefined = 6;
         /**
          * Radius of the top end, in scene units
          * @default 0.5
@@ -782,7 +782,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusTop = 0.5;
+        radiusTop?: number | undefined = 0.5;
         /**
          * Radius of the bottom end, in scene units
          * @default 0.5
@@ -790,7 +790,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusBottom = 0.5;
+        radiusBottom?: number | undefined = 0.5;
         /**
          * Number of divisions over the top end, overriding `capSubdivisions`
          * @default 6
@@ -798,7 +798,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        topCapSubdivisions = 6;
+        topCapSubdivisions?: number | undefined = 6;
         /**
          * Number of divisions over the bottom end, overriding `capSubdivisions`
          * @default 6
@@ -806,18 +806,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        bottomCapSubdivisions = 6;
+        bottomCapSubdivisions?: number | undefined = 6;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createGoldberg`: how many hexagons the ball is made of and its
@@ -842,7 +842,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        m = 4;
+        m?: number | undefined = 4;
         /**
          * The second subdivision number; with `m` it sets how many hexagons surround the twelve
          * pentagons
@@ -851,7 +851,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        n = 4;
+        n?: number | undefined = 4;
         /**
          * Size on every axis, in scene units, unless a per-axis size overrides it
          * @default 1
@@ -859,7 +859,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * Size along X, in scene units; 0 falls back to `size`
          * @default 0
@@ -867,7 +867,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeX = 0;
+        sizeX?: number | undefined = 0;
         /**
          * Size along Y, in scene units; 0 falls back to `size`
          * @default 0
@@ -875,7 +875,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeY = 0;
+        sizeY?: number | undefined = 0;
         /**
          * Size along Z, in scene units; 0 falls back to `size`
          * @default 0
@@ -883,18 +883,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeZ = 0;
+        sizeZ?: number | undefined = 0;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createTube`: the path a tube follows, its radius, how round it is,
@@ -922,7 +922,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of sides around the tube; more is rounder
          * @default 32
@@ -930,7 +930,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 32;
+        tessellation?: number | undefined = 32;
         /**
          * Which ends are closed: 0 none, 1 the start, 2 the end, 3 both
          * @default 0
@@ -938,7 +938,7 @@ export namespace BabylonMeshBuilder {
          * @maximum 3
          * @step 1
          */
-        cap = 0;
+        cap?: number | undefined = 0;
         /**
          * How much of the circumference is drawn, from 0 to 1; below 1 the tube is open along its
          * length
@@ -947,18 +947,18 @@ export namespace BabylonMeshBuilder {
          * @maximum 1
          * @step 0.1
          */
-        arc = 1;
+        arc?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createExtrudedSahpe`: the profile to sweep, the path to sweep it
@@ -989,7 +989,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * How far the profile turns around the path at each step, in radians; 0 keeps it straight
          * @default 0
@@ -997,17 +997,17 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * When true, the last point of the profile is joined back to its first
          * @default false
          */
-        closeShape = false;
+        closeShape?: boolean | undefined = false;
         /**
          * When true, the last point of the path is joined back to its first
          * @default false
          */
-        closePath = false;
+        closePath?: boolean | undefined = false;
         /**
          * Which ends are closed: 0 none, 1 the start, 2 the end, 3 both
          * @default 0
@@ -1015,18 +1015,18 @@ export namespace BabylonMeshBuilder {
          * @maximum 3
          * @step 1
          */
-        cap = 0;
+        cap?: number | undefined = 0;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createCylinder`: the height of a cylinder standing along Y, its
@@ -1049,7 +1049,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Diameter of the top end, in scene units; 0 closes it to a point
          * @default 1
@@ -1057,7 +1057,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        diameterTop = 1;
+        diameterTop?: number | undefined = 1;
         /**
          * Diameter of the bottom end, in scene units; 0 closes it to a point
          * @default 1
@@ -1065,7 +1065,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        diameterBottom = 1;
+        diameterBottom?: number | undefined = 1;
         /**
          * Number of sides around the cylinder; more is rounder
          * @default 64
@@ -1073,7 +1073,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 64;
+        tessellation?: number | undefined = 64;
         /**
          * Number of rings along the height; more than 1 only matters for deforming or shading
          * @default 1
@@ -1081,18 +1081,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisions = 1;
+        subdivisions?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createLathe`: the profile to revolve around the Y axis, an outward
@@ -1120,7 +1120,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of steps in a full turn; more is rounder
          * @default 64
@@ -1128,7 +1128,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        tessellation = 64;
+        tessellation?: number | undefined = 64;
         /**
          * How much of a full turn is revolved, from 0 to 1; below 1 the shape is open
          * @default 1
@@ -1136,23 +1136,23 @@ export namespace BabylonMeshBuilder {
          * @maximum 1
          * @step 0.1
          */
-        arc = 1;
+        arc?: number | undefined = 1;
         /**
          * When true and the arc is full, the seam is closed so the surface has no gap
          * @default true
          */
-        closed = true;
+        closed?: boolean | undefined = true;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.meshBuilder.createGround`: the size of a flat ground in the XZ plane and how
@@ -1174,7 +1174,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        width = 10;
+        width?: number | undefined = 10;
         /**
          * Full size along Z, in scene units
          * @default 10
@@ -1182,7 +1182,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        height = 10;
+        height?: number | undefined = 10;
         /**
          * Number of cells along X; more matters only for deforming or lighting
          * @default 1
@@ -1190,7 +1190,7 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisionsX = 1;
+        subdivisionsX?: number | undefined = 1;
         /**
          * Number of cells along Z; more matters only for deforming or lighting
          * @default 1
@@ -1198,18 +1198,18 @@ export namespace BabylonMeshBuilder {
          * @maximum Infinity
          * @step 1
          */
-        subdivisionsY = 1;
+        subdivisionsY?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 
     /**
@@ -1227,22 +1227,22 @@ export namespace BabylonMeshBuilder {
          * Full size along X, in scene units
          * @default 1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Y, in scene units
          * @default 1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Which side of each face is drawn: the front, the back or both; single-sided meshes are
          * invisible from behind
          * @default doubleside
          */
-        sideOrientation = BabylonMesh.sideOrientationEnum.doubleside;
+        sideOrientation?: BabylonMesh.sideOrientationEnum | undefined = BabylonMesh.sideOrientationEnum.doubleside;
         /**
          * When true, the mesh casts and receives shadows from the lights that have them enabled
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
     }
 }

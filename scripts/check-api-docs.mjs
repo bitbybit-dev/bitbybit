@@ -128,7 +128,7 @@ const SEVERITY = {
     "stray-tag": "error", "unsafe-description": "error", "multiple-doc-blocks": "error", "forbidden-words": "error", "version-string": "error",
     "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error",
     "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
-    "defaulted-spelling": "warn",
+    "defaulted-spelling": "error",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
 };
 const BUDGET = { M: [8, 60], C: [15, 120], D: [8, 40], P: [3, 30] };

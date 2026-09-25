@@ -3,6 +3,8 @@
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import * as BABYLON from "../../../../gui-enriched-babylon";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Single-line text fields the user can type into, with a placeholder shown while empty. Subscribe
@@ -28,22 +30,23 @@ export class BabylonGuiInputText {
      * ```
      */
     createInputText(inputs: Inputs.BabylonGui.CreateInputTextDto): BABYLON.GUI.InputText {
-        const inputText = new BABYLON.GUI.InputText(inputs.name);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateInputTextDto, inputs) as Resolved.BabylonGui.CreateInputTextDto;
+        const inputText = new BABYLON.GUI.InputText(resolved.name);
 
-        if (inputs.height) {
-            inputText.height = inputs.height;
+        if (resolved.height) {
+            inputText.height = resolved.height;
         } else {
             inputText.height = "56px";
         }
-        if (inputs.width) {
-            inputText.width = inputs.width;
+        if (resolved.width) {
+            inputText.width = resolved.width;
         } else {
             inputText.width = 1;
         }
-        inputText.text = inputs.text;
-        inputText.placeholderText = inputs.placeholder;
-        inputText.color = inputs.color;
-        inputText.background = inputs.background;
+        inputText.text = resolved.text;
+        inputText.placeholderText = resolved.placeholder;
+        inputText.color = resolved.color;
+        inputText.background = resolved.background;
       
         return inputText;
     }
@@ -56,8 +59,9 @@ export class BabylonGuiInputText {
      * @shortname set input text background
      */
     setBackground(inputs: Inputs.BabylonGui.SetInputTextBackgroundDto): BABYLON.GUI.InputText {
-        inputs.inputText.background = inputs.background;
-        return inputs.inputText;
+        const resolved = resolveDto(Inputs.BabylonGui.SetInputTextBackgroundDto, inputs) as Resolved.BabylonGui.SetInputTextBackgroundDto;
+        resolved.inputText.background = resolved.background;
+        return resolved.inputText;
     }
 
     /**
@@ -68,8 +72,9 @@ export class BabylonGuiInputText {
      * @shortname set input text text
      */
     setText(inputs: Inputs.BabylonGui.SetInputTextTextDto): BABYLON.GUI.InputText {
-        inputs.inputText.text = inputs.text;
-        return inputs.inputText;
+        const resolved = resolveDto(Inputs.BabylonGui.SetInputTextTextDto, inputs) as Resolved.BabylonGui.SetInputTextTextDto;
+        resolved.inputText.text = resolved.text;
+        return resolved.inputText;
     }
 
     /**
@@ -80,8 +85,9 @@ export class BabylonGuiInputText {
      * @shortname set input text placeholder
      */
     setPlaceholder(inputs: Inputs.BabylonGui.SetInputTextPlaceholderDto): BABYLON.GUI.InputText {
-        inputs.inputText.placeholderText = inputs.placeholder;
-        return inputs.inputText;
+        const resolved = resolveDto(Inputs.BabylonGui.SetInputTextPlaceholderDto, inputs) as Resolved.BabylonGui.SetInputTextPlaceholderDto;
+        resolved.inputText.placeholderText = resolved.placeholder;
+        return resolved.inputText;
     }
 
     /**
@@ -126,6 +132,7 @@ export class BabylonGuiInputText {
      * @shortname input text observable selector
      */
     createInputTextObservableSelector(inputs: Inputs.BabylonGui.InputTextObservableSelectorDto): Inputs.BabylonGui.inputTextObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.InputTextObservableSelectorDto, inputs) as Resolved.BabylonGui.InputTextObservableSelectorDto;
+        return resolved.selector;
     }
 }

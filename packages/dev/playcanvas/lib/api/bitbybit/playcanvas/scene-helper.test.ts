@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initPlayCanvas } from "./scene-helper";
 import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
+import * as Resolved from "../../resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 import { asMockApp, asMockEntity } from "../../__mocks__/playcanvas.mock";
 import type { Mock } from "vitest";
 import * as pc from "playcanvas";
@@ -396,6 +398,21 @@ describe("initPlayCanvas unit tests", () => {
         });
     });
 
+    describe("an options object that leaves settings out", () => {
+        it("should fill every setting it leaves out from the defaults", () => {
+            // Arrange
+            const defaults = resolveDto(PlayCanvasScene.InitPlayCanvasDto, {}) as Resolved.PlayCanvasScene.InitPlayCanvasDto;
+
+            // Act
+            const result = initPlayCanvas({ canvasId: "test-canvas", sceneSize: 40 });
+
+            // Assert
+            expect(asMockEntity(result.directionalLight).light?.intensity).toBe(defaults.directionalLightIntensity);
+
+            result.dispose();
+        });
+    });
+
     describe("light configuration", () => {
         it("should apply directional light intensity from config", () => {
             // Arrange
@@ -779,7 +796,7 @@ describe("the orbit camera's input handling", () => {
             // Assert
             const smallRatio = result.orbitCamera!.orbitCamera.distance / smallBefore;
             const largeRatio = large.orbitCamera!.orbitCamera.distance / largeBefore;
-            const defaults = new PlayCanvasCamera.OrbitCameraDto();
+            const defaults = resolveDto(PlayCanvasCamera.OrbitCameraDto, {}) as Resolved.PlayCanvasCamera.OrbitCameraDto;
             expect(largeRatio).toBeCloseTo(smallRatio, 10);
             expect(largeRatio).toBeCloseTo(1 + defaults.distanceSensitivity * 0.1, 10);
 

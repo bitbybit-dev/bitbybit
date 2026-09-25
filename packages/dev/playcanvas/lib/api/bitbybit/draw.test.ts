@@ -2177,6 +2177,38 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("the options a shape is drawn with", () => {
+        it("should mesh an OCCT shape at the default precision when the options hand it undefined", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options: { precision: undefined, faceColour: "#00ff00" } });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
+        });
+
+        it("should draw the manifold it is given even when the options it is redrawn with name another", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+            manifoldWorkerManager.genericCallToWorkerPromise = callWorker;
+            const previous: Inputs.Manifold.ManifoldPointer = { hash: 1, type: "manifold-shape" };
+            const current: Inputs.Manifold.ManifoldPointer = { hash: 2, type: "manifold-shape" };
+            const group = Object.assign(new pc.Entity(), { bitbybitMeta: { type: Inputs.Draw.drawingTypes.manifold, options: { manifoldOrCrossSection: previous, faceColour: "#00ff00" } } });
+
+            // Act
+            await draw.drawAnyAsync({ entity: current, group });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.objectContaining({ manifoldOrCrossSection: current }));
+        });
+    });
+
 });
 
 

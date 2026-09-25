@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * One plane handle of a position gizmo, dragging within a single plane; reach it through
@@ -28,8 +30,9 @@ export class BabylonGizmoPlaneDragGizmo {
      * ```
      */
     setIsEnabled(inputs: Inputs.BabylonGizmo.SetIsEnabledPlaneDragGizmoDto): BABYLON.IPlaneDragGizmo {
-        inputs.planeDragGizmo.isEnabled = inputs.isEnabled;
-        return inputs.planeDragGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetIsEnabledPlaneDragGizmoDto, inputs) as Resolved.BabylonGizmo.SetIsEnabledPlaneDragGizmoDto;
+        resolved.planeDragGizmo.isEnabled = resolved.isEnabled;
+        return resolved.planeDragGizmo;
     }
 
     /**

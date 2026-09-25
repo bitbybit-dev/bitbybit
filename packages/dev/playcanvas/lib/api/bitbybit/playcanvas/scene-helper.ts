@@ -1,6 +1,8 @@
 import * as pc from "playcanvas";
 import { PlayCanvasScene, InitPlayCanvasResult, PlayCanvasOrbitCameraInstance, PlayCanvasInputHandler, PlayCanvasOrbitCameraController } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Helper function to initialize a basic PlayCanvas scene with lights, shadows, and optional ground plane.
@@ -25,7 +27,7 @@ import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
  * ```
  */
 export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): InitPlayCanvasResult {
-    const config = inputs || new PlayCanvasScene.InitPlayCanvasDto();
+    const config = resolveDto(PlayCanvasScene.InitPlayCanvasDto, inputs) as Resolved.PlayCanvasScene.InitPlayCanvasDto;
 
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
@@ -128,7 +130,7 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
 
     let orbitCamera: PlayCanvasOrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        const camOpts = config.orbitCameraOptions ?? new PlayCanvasCamera.OrbitCameraDto();
+        const camOpts = resolveDto(PlayCanvasCamera.OrbitCameraDto, config.orbitCameraOptions) as Resolved.PlayCanvasCamera.OrbitCameraDto;
 
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);

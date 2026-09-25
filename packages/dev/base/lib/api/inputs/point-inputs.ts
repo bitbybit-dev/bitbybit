@@ -141,7 +141,7 @@ export namespace Point {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * Size of the drawn point, in model units.
          * @default 3
@@ -149,19 +149,19 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 3;
+        size?: number | undefined = 3;
         /**
          * Color of the point as a hex string such as `#ff0000`; a list of strings is also
          * accepted.
          * @default #444444
          */
-        colours: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * When true, the drawn mesh is built so its position can be changed later without
          * redrawing.
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * A mesh drawn earlier for this point; when given it is updated in place instead of a new
          * one being made.
@@ -198,7 +198,7 @@ export namespace Point {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * Size of each drawn point, in model units.
          * @default 0.1
@@ -206,18 +206,18 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 0.1;
+        size?: number | undefined = 0.1;
         /**
          * One hex color string for all points, or one string per point.
          * @default #444444
          */
-        colours: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * When true, the drawn mesh is built so the positions can be changed later without
          * redrawing.
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * A mesh drawn earlier for these points; when given it is updated in place instead of a new
          * one being made.

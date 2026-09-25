@@ -1132,7 +1132,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * How opaque the edges are, from 0 for invisible to 1 for solid.
          * @default 1
@@ -1140,12 +1140,12 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        edgeOpacity = 1;
+        edgeOpacity?: number | undefined = 1;
         /**
          * The color of the edges as a hex string such as `#ffffff`.
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
@@ -1156,7 +1156,7 @@ export namespace OCCT {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * How thick the edge lines are drawn.
          * @default 2
@@ -1164,27 +1164,27 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
         /**
          * When false, the edges are not drawn.
          * @default true
          */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * When false, the faces are not drawn.
          * @default true
          */
-        drawFaces = true;
+        drawFaces?: boolean | undefined = true;
         /**
          * When true, the vertices are drawn as small markers.
          * @default false
          */
-        drawVertices = false;
+        drawVertices?: boolean | undefined = false;
         /**
          * The color of the vertex markers as a hex string.
          * @default #ff00ff
          */
-        vertexColour = "#ff00ff";
+        vertexColour?: string | undefined = "#ff00ff";
         /**
          * The size of the vertex markers, in model units.
          * @default 0.03
@@ -1192,7 +1192,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        vertexSize = 0.03;
+        vertexSize?: number | undefined = 0.03;
         /**
          * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
          * with more triangles.
@@ -1201,12 +1201,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, each edge's index is written next to it, handy for picking edges to fillet.
          * @default false
          */
-        drawEdgeIndexes = false;
+        drawEdgeIndexes?: boolean | undefined = false;
         /**
          * The height of the edge index labels, in model units.
          * @default 0.06
@@ -1214,17 +1214,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeIndexHeight = 0.06;
+        edgeIndexHeight?: number | undefined = 0.06;
         /**
          * The color of the edge index labels as a hex string.
          * @default #ff00ff
          */
-        edgeIndexColour: Base.Color = "#ff00ff";
+        edgeIndexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * When true, each face's index is written on it, handy for picking faces.
          * @default false
          */
-        drawFaceIndexes = false;
+        drawFaceIndexes?: boolean | undefined = false;
         /**
          * The height of the face index labels, in model units.
          * @default 0.06
@@ -1232,23 +1232,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        faceIndexHeight = 0.06;
+        faceIndexHeight?: number | undefined = 0.06;
         /**
          * The color of the face index labels as a hex string.
          * @default #0000ff
          */
-        faceIndexColour: Base.Color = "#0000ff";
+        faceIndexColour?: Base.Color | undefined = "#0000ff";
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -1256,25 +1256,25 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * When true, the triangulation stays cached on the shape after drawing; when false it is
          * cleared so memory does not grow across draws.
          * @default false
          */
-        keepMeshData = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
          * for.
          * @default true
          */
-        allowQualityDecrease = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * When true, every face is remeshed at the requested precision even when a triangulation is
          * cached.
          * @default false
          */
-        forceFaceDeflection = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     /**
      * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
@@ -1324,7 +1324,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * How opaque the edges are, from 0 for invisible to 1 for solid.
          * @default 1
@@ -1332,12 +1332,12 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        edgeOpacity = 1;
+        edgeOpacity?: number | undefined = 1;
         /**
          * The color of the edges as a hex string such as `#ffffff`.
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
@@ -1348,7 +1348,7 @@ export namespace OCCT {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * How thick the edge lines are drawn.
          * @default 2
@@ -1356,27 +1356,27 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
         /**
          * When false, the edges are not drawn.
          * @default true
          */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * When false, the faces are not drawn.
          * @default true
          */
-        drawFaces = true;
+        drawFaces?: boolean | undefined = true;
         /**
          * When true, the vertices are drawn as small markers.
          * @default false
          */
-        drawVertices = false;
+        drawVertices?: boolean | undefined = false;
         /**
          * The color of the vertex markers as a hex string.
          * @default #ff00ff
          */
-        vertexColour = "#ff00ff";
+        vertexColour?: string | undefined = "#ff00ff";
         /**
          * The size of the vertex markers, in model units.
          * @default 0.03
@@ -1384,7 +1384,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        vertexSize = 0.03;
+        vertexSize?: number | undefined = 0.03;
         /**
          * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
          * with more triangles.
@@ -1393,12 +1393,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, each edge's index is written next to it, handy for picking edges to fillet.
          * @default false
          */
-        drawEdgeIndexes = false;
+        drawEdgeIndexes?: boolean | undefined = false;
         /**
          * The height of the edge index labels, in model units.
          * @default 0.06
@@ -1406,17 +1406,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeIndexHeight = 0.06;
+        edgeIndexHeight?: number | undefined = 0.06;
         /**
          * The color of the edge index labels as a hex string.
          * @default #ff00ff
          */
-        edgeIndexColour: Base.Color = "#ff00ff";
+        edgeIndexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * When true, each face's index is written on it, handy for picking faces.
          * @default false
          */
-        drawFaceIndexes = false;
+        drawFaceIndexes?: boolean | undefined = false;
         /**
          * The height of the face index labels, in model units.
          * @default 0.06
@@ -1424,23 +1424,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        faceIndexHeight = 0.06;
+        faceIndexHeight?: number | undefined = 0.06;
         /**
          * The color of the face index labels as a hex string.
          * @default #0000ff
          */
-        faceIndexColour: Base.Color = "#0000ff";
+        faceIndexColour?: Base.Color | undefined = "#0000ff";
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -1448,25 +1448,25 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * When true, the triangulation stays cached on each shape after drawing; when false it is
          * cleared so memory does not grow across draws.
          * @default false
          */
-        keepMeshData = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
          * for.
          * @default true
          */
-        allowQualityDecrease = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * When true, every face is remeshed at the requested precision even when a triangulation is
          * cached.
          * @default false
          */
-        forceFaceDeflection = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
     /**
      * A face and a grid of divisions for `shapes.face.subdivideToPoints`, `subdivideToNormals` and
@@ -8579,12 +8579,12 @@ export namespace OCCT {
          * Whether the text is STEP or IGES.
          * @default step
          */
-        fileType: fileTypeEnum = fileTypeEnum.step;
+        fileType?: fileTypeEnum | undefined = fileTypeEnum.step;
         /**
          * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
          * @default true
          */
-        adjustZtoY = true;
+        adjustZtoY?: boolean | undefined = true;
     }
     /**
      * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
@@ -8603,7 +8603,7 @@ export namespace OCCT {
          * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
          * @default true
          */
-        adjustZtoY = true;
+        adjustZtoY?: boolean | undefined = true;
     }
 
     /**

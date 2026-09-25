@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * What every container control shares: adding child controls, a background color and the read-only
@@ -24,11 +26,12 @@ export class BabylonGuiContainer {
      * ```
      */
     addControls(inputs: Inputs.BabylonGui.AddControlsToContainerDto): BABYLON.GUI.Container {
-        if(inputs.clearControlsFirst && inputs.container.clearControls){
-            inputs.container.clearControls();
+        const resolved = resolveDto(Inputs.BabylonGui.AddControlsToContainerDto, inputs) as Resolved.BabylonGui.AddControlsToContainerDto;
+        if(resolved.clearControlsFirst && resolved.container.clearControls){
+            resolved.container.clearControls();
         }
-        inputs.controls.forEach(control => inputs.container.addControl(control));
-        return inputs.container;
+        resolved.controls.forEach(control => resolved.container.addControl(control));
+        return resolved.container;
     }
 
     /**
@@ -40,8 +43,9 @@ export class BabylonGuiContainer {
      * @shortname set container background
      */
     setBackground(inputs: Inputs.BabylonGui.SetContainerBackgroundDto): BABYLON.GUI.Container {
-        inputs.container.background = inputs.background;
-        return inputs.container;
+        const resolved = resolveDto(Inputs.BabylonGui.SetContainerBackgroundDto, inputs) as Resolved.BabylonGui.SetContainerBackgroundDto;
+        resolved.container.background = resolved.background;
+        return resolved.container;
     }
 
     /**
@@ -52,8 +56,9 @@ export class BabylonGuiContainer {
      * @shortname set container is readonly
      */
     setIsReadonly(inputs: Inputs.BabylonGui.SetContainerIsReadonlyDto): BABYLON.GUI.Container {
-        inputs.container.isReadOnly = inputs.isReadOnly;
-        return inputs.container;
+        const resolved = resolveDto(Inputs.BabylonGui.SetContainerIsReadonlyDto, inputs) as Resolved.BabylonGui.SetContainerIsReadonlyDto;
+        resolved.container.isReadOnly = resolved.isReadOnly;
+        return resolved.container;
     }
 
     /**

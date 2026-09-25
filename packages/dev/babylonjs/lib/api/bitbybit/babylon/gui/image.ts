@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Images shown as GUI controls, loaded from a URL, for logos, icons and pictures beside other
@@ -26,19 +28,20 @@ export class BabylonGuiImage {
      * ```
      */
     createImage(inputs: Inputs.BabylonGui.CreateImageDto): BABYLON.GUI.Image {
-        const image = new BABYLON.GUI.Image(inputs.name, inputs.url);
-        if (inputs.width) {
-            image.width = inputs.width;
+        const resolved = resolveDto(Inputs.BabylonGui.CreateImageDto, inputs) as Resolved.BabylonGui.CreateImageDto;
+        const image = new BABYLON.GUI.Image(resolved.name, resolved.url);
+        if (resolved.width) {
+            image.width = resolved.width;
         } else {
             image.width = "200px";
         }
-        if (inputs.height) {
-            image.height = inputs.height;
+        if (resolved.height) {
+            image.height = resolved.height;
         } else {
             image.height = "200px";
         }
 
-        image.color = inputs.color;
+        image.color = resolved.color;
        
         return image;
     }

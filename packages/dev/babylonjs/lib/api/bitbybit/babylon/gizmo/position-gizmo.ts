@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The position gizmo: three arrows that drag the attached mesh along X, Y or Z, plus optional
@@ -28,8 +30,9 @@ export class BabylonGizmoPositionGizmo {
      * ```
      */
     planarGizmoEnabled(inputs: Inputs.BabylonGizmo.SetPlanarGizmoEnabled): BABYLON.IPositionGizmo {
-        inputs.positionGizmo.planarGizmoEnabled = inputs.planarGizmoEnabled;
-        return inputs.positionGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetPlanarGizmoEnabled, inputs) as Resolved.BabylonGizmo.SetPlanarGizmoEnabled;
+        resolved.positionGizmo.planarGizmoEnabled = resolved.planarGizmoEnabled;
+        return resolved.positionGizmo;
     }
 
     /**
@@ -45,8 +48,9 @@ export class BabylonGizmoPositionGizmo {
      * ```
      */
     snapDistance(inputs: Inputs.BabylonGizmo.SetPositionGizmoSnapDistanceDto): BABYLON.IPositionGizmo {
-        inputs.positionGizmo.snapDistance = inputs.snapDistance;
-        return inputs.positionGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetPositionGizmoSnapDistanceDto, inputs) as Resolved.BabylonGizmo.SetPositionGizmoSnapDistanceDto;
+        resolved.positionGizmo.snapDistance = resolved.snapDistance;
+        return resolved.positionGizmo;
     }
 
     /**

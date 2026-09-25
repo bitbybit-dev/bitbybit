@@ -4,6 +4,8 @@ import { KHR_materials_variants } from "@babylonjs/loaders/glTF/2.0/Extensions/K
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Advanced glTF/glb tooling on top of the basic import/export in io. It keeps the rich asset container
@@ -24,8 +26,9 @@ export class BabylonGltf {
      * @shortname gltf container from url
      */
     async loadAssetContainerFromUrl(inputs: Inputs.Asset.AssetFileByUrlDto): Promise<BABYLON.AssetContainer> {
-        const container = await BABYLON.LoadAssetContainerAsync(inputs.rootUrl + inputs.assetFile, this.context.scene);
-        this.addContainer(container, inputs.hidden);
+        const resolved = resolveDto(Inputs.Asset.AssetFileByUrlDto, inputs) as Resolved.Asset.AssetFileByUrlDto;
+        const container = await BABYLON.LoadAssetContainerAsync(resolved.rootUrl + resolved.assetFile, this.context.scene);
+        this.addContainer(container, resolved.hidden);
         return container;
     }
 
@@ -37,8 +40,9 @@ export class BabylonGltf {
      * @shortname gltf container from file
      */
     async loadAssetContainer(inputs: Inputs.Asset.AssetFileDto): Promise<BABYLON.AssetContainer> {
-        const container = await BABYLON.LoadAssetContainerAsync(inputs.assetFile, this.context.scene);
-        this.addContainer(container, inputs.hidden);
+        const resolved = resolveDto(Inputs.Asset.AssetFileDto, inputs) as Resolved.Asset.AssetFileDto;
+        const container = await BABYLON.LoadAssetContainerAsync(resolved.assetFile, this.context.scene);
+        this.addContainer(container, resolved.hidden);
         return container;
     }
 
@@ -135,8 +139,9 @@ export class BabylonGltf {
      * @shortname play animation group
      */
     playAnimationGroup(inputs: Inputs.BabylonGltf.PlayAnimationGroupDto): void {
-        inputs.animationGroup.speedRatio = inputs.speedRatio;
-        inputs.animationGroup.start(inputs.loop, inputs.speedRatio);
+        const resolved = resolveDto(Inputs.BabylonGltf.PlayAnimationGroupDto, inputs) as Resolved.BabylonGltf.PlayAnimationGroupDto;
+        resolved.animationGroup.speedRatio = resolved.speedRatio;
+        resolved.animationGroup.start(resolved.loop, resolved.speedRatio);
     }
 
     /**

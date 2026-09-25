@@ -99,6 +99,11 @@
             "types": "./dist/lib/api/models/index.d.ts",
             "default": "./dist/lib/api/models/index.js"
         },
+        "./lib/api/resolved-inputs": {
+            "@bitbybit-dev/source": "./lib/api/resolved-inputs/index.ts",
+            "types": "./dist/lib/api/resolved-inputs/index.d.ts",
+            "default": "./dist/lib/api/resolved-inputs/index.js"
+        },
         "./package.json": "./package.json",
         "./*.js": {
             "@bitbybit-dev/source": "./*.js",

@@ -202,24 +202,24 @@ export namespace JSCAD {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex color of the faces; a list uses its first entry. An entity colored with `colors.colorize`
          * keeps its own color instead
          * @default #444444
          */
-        colours: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * When true, the drawn mesh can be refreshed in place on later draws by passing it back as
          * `jscadMesh`
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * When true, the mesh is created but not shown until it is made visible
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
         /**
          * A mesh from an earlier draw to refresh instead of creating a new one; used only when
          * `updatable` is true
@@ -233,13 +233,13 @@ export namespace JSCAD {
          * face orientation
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color of the back faces, the side the face normal points away from; used only when
          * `drawTwoSided` is true
          * @default #0000ff
          */
-        backFaceColour = "#0000ff";
+        backFaceColour?: string | undefined = "#0000ff";
         /**
          * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
          * @default 1
@@ -247,7 +247,7 @@ export namespace JSCAD {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * The options `draw.drawAnyAsync` passes on when the entity is a list of JSCAD solids or 2D shapes:
@@ -281,24 +281,24 @@ export namespace JSCAD {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * Hex color of the faces; a list with one entry per entity colors each in turn, any other list
          * uses its first entry. Colorized entities keep their own color
          * @default #444444
          */
-        colours: string | string[] = "#444444";
+        colours?: string | string[] | undefined = "#444444";
         /**
          * When true, the drawn meshes can be refreshed in place on later draws by passing the parent
          * back as `jscadMesh`
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * When true, the meshes are created but not shown until they are made visible
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
         /**
          * The parent mesh from an earlier draw to refresh instead of creating a new one; used only when
          * `updatable` is true
@@ -312,13 +312,13 @@ export namespace JSCAD {
          * face orientation
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color of the back faces, the side the face normal points away from; used only when
          * `drawTwoSided` is true
          * @default #0000ff
          */
-        backFaceColour = "#0000ff";
+        backFaceColour?: string | undefined = "#0000ff";
         /**
          * How opaque the back faces are, from 0 to 1; used only when `drawTwoSided` is true
          * @default 1
@@ -326,7 +326,7 @@ export namespace JSCAD {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * The options `draw.drawAnyAsync` passes on when the entity is a JSCAD 2D path, drawn as a line
@@ -353,7 +353,7 @@ export namespace JSCAD {
          * Hex color of the line; a path colored with `colors.colorize` keeps its own color instead
          * @default #444444
          */
-        colour = "#444444";
+        colour?: string | undefined = "#444444";
         /**
          * How opaque the line is, from 0 for invisible to 1 for solid
          * @default 1
@@ -361,7 +361,7 @@ export namespace JSCAD {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * Thickness of the drawn line
          * @default 10
@@ -369,13 +369,13 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        width = 10;
+        width?: number | undefined = 10;
         /**
          * When true, the drawn line can be refreshed in place on later draws by passing it back as
          * `pathMesh`
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * A line from an earlier draw to refresh instead of creating a new one; used only when
          * `updatable` is true

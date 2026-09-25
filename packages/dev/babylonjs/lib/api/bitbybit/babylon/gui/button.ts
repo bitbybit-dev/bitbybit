@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Push buttons with a text label. Subscribe to the button's pointer click event to run code when it
@@ -27,22 +29,23 @@ export class BabylonGuiButton {
      * ```
      */
     createSimpleButton(inputs: Inputs.BabylonGui.CreateButtonDto): BABYLON.GUI.Button {
-        const button = BABYLON.GUI.Button.CreateSimpleButton(inputs.name, inputs.label);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateButtonDto, inputs) as Resolved.BabylonGui.CreateButtonDto;
+        const button = BABYLON.GUI.Button.CreateSimpleButton(resolved.name, resolved.label);
 
-        if (inputs.width) {
-            button.width = inputs.width;
+        if (resolved.width) {
+            button.width = resolved.width;
         } else {
             button.width = 1;
         }
-        if (inputs.height) {
-            button.height = inputs.height;
+        if (resolved.height) {
+            button.height = resolved.height;
         } else {
             button.height = "42px";
         }
 
-        button.color = inputs.color;
-        button.fontSize = inputs.fontSize;
-        button.background = inputs.background;
+        button.color = resolved.color;
+        button.fontSize = resolved.fontSize;
+        button.background = resolved.background;
 
         return button;
     }
@@ -55,8 +58,9 @@ export class BabylonGuiButton {
      * @shortname set button text
      */
     setButtonText(inputs: Inputs.BabylonGui.SetButtonTextDto): BABYLON.GUI.Button {
-        inputs.button.textBlock!.text = inputs.text;
-        return inputs.button;
+        const resolved = resolveDto(Inputs.BabylonGui.SetButtonTextDto, inputs) as Resolved.BabylonGui.SetButtonTextDto;
+        resolved.button.textBlock!.text = resolved.text;
+        return resolved.button;
     }
 
     /**

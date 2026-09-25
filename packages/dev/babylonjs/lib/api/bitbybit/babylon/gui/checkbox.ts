@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Checkboxes: square toggles that are on or off, for yes or no choices. Subscribe to the checked
@@ -27,23 +29,24 @@ export class BabylonGuiCheckbox {
      * ```
      */
     createCheckbox(inputs: Inputs.BabylonGui.CreateCheckboxDto): BABYLON.GUI.Checkbox {
-        const checkbox = new BABYLON.GUI.Checkbox(inputs.name);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateCheckboxDto, inputs) as Resolved.BabylonGui.CreateCheckboxDto;
+        const checkbox = new BABYLON.GUI.Checkbox(resolved.name);
 
-        if (inputs.height) {
-            checkbox.height = inputs.height;
+        if (resolved.height) {
+            checkbox.height = resolved.height;
         } else {
             checkbox.height = "32px";
         }
-        if (inputs.width) {
-            checkbox.width = inputs.width;
+        if (resolved.width) {
+            checkbox.width = resolved.width;
         } else {
             checkbox.width = "32px";
         }
 
-        checkbox.checkSizeRatio = inputs.checkSizeRatio;
-        checkbox.color = inputs.color;
-        checkbox.isChecked = inputs.isChecked;
-        checkbox.background = inputs.background;
+        checkbox.checkSizeRatio = resolved.checkSizeRatio;
+        checkbox.color = resolved.color;
+        checkbox.isChecked = resolved.isChecked;
+        checkbox.background = resolved.background;
 
         return checkbox;
     }
@@ -56,8 +59,9 @@ export class BabylonGuiCheckbox {
      * @shortname set checkbox background
      */
     setBackground(inputs: Inputs.BabylonGui.SetCheckboxBackgroundDto): BABYLON.GUI.Checkbox {
-        inputs.checkbox.background = inputs.background;
-        return inputs.checkbox;
+        const resolved = resolveDto(Inputs.BabylonGui.SetCheckboxBackgroundDto, inputs) as Resolved.BabylonGui.SetCheckboxBackgroundDto;
+        resolved.checkbox.background = resolved.background;
+        return resolved.checkbox;
     }
 
     /**
@@ -68,8 +72,9 @@ export class BabylonGuiCheckbox {
      * @shortname set checkbox check size ratio
      */
     setCheckSizeRatio(inputs: Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto): BABYLON.GUI.Checkbox {
-        inputs.checkbox.checkSizeRatio = inputs.checkSizeRatio;
-        return inputs.checkbox;
+        const resolved = resolveDto(Inputs.BabylonGui.SetCheckboxCheckSizeRatioDto, inputs) as Resolved.BabylonGui.SetCheckboxCheckSizeRatioDto;
+        resolved.checkbox.checkSizeRatio = resolved.checkSizeRatio;
+        return resolved.checkbox;
     }
 
     /**
@@ -80,8 +85,9 @@ export class BabylonGuiCheckbox {
      * @shortname set checkbox is checked
      */
     setIsChecked(inputs: Inputs.BabylonGui.SetCheckboxIsCheckedDto): BABYLON.GUI.Checkbox {
-        inputs.checkbox.isChecked = inputs.isChecked;
-        return inputs.checkbox;
+        const resolved = resolveDto(Inputs.BabylonGui.SetCheckboxIsCheckedDto, inputs) as Resolved.BabylonGui.SetCheckboxIsCheckedDto;
+        resolved.checkbox.isChecked = resolved.isChecked;
+        return resolved.checkbox;
     }
 
     /**
@@ -126,6 +132,7 @@ export class BabylonGuiCheckbox {
      * @shortname checkbox observable selector
      */
     createCheckboxObservableSelector(inputs: Inputs.BabylonGui.CheckboxObservableSelectorDto): Inputs.BabylonGui.checkboxObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.CheckboxObservableSelectorDto, inputs) as Resolved.BabylonGui.CheckboxObservableSelectorDto;
+        return resolved.selector;
     }
 }

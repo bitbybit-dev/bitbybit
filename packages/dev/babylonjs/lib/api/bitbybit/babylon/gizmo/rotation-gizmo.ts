@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The rotation gizmo: three rings that turn the attached mesh around X, Y or Z. Snapping turns it
@@ -28,8 +30,9 @@ export class BabylonGizmoRotationGizmo {
      * ```
      */
     snapDistance(inputs: Inputs.BabylonGizmo.SetRotationGizmoSnapDistanceDto): BABYLON.IRotationGizmo {
-        inputs.rotationGizmo.snapDistance = inputs.snapDistance;
-        return inputs.rotationGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetRotationGizmoSnapDistanceDto, inputs) as Resolved.BabylonGizmo.SetRotationGizmoSnapDistanceDto;
+        resolved.rotationGizmo.snapDistance = resolved.snapDistance;
+        return resolved.rotationGizmo;
     }
 
     /**
@@ -41,8 +44,9 @@ export class BabylonGizmoRotationGizmo {
      * @shortname set sensitivity
      */
     sensitivity(inputs: Inputs.BabylonGizmo.SetRotationGizmoSensitivityDto): BABYLON.IRotationGizmo {
-        inputs.rotationGizmo.sensitivity = inputs.sensitivity;
-        return inputs.rotationGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetRotationGizmoSensitivityDto, inputs) as Resolved.BabylonGizmo.SetRotationGizmoSensitivityDto;
+        resolved.rotationGizmo.sensitivity = resolved.sensitivity;
+        return resolved.rotationGizmo;
     }
     
     /**

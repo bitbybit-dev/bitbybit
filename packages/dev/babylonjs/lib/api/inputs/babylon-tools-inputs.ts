@@ -33,7 +33,7 @@ export namespace BabylonTools {
          * @maximum Infinity
          * @step 1
          */
-        width = 1920;
+        width?: number | undefined = 1920;
         /**
          * Pixel height of the image
          * @default 1080
@@ -41,12 +41,12 @@ export namespace BabylonTools {
          * @maximum Infinity
          * @step 1
          */
-        height = 1080;
+        height?: number | undefined = 1080;
         /**
          * Image format as a MIME type, such as `image/png` or `image/jpeg`
          * @default image/png
          */
-        mimeType = "image/png";
+        mimeType?: string | undefined = "image/png";
         /**
          * Compression quality from 0 to 1 for lossy formats such as JPEG; PNG ignores it
          * @default 1
@@ -54,7 +54,7 @@ export namespace BabylonTools {
          * @maximum Infinity
          * @step 0.1
          */
-        quality = 1;
+        quality?: number | undefined = 1;
     }
 
 }

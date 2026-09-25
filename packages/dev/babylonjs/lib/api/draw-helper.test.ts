@@ -173,6 +173,16 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("drawPoints", () => {
+        it("should draw points given nothing else in the documented default colour and opacity", () => {
+            // Act
+            const result = drawHelper.drawPoints({ points: [[0, 0, 0], [1, 1, 1]] });
+
+            // Assert
+            const material = result.getChildMeshes()[0]!.material as BABYLON.StandardMaterial;
+            expect(material.alpha).toBe(1);
+            expect(colorsAreEqual({ r: material.emissiveColor.r, g: material.emissiveColor.g, b: material.emissiveColor.b }, hexToRgb("#444444"))).toBe(true);
+        });
+
         it("should draw multiple points", () => {
             const inputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[0, 0, 0], [1, 1, 1], [2, 2, 2]],

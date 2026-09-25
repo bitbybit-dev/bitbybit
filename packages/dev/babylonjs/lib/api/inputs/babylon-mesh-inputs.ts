@@ -159,7 +159,7 @@ export namespace BabylonMesh {
          * The factor the current scale is multiplied by on every axis; 2 doubles the size
          * @default 1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
     }
     /**
      * Feeds `babylon.mesh.intersectsMesh` with the two meshes to test for overlap and how carefully
@@ -187,12 +187,12 @@ export namespace BabylonMesh {
          * ones, a slower but tighter check
          * @default false
          */
-        precise = false;
+        precise?: boolean | undefined = false;
         /**
          * When true, the child meshes of both are tested as well
          * @default false
          */
-        includeDescendants = false;
+        includeDescendants?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.mesh.intersectsPoint` with a mesh and the point to test against its bounding
@@ -247,7 +247,7 @@ export namespace BabylonMesh {
          * One point per copy, in the order the copies come back
          * @default []
          */
-        positions: Base.Point3[] = [];
+        positions?: Base.Point3[] | undefined = [];
     }
     /**
      * Feeds `babylon.mesh.mergeMeshes` with the meshes to join into one and the merge options of
@@ -271,12 +271,12 @@ export namespace BabylonMesh {
          * When true, the source meshes are removed once merged
          * @default true
          */
-        disposeSource = true;
+        disposeSource?: boolean | undefined = true;
         /**
          * Set true when the meshes together have more than 65 thousand vertices, or the merge fails
          * @default false
          */
-        allow32BitsIndices = false;
+        allow32BitsIndices?: boolean | undefined = false;
         /**
          * An existing mesh to merge the vertices into instead of creating a new one
          * @default undefined
@@ -287,13 +287,13 @@ export namespace BabylonMesh {
          * When true, each source becomes a sub-mesh of the result, keeping their boundaries
          * @default false
          */
-        subdivideWithSubMeshes = false;
+        subdivideWithSubMeshes?: boolean | undefined = false;
         /**
          * When true, each source keeps its own material in a multi-material result; overrides
          * `subdivideWithSubMeshes`
          * @default false
          */
-        multiMultiMaterials = false;
+        multiMultiMaterials?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.mesh.enablePointerMoveEvents` and `disablePointerMoveEvents` with a mesh and
@@ -312,7 +312,7 @@ export namespace BabylonMesh {
          * When true, the change is applied to the child meshes as well
          * @default true
          */
-        includeChildren = true;
+        includeChildren?: boolean | undefined = true;
     }
     
     /**
@@ -333,7 +333,7 @@ export namespace BabylonMesh {
          * When true, the child meshes are shown or hidden too
          * @default true
          */
-        includeChildren = true;
+        includeChildren?: boolean | undefined = true;
     }
     /**
      * A mesh to copy; `babylon.mesh.clone` reads the plainer `BabylonMeshDto`, so this class is
@@ -366,7 +366,7 @@ export namespace BabylonMesh {
          * When true, only the direct children are listed; when false, every descendant
          * @default false
          */
-        directDescendantsOnly = false;
+        directDescendantsOnly?: boolean | undefined = false;
     }
     /**
      * Feeds the `babylon.mesh.move` methods with a mesh and how far to move it along its own axis.
@@ -388,7 +388,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        distance = 0;
+        distance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.mesh.setName` with a mesh, the name to give it and whether its children get it
@@ -454,7 +454,7 @@ export namespace BabylonMesh {
          * When true, the child meshes get the same material
          * @default false
          */
-        includeChildren = false;
+        includeChildren?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.mesh.setId` and `babylon.mesh.getId` with a mesh and the id, a label that need
@@ -506,7 +506,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        uniqueId: number = 0;
+        uniqueId?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.mesh.setPickable` with a mesh, whether it answers to pointer picking and
@@ -527,12 +527,12 @@ export namespace BabylonMesh {
          * When true, clicks and rays can pick the mesh; when false, they pass through it
          * @default false
          */
-        pickable = false;
+        pickable?: boolean | undefined = false;
         /**
          * When true, the child meshes get the same setting
          * @default false
          */
-        includeChildren = false;
+        includeChildren?: boolean | undefined = false;
     }
 
     /**
@@ -554,12 +554,12 @@ export namespace BabylonMesh {
          * When true, colliders such as a camera with collisions on cannot pass through the mesh
          * @default false
          */
-        checkCollisions = false;
+        checkCollisions?: boolean | undefined = false;
         /**
          * When true, the child meshes get the same setting
          * @default false
          */
-        includeChildren = false;
+        includeChildren?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.mesh.yaw`, `pitch` and `roll` with a mesh and the angle to turn it by.
@@ -581,7 +581,7 @@ export namespace BabylonMesh {
          * @maximum Infinity
          * @step 1
          */
-        rotate: number = 0;
+        rotate?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.mesh.setVisibility` with a mesh, how visible it is from 0 to 1 and whether its
@@ -605,12 +605,12 @@ export namespace BabylonMesh {
          * @maximum 1
          * @step 0.1
          */
-        visibility = 0;
+        visibility?: number | undefined = 0;
         /**
          * When true, the child meshes get the same visibility
          * @default false
          */
-        includeChildren = false;
+        includeChildren?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.mesh.createMeshInstanceAndTransform`: the mesh to instance and where to place
@@ -677,16 +677,16 @@ export namespace BabylonMesh {
          * A point the axis passes through
          * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis; any length will do, but not a zero vector
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far to turn, in degrees; positive follows the right-hand rule around the axis
          * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 }

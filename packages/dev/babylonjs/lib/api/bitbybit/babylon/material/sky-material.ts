@@ -3,6 +3,8 @@ import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import { SkyMaterial } from "@babylonjs/materials";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * A procedural daytime sky computed from atmosphere settings rather than an image: where the sun
@@ -32,47 +34,26 @@ export class BabylonMaterialSky {
      * ```
      */
     create(inputs: Inputs.BabylonMaterial.SkyMaterialDto): SkyMaterial {
+        const resolved = resolveDto(Inputs.BabylonMaterial.SkyMaterialDto, inputs) as Resolved.BabylonMaterial.SkyMaterialDto;
         const name = "bitbybit-skyMaterial";
         const mat = new SkyMaterial(name, this.context.scene);
-        if (inputs.luminance !== undefined) {
-            mat.luminance = inputs.luminance ?? 1;
+        mat.luminance = resolved.luminance;
+        mat.turbidity = resolved.turbidity;
+        mat.rayleigh = resolved.rayleigh;
+        mat.mieCoefficient = resolved.mieCoefficient;
+        mat.mieDirectionalG = resolved.mieDirectionalG;
+        mat.distance = resolved.distance;
+        mat.inclination = resolved.inclination;
+        mat.azimuth = resolved.azimuth;
+        if (resolved.sunPosition !== undefined) {
+            mat.sunPosition = new BABYLON.Vector3(resolved.sunPosition[0], resolved.sunPosition[1], resolved.sunPosition[2]);
         }
-        if (inputs.turbidity !== undefined) {
-            mat.turbidity = inputs.turbidity ?? 10;
+        mat.useSunPosition = resolved.useSunPosition;
+        if (resolved.cameraOffset !== undefined) {
+            mat.cameraOffset = new BABYLON.Vector3(resolved.cameraOffset[0], resolved.cameraOffset[1], resolved.cameraOffset[2]);
         }
-        if (inputs.rayleigh !== undefined) {
-            mat.rayleigh = inputs.rayleigh ?? 2;
-        }
-        if (inputs.mieCoefficient !== undefined) {
-            mat.mieCoefficient = inputs.mieCoefficient ?? 0.005;
-        }
-        if (inputs.mieDirectionalG !== undefined) {
-            mat.mieDirectionalG = inputs.mieDirectionalG ?? 0.8;
-        }
-        if (inputs.distance !== undefined) {
-            mat.distance = inputs.distance ?? 500;
-        }
-        if (inputs.inclination !== undefined) {
-            mat.inclination = inputs.inclination ?? 0.49;
-        }
-        if (inputs.azimuth !== undefined) {
-            mat.azimuth = inputs.azimuth ?? 0.25;
-        }
-        if (inputs.sunPosition !== undefined) {
-            mat.sunPosition = new BABYLON.Vector3(inputs.sunPosition[0], inputs.sunPosition[1], inputs.sunPosition[2]);
-        }
-        if (inputs.useSunPosition !== undefined) {
-            mat.useSunPosition = inputs.useSunPosition ?? false;
-        }
-        if (inputs.cameraOffset !== undefined) {
-            mat.cameraOffset = new BABYLON.Vector3(inputs.cameraOffset[0], inputs.cameraOffset[1], inputs.cameraOffset[2]);
-        }
-        if (inputs.up !== undefined) {
-            mat.up = new BABYLON.Vector3(inputs.up[0], inputs.up[1], inputs.up[2]);
-        }
-        if (inputs.dithering !== undefined) {
-            mat.dithering = inputs.dithering ?? false;
-        }
+        mat.up = new BABYLON.Vector3(resolved.up[0], resolved.up[1], resolved.up[2]);
+        mat.dithering = resolved.dithering;
 
         return mat;
     }
@@ -84,8 +65,9 @@ export class BabylonMaterialSky {
      * @shortname set luminance
      */
     setLuminance(inputs: Inputs.BabylonMaterial.LuminanceDto): void {
-        const mat = inputs.material;
-        mat.luminance = inputs.luminance ?? 1;
+        const resolved = resolveDto(Inputs.BabylonMaterial.LuminanceDto, inputs) as Resolved.BabylonMaterial.LuminanceDto;
+        const mat = resolved.material;
+        mat.luminance = resolved.luminance;
     }
 
     /**
@@ -96,8 +78,9 @@ export class BabylonMaterialSky {
      * @shortname set turbidity
      */
     setTurbidity(inputs: Inputs.BabylonMaterial.TurbidityDto): void {
-        const mat = inputs.material;
-        mat.turbidity = inputs.turbidity ?? 10;
+        const resolved = resolveDto(Inputs.BabylonMaterial.TurbidityDto, inputs) as Resolved.BabylonMaterial.TurbidityDto;
+        const mat = resolved.material;
+        mat.turbidity = resolved.turbidity;
     }
 
     /**
@@ -108,8 +91,9 @@ export class BabylonMaterialSky {
      * @shortname set rayleigh
      */
     setRayleigh(inputs: Inputs.BabylonMaterial.RayleighDto): void {
-        const mat = inputs.material;
-        mat.rayleigh = inputs.rayleigh ?? 2;
+        const resolved = resolveDto(Inputs.BabylonMaterial.RayleighDto, inputs) as Resolved.BabylonMaterial.RayleighDto;
+        const mat = resolved.material;
+        mat.rayleigh = resolved.rayleigh;
     }
 
     /**
@@ -120,8 +104,9 @@ export class BabylonMaterialSky {
      * @shortname set mieCoefficient
      */
     setMieCoefficient(inputs: Inputs.BabylonMaterial.MieCoefficientDto): void {
-        const mat = inputs.material;
-        mat.mieCoefficient = inputs.mieCoefficient ?? 0.005;
+        const resolved = resolveDto(Inputs.BabylonMaterial.MieCoefficientDto, inputs) as Resolved.BabylonMaterial.MieCoefficientDto;
+        const mat = resolved.material;
+        mat.mieCoefficient = resolved.mieCoefficient;
     }
 
     /**
@@ -132,8 +117,9 @@ export class BabylonMaterialSky {
      * @shortname set mieDirectionalG
      */
     setMieDirectionalG(inputs: Inputs.BabylonMaterial.MieDirectionalGDto): void {
-        const mat = inputs.material;
-        mat.mieDirectionalG = inputs.mieDirectionalG ?? 0.8;
+        const resolved = resolveDto(Inputs.BabylonMaterial.MieDirectionalGDto, inputs) as Resolved.BabylonMaterial.MieDirectionalGDto;
+        const mat = resolved.material;
+        mat.mieDirectionalG = resolved.mieDirectionalG;
     }
 
     /**
@@ -144,8 +130,9 @@ export class BabylonMaterialSky {
      * @shortname set distance
      */
     setDistance(inputs: Inputs.BabylonMaterial.DistanceDto): void {
-        const mat = inputs.material;
-        mat.distance = inputs.distance ?? 500;
+        const resolved = resolveDto(Inputs.BabylonMaterial.DistanceDto, inputs) as Resolved.BabylonMaterial.DistanceDto;
+        const mat = resolved.material;
+        mat.distance = resolved.distance;
     }
 
     /**
@@ -160,8 +147,9 @@ export class BabylonMaterialSky {
      * ```
      */
     setInclination(inputs: Inputs.BabylonMaterial.InclinationDto): void {
-        const mat = inputs.material;
-        mat.inclination = inputs.inclination ?? 0.49;
+        const resolved = resolveDto(Inputs.BabylonMaterial.InclinationDto, inputs) as Resolved.BabylonMaterial.InclinationDto;
+        const mat = resolved.material;
+        mat.inclination = resolved.inclination;
     }
 
     /**
@@ -172,8 +160,9 @@ export class BabylonMaterialSky {
      * @shortname set azimuth
      */
     setAzimuth(inputs: Inputs.BabylonMaterial.AzimuthDto): void {
-        const mat = inputs.material;
-        mat.azimuth = inputs.azimuth ?? 0.25;
+        const resolved = resolveDto(Inputs.BabylonMaterial.AzimuthDto, inputs) as Resolved.BabylonMaterial.AzimuthDto;
+        const mat = resolved.material;
+        mat.azimuth = resolved.azimuth;
     }
 
     /**
@@ -201,8 +190,9 @@ export class BabylonMaterialSky {
      * @shortname set use sun position
      */
     setUseSunPosition(inputs: Inputs.BabylonMaterial.UseSunPositionDto): void {
-        const mat = inputs.material;
-        mat.useSunPosition = inputs.useSunPosition ?? false;
+        const resolved = resolveDto(Inputs.BabylonMaterial.UseSunPositionDto, inputs) as Resolved.BabylonMaterial.UseSunPositionDto;
+        const mat = resolved.material;
+        mat.useSunPosition = resolved.useSunPosition;
     }
 
     /**
@@ -237,8 +227,9 @@ export class BabylonMaterialSky {
      * @shortname set dithering
      */
     setDithering(inputs: Inputs.BabylonMaterial.DitheringDto): void {
-        const mat = inputs.material;
-        mat.dithering = inputs.dithering ?? false;
+        const resolved = resolveDto(Inputs.BabylonMaterial.DitheringDto, inputs) as Resolved.BabylonMaterial.DitheringDto;
+        const mat = resolved.material;
+        mat.dithering = resolved.dithering;
     }
 
     /**

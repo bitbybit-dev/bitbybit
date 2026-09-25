@@ -3,7 +3,7 @@ import { Context } from "./context";
 import * as Inputs from "./inputs";
 import { DrawHelperCore, MeshData } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
-import { Vector } from "@bitbybit-dev/base";
+import { Vector, resolveDto } from "@bitbybit-dev/base";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
@@ -12,6 +12,7 @@ import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
+import * as Resolved from "./resolved-inputs";
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -86,10 +87,11 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.Manifold.DrawManifoldsOrCrossSectionsDto, inputs) as Resolved.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, inputs)).filter((s): s is THREEJS.Group => s !== undefined);
+            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)).filter((s): s is THREEJS.Group => s !== undefined);
             const manifoldMeshContainer = new THREEJS.Group();
             manifoldMeshContainer.name = this.generateEntityId("manifoldMeshContainer");
             meshes.forEach(mesh => {
@@ -104,13 +106,14 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group | undefined> {
+        const resolved = resolveDto(Inputs.Manifold.DrawManifoldOrCrossSectionDto, inputs) as Resolved.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>;
         try {
-            if (!inputs.manifoldOrCrossSection) {
+            if (!resolved.manifoldOrCrossSection) {
                 throw new Error("Manifold or cross section parameter is required");
             }
-            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
-            return this.handleDecomposedManifold(decomposedMesh, inputs);
+            return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
             throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
@@ -118,13 +121,14 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
-            if (!inputs.shape) {
+            if (!resolved.shape) {
                 throw new Error("Shape parameter is required");
             }
-            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
             const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
-            return this.handleDecomposedMesh(inputs, decomposedMesh, inputs);
+            return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
             throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
@@ -132,10 +136,11 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(inputs);
+            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
             const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
-            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(inputs, decomposedMesh, inputs)));
+            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(resolved, decomposedMesh, resolved)));
             const shapesMeshContainer = new THREEJS.Group();
             shapesMeshContainer.name = this.generateEntityId("shapesMeshContainer");
             this.context.scene.add(shapesMeshContainer);
@@ -150,13 +155,14 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawSolidOrPolygonMesh(inputs: Inputs.JSCAD.DrawSolidMeshDto<THREEJS.Group>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.JSCAD.DrawSolidMeshDto, inputs) as Resolved.JSCAD.DrawSolidMeshDto<THREEJS.Group>;
         try {
             const res: {
                 positions: number[],
                 normals: number[],
                 indices: number[],
                 transforms: [],
-            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", inputs);
+            } = await this.jscadWorkerManager.genericCallToWorkerPromise("shapeToMesh", resolved);
 
             if (!res || !res.positions || !res.indices || !res.transforms) {
                 console.warn("Corrupted worker response, returning empty mesh");
@@ -167,30 +173,30 @@ export class DrawHelper extends DrawHelperCore {
             }
 
             let meshToUpdate;
-            if (inputs.jscadMesh && inputs.updatable) {
-                meshToUpdate = inputs.jscadMesh;
+            if (resolved.jscadMesh && resolved.updatable) {
+                meshToUpdate = resolved.jscadMesh;
             } else {
                 meshToUpdate = new THREEJS.Group();
                 meshToUpdate.name = this.generateEntityId("jscadMesh");
                 this.context.scene.add(meshToUpdate);
             }
             let colour;
-            if (inputs.mesh.color && inputs.mesh.color.length > 0) {
-                const c = inputs.mesh.color;
+            if (resolved.mesh.color && resolved.mesh.color.length > 0) {
+                const c = resolved.mesh.color;
                 colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();
             } else {
-                colour = Array.isArray(inputs.colours) ? inputs.colours[0] : inputs.colours;
+                colour = Array.isArray(resolved.colours) ? resolved.colours[0] : resolved.colours;
             }
             const s = this.makeMesh({ 
-                updatable: inputs.updatable,
-                opacity: inputs.opacity,
-                hidden: inputs.hidden,
+                updatable: resolved.updatable,
+                opacity: resolved.opacity,
+                hidden: resolved.hidden,
                 colour: colour!,
-                drawTwoSided: inputs.drawTwoSided,
-                backFaceColour: inputs.backFaceColour,
-                backFaceOpacity: inputs.backFaceOpacity
+                drawTwoSided: resolved.drawTwoSided,
+                backFaceColour: resolved.backFaceColour,
+                backFaceOpacity: resolved.backFaceOpacity
             }, meshToUpdate, res);
-            inputs.jscadMesh = s;
+            resolved.jscadMesh = s;
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
@@ -199,6 +205,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async drawSolidOrPolygonMeshes(inputs: Inputs.JSCAD.DrawSolidMeshesDto<THREEJS.Group>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.JSCAD.DrawSolidMeshesDto, inputs) as Resolved.JSCAD.DrawSolidMeshesDto<THREEJS.Group>;
         try {
             const res: {
                 positions: number[],
@@ -206,19 +213,19 @@ export class DrawHelper extends DrawHelperCore {
                 indices: number[],
                 transforms: [],
                 color?: number[]
-            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", inputs);
+            }[] = await this.jscadWorkerManager.genericCallToWorkerPromise("shapesToMeshes", resolved);
 
             let localOrigin: THREEJS.Group;
-            if (inputs.jscadMesh && inputs.updatable) {
-                localOrigin = inputs.jscadMesh;
+            if (resolved.jscadMesh && resolved.updatable) {
+                localOrigin = resolved.jscadMesh;
                 localOrigin.clear();
             } else {
                 localOrigin = new THREEJS.Group();
                 localOrigin.name = this.generateEntityId("jscadMeshes");
             }
 
-            const colourIsArrayAndMatches = Array.isArray(inputs.colours) && inputs.colours.length === res.length;
-            const colorsAreArrays = Array.isArray(inputs.colours);
+            const colourIsArrayAndMatches = Array.isArray(resolved.colours) && resolved.colours.length === res.length;
+            const colorsAreArrays = Array.isArray(resolved.colours);
 
             res.map((r, index) => {
                 const meshToUpdate = new THREEJS.Group();
@@ -228,23 +235,23 @@ export class DrawHelper extends DrawHelperCore {
                     const c = r.color;
                     colour = "#" + new THREEJS.Color(c[0]!, c[1]!, c[2]!).getHexString();
                 } else if (colourIsArrayAndMatches) {
-                    colour = inputs.colours[index];
+                    colour = resolved.colours[index];
                 } else if (colorsAreArrays) {
-                    colour = inputs.colours[0];
+                    colour = resolved.colours[0];
                 } else {
-                    colour = inputs.colours;
+                    colour = resolved.colours;
                 }
                 const m = this.makeMesh({ 
-                    ...inputs, 
+                    ...resolved, 
                     colour: colour as string,
-                    drawTwoSided: inputs.drawTwoSided,
-                    backFaceColour: inputs.backFaceColour,
-                    backFaceOpacity: inputs.backFaceOpacity
+                    drawTwoSided: resolved.drawTwoSided,
+                    backFaceColour: resolved.backFaceColour,
+                    backFaceOpacity: resolved.backFaceOpacity
                 }, meshToUpdate, r);
                 localOrigin.add(m);
             });
             this.context.scene.add(localOrigin);
-            inputs.jscadMesh = localOrigin;
+            resolved.jscadMesh = localOrigin;
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
@@ -252,16 +259,17 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number }) {
-        let colours = inputs.colours;
-        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+    drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined }) {
+        const resolved = resolveDto(Inputs.Polyline.DrawPolylinesDto, inputs) as Resolved.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined };
+        let colours = resolved.colours;
+        const strategy = resolved.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
 
-        const points = inputs.polylines.map((s, index) => {
+        const points = resolved.polylines.map((s, index) => {
             const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
             if (s.color) {
                 if (!Array.isArray(colours)) {
-                    const shared = colours ?? "#444444";
-                    colours = inputs.polylines.map(() => shared);
+                    const shared = colours;
+                    colours = resolved.polylines.map(() => shared);
                 }
                 if (Array.isArray(s.color)) {
                     colours[index] = "#" + new THREEJS.Color(s.color[0]!, s.color[1]!, s.color[2]!).getHexString();
@@ -273,31 +281,31 @@ export class DrawHelper extends DrawHelperCore {
         });
 
         let lineSegments: LineSegments2 | undefined;
-        if (inputs.polylinesMesh && inputs.updatable) {
-            lineSegments = inputs.polylinesMesh.children[0] as LineSegments2;
+        if (resolved.polylinesMesh && resolved.updatable) {
+            lineSegments = resolved.polylinesMesh.children[0] as LineSegments2;
         }
         const polylines = this.drawPolylines(
             lineSegments,
             points,
-            inputs.updatable ?? false,
-            inputs.size ?? 3,
-            inputs.opacity ?? 1,
-            colours ?? "#444444",
+            resolved.updatable,
+            resolved.size,
+            resolved.opacity,
+            colours,
             strategy,
-            inputs.arrowSize,
-            inputs.arrowAngle
+            resolved.arrowSize,
+            resolved.arrowAngle
         );
-        if (inputs.polylinesMesh && inputs.updatable) {
-            if (inputs.polylinesMesh.children[0]!.name !== polylines!.name) {
-                inputs.polylinesMesh.children.forEach(child => {
+        if (resolved.polylinesMesh && resolved.updatable) {
+            if (resolved.polylinesMesh.children[0]!.name !== polylines!.name) {
+                resolved.polylinesMesh.children.forEach(child => {
                     if (child instanceof LineSegments2) {
                         child.geometry.dispose();
                     }
                 });
-                inputs.polylinesMesh.clear();
-                inputs.polylinesMesh.add(polylines!);
+                resolved.polylinesMesh.clear();
+                resolved.polylinesMesh.add(polylines!);
             }
-            return inputs.polylinesMesh;
+            return resolved.polylinesMesh;
         } else {
             const group = new THREEJS.Group();
             group.name = this.generateEntityId("polylines");
@@ -308,32 +316,34 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawPoint(inputs: Inputs.Point.DrawPointDto<THREEJS.Group>): THREEJS.Group {
-        const vectorPoints = [inputs.point];
+        const resolved = resolveDto(Inputs.Point.DrawPointDto, inputs) as Resolved.Point.DrawPointDto<THREEJS.Group>;
+        const vectorPoints = [resolved.point];
 
-        const colorsHex: string[] = Array.isArray(inputs.colours) ? inputs.colours : [inputs.colours];
-        if (inputs.pointMesh && inputs.updatable) {
-            this.updatePointsInstances(inputs.pointMesh, vectorPoints);
+        const colorsHex: string[] = Array.isArray(resolved.colours) ? resolved.colours : [resolved.colours];
+        if (resolved.pointMesh && resolved.updatable) {
+            this.updatePointsInstances(resolved.pointMesh, vectorPoints);
         } else {
-            inputs.pointMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, inputs.opacity, inputs.size, inputs.updatable
+            resolved.pointMesh = this.createPointSpheresMesh(
+                this.generateEntityId("pointMesh"), vectorPoints, colorsHex, resolved.opacity, resolved.size, resolved.updatable
             );
         }
-        return inputs.pointMesh;
+        return resolved.pointMesh;
     }
 
-    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number, arrowAngle?: number }): THREEJS.Group {
-        const points = inputs.polyline.isClosed
-            ? [...inputs.polyline.points, inputs.polyline.points[0]!]
-            : inputs.polyline.points;
+    drawPolylineClose(inputs: Inputs.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number | undefined, arrowAngle?: number | undefined }): THREEJS.Group {
+        const resolved = resolveDto(Inputs.Polyline.DrawPolylineDto, inputs) as Resolved.Polyline.DrawPolylineDto<THREEJS.Group> & { arrowSize?: number | undefined, arrowAngle?: number | undefined };
+        const points = resolved.polyline.isClosed
+            ? [...resolved.polyline.points, resolved.polyline.points[0]!]
+            : resolved.polyline.points;
         return this.drawPolyline(
-            inputs.polylineMesh,
+            resolved.polylineMesh,
             points,
-            inputs.updatable ?? false,
-            inputs.size ?? 3,
-            inputs.opacity ?? 1,
-            inputs.colours ?? "#444444",
-            inputs.arrowSize,
-            inputs.arrowAngle
+            resolved.updatable,
+            resolved.size,
+            resolved.opacity,
+            resolved.colours,
+            resolved.arrowSize,
+            resolved.arrowAngle
         );
     }
 
@@ -365,25 +375,27 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawCurve(inputs: Inputs.Verb.DrawCurveDto<THREEJS.Group>): THREEJS.Group {
-        const points = inputs.curve.tessellate();
+        const resolved = resolveDto(Inputs.Verb.DrawCurveDto, inputs) as Resolved.Verb.DrawCurveDto<THREEJS.Group>;
+        const points = resolved.curve.tessellate();
         return this.drawPolyline(
-            inputs.curveMesh,
+            resolved.curveMesh,
             points,
-            inputs.updatable,
-            inputs.size,
-            inputs.opacity,
-            inputs.colours
+            resolved.updatable,
+            resolved.size,
+            resolved.opacity,
+            resolved.colours
         );
     }
 
-    drawPoints(inputs: Inputs.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): THREEJS.Group {
-        const vectorPoints = inputs.points;
-        const strategy = inputs.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
+    drawPoints(inputs: Inputs.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined }): THREEJS.Group {
+        const resolved = resolveDto(Inputs.Point.DrawPointsDto, inputs) as Resolved.Point.DrawPointsDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined };
+        const vectorPoints = resolved.points;
+        const strategy = resolved.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
 
-        const coloursHex = this.resolveAllColors(inputs.colours, vectorPoints.length, strategy);
+        const coloursHex = this.resolveAllColors(resolved.colours, vectorPoints.length, strategy);
 
-        if (inputs.pointsMesh && inputs.updatable) {
-            const currentPointCount = inputs.pointsMesh.children.reduce((sum, child) => {
+        if (resolved.pointsMesh && resolved.updatable) {
+            const currentPointCount = resolved.pointsMesh.children.reduce((sum, child) => {
                 if (child instanceof THREEJS.InstancedMesh) {
                     return sum + child.count;
                 }
@@ -391,9 +403,9 @@ export class DrawHelper extends DrawHelperCore {
             }, 0);
 
             if (currentPointCount === vectorPoints.length) {
-                this.updatePointsInstances(inputs.pointsMesh, vectorPoints);
+                this.updatePointsInstances(resolved.pointsMesh, vectorPoints);
             } else {
-                inputs.pointsMesh.children.forEach(child => {
+                resolved.pointsMesh.children.forEach(child => {
                     if (child instanceof THREEJS.Mesh || child instanceof THREEJS.InstancedMesh) {
                         child.geometry?.dispose();
                         if (child.material) {
@@ -405,17 +417,17 @@ export class DrawHelper extends DrawHelperCore {
                         }
                     }
                 });
-                inputs.pointsMesh.remove();
-                inputs.pointsMesh = this.createPointSpheresMesh(
-                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+                resolved.pointsMesh.remove();
+                resolved.pointsMesh = this.createPointSpheresMesh(
+                    this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
                 );
             }
         } else {
-            inputs.pointsMesh = this.createPointSpheresMesh(
-                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, inputs.opacity, inputs.size, inputs.updatable
+            resolved.pointsMesh = this.createPointSpheresMesh(
+                this.generateEntityId("pointsMesh"), vectorPoints, coloursHex, resolved.opacity, resolved.size, resolved.updatable
             );
         }
-        return inputs.pointsMesh;
+        return resolved.pointsMesh;
     }
 
     updatePointsInstances(group: THREEJS.Group, positions: Inputs.Base.Point3[]): void {
@@ -443,11 +455,12 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawCurves(inputs: Inputs.Verb.DrawCurvesDto<THREEJS.Group>): THREEJS.Group {
-        const points = inputs.curves.map(s => ({ points: s.tessellate() }));
-        return this.drawPolylinesWithColours({ polylines: points, polylinesMesh: inputs.curvesMesh, ...inputs });
+        const resolved = resolveDto(Inputs.Verb.DrawCurvesDto, inputs) as Resolved.Verb.DrawCurvesDto<THREEJS.Group>;
+        const points = resolved.curves.map(s => ({ points: s.tessellate() }));
+        return this.drawPolylinesWithColours({ polylines: points, polylinesMesh: resolved.curvesMesh, ...resolved });
     }
 
-    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum }): THREEJS.Group {
+    drawSurfacesMultiColour(inputs: Inputs.Verb.DrawSurfacesColoursDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined }): THREEJS.Group {
         if (inputs.surfacesMesh && inputs.updatable) {
             inputs.surfacesMesh.clear();
         } else {
@@ -564,7 +577,8 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     drawSurface(inputs: Inputs.Verb.DrawSurfaceDto<THREEJS.Group>): THREEJS.Group {
-        const meshData = inputs.surface.tessellate();
+        const resolved = resolveDto(Inputs.Verb.DrawSurfaceDto, inputs) as Resolved.Verb.DrawSurfaceDto<THREEJS.Group>;
+        const meshData = resolved.surface.tessellate();
 
         const meshDataConverted: MeshData = {
             positions: [],
@@ -577,15 +591,15 @@ export class DrawHelper extends DrawHelperCore {
             countIndices = this.parseFaces(faceIndices, meshData, meshDataConverted, countIndices);
         });
 
-        const hex = Array.isArray(inputs.colours) ? inputs.colours[0]! : inputs.colours;
-        const pbr = this.getOrCreateMaterial(hex, inputs.opacity, 0, () => {
+        const hex = Array.isArray(resolved.colours) ? resolved.colours[0]! : resolved.colours;
+        const pbr = this.getOrCreateMaterial(hex, resolved.opacity, 0, () => {
             const mat = new THREEJS.MeshPhysicalMaterial();
             mat.name = this.generateEntityId("surfaceMaterial");
             mat.color = new THREEJS.Color(hex);
             mat.metalness = MATERIAL_DEFAULTS.METALNESS.SURFACE;
             mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.SURFACE;
-            mat.opacity = inputs.opacity;
-            if (inputs.opacity < 1) {
+            mat.opacity = resolved.opacity;
+            if (resolved.opacity < 1) {
                 mat.transparent = true;
             }
             return mat;
@@ -593,18 +607,18 @@ export class DrawHelper extends DrawHelperCore {
 
         const surfaceGroup = this.createOrUpdateSurfacesMesh(
             [meshDataConverted],
-            inputs.surfaceMesh,
-            inputs.updatable,
+            resolved.surfaceMesh,
+            resolved.updatable,
             pbr,
             true,
-            inputs.hidden,
+            resolved.hidden,
         );
 
-        if (inputs.drawTwoSided !== false) {
+        if (resolved.drawTwoSided !== false) {
             const backFaceMesh = this.createBackFaceMesh(
                 [meshDataConverted],
-                inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                inputs.backFaceOpacity ?? inputs.opacity,
+                resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                resolved.backFaceOpacity,
                 0
             );
             surfaceGroup.add(backFaceMesh);
@@ -687,21 +701,22 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
+        const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
         const dummy = undefined;
 
-        if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
+        if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
             let pbr: THREEJS.MeshPhysicalMaterial;
 
-            if (inputs.faceMaterial) {
-                pbr = inputs.faceMaterial;
+            if (resolved.faceMaterial) {
+                pbr = resolved.faceMaterial;
             } else {
-                const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
-                const alpha = inputs.faceOpacity;
-                const zOffset = inputs.drawEdges ? 2 : 0;
+                const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
+                const alpha = resolved.faceOpacity;
+                const zOffset = resolved.drawEdges ? 2 : 0;
 
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new THREEJS.MeshPhysicalMaterial();
@@ -728,17 +743,17 @@ export class DrawHelper extends DrawHelperCore {
             const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
             shapeGroup.add(mesh);
 
-            if (inputs.drawTwoSided !== false) {
+            if (resolved.drawTwoSided !== false) {
                 const backFaceMesh = this.createBackFaceMesh(
                     meshData,
-                    inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                    inputs.backFaceOpacity ?? inputs.faceOpacity,
-                    inputs.drawEdges ? 2 : 0
+                    resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                    resolved.backFaceOpacity,
+                    resolved.drawEdges ? 2 : 0
                 );
                 shapeGroup.add(backFaceMesh);
             }
         }
-        if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
+        if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
 
             const polylineEdgePoints: Inputs.Base.Point3[][] = [];
             decomposedMesh.edgeList.forEach(edge => {
@@ -749,9 +764,9 @@ export class DrawHelper extends DrawHelperCore {
                 undefined, 
                 polylineEdgePoints, 
                 false, 
-                inputs.edgeWidth, 
-                inputs.edgeOpacity, 
-                inputs.edgeColour,
+                resolved.edgeWidth, 
+                resolved.edgeOpacity, 
+                resolved.edgeColour,
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                 options.edgeArrowSize,
                 options.edgeArrowAngle
@@ -759,18 +774,18 @@ export class DrawHelper extends DrawHelperCore {
             shapeGroup.add(line!);
         }
 
-        if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
+        if (resolved.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
             const mesh = this.drawPoints({
                 points: decomposedMesh.pointsList,
                 opacity: 1,
-                size: inputs.vertexSize,
-                colours: inputs.vertexColour,
+                size: resolved.vertexSize,
+                colours: resolved.vertexColour,
                 updatable: false,
             });
             shapeGroup.add(mesh);
         }
 
-        if (inputs.drawEdgeIndexes) {
+        if (resolved.drawEdgeIndexes) {
             const promises = decomposedMesh.edgeList.map(async (edge) => {
                 let edgeMiddle = edge.middlePoint;
                 if (edgeMiddle === undefined) {
@@ -778,7 +793,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${edge.edgeIndex}`;
-                tdto.height = inputs.edgeIndexHeight;
+                tdto.height = resolved.edgeIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);
                 const texts = t.map(s => {
@@ -796,10 +811,10 @@ export class DrawHelper extends DrawHelperCore {
                 return texts;
             });
             const textPolylines = await Promise.all(promises);
-            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.edgeIndexColour);
+            const edgeMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.edgeIndexColour);
             shapeGroup.add(edgeMesh!);
         }
-        if (inputs.drawFaceIndexes) {
+        if (resolved.drawFaceIndexes) {
             const promises = decomposedMesh.faceList.map(async (face) => {
                 let faceMiddle = face.centerPoint;
                 if (faceMiddle === undefined) {
@@ -807,7 +822,7 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 const tdto = new Inputs.JSCAD.TextDto();
                 tdto.text = `${face.faceIndex}`;
-                tdto.height = inputs.faceIndexHeight;
+                tdto.height = resolved.faceIndexHeight;
                 tdto.lineSpacing = 1.5;
                 const t = await this.solidText.createVectorText(tdto);
                 const texts = t.map(s => {
@@ -825,26 +840,27 @@ export class DrawHelper extends DrawHelperCore {
             });
             const textPolylines = await Promise.all(promises);
 
-            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, inputs.faceIndexColour);
+            const faceMesh = this.drawPolylines(undefined, textPolylines.flat(), false, 2, 1, resolved.faceIndexColour);
             faceMesh!.parent = shapeGroup;
         }
         return shapeGroup;
     }
 
     async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
         const dummy = undefined;
 
-        if (inputs.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
-            const hex = Array.isArray(inputs.faceColour) ? inputs.faceColour[0] : inputs.faceColour;
-            const alpha = inputs.faceOpacity;
-            const zOffset = inputs.drawEdges ? 2 : 0;
+        if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
+            const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
+            const alpha = resolved.faceOpacity;
+            const zOffset = resolved.drawEdges ? 2 : 0;
 
             let pbr: THREEJS.MeshPhysicalMaterial;
-            if (inputs.faceMaterial) {
-                pbr = inputs.faceMaterial;
+            if (resolved.faceMaterial) {
+                pbr = resolved.faceMaterial;
             } else {
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new THREEJS.MeshPhysicalMaterial();
@@ -867,11 +883,11 @@ export class DrawHelper extends DrawHelperCore {
                     uvs: face.uvs ? [...face.uvs] : undefined,
                 }];
 
-                if (inputs.drawTwoSided !== false) {
+                if (resolved.drawTwoSided !== false) {
                     const backFaceMesh = this.createBackFaceMesh(
                         meshData,
-                        inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                        inputs.backFaceOpacity ?? inputs.faceOpacity,
+                        resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
+                        resolved.backFaceOpacity,
                         zOffset
                     );
                     backFaceMesh.name = `face ${face.faceIndex} backFace`;
@@ -884,16 +900,16 @@ export class DrawHelper extends DrawHelperCore {
             });
         }
 
-        if (inputs.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
+        if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 const mesh = this.drawPolylines(
                     undefined,
                     [ev],
                     false,
-                    inputs.edgeWidth,
-                    inputs.edgeOpacity,
-                    inputs.edgeColour,
+                    resolved.edgeWidth,
+                    resolved.edgeOpacity,
+                    resolved.edgeColour,
                     Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                     options.edgeArrowSize,
                     options.edgeArrowAngle
@@ -905,12 +921,12 @@ export class DrawHelper extends DrawHelperCore {
             });
         }
 
-        if (inputs.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
+        if (resolved.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
             const mesh = this.drawPoints({
                 points: decomposedMesh.pointsList,
                 opacity: 1,
-                size: inputs.vertexSize,
-                colours: inputs.vertexColour,
+                size: resolved.vertexSize,
+                colours: resolved.vertexColour,
                 updatable: false,
             });
             mesh.name = "vertices";
@@ -1151,7 +1167,7 @@ export class DrawHelper extends DrawHelperCore {
 
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
-        options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group | undefined {
+        options: Resolved.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
@@ -1203,7 +1219,7 @@ export class DrawHelper extends DrawHelperCore {
                     const backFaceMesh = this.createBackFaceMesh(
                         meshData,
                         options.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                        options.backFaceOpacity ?? options.faceOpacity,
+                        options.backFaceOpacity,
                         0
                     );
                     group.add(backFaceMesh);

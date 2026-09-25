@@ -2,6 +2,8 @@ import * as BABYLON from "@babylonjs/core";
 import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The orbiting camera: it circles a target point at a distance, the way you would turn a product in
@@ -32,48 +34,35 @@ export class BabylonArcRotateCamera {
      * ```
      */
     create(inputs: Inputs.BabylonCamera.ArcRotateCameraDto): BABYLON.ArcRotateCamera {
-        const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
+        const resolved = resolveDto(Inputs.BabylonCamera.ArcRotateCameraDto, inputs) as Resolved.BabylonCamera.ArcRotateCameraDto;
+        const target = new BABYLON.Vector3(resolved.target[0], resolved.target[1], resolved.target[2]);
         const camera = new BABYLON.ArcRotateCamera(
             uniqueName("arcRotateCamera"),
-            this.getRadians(inputs.alpha),
-            this.getRadians(inputs.beta),
-            inputs.radius,
+            this.getRadians(resolved.alpha),
+            this.getRadians(resolved.beta),
+            resolved.radius,
             target,
             this.context.scene
         );
-        if (inputs.angularSensibilityX !== undefined) {
-            camera.angularSensibilityX = inputs.angularSensibilityX;
+        camera.angularSensibilityX = resolved.angularSensibilityX;
+        camera.angularSensibilityY = resolved.angularSensibilityY;
+        if (resolved.lowerRadiusLimit !== undefined) {
+            camera.lowerRadiusLimit = resolved.lowerRadiusLimit;
         }
-        if (inputs.angularSensibilityY !== undefined) {
-            camera.angularSensibilityY = inputs.angularSensibilityY;
+        if (resolved.upperRadiusLimit !== undefined) {
+            camera.upperRadiusLimit = resolved.upperRadiusLimit;
         }
-        if (inputs.lowerRadiusLimit !== undefined) {
-            camera.lowerRadiusLimit = inputs.lowerRadiusLimit;
+        if (resolved.lowerAlphaLimit !== undefined) {
+            camera.lowerAlphaLimit = this.getRadians(resolved.lowerAlphaLimit);
         }
-        if (inputs.upperRadiusLimit !== undefined) {
-            camera.upperRadiusLimit = inputs.upperRadiusLimit;
+        if (resolved.upperAlphaLimit !== undefined) {
+            camera.upperAlphaLimit = this.getRadians(resolved.upperAlphaLimit);
         }
-        if (inputs.lowerAlphaLimit !== undefined) {
-            camera.lowerAlphaLimit = this.getRadians(inputs.lowerAlphaLimit);
-        }
-        if (inputs.upperAlphaLimit !== undefined) {
-            camera.upperAlphaLimit = this.getRadians(inputs.upperAlphaLimit);
-        }
-        if (inputs.lowerBetaLimit !== undefined) {
-            camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
-        }
-        if (inputs.upperBetaLimit !== undefined) {
-            camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
-        }
-        if (inputs.panningSensibility !== undefined) {
-            camera.panningSensibility = inputs.panningSensibility;
-        }
-        if (inputs.wheelPrecision !== undefined) {
-            camera.wheelPrecision = inputs.wheelPrecision;
-        }
-        if (inputs.maxZ !== undefined) {
-            camera.maxZ = inputs.maxZ;
-        }
+        camera.lowerBetaLimit = this.getRadians(resolved.lowerBetaLimit);
+        camera.upperBetaLimit = this.getRadians(resolved.upperBetaLimit);
+        camera.panningSensibility = resolved.panningSensibility;
+        camera.wheelPrecision = resolved.wheelPrecision;
+        camera.maxZ = resolved.maxZ;
         camera.minZ = 0;
 
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;

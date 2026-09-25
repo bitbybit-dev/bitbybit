@@ -1,5 +1,7 @@
 import * as Inputs from "../inputs";
 import { ContextBase } from "../context";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Text labels pinned to 3D positions: a tag is an HTML text element placed over the canvas at the
@@ -23,12 +25,13 @@ export class Tag {
      * ```
      */
     create(inputs: Inputs.Tag.TagDto): Inputs.Tag.TagDto {
+        const resolved = resolveDto(Inputs.Tag.TagDto, inputs) as Resolved.Tag.TagDto;
         const tag = new Inputs.Tag.TagDto();
-        tag.text = inputs.text;
-        tag.position = inputs.position;
-        tag.colour = inputs.colour;
-        tag.size = inputs.size;
-        tag.adaptDepth = inputs.adaptDepth;
+        tag.text = resolved.text;
+        tag.position = resolved.position;
+        tag.colour = resolved.colour;
+        tag.size = resolved.size;
+        tag.adaptDepth = resolved.adaptDepth;
         return tag;
     }
 
@@ -48,21 +51,22 @@ export class Tag {
      * ```
      */
     drawTag(inputs: Inputs.Tag.DrawTagDto): Inputs.Tag.TagDto {
-        if (inputs.tagVariable && inputs.updatable) {
-            const tagToUpdate = this.context.tagBag.find(tag => tag.id === inputs.tagVariable!.id)!;
-            Object.assign(tagToUpdate, inputs.tag);
+        const resolved = resolveDto(Inputs.Tag.DrawTagDto, inputs) as Resolved.Tag.DrawTagDto;
+        if (resolved.tagVariable && resolved.updatable) {
+            const tagToUpdate = this.context.tagBag.find(tag => tag.id === resolved.tagVariable!.id)!;
+            Object.assign(tagToUpdate, resolved.tag);
             tagToUpdate.needsUpdate = true;
         } else {
             const textNode = document.createElement("span");
             const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
-            inputs.tag.id = id;
+            resolved.tag.id = id;
             textNode.id = id;
-            textNode.textContent = inputs.tag.text;
+            textNode.textContent = resolved.tag.text;
             document.querySelector("." + this.context.canvasZoneClass)!.appendChild(textNode);
-            inputs.tag.needsUpdate = true;
-            this.context.tagBag.push(inputs.tag);
+            resolved.tag.needsUpdate = true;
+            this.context.tagBag.push(resolved.tag);
         }
-        return inputs.tag;
+        return resolved.tag;
     }
 
     /**
@@ -80,11 +84,12 @@ export class Tag {
      * ```
      */
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
-        if (inputs.tagsVariable && inputs.updatable) {
+        const resolved = resolveDto(Inputs.Tag.DrawTagsDto, inputs) as Resolved.Tag.DrawTagsDto;
+        if (resolved.tagsVariable && resolved.updatable) {
 
-            if (inputs.tagsVariable.length < inputs.tags.length) {
-                for (let i = inputs.tagsVariable.length - 1; i < inputs.tags.length - 1; i++) {
-                    const tagToCreate = inputs.tags[i]!;
+            if (resolved.tagsVariable.length < resolved.tags.length) {
+                for (let i = resolved.tagsVariable.length - 1; i < resolved.tags.length - 1; i++) {
+                    const tagToCreate = resolved.tags[i]!;
                     const textNode = document.createElement("span");
                     const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
                     tagToCreate.id = id;
@@ -92,13 +97,13 @@ export class Tag {
                     document.querySelector("." + this.context.canvasZoneClass)!.appendChild(textNode);
                     tagToCreate.needsUpdate = true;
                     this.context.tagBag.push(tagToCreate);
-                    inputs.tagsVariable.push(tagToCreate);
+                    resolved.tagsVariable.push(tagToCreate);
                 }
             }
 
-            inputs.tagsVariable.forEach((tagFromVar, index) => {
+            resolved.tagsVariable.forEach((tagFromVar, index) => {
                 const tagToUpdate = this.context.tagBag.find(tag => tag.id === tagFromVar.id)!;
-                const tagToUpdateWith = inputs.tags[index];
+                const tagToUpdateWith = resolved.tags[index];
                 if (tagToUpdateWith) {
                     Object.assign(tagToUpdate, tagToUpdateWith);
                     tagToUpdate.needsUpdate = true;
@@ -113,7 +118,7 @@ export class Tag {
             });
         } else {
             const tagsToCreate: Inputs.Tag.TagDto[] = [];
-            inputs.tags.forEach((tag, _index) => {
+            resolved.tags.forEach((tag, _index) => {
                 const textNode = document.createElement("span");
                 const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
                 tag.id = id;
@@ -124,8 +129,8 @@ export class Tag {
                 this.context.tagBag.push(tag);
                 tagsToCreate.push(tag);
             });
-            inputs.tagsVariable = tagsToCreate;
+            resolved.tagsVariable = tagsToCreate;
         }
-        return inputs.tagsVariable;
+        return resolved.tagsVariable;
     }
 }

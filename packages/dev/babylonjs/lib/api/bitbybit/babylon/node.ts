@@ -4,6 +4,8 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import { DrawHelper } from "../../draw-helper";
 import * as Inputs from "../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Transform nodes: invisible points with a position and an orientation that meshes and other nodes
@@ -28,10 +30,11 @@ export class BabylonNode {
      * ```
      */
     drawNode(inputs: Inputs.BabylonNode.DrawNodeDto): void {
+        const resolved = resolveDto(Inputs.BabylonNode.DrawNodeDto, inputs) as Resolved.BabylonNode.DrawNodeDto;
         const cotAxis = this.drawHelper.localAxes(
-            inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ
+            resolved.size, this.context.scene, resolved.colorX, resolved.colorY, resolved.colorZ
         );
-        cotAxis.parent = inputs.node;
+        cotAxis.parent = resolved.node;
     }
 
     /**
@@ -44,9 +47,10 @@ export class BabylonNode {
      * ```
      */
     drawNodes(inputs: Inputs.BabylonNode.DrawNodesDto): void {
-        inputs.nodes.forEach(node => {
+        const resolved = resolveDto(Inputs.BabylonNode.DrawNodesDto, inputs) as Resolved.BabylonNode.DrawNodesDto;
+        resolved.nodes.forEach(node => {
             const CoTAxis = this.drawHelper.localAxes(
-                inputs.size, this.context.scene, inputs.colorX, inputs.colorY, inputs.colorZ);
+                resolved.size, this.context.scene, resolved.colorX, resolved.colorY, resolved.colorZ);
             CoTAxis.parent = node;
         });
     }
@@ -62,15 +66,16 @@ export class BabylonNode {
      * ```
      */
     createNodeFromRotation(inputs: Inputs.BabylonNode.CreateNodeFromRotationDto): BABYLON.TransformNode {
+        const resolved = resolveDto(Inputs.BabylonNode.CreateNodeFromRotationDto, inputs) as Resolved.BabylonNode.CreateNodeFromRotationDto;
         const transformNode = new BABYLON.TransformNode(uniqueName("node"), this.context.scene);
-        if (inputs.parent) {
-            transformNode.parent = inputs.parent;
+        if (resolved.parent) {
+            transformNode.parent = resolved.parent;
         }
-        transformNode.position = new BABYLON.Vector3(inputs.origin[0], inputs.origin[1], inputs.origin[2]);
+        transformNode.position = new BABYLON.Vector3(resolved.origin[0], resolved.origin[1], resolved.origin[2]);
         transformNode.rotation = new BABYLON.Vector3(
-            BABYLON.Angle.FromDegrees(inputs.rotation[0]).radians(),
-            BABYLON.Angle.FromDegrees(inputs.rotation[1]).radians(),
-            BABYLON.Angle.FromDegrees(inputs.rotation[2]).radians()
+            BABYLON.Angle.FromDegrees(resolved.rotation[0]).radians(),
+            BABYLON.Angle.FromDegrees(resolved.rotation[1]).radians(),
+            BABYLON.Angle.FromDegrees(resolved.rotation[2]).radians()
         );
         return transformNode;
     }
@@ -219,10 +224,11 @@ export class BabylonNode {
      * ```
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonNode.RotateAroundAxisNodeDto): void {
-        inputs.node.rotateAround(
-            new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-            BABYLON.Angle.FromDegrees(inputs.angle).radians()
+        const resolved = resolveDto(Inputs.BabylonNode.RotateAroundAxisNodeDto, inputs) as Resolved.BabylonNode.RotateAroundAxisNodeDto;
+        resolved.node.rotateAround(
+            new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]),
+            new BABYLON.Vector3(resolved.axis[0], resolved.axis[1], resolved.axis[2]),
+            BABYLON.Angle.FromDegrees(resolved.angle).radians()
         );
     }
 
@@ -236,9 +242,10 @@ export class BabylonNode {
      * ```
      */
     rotate(inputs: Inputs.BabylonNode.RotateNodeDto): void {
-        inputs.node.rotate(
-            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-            BABYLON.Angle.FromDegrees(inputs.angle).radians()
+        const resolved = resolveDto(Inputs.BabylonNode.RotateNodeDto, inputs) as Resolved.BabylonNode.RotateNodeDto;
+        resolved.node.rotate(
+            new BABYLON.Vector3(resolved.axis[0], resolved.axis[1], resolved.axis[2]),
+            BABYLON.Angle.FromDegrees(resolved.angle).radians()
         );
     }
 

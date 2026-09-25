@@ -2,6 +2,8 @@ import * as THREEJS from "three";
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { OrbitCameraController, ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
 import { createOrbitCamera } from "./orbit-camera";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 const SIXTY_HZ_FRAMES_PER_SECOND = 60;
 const FIRST_FRAME_DELTA_SECONDS = 1 / SIXTY_HZ_FRAMES_PER_SECOND;
@@ -41,7 +43,7 @@ function frameDeltaSeconds(previousFrameTimeMs: number | undefined, frameTimeMs:
  * ```
  */
 export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSResult {
-    const config = inputs || new ThreeJSScene.InitThreeJSDto();
+    const config = resolveDto(ThreeJSScene.InitThreeJSDto, inputs) as Resolved.ThreeJSScene.InitThreeJSDto;
 
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
@@ -138,7 +140,7 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
 
     let orbitCamera: OrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        const camOpts = config.orbitCameraOptions ?? new ThreeJSCamera.OrbitCameraDto();
+        const camOpts = resolveDto(ThreeJSCamera.OrbitCameraDto, config.orbitCameraOptions) as Resolved.ThreeJSCamera.OrbitCameraDto;
 
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);

@@ -212,7 +212,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 10
          */
-        width = 400;
+        width?: number | undefined = 400;
         /**
          * Height of the ground
          * @default 400
@@ -220,7 +220,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 10
          */
-        height = 400;
+        height?: number | undefined = 400;
         /**
          * Number of cells the ground mesh is divided into along each side
          * @default 10
@@ -228,7 +228,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 1
          */
-        subdivisions = 10;
+        subdivisions?: number | undefined = 10;
         /**
          * The frequency of thicker lines.
          * @default 10
@@ -236,7 +236,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 1
          */
-        majorUnitFrequency = 10;
+        majorUnitFrequency?: number | undefined = 10;
         /**
          * How strongly the thin lines between the thick ones show, from 0 for hidden to 1 for full
          * @default 0.45
@@ -244,7 +244,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        minorUnitVisibility = 0.45;
+        minorUnitVisibility?: number | undefined = 0.45;
         /**
          * The scale of the grid compared to unit.
          * @default 0.5
@@ -252,7 +252,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        gridRatio = 0.5;
+        gridRatio?: number | undefined = 0.5;
         /**
          * The grid opacity outside of the lines.
          * @default 0.5
@@ -260,22 +260,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 0.5;
+        opacity?: number | undefined = 0.5;
         /**
          * Cull the back faces
          * @default false
          */
-        backFaceCulling = false;
+        backFaceCulling?: boolean | undefined = false;
         /**
          * Main color of the grid (e.g. between lines)
          * @default #ffffff
          */
-        mainColor: Base.Color = "#ffffff";
+        mainColor?: Base.Color | undefined = "#ffffff";
         /**
          * Color of the grid lines.
          * @default #ffffff
          */
-        secondaryColor: Base.Color = "#ffffff";
+        secondaryColor?: Base.Color | undefined = "#ffffff";
     }
 
     /**
@@ -299,13 +299,13 @@ export namespace Draw {
          * Basic geometry colors to use for lines, points, polylines, surfaces, jscad meshes.
          * @default #ff0000
          */
-        colours: string | string[] = "#ff0000";
+        colours?: string | string[] | undefined = "#ff0000";
         /**
          * How colors are spread over more entities than colors: first color for all, the last color
          * for the remainder, colors repeating, or colors bouncing back and forth
          * @default lastColorRemainder
          */
-        colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
+        colorMapStrategy?: Base.colorMapStrategyEnum | undefined = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
          * @default 0.1
@@ -313,7 +313,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 0.1;
+        size?: number | undefined = 0.1;
         /**
          * Opacity of the point 0 to 1
          * @default 1
@@ -321,27 +321,27 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * If geometry needs to be updated later
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * When true, the entity is drawn but not shown until it is made visible
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation. Only applies to surfaces.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true and drawing surfaces.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Back face opacity value between 0 and 1. Only used when drawTwoSided is true and drawing surfaces.
          * @default 1
@@ -349,7 +349,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * Size of the arrow head at the end of lines and polylines. Set to 0 to disable arrows.
          * @default 0
@@ -357,7 +357,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        arrowSize = 0;
+        arrowSize?: number | undefined = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
          * @default 15
@@ -365,7 +365,7 @@ export namespace Draw {
          * @maximum 90
          * @step 1
          */
-        arrowAngle = 15;
+        arrowAngle?: number | undefined = 15;
     }
 
     /**
@@ -383,24 +383,24 @@ export namespace Draw {
          * X Axis color
          * @default #ff0000
          */
-        colorX: Base.Color = "#ff0000";
+        colorX?: Base.Color | undefined = "#ff0000";
         /**
          * Y Axis color
          * @default #00ff00
          */
-        colorY: Base.Color = "#00ff00";
+        colorY?: Base.Color | undefined = "#00ff00";
         /**
          * Z Axis color
          * @default #0000ff
          */
-        colorZ: Base.Color = "#0000ff";
+        colorZ?: Base.Color | undefined = "#0000ff";
         /**
          * Length of the node axis
          * @default 2
          * @minimum 0
          * @maximum Infinity
          */
-        size = 2;
+        size?: number | undefined = 2;
     }
     /**
      * Feeds `draw.optionsManifoldShapeMaterial`: the face color or material of a Manifold solid,
@@ -429,12 +429,12 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * Hex color string for face color
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
@@ -445,12 +445,12 @@ export namespace Draw {
          * Hex color string for cross section drawing
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * Width of cross section lines
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * Cross section opacity value between 0 and 1
          * @default 1
@@ -458,22 +458,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity: number = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * Compute normals for the shape
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * Whether to draw two-sided geometry with back face rendering
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for the back face when drawing two-sided geometry
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Opacity of the back face when drawing two-sided geometry
          * @default 1
@@ -481,7 +481,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Feeds `draw.optionsOcctShape`: everything about how an OCCT shape is drawn, from meshing
@@ -526,7 +526,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * Edge opacity value between 0 and 1
          * @default 1
@@ -534,22 +534,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        edgeOpacity = 1;
+        edgeOpacity?: number | undefined = 1;
         /**
          * Hex color string for the edges
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * Hex color string for face color
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * Color of the vertices that will be drawn
          * @default #ff00ff
          */
-        vertexColour: Base.Color = "#ff00ff";
+        vertexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
@@ -563,7 +563,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
         /**
          * The size of a vertices that will be drawn
          * @default 0.03
@@ -571,22 +571,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        vertexSize = 0.03;
+        vertexSize?: number | undefined = 0.03;
         /**
          * You can turn off drawing of edges via this property
          * @default true
          */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * You can turn off drawing of faces via this property
          * @default true
          */
-        drawFaces = true;
+        drawFaces?: boolean | undefined = true;
         /**
          * You can turn off drawing of vertexes via this property
          * @default false
          */
-        drawVertices = false;
+        drawVertices?: boolean | undefined = false;
         /**
          * Precision of the mesh that will be generated for the shape, lower number will mean more triangles
          * @default 0.01
@@ -594,12 +594,12 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * Draw index of edges in space
          * @default false
          */
-        drawEdgeIndexes = false;
+        drawEdgeIndexes?: boolean | undefined = false;
         /**
          * Indicates the edge index height if they are drawn
          * @default 0.06
@@ -607,17 +607,17 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeIndexHeight = 0.06;
+        edgeIndexHeight?: number | undefined = 0.06;
         /**
          * Edge index color if the edges are drawn
          * @default #ff00ff
          */
-        edgeIndexColour: Base.Color = "#ff00ff";
+        edgeIndexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * Draw indexes of faces in space
          * @default false
          */
-        drawFaceIndexes = false;
+        drawFaceIndexes?: boolean | undefined = false;
         /**
          * Indicates the edge index height if they are drawn
          * @default 0.06
@@ -625,22 +625,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        faceIndexHeight = 0.06;
+        faceIndexHeight?: number | undefined = 0.06;
         /**
          * Edge index color if the edges are drawn
          * @default #0000ff
          */
-        faceIndexColour: Base.Color = "#0000ff";
+        faceIndexColour?: Base.Color | undefined = "#0000ff";
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
          * @default 1
@@ -648,7 +648,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * Size of arrow heads at the end of edges to indicate edge/wire orientation. Set to 0 to disable arrows.
          * @default 0
@@ -656,7 +656,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeArrowSize = 0;
+        edgeArrowSize?: number | undefined = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
          * @default 15
@@ -664,23 +664,23 @@ export namespace Draw {
          * @maximum 90
          * @step 1
          */
-        edgeArrowAngle = 15;
+        edgeArrowAngle?: number | undefined = 15;
         /**
          * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
          * is flushed so it does not accumulate in memory across draws.
          * @default false
          */
-        keepMeshData = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on the shape.
          * @default true
          */
-        allowQualityDecrease = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of cached triangulation.
          * @default false
          */
-        forceFaceDeflection = false;
+        forceFaceDeflection?: boolean | undefined = false;
     }
 
     /**
@@ -706,12 +706,12 @@ export namespace Draw {
          * @minimum 0
          * @maximum Infinity
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * You can turn off drawing of faces via this property
          * @default true
          */
-        drawFaces = true;
+        drawFaces?: boolean | undefined = true;
         /**
          * Hex color string for face color
          * @default #ff0000
@@ -721,29 +721,29 @@ export namespace Draw {
         * You can turn off drawing of edges via this property
         * @default true
         */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * Hex color string for the edges
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * Thickness of the drawn edge lines
          * @default 2
          * @minimum 0
          * @maximum Infinity
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
         /**
          * Whether to draw two-sided geometry with back face rendering
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for the back face when drawing two-sided geometry
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Opacity of the back face when drawing two-sided geometry
          * @default 1
@@ -751,7 +751,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
 
     /**
@@ -773,7 +773,7 @@ export namespace Draw {
          * @minimum 0
          * @maximum Infinity
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * The engine material the faces are drawn with
          * @default undefined
@@ -784,19 +784,19 @@ export namespace Draw {
         * You can turn off drawing of edges via this property
         * @default true
         */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * Hex color string for the edges
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * Thickness of the drawn edge lines
          * @default 2
          * @minimum 0
          * @maximum Infinity
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
     }
 
     /**
@@ -845,7 +845,7 @@ export namespace Draw {
          * Name identifier for the texture
          * @default Texture
          */
-        name = "Texture";
+        name?: string | undefined = "Texture";
         /**
          * Horizontal (U) scale/tiling of the texture
          * @default 1
@@ -853,7 +853,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        uScale = 1;
+        uScale?: number | undefined = 1;
         /**
          * Vertical (V) scale/tiling of the texture
          * @default 1
@@ -861,7 +861,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        vScale = 1;
+        vScale?: number | undefined = 1;
         /**
          * Horizontal (U) offset of the texture
          * @default 0
@@ -869,7 +869,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        uOffset = 0;
+        uOffset?: number | undefined = 0;
         /**
          * Vertical (V) offset of the texture
          * @default 0
@@ -877,7 +877,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        vOffset = 0;
+        vOffset?: number | undefined = 0;
         /**
          * Rotation angle of the texture in radians around the W axis
          * @default 0
@@ -885,22 +885,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        wAng = 0;
+        wAng?: number | undefined = 0;
         /**
          * Invert the texture on the Y axis
          * @default false
          */
-        invertY = false;
+        invertY?: boolean | undefined = false;
         /**
          * Invert the texture on the Z axis
          * @default false
          */
-        invertZ = false;
+        invertZ?: boolean | undefined = false;
         /**
          * Texture sampling/filtering mode
          * @default nearest
          */
-        samplingMode: samplingModeEnum = samplingModeEnum.nearest;
+        samplingMode?: samplingModeEnum | undefined = samplingModeEnum.nearest;
     }
 
     /**
@@ -963,12 +963,12 @@ export namespace Draw {
          * Name identifier for the material
          * @default PBRMaterial
          */
-        name = "PBRMaterial";
+        name?: string | undefined = "PBRMaterial";
         /**
          * Base/albedo color of the material in hex format
          * @default #0000ff
          */
-        baseColor: Base.Color = "#0000ff";
+        baseColor?: Base.Color | undefined = "#0000ff";
         /**
          * Metallic factor (0 = dielectric, 1 = metallic)
          * @default 0.5
@@ -976,7 +976,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        metallic = 0.5;
+        metallic?: number | undefined = 0.5;
         /**
          * Roughness factor (0 = smooth/mirror, 1 = rough/diffuse)
          * @default 0.5
@@ -984,7 +984,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        roughness = 0.5;
+        roughness?: number | undefined = 0.5;
         /**
          * Overall opacity/transparency of the material (0 = fully transparent, 1 = fully opaque)
          * @default 1
@@ -992,7 +992,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        alpha = 1;
+        alpha?: number | undefined = 1;
         /**
          * Emissive color - the color the material appears to emit (glow)
          * @default #000000
@@ -1005,7 +1005,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        emissiveIntensity = 1;
+        emissiveIntensity?: number | undefined = 1;
         /**
          * Z-buffer depth offset factor to help with z-fighting on coplanar surfaces
          * @default 0
@@ -1013,7 +1013,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        zOffset = 0;
+        zOffset?: number | undefined = 0;
         /**
          * Z-buffer depth offset units for fine-tuned z-fighting control
          * @default 0
@@ -1021,7 +1021,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 1
          */
-        zOffsetUnits = 0;
+        zOffsetUnits?: number | undefined = 0;
         /**
          * Texture to use for base/albedo color
          * @default undefined
@@ -1056,7 +1056,7 @@ export namespace Draw {
          * Alpha/transparency mode: opaque, mask (cutout), or blend (translucent)
          * @default opaque
          */
-        alphaMode: alphaModeEnum = alphaModeEnum.opaque;
+        alphaMode?: alphaModeEnum | undefined = alphaModeEnum.opaque;
         /**
          * Alpha threshold for mask mode (pixels below this are fully transparent)
          * @default 0.5
@@ -1064,22 +1064,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.05
          */
-        alphaCutoff = 0.5;
+        alphaCutoff?: number | undefined = 0.5;
         /**
          * Render both sides of faces (equivalent to disabling backFaceCulling)
          * @default false
          */
-        doubleSided = false;
+        doubleSided?: boolean | undefined = false;
         /**
          * Render material as wireframe
          * @default false
          */
-        wireframe = false;
+        wireframe?: boolean | undefined = false;
         /**
          * Disable lighting calculations and render flat/unlit
          * @default false
          */
-        unlit = false;
+        unlit?: boolean | undefined = false;
     }
 
     /**

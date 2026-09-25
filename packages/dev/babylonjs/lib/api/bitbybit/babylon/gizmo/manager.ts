@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The gizmo manager owns the on-screen manipulators for one attached mesh at a time and, by
@@ -35,17 +37,18 @@ export class BabylonGizmoManager {
      * ```
      */
     createGizmoManager(inputs: Inputs.BabylonGizmo.CreateGizmoDto): BABYLON.GizmoManager {
+        const resolved = resolveDto(Inputs.BabylonGizmo.CreateGizmoDto, inputs) as Resolved.BabylonGizmo.CreateGizmoDto;
         const gizmoManager = new BABYLON.GizmoManager(this.context.scene);
-        gizmoManager.positionGizmoEnabled = inputs.positionGizmoEnabled;
-        gizmoManager.rotationGizmoEnabled = inputs.rotationGizmoEnabled;
-        gizmoManager.scaleGizmoEnabled = inputs.scaleGizmoEnabled;
-        gizmoManager.boundingBoxGizmoEnabled = inputs.boundingBoxGizmoEnabled;
-        if (inputs.attachableMeshes && inputs.attachableMeshes.length > 0) {
-            gizmoManager.attachableMeshes = inputs.attachableMeshes;
+        gizmoManager.positionGizmoEnabled = resolved.positionGizmoEnabled;
+        gizmoManager.rotationGizmoEnabled = resolved.rotationGizmoEnabled;
+        gizmoManager.scaleGizmoEnabled = resolved.scaleGizmoEnabled;
+        gizmoManager.boundingBoxGizmoEnabled = resolved.boundingBoxGizmoEnabled;
+        if (resolved.attachableMeshes && resolved.attachableMeshes.length > 0) {
+            gizmoManager.attachableMeshes = resolved.attachableMeshes;
         }
-        gizmoManager.clearGizmoOnEmptyPointerEvent = inputs.clearGizmoOnEmptyPointerEvent;
-        gizmoManager.scaleRatio = inputs.scaleRatio;
-        gizmoManager.usePointerToAttachGizmos = inputs.usePointerToAttachGizmos;
+        gizmoManager.clearGizmoOnEmptyPointerEvent = resolved.clearGizmoOnEmptyPointerEvent;
+        gizmoManager.scaleRatio = resolved.scaleRatio;
+        gizmoManager.usePointerToAttachGizmos = resolved.usePointerToAttachGizmos;
         return gizmoManager;
     }
 

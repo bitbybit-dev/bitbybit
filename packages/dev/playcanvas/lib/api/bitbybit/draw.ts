@@ -5,6 +5,8 @@ import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import { GEOMETRY_DEFAULTS, DEFAULT_COLORS } from "../constants";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 type BitByBitEntity = Inputs.Draw.BitByBitEntity;
 
@@ -137,7 +139,7 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const merged = this.occtOptions(options);
             return this.drawHelper.handleDecomposedMesh(
                 merged,
                 inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
@@ -148,7 +150,7 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const merged = this.occtOptions(options);
             const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
@@ -220,7 +222,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
     }
 
     /**
@@ -237,7 +239,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
     }
 
     /**
@@ -254,22 +256,23 @@ export class Draw extends DrawCore {
      * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): pc.Texture {
+        const resolved = resolveDto(Inputs.Draw.GenericTextureDto, inputs) as Resolved.Draw.GenericTextureDto;
         const app = this.context.app;
         
         const texture = new pc.Texture(app.graphicsDevice, {
-            name: inputs.name,
+            name: resolved.name,
             addressU: pc.ADDRESS_REPEAT,
             addressV: pc.ADDRESS_REPEAT,
-            flipY: !inputs.invertY,
+            flipY: !resolved.invertY,
         });
         
         (texture as pc.Texture & { _bitbybitTransform?: TextureTransformData })._bitbybitTransform = {
-            uScale: inputs.uScale,
-            vScale: inputs.vScale,
-            uOffset: inputs.uOffset,
-            vOffset: inputs.vOffset,
-            wAng: inputs.wAng,
-            invertZ: inputs.invertZ,
+            uScale: resolved.uScale,
+            vScale: resolved.vScale,
+            uOffset: resolved.uOffset,
+            vOffset: resolved.vOffset,
+            wAng: resolved.wAng,
+            invertZ: resolved.invertZ,
         };
         
         const image = new Image();
@@ -277,7 +280,7 @@ export class Draw extends DrawCore {
         image.onload = () => {
             texture.setSource(image);
             
-            switch (inputs.samplingMode) {
+            switch (resolved.samplingMode) {
                 case Inputs.Draw.samplingModeEnum.nearest:
                     texture.minFilter = pc.FILTER_NEAREST;
                     texture.magFilter = pc.FILTER_NEAREST;
@@ -292,7 +295,7 @@ export class Draw extends DrawCore {
                     break;
             }
         };
-        image.src = inputs.url;
+        image.src = resolved.url;
         
         return texture;
     }
@@ -313,59 +316,60 @@ export class Draw extends DrawCore {
      * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): pc.StandardMaterial {
+        const resolved = resolveDto(Inputs.Draw.GenericPBRMaterialDto, inputs) as Resolved.Draw.GenericPBRMaterialDto;
         const mat = new pc.StandardMaterial();
-        mat.name = inputs.name;
+        mat.name = resolved.name;
         
-        const baseColor = this.hexToRgb(inputs.baseColor);
+        const baseColor = this.hexToRgb(resolved.baseColor);
         mat.diffuse = new pc.Color(baseColor.r, baseColor.g, baseColor.b);
         
-        mat.metalness = inputs.metallic;
-        mat.gloss = 1 - inputs.roughness;
+        mat.metalness = resolved.metallic;
+        mat.gloss = 1 - resolved.roughness;
         mat.useMetalness = true;
-        mat.opacity = inputs.alpha;
+        mat.opacity = resolved.alpha;
         
-        if (inputs.emissiveColor) {
-            const emissive = this.hexToRgb(inputs.emissiveColor);
+        if (resolved.emissiveColor) {
+            const emissive = this.hexToRgb(resolved.emissiveColor);
             mat.emissive = new pc.Color(emissive.r, emissive.g, emissive.b);
-            mat.emissiveIntensity = inputs.emissiveIntensity;
+            mat.emissiveIntensity = resolved.emissiveIntensity;
         }
         
-        mat.cull = inputs.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK;
+        mat.cull = resolved.doubleSided ? pc.CULLFACE_NONE : pc.CULLFACE_BACK;
         
-        if (inputs.zOffset !== 0) {
-            mat.depthBias = inputs.zOffset;
-            mat.slopeDepthBias = inputs.zOffsetUnits;
-        }
-        
-        if (inputs.baseColorTexture) {
-            mat.diffuseMap = inputs.baseColorTexture as pc.Texture;
-            this.applyTextureTransform(mat, inputs.baseColorTexture as TextureWithTransform, "diffuseMap");
-        }
-        if (inputs.metallicRoughnessTexture) {
-            mat.metalnessMap = inputs.metallicRoughnessTexture as pc.Texture;
-            mat.glossMap = inputs.metallicRoughnessTexture as pc.Texture;
-            this.applyTextureTransform(mat, inputs.metallicRoughnessTexture as TextureWithTransform, "metalnessMap");
-        }
-        if (inputs.normalTexture) {
-            mat.normalMap = inputs.normalTexture as pc.Texture;
-            this.applyTextureTransform(mat, inputs.normalTexture as TextureWithTransform, "normalMap");
-        }
-        if (inputs.emissiveTexture) {
-            mat.emissiveMap = inputs.emissiveTexture as pc.Texture;
-            this.applyTextureTransform(mat, inputs.emissiveTexture as TextureWithTransform, "emissiveMap");
-        }
-        if (inputs.occlusionTexture) {
-            mat.aoMap = inputs.occlusionTexture as pc.Texture;
-            this.applyTextureTransform(mat, inputs.occlusionTexture as TextureWithTransform, "aoMap");
+        if (resolved.zOffset !== 0) {
+            mat.depthBias = resolved.zOffset;
+            mat.slopeDepthBias = resolved.zOffsetUnits;
         }
         
-        switch (inputs.alphaMode) {
+        if (resolved.baseColorTexture) {
+            mat.diffuseMap = resolved.baseColorTexture as pc.Texture;
+            this.applyTextureTransform(mat, resolved.baseColorTexture as TextureWithTransform, "diffuseMap");
+        }
+        if (resolved.metallicRoughnessTexture) {
+            mat.metalnessMap = resolved.metallicRoughnessTexture as pc.Texture;
+            mat.glossMap = resolved.metallicRoughnessTexture as pc.Texture;
+            this.applyTextureTransform(mat, resolved.metallicRoughnessTexture as TextureWithTransform, "metalnessMap");
+        }
+        if (resolved.normalTexture) {
+            mat.normalMap = resolved.normalTexture as pc.Texture;
+            this.applyTextureTransform(mat, resolved.normalTexture as TextureWithTransform, "normalMap");
+        }
+        if (resolved.emissiveTexture) {
+            mat.emissiveMap = resolved.emissiveTexture as pc.Texture;
+            this.applyTextureTransform(mat, resolved.emissiveTexture as TextureWithTransform, "emissiveMap");
+        }
+        if (resolved.occlusionTexture) {
+            mat.aoMap = resolved.occlusionTexture as pc.Texture;
+            this.applyTextureTransform(mat, resolved.occlusionTexture as TextureWithTransform, "aoMap");
+        }
+        
+        switch (resolved.alphaMode) {
             case Inputs.Draw.alphaModeEnum.opaque:
                 mat.blendType = pc.BLEND_NONE;
                 break;
             case Inputs.Draw.alphaModeEnum.mask:
                 mat.blendType = pc.BLEND_NONE;
-                mat.alphaTest = inputs.alphaCutoff;
+                mat.alphaTest = resolved.alphaCutoff;
                 break;
             case Inputs.Draw.alphaModeEnum.blend:
                 mat.blendType = pc.BLEND_NORMAL;
@@ -456,21 +460,19 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity | undefined> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
+                ...this.manifoldOptions(options),
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldsOrCrossSections({
+                ...this.manifoldOptions(options),
                 manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -479,8 +481,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
+                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -489,8 +490,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShapes({
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
+                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
@@ -555,7 +555,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawCurve({
                 curveMesh: inputs.group,
                 curve: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbCurve);
     }
@@ -565,7 +565,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawSurface({
                 surfaceMesh: inputs.group,
                 surface: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
@@ -616,7 +616,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawCurves({
                 curvesMesh: inputs.group,
                 curves: inputs.entity as Base.VerbCurve[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbCurves);
     }
@@ -626,7 +626,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawSurfacesMultiColour({
                 surfacesMesh: inputs.group,
                 surfaces: inputs.entity as Base.VerbSurface[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
@@ -728,6 +728,22 @@ export class Draw extends DrawCore {
      * @param type - Geometry type for metadata
      * @returns Drawn entity
      */
+    /**
+     * The options a draw call was given, laid over the defaults of the options class for the kind
+     * being drawn: a partial object gets the same values the matching `options` method would give it.
+     */
+    private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
+    }
+
+    private occtOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions {
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+    }
+
+    private manifoldOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawManifoldOrCrossSectionOptions {
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+    }
+
     private handle(
         inputs: Inputs.Draw.DrawAny<pc.Entity>, 
         defaultOptions: Inputs.Draw.DrawOptions, 

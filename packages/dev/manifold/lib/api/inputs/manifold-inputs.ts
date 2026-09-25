@@ -146,7 +146,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
@@ -157,17 +157,17 @@ export namespace Manifold {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * How thick a cross-section's lines are drawn.
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
@@ -175,23 +175,23 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * When true, normals are computed for the mesh so it shades smoothly.
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -199,7 +199,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Solids or cross-sections and how to draw them, for the renderer packages: the same options as
@@ -238,7 +238,7 @@ export namespace Manifold {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * How opaque the faces are, from 0 for invisible to 1 for solid.
          * @default 1
@@ -246,17 +246,17 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * How thick a cross-section's lines are drawn.
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
@@ -264,23 +264,23 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * When true, normals are computed for the meshes so they shade smoothly.
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -288,7 +288,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Mesh data for `manifold.shapes.manifoldFromMesh`, which builds a solid from it.
@@ -1539,7 +1539,7 @@ export namespace Manifold {
          * The uniform scale about the origin; 2 doubles every size.
          * @default 2
          */
-        factor = 2;
+        factor?: number | undefined = 2;
     }
     /**
      * A solid and three distances for `manifold.transforms.translateXYZ`.

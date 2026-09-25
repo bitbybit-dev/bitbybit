@@ -840,4 +840,30 @@ describe("CSV unit tests", () => {
             expect(csv.getHeaders({ csv: "name,age\nJohn,30", rowSeparator: "\n", columnSeparator: "," })).toEqual(["name", "age"]);
         });
     });
+    describe("an empty separator", () => {
+        it("should read rows and cells by the default separators when both are empty", () => {
+            // Act
+            const rows = csv.parseToArray({ csv: "a,b\nc,d", rowSeparator: "", columnSeparator: "" });
+
+            // Assert
+            expect(rows).toEqual([["a", "b"], ["c", "d"]]);
+        });
+
+        it("should write an array by the default separators when both are empty", () => {
+            // Act
+            const text = csv.arrayToCsv({ array: [["a", "b"], ["c", "d"]], rowSeparator: "", columnSeparator: "" });
+
+            // Assert
+            expect(text).toBe("a,b\nc,d");
+        });
+
+        it("should write objects by the default separators when both are empty", () => {
+            // Act
+            const text = csv.jsonToCsv({ json: [{ a: "1", b: "2" }], headers: ["a", "b"], includeHeaders: true, rowSeparator: "", columnSeparator: "" });
+
+            // Assert
+            expect(text).toBe("a,b\n1,2");
+        });
+    });
+
 });

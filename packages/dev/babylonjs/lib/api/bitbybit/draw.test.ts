@@ -929,63 +929,64 @@ describe("Draw unit tests", () => {
     });
 
     describe("Options methods", () => {
-        it("optionsSimple should return input options", () => {
-            const options = new Inputs.Draw.DrawBasicGeometryOptions();
-            options.size = 5;
-            options.colours = "#FF0000";
-            
-            const result = draw.optionsSimple(options);
-            
-            expect(result).toBe(options);
-            expect(result.size).toBe(5);
-            expect(result.colours).toBe("#FF0000");
+        it("optionsSimple should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsSimple({ size: 5, colours: "#FF0000" });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawBasicGeometryOptions(), size: 5, colours: "#FF0000" });
         });
 
-        it("optionsOcctShape should return input options", () => {
-            const options = new Inputs.Draw.DrawOcctShapeOptions();
-            
-            const result = draw.optionsOcctShape(options);
-            
-            expect(result).toBe(options);
+        it("optionsSimple should give the default for an option handed as undefined", () => {
+            // Act
+            const result = draw.optionsSimple({ size: undefined });
+
+            // Assert
+            expect(result.size).toBe(0.1);
         });
 
-        it("optionsOcctShapeSimple should return input options", () => {
-            const options = new Inputs.Draw.DrawOcctShapeSimpleOptions();
-            
-            const result = draw.optionsOcctShapeSimple(options);
-            
-            expect(result).toBe(options);
+        it("optionsOcctShape should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsOcctShape({ precision: 0.05 });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawOcctShapeOptions(), precision: 0.05 });
         });
 
-        it("optionsOcctShapeMaterial should return input options", () => {
-            const options = new Inputs.Draw.DrawOcctShapeMaterialOptions();
-            
-            const result = draw.optionsOcctShapeMaterial(options);
-            
-            expect(result).toBe(options);
+        it("optionsOcctShapeSimple should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsOcctShapeSimple({ faceColour: "#00ff00" });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawOcctShapeSimpleOptions(), faceColour: "#00ff00" });
         });
 
-        it("optionsManifoldShapeMaterial should return input options", () => {
-            const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-            
-            const result = draw.optionsManifoldShapeMaterial(options);
-            
-            expect(result).toBe(options);
+        it("optionsOcctShapeMaterial should keep the material it is given and fill the rest from the defaults", () => {
+            // Arrange
+            const faceMaterial = { name: "steel" };
+
+            // Act
+            const result = draw.optionsOcctShapeMaterial({ faceMaterial });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawOcctShapeMaterialOptions(), faceMaterial });
+            expect(result.faceMaterial).toBe(faceMaterial);
         });
 
-        it("optionsBabylonNode should return input options", () => {
-            const options: Inputs.Draw.DrawNodeOptions = {
-                colorX: "#FF0000",
-                colorY: "#00FF00",
-                colorZ: "#0000FF",
-                size: 3,
-            };
-            
-            const result = draw.optionsBabylonNode(options);
-            
-            expect(result).toBe(options);
-            expect(result.colorX).toBe("#FF0000");
-            expect(result.size).toBe(3);
+        it("optionsManifoldShapeMaterial should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsManifoldShapeMaterial({ crossSectionWidth: 4 });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), crossSectionWidth: 4 });
+        });
+
+        it("optionsBabylonNode should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsBabylonNode({ colorX: "#FF0000", size: 3 });
+
+            // Assert
+            expect(result).toEqual({ colorX: "#FF0000", colorY: "#00ff00", colorZ: "#0000ff", size: 3 });
         });
     });
 
@@ -1783,6 +1784,50 @@ describe("Draw unit tests", () => {
             expect(mockDrawHelper.drawShape).toHaveBeenCalledWith(expect.objectContaining({
                 drawEdges: true
             }));
+        });
+        it("handleOcctShape should give the default for an option handed as undefined and keep the rest", async () => {
+            // Arrange
+            const mockOcctShape: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 1 };
+            const drawShape = vi.fn().mockResolvedValue(createMockMesh("occt"));
+            mockDrawHelper.drawShape = drawShape;
+
+            // Act
+            await drawPrivate.handleOcctShape({ entity: mockOcctShape, options: { precision: undefined, faceColour: "#00ff00" } });
+
+            // Assert
+            expect(drawShape).toHaveBeenCalledWith(expect.objectContaining({ shape: mockOcctShape, precision: 0.01, faceColour: "#00ff00", edgeWidth: 2 }));
+        });
+
+        it("handleManifoldShape should draw the entity it is given when the options it redraws with name another", async () => {
+            // Arrange
+            const previous: Inputs.Manifold.ManifoldPointer = { type: "manifold-shape", hash: 1 };
+            const current: Inputs.Manifold.ManifoldPointer = { type: "manifold-shape", hash: 2 };
+            const mockMesh = createMockMesh("manifold");
+            mockMesh.metadata = { options: { manifoldOrCrossSection: previous, faceColour: "#00ff00" } };
+            const drawManifold = vi.fn().mockResolvedValue(mockMesh);
+            mockDrawHelper.drawManifoldOrCrossSection = drawManifold;
+
+            // Act
+            await drawPrivate.handleManifoldShape({ entity: current, babylonMesh: mockMesh });
+
+            // Assert
+            expect(drawManifold).toHaveBeenCalledWith(expect.objectContaining({ manifoldOrCrossSection: current, faceColour: "#00ff00" }));
+        });
+
+        it("handleManifoldShapes should draw the entities it is given when the options it redraws with name others", async () => {
+            // Arrange
+            const previous: Inputs.Manifold.ManifoldPointer[] = [{ type: "manifold-shape", hash: 1 }];
+            const current: Inputs.Manifold.ManifoldPointer[] = [{ type: "manifold-shape", hash: 2 }];
+            const mockMesh = createMockMesh("manifold-shapes");
+            mockMesh.metadata = { options: { manifoldsOrCrossSections: previous } };
+            const drawManifolds = vi.fn().mockResolvedValue(mockMesh);
+            mockDrawHelper.drawManifoldsOrCrossSections = drawManifolds;
+
+            // Act
+            await drawPrivate.handleManifoldShapes({ entity: current, babylonMesh: mockMesh });
+
+            // Assert
+            expect(drawManifolds).toHaveBeenCalledWith(expect.objectContaining({ manifoldsOrCrossSections: current, crossSectionWidth: 2 }));
         });
     });
 
@@ -2746,6 +2791,15 @@ describe("Draw unit tests", () => {
     });
 
     describe("createPBRMaterial", () => {
+        it("should keep a metallic and a roughness of zero", () => {
+            // Act
+            const result = draw.createPBRMaterial({ metallic: 0, roughness: 0 });
+
+            // Assert
+            expect(result.metallic).toBe(0);
+            expect(result.roughness).toBe(0);
+        });
+
         it("should create PBR material with default properties", () => {
             // Arrange
             const inputs = new Inputs.Draw.GenericPBRMaterialDto();

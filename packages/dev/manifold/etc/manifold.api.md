@@ -927,30 +927,30 @@ export namespace Manifold {
     }
     export class DrawManifoldOrCrossSectionDto<T, M> {
         constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldOrCrossSection?: T | undefined;
     }
     export class DrawManifoldsOrCrossSectionsDto<T, M> {
         constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldsOrCrossSections?: T[] | undefined;
     }
     export class ExtrudeDto<T> {
@@ -1174,7 +1174,7 @@ export namespace Manifold {
     }
     export class ScaleDto<T> {
         constructor(manifold?: T, factor?: number);
-        factor: number;
+        factor?: number | undefined;
         manifold: T;
     }
     export class SimplifyDto<T> {
@@ -1768,21 +1768,21 @@ export namespace Point {
     }
     export class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         point: Base.Point3;
         pointMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         points: Base.Point3[];
         pointsMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);

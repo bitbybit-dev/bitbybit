@@ -380,6 +380,34 @@ describe("initBabylonJS unit tests", () => {
         });
     });
 
+    describe("an options object that leaves settings out", () => {
+        it("should fill every setting it leaves out from the defaults", () => {
+            // Arrange
+            const defaults = new BabylonJSScene.InitBabylonJSDto();
+
+            // Act
+            const result = initBabylonJS({ canvasId: "test-canvas", sceneSize: 40 });
+
+            // Assert
+            expect(result.hemisphericLight.intensity).toBe(defaults.hemisphereLightIntensity);
+            expect(result.directionalLight.position.y).toBeCloseTo(30, 5);
+
+            result.dispose();
+        });
+
+        it("should fill the camera settings it leaves out and keep the far plane scaled to the scene", () => {
+            // Act
+            const result = initBabylonJS({ canvasId: "test-canvas", sceneSize: 50, enableArcRotateCamera: true, arcRotateCameraOptions: { radius: 100 } });
+
+            // Assert
+            expect(result.arcRotateCamera?.radius).toBe(100);
+            expect(result.arcRotateCamera?.wheelPrecision).toBe(new BabylonCamera.ArcRotateCameraDto().wheelPrecision);
+            expect(result.arcRotateCamera?.maxZ).toBeCloseTo(2500, 5);
+
+            result.dispose();
+        });
+    });
+
     describe("scene size scaling", () => {
         it("should position lights based on scene size", () => {
             // Arrange

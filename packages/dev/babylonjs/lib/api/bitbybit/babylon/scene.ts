@@ -3,9 +3,10 @@ import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs";
-import { GlobalCDNProvider } from "@bitbybit-dev/base";
+import { GlobalCDNProvider, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
-type SkyboxMeshInputs = Pick<Inputs.BabylonScene.SkyboxFromTextureDto,
+type SkyboxMeshInputs = Pick<Resolved.BabylonScene.SkyboxFromTextureDto,
     "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
 
 /**
@@ -13,7 +14,6 @@ type SkyboxMeshInputs = Pick<Inputs.BabylonScene.SkyboxFromTextureDto,
  * material's light slots; the default of four drops the shadow of the fifth light.
  */
 const PROJECTED_GROUND_MAX_LIGHTS = 8;
-
 
 /**
  * The BabylonJS scene as a whole: the active camera and its limits, lights with shadows, the skybox
@@ -86,7 +86,8 @@ export class BabylonScene {
      * ```
      */
     useRightHandedSystem(inputs: Inputs.BabylonScene.UseRightHandedSystemDto): void {
-        this.context.scene.useRightHandedSystem = inputs.use;
+        const resolved = resolveDto(Inputs.BabylonScene.UseRightHandedSystemDto, inputs) as Resolved.BabylonScene.UseRightHandedSystemDto;
+        this.context.scene.useRightHandedSystem = resolved.use;
         this.context.scene.activeCamera!.getViewMatrix(true);
         this.context.scene.activeCamera!.getProjectionMatrix(true);
     }
@@ -104,7 +105,8 @@ export class BabylonScene {
      * ```
      */
     drawPointLightNoReturn(inputs: Inputs.BabylonScene.PointLightDto): void {
-        this.drawPointLight(inputs);
+        const resolved = resolveDto(Inputs.BabylonScene.PointLightDto, inputs) as Resolved.BabylonScene.PointLightDto;
+        this.drawPointLight(resolved);
     }
 
     /**
@@ -141,27 +143,26 @@ export class BabylonScene {
      * ```
      */
     drawPointLight(inputs: Inputs.BabylonScene.PointLightDto): BABYLON.PointLight {
-        const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        const resolved = resolveDto(Inputs.BabylonScene.PointLightDto, inputs) as Resolved.BabylonScene.PointLightDto;
+        const pos = new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]);
         const light = new BABYLON.PointLight(uniqueName("pointLight"),
             pos,
             this.context.scene
         );
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize ?? 1024, light);
-            shadowGenerator.darkness = inputs.shadowDarkness ?? 0;
-            shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
-            shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
-            shadowGenerator.bias = inputs.shadowBias;
-            shadowGenerator.normalBias = inputs.shadowNormalBias;
-            if (inputs.transparencyShadow === true) {
+            const shadowGenerator = new BABYLON.ShadowGenerator(resolved.shadowGeneratorMapSize, light);
+            shadowGenerator.darkness = resolved.shadowDarkness;
+            shadowGenerator.usePercentageCloserFiltering = resolved.shadowUsePercentageCloserFiltering;
+            shadowGenerator.contactHardeningLightSizeUVRatio = resolved.shadowContactHardeningLightSizeUVRatio;
+            shadowGenerator.bias = resolved.shadowBias;
+            shadowGenerator.normalBias = resolved.shadowNormalBias;
+            if (resolved.transparencyShadow === true) {
                 shadowGenerator.setTransparencyShadow(true);
             }
-            if (inputs.shadowRefreshRate !== undefined) {
-                shadowGenerator.getShadowMap()!.refreshRate = inputs.shadowRefreshRate;
-            }
-            light.shadowMaxZ = inputs.shadowMaxZ;
-            light.shadowMinZ = inputs.shadowMinZ;
+            shadowGenerator.getShadowMap()!.refreshRate = resolved.shadowRefreshRate;
+            light.shadowMaxZ = resolved.shadowMaxZ;
+            light.shadowMinZ = resolved.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
 
             this.context.scene.meshes.forEach(m => {
@@ -182,14 +183,14 @@ export class BabylonScene {
             };
         }
 
-        light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
-        light.specular = BABYLON.Color3.FromHexString(inputs.specular);
+        light.diffuse = BABYLON.Color3.FromHexString(resolved.diffuse);
+        light.specular = BABYLON.Color3.FromHexString(resolved.specular);
         light.intensityMode = BABYLON.Light.INTENSITYMODE_LUMINOUSPOWER;
-        light.intensity = inputs.intensity;
+        light.intensity = resolved.intensity;
 
-        if (inputs.radius > 0) {
+        if (resolved.radius > 0) {
             const sphere = BABYLON.MeshBuilder.CreateSphere(uniqueName("PointLightSphere"),
-                { diameter: inputs.radius * 2 },
+                { diameter: resolved.radius * 2 },
                 this.context.scene
             );
             sphere.metadata = { shadows: false };
@@ -216,7 +217,8 @@ export class BabylonScene {
      * ```
      */
     drawDirectionalLightNoReturn(inputs: Inputs.BabylonScene.DirectionalLightDto): void {
-        this.drawDirectionalLight(inputs);
+        const resolved = resolveDto(Inputs.BabylonScene.DirectionalLightDto, inputs) as Resolved.BabylonScene.DirectionalLightDto;
+        this.drawDirectionalLight(resolved);
     }
 
     /**
@@ -235,30 +237,29 @@ export class BabylonScene {
      * ```
      */
     drawDirectionalLight(inputs: Inputs.BabylonScene.DirectionalLightDto): BABYLON.DirectionalLight {
-        const dir = new BABYLON.Vector3(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
+        const resolved = resolveDto(Inputs.BabylonScene.DirectionalLightDto, inputs) as Resolved.BabylonScene.DirectionalLightDto;
+        const dir = new BABYLON.Vector3(resolved.direction[0], resolved.direction[1], resolved.direction[2]);
         const light = new BABYLON.DirectionalLight(uniqueName("directionalLight"),
             dir,
             this.context.scene
         );
 
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             light.shadowEnabled = true;
-            const shadowGenerator = new BABYLON.ShadowGenerator(inputs.shadowGeneratorMapSize ?? 1024, light);
-            shadowGenerator.darkness = inputs.shadowDarkness ?? 0;
+            const shadowGenerator = new BABYLON.ShadowGenerator(resolved.shadowGeneratorMapSize, light);
+            shadowGenerator.darkness = resolved.shadowDarkness;
 
-            shadowGenerator.usePercentageCloserFiltering = inputs.shadowUsePercentageCloserFiltering;
-            shadowGenerator.contactHardeningLightSizeUVRatio = inputs.shadowContactHardeningLightSizeUVRatio;
-            shadowGenerator.bias = inputs.shadowBias;
-            shadowGenerator.normalBias = inputs.shadowNormalBias;
-            if (inputs.transparencyShadow === true) {
+            shadowGenerator.usePercentageCloserFiltering = resolved.shadowUsePercentageCloserFiltering;
+            shadowGenerator.contactHardeningLightSizeUVRatio = resolved.shadowContactHardeningLightSizeUVRatio;
+            shadowGenerator.bias = resolved.shadowBias;
+            shadowGenerator.normalBias = resolved.shadowNormalBias;
+            if (resolved.transparencyShadow === true) {
                 shadowGenerator.setTransparencyShadow(true);
             }
-            if (inputs.shadowRefreshRate !== undefined) {
-                shadowGenerator.getShadowMap()!.refreshRate = inputs.shadowRefreshRate;
-            }
+            shadowGenerator.getShadowMap()!.refreshRate = resolved.shadowRefreshRate;
 
-            light.shadowMaxZ = inputs.shadowMaxZ;
-            light.shadowMinZ = inputs.shadowMinZ;
+            light.shadowMaxZ = resolved.shadowMaxZ;
+            light.shadowMinZ = resolved.shadowMinZ;
             this.context.scene.metadata.shadowGenerators.push(shadowGenerator);
             this.context.scene.meshes.forEach(m => {
                 if (m.name !== "bitbybit-hdrSkyBox" && !m.name.includes("poi_") && !m.name.includes("dimension_text_3d") && !m.name.includes("bitbybit-ground") && (!m.metadata || (m.metadata && m.metadata.shadows !== false))) {
@@ -277,10 +278,10 @@ export class BabylonScene {
             };
         }
 
-        light.diffuse = BABYLON.Color3.FromHexString(inputs.diffuse);
-        light.specular = BABYLON.Color3.FromHexString(inputs.specular);
-        light.intensity = inputs.intensity;
-        light.shadowMaxZ = inputs.shadowMaxZ;
+        light.diffuse = BABYLON.Color3.FromHexString(resolved.diffuse);
+        light.specular = BABYLON.Color3.FromHexString(resolved.specular);
+        light.intensity = resolved.intensity;
+        light.shadowMaxZ = resolved.shadowMaxZ;
         return light;
     }
 
@@ -310,44 +311,31 @@ export class BabylonScene {
      * ```
      */
     adjustActiveArcRotateCamera(inputs: Inputs.BabylonScene.CameraConfigurationDto): void {
+        const resolved = resolveDto(Inputs.BabylonScene.CameraConfigurationDto, inputs) as Resolved.BabylonScene.CameraConfigurationDto;
         const camera = this.context.scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
-        camera.position = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        camera.target = new BABYLON.Vector3(inputs.lookAt[0], inputs.lookAt[1], inputs.lookAt[2]);
+        camera.position = new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]);
+        camera.target = new BABYLON.Vector3(resolved.lookAt[0], resolved.lookAt[1], resolved.lookAt[2]);
         const distance = BABYLON.Vector3.Distance(camera.position, camera.target);
         camera.radius = distance;
-        if (inputs.lowerRadiusLimit !== undefined) {
-            camera.lowerRadiusLimit = inputs.lowerRadiusLimit;
+        if (resolved.lowerRadiusLimit !== undefined) {
+            camera.lowerRadiusLimit = resolved.lowerRadiusLimit;
         }
-        if (inputs.upperRadiusLimit !== undefined) {
-            camera.upperRadiusLimit = inputs.upperRadiusLimit;
+        if (resolved.upperRadiusLimit !== undefined) {
+            camera.upperRadiusLimit = resolved.upperRadiusLimit;
         }
-        if (inputs.lowerAlphaLimit !== undefined) {
-            camera.lowerAlphaLimit = this.getRadians(inputs.lowerAlphaLimit);
+        if (resolved.lowerAlphaLimit !== undefined) {
+            camera.lowerAlphaLimit = this.getRadians(resolved.lowerAlphaLimit);
         }
-        if (inputs.upperAlphaLimit !== undefined) {
-            camera.upperAlphaLimit = this.getRadians(inputs.upperAlphaLimit);
+        if (resolved.upperAlphaLimit !== undefined) {
+            camera.upperAlphaLimit = this.getRadians(resolved.upperAlphaLimit);
         }
-        if (inputs.lowerBetaLimit !== undefined) {
-            camera.lowerBetaLimit = this.getRadians(inputs.lowerBetaLimit);
-        }
-        if (inputs.upperBetaLimit !== undefined) {
-            camera.upperBetaLimit = this.getRadians(inputs.upperBetaLimit);
-        }
-        if (inputs.angularSensibilityX !== undefined) {
-            camera.angularSensibilityX = inputs.angularSensibilityX;
-        }
-        if (inputs.angularSensibilityY !== undefined) {
-            camera.angularSensibilityY = inputs.angularSensibilityY;
-        }
-        if (inputs.panningSensibility !== undefined) {
-            camera.panningSensibility = inputs.panningSensibility;
-        }
-        if (inputs.wheelPrecision !== undefined) {
-            camera.wheelPrecision = inputs.wheelPrecision;
-        }
-        if (inputs.maxZ !== undefined) {
-            camera.maxZ = inputs.maxZ;
-        }
+        camera.lowerBetaLimit = this.getRadians(resolved.lowerBetaLimit);
+        camera.upperBetaLimit = this.getRadians(resolved.upperBetaLimit);
+        camera.angularSensibilityX = resolved.angularSensibilityX;
+        camera.angularSensibilityY = resolved.angularSensibilityY;
+        camera.panningSensibility = resolved.panningSensibility;
+        camera.wheelPrecision = resolved.wheelPrecision;
+        camera.maxZ = resolved.maxZ;
     }
 
     /**
@@ -445,22 +433,23 @@ export class BabylonScene {
      * ```
      */
     enableSkybox(inputs: Inputs.BabylonScene.SkyboxDto): void {
+        const resolved = resolveDto(Inputs.BabylonScene.SkyboxDto, inputs) as Resolved.BabylonScene.SkyboxDto;
 
         let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture | undefined;
 
-        if (inputs.skybox === Inputs.Base.skyboxEnum.default) {
+        if (resolved.skybox === Inputs.Base.skyboxEnum.default) {
             texture = new BABYLON.CubeTexture(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/default_skybox/skybox", this.context.scene);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.greyGradient) {
+        } else if (resolved.skybox === Inputs.Base.skyboxEnum.greyGradient) {
             texture = new BABYLON.CubeTexture(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/grey_gradient/skybox", this.context.scene);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.clearSky) {
+        } else if (resolved.skybox === Inputs.Base.skyboxEnum.clearSky) {
             texture = BABYLON.CubeTexture.CreateFromPrefilteredData(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/clear_sky/environment.env",
                 this.context.scene, false, false);
-        } else if (inputs.skybox === Inputs.Base.skyboxEnum.city) {
+        } else if (resolved.skybox === Inputs.Base.skyboxEnum.city) {
             texture = BABYLON.CubeTexture.CreateFromPrefilteredData(GlobalCDNProvider.BITBYBIT_CDN_URL + "/textures/skybox/city/environmentSpecular.env",
                 this.context.scene, false, false);
         }
 
-        this.createSkyboxMesh(texture, inputs);
+        this.createSkyboxMesh(texture, resolved);
     }
 
     /**
@@ -478,23 +467,24 @@ export class BabylonScene {
      * ```
      */
     enableSkyboxCustomTexture(inputs: Inputs.BabylonScene.SkyboxCustomTextureDto): void {
-        if (inputs.textureUrl) {
+        const resolved = resolveDto(Inputs.BabylonScene.SkyboxCustomTextureDto, inputs) as Resolved.BabylonScene.SkyboxCustomTextureDto;
+        if (resolved.textureUrl) {
             let texture: BABYLON.CubeTexture | BABYLON.HDRCubeTexture;
-            const textureUrl = inputs.textureUrl;
-            const textureSize = inputs.textureSize || 512;
+            const textureUrl = resolved.textureUrl;
+            const textureSize = resolved.textureSize || 512;
 
             const urlPath = textureUrl.split("?")[0]!.toLowerCase();
 
             if (urlPath.endsWith(".hdr")) {
                 texture = new BABYLON.HDRCubeTexture(textureUrl, this.context.scene, textureSize, false, true, false, true);
             } else if (urlPath.endsWith(".env")) {
-                texture = BABYLON.CubeTexture.CreateFromPrefilteredData(inputs.textureUrl,
+                texture = BABYLON.CubeTexture.CreateFromPrefilteredData(resolved.textureUrl,
                     this.context.scene, false, false);
             } else {
                 texture = new BABYLON.CubeTexture(textureUrl, this.context.scene);
             }
 
-            this.createSkyboxMesh(texture, inputs);
+            this.createSkyboxMesh(texture, resolved);
         }
     }
 
@@ -514,7 +504,8 @@ export class BabylonScene {
      * ```
      */
     enableSkyboxFromTexture(inputs: Inputs.BabylonScene.SkyboxFromTextureDto): void {
-        this.createSkyboxMesh(inputs.texture, inputs);
+        const resolved = resolveDto(Inputs.BabylonScene.SkyboxFromTextureDto, inputs) as Resolved.BabylonScene.SkyboxFromTextureDto;
+        this.createSkyboxMesh(resolved.texture, resolved);
     }
 
     /**
@@ -573,7 +564,8 @@ export class BabylonScene {
      * ```
      */
     fog(inputs: Inputs.BabylonScene.FogDto): void {
-        switch (inputs.mode) {
+        const resolved = resolveDto(Inputs.BabylonScene.FogDto, inputs) as Resolved.BabylonScene.FogDto;
+        switch (resolved.mode) {
             case Inputs.Base.fogModeEnum.none:
                 this.context.scene.fogMode = 0;
                 break;
@@ -587,10 +579,10 @@ export class BabylonScene {
                 this.context.scene.fogMode = 3;
                 break;
         }
-        this.context.scene.fogDensity = inputs.density;
-        this.context.scene.fogStart = inputs.start;
-        this.context.scene.fogEnd = inputs.end;
-        this.context.scene.fogColor = BABYLON.Color3.FromHexString(inputs.color);
+        this.context.scene.fogDensity = resolved.density;
+        this.context.scene.fogStart = resolved.start;
+        this.context.scene.fogEnd = resolved.end;
+        this.context.scene.fogColor = BABYLON.Color3.FromHexString(resolved.color);
 
     }
 
@@ -608,7 +600,8 @@ export class BabylonScene {
      * ```
      */
     enablePhysics(inputs: Inputs.BabylonScene.EnablePhysicsDto) {
-        this.context.scene.enablePhysics(new BABYLON.Vector3(inputs.vector[0], inputs.vector[1], inputs.vector[2]), this.context.havokPlugin);
+        const resolved = resolveDto(Inputs.BabylonScene.EnablePhysicsDto, inputs) as Resolved.BabylonScene.EnablePhysicsDto;
+        this.context.scene.enablePhysics(new BABYLON.Vector3(resolved.vector[0], resolved.vector[1], resolved.vector[2]), this.context.havokPlugin);
     }
 
     /**
@@ -624,11 +617,12 @@ export class BabylonScene {
      * ```
      */
     canvasCSSBackgroundImage(inputs: Inputs.BabylonScene.SceneCanvasCSSBackgroundImageDto): { backgroundImage: string } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneCanvasCSSBackgroundImageDto, inputs) as Resolved.BabylonScene.SceneCanvasCSSBackgroundImageDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
-        const styleObject = { backgroundImage: inputs.cssBackgroundImage };
+        const styleObject = { backgroundImage: resolved.cssBackgroundImage };
         if (canvas) {
-            canvas.style.backgroundImage = inputs.cssBackgroundImage;
+            canvas.style.backgroundImage = resolved.cssBackgroundImage;
         }
         return styleObject;
     }
@@ -646,9 +640,10 @@ export class BabylonScene {
      * ```
      */
     twoColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorLinearGradientDto): { backgroundImage: string } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneTwoColorLinearGradientDto, inputs) as Resolved.BabylonScene.SceneTwoColorLinearGradientDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
-        const gradient = `linear-gradient(${inputs.direction}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
+        const gradient = `linear-gradient(${resolved.direction}, ${resolved.colorFrom} ${resolved.stopFrom}%, ${resolved.colorTo} ${resolved.stopTo}%)`;
         const styleObject = { backgroundImage: gradient };
         if (canvas) {
             canvas.style.backgroundImage = gradient;
@@ -669,9 +664,10 @@ export class BabylonScene {
      * ```
      */
     twoColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneTwoColorRadialGradientDto): { backgroundImage: string } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneTwoColorRadialGradientDto, inputs) as Resolved.BabylonScene.SceneTwoColorRadialGradientDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
-        const gradient = `radial-gradient(${inputs.shape} at ${inputs.position}, ${inputs.colorFrom} ${inputs.stopFrom}%, ${inputs.colorTo} ${inputs.stopTo}%)`;
+        const gradient = `radial-gradient(${resolved.shape} at ${resolved.position}, ${resolved.colorFrom} ${resolved.stopFrom}%, ${resolved.colorTo} ${resolved.stopTo}%)`;
         const styleObject = { backgroundImage: gradient };
         if (canvas) {
             canvas.style.backgroundImage = gradient;
@@ -693,15 +689,16 @@ export class BabylonScene {
      * ```
      */
     multiColorLinearGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorLinearGradientDto): { backgroundImage: string } | { error: string } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneMultiColorLinearGradientDto, inputs) as Resolved.BabylonScene.SceneMultiColorLinearGradientDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
-        if (inputs.colors.length !== inputs.stops.length) {
+        if (resolved.colors.length !== resolved.stops.length) {
             const errorObj = { error: "Colors and stops arrays must have the same length" };
             console.warn(errorObj.error);
             return errorObj;
         }
-        const colorStops = inputs.colors.map((color, index) => `${color} ${inputs.stops[index]}%`).join(", ");
-        const gradient = `linear-gradient(${inputs.direction}, ${colorStops})`;
+        const colorStops = resolved.colors.map((color, index) => `${color} ${resolved.stops[index]}%`).join(", ");
+        const gradient = `linear-gradient(${resolved.direction}, ${colorStops})`;
         const styleObject = { backgroundImage: gradient };
         if (canvas) {
             canvas.style.backgroundImage = gradient;
@@ -723,15 +720,16 @@ export class BabylonScene {
      * ```
      */
     multiColorRadialGradientBackground(inputs: Inputs.BabylonScene.SceneMultiColorRadialGradientDto): { backgroundImage: string } | { error: string } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneMultiColorRadialGradientDto, inputs) as Resolved.BabylonScene.SceneMultiColorRadialGradientDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
-        if (inputs.colors.length !== inputs.stops.length) {
+        if (resolved.colors.length !== resolved.stops.length) {
             const errorObj = { error: "Colors and stops arrays must have the same length" };
             console.warn(errorObj.error);
             return errorObj;
         }
-        const colorStops = inputs.colors.map((color, index) => `${color} ${inputs.stops[index]}%`).join(", ");
-        const gradient = `radial-gradient(${inputs.shape} at ${inputs.position}, ${colorStops})`;
+        const colorStops = resolved.colors.map((color, index) => `${color} ${resolved.stops[index]}%`).join(", ");
+        const gradient = `radial-gradient(${resolved.shape} at ${resolved.position}, ${colorStops})`;
         const styleObject = { backgroundImage: gradient };
         if (canvas) {
             canvas.style.backgroundImage = gradient;
@@ -760,16 +758,17 @@ export class BabylonScene {
         backgroundOrigin: string;
         backgroundClip: string;
     } {
+        const resolved = resolveDto(Inputs.BabylonScene.SceneCanvasBackgroundImageDto, inputs) as Resolved.BabylonScene.SceneCanvasBackgroundImageDto;
         this.context.scene.clearColor = new BABYLON.Color4(0, 0, 0, 0);
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         const styleObject = {
-            backgroundImage: `url(${inputs.imageUrl})`,
-            backgroundRepeat: inputs.repeat,
-            backgroundSize: inputs.size,
-            backgroundPosition: inputs.position,
-            backgroundAttachment: inputs.attachment,
-            backgroundOrigin: inputs.origin,
-            backgroundClip: inputs.clip
+            backgroundImage: `url(${resolved.imageUrl})`,
+            backgroundRepeat: resolved.repeat,
+            backgroundSize: resolved.size,
+            backgroundPosition: resolved.position,
+            backgroundAttachment: resolved.attachment,
+            backgroundOrigin: resolved.origin,
+            backgroundClip: resolved.clip
         };
         if (canvas) {
             canvas.style.backgroundImage = styleObject.backgroundImage;
@@ -795,7 +794,8 @@ export class BabylonScene {
      * ```
      */
     backgroundColour(inputs: Inputs.BabylonScene.SceneBackgroundColourDto): void {
-        this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(inputs.colour));
+        const resolved = resolveDto(Inputs.BabylonScene.SceneBackgroundColourDto, inputs) as Resolved.BabylonScene.SceneBackgroundColourDto;
+        this.context.scene.clearColor = BABYLON.Color4.FromColor3(BABYLON.Color3.FromHexString(resolved.colour));
         const canvas = this.context.scene.getEngine().getRenderingCanvas();
         if (canvas) {
             canvas.style.backgroundImage = "none";
@@ -814,11 +814,11 @@ export class BabylonScene {
 
     private createSkyboxMesh(texture: BABYLON.BaseTexture | undefined, inputs: SkyboxMeshInputs): void {
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
-        const skybox = (inputs.enableGroundProjection ?? false) && texture
+        const skybox = inputs.enableGroundProjection && texture
             ? this.createGroundProjectedSkybox(texture, inputs)
             : this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true)!;
         skybox.name = "bitbybit-hdrSkyBox";
-        if (inputs.hideSkybox ?? false) {
+        if (inputs.hideSkybox) {
             skybox.isVisible = false;
         }
         this.context.scene.environmentIntensity = inputs.environmentIntensity;
@@ -839,8 +839,8 @@ export class BabylonScene {
         material.reflectionTexture = reflection;
         material.reflectionBlur = inputs.blur;
         material.enableGroundProjection = true;
-        material.projectedGroundRadius = inputs.projectedGroundRadius ?? 20;
-        material.projectedGroundHeight = inputs.projectedGroundHeight ?? 3;
+        material.projectedGroundRadius = inputs.projectedGroundRadius;
+        material.projectedGroundHeight = inputs.projectedGroundHeight;
         material.maxSimultaneousLights = PROJECTED_GROUND_MAX_LIGHTS;
         skybox.material = material;
         skybox.receiveShadows = true;

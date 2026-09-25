@@ -510,12 +510,12 @@ export class ImportStepIgesFromTextDto {
      * Whether the text is STEP or IGES.
      * @default step
      */
-    fileType: fileTypeEnum = fileTypeEnum.step;
+    fileType?: fileTypeEnum | undefined = fileTypeEnum.step;
     /**
      * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
-    adjustZtoY = true;
+    adjustZtoY?: boolean | undefined = true;
 }
 /**
  * A STEP or IGES file for the core `occt.io.loadSTEPorIGES`, which reads it into a shape.
@@ -534,7 +534,7 @@ export class ImportStepIgesDto {
      * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
-    adjustZtoY = true;
+    adjustZtoY?: boolean | undefined = true;
 }
 
 /**

@@ -116,12 +116,12 @@ export namespace BabylonNode {
          * The axis direction through the node's origin, as `[x, y, z]`
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far to turn, in degrees, added to the current rotation
          * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 
     /**
@@ -143,17 +143,17 @@ export namespace BabylonNode {
          * A point the axis passes through
          * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis, as `[x, y, z]`; not a zero vector
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far to turn, in degrees; positive follows the right-hand rule around the axis
          * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 
     /**
@@ -174,12 +174,12 @@ export namespace BabylonNode {
          * Where the node sits, relative to its parent
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The angles around X, Y and Z in degrees the node is turned by
          * @default [0, 0, 0]
          */
-        rotation: Base.Vector3 = [0, 0, 0];
+        rotation?: Base.Vector3 | undefined = [0, 0, 0];
     }
 
     /**
@@ -202,22 +202,22 @@ export namespace BabylonNode {
          * Hex color of the line along the node's X axis
          * @default #ff0000
          */
-        colorX = "#ff0000";
+        colorX?: string | undefined = "#ff0000";
         /**
          * Hex color of the line along the node's Y axis
          * @default #00ff00
          */
-        colorY = "#00ff00";
+        colorY?: string | undefined = "#00ff00";
         /**
          * Hex color of the line along the node's Z axis
          * @default #0000ff
          */
-        colorZ = "#0000ff";
+        colorZ?: string | undefined = "#0000ff";
         /**
          * Length of each axis line, in scene units
          * @default 2
          */
-        size = 2;
+        size?: number | undefined = 2;
     }
 
     /**
@@ -240,22 +240,22 @@ export namespace BabylonNode {
          * Hex color of the lines along the X axes
          * @default #ff0000
          */
-        colorX = "#ff0000";
+        colorX?: string | undefined = "#ff0000";
         /**
          * Hex color of the lines along the Y axes
          * @default #00ff00
          */
-        colorY = "#00ff00";
+        colorY?: string | undefined = "#00ff00";
         /**
          * Hex color of the lines along the Z axes
          * @default #0000ff
          */
-        colorZ = "#0000ff";
+        colorZ?: string | undefined = "#0000ff";
         /**
          * Length of each axis line, in scene units
          * @default 2
          */
-        size = 2;
+        size?: number | undefined = 2;
     }
 
 }

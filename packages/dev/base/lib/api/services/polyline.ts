@@ -229,7 +229,6 @@ export class Polyline {
         }
 
         const selfIntersectionPoints: Inputs.Base.Point3[] = [];
-        const defaultTolerance = tolerance ?? 1e-6;
 
         for (let i = 0; i < numSegments; i++) {
             for (let j = i + 1; j < numSegments; j++) {
@@ -246,7 +245,7 @@ export class Polyline {
                     line1: lines[i]!,
                     line2: lines[j]!,
                     checkSegmentsOnly: true,
-                    tolerance: defaultTolerance,
+                    tolerance,
                 });
 
                 if (intersection) {
@@ -255,7 +254,7 @@ export class Polyline {
                         if (this.point.twoPointsAlmostEqual({
                             point1: intersection,
                             point2: existingPoint,
-                            tolerance: defaultTolerance
+                            tolerance
                         })) {
                             foundClose = true;
                             break;
@@ -298,7 +297,6 @@ export class Polyline {
         const lines2 = this.polylineToLines({ polyline: polyline2 });
 
         const intersectionPoints: Inputs.Base.Point3[] = [];
-        const defaultTolerance = tolerance ?? 1e-6;
 
         for (const seg1 of lines1) {
             for (const seg2 of lines2) {
@@ -306,7 +304,7 @@ export class Polyline {
                     line1: seg1,
                     line2: seg2,
                     checkSegmentsOnly: true,
-                    tolerance: defaultTolerance,
+                    tolerance,
                 });
 
                 if (intersection) {
@@ -315,7 +313,7 @@ export class Polyline {
                         if (this.point.twoPointsAlmostEqual({
                             point1: intersection,
                             point2: existingPoint,
-                            tolerance: defaultTolerance
+                            tolerance
                         })) {
                             foundClose = true;
                             break;

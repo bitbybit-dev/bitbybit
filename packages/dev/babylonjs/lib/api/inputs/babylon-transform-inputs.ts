@@ -25,17 +25,17 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * The direction of the axis, as `[x, y, z]`
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * A point the axis passes through; it stays where it is
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A mesh and the matrix, or matrices, to apply to it; kept for scripts that transform meshes
@@ -73,12 +73,12 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * A point the axis passes through; it stays where it is
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.transforms.rotationCenterYawPitchRoll` with three angles and the point they
@@ -98,7 +98,7 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 1
          */
-        yaw = 0;
+        yaw?: number | undefined = 0;
         /**
          * The turn around the X axis, in degrees
          * @default 0
@@ -106,7 +106,7 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 1
          */
-        pitch = 0;
+        pitch?: number | undefined = 0;
         /**
          * The turn around the Z axis, in degrees
          * @default 0
@@ -114,12 +114,12 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 1
          */
-        roll = 0;
+        roll?: number | undefined = 0;
         /**
          * The point the rotation is applied around; it stays where it is
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.transforms.scaleXYZ` with a scale factor per axis, measured from the origin.
@@ -132,7 +132,7 @@ export namespace BabylonTransforms {
          * The factors along X, Y and Z: `[1, 2, 1]` doubles Y and keeps X and Z
          * @default [1, 1, 1]
          */
-        scaleXyz: Base.Vector3 = [1, 1, 1];
+        scaleXyz?: Base.Vector3 | undefined = [1, 1, 1];
     }
     /**
      * Feeds `babylon.transforms.scaleCenterXYZ` with a scale factor per axis and the point that
@@ -147,12 +147,12 @@ export namespace BabylonTransforms {
          * The point the scaling is measured from; it stays where it is
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The factors along X, Y and Z: `[1, 2, 1]` doubles Y and keeps X and Z
          * @default [1, 1, 1]
          */
-        scaleXyz: Base.Vector3 = [1, 1, 1];
+        scaleXyz?: Base.Vector3 | undefined = [1, 1, 1];
     }
     /**
      * Feeds `babylon.transforms.uniformScale` with one factor for every axis, measured from the
@@ -169,7 +169,7 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
     }
     /**
      * Feeds `babylon.transforms.uniformScaleFromCenter` with one factor for every axis and the
@@ -187,12 +187,12 @@ export namespace BabylonTransforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * The point the scaling is measured from; it stays where it is
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.transforms.translationXYZ` with the vector to move by.
@@ -205,7 +205,7 @@ export namespace BabylonTransforms {
          * The distances to move along X, Y and Z, in scene units
          * @default [0, 0, 0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.transforms.translationsXYZ` with several vectors, one move each.

@@ -79,13 +79,13 @@ export namespace BabylonGltf {
          * When true, the animation starts over each time it reaches its end
          * @default true
          */
-        loop = true;
+        loop?: boolean | undefined = true;
         /**
          * Playback speed where 1 is normal, 2 twice as fast and 0.5 half speed
          * @default 1
          * @step 0.1
          */
-        speedRatio = 1;
+        speedRatio?: number | undefined = 1;
     }
 
     /**

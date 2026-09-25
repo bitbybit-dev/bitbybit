@@ -38,7 +38,7 @@ export namespace BabylonTexture {
          * Name the texture is known by in the scene
          * @default Custom Texture
          */
-        name = "Custom Texture";
+        name?: string | undefined = "Custom Texture";
         /**
          * Address of the image; for an uploaded file, make an object URL with
          * `asset.createObjectURL` first
@@ -49,44 +49,44 @@ export namespace BabylonTexture {
          * When true, the image is flipped top to bottom; use it when a texture appears upside down
          * @default false
          */
-        invertY = false;
+        invertY?: boolean | undefined = false;
         /**
          * When true, the image is flipped along the third texture axis, which matters for volume
          * textures only
          * @default false
          */
-        invertZ = false;
+        invertZ?: boolean | undefined = false;
         /**
          * How far the image is turned over the surface, in radians
          * @default 0
          */
-        wAng = 0;
+        wAng?: number | undefined = 0;
         /**
          * How many times the image repeats across the surface horizontally; 2 tiles it twice
          * @default 1
          */
-        uScale = 1;
+        uScale?: number | undefined = 1;
         /**
          * How many times the image repeats across the surface vertically; 2 tiles it twice
          * @default 1
          */
-        vScale = 1;
+        vScale?: number | undefined = 1;
         /**
          * How far the image is shifted horizontally, as a fraction of its width
          * @default 0
          */
-        uOffset = 0;
+        uOffset?: number | undefined = 0;
         /**
          * How far the image is shifted vertically, as a fraction of its height
          * @default 0
          */
-        vOffset = 0;
+        vOffset?: number | undefined = 0;
         /**
          * How pixels are read when the image is scaled: nearest keeps hard pixels, bilinear and
          * trilinear blend them
          * @default nearest
          */
-        samplingMode = BabylonTexture.samplingModeEnum.nearest;
+        samplingMode?: BabylonTexture.samplingModeEnum | undefined = BabylonTexture.samplingModeEnum.nearest;
     }
 
     /**
@@ -105,7 +105,7 @@ export namespace BabylonTexture {
          * Name the texture is known by in the scene
          * @default Image Texture
          */
-        name = "Image Texture";
+        name?: string | undefined = "Image Texture";
         /**
          * Address of the image: a public URL, a data URL or an object URL made from an uploaded
          * file
@@ -116,18 +116,18 @@ export namespace BabylonTexture {
          * When true, transparent pixels of the image stay transparent, which cut-out decals need
          * @default true
          */
-        hasAlpha = true;
+        hasAlpha?: boolean | undefined = true;
         /**
          * When true, the image is flipped top to bottom; use it when a decal appears upside down
          * @default false
          */
-        invertY = false;
+        invertY?: boolean | undefined = false;
         /**
          * How pixels are read when the image is scaled: nearest keeps hard pixels, bilinear and
          * trilinear blend them
          * @default trilinear
          */
-        samplingMode = BabylonTexture.samplingModeEnum.trilinear;
+        samplingMode?: BabylonTexture.samplingModeEnum | undefined = BabylonTexture.samplingModeEnum.trilinear;
     }
 
 }

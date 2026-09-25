@@ -110,9 +110,9 @@ export class FilletDto<T> {
 
   The initializer is the default - `new Dto()` runs it - and `@default` must name the same value, so
   a `@default` value with no initializer, or an initializer with no `@default`, is an error. A
-  default already makes a property optional, so `@optional true` never sits beside one. Older
-  defaulted properties are still spelled `tolerance = 1e-7;`, which an object literal must pass;
-  `check:api-docs` counts them (`defaulted-spelling`) and the count may only fall.
+  default already makes a property optional, so `@optional true` never sits beside one. A class
+  that is only ever returned, never taken, keeps `size = 0;`: its readers count on every property
+  being there, and `defaulted-spelling` asks the `?` only of a class some method takes.
 
 ## An API class
 

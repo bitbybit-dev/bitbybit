@@ -2,6 +2,8 @@
 import { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 
 /**
@@ -28,8 +30,9 @@ export class BabylonTools {
      * ```
      */
     async createScreenshot(inputs: Inputs.BabylonTools.ScreenshotDto): Promise<string> {
-        const camera = inputs.camera ? inputs.camera : this.context.scene.activeCamera;
-        return BABYLON.Tools.CreateScreenshotAsync(this.context.engine, camera!, { width: inputs.width, height: inputs.height }, inputs.mimeType, inputs.quality);
+        const resolved = resolveDto(Inputs.BabylonTools.ScreenshotDto, inputs) as Resolved.BabylonTools.ScreenshotDto;
+        const camera = resolved.camera ? resolved.camera : this.context.scene.activeCamera;
+        return BABYLON.Tools.CreateScreenshotAsync(this.context.engine, camera!, { width: resolved.width, height: resolved.height }, resolved.mimeType, resolved.quality);
     }
     /**
      * Renders the scene through `camera`, or the active camera when none is given, at the given
@@ -44,11 +47,12 @@ export class BabylonTools {
      * ```
      */
     async createScreenshotAndDownload(inputs: Inputs.BabylonTools.ScreenshotDto): Promise<string> {
+        const resolved = resolveDto(Inputs.BabylonTools.ScreenshotDto, inputs) as Resolved.BabylonTools.ScreenshotDto;
         return new Promise((resolve, _) => {
-            const camera = inputs.camera ? inputs.camera : this.context.scene.activeCamera;
-            return BABYLON.Tools.CreateScreenshot(this.context.engine, camera!, { width: inputs.width, height: inputs.height }, () => {
+            const camera = resolved.camera ? resolved.camera : this.context.scene.activeCamera;
+            return BABYLON.Tools.CreateScreenshot(this.context.engine, camera!, { width: resolved.width, height: resolved.height }, () => {
                 resolve("done");
-            }, inputs.mimeType, true, inputs.quality);
+            }, resolved.mimeType, true, resolved.quality);
         });
 
     }

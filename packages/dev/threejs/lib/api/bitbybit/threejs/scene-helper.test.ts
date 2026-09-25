@@ -17,6 +17,8 @@ vi.mock("./orbit-camera", async () => {
 import { initThreeJS } from "./scene-helper";
 import { createOrbitCamera } from "./orbit-camera";
 import { ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
+import * as Resolved from "../../resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 describe("initThreeJS unit tests", () => {
     let mockCanvas: HTMLCanvasElement;
@@ -77,7 +79,7 @@ describe("initThreeJS unit tests", () => {
 
         it("should create hemisphere light with default settings", () => {
             // Arrange
-            const defaultDto = new ThreeJSScene.InitThreeJSDto();
+            const defaultDto = resolveDto(ThreeJSScene.InitThreeJSDto, {}) as Resolved.ThreeJSScene.InitThreeJSDto;
 
             // Act
             const result = initThreeJS();
@@ -92,7 +94,7 @@ describe("initThreeJS unit tests", () => {
 
         it("should create directional light with default settings", () => {
             // Arrange
-            const defaultDto = new ThreeJSScene.InitThreeJSDto();
+            const defaultDto = resolveDto(ThreeJSScene.InitThreeJSDto, {}) as Resolved.ThreeJSScene.InitThreeJSDto;
 
             // Act
             const result = initThreeJS();
@@ -104,6 +106,25 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.position.x).toBeCloseTo(expectedOffset, 5);
             expect(result.directionalLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.z).toBeCloseTo(expectedOffset, 5);
+
+            result.dispose();
+        });
+    });
+
+    describe("an options object that leaves settings out", () => {
+        it("should fill every setting it leaves out from the defaults", () => {
+            // Arrange
+            const expectedColor = hexToRgb("#1a1c1f");
+
+            // Act
+            const result = initThreeJS({ canvasId: "test-canvas", sceneSize: 40 });
+
+            // Assert
+            const background = result.scene.background as { r: number; g: number; b: number };
+            expect(Math.abs(background.r - expectedColor.r)).toBeLessThan(0.01);
+            expect(Math.abs(background.g - expectedColor.g)).toBeLessThan(0.01);
+            expect(Math.abs(background.b - expectedColor.b)).toBeLessThan(0.01);
+            expect(result.hemisphereLight.position.y).toBeCloseTo(30, 5);
 
             result.dispose();
         });

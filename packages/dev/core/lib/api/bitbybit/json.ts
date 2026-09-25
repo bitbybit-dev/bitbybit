@@ -1,5 +1,7 @@
 import { ContextBase } from "../context";
 import * as Inputs from "../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
     typeof value === "object" && value !== null;
@@ -54,7 +56,8 @@ export class JSONBitByBit {
      * ```
      */
     parse(inputs: Inputs.JSON.ParseDto): any {
-        return JSON.parse(inputs.text);
+        const resolved = resolveDto(Inputs.JSON.ParseDto, inputs) as Resolved.JSON.ParseDto;
+        return JSON.parse(resolved.text);
     }
 
     /**
@@ -91,8 +94,9 @@ export class JSONBitByBit {
      * ```
      */
     setValueOnProp(inputs: Inputs.JSON.SetValueOnPropDto): any {
-        const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
-        clonedJson[inputs.property] = inputs.value;
+        const resolved = resolveDto(Inputs.JSON.SetValueOnPropDto, inputs) as Resolved.JSON.SetValueOnPropDto;
+        const clonedJson = { ...structuredClone(resolved.json) as Record<string, unknown> };
+        clonedJson[resolved.property] = resolved.value;
         return clonedJson;
     }
 
@@ -112,7 +116,8 @@ export class JSONBitByBit {
      * ```
      */
     getJsonFromArrayByFirstPropMatch(inputs: Inputs.JSON.GetJsonFromArrayByFirstPropMatchDto): any {
-        return inputs.jsonArray.find(j => isRecord(j) && j[inputs.property] === inputs.match);
+        const resolved = resolveDto(Inputs.JSON.GetJsonFromArrayByFirstPropMatchDto, inputs) as Resolved.JSON.GetJsonFromArrayByFirstPropMatchDto;
+        return resolved.jsonArray.find(j => isRecord(j) && j[resolved.property] === resolved.match);
     }
 
     /**
@@ -128,11 +133,12 @@ export class JSONBitByBit {
      * ```
      */
     getValueOnProp(inputs: Inputs.JSON.GetValueOnPropDto): any {
+        const resolved = resolveDto(Inputs.JSON.GetValueOnPropDto, inputs) as Resolved.JSON.GetValueOnPropDto;
         try {
-            const clonedJson = { ...structuredClone(inputs.json) as Record<string, unknown> };
-            return clonedJson[inputs.property];
+            const clonedJson = { ...structuredClone(resolved.json) as Record<string, unknown> };
+            return clonedJson[resolved.property];
         } catch {
-            return (inputs.json as Record<string, unknown>)[inputs.property];
+            return (resolved.json as Record<string, unknown>)[resolved.property];
         }
     }
 
@@ -153,15 +159,16 @@ export class JSONBitByBit {
      * ```
      */
     setValue(inputs: Inputs.JSON.SetValueDto): any {
-        if (inputs.json instanceof Object) {
-            const clonedJson = { ...structuredClone(inputs.json) };
+        const resolved = resolveDto(Inputs.JSON.SetValueDto, inputs) as Resolved.JSON.SetValueDto;
+        if (resolved.json instanceof Object) {
+            const clonedJson = { ...structuredClone(resolved.json) };
 
             const callback = (payload: Record<string, unknown>) => {
-                payload[inputs.prop] = inputs.value;
+                payload[resolved.prop] = resolved.value;
                 return payload;
             };
             this.context.jsonpath({
-                path: inputs.path,
+                path: resolved.path,
                 json: clonedJson,
                 callback
             });

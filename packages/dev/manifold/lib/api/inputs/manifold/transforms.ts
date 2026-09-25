@@ -150,7 +150,7 @@ export class ScaleDto<T> {
      * The uniform scale about the origin; 2 doubles every size.
      * @default 2
      */
-    factor = 2;
+    factor?: number | undefined = 2;
 }
 /**
  * A solid and three distances for `manifold.transforms.translateXYZ`.

@@ -30,7 +30,7 @@ export namespace JSON {
          * error
          * @default "[0, 0, 0]"
          */
-        text = "[0, 0, 0]";
+        text?: string | undefined = "[0, 0, 0]";
     }
     /**
      * Feeds `json.query` with the JSON to search and the JSONPath expression that selects values in
@@ -77,7 +77,7 @@ export namespace JSON {
          * Name of the top-level property to set; a property that does not exist yet is added
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
     }
 
     /**
@@ -99,7 +99,7 @@ export namespace JSON {
          * Name of the property compared on every object
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
         /**
          * The value the property must equal exactly, same type included
          * @default undefined
@@ -125,7 +125,7 @@ export namespace JSON {
          * Name of the top-level property whose value comes back; a missing one gives undefined
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
     }
 
     /**
@@ -155,12 +155,12 @@ export namespace JSON {
          * set on each of them
          * @default $.pathToParent
          */
-        path = "$.pathToParent";
+        path?: string | undefined = "$.pathToParent";
         /**
          * Name of the property set on every object the path reaches
          * @default propertyName
          */
-        prop = "propertyName";
+        prop?: string | undefined = "propertyName";
     }
 
     /**

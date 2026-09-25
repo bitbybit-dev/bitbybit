@@ -5,6 +5,8 @@ import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 import { BabylonMesh } from "../mesh";
 import earcut from "earcut";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 /**
  * BabylonJS's own mesh primitives, built straight into the scene as ready-to-render meshes rather
  * than through a CAD kernel: boxes, spheres, discs, tori, polygons, tubes, polyhedra, capsules,
@@ -33,14 +35,15 @@ export class BabylonMeshBuilder {
      * ```
      */
     createBox(inputs: Inputs.BabylonMeshBuilder.CreateBoxDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateBoxDto, inputs) as Resolved.BabylonMeshBuilder.CreateBoxDto;
         const mesh = BABYLON.MeshBuilder.CreateBox(uniqueName("BabylonMesh"), {
-            width: inputs.width,
-            height: inputs.height,
-            depth: inputs.depth,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            width: resolved.width,
+            height: resolved.height,
+            depth: resolved.depth,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
 
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -62,11 +65,12 @@ export class BabylonMeshBuilder {
      * ```
      */
     createCube(inputs: Inputs.BabylonMeshBuilder.CreateCubeDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateCubeDto, inputs) as Resolved.BabylonMeshBuilder.CreateCubeDto;
         const mesh = BABYLON.MeshBuilder.CreateBox(uniqueName("BabylonMesh"), {
-            size: inputs.size,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            size: resolved.size,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -89,11 +93,12 @@ export class BabylonMeshBuilder {
      * ```
      */
     createSquarePlane(inputs: Inputs.BabylonMeshBuilder.CreateSquarePlaneDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateSquarePlaneDto, inputs) as Resolved.BabylonMeshBuilder.CreateSquarePlaneDto;
         const mesh = BABYLON.MeshBuilder.CreatePlane(uniqueName("BabylonMesh"), {
-            size: inputs.size,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            size: resolved.size,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -116,12 +121,13 @@ export class BabylonMeshBuilder {
      * ```
      */
     createSphere(inputs: Inputs.BabylonMeshBuilder.CreateSphereDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateSphereDto, inputs) as Resolved.BabylonMeshBuilder.CreateSphereDto;
         const mesh = BABYLON.MeshBuilder.CreateSphere(uniqueName("BabylonMesh"), {
-            diameter: inputs.diameter,
-            segments: inputs.segments,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            diameter: resolved.diameter,
+            segments: resolved.segments,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -147,16 +153,17 @@ export class BabylonMeshBuilder {
      * ```
      */
     createIcoSphere(inputs: Inputs.BabylonMeshBuilder.CreateIcoSphereDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateIcoSphereDto, inputs) as Resolved.BabylonMeshBuilder.CreateIcoSphereDto;
         const mesh = BABYLON.MeshBuilder.CreateIcoSphere(uniqueName("BabylonMesh"), {
-            radius: inputs.radius,
-            radiusX: inputs.radiusX,
-            radiusY: inputs.radiusY,
-            radiusZ: inputs.radiusZ,
-            flat: inputs.flat,
-            subdivisions: inputs.subdivisions,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            radius: resolved.radius,
+            radiusX: resolved.radiusX,
+            radiusY: resolved.radiusY,
+            radiusZ: resolved.radiusZ,
+            flat: resolved.flat,
+            subdivisions: resolved.subdivisions,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -179,13 +186,14 @@ export class BabylonMeshBuilder {
      * ```
      */
     createDisc(inputs: Inputs.BabylonMeshBuilder.CreateDiscDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateDiscDto, inputs) as Resolved.BabylonMeshBuilder.CreateDiscDto;
         const mesh = BABYLON.MeshBuilder.CreateDisc(uniqueName("BabylonMesh"), {
-            radius: inputs.radius,
-            tessellation: inputs.tessellation,
-            arc: inputs.arc,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            radius: resolved.radius,
+            tessellation: resolved.tessellation,
+            arc: resolved.arc,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -208,13 +216,14 @@ export class BabylonMeshBuilder {
      * ```
      */
     createTorus(inputs: Inputs.BabylonMeshBuilder.CreateTorusDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateTorusDto, inputs) as Resolved.BabylonMeshBuilder.CreateTorusDto;
         const mesh = BABYLON.MeshBuilder.CreateTorus(uniqueName("BabylonMesh"), {
-            diameter: inputs.diameter,
-            thickness: inputs.thickness,
-            tessellation: inputs.tessellation,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            diameter: resolved.diameter,
+            thickness: resolved.thickness,
+            tessellation: resolved.tessellation,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -237,16 +246,17 @@ export class BabylonMeshBuilder {
      * ```
      */
     createTorusKnot(inputs: Inputs.BabylonMeshBuilder.CreateTorusKnotDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateTorusKnotDto, inputs) as Resolved.BabylonMeshBuilder.CreateTorusKnotDto;
         const mesh = BABYLON.MeshBuilder.CreateTorusKnot(uniqueName("BabylonMesh"), {
-            radius: inputs.radius,
-            tube: inputs.tube,
-            radialSegments: inputs.radialSegments,
-            tubularSegments: inputs.tubularSegments,
-            p: inputs.p,
-            q: inputs.q,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            radius: resolved.radius,
+            tube: resolved.tube,
+            radialSegments: resolved.radialSegments,
+            tubularSegments: resolved.tubularSegments,
+            p: resolved.p,
+            q: resolved.q,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -271,15 +281,16 @@ export class BabylonMeshBuilder {
      * ```
      */
     createPolygon(inputs: Inputs.BabylonMeshBuilder.CreatePolygonDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreatePolygonDto, inputs) as Resolved.BabylonMeshBuilder.CreatePolygonDto;
         const mesh = BABYLON.MeshBuilder.CreatePolygon(uniqueName("BabylonMesh"), {
-            shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
-            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
-            depth: inputs.depth,
-            smoothingThreshold: inputs.smoothingThreshold,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
-            wrap: inputs.wrap,
+            shape: resolved.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
+            holes: resolved.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
+            depth: resolved.depth,
+            smoothingThreshold: resolved.smoothingThreshold,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
+            wrap: resolved.wrap,
         }, this.context.scene, earcut);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -303,14 +314,15 @@ export class BabylonMeshBuilder {
      * ```
      */
     extrudePolygon(inputs: Inputs.BabylonMeshBuilder.ExtrudePolygonDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.ExtrudePolygonDto, inputs) as Resolved.BabylonMeshBuilder.ExtrudePolygonDto;
         const mesh = BABYLON.MeshBuilder.ExtrudePolygon(uniqueName("BabylonMesh"), {
-            shape: inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
-            holes: inputs.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
-            depth: inputs.depth,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
-            wrap: inputs.wrap,
+            shape: resolved.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2])),
+            holes: resolved.holes?.map(h => h.map(p => new BABYLON.Vector3(p[0], p[1], p[2]))) ?? [],
+            depth: resolved.depth,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
+            wrap: resolved.wrap,
         }, this.context.scene, earcut);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -334,16 +346,17 @@ export class BabylonMeshBuilder {
      * ```
      */
     createTube(inputs: Inputs.BabylonMeshBuilder.CreateTubeDto): BABYLON.Mesh {
-        const path = inputs.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateTubeDto, inputs) as Resolved.BabylonMeshBuilder.CreateTubeDto;
+        const path = resolved.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         const mesh = BABYLON.MeshBuilder.CreateTube(uniqueName("BabylonMesh"), {
             path,
-            radius: inputs.radius,
-            tessellation: inputs.tessellation,
-            cap: inputs.cap,
-            arc: inputs.arc,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            radius: resolved.radius,
+            tessellation: resolved.tessellation,
+            cap: resolved.cap,
+            arc: resolved.arc,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -369,17 +382,18 @@ export class BabylonMeshBuilder {
      * ```
      */
     createPolyhedron(inputs: Inputs.BabylonMeshBuilder.CreatePolyhedronDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreatePolyhedronDto, inputs) as Resolved.BabylonMeshBuilder.CreatePolyhedronDto;
         const mesh = BABYLON.MeshBuilder.CreatePolyhedron(uniqueName("BabylonMesh"), {
-            type: inputs.type,
-            size: inputs.size,
-            sizeX: inputs.sizeX,
-            sizeY: inputs.sizeY,
-            sizeZ: inputs.sizeZ,
-            custom: inputs.custom,
-            flat: inputs.flat,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            type: resolved.type,
+            size: resolved.size,
+            sizeX: resolved.sizeX,
+            sizeY: resolved.sizeY,
+            sizeZ: resolved.sizeZ,
+            custom: resolved.custom,
+            flat: resolved.flat,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -405,17 +419,18 @@ export class BabylonMeshBuilder {
      * ```
      */
     createGeodesic(inputs: Inputs.BabylonMeshBuilder.CreateGeodesicDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateGeodesicDto, inputs) as Resolved.BabylonMeshBuilder.CreateGeodesicDto;
         const mesh = BABYLON.MeshBuilder.CreateGeodesic(uniqueName("BabylonMesh"), {
-            m: inputs.m,
-            n: inputs.n,
-            size: inputs.size,
-            sizeX: inputs.sizeX,
-            sizeY: inputs.sizeY,
-            sizeZ: inputs.sizeZ,
-            flat: inputs.flat,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            m: resolved.m,
+            n: resolved.n,
+            size: resolved.size,
+            sizeX: resolved.sizeX,
+            sizeY: resolved.sizeY,
+            sizeZ: resolved.sizeZ,
+            flat: resolved.flat,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -441,16 +456,17 @@ export class BabylonMeshBuilder {
      * ```
      */
     createGoldberg(inputs: Inputs.BabylonMeshBuilder.CreateGoldbergDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateGoldbergDto, inputs) as Resolved.BabylonMeshBuilder.CreateGoldbergDto;
         const mesh = BABYLON.MeshBuilder.CreateGoldberg(uniqueName("BabylonMesh"), {
-            n: inputs.n,
-            m: inputs.m,
-            size: inputs.size,
-            sizeX: inputs.sizeX,
-            sizeY: inputs.sizeY,
-            sizeZ: inputs.sizeZ,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            n: resolved.n,
+            m: resolved.m,
+            size: resolved.size,
+            sizeX: resolved.sizeX,
+            sizeY: resolved.sizeY,
+            sizeZ: resolved.sizeZ,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -474,20 +490,21 @@ export class BabylonMeshBuilder {
      * ```
      */
     createCapsule(inputs: Inputs.BabylonMeshBuilder.CreateCapsuleDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateCapsuleDto, inputs) as Resolved.BabylonMeshBuilder.CreateCapsuleDto;
         const mesh = BABYLON.MeshBuilder.CreateCapsule(uniqueName("BabylonMesh"), {
-            orientation: new BABYLON.Vector3(...inputs.orientation),
-            subdivisions: inputs.subdivisions,
-            tessellation: inputs.tessellation,
-            height: inputs.height,
-            radius: inputs.radius,
-            capSubdivisions: inputs.capSubdivisions,
-            radiusTop: inputs.radiusTop,
-            radiusBottom: inputs.radiusBottom,
-            topCapSubdivisions: inputs.topCapSubdivisions,
-            bottomCapSubdivisions: inputs.bottomCapSubdivisions
+            orientation: new BABYLON.Vector3(...resolved.orientation),
+            subdivisions: resolved.subdivisions,
+            tessellation: resolved.tessellation,
+            height: resolved.height,
+            radius: resolved.radius,
+            capSubdivisions: resolved.capSubdivisions,
+            radiusTop: resolved.radiusTop,
+            radiusBottom: resolved.radiusBottom,
+            topCapSubdivisions: resolved.topCapSubdivisions,
+            bottomCapSubdivisions: resolved.bottomCapSubdivisions
         }, this.context.scene);
-        mesh.sideOrientation = this.mesh.getSideOrientation(inputs.sideOrientation);
-        if (inputs.enableShadows) {
+        mesh.sideOrientation = this.mesh.getSideOrientation(resolved.sideOrientation);
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -511,15 +528,16 @@ export class BabylonMeshBuilder {
      * ```
      */
     createCylinder(inputs: Inputs.BabylonMeshBuilder.CreateCylinderDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateCylinderDto, inputs) as Resolved.BabylonMeshBuilder.CreateCylinderDto;
         const mesh = BABYLON.MeshBuilder.CreateCylinder(uniqueName("BabylonMesh"), {
-            height: inputs.height,
-            diameterTop: inputs.diameterTop,
-            diameterBottom: inputs.diameterBottom,
-            tessellation: inputs.tessellation,
-            subdivisions: inputs.subdivisions,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            height: resolved.height,
+            diameterTop: resolved.diameterTop,
+            diameterBottom: resolved.diameterBottom,
+            tessellation: resolved.tessellation,
+            subdivisions: resolved.subdivisions,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -546,19 +564,20 @@ export class BabylonMeshBuilder {
      * ```
      */
     createExtrudedSahpe(inputs: Inputs.BabylonMeshBuilder.CreateExtrudedShapeDto): BABYLON.Mesh {
-        const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
-        const path = inputs.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateExtrudedShapeDto, inputs) as Resolved.BabylonMeshBuilder.CreateExtrudedShapeDto;
+        const shape = resolved.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
+        const path = resolved.path.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         const mesh = BABYLON.MeshBuilder.ExtrudeShape(uniqueName("BabylonMesh"), {
             shape: shape,
             path: path,
-            scale: inputs.scale,
-            rotation: inputs.rotation,
-            closeShape: inputs.closeShape,
-            closePath: inputs.closePath,
-            cap: inputs.cap,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            scale: resolved.scale,
+            rotation: resolved.rotation,
+            closeShape: resolved.closeShape,
+            closePath: resolved.closePath,
+            cap: resolved.cap,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -584,18 +603,19 @@ export class BabylonMeshBuilder {
      * ```
      */
     createRibbon(inputs: Inputs.BabylonMeshBuilder.CreateRibbonDto): BABYLON.Mesh {
-        const pathArray = inputs.pathArray.map(p => {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateRibbonDto, inputs) as Resolved.BabylonMeshBuilder.CreateRibbonDto;
+        const pathArray = resolved.pathArray.map(p => {
             return p.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         });
         const mesh = BABYLON.MeshBuilder.CreateRibbon(uniqueName("BabylonMesh"), {
             pathArray: pathArray,
-            closeArray: inputs.closeArray,
-            closePath: inputs.closePath,
-            offset: inputs.offset,
-            updatable: inputs.updatable,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            closeArray: resolved.closeArray,
+            closePath: resolved.closePath,
+            offset: resolved.offset,
+            updatable: resolved.updatable,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -619,16 +639,17 @@ export class BabylonMeshBuilder {
      * ```
      */
     createLathe(inputs: Inputs.BabylonMeshBuilder.CreateLatheDto): BABYLON.Mesh {
-        const shape = inputs.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateLatheDto, inputs) as Resolved.BabylonMeshBuilder.CreateLatheDto;
+        const shape = resolved.shape.map(p => new BABYLON.Vector3(p[0], p[1], p[2]));
         const mesh = BABYLON.MeshBuilder.CreateLathe(uniqueName("BabylonMesh"), {
             shape: shape,
-            radius: inputs.radius,
-            tessellation: inputs.tessellation,
-            arc: inputs.arc,
-            closed: inputs.closed,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            radius: resolved.radius,
+            tessellation: resolved.tessellation,
+            arc: resolved.arc,
+            closed: resolved.closed,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -651,14 +672,15 @@ export class BabylonMeshBuilder {
      * ```
      */
     createGround(inputs: Inputs.BabylonMeshBuilder.CreateGroundDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateGroundDto, inputs) as Resolved.BabylonMeshBuilder.CreateGroundDto;
         const mesh = BABYLON.MeshBuilder.CreateGround(uniqueName("BabylonMesh"), {
-            width: inputs.width,
-            height: inputs.height,
-            subdivisionsX: inputs.subdivisionsX,
-            subdivisionsY: inputs.subdivisionsY,
+            width: resolved.width,
+            height: resolved.height,
+            subdivisionsX: resolved.subdivisionsX,
+            subdivisionsY: resolved.subdivisionsY,
         }, this.context.scene);
-        mesh.sideOrientation = this.mesh.getSideOrientation(inputs.sideOrientation);
-        if (inputs.enableShadows) {
+        mesh.sideOrientation = this.mesh.getSideOrientation(resolved.sideOrientation);
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };
@@ -682,12 +704,13 @@ export class BabylonMeshBuilder {
      * ```
      */
     createRectanglePlane(inputs: Inputs.BabylonMeshBuilder.CreateRectanglePlaneDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMeshBuilder.CreateRectanglePlaneDto, inputs) as Resolved.BabylonMeshBuilder.CreateRectanglePlaneDto;
         const mesh = BABYLON.MeshBuilder.CreatePlane(uniqueName("BabylonMesh"), {
-            width: inputs.width,
-            height: inputs.height,
-            sideOrientation: this.mesh.getSideOrientation(inputs.sideOrientation),
+            width: resolved.width,
+            height: resolved.height,
+            sideOrientation: this.mesh.getSideOrientation(resolved.sideOrientation),
         }, this.context.scene);
-        if (inputs.enableShadows) {
+        if (resolved.enableShadows) {
             this.enableShadows(mesh);
         } else {
             mesh.metadata = { shadows: false };

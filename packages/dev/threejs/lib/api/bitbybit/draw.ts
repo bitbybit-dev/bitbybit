@@ -4,6 +4,8 @@ import * as Inputs from "../inputs";
 import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Everything drawing can hand back: a group for geometry, the tag or tags for tags, a disposable
@@ -131,7 +133,7 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const merged = this.occtOptions(options);
             return this.drawHelper.handleDecomposedMesh(
                 merged,
                 inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
@@ -142,7 +144,7 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const merged = this.occtOptions(options);
             const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
@@ -211,7 +213,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
     }
 
     /**
@@ -228,7 +230,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
     }
 
     /**
@@ -245,18 +247,19 @@ export class Draw extends DrawCore {
      * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): THREEJS.Texture {
+        const resolved = resolveDto(Inputs.Draw.GenericTextureDto, inputs) as Resolved.Draw.GenericTextureDto;
         const loader = new THREEJS.TextureLoader();
-        const texture = loader.load(inputs.url);
+        const texture = loader.load(resolved.url);
         
-        texture.name = inputs.name;
-        texture.repeat.set(inputs.uScale, inputs.vScale);
-        texture.offset.set(inputs.uOffset, inputs.vOffset);
-        texture.rotation = inputs.wAng;
-        texture.flipY = !inputs.invertY;
+        texture.name = resolved.name;
+        texture.repeat.set(resolved.uScale, resolved.vScale);
+        texture.offset.set(resolved.uOffset, resolved.vOffset);
+        texture.rotation = resolved.wAng;
+        texture.flipY = !resolved.invertY;
         texture.wrapS = THREEJS.RepeatWrapping;
         texture.wrapT = THREEJS.RepeatWrapping;
         
-        switch (inputs.samplingMode) {
+        switch (resolved.samplingMode) {
             case Inputs.Draw.samplingModeEnum.nearest:
                 texture.minFilter = THREEJS.NearestFilter;
                 texture.magFilter = THREEJS.NearestFilter;
@@ -290,53 +293,54 @@ export class Draw extends DrawCore {
      * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): THREEJS.MeshStandardMaterial {
+        const resolved = resolveDto(Inputs.Draw.GenericPBRMaterialDto, inputs) as Resolved.Draw.GenericPBRMaterialDto;
         const mat = new THREEJS.MeshStandardMaterial({
-            name: inputs.name,
-            color: new THREEJS.Color(inputs.baseColor),
-            metalness: inputs.metallic,
-            roughness: inputs.roughness,
-            opacity: inputs.alpha,
-            transparent: inputs.alpha < 1 || inputs.alphaMode === Inputs.Draw.alphaModeEnum.blend,
-            side: inputs.doubleSided ? THREEJS.DoubleSide : THREEJS.FrontSide,
-            wireframe: inputs.wireframe,
+            name: resolved.name,
+            color: new THREEJS.Color(resolved.baseColor),
+            metalness: resolved.metallic,
+            roughness: resolved.roughness,
+            opacity: resolved.alpha,
+            transparent: resolved.alpha < 1 || resolved.alphaMode === Inputs.Draw.alphaModeEnum.blend,
+            side: resolved.doubleSided ? THREEJS.DoubleSide : THREEJS.FrontSide,
+            wireframe: resolved.wireframe,
         });
         
-        if (inputs.emissiveColor) {
-            mat.emissive = new THREEJS.Color(inputs.emissiveColor);
-            mat.emissiveIntensity = inputs.emissiveIntensity;
+        if (resolved.emissiveColor) {
+            mat.emissive = new THREEJS.Color(resolved.emissiveColor);
+            mat.emissiveIntensity = resolved.emissiveIntensity;
         }
         
-        if (inputs.zOffset !== 0 || inputs.zOffsetUnits !== 0) {
+        if (resolved.zOffset !== 0 || resolved.zOffsetUnits !== 0) {
             mat.polygonOffset = true;
-            mat.polygonOffsetFactor = inputs.zOffset;
-            mat.polygonOffsetUnits = inputs.zOffsetUnits;
+            mat.polygonOffsetFactor = resolved.zOffset;
+            mat.polygonOffsetUnits = resolved.zOffsetUnits;
         }
         
-        if (inputs.baseColorTexture) {
-            mat.map = inputs.baseColorTexture as THREEJS.Texture;
+        if (resolved.baseColorTexture) {
+            mat.map = resolved.baseColorTexture as THREEJS.Texture;
         }
-        if (inputs.metallicRoughnessTexture) {
-            mat.metalnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
-            mat.roughnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
+        if (resolved.metallicRoughnessTexture) {
+            mat.metalnessMap = resolved.metallicRoughnessTexture as THREEJS.Texture;
+            mat.roughnessMap = resolved.metallicRoughnessTexture as THREEJS.Texture;
         }
-        if (inputs.normalTexture) {
-            mat.normalMap = inputs.normalTexture as THREEJS.Texture;
+        if (resolved.normalTexture) {
+            mat.normalMap = resolved.normalTexture as THREEJS.Texture;
         }
-        if (inputs.emissiveTexture) {
-            mat.emissiveMap = inputs.emissiveTexture as THREEJS.Texture;
+        if (resolved.emissiveTexture) {
+            mat.emissiveMap = resolved.emissiveTexture as THREEJS.Texture;
         }
-        if (inputs.occlusionTexture) {
-            mat.aoMap = inputs.occlusionTexture as THREEJS.Texture;
+        if (resolved.occlusionTexture) {
+            mat.aoMap = resolved.occlusionTexture as THREEJS.Texture;
         }
         
-        switch (inputs.alphaMode) {
+        switch (resolved.alphaMode) {
             case Inputs.Draw.alphaModeEnum.opaque:
                 mat.transparent = false;
                 mat.alphaTest = 0;
                 break;
             case Inputs.Draw.alphaModeEnum.mask:
                 mat.transparent = false;
-                mat.alphaTest = inputs.alphaCutoff;
+                mat.alphaTest = resolved.alphaCutoff;
                 break;
             case Inputs.Draw.alphaModeEnum.blend:
                 mat.transparent = true;
@@ -344,8 +348,8 @@ export class Draw extends DrawCore {
                 break;
         }
         
-        if (inputs.unlit) {
-            mat.emissive = new THREEJS.Color(inputs.baseColor);
+        if (resolved.unlit) {
+            mat.emissive = new THREEJS.Color(resolved.baseColor);
             mat.emissiveIntensity = 1;
             mat.color = new THREEJS.Color(0x000000);
         }
@@ -374,21 +378,19 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group | undefined> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
+                ...this.manifoldOptions(options),
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldsOrCrossSections({
+                ...this.manifoldOptions(options),
                 manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -397,8 +399,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
+                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -407,8 +408,7 @@ export class Draw extends DrawCore {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShapes({
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
+                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
@@ -473,7 +473,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawCurve({
                 curveMesh: inputs.group,
                 curve: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbCurve);
     }
@@ -483,7 +483,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawSurface({
                 surfaceMesh: inputs.group,
                 surface: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
@@ -534,7 +534,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawCurves({
                 curvesMesh: inputs.group,
                 curves: inputs.entity as Base.VerbCurve[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbCurves);
     }
@@ -544,7 +544,7 @@ export class Draw extends DrawCore {
             return this.drawHelper.drawSurfacesMultiColour({
                 surfacesMesh: inputs.group,
                 surfaces: inputs.entity as Base.VerbSurface[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
+                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
@@ -631,6 +631,22 @@ export class Draw extends DrawCore {
             }
         }
         return result;
+    }
+
+    /**
+     * The options a draw call was given, laid over the defaults of the options class for the kind
+     * being drawn: a partial object gets the same values the matching `options` method would give it.
+     */
+    private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
+    }
+
+    private occtOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions {
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+    }
+
+    private manifoldOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawManifoldOrCrossSectionOptions {
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
     }
 
     private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {
