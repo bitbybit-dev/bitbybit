@@ -465,6 +465,20 @@ describe("CacheHelper unit tests", () => {
             expect(result2).toEqual(mockResult);
         });
 
+        it("should hand back a cached false result on the second call instead of null", () => {
+            // Arrange
+            const args = { functionName: "evaluate.isEmpty", inputs: { hash: 7 } };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return false; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return false; });
+
+            // Assert
+            expect(second).toBe(false);
+            expect(calls).toBe(1);
+        });
+
         it("should cache OCCT shapes and return hash reference", () => {
             const point = new occt.gp_Pnt(0, 0, 0);
             const vertex = new occt.BRepBuilderAPI_MakeVertex(point);

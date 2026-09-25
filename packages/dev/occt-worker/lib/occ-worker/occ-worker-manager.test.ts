@@ -148,6 +148,17 @@ describe("OCCTWorkerManager unit tests", () => {
             await expect(pending).resolves.toBe(0);
         });
 
+        it("should resolve a call the worker answered without a result", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise<void>("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0) });
+
+            // Assert
+            await expect(pending).resolves.toBeUndefined();
+        });
+
         it("should leave a call pending when another call's uid is answered", async () => {
             // Arrange
             const first = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
@@ -163,7 +174,7 @@ describe("OCCTWorkerManager unit tests", () => {
             expect(settled).toBe(false);
         });
 
-        it("should reject with the error the worker reported", async () => {
+        it("should reject with an Error carrying the message the worker reported", async () => {
             // Arrange
             const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
 
@@ -171,7 +182,8 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toBeInstanceOf(Error);
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
         });
 
         it("should pass the error to the error callback when one is registered", async () => {
@@ -182,7 +194,7 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Act
             answer({ uid: uidOf(0), error: "radius must be positive" });
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("radius must be positive");
@@ -198,7 +210,7 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
             vi.restoreAllMocks();
         });
 

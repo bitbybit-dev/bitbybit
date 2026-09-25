@@ -83,6 +83,28 @@ describe("JSCADWorkerManager unit tests", () => {
             await expect(pending).resolves.toBe("a-sphere");
         });
 
+        it("should resolve with a falsy result the worker returned", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise<boolean>("hulls.isConvex", {});
+
+            // Act
+            answer({ uid: uidOf(0), result: false });
+
+            // Assert
+            await expect(pending).resolves.toBe(false);
+        });
+
+        it("should resolve a call the worker answered without a result", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise<void>("shapes.sphere", {});
+
+            // Act
+            answer({ uid: uidOf(0) });
+
+            // Assert
+            await expect(pending).resolves.toBeUndefined();
+        });
+
         it("should leave a call pending when another call's uid is answered", async () => {
             // Arrange
             const first = manager.genericCallToWorkerPromise("shapes.sphere", {});
@@ -98,7 +120,7 @@ describe("JSCADWorkerManager unit tests", () => {
             expect(settled).toBe(false);
         });
 
-        it("should reject with the error message the worker reported", async () => {
+        it("should reject with an Error carrying the message the worker reported", async () => {
             // Arrange
             const pending = manager.genericCallToWorkerPromise("shapes.sphere", {});
 
@@ -106,7 +128,8 @@ describe("JSCADWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toBeInstanceOf(Error);
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
         });
 
         it("should pass the error to the error callback when one is registered", async () => {
@@ -117,10 +140,24 @@ describe("JSCADWorkerManager unit tests", () => {
 
             // Act
             answer({ uid: uidOf(0), error: "radius must be positive" });
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("radius must be positive");
+        });
+
+        it("should still reject the call when the error callback itself throws", async () => {
+            // Arrange
+            vi.spyOn(console, "error").mockImplementation(() => undefined);
+            manager.errorCallback = () => { throw new Error("the handler broke"); };
+            const pending = manager.genericCallToWorkerPromise("shapes.sphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+
+            // Assert
+            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
+            vi.restoreAllMocks();
         });
 
         it("should report an error carrying no known uid without throwing", () => {

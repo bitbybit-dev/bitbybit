@@ -54,9 +54,7 @@ export class OCCTWorkerManager {
             }
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
-                if (promise && data.result !== undefined && !data.error) {
-                    promise.resolve!(data.result);
-                } else if (data.error) {
+                if (data.error !== undefined) {
                     if (this.errorCallback) {
                         try {
                             this.errorCallback(data.error);
@@ -65,8 +63,10 @@ export class OCCTWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(data.error);
+                        promise.reject!(new Error(data.error));
                     }
+                } else if (promise) {
+                    promise.resolve!(data.result);
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
                 if (this.promisesMade.length === 0) {

@@ -145,7 +145,7 @@ export class CacheHelper {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
-        let toReturn = null;
+        let toReturn;
         const curHash = this.computeHash(args);
         this.usedHashes[curHash] = curHash;
         this.hashesFromPreviousRun[curHash] = curHash;
@@ -154,7 +154,7 @@ export class CacheHelper {
             if (this.isJSCADObject(check)) {
                 toReturn = check;
                 toReturn.hash = check.hash;
-            } else if (check.value) {
+            } else {
                 toReturn = check.value;
             }
         } else {

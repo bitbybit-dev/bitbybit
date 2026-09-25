@@ -189,7 +189,7 @@ export class CacheHelper {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
-        let toReturn = null;
+        let toReturn;
         const hashableArgs = this.toHashableArgs(args);
         const curHash = this.computeHash(hashableArgs);
         this.usedHashes[curHash] = curHash;
@@ -199,7 +199,7 @@ export class CacheHelper {
             if (this.isOCCTObject(check)) {
                 toReturn = check;
                 toReturn.hash = check.hash;
-            } else if (check.value) {
+            } else {
                 toReturn = check.value;
             }
         } else {

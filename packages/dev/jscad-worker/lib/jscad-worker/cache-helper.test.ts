@@ -866,6 +866,20 @@ describe("CacheHelper unit tests", () => {
             expect(deleted).toEqual(["first"]);
         });
 
+        it("should hand back a cached false result on the second call instead of null", () => {
+            // Arrange
+            const args = { functionName: "evaluate.isEmpty", inputs: { hash: 7 } };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return false; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return false; });
+
+            // Assert
+            expect(second).toBe(false);
+            expect(calls).toBe(1);
+        });
+
         it("should hand back the same empty result on the second call rather than running it again", () => {
             // Arrange
             const args = { radius: 1 };

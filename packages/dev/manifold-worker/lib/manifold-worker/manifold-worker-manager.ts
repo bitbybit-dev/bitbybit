@@ -35,15 +35,19 @@ export class ManifoldWorkerManager {
             }
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
-                if (promise && data.result !== undefined && !data.error) {
-                    promise.resolve!(data.result);
-                } else if (data.error) {
+                if (data.error !== undefined) {
                     if (this.errorCallback) {
-                        this.errorCallback(data.error);
+                        try {
+                            this.errorCallback(data.error);
+                        } catch (cbErr) {
+                            console.error("Manifold errorCallback threw:", cbErr);
+                        }
                     }
                     if (promise) {
-                        promise.reject!(data.error);
+                        promise.reject!(new Error(data.error));
                     }
+                } else if (promise) {
+                    promise.resolve!(data.result);
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
 
