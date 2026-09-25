@@ -154,12 +154,6 @@ deliberately declares a type other than the mechanical mapping, `scripts/worker-
 holds the type and the reason; kernel methods the worker does not expose are the `kernelOnly` entries
 of `scripts/worker-parity.allow.json`, one list for the generator and the parity check.
 
-The same walk of each kernel, shared through `scripts/lib/kernel-surface.mjs`, gives
-`scripts/gen-dto-meta.mjs` the operation registry of each kernel package (`lib/api/dto-registry.ts`):
-every public dotted path with the inputs DTO it takes. The workers read it to lay a call's inputs over
-that DTO's defaults before the kernel runs. `npm run gen:dto-meta` rewrites the three registries and
-`check:dto-meta` in `npm test` fails on a stale one.
-
 The four inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
 `manifold-inputs.ts`, `verb-inputs.ts` - are assembled the same way. Each has to stay one compilation
 unit, because TypeScript does not merge a namespace across modules and the declarations the visual

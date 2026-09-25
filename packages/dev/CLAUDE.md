@@ -42,23 +42,18 @@ npm run lint
     left out, it stays unset and the service decides what that means.
 
   Constructors take every parameter as optional and assign it only when it is not undefined. Write
-  the `| undefined` out - an inferred type prints differently in the declarations depending on the
-  compiler flags, and under exactOptionalPropertyTypes only that spelling lets a caller pass an
-  optional value straight through (`{ tolerance: inputs.tolerance }`). Many defaulted properties are
-  still spelled `tolerance = 1e-7;`, which an object literal must pass; the `defaulted-spelling`
-  count may only fall. Only `new Dto()` runs an initializer - an object literal does not. The three
-  workers therefore lay every call's inputs over the defaults of the DTO it takes before the kernel
-  runs (`resolveInputs` from base, over the kernel's generated `*DtoRegistry`), and `withDefaults`
-  does the same for a kernel used in the same thread; a kernel called directly with a literal gets
-  no defaults, so a service reading a property spelled with `?` still applies the default where it
-  reads it (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop, after a length
-  check, or of a regex group the pattern guarantees carry a non-null assertion; everything else
-  narrows.
-- **Each kernel's operation registry is generated; do not edit it.** `occt/lib/api/dto-registry.ts`,
-  `jscad/lib/api/dto-registry.ts` and `manifold/lib/api/dto-registry.ts` list every public operation
-  by dotted path with the DTO it takes, walked from the kernel root like the worker API. A new or
-  changed kernel method, or a DTO property that holds another DTO, needs `npm run gen:dto-meta` at
-  the repository root; `check:dto-meta` in `npm test` fails on a stale registry.
+  the `| undefined` out: an inferred type prints differently under other compiler flags, and only
+  that spelling lets a caller pass an optional straight through (`{ tolerance: inputs.tolerance }`).
+  Older defaulted properties are spelled `tolerance = 1e-7;`; the `defaulted-spelling` count may only
+  fall. Only `new Dto()` runs an initializer, so the workers lay each call's inputs over its DTO's
+  defaults (`resolveInputs` over the kernel's `*DtoRegistry`) and `withDefaults` does the same in the
+  same thread; a kernel called directly gets none, so a service reading a `?` property applies the
+  default where it reads it (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop,
+  after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
+- **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** It lists every public
+  operation with the DTO it takes, walked from the kernel root like the worker API; run
+  `npm run gen:dto-meta` after changing a kernel method, and `check:dto-meta` in `npm test` fails on
+  a stale registry.
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
   `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
   files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
