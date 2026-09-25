@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type * as Modeling from "@jscad/modeling";
 import { expectSolid, getJscad } from "./__test__/kernel";
 import type { Jscad } from "./jscad-service";
@@ -298,6 +298,21 @@ describe("Jscad", () => {
 
             // Assert
             expect(mesh.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+        });
+
+        it("should read the polygons of a flat shape's extrusion through the method that library carries", () => {
+            // Arrange
+            const triangle: Inputs.JSCAD.JSCADPoly3 = { vertices: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] };
+            const extruded = Object.assign(jscad.path.createEmpty(), { toPolygons: () => [triangle] });
+            const extrude = vi.spyOn(jscad.extrusions, "extrudeLinear").mockReturnValueOnce(extruded);
+            const circle = jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16));
+
+            // Act
+            const mesh = jscad.shapeToMesh({ mesh: circle });
+
+            // Assert
+            expect(mesh.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            extrude.mockRestore();
         });
     });
 

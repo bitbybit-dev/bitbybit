@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Moving, turning, scaling, mirroring and warping Manifold cross-sections in the XY plane. Angles
@@ -23,7 +25,8 @@ export class CrossSectionTransforms {
      * ```
      */
     scale2D(inputs: Inputs.Manifold.Scale2DCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.scale(inputs.vector);
+        const resolved = resolveDto(Inputs.Manifold.Scale2DCrossSectionDto, inputs) as Resolved.Manifold.Scale2DCrossSectionDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.scale(resolved.vector);
     }
 
     /**
@@ -39,7 +42,8 @@ export class CrossSectionTransforms {
      * ```
      */
     scale(inputs: Inputs.Manifold.ScaleCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.scale(inputs.factor);
+        const resolved = resolveDto(Inputs.Manifold.ScaleCrossSectionDto, inputs) as Resolved.Manifold.ScaleCrossSectionDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.scale(resolved.factor);
     }
 
     /**
@@ -56,7 +60,8 @@ export class CrossSectionTransforms {
      * ```
      */
     mirror(inputs: Inputs.Manifold.MirrorCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.mirror(inputs.normal);
+        const resolved = resolveDto(Inputs.Manifold.MirrorCrossSectionDto, inputs) as Resolved.Manifold.MirrorCrossSectionDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.mirror(resolved.normal);
     }
 
     /**
@@ -88,7 +93,8 @@ export class CrossSectionTransforms {
      * ```
      */
     translateXY(inputs: Inputs.Manifold.TranslateXYCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.translate([inputs.x, inputs.y]);
+        const resolved = resolveDto(Inputs.Manifold.TranslateXYCrossSectionDto, inputs) as Resolved.Manifold.TranslateXYCrossSectionDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.translate([resolved.x, resolved.y]);
     }
 
     /**
@@ -104,7 +110,8 @@ export class CrossSectionTransforms {
      * ```
      */
     rotate(inputs: Inputs.Manifold.RotateCrossSectionDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.rotate(inputs.degrees);
+        const resolved = resolveDto(Inputs.Manifold.RotateCrossSectionDto, inputs) as Resolved.Manifold.RotateCrossSectionDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.rotate(resolved.degrees);
     }
 
     /**

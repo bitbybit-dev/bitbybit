@@ -45,11 +45,11 @@ npm run lint
   the `| undefined` out: an inferred type prints differently under other compiler flags, and only
   that spelling lets a caller pass an optional straight through (`{ tolerance: inputs.tolerance }`).
   Older defaulted properties are spelled `tolerance = 1e-7;`; the `defaulted-spelling` count may only
-  fall. Only `new Dto()` runs an initializer, so the workers lay each call's inputs over its DTO's
-  defaults (`resolveInputs` over the kernel's `*DtoRegistry`) and `withDefaults` does the same in the
-  same thread; a kernel called directly gets none, so a service reading a `?` property applies the
-  default where it reads it (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop,
-  after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
+  fall. Only `new Dto()` runs an initializer, so a public method whose DTO has defaults starts with
+  `const resolved = resolveDto(Inputs.X.Dto, inputs) as Resolved.X.Dto;` and reads `resolved`; an
+  internal method takes `Resolved.X.Dto`, so its callers hand it a complete object (the generated
+  `Resolved` mirror types a DTO with every default present). Index reads inside a bounds-checked
+  loop, after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
 - **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** It lists every public
   operation with the DTO it takes, walked from the kernel root like the worker API; run
   `npm run gen:dto-meta` after changing a kernel method, and `check:dto-meta` in `npm test` fails on

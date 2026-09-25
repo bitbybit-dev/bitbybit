@@ -2,6 +2,8 @@
 import * as Inputs from "../inputs";
 import { GeometryHelper } from "./geometry-helper";
 import { MathBitByBit } from "./math";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Vector maths on plain number arrays. A vector is an array of numbers; in 3D it is `[x, y, z]`
@@ -31,7 +33,8 @@ export class Vector {
      * ```
      */
     removeAllDuplicateVectors(inputs: Inputs.Vector.RemoveAllDuplicateVectorsDto): number[][] {
-        return this.geometryHelper.removeAllDuplicateVectors(inputs.vectors, inputs.tolerance);
+        const resolved = resolveDto(Inputs.Vector.RemoveAllDuplicateVectorsDto, inputs) as Resolved.Vector.RemoveAllDuplicateVectorsDto;
+        return this.geometryHelper.removeAllDuplicateVectors(resolved.vectors, resolved.tolerance);
     }
 
     /**
@@ -56,7 +59,8 @@ export class Vector {
      * ```
      */
     removeConsecutiveDuplicateVectors(inputs: Inputs.Vector.RemoveConsecutiveDuplicateVectorsDto): number[][] {
-        return this.geometryHelper.removeConsecutiveVectorDuplicates(inputs.vectors, inputs.checkFirstAndLast, inputs.tolerance);
+        const resolved = resolveDto(Inputs.Vector.RemoveConsecutiveDuplicateVectorsDto, inputs) as Resolved.Vector.RemoveConsecutiveDuplicateVectorsDto;
+        return this.geometryHelper.removeConsecutiveVectorDuplicates(resolved.vectors, resolved.checkFirstAndLast, resolved.tolerance);
     }
 
     /**
@@ -75,7 +79,8 @@ export class Vector {
      * ```
      */
     vectorsTheSame(inputs: Inputs.Vector.VectorsTheSameDto): boolean {
-        return this.geometryHelper.vectorsTheSame(inputs.vec1, inputs.vec2, inputs.tolerance);
+        const resolved = resolveDto(Inputs.Vector.VectorsTheSameDto, inputs) as Resolved.Vector.VectorsTheSameDto;
+        return this.geometryHelper.vectorsTheSame(resolved.vec1, resolved.vec2, resolved.tolerance);
     }
 
     /**
@@ -290,9 +295,10 @@ export class Vector {
      * ```
      */
     div(inputs: Inputs.Vector.VectorScalarDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.VectorScalarDto, inputs) as Resolved.Vector.VectorScalarDto;
         const res = [];
-        for (let i = 0; i < inputs.vector.length; i++) {
-            res.push(inputs.vector[i]! / inputs.scalar);
+        for (let i = 0; i < resolved.vector.length; i++) {
+            res.push(resolved.vector[i]! / resolved.scalar);
         }
         return res;
     }
@@ -391,10 +397,11 @@ export class Vector {
      * ```
      */
     lerp(inputs: Inputs.Vector.FractionTwoVectorsDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.FractionTwoVectorsDto, inputs) as Resolved.Vector.FractionTwoVectorsDto;
         return this.add(
             {
-                first: this.mul({ vector: inputs.first, scalar: inputs.fraction }),
-                second: this.mul({ vector: inputs.second, scalar: 1.0 - inputs.fraction })
+                first: this.mul({ vector: resolved.first, scalar: resolved.fraction }),
+                second: this.mul({ vector: resolved.second, scalar: 1.0 - resolved.fraction })
             }
         );
     }
@@ -450,9 +457,10 @@ export class Vector {
      * ```
      */
     mul(inputs: Inputs.Vector.VectorScalarDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.VectorScalarDto, inputs) as Resolved.Vector.VectorScalarDto;
         const res = [];
-        for (let i = 0; i < inputs.vector.length; i++) {
-            res.push(inputs.vector[i]! * inputs.scalar);
+        for (let i = 0; i < resolved.vector.length; i++) {
+            res.push(resolved.vector[i]! * resolved.scalar);
         }
         return res;
     }
@@ -556,7 +564,8 @@ export class Vector {
      * ```
      */
     onRay(inputs: Inputs.Vector.RayPointDto): number[] {
-        return this.add({ first: inputs.point, second: this.mul({ vector: inputs.vector, scalar: inputs.distance }) });
+        const resolved = resolveDto(Inputs.Vector.RayPointDto, inputs) as Resolved.Vector.RayPointDto;
+        return this.add({ first: resolved.point, second: this.mul({ vector: resolved.vector, scalar: resolved.distance }) });
     }
 
     /**
@@ -574,7 +583,8 @@ export class Vector {
      * ```
      */
     vectorXYZ(inputs: Inputs.Vector.VectorXYZDto): Inputs.Base.Vector3 {
-        return [inputs.x, inputs.y, inputs.z];
+        const resolved = resolveDto(Inputs.Vector.VectorXYZDto, inputs) as Resolved.Vector.VectorXYZDto;
+        return [resolved.x, resolved.y, resolved.z];
     }
 
     /**
@@ -592,7 +602,8 @@ export class Vector {
      * ```
      */
     vectorXY(inputs: Inputs.Vector.VectorXYDto): Inputs.Base.Vector2 {
-        return [inputs.x, inputs.y];
+        const resolved = resolveDto(Inputs.Vector.VectorXYDto, inputs) as Resolved.Vector.VectorXYDto;
+        return [resolved.x, resolved.y];
     }
 
     /**
@@ -610,8 +621,9 @@ export class Vector {
      * ```
      */
     range(inputs: Inputs.Vector.RangeMaxDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.RangeMaxDto, inputs) as Resolved.Vector.RangeMaxDto;
         const res = [];
-        for (let i = 0; i < inputs.max; i++) {
+        for (let i = 0; i < resolved.max; i++) {
             res.push(i);
         }
         return res;
@@ -664,8 +676,9 @@ export class Vector {
      * ```
      */
     span(inputs: Inputs.Vector.SpanDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.SpanDto, inputs) as Resolved.Vector.SpanDto;
         const res = [];
-        for (let i = inputs.min; i <= inputs.max; i += inputs.step) {
+        for (let i = resolved.min; i <= resolved.max; i += resolved.step) {
             res.push(i);
         }
         return res;
@@ -689,12 +702,13 @@ export class Vector {
      * ```
      */
     spanEaseItems(inputs: Inputs.Vector.SpanEaseItemsDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.SpanEaseItemsDto, inputs) as Resolved.Vector.SpanEaseItemsDto;
         const res = [];
-        for (let i = 0; i < inputs.nrItems; i++) {
-            const x = i * 1 / (inputs.nrItems - 1);
-            res.push(this.math.ease({ x: x, ease: inputs.ease, min: inputs.min, max: inputs.max }));
+        for (let i = 0; i < resolved.nrItems; i++) {
+            const x = i * 1 / (resolved.nrItems - 1);
+            res.push(this.math.ease({ x: x, ease: resolved.ease, min: resolved.min, max: resolved.max }));
         }
-        if (inputs.intervals) {
+        if (resolved.intervals) {
             return res.map((v, i, a) => i === 0 ? v : v - a[i - 1]!);
         }
         return res;
@@ -715,11 +729,12 @@ export class Vector {
      * ```
      */
     spanLinearItems(inputs: Inputs.Vector.SpanLinearItemsDto): number[] {
+        const resolved = resolveDto(Inputs.Vector.SpanLinearItemsDto, inputs) as Resolved.Vector.SpanLinearItemsDto;
         const res = [];
-        const dist = (inputs.max - inputs.min);
-        for (let i = 0; i < inputs.nrItems; i++) {
-            const x = dist * i / (inputs.nrItems - 1);
-            res.push(x + inputs.min);
+        const dist = (resolved.max - resolved.min);
+        for (let i = 0; i < resolved.nrItems; i++) {
+            const x = dist * i / (resolved.nrItems - 1);
+            res.push(x + resolved.min);
         }
         return res;
     }

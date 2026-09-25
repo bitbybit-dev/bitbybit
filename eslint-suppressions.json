@@ -119,9 +119,6 @@
   "packages/dev/base/lib/api/services/lists.test.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "bitbybit/no-double-assertion": {
-      "count": 1
     }
   },
   "packages/dev/base/lib/api/services/lists.ts": {
@@ -517,9 +514,6 @@
   "packages/dev/occt/lib/services/operations.test.ts": {
     "@typescript-eslint/require-await": {
       "count": 11
-    },
-    "bitbybit/no-double-assertion": {
-      "count": 1
     }
   },
   "packages/dev/occt/lib/services/shape-fix.test.ts": {
@@ -573,7 +567,7 @@
       "count": 75
     },
     "bitbybit/no-double-assertion": {
-      "count": 2
+      "count": 1
     }
   },
   "packages/dev/occt/lib/shape-parser.ts": {

@@ -36,7 +36,7 @@ export class ThickSolidByJoinDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    offset = 1;
+    offset?: number | undefined = 1;
     /**
      * How close two points must be to count as the same when the offset walls are joined, in model
      * units.
@@ -45,30 +45,30 @@ export class ThickSolidByJoinDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.e-3;
+    tolerance?: number | undefined = 1.e-3;
     /**
      * When true, the offset faces are intersected with each other rather than joined by their
      * parallels; the kernel's default is false.
      * @default false
      */
-    intersection = false;
+    intersection?: boolean | undefined = false;
     /**
      * Whether the kernel should look for self-intersections in the result; not implemented by the
      * kernel, so leave it false.
      * @default false
      */
-    selfIntersection = false;
+    selfIntersection?: boolean | undefined = false;
     /**
      * How the offset walls meet at corners: `arc` rounds them, `intersection` extends them to a
      * sharp corner, `tangent` keeps them tangent.
      * @default arc
      */
-    joinType = joinTypeEnum.arc;
+    joinType?: joinTypeEnum | undefined = joinTypeEnum.arc;
     /**
      * When true, the internal edges the offset can leave on the walls are removed from the result.
      * @default false
      */
-    removeIntEdges = false;
+    removeIntEdges?: boolean | undefined = false;
 }
 /**
  * A shape and a scale, rotation and translation for `transforms.transform`, applied in that order
@@ -91,12 +91,12 @@ export class TransformDto<T> {
      * The vector the shape moves by, in model units, applied last.
      * @default [0,0,0]
      */
-    translation: Base.Vector3 = [0, 0, 0];
+    translation?: Base.Vector3 | undefined = [0, 0, 0];
     /**
      * The direction of the rotation axis, which passes through the origin.
      * @default [0,1,0]
      */
-    rotationAxis: Base.Vector3 = [0, 1, 0];
+    rotationAxis?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The rotation about the axis, in degrees, applied after the scale.
      * @default 0
@@ -104,7 +104,7 @@ export class TransformDto<T> {
      * @maximum 360
      * @step 1
      */
-    rotationAngle = 0;
+    rotationAngle?: number | undefined = 0;
     /**
      * The uniform scale about the origin, applied first; 1 keeps the size.
      * @default 1
@@ -112,7 +112,7 @@ export class TransformDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    scaleFactor = 1;
+    scaleFactor?: number | undefined = 1;
 }
 /**
  * Shapes and one scale, rotation and translation each for `transforms.transformShapes`; all the
@@ -136,22 +136,22 @@ export class TransformShapesDto<T> {
      * One translation vector per shape, in model units.
      * @default [[0,0,0]]
      */
-    translations: Base.Vector3[] = [[0, 0, 0]];
+    translations?: Base.Vector3[] | undefined = [[0, 0, 0]];
     /**
      * One rotation axis direction per shape, each through the origin.
      * @default [[0,1,0]]
      */
-    rotationAxes: Base.Vector3[] = [[0, 1, 0]];
+    rotationAxes?: Base.Vector3[] | undefined = [[0, 1, 0]];
     /**
      * One rotation angle per shape, in degrees.
      * @default [0]
      */
-    rotationAngles: number[] = [0];
+    rotationAngles?: number[] | undefined = [0];
     /**
      * One uniform scale factor per shape, about the origin.
      * @default [1]
      */
-    scaleFactors: number[] = [1];
+    scaleFactors?: number[] | undefined = [1];
 }
 /**
  * A shape and a vector for `transforms.translate`.
@@ -170,7 +170,7 @@ export class TranslateDto<T> {
      * The vector the shape moves by, in model units.
      * @default [0, 0, 0]
      */
-    translation: Base.Vector3 = [0, 0, 0];
+    translation?: Base.Vector3 | undefined = [0, 0, 0];
 }
 /**
  * Shapes and one vector each for `transforms.translateShapes`; the two lists must have the same
@@ -190,7 +190,7 @@ export class TranslateShapesDto<T> {
      * One vector per shape, in model units.
      * @default [[0, 0, 0]]
      */
-    translations: Base.Vector3[] = [[0, 0, 0]];
+    translations?: Base.Vector3[] | undefined = [[0, 0, 0]];
 }
 /**
  * A shape and two full frames for `transforms.alignNormAndAxis`: the point, normal and axis the
@@ -215,33 +215,33 @@ export class AlignNormAndAxisDto<T> {
      * The point on the shape that is carried onto `toOrigin`.
      * @default [0, 0, 0]
      */
-    fromOrigin: Base.Point3 = [0, 0, 0];
+    fromOrigin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal direction at the shape's frame, carried onto `toNorm`.
      * @default [1, 0, 0]
      */
-    fromNorm: Base.Vector3 = [1, 0, 0];
+    fromNorm?: Base.Vector3 | undefined = [1, 0, 0];
     /**
      * An axis direction in the plane of the normal at the shape's frame, carried onto `toAx`; it
      * fixes the spin about the normal.
      * @default [0, 0, 1]
      */
-    fromAx: Base.Vector3 = [0, 0, 1];
+    fromAx?: Base.Vector3 | undefined = [0, 0, 1];
     /**
      * The point `fromOrigin` lands on.
      * @default [0, 1, 0]
      */
-    toOrigin: Base.Point3 = [0, 1, 0];
+    toOrigin?: Base.Point3 | undefined = [0, 1, 0];
     /**
      * The direction `fromNorm` lands on.
      * @default [0, 1, 0]
      */
-    toNorm: Base.Vector3 = [0, 1, 0];
+    toNorm?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The direction `fromAx` lands on.
      * @default [0, 0, 1]
      */
-    toAx: Base.Vector3 = [0, 0, 1];
+    toAx?: Base.Vector3 | undefined = [0, 0, 1];
 }
 /**
  * A shape, a point and direction on it, and the point and direction to land on, for
@@ -264,22 +264,22 @@ export class AlignDto<T> {
      * The point on the shape that is carried onto `toOrigin`.
      * @default [0, 0, 0]
      */
-    fromOrigin: Base.Point3 = [0, 0, 0];
+    fromOrigin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction at the shape's frame that is carried onto `toDirection`.
      * @default [0, 0, 1]
      */
-    fromDirection: Base.Vector3 = [0, 0, 1];
+    fromDirection?: Base.Vector3 | undefined = [0, 0, 1];
     /**
      * The point `fromOrigin` lands on.
      * @default [0, 1, 0]
      */
-    toOrigin: Base.Point3 = [0, 1, 0];
+    toOrigin?: Base.Point3 | undefined = [0, 1, 0];
     /**
      * The direction `fromDirection` lands on.
      * @default [0, 1, 0]
      */
-    toDirection: Base.Vector3 = [0, 1, 0];
+    toDirection?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * Shapes and one from and to frame each for `transforms.alignShapes`; all the lists must have the
@@ -302,22 +302,22 @@ export class AlignShapesDto<T> {
      * One point per shape that is carried onto the matching `toOrigins` entry.
      * @default [[0, 0, 0]]
      */
-    fromOrigins: Base.Point3[] = [[0, 0, 0]];
+    fromOrigins?: Base.Point3[] | undefined = [[0, 0, 0]];
     /**
      * One direction per shape that is carried onto the matching `toDirections` entry.
      * @default [[0, 0, 1]]
      */
-    fromDirections: Base.Vector3[] = [[0, 0, 1]];
+    fromDirections?: Base.Vector3[] | undefined = [[0, 0, 1]];
     /**
      * One point per shape for its `fromOrigins` entry to land on.
      * @default [[0, 1, 0]]
      */
-    toOrigins: Base.Point3[] = [[0, 1, 0]];
+    toOrigins?: Base.Point3[] | undefined = [[0, 1, 0]];
     /**
      * One direction per shape for its `fromDirections` entry to land on.
      * @default [[0, 1, 0]]
      */
-    toDirections: Base.Vector3[] = [[0, 1, 0]];
+    toDirections?: Base.Vector3[] | undefined = [[0, 1, 0]];
 }
 
 /**
@@ -339,12 +339,12 @@ export class MirrorDto<T> {
      * A point on the mirror axis.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the mirror axis.
      * @default [0, 0, 1]
      */
-    direction: Base.Vector3 = [0, 0, 1];
+    direction?: Base.Vector3 | undefined = [0, 0, 1];
 }
 /**
  * Shapes and one mirror axis each for `transforms.mirrorShapes`; all the lists must have the same
@@ -365,12 +365,12 @@ export class MirrorShapesDto<T> {
      * One point per shape on its mirror axis.
      * @default [[0, 0, 0]]
      */
-    origins: Base.Point3[] = [[0, 0, 0]];
+    origins?: Base.Point3[] | undefined = [[0, 0, 0]];
     /**
      * One mirror axis direction per shape.
      * @default [[0, 0, 1]]
      */
-    directions: Base.Vector3[] = [[0, 0, 1]];
+    directions?: Base.Vector3[] | undefined = [[0, 0, 1]];
 }
 /**
  * A shape and a plane for `transforms.mirrorAlongNormal`, which mirrors the shape across the plane
@@ -391,12 +391,12 @@ export class MirrorAlongNormalDto<T> {
      * A point on the mirror plane.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the mirror plane.
      * @default [0, 0, 1]
      */
-    normal: Base.Vector3 = [0, 0, 1];
+    normal?: Base.Vector3 | undefined = [0, 0, 1];
 }
 /**
  * Shapes and one mirror plane each for `transforms.mirrorAlongNormalShapes`; all the lists must
@@ -417,12 +417,12 @@ export class MirrorAlongNormalShapesDto<T> {
      * One point per shape on its mirror plane.
      * @default [[0, 0, 0]]
      */
-    origins: Base.Point3[] = [[0, 0, 0]];
+    origins?: Base.Point3[] | undefined = [[0, 0, 0]];
     /**
      * One mirror plane normal per shape.
      * @default [[0, 0, 1]]
      */
-    normals: Base.Vector3[] = [[0, 0, 1]];
+    normals?: Base.Vector3[] | undefined = [[0, 0, 1]];
 }
 /**
  * A shape, a direction for its Y axis and a point to move it to, for
@@ -443,12 +443,12 @@ export class AlignAndTranslateDto<T> {
      * The direction the shape's Y axis should point along after placing.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The point the shape's origin is moved to, in model units.
      * @default [0, 0, 0]
      */
-    center: Base.Vector3 = [0, 0, 0];
+    center?: Base.Vector3 | undefined = [0, 0, 0];
 }
 /**
  * A shape and what to merge for `shapes.shape.unifySameDomain`, which joins faces and edges that
@@ -470,17 +470,17 @@ export class UnifySameDomainDto<T> {
      * When true, edges that continue each other on one curve are merged into one.
      * @default true
      */
-    unifyEdges = true;
+    unifyEdges?: boolean | undefined = true;
     /**
      * When true, faces that lie on one surface are merged into one.
      * @default true
      */
-    unifyFaces = true;
+    unifyFaces?: boolean | undefined = true;
     /**
      * When true, neighboring B-spline edges are joined into a single B-spline where possible.
      * @default true
      */
-    concatBSplines = true;
+    concatBSplines?: boolean | undefined = true;
 }
 
 /**
@@ -517,13 +517,13 @@ export class FilterFacesPointsDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.0e-4;
+    tolerance?: number | undefined = 1.0e-4;
     /**
      * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
      * outside without the exact test; a quick reject for many points far from the face.
      * @default false
      */
-    useBndBox = false;
+    useBndBox?: boolean | undefined = false;
     /**
      * How far beyond the bounding box a point may lie and still get the exact test when
      * `useBndBox` is on, in model units.
@@ -532,33 +532,33 @@ export class FilterFacesPointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    gapTolerance = 0.1;
+    gapTolerance?: number | undefined = 0.1;
     /**
      * When true, points inside a face are kept.
      * @default true
      */
-    keepIn = true;
+    keepIn?: boolean | undefined = true;
     /**
      * When true, points on the boundary of a face are kept.
      * @default true
      */
-    keepOn = true;
+    keepOn?: boolean | undefined = true;
     /**
      * When true, points outside a face are kept.
      * @default false
      */
-    keepOut = false;
+    keepOut?: boolean | undefined = false;
     /**
      * When true, points the kernel cannot place inside, on or outside a face are kept.
      * @default false
      */
-    keepUnknown = false;
+    keepUnknown?: boolean | undefined = false;
     /**
      * When true, the kept points of all faces come back in one list; when false, one list per face
      * in the order given.
      * @default true
      */
-    flatPointsArray = true;
+    flatPointsArray?: boolean | undefined = true;
 }
 /**
  * A face, points and which groups to keep for `shapes.face.filterFacePoints`, which sorts each
@@ -593,13 +593,13 @@ export class FilterFacePointsDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.0e-4;
+    tolerance?: number | undefined = 1.0e-4;
     /**
      * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
      * outside without the exact test; a quick reject for many points far from the face.
      * @default false
      */
-    useBndBox = false;
+    useBndBox?: boolean | undefined = false;
     /**
      * How far beyond the bounding box a point may lie and still get the exact test when
      * `useBndBox` is on, in model units.
@@ -608,27 +608,27 @@ export class FilterFacePointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    gapTolerance = 0.1;
+    gapTolerance?: number | undefined = 0.1;
     /**
      * When true, points inside the face are kept.
      * @default true
      */
-    keepIn = true;
+    keepIn?: boolean | undefined = true;
     /**
      * When true, points on the boundary of the face are kept.
      * @default true
      */
-    keepOn = true;
+    keepOn?: boolean | undefined = true;
     /**
      * When true, points outside the face are kept.
      * @default false
      */
-    keepOut = false;
+    keepOut?: boolean | undefined = false;
     /**
      * When true, points the kernel cannot place inside, on or outside the face are kept.
      * @default false
      */
-    keepUnknown = false;
+    keepUnknown?: boolean | undefined = false;
 }
 /**
  * A solid, points and which groups to keep for `shapes.solid.filterSolidPoints`, which sorts each
@@ -661,27 +661,27 @@ export class FilterSolidPointsDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.0e-4;
+    tolerance?: number | undefined = 1.0e-4;
     /**
      * When true, points inside the solid are kept.
      * @default true
      */
-    keepIn = true;
+    keepIn?: boolean | undefined = true;
     /**
      * When true, points on the surface of the solid are kept.
      * @default true
      */
-    keepOn = true;
+    keepOn?: boolean | undefined = true;
     /**
      * When true, points outside the solid are kept.
      * @default false
      */
-    keepOut = false;
+    keepOut?: boolean | undefined = false;
     /**
      * When true, points the kernel could not classify are kept.
      * @default false
      */
-    keepUnknown = false;
+    keepUnknown?: boolean | undefined = false;
 }
 /**
  * Shapes and one direction and point each for `transforms.alignAndTranslateShapes`; all the lists
@@ -702,12 +702,12 @@ export class AlignAndTranslateShapesDto<T> {
      * One direction per shape for its Y axis to point along.
      * @default [[0, 1, 0]]
      */
-    directions: Base.Vector3[] = [[0, 1, 0]];
+    directions?: Base.Vector3[] | undefined = [[0, 1, 0]];
     /**
      * One point per shape for its origin to move to, in model units.
      * @default [[0, 0, 0]]
      */
-    centers: Base.Vector3[] = [[0, 0, 0]];
+    centers?: Base.Vector3[] | undefined = [[0, 0, 0]];
 }
 /**
  * A shape, an axis through the origin and an angle for `transforms.rotate`.
@@ -727,7 +727,7 @@ export class RotateDto<T> {
      * The direction of the rotation axis, which passes through the origin.
      * @default [0, 0, 1]
      */
-    axis: Base.Vector3 = [0, 0, 1];
+    axis?: Base.Vector3 | undefined = [0, 0, 1];
     /**
      * The rotation in degrees, following the right-hand rule about the axis.
      * @default 0
@@ -735,7 +735,7 @@ export class RotateDto<T> {
      * @maximum 360
      * @step 1
      */
-    angle = 0;
+    angle?: number | undefined = 0;
 }
 /**
  * A shape, an angle, a center and an axis for `transforms.rotateAroundCenter`, which rotates about
@@ -757,17 +757,17 @@ export class RotateAroundCenterDto<T> {
      * The rotation in degrees, following the right-hand rule about the axis.
      * @default 0
      */
-    angle = 0;
+    angle?: number | undefined = 0;
     /**
      * The point the rotation axis passes through.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the rotation axis.
      * @default [0, 0, 1]
      */
-    axis: Base.Vector3 = [0, 0, 1];
+    axis?: Base.Vector3 | undefined = [0, 0, 1];
 }
 /**
  * Shapes and one axis and angle each for `transforms.rotateShapes`; all the lists must have the
@@ -788,12 +788,12 @@ export class RotateShapesDto<T> {
      * One rotation axis direction per shape, each through the origin.
      * @default [[0, 0, 1]]
      */
-    axes: Base.Vector3[] = [[0, 0, 1]];
+    axes?: Base.Vector3[] | undefined = [[0, 0, 1]];
     /**
      * One rotation angle per shape, in degrees.
      * @default [0]
      */
-    angles: number[] = [0];
+    angles?: number[] | undefined = [0];
 }
 /**
  * Shapes and one angle, center and axis each for `transforms.rotateAroundCenterShapes`; all the
@@ -815,17 +815,17 @@ export class RotateAroundCenterShapesDto<T> {
      * One rotation angle per shape, in degrees.
      * @default [0]
      */
-    angles = [0];
+    angles?: number[] | undefined = [0];
     /**
      * One point per shape for its rotation axis to pass through.
      * @default [[0, 0, 0]]
      */
-    centers: Base.Point3[] = [[0, 0, 0]];
+    centers?: Base.Point3[] | undefined = [[0, 0, 0]];
     /**
      * One rotation axis direction per shape.
      * @default [[0, 0, 1]]
      */
-    axes: Base.Vector3[] = [[0, 0, 1]];
+    axes?: Base.Vector3[] | undefined = [[0, 0, 1]];
 }
 /**
  * A shape and a factor for `transforms.scale`, which scales uniformly about the origin.
@@ -847,7 +847,7 @@ export class ScaleDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    factor = 1;
+    factor?: number | undefined = 1;
 }
 /**
  * Shapes and one factor each for `transforms.scaleShapes`; the two lists must have the same length.
@@ -866,7 +866,7 @@ export class ScaleShapesDto<T> {
      * One uniform scale factor per shape, about the origin.
      * @default [1]
      */
-    factors: number[] = [1];
+    factors?: number[] | undefined = [1];
 }
 /**
  * A shape, three factors and a center for `transforms.scale3d`, which scales each axis on its own
@@ -887,12 +887,12 @@ export class Scale3DDto<T> {
      * The factors along X, Y and Z; unequal factors stretch the shape.
      * @default [1, 1, 1]
      */
-    scale: Base.Vector3 = [1, 1, 1];
+    scale?: Base.Vector3 | undefined = [1, 1, 1];
     /**
      * The point that stays in place while everything else scales away from or toward it.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * Shapes and one factor triple and center each for `transforms.scale3dShapes`; all the lists must
@@ -913,12 +913,12 @@ export class Scale3DShapesDto<T> {
      * One set of X, Y and Z factors per shape.
      * @default [[1, 1, 1]]
      */
-    scales: Base.Vector3[] = [[1, 1, 1]];
+    scales?: Base.Vector3[] | undefined = [[1, 1, 1]];
     /**
      * One point per shape that stays in place while it scales.
      * @default [[0, 0, 0]]
      */
-    centers: Base.Point3[] = [[0, 0, 0]];
+    centers?: Base.Point3[] | undefined = [[0, 0, 0]];
 }
 // Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
 // matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
@@ -998,12 +998,12 @@ export class ScaleFromCenterDto<T> {
      * @default 1
      * @step 0.1
      */
-    factor = 1;
+    factor?: number | undefined = 1;
     /**
      * The point that stays in place while everything else scales away from or toward it.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * A shape and a point for `transforms.mirrorAboutPoint`, which mirrors the shape through the point.
@@ -1022,7 +1022,7 @@ export class MirrorAboutPointDto<T> {
      * The point every part of the shape is mirrored through.
      * @default [0, 0, 0]
      */
-    point: Base.Point3 = [0, 0, 0];
+    point?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * A shape and a quaternion for `transforms.rotateByQuaternion`, which rotates the shape about the
@@ -1043,7 +1043,7 @@ export class RotateByQuaternionDto<T> {
      * rotation.
      * @default [0, 0, 0, 1]
      */
-    quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    quaternion?: [number, number, number, number] | undefined = [0, 0, 0, 1];
 }
 /**
  * A translation, Euler rotation and uniform scale for `transforms.composeTransform`, combined into
@@ -1059,19 +1059,19 @@ export class ComposeTransformDto {
      * The move as `[x, y, z]`, in model units, applied last.
      * @default [0, 0, 0]
      */
-    translation: Base.Vector3 = [0, 0, 0];
+    translation?: Base.Vector3 | undefined = [0, 0, 0];
     /**
      * Euler angles `[rx, ry, rz]` in degrees about the X, Y and Z axes; the Z turn is applied
      * first, then Y, then X.
      * @default [0, 0, 0]
      */
-    rotation: Base.Vector3 = [0, 0, 0];
+    rotation?: Base.Vector3 | undefined = [0, 0, 0];
     /**
      * The uniform scale about the origin, applied first; 1 keeps the size.
      * @default 1
      * @step 0.1
      */
-    scale = 1;
+    scale?: number | undefined = 1;
 }
 /**
  * A matrix, or a list of matrices, for `transforms.multiplyTransforms`, which folds them into one.
@@ -1111,7 +1111,7 @@ export class TranslationToMatrixDto {
      * The move as `[x, y, z]`, in model units.
      * @default [0, 0, 0]
      */
-    translation: Base.Vector3 = [0, 0, 0];
+    translation?: Base.Vector3 | undefined = [0, 0, 0];
 }
 /**
  * An axis, an angle and an optional center for `transforms.rotationAxisAngleToMatrix`.
@@ -1126,18 +1126,18 @@ export class RotationAxisAngleToMatrixDto {
      * The direction of the rotation axis.
      * @default [0, 0, 1]
      */
-    axis: Base.Vector3 = [0, 0, 1];
+    axis?: Base.Vector3 | undefined = [0, 0, 1];
     /**
      * The rotation in degrees, following the right-hand rule about the axis.
      * @default 0
      * @step 1
      */
-    angle = 0;
+    angle?: number | undefined = 0;
     /**
      * The point the axis passes through; the origin when left at its default.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * A factor and an optional center for `transforms.scaleUniformToMatrix`.
@@ -1152,13 +1152,13 @@ export class ScaleUniformToMatrixDto {
      * @default 1
      * @step 0.1
      */
-    factor = 1;
+    factor?: number | undefined = 1;
     /**
      * The point that stays in place while everything else scales; the origin when left at its
      * default.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * A point for `transforms.mirrorPointToMatrix`, the matrix of a mirror through that point.
@@ -1171,7 +1171,7 @@ export class MirrorPointToMatrixDto {
      * The point every part of a shape is mirrored through.
      * @default [0, 0, 0]
      */
-    point: Base.Point3 = [0, 0, 0];
+    point?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * An axis for `transforms.mirrorAxisToMatrix`, the matrix of a mirror across the line through
@@ -1186,12 +1186,12 @@ export class MirrorAxisToMatrixDto {
      * A point on the mirror axis.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the mirror axis; any length will do, but not a zero vector.
      * @default [1, 0, 0]
      */
-    direction: Base.Vector3 = [1, 0, 0];
+    direction?: Base.Vector3 | undefined = [1, 0, 0];
 }
 /**
  * A plane for `transforms.mirrorPlaneToMatrix`, the matrix of a mirror across the plane through
@@ -1206,12 +1206,12 @@ export class MirrorPlaneToMatrixDto {
      * A point on the mirror plane.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the mirror plane; any length will do, but not a zero vector.
      * @default [0, 0, 1]
      */
-    normal: Base.Vector3 = [0, 0, 1];
+    normal?: Base.Vector3 | undefined = [0, 0, 1];
 }
 /**
  * A quaternion for `transforms.quaternionToMatrix`, which builds the matrix of that rotation.
@@ -1225,7 +1225,7 @@ export class QuaternionToMatrixDto {
      * rotation.
      * @default [0, 0, 0, 1]
      */
-    quaternion: [number, number, number, number] = [0, 0, 0, 1];
+    quaternion?: [number, number, number, number] | undefined = [0, 0, 0, 1];
 }
 /**
  * Decomposed placement transform of a shape or label.

@@ -2,6 +2,8 @@ import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bit
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Structural queries over an OpenCascade shape seen as a graph: which faces touch, which faces an
@@ -252,7 +254,8 @@ export class OCCTBrepGraph {
      * ```
      */
     reconstruct(inputs: Inputs.OCCT.BRepGraphReconstructDto<TopoDS_Shape>): TopoDS_Shape {
-        const shape = this.occ.BRepGraphReconstruct(inputs.shape, inputs.kind, inputs.index);
+        const resolved = resolveDto(Inputs.OCCT.BRepGraphReconstructDto, inputs) as Resolved.OCCT.BRepGraphReconstructDto<TopoDS_Shape>;
+        const shape = this.occ.BRepGraphReconstruct(resolved.shape, resolved.kind, resolved.index);
         if (shape.IsNull()) {
             throw new Error("Could not reconstruct a sub-shape for the given node.");
         }

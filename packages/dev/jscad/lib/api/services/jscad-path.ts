@@ -1,9 +1,10 @@
-import { GeometryHelper } from "@bitbybit-dev/base";
+import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
 import { Base } from "../inputs";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
 import { asPath } from "./entity-narrowing";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Building JSCAD paths, the 2D polylines that walls are extruded along, offsets follow and filled
@@ -35,8 +36,9 @@ export class JSCADPath {
      * ```
      */
     createFromPoints(inputs: Inputs.JSCAD.PathFromPointsDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
-        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
+        const resolved = resolveDto(Inputs.JSCAD.PathFromPointsDto, inputs) as Resolved.JSCAD.PathFromPointsDto;
+        const twoDimensionalPoints = resolved.points.map(pt => [pt[0], pt[1]]);
+        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, resolved.closed);
     }
 
     /**
@@ -81,8 +83,9 @@ export class JSCADPath {
      * ```
      */
     createFromPolyline(inputs: Inputs.JSCAD.PathFromPolylineDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.polyline.points.map(pt => [pt[0], pt[1]]);
-        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, inputs.closed);
+        const resolved = resolveDto(Inputs.JSCAD.PathFromPolylineDto, inputs, { polyline: Inputs.JSCAD.PolylinePropertiesDto }) as Resolved.JSCAD.PathFromPolylineDto;
+        const twoDimensionalPoints = resolved.polyline.points.map(pt => [pt[0], pt[1]]);
+        return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints, resolved.closed);
     }
 
     /**
@@ -181,16 +184,17 @@ export class JSCADPath {
      * ```
      */
     appendArc(inputs: Inputs.JSCAD.PathAppendArcDto): Inputs.JSCAD.JSCADEntity {
-        const endpoint = [inputs.endPoint[0], inputs.endPoint[1]] as JSCAD.maths.vec2.Vec2;
-        const radius = [inputs.radiusX, inputs.radiusY] as JSCAD.maths.vec2.Vec2;
+        const resolved = resolveDto(Inputs.JSCAD.PathAppendArcDto, inputs) as Resolved.JSCAD.PathAppendArcDto;
+        const endpoint = [resolved.endPoint[0], resolved.endPoint[1]] as JSCAD.maths.vec2.Vec2;
+        const radius = [resolved.radiusX, resolved.radiusY] as JSCAD.maths.vec2.Vec2;
         return this.jscad.geometries.path2.appendArc({
             endpoint ,
             radius,
-            xaxisrotation: this.math.degToRad({number: inputs.xAxisRotation}),
-            clockwise: inputs.clockwise,
-            large: inputs.large,
-            segments: inputs.segments,
-        }, asPath(inputs.path, "path operations"));
+            xaxisrotation: this.math.degToRad({number: resolved.xAxisRotation}),
+            clockwise: resolved.clockwise,
+            large: resolved.large,
+            segments: resolved.segments,
+        }, asPath(resolved.path, "path operations"));
     }
 
     private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {

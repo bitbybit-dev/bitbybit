@@ -70,7 +70,7 @@ describe("JSCADExpansions", () => {
             const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
 
             // Act
-            const expanded = jscad.expansions.expand({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
+            const expanded = jscad.expansions.expand({ geometry: square, delta: 1, segments: 16 });
 
             expect(kernel.measurements.measureArea(expanded)).toBeGreaterThan(16);
         });
@@ -81,7 +81,7 @@ describe("JSCADExpansions", () => {
 
             // Act
             const rounded = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16, corners: Inputs.JSCAD.solidCornerTypeEnum.round });
-            const edged = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto);
+            const edged = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16 });
 
             expect(kernel.measurements.measureArea(edged)).toBeGreaterThan(kernel.measurements.measureArea(rounded));
         });

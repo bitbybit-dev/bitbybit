@@ -8,6 +8,7 @@ import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
 import * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
+import * as Resolved from "../../api/resolved-inputs";
 
 describe("OCCTAssemblyManager unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -156,7 +157,7 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(node.colorRgba).toEqual({ r: 1, g: 0, b: 0, a: 0.5 });
         });
 
-        it("should create an instance node with minimal properties", () => {
+        it("should give an instance node with minimal properties the identity placement", () => {
             // Act
             const node = manager.createInstanceNode({
                 id: "simple-instance",
@@ -169,7 +170,9 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(node.type).toBe("instance");
             expect(node.partId).toBe("part-1");
             expect(node.parentId).toBeUndefined();
-            expect(node.scale).toBeUndefined();
+            expect(node.scale).toBe(1);
+            expect(node.translation).toEqual([0, 0, 0]);
+            expect(node.rotation).toEqual([0, 0, 0]);
         });
 
         it("should always set type to instance", () => {
@@ -1241,7 +1244,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const meshes = occHelper.meshingService.docToMeshes(
-                new Inputs.OCCT.DocToMeshesDto(document, 0.1));
+                new Inputs.OCCT.DocToMeshesDto(document, 0.1) as Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>);
 
             // Assert
             expect(meshes.length).toBeGreaterThan(0);
@@ -1261,7 +1264,7 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const mesh = occHelper.meshingService.docToMesh(
-                new Inputs.OCCT.DocToMeshDto(document, 0.1));
+                new Inputs.OCCT.DocToMeshDto(document, 0.1) as Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>);
 
             // Assert
             expect(mesh.faceList.length).toBeGreaterThan(0);
@@ -1276,9 +1279,9 @@ describe("OCCTAssemblyManager unit tests", () => {
 
             // Act
             const meshes = occHelper.meshingService.docToMeshes(
-                new Inputs.OCCT.DocToMeshesDto(noDocument, 0.1));
+                new Inputs.OCCT.DocToMeshesDto(noDocument, 0.1) as Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>);
             const mesh = occHelper.meshingService.docToMesh(
-                new Inputs.OCCT.DocToMeshDto(noDocument, 0.1));
+                new Inputs.OCCT.DocToMeshDto(noDocument, 0.1) as Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>);
 
             // Assert
             expect(meshes).toEqual([]);

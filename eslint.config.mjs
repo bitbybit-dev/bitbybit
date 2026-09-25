@@ -139,7 +139,8 @@ export default defineConfig([
     // commentary at all but input or output: a worker package's lib/api is emitted by
     // scripts/gen-worker-api.mjs and check:worker-api compares it byte for byte, so an edit there is
     // undone by the next regeneration and fails a gate in the meantime; a kernel's lib/api/dto-registry.ts
-    // is emitted by scripts/gen-dto-meta.mjs and held by check:dto-meta the same way. The SDK's generated types and
+    // and a package's lib/api/resolved-inputs are emitted by scripts/gen-dto-meta.mjs and held by
+    // check:dto-meta the same way. The SDK's generated types and
     // request schemas are written by the API's own generators, and their banner is not a note but a
     // record: it carries the catalog version that the release version registry checks for. The marker
     // line above every member of a worker API fragment
@@ -156,6 +157,7 @@ export default defineConfig([
             "**/lib/api/inputs/**",
             "packages/dev/*-worker/lib/api/**",
             "packages/dev/*/lib/api/dto-registry.ts",
+            "packages/dev/*/lib/api/resolved-inputs/**",
             "packages/dev/cad-cloud-sdk/src/types/schema-exports.ts",
             "packages/dev/cad-cloud-sdk/src/types/pipeline-operations.ts",
             "packages/dev/cad-cloud-sdk/src/types/generated.ts",

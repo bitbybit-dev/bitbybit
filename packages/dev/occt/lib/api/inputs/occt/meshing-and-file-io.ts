@@ -30,13 +30,13 @@ export class ShapeToMeshDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance and neighbors, at extra cost.
@@ -86,19 +86,19 @@ export class ShapeFacesToPolygonPointsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the points are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, the three points of each triangle come in the opposite order, for tools that wind
      * triangles the other way.
      * @default false
      */
-    reversedPoints = false;
+    reversedPoints?: boolean | undefined = false;
 }
 /**
  * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
@@ -127,13 +127,13 @@ export class ShapesToMeshesDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance and neighbors, at extra cost.
@@ -187,13 +187,13 @@ export class DocToMeshDto<U> {
      * @maximum Infinity
      * @step 0.001
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -247,13 +247,13 @@ export class DocToMeshesDto<U> {
      * @maximum Infinity
      * @step 0.001
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, each face and edge entry also carries its area or length, center of mass, surface
      * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -299,12 +299,12 @@ export class SaveStepDto<T> {
      * The name the downloaded file gets; `.step` is appended when missing.
      * @default shape.step
      */
-    fileName = "shape.step";
+    fileName?: string | undefined = "shape.step";
     /**
      * When true, the shape is turned so this library's Y-up becomes STEP's Z-up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
      * system.
@@ -340,18 +340,18 @@ export class SaveStlDto<T> {
      * The name the downloaded file gets.
      * @default shape.stl
      */
-    fileName = "shape.stl";
+    fileName?: string | undefined = "shape.stl";
     /**
      * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
      * and makes a bigger file.
      * @default 0.01
      */
-    precision = 0.01;
+    precision?: number | undefined = 0.01;
     /**
      * When true, the shape is turned so this library's Y-up becomes Z-up.
      * @default false
      */
-    adjustYtoZ = false;
+    adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the text.
@@ -391,7 +391,7 @@ export class ShapeToDxfPathsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    angularDeflection = 0.1;
+    angularDeflection?: number | undefined = 0.1;
     /**
      * The largest distance, in model units, the traced polyline may stray from the curve; smaller
      * follows it more closely.
@@ -400,7 +400,7 @@ export class ShapeToDxfPathsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    curvatureDeflection = 0.1;
+    curvatureDeflection?: number | undefined = 0.1;
     /**
      * The fewest points any edge is traced with, however straight.
      * @default 2
@@ -408,7 +408,7 @@ export class ShapeToDxfPathsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minimumOfPoints = 2;
+    minimumOfPoints?: number | undefined = 2;
     /**
      * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
@@ -416,7 +416,7 @@ export class ShapeToDxfPathsDto<T> {
      * @maximum Infinity
      * @step 1.0e-9
      */
-    uTolerance = 1.0e-9;
+    uTolerance?: number | undefined = 1.0e-9;
     /**
      * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
@@ -424,7 +424,7 @@ export class ShapeToDxfPathsDto<T> {
      * @maximum Infinity
      * @step 1.0e-7
      */
-    minimumLength = 1.0e-7;
+    minimumLength?: number | undefined = 1.0e-7;
 }
 
 /**
@@ -446,12 +446,12 @@ export class DxfPathsWithLayerDto {
      * The name of the DXF layer the paths go on.
      * @default Default
      */
-    layer = "Default";
+    layer?: string | undefined = "Default";
     /**
      * The color of the paths as a hex string such as `#000000`.
      * @default #000000
      */
-    color: Base.Color = "#000000";
+    color?: Base.Color | undefined = "#000000";
 }
 
 /**
@@ -473,12 +473,12 @@ export class DxfPathsPartsListDto {
      * How colors are written: `aci` as AutoCAD's indexed colors, `truecolor` as RGB.
      * @default aci
      */
-    colorFormat: dxfColorFormatEnum = dxfColorFormatEnum.aci;
+    colorFormat?: dxfColorFormatEnum | undefined = dxfColorFormatEnum.aci;
     /**
      * The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000.
      * @default AC1009
      */
-    acadVersion: dxfAcadVersionEnum = dxfAcadVersionEnum.AC1009;
+    acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
     /**
      * The name the downloaded file gets.
      * @default bitbybit-dev.dxf
@@ -558,12 +558,12 @@ export class LoadStepOrIgesDto {
      * compressed.
      * @default shape.step
      */
-    fileName = "shape.step";
+    fileName?: string | undefined = "shape.step";
     /**
      * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
      * @default true
      */
-    adjustZtoY = true;
+    adjustZtoY?: boolean | undefined = true;
 }
 
 /**
@@ -604,7 +604,7 @@ export class ConvertStepToGltfDto {
      * @maximum 10
      * @step 0.001
      */
-    meshPrecision = 0.005;
+    meshPrecision?: number | undefined = 0.005;
     /**
      * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
      * smoother curves and more triangles.
@@ -613,25 +613,25 @@ export class ConvertStepToGltfDto {
      * @maximum 3.14159
      * @step 0.05
      */
-    meshAngle = 0.5;
+    meshAngle?: number | undefined = 0.5;
     /**
      * When true, `meshPrecision` scales with each part's size, so small fasteners and large
      * housings both mesh well; when false it is an absolute distance.
      * @default true
      */
-    meshRelative = true;
+    meshRelative?: boolean | undefined = true;
     /**
      * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
      * speed.
      * @default false
      */
-    internalVerticesMode = false;
+    internalVerticesMode?: boolean | undefined = false;
     /**
      * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
      * speed.
      * @default false
      */
-    controlSurfaceDeflection = false;
+    controlSurfaceDeflection?: boolean | undefined = false;
 }
 
 /**
@@ -646,7 +646,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * When true, the geometry is compressed with Draco.
      * @default true
      */
-    useDraco = true;
+    useDraco?: boolean | undefined = true;
     /**
      * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
@@ -654,7 +654,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 10
      * @step 1
      */
-    dracoCompressionLevel = 7;
+    dracoCompressionLevel?: number | undefined = 7;
     /**
      * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
@@ -662,7 +662,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 31
      * @step 1
      */
-    dracoQuantizePositionBits = 14;
+    dracoQuantizePositionBits?: number | undefined = 14;
     /**
      * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
@@ -670,7 +670,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeNormalBits = 10;
+    dracoQuantizeNormalBits?: number | undefined = 10;
     /**
      * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
      * precision.
@@ -679,7 +679,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeTexcoordBits = 12;
+    dracoQuantizeTexcoordBits?: number | undefined = 12;
     /**
      * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
@@ -687,7 +687,7 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeColorBits = 8;
+    dracoQuantizeColorBits?: number | undefined = 8;
     /**
      * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
      * precision.
@@ -696,12 +696,12 @@ export class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeGenericBits = 12;
+    dracoQuantizeGenericBits?: number | undefined = 12;
     /**
      * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
-    dracoUnifiedQuantization = false;
+    dracoUnifiedQuantization?: boolean | undefined = false;
 }
 
 /**
@@ -760,32 +760,32 @@ export class ConvertStepToGltfAdvancedDto {
      * When true, colors are read from the file; needed for a colored glTF.
      * @default true
      */
-    readColors = true;
+    readColors?: boolean | undefined = true;
 
     /**
      * When true, part names are read from the file; switch it off for faster parsing when names are
      * not needed.
      * @default true
      */
-    readNames = true;
+    readNames?: boolean | undefined = true;
 
     /**
      * When true, materials are read from the file; needed for material properties in the glTF.
      * @default true
      */
-    readMaterials = true;
+    readMaterials?: boolean | undefined = true;
 
     /**
      * When true, layer information is read from the file; rarely needed for glTF.
      * @default false
      */
-    readLayers = false;
+    readLayers?: boolean | undefined = false;
 
     /**
      * When true, validation properties are read from the file; rarely needed for glTF.
      * @default false
      */
-    readProps = false;
+    readProps?: boolean | undefined = false;
 
     // ==================== Mesh Options ====================
 
@@ -797,7 +797,7 @@ export class ConvertStepToGltfAdvancedDto {
      * @maximum 10
      * @step 0.001
      */
-    meshDeflection = 0.005;
+    meshDeflection?: number | undefined = 0.005;
 
     /**
      * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
@@ -807,13 +807,13 @@ export class ConvertStepToGltfAdvancedDto {
      * @maximum 3.14159
      * @step 0.1
      */
-    meshAngle = 0.5;
+    meshAngle?: number | undefined = 0.5;
 
     /**
      * When true, faces are meshed on several threads where the build allows it.
      * @default true
      */
-    meshParallel = true;
+    meshParallel?: boolean | undefined = true;
 
     /**
      * Above this many faces the assembly is meshed solid by solid to save memory; -1 meshes
@@ -823,28 +823,28 @@ export class ConvertStepToGltfAdvancedDto {
      * @maximum 500000
      * @step 10000
      */
-    faceCountThreshold = -1;
+    faceCountThreshold?: number | undefined = -1;
 
     /**
      * When true, `meshDeflection` scales with each part's size, so small fasteners and large
      * housings both mesh well; when false it is an absolute distance.
      * @default true
      */
-    meshRelative = true;
+    meshRelative?: boolean | undefined = true;
 
     /**
      * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
      * speed.
      * @default false
      */
-    internalVerticesMode = false;
+    internalVerticesMode?: boolean | undefined = false;
 
     /**
      * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
      * speed.
      * @default false
      */
-    controlSurfaceDeflection = false;
+    controlSurfaceDeflection?: boolean | undefined = false;
 
     // ==================== glTF Writer Options ====================
 
@@ -852,50 +852,50 @@ export class ConvertStepToGltfAdvancedDto {
      * When true, the faces of a part are joined into one mesh, which makes a smaller file.
      * @default true
      */
-    mergeFaces = true;
+    mergeFaces?: boolean | undefined = true;
 
     /**
      * When true, merged meshes use 16-bit indexes where they fit, which makes a smaller file.
      * @default true
      */
-    splitIndices16 = true;
+    splitIndices16?: boolean | undefined = true;
 
     /**
      * When true, the glTF is written on several threads, which helps with large files.
      * @default true
      */
-    parallelWrite = true;
+    parallelWrite?: boolean | undefined = true;
 
     /**
      * When true, textures are embedded in the GLB instead of referenced as separate files.
      * @default true
      */
-    embedTextures = true;
+    embedTextures?: boolean | undefined = true;
 
     /**
      * When true, texture coordinates are written even for meshes without textures.
      * @default false
      */
-    forceUVExport = false;
+    forceUVExport?: boolean | undefined = false;
 
     /**
      * What the glTF nodes are named after: the instance, the product, a combination, or nothing.
      * @default instance
      */
-    nodeNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+    nodeNameFormat?: gltfNameFormatEnum | undefined = gltfNameFormatEnum.instance;
 
     /**
      * What the glTF meshes are named after: the instance, the product, a combination, or nothing.
      * @default instance
      */
-    meshNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+    meshNameFormat?: gltfNameFormatEnum | undefined = gltfNameFormatEnum.instance;
 
     /**
      * How node placements are written: `compact` as translation, rotation and scale where possible,
      * `mat4` always as a matrix, `trs` always as the three parts.
      * @default compact
      */
-    transformFormat: gltfTransformFormatEnum = gltfTransformFormatEnum.compact;
+    transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
 
     // ==================== Coordinate System Options ====================
 
@@ -903,7 +903,7 @@ export class ConvertStepToGltfAdvancedDto {
      * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
      * @default true
      */
-    adjustZtoY = true;
+    adjustZtoY?: boolean | undefined = true;
 
     /**
      * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
@@ -913,7 +913,7 @@ export class ConvertStepToGltfAdvancedDto {
      * @maximum 1000000
      * @step 0.001
      */
-    scale = 1.0;
+    scale?: number | undefined = 1.0;
 }
 
 /**
@@ -928,7 +928,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * When true, the geometry is compressed with Draco.
      * @default true
      */
-    useDraco = true;
+    useDraco?: boolean | undefined = true;
     /**
      * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
@@ -936,7 +936,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 10
      * @step 1
      */
-    dracoCompressionLevel = 7;
+    dracoCompressionLevel?: number | undefined = 7;
     /**
      * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
@@ -944,7 +944,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 31
      * @step 1
      */
-    dracoQuantizePositionBits = 14;
+    dracoQuantizePositionBits?: number | undefined = 14;
     /**
      * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
@@ -952,7 +952,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeNormalBits = 10;
+    dracoQuantizeNormalBits?: number | undefined = 10;
     /**
      * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
      * precision.
@@ -961,7 +961,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeTexcoordBits = 12;
+    dracoQuantizeTexcoordBits?: number | undefined = 12;
     /**
      * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
@@ -969,7 +969,7 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeColorBits = 8;
+    dracoQuantizeColorBits?: number | undefined = 8;
     /**
      * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
      * precision.
@@ -978,12 +978,12 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeGenericBits = 12;
+    dracoQuantizeGenericBits?: number | undefined = 12;
     /**
      * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
-    dracoUnifiedQuantization = false;
+    dracoUnifiedQuantization?: boolean | undefined = false;
 }
 
 // =====================================================

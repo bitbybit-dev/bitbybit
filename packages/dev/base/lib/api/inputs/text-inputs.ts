@@ -30,7 +30,7 @@ export namespace Text {
          * The text the method works on; it is not changed, a new text is returned.
          * @default Hello World
          */
-        text = "Hello World";
+        text?: string | undefined = "Hello World";
     }
 
     /**
@@ -45,12 +45,12 @@ export namespace Text {
          * The text to cut into pieces.
          * @default a,b,c
          */
-        text = "a,b,c";
+        text?: string | undefined = "a,b,c";
         /**
          * The text that marks a cut; it is dropped from the pieces.
          * @default ,
          */
-        separator = ",";
+        separator?: string | undefined = ",";
     }
     /**
      * A text, what to look for in it and what to put in its place, for `text.replaceAll`.
@@ -65,17 +65,17 @@ export namespace Text {
          * The text to make the replacements in.
          * @default a-c
          */
-        text = "a-c";
+        text?: string | undefined = "a-c";
         /**
          * The text to look for; every occurrence is replaced.
          * @default -
          */
-        search = "-";
+        search?: string | undefined = "-";
         /**
          * The text that takes the place of each occurrence.
          * @default b
          */
-        replaceWith = "b";
+        replaceWith?: string | undefined = "b";
     }
     /**
      * Texts and a separator for `text.join`, which writes them one after another.
@@ -94,7 +94,7 @@ export namespace Text {
          * The text placed between neighbors; an empty text joins them directly.
          * @default ,
          */
-        separator = ",";
+        separator?: string | undefined = ",";
     }
     /**
      * Any value for `text.toString`, which turns it into text the way JavaScript prints it.
@@ -136,12 +136,12 @@ export namespace Text {
          * The text with placeholders such as `{0}` and `{1}`.
          * @default Hello {0}
          */
-        text = "Hello {0}";
+        text?: string | undefined = "Hello {0}";
         /**
          * The values, in placeholder order: the first fills `{0}`, the second `{1}`.
          * @default ["World"]
          */
-        values = ["World"];
+        values?: string[] | undefined = ["World"];
     }
 
     /**
@@ -157,12 +157,12 @@ export namespace Text {
          * The text to look in.
          * @default hello world
          */
-        text = "hello world";
+        text?: string | undefined = "hello world";
         /**
          * The text to look for, matched exactly, including case.
          * @default world
          */
-        search = "world";
+        search?: string | undefined = "world";
     }
 
     /**
@@ -178,7 +178,7 @@ export namespace Text {
          * The text to take characters from.
          * @default hello world
          */
-        text = "hello world";
+        text?: string | undefined = "hello world";
         /**
          * Position of the first character to take, counting from 0.
          * @default 0
@@ -186,16 +186,17 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        start = 0;
+        start?: number | undefined = 0;
         /**
          * Position just after the last character to take; leave it out to take everything to the
          * end.
-         * @default 5
+         * @default undefined
+         * @optional true
          * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        end?: number | undefined = 5;
+        end?: number | undefined;
     }
 
     /**
@@ -210,7 +211,7 @@ export namespace Text {
          * The text to read a character from.
          * @default hello
          */
-        text = "hello";
+        text?: string | undefined = "hello";
         /**
          * Position of the character, counting from 0.
          * @default 0
@@ -218,7 +219,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
     }
 
     /**
@@ -234,7 +235,7 @@ export namespace Text {
          * The text to lengthen.
          * @default x
          */
-        text = "x";
+        text?: string | undefined = "x";
         /**
          * The length to reach; a text already that long stays as it is.
          * @default 3
@@ -242,12 +243,12 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        length = 3;
+        length?: number | undefined = 3;
         /**
          * The filler repeated until the length is reached; the last repeat is cut short if needed.
          * @default a
          */
-        padString = "a";
+        padString?: string | undefined = "a";
     }
 
     /**
@@ -262,7 +263,7 @@ export namespace Text {
          * The text that is written out again and again.
          * @default ha
          */
-        text = "ha";
+        text?: string | undefined = "ha";
         /**
          * How many times the text appears in the result.
          * @default 3
@@ -270,7 +271,7 @@ export namespace Text {
          * @maximum Infinity
          * @step 1
          */
-        count = 3;
+        count?: number | undefined = 3;
     }
 
     /**
@@ -284,7 +285,7 @@ export namespace Text {
          * The texts to join, in order.
          * @default ["hello", " ", "world"]
          */
-        texts = ["hello", " ", "world"];
+        texts?: string[] | undefined = ["hello", " ", "world"];
     }
 
     /**
@@ -301,19 +302,19 @@ export namespace Text {
          * The text the pattern is applied to.
          * @default hello123world
          */
-        text = "hello123world";
+        text?: string | undefined = "hello123world";
         /**
          * The regular expression, written as it would be between the slashes in JavaScript, such as
          * `[0-9]+`.
          * @default [0-9]+
          */
-        pattern = "[0-9]+";
+        pattern?: string | undefined = "[0-9]+";
         /**
          * The regular expression flags: `g` for every match, `i` to ignore case, `m` for
          * line-by-line anchors, and `s`, `u`, `y` as in JavaScript.
          * @default g
          */
-        flags = "g";
+        flags?: string | undefined = "g";
     }
 
     /**
@@ -330,25 +331,25 @@ export namespace Text {
          * The text to make the replacements in.
          * @default hello123world456
          */
-        text = "hello123world456";
+        text?: string | undefined = "hello123world456";
         /**
          * The regular expression, written as it would be between the slashes in JavaScript, such as
          * `[0-9]+`.
          * @default [0-9]+
          */
-        pattern = "[0-9]+";
+        pattern?: string | undefined = "[0-9]+";
         /**
          * The regular expression flags: `g` replaces every match instead of the first, `i` ignores
          * case, and `m`, `s`, `u`, `y` work as in JavaScript.
          * @default g
          */
-        flags = "g";
+        flags?: string | undefined = "g";
         /**
          * The text that takes the place of each match; `$1` and the like refer to capture groups,
          * as in JavaScript.
          * @default X
          */
-        replaceWith = "X";
+        replaceWith?: string | undefined = "X";
     }
 
     /**
@@ -368,7 +369,7 @@ export namespace Text {
          * question mark.
          * @default A
          */
-        char = "A";
+        char?: string | undefined = "A";
         /**
          * How far to shift the strokes along X, in model units.
          * @default 0

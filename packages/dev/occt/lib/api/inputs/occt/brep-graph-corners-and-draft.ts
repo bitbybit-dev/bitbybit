@@ -37,14 +37,14 @@ export class BRepGraphReconstructDto<T> {
      * What kind of part the node is: solid, shell, face, wire, edge, vertex, compound or compsolid.
      * @default solid
      */
-    kind: brepGraphNodeKindEnum = brepGraphNodeKindEnum.solid;
+    kind?: brepGraphNodeKindEnum | undefined = brepGraphNodeKindEnum.solid;
     /**
      * The position of the node among the parts of its kind, counting from 0, as the graph queries
      * report it.
      * @default 0
      * @step 1
      */
-    index = 0;
+    index?: number | undefined = 0;
 }
 /**
  * A shape and one of its sub-shapes for `brepGraph.nodeOfShape`, which finds the graph node
@@ -88,13 +88,13 @@ export class FilletCornerByPointDto<T> {
      * Points near the corners to round; the vertex nearest each point is the one treated.
      * @default []
      */
-    points: Base.Point3[] = [];
+    points?: Base.Point3[] | undefined = [];
     /**
      * The rounding radius, in model units.
      * @default 1
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * For 3D corners, how far the rounding reaches along the meeting edges: 0 for the tightest,
      * almost spherical corner, 1 for the full reach.
@@ -103,20 +103,20 @@ export class FilletCornerByPointDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    taperFactor = 1;
+    taperFactor?: number | undefined = 1;
     /**
      * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
      * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
-    snapTolerance = 0;
+    snapTolerance?: number | undefined = 0;
     /**
      * `auto` rounds planar corners in place and 3D corners with a taper; `planarOnly` skips 3D
      * corners.
      * @default auto
      */
-    mode: cornerModeEnum = cornerModeEnum.auto;
+    mode?: cornerModeEnum | undefined = cornerModeEnum.auto;
 }
 /**
  * A shell or solid, points near its corners and bevel settings for `corners.chamferCornerByPoint`,
@@ -140,32 +140,32 @@ export class ChamferCornerByPointDto<T> {
      * Points near the corners to bevel; the vertex nearest each point is the one treated.
      * @default []
      */
-    points: Base.Point3[] = [];
+    points?: Base.Point3[] | undefined = [];
     /**
      * How far the bevel reaches back from the corner along its edges, in model units.
      * @default 1
      * @step 0.1
      */
-    distance = 1;
+    distance?: number | undefined = 1;
     /**
      * The slope of the bevel in degrees, used for planar corners.
      * @default 45
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
     /**
      * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
      * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
-    snapTolerance = 0;
+    snapTolerance?: number | undefined = 0;
     /**
      * `auto` bevels planar corners in place and 3D corners with a local plane cut; `planarOnly`
      * skips 3D corners.
      * @default auto
      */
-    mode: cornerModeEnum = cornerModeEnum.auto;
+    mode?: cornerModeEnum | undefined = cornerModeEnum.auto;
 }
 /**
  * A shell or solid and points near its corners for `corners.classifyCornerByPoint`, which reports
@@ -186,14 +186,14 @@ export class ClassifyCornerByPointDto<T> {
      * Points near the corners to classify; the vertex nearest each point is the one reported.
      * @default []
      */
-    points: Base.Point3[] = [];
+    points?: Base.Point3[] | undefined = [];
     /**
      * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
      * nearest vertex whatever the distance.
      * @default 0
      * @step 0.1
      */
-    snapTolerance = 0;
+    snapTolerance?: number | undefined = 0;
 }
 /**
  * A flat wire or face, a distance, an angle and optional corner indexes for
@@ -216,13 +216,13 @@ export class Chamfer2dVertexDto<T> {
      * @default 1
      * @step 0.1
      */
-    distance = 1;
+    distance?: number | undefined = 1;
     /**
      * The angle of the bevel to that edge, in degrees; 45 gives an even chamfer.
      * @default 45
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
     /**
      * Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all.
      * @default undefined
@@ -258,29 +258,29 @@ export class DraftAngleDto<T, U> {
      * The pull direction, the way the part leaves the mold; the taper is measured against it.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The draft angle, in degrees.
      * @default 5
      * @step 1
      */
-    angle = 5;
+    angle?: number | undefined = 5;
     /**
      * A point on the neutral plane, the plane that stays where it is while the faces pivot about
      * it.
      * @default [0, 0, 0]
      */
-    neutralPlaneOrigin: Base.Point3 = [0, 0, 0];
+    neutralPlaneOrigin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the neutral plane.
      * @default [0, 0, 1]
      */
-    neutralPlaneDirection: Base.Vector3 = [0, 0, 1];
+    neutralPlaneDirection?: Base.Vector3 | undefined = [0, 0, 1];
     /**
      * When true, the faces taper on the standard side; false tapers them the other way.
      * @default true
      */
-    flag = true;
+    flag?: boolean | undefined = true;
 }
 /**
  * A wire or shape, a direction, an angle and a length for `draft.makeDraft`, which grows a tapered
@@ -303,25 +303,25 @@ export class MakeDraftDto<T> {
      * The direction the skirt grows along, the pull direction of the mold.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * How far the skirt leans from the direction, in degrees.
      * @default 5
      * @step 1
      */
-    angle = 5;
+    angle?: number | undefined = 5;
     /**
      * How long the skirt may grow, in model units, measured along the corner edges between its
      * faces.
      * @default 10
      * @step 0.1
      */
-    lengthMax = 10;
+    lengthMax?: number | undefined = 10;
     /**
      * When true, the skirt leans inward instead of outward.
      * @default false
      */
-    internal = false;
+    internal?: boolean | undefined = false;
 }
 /**
  * A wire or shape, a direction, an angle and a stop shape for `draft.makeDraftToShape`, which grows
@@ -345,13 +345,13 @@ export class MakeDraftToShapeDto<T> {
      * The direction the skirt grows along, the pull direction of the mold.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * How far the skirt leans from the direction, in degrees.
      * @default 5
      * @step 1
      */
-    angle = 5;
+    angle?: number | undefined = 5;
     /**
      * The shape the skirt grows up to and stops at.
      * @default undefined
@@ -361,10 +361,10 @@ export class MakeDraftToShapeDto<T> {
      * When true, the part of the stop shape outside the skirt is kept in the result.
      * @default false
      */
-    keepOut = false;
+    keepOut?: boolean | undefined = false;
     /**
      * When true, the skirt leans inward instead of outward.
      * @default false
      */
-    internal = false;
+    internal?: boolean | undefined = false;
 }

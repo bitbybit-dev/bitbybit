@@ -106,7 +106,7 @@ export class CubeDto {
      * along the positive axes.
      * @default true
      */
-    center = true;
+    center?: boolean | undefined = true;
     /**
      * The side length of the cube, in model units.
      * @default 1
@@ -114,7 +114,7 @@ export class CubeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * Polygons as 2D points and a fill rule for `crossSection.shapes.create`.
@@ -134,7 +134,7 @@ export class CreateContourSectionDto {
      * negative winding.
      * @default EvenOdd
      */
-    fillRule: fillRuleEnum = fillRuleEnum.evenOdd;
+    fillRule?: fillRuleEnum | undefined = fillRuleEnum.evenOdd;
 }
 /**
  * A side length and a placement for `crossSection.shapes.square`.
@@ -148,7 +148,7 @@ export class SquareDto {
      * When true, the square is centered on the origin; when false its corner sits there.
      * @default false
      */
-    center = false;
+    center?: boolean | undefined = false;
     /**
      * The side length, one number for a square or two for a rectangle along X and Y, in model
      * units.
@@ -157,7 +157,7 @@ export class SquareDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * A radius and a segment count for `manifold.shapes.sphere`.
@@ -174,7 +174,7 @@ export class SphereDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How many segments go around the sphere; rounded up to a multiple of four.
      * @default 32
@@ -182,7 +182,7 @@ export class SphereDto {
      * @maximum Infinity
      * @step 1
      */
-    circularSegments: number = 32;
+    circularSegments?: number | undefined = 32;
 }
 /**
  * The size and placement of a cylinder or cone for `manifold.shapes.cylinder`, which stands it
@@ -203,7 +203,7 @@ export class CylinderDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * The radius of the bottom circle, in model units; must be above 0.
      * @default 1
@@ -211,7 +211,7 @@ export class CylinderDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusLow = 1;
+    radiusLow?: number | undefined = 1;
     /**
      * The radius of the top circle, in model units: equal to `radiusLow` for a cylinder, smaller
      * for a truncated cone, 0 for a pointed cone.
@@ -220,7 +220,7 @@ export class CylinderDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusHigh = 1;
+    radiusHigh?: number | undefined = 1;
     /**
      * How many flat sides go around the cylinder; more is rounder.
      * @default 32
@@ -228,12 +228,12 @@ export class CylinderDto {
      * @maximum Infinity
      * @step 1
      */
-    circularSegments = 32;
+    circularSegments?: number | undefined = 32;
     /**
      * When true, the cylinder is centered on the origin; when false it stands on the XY plane.
      * @default true
      */
-    center = true;
+    center?: boolean | undefined = true;
 }
 /**
  * A radius and a segment count for `crossSection.shapes.circle`.
@@ -250,7 +250,7 @@ export class CircleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How many straight sides the circle is drawn with; more is rounder.
      * @default 32
@@ -258,7 +258,7 @@ export class CircleDto {
      * @maximum Infinity
      * @step 1
      */
-    circularSegments = 32;
+    circularSegments?: number | undefined = 32;
 }
 /**
  * Two sides and a placement for `crossSection.shapes.rectangle`.
@@ -276,7 +276,7 @@ export class RectangleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
     /**
      * The side along Y, in model units.
      * @default 1
@@ -284,10 +284,10 @@ export class RectangleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * When true, the rectangle is centered on the origin; when false its corner sits there.
      * @default false
      */
-    center = false;
+    center?: boolean | undefined = false;
 }

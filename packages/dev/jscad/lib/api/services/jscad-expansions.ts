@@ -1,6 +1,8 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
 import { asEntity, asKind, oneOrMany } from "./entity-narrowing";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Growing and shrinking JSCAD geometry by a distance: `expand` moves every boundary outward, or
@@ -33,12 +35,13 @@ export class JSCADExpansions {
      * ```
      */
     expand(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
-        const corners = inputs.corners || Inputs.JSCAD.solidCornerTypeEnum.round;
+        const resolved = resolveDto(Inputs.JSCAD.ExpansionDto, inputs) as Resolved.JSCAD.ExpansionDto;
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(resolved.geometry));
+        const corners = resolved.corners;
         const result = this.jscad.expansions.expand({
-            delta: inputs.delta,
+            delta: resolved.delta,
             corners,
-            segments: inputs.segments,
+            segments: resolved.segments,
         }, ...geometry);
         return asEntity(result);
     }
@@ -61,12 +64,13 @@ export class JSCADExpansions {
      * ```
      */
     offset(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
-        const corners = inputs.corners || Inputs.JSCAD.solidCornerTypeEnum.edge;
+        const resolved = resolveDto(Inputs.JSCAD.ExpansionDto, inputs) as Resolved.JSCAD.ExpansionDto;
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(resolved.geometry));
+        const corners = resolved.corners;
         const result = this.jscad.expansions.offset({
-            delta: inputs.delta,
+            delta: resolved.delta,
             corners,
-            segments: inputs.segments,
+            segments: resolved.segments,
         }, ...geometry);
         return asEntity(result);
     }

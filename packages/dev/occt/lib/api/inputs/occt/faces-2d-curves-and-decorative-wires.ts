@@ -38,7 +38,7 @@ export class ThisckSolidSimpleDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    offset = 1;
+    offset?: number | undefined = 1;
 }
 /**
  * A wire, an offset and an extrusion direction for `operations.offset3DWire`, which offsets a wire
@@ -62,13 +62,13 @@ export class Offset3DWireDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    offset = 1;
+    offset?: number | undefined = 1;
     /**
      * The direction the wire is extruded along to build the offset; it must not be parallel to the
      * wire.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A closed wire and a planar flag for `shapes.face.createFaceFromWire`.
@@ -88,7 +88,7 @@ export class FaceFromWireDto<T> {
      * fitted through the wire's edges.
      * @default false
      */
-    planar = false;
+    planar?: boolean | undefined = false;
 }
 /**
  * A wire, a guiding face and a side for `shapes.face.createFaceFromWireOnFace`, which cuts a face
@@ -115,7 +115,7 @@ export class FaceFromWireOnFaceDto<T, U> {
      * own direction decides.
      * @default true
      */
-    inside = true;
+    inside?: boolean | undefined = true;
 }
 /**
  * Wires, a guiding face and a side for `shapes.face.createFacesFromWiresOnFace`, which cuts one
@@ -142,7 +142,7 @@ export class FacesFromWiresOnFaceDto<T, U> {
      * own direction decides.
      * @default true
      */
-    inside = true;
+    inside?: boolean | undefined = true;
 }
 /**
  * Wires and a planar flag for `shapes.face.createFaceFromWires`, which makes one face with the
@@ -162,7 +162,7 @@ export class FaceFromWiresDto<T> {
      * When true the wires must lie in one plane and the face is flat.
      * @default false
      */
-    planar = false;
+    planar?: boolean | undefined = false;
 }
 /**
  * Wires and a planar flag for `shapes.face.createFacesFromWires`, which makes one face per wire.
@@ -182,7 +182,7 @@ export class FacesFromWiresDto<T> {
      * fitted through each.
      * @default false
      */
-    planar = false;
+    planar?: boolean | undefined = false;
 }
 /**
  * Wires, a guiding face and a side for `shapes.face.createFaceFromWiresOnFace`, which makes one
@@ -210,7 +210,7 @@ export class FaceFromWiresOnFaceDto<T, U> {
      * false its own direction decides.
      * @default true
      */
-    inside = true;
+    inside?: boolean | undefined = true;
 }
 /**
  * Faces and a tolerance for `shapes.shell.sewFaces`, which stitches faces that share edges into one
@@ -233,7 +233,7 @@ export class SewDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1.0e-7;
+    tolerance?: number | undefined = 1.0e-7;
 }
 /**
  * A center, a major axis direction and two radii for `geom.curves.geom2dEllipse`, a 2D construction
@@ -251,12 +251,12 @@ export class Geom2dEllipseDto {
      * The center of the ellipse as a 2D point.
      * @default [0,0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * The direction of the major axis in the plane.
      * @default [1,0]
      */
-    direction: Base.Vector2 = [1, 0];
+    direction?: Base.Vector2 | undefined = [1, 0];
     /**
      * The half-width across the ellipse's short axis; must not exceed `radiusMajor`.
      * @default 1
@@ -264,7 +264,7 @@ export class Geom2dEllipseDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusMinor = 1;
+    radiusMinor?: number | undefined = 1;
     /**
      * The half-width along the ellipse's long axis.
      * @default 2
@@ -272,12 +272,12 @@ export class Geom2dEllipseDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusMajor = 2;
+    radiusMajor?: number | undefined = 2;
     /**
      * When true, the curve runs the other way round.
      * @default false
      */
-    sense = false;
+    sense?: boolean | undefined = false;
 }
 /**
  * A center, a start direction and a radius for `geom.curves.geom2dCircle`, a 2D construction curve.
@@ -293,12 +293,12 @@ export class Geom2dCircleDto {
      * The center of the circle as a 2D point.
      * @default [0,0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * The direction in the plane where the curve's parameter starts.
      * @default [1,0]
      */
-    direction: Base.Vector2 = [1, 0];
+    direction?: Base.Vector2 | undefined = [1, 0];
     /**
      * The distance from the center to the curve.
      * @default 1
@@ -306,12 +306,12 @@ export class Geom2dCircleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * When true, the curve runs the other way round.
      * @default false
      */
-    sense = false;
+    sense?: boolean | undefined = false;
 }
 /**
  * The proportions of a stylized Christmas tree for `shapes.wire.createChristmasTreeWire` and
@@ -337,7 +337,7 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 6;
+    height?: number | undefined = 6;
     /**
      * How far the branches reach from the trunk line at the notches of the lowest skirt, in model
      * units.
@@ -346,7 +346,7 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    innerDist = 1.5;
+    innerDist?: number | undefined = 1.5;
     /**
      * How far the branches reach from the trunk line at the tips of the lowest skirt, in model
      * units.
@@ -355,7 +355,7 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    outerDist = 3;
+    outerDist?: number | undefined = 3;
     /**
      * How many layers of branches, the triangle-like skirts, the tree has.
      * @default 5
@@ -363,7 +363,7 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 1
      */
-    nrSkirts = 5;
+    nrSkirts?: number | undefined = 5;
     /**
      * The height of the trunk below the branches, in model units; 0 leaves the trunk out.
      * @default 1
@@ -371,7 +371,7 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    trunkHeight = 1;
+    trunkHeight?: number | undefined = 1;
     /**
      * The width of the trunk, in model units; used only when the trunk height is above 0.
      * @default 1
@@ -379,12 +379,12 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    trunkWidth = 1;
+    trunkWidth?: number | undefined = 1;
     /**
      * When true, only one side of the tree is built, as an open wire.
      * @default false
      */
-    half = false;
+    half?: boolean | undefined = false;
     /**
      * How far the tree is spun about its trunk-to-tip axis, in degrees.
      * @default 0
@@ -392,17 +392,17 @@ export class ChristmasTreeDto {
      * @maximum Infinity
      * @step 15
      */
-    rotation = 0;
+    rotation?: number | undefined = 0;
     /**
      * The point at the base of the trunk.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction from the trunk to the tip; the default stands the tree up along Y.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * The proportions of a star for `shapes.wire.createStarWire` and `shapes.face.createStarFace`,
@@ -422,12 +422,12 @@ export class StarDto {
      * The point the star is centered on.
      * @default [0,0,0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the star lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * How many points the star has.
      * @default 7
@@ -435,7 +435,7 @@ export class StarDto {
      * @maximum Infinity
      * @step 1
      */
-    numRays = 7;
+    numRays?: number | undefined = 7;
     /**
      * The distance from the center to the tip of each ray, in model units.
      * @default 2
@@ -443,7 +443,7 @@ export class StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    outerRadius: number = 2;
+    outerRadius?: number | undefined = 2;
     /**
      * The distance from the center to the notch between two rays, in model units.
      * @default 1
@@ -451,7 +451,7 @@ export class StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    innerRadius: number = 1;
+    innerRadius?: number | undefined = 1;
     /**
      * Lifts the ray tips out of the plane along the normal, in model units, making a 3D star; keep
      * it 0 for a face.
@@ -465,7 +465,7 @@ export class StarDto {
      * When true, only the first half of the rays are built, as an open wire.
      * @default false
      */
-    half = false;
+    half?: boolean | undefined = false;
 }
 /**
  * The size, lean and placement of a parallelogram for `shapes.wire.createParallelogramWire` and
@@ -484,18 +484,18 @@ export class ParallelogramDto {
      * The point the shape is centered on, or starts from when `aroundCenter` is false.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the shape lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true the shape is centered on `center`; when false it starts there and extends in the
      * positive directions.
      * @default true
      */
-    aroundCenter = true;
+    aroundCenter?: boolean | undefined = true;
     /**
      * The width of the shape's bounding rectangle, in model units.
      * @default 2
@@ -503,7 +503,7 @@ export class ParallelogramDto {
      * @maximum Infinity
      * @step 0.1
      */
-    width = 2;
+    width?: number | undefined = 2;
     /**
      * The height of the shape's bounding rectangle, in model units.
      * @default 1
@@ -511,7 +511,7 @@ export class ParallelogramDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the sides lean over from a rectangle, in degrees; 0 gives a rectangle.
      * @default 15
@@ -519,7 +519,7 @@ export class ParallelogramDto {
      * @maximum Infinity
      * @step 1
      */
-    angle = 15;
+    angle?: number | undefined = 15;
 }
 /**
  * The size and placement of a heart outline for `shapes.wire.createHeartWire` and
@@ -536,12 +536,12 @@ export class Heart2DDto {
      * The point the heart is centered on.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the heart lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * How far the heart is turned in its plane, in degrees.
      * @default 0
@@ -549,7 +549,7 @@ export class Heart2DDto {
      * @maximum Infinity
      * @step 15
      */
-    rotation = 0;
+    rotation?: number | undefined = 0;
     /**
      * The side of the square the heart roughly fits into, in model units.
      * @default 2
@@ -557,7 +557,7 @@ export class Heart2DDto {
      * @maximum Infinity
      * @step 0.1
      */
-    sizeApprox = 2;
+    sizeApprox?: number | undefined = 2;
 }
 /**
  * A corner count, a radius and a placement for `shapes.wire.createNGonWire` and
@@ -574,12 +574,12 @@ export class NGonWireDto {
      * The point the polygon is centered on.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the polygon lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * How many corners, and so how many equal sides, the polygon has.
      * @default 6
@@ -587,7 +587,7 @@ export class NGonWireDto {
      * @maximum Infinity
      * @step 1
      */
-    nrCorners = 6;
+    nrCorners?: number | undefined = 6;
     /**
      * The distance from the center to each corner, in model units.
      * @default 1
@@ -595,7 +595,7 @@ export class NGonWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
 }
 /**
  * A center, a plane normal and two radii for the ellipse edge, wire and face methods of `shapes`
@@ -612,12 +612,12 @@ export class EllipseDto {
      * The point the ellipse is centered on.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the ellipse lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The half-width across the ellipse's short axis, in model units; must not exceed
      * `radiusMajor`.
@@ -626,7 +626,7 @@ export class EllipseDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusMinor = 1;
+    radiusMinor?: number | undefined = 1;
     /**
      * The half-width along the ellipse's long axis, in model units.
      * @default 2
@@ -634,7 +634,7 @@ export class EllipseDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusMajor = 2;
+    radiusMajor?: number | undefined = 2;
 }
 /**
  * The size of a coil for `shapes.wire.createHelixWire`: its radius, how much it climbs per turn and
@@ -657,7 +657,7 @@ export class HelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How far the coil climbs along the axis in one full turn, in model units.
      * @default 1
@@ -665,7 +665,7 @@ export class HelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    pitch = 1;
+    pitch?: number | undefined = 1;
     /**
      * The total climb of the coil along the axis, in model units.
      * @default 5
@@ -673,22 +673,22 @@ export class HelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 5;
+    height?: number | undefined = 5;
     /**
      * The point on the axis where the coil starts climbing from.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the axis the coil climbs along.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true, the coil winds clockwise seen from the tip of the axis.
      * @default false
      */
-    clockwise = false;
+    clockwise?: boolean | undefined = false;
     /**
      * How far the fitted curve may stray from the exact helix, in model units.
      * @default 0.0001
@@ -696,7 +696,7 @@ export class HelixWireDto {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 0.0001;
+    tolerance?: number | undefined = 0.0001;
 }
 /**
  * The size of a coil for `shapes.wire.createHelixWireByTurns`: its radius, how much it climbs per
@@ -719,7 +719,7 @@ export class HelixWireByTurnsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How far the coil climbs along the axis in one full turn, in model units.
      * @default 1
@@ -727,7 +727,7 @@ export class HelixWireByTurnsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    pitch = 1;
+    pitch?: number | undefined = 1;
     /**
      * How many full turns the coil makes; fractions are allowed.
      * @default 5
@@ -735,22 +735,22 @@ export class HelixWireByTurnsDto {
      * @maximum Infinity
      * @step 0.5
      */
-    numTurns = 5;
+    numTurns?: number | undefined = 5;
     /**
      * The point on the axis where the coil starts climbing from.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the axis the coil climbs along.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true, the coil winds clockwise seen from the tip of the axis.
      * @default false
      */
-    clockwise = false;
+    clockwise?: boolean | undefined = false;
     /**
      * How far the fitted curve may stray from the exact helix, in model units.
      * @default 0.0001
@@ -758,7 +758,7 @@ export class HelixWireByTurnsDto {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 0.0001;
+    tolerance?: number | undefined = 0.0001;
 }
 /**
  * The size of a conical coil for `shapes.wire.createTaperedHelixWire`: the radius at each end, the
@@ -782,7 +782,7 @@ export class TaperedHelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    startRadius = 2;
+    startRadius?: number | undefined = 2;
     /**
      * The distance from the axis to the coil at its top, in model units.
      * @default 0.5
@@ -790,7 +790,7 @@ export class TaperedHelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    endRadius = 0.5;
+    endRadius?: number | undefined = 0.5;
     /**
      * How far the coil climbs along the axis in one full turn, in model units.
      * @default 1
@@ -798,7 +798,7 @@ export class TaperedHelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    pitch = 1;
+    pitch?: number | undefined = 1;
     /**
      * The total climb of the coil along the axis, in model units.
      * @default 5
@@ -806,22 +806,22 @@ export class TaperedHelixWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 5;
+    height?: number | undefined = 5;
     /**
      * The point on the axis where the coil starts climbing from.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the axis the coil climbs along.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true, the coil winds clockwise seen from the tip of the axis.
      * @default false
      */
-    clockwise = false;
+    clockwise?: boolean | undefined = false;
     /**
      * How far the fitted curve may stray from the exact helix, in model units.
      * @default 0.0001
@@ -829,7 +829,7 @@ export class TaperedHelixWireDto {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 0.0001;
+    tolerance?: number | undefined = 0.0001;
 }
 /**
  * The size of a flat spiral for `shapes.wire.createFlatSpiralWire`: the radius at each end and the
@@ -852,7 +852,7 @@ export class FlatSpiralWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    startRadius = 0.5;
+    startRadius?: number | undefined = 0.5;
     /**
      * The distance from the center where the spiral ends, in model units.
      * @default 5
@@ -860,7 +860,7 @@ export class FlatSpiralWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    endRadius = 5;
+    endRadius?: number | undefined = 5;
     /**
      * How many full turns the spiral makes between the two radii; fractions are allowed.
      * @default 5
@@ -868,22 +868,22 @@ export class FlatSpiralWireDto {
      * @maximum Infinity
      * @step 0.5
      */
-    numTurns = 5;
+    numTurns?: number | undefined = 5;
     /**
      * The point the spiral winds around.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the spiral lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true, the spiral winds clockwise seen from the tip of the normal.
      * @default false
      */
-    clockwise = false;
+    clockwise?: boolean | undefined = false;
     /**
      * How far the fitted curve may stray from the exact spiral, in model units.
      * @default 0.0001
@@ -891,7 +891,7 @@ export class FlatSpiralWireDto {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 0.0001;
+    tolerance?: number | undefined = 0.0001;
 }
 /**
  * Text and its layout for `shapes.wire.textWires` and `textWiresWithData`, which write it as stroke
@@ -972,7 +972,7 @@ export class TextWiresDto {
      * When true, the middle of the whole text block is moved to the origin.
      * @default false
      */
-    centerOnOrigin = false;
+    centerOnOrigin?: boolean | undefined = false;
 }
 /**
  * A radius and an axis for `geom.surfaces.cylindricalSurface`, an infinite construction surface.
@@ -990,17 +990,17 @@ export class GeomCylindricalSurfaceDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * A point on the axis of the cylinder.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction of the axis of the cylinder.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A 2D curve and two parameters for `geom.curves.geom2dTrimmedCurve`, which keeps the piece between
@@ -1026,7 +1026,7 @@ export class Geom2dTrimmedCurveDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    u1 = 0;
+    u1?: number | undefined = 0;
     /**
      * The parameter where the piece ends.
      * @default 1
@@ -1034,18 +1034,18 @@ export class Geom2dTrimmedCurveDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    u2 = 1;
+    u2?: number | undefined = 1;
     /**
      * On a closed curve, which of the two possible pieces is kept: true keeps the one running the
      * curve's own way.
      * @default true
      */
-    sense = true;
+    sense?: boolean | undefined = true;
     /**
      * When true, the parameters of a periodic curve are brought into its period first.
      * @default true
      */
-    adjustPeriodic = true;
+    adjustPeriodic?: boolean | undefined = true;
 }
 /**
  * Two 2D points for `geom.curves.geom2dSegment`, a straight construction curve between them.
@@ -1059,12 +1059,12 @@ export class Geom2dSegmentDto {
      * The 2D point the segment starts at.
      * @default [0, 0]
      */
-    start: Base.Point2 = [0, 0];
+    start?: Base.Point2 | undefined = [0, 0];
     /**
      * The 2D point the segment ends at.
      * @default [1, 0]
      */
-    end: Base.Point2 = [1, 0];
+    end?: Base.Point2 | undefined = [1, 0];
 }
 /**
  * A solid, a spacing and a direction for `operations.slice`, which cuts it into parallel slices.
@@ -1087,12 +1087,12 @@ export class SliceDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    step = 0.1;
+    step?: number | undefined = 0.1;
     /**
      * The direction the slices are stacked along; each cutting plane is perpendicular to it.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A solid, a pattern of spacings and a direction for `operations.sliceInStepPattern`, which cuts it
@@ -1114,10 +1114,10 @@ export class SliceInStepPatternDto<T> {
      * the top is reached.
      * @default [0.1, 0.2]
      */
-    steps = [0.1, 0.2];
+    steps?: number[] | undefined = [0.1, 0.2];
     /**
      * The direction the slices are stacked along; each cutting plane is perpendicular to it.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }

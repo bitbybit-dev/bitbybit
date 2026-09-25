@@ -28,13 +28,13 @@ export class ExpansionDto {
      * @maximum Infinity
      * @step 0.1
      */
-    delta = 0.1;
+    delta?: number | undefined = 0.1;
     /**
      * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
      * it; a solid accepts `round` only
      * @default edge
      */
-    corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
+    corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.edge;
     /**
      * Number of straight pieces a `round` corner is made of over a full circle; more makes it
      * smoother
@@ -43,7 +43,7 @@ export class ExpansionDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
@@ -69,7 +69,7 @@ export class ExtrudeLinearDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the top is turned relative to the bottom around Z, in degrees; 0 gives a straight
      * extrusion
@@ -78,7 +78,7 @@ export class ExtrudeLinearDto {
      * @maximum Infinity
      * @step 1
      */
-    twistAngle = 90;
+    twistAngle?: number | undefined = 90;
     /**
      * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
      * heavier mesh
@@ -87,7 +87,7 @@ export class ExtrudeLinearDto {
      * @maximum Infinity
      * @step 1
      */
-    twistSteps = 15;
+    twistSteps?: number | undefined = 15;
 }
 
 /**
@@ -140,7 +140,7 @@ export class ExtrudeRectangularDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the wall reaches to each side of the outline, in model units, so the wall is twice
      * this thick
@@ -149,7 +149,7 @@ export class ExtrudeRectangularDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
@@ -173,7 +173,7 @@ export class ExtrudeRectangularPointsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the wall reaches to each side of the line, in model units, so the wall is twice this
      * thick
@@ -182,7 +182,7 @@ export class ExtrudeRectangularPointsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
@@ -208,7 +208,7 @@ export class ExtrudeRotateDto {
      * @maximum Infinity
      * @step 1
      */
-    angle = 90;
+    angle?: number | undefined = 90;
     /**
      * Where the revolution starts, in degrees from the X axis
      * @default 0
@@ -216,7 +216,7 @@ export class ExtrudeRotateDto {
      * @maximum Infinity
      * @step 1
      */
-    startAngle = 0;
+    startAngle?: number | undefined = 0;
     /**
      * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
      * throws an error
@@ -225,5 +225,5 @@ export class ExtrudeRotateDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }

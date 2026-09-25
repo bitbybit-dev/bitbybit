@@ -21,7 +21,7 @@ export class LoftDto<T> {
      * When true, the loft is capped into a solid; the sections must be closed for that.
      * @default false
      */
-    makeSolid = false;
+    makeSolid?: boolean | undefined = false;
 }
 /**
  * Section wires and fitting options for `operations.loftAdvanced`: ruled or smooth patches, a
@@ -51,24 +51,24 @@ export class LoftAdvancedDto<T> {
      * When true, the loft is capped into a solid; the sections must be closed for that.
      * @default false
      */
-    makeSolid = false;
+    makeSolid?: boolean | undefined = false;
     /**
      * When true, the surface loops from the last section back to the first.
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
     /**
      * When true, the closed loop is made smooth across the seam by resampling the sections; needs
      * `closed`.
      * @default false
      */
-    periodic = false;
+    periodic?: boolean | undefined = false;
     /**
      * When true, the patches between sections are ruled surfaces with straight lines instead of a
      * smooth blend.
      * @default false
      */
-    straight = false;
+    straight?: boolean | undefined = false;
     /**
      * How many points each section is resampled into for a periodic loft.
      * @default 10
@@ -76,17 +76,17 @@ export class LoftAdvancedDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrPeriodicSections = 10;
+    nrPeriodicSections?: number | undefined = 10;
     /**
      * When true, the kernel smooths the fitted surface.
      * @default false
      */
-    useSmoothing = false;
+    useSmoothing?: boolean | undefined = false;
     /**
      * The highest polynomial degree the surface may use across the sections.
      * @default 3
      */
-    maxUDegree = 3;
+    maxUDegree?: number | undefined = 3;
     /**
      * How far the fitted surface may stray from the sections, in model units.
      * @default 1.0e-7
@@ -94,13 +94,13 @@ export class LoftAdvancedDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.0e-7;
+    tolerance?: number | undefined = 1.0e-7;
     /**
      * How the sections are parametrized before fitting: by chord length, centripetal, or
      * isoparametric; centripetal handles uneven sections best.
      * @default approxCentripetal
      */
-    parType: approxParametrizationTypeEnum = approxParametrizationTypeEnum.approxCentripetal;
+    parType?: approxParametrizationTypeEnum | undefined = approxParametrizationTypeEnum.approxCentripetal;
     /**
      * A point the loft closes to before the first section, making a pointed end; leave it out for
      * an open end.
@@ -147,7 +147,7 @@ export class OffsetDto<T, U> {
      * @maximum Infinity
      * @step 0.1
      */
-    distance = 0.2;
+    distance?: number | undefined = 0.2;
     /**
      * How close two points must be to count as the same when the offset is built, in model units.
      * @default 0.1
@@ -155,7 +155,7 @@ export class OffsetDto<T, U> {
      * @maximum Infinity
      * @step 0.01
      */
-    tolerance = 0.1;
+    tolerance?: number | undefined = 0.1;
 }
 /**
  * A shape, a distance and corner options for `operations.offsetAdv`, which moves the shape's
@@ -190,7 +190,7 @@ export class OffsetAdvancedDto<T, U> {
      * @maximum Infinity
      * @step 0.1
      */
-    distance = 0.2;
+    distance?: number | undefined = 0.2;
     /**
      * How close two points must be to count as the same when the offset is built, in model units.
      * @default 0.1
@@ -198,18 +198,18 @@ export class OffsetAdvancedDto<T, U> {
      * @maximum Infinity
      * @step 0.01
      */
-    tolerance = 0.1;
+    tolerance?: number | undefined = 0.1;
     /**
      * How the offset pieces meet at corners: `arc` rounds them, `intersection` extends them to a
      * sharp corner, `tangent` keeps them tangent.
      * @default arc
      */
-    joinType = joinTypeEnum.arc;
+    joinType?: joinTypeEnum | undefined = joinTypeEnum.arc;
     /**
      * When true, the internal edges the offset can leave behind are removed from the result.
      * @default false
      */
-    removeIntEdges = false;
+    removeIntEdges?: boolean | undefined = false;
 }
 /**
  * A profile, an angle and an axis for `operations.revolve`, which spins the profile about the axis
@@ -234,17 +234,17 @@ export class RevolveDto<T> {
      * @maximum 360
      * @step 1
      */
-    angle = 360;
+    angle?: number | undefined = 360;
     /**
      * The direction of the axis, which passes through the origin.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * When true, the profile's geometry is copied instead of shared with the result.
      * @default false
      */
-    copy = false;
+    copy?: boolean | undefined = false;
 }
 /**
  * A path wire and profile shapes for `operations.pipe`, and generally one shape with a list of
@@ -310,23 +310,23 @@ export class PipeWiresCylindricalDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
     /**
      * When true, the tubes are solids; when false they are open shells.
      * @default true
      */
-    makeSolid = true;
+    makeSolid?: boolean | undefined = true;
     /**
      * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
      * modes follow the curve's bending.
      * @default isConstantNormal
      */
-    trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
     /**
      * When true, a swept surface that came out with kinks is refitted to be smooth.
      * @default false
      */
-    forceApproxC1 = false;
+    forceApproxC1?: boolean | undefined = false;
 }
 /**
  * A path wire, a radius and sweep options for `operations.pipeWireCylindrical`, which makes a round
@@ -352,23 +352,23 @@ export class PipeWireCylindricalDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
     /**
      * When true, the tube is a solid; when false it is an open shell.
      * @default true
      */
-    makeSolid = true;
+    makeSolid?: boolean | undefined = true;
     /**
      * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
      * modes follow the curve's bending.
      * @default isConstantNormal
      */
-    trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
     /**
      * When true, a swept surface that came out with kinks is refitted to be smooth.
      * @default false
      */
-    forceApproxC1 = false;
+    forceApproxC1?: boolean | undefined = false;
 }
 /**
  * A path wire, a polygon size and sweep options for `operations.pipePolylineWireNGon`, which makes
@@ -395,7 +395,7 @@ export class PipePolygonWireNGonDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
     /**
      * How many corners, and so flat sides, the tube has.
      * @default 6
@@ -403,23 +403,23 @@ export class PipePolygonWireNGonDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrCorners = 6;
+    nrCorners?: number | undefined = 6;
     /**
      * When true, the tube is a solid; when false it is an open shell.
      * @default true
      */
-    makeSolid = true;
+    makeSolid?: boolean | undefined = true;
     /**
      * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
      * modes follow the curve's bending.
      * @default isConstantNormal
      */
-    trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+    trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
     /**
      * When true, a swept surface that came out with kinks is refitted to be smooth.
      * @default false
      */
-    forceApproxC1 = false;
+    forceApproxC1?: boolean | undefined = false;
 }
 /**
  * A shape and a vector for `operations.extrude`, which sweeps the shape in a straight line.
@@ -438,7 +438,7 @@ export class ExtrudeDto<T> {
      * The direction and distance of the sweep as one vector, in model units.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 
 /**
@@ -459,7 +459,7 @@ export class ExtrudeShapesDto<T> {
      * The direction and distance of the sweep as one vector, in model units.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 
 /**
@@ -488,13 +488,13 @@ export class SplitDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    localFuzzyTolerance = 1.0e-4;
+    localFuzzyTolerance?: number | undefined = 1.0e-4;
     /**
      * When true, the inputs stay untouched and the result holds the pieces of every shape involved;
      * when false only the pieces of `shape` come back.
      * @default true
      */
-    nonDestructive = true;
+    nonDestructive?: boolean | undefined = true;
 }
 /**
  * Shapes and an edge flag for `booleans.union`, which fuses them into one.
@@ -514,7 +514,7 @@ export class UnionDto<T> {
      * every edge of the inputs stays.
      * @default false
      */
-    keepEdges = false;
+    keepEdges?: boolean | undefined = false;
 }
 /**
  * A main shape and the shapes to cut away from it for `booleans.difference`.
@@ -540,7 +540,7 @@ export class DifferenceDto<T> {
      * edge stays.
      * @default false
      */
-    keepEdges = false;
+    keepEdges?: boolean | undefined = false;
 }
 
 /**
@@ -562,7 +562,7 @@ export class IntersectionDto<T> {
      * stays.
      * @default false
      */
-    keepEdges = false;
+    keepEdges?: boolean | undefined = false;
 }
 /**
  * One shape for the many methods that take nothing else, such as `shapes.shape.isValid`,
@@ -693,7 +693,7 @@ export class FixSmallEdgesInWireDto<T> {
      * gaps.
      * @default false
      */
-    lockvtx = false;
+    lockvtx?: boolean | undefined = false;
     /**
      * Edges shorter than this, in model units, are removed; 0 uses the wire's own tolerance.
      * @default 0
@@ -701,7 +701,7 @@ export class FixSmallEdgesInWireDto<T> {
      * @maximum Infinity
      * @step 0.0000000001
      */
-    precsmall = 0.0;
+    precsmall?: number | undefined = 0.0;
 }
 /**
  * A shape and tolerance bounds for `shapeFix.basicShapeRepair`, the kernel's general repair.
@@ -725,7 +725,7 @@ export class BasicShapeRepairDto<T> {
      * @maximum Infinity
      * @step 0.0000000001
      */
-    precision = 0.001;
+    precision?: number | undefined = 0.001;
     /**
      * The largest tolerance the repair may give a part of the shape while closing gaps, in model
      * units; a gap needing more stays open.
@@ -734,7 +734,7 @@ export class BasicShapeRepairDto<T> {
      * @maximum Infinity
      * @step 0.0000000001
      */
-    maxTolerance = 0.01;
+    maxTolerance?: number | undefined = 0.01;
     /**
      * The smallest tolerance the repair may use, in model units; edges shorter than this are
      * removed.
@@ -743,7 +743,7 @@ export class BasicShapeRepairDto<T> {
      * @maximum Infinity
      * @step 0.0000000001
      */
-    minTolerance = 0.0001;
+    minTolerance?: number | undefined = 0.0001;
 }
 /**
  * A shape and a tolerance for `shapes.face.faceFromSurface`, `shapes.shell.sewFaces` and the other
@@ -766,7 +766,7 @@ export class ShapeWithToleranceDto<T> {
      * @maximum Infinity
      * @step 0.000001
      */
-    tolerance = 1.0e-7;
+    tolerance?: number | undefined = 1.0e-7;
 }
 
 /**
@@ -791,7 +791,7 @@ export class ShapeIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    index = 0;
+    index?: number | undefined = 0;
 }
 /**
  * A shape and a position for `shapes.edge.getEdge`.
@@ -814,7 +814,7 @@ export class EdgeIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    index = 0;
+    index?: number | undefined = 0;
 }
 /**
  * A flat profile, a height and a twist for `operations.rotatedExtrude`, which extrudes the profile
@@ -839,7 +839,7 @@ export class RotationExtrudeDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the profile turns about the Y axis over the height, in degrees.
      * @default 360
@@ -847,10 +847,10 @@ export class RotationExtrudeDto<T> {
      * @maximum 360
      * @step 1
      */
-    angle = 360;
+    angle?: number | undefined = 360;
     /**
      * When true, a face profile gives a closed solid; when false the result is a shell.
      * @default true
      */
-    makeSolid = true;
+    makeSolid?: boolean | undefined = true;
 }

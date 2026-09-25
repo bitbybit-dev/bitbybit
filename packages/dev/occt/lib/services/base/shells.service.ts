@@ -3,6 +3,7 @@ import * as Inputs from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { ConverterService } from "./converter.service";
+import * as Resolved from "../../api/resolved-inputs";
 
 export class ShellsService {
 
@@ -19,7 +20,7 @@ export class ShellsService {
         return faceAreas.reduce((p, c) => p + c, 0);
     }
 
-    sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
+    sewFaces(inputs: Resolved.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
         const sew = new this.occ.BRepBuilderAPI_Sewing(inputs.tolerance);
         inputs.shapes.forEach(face => {
             sew.Add(face);

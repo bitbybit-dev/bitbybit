@@ -64,7 +64,7 @@ export class ProjectWireDto<T, U> {
      * The direction the wire is cast along; only its direction matters.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * Points, a shape and a direction for `shapes.vertex.projectPoints`, which casts each point onto
@@ -92,13 +92,13 @@ export class ProjectPointsOnShapeDto<T> {
      * length are not found.
      * @default [0, 10, 0]
      */
-    direction: Base.Vector3 = [0, 10, 0];
+    direction?: Base.Vector3 | undefined = [0, 10, 0];
     /**
      * Which hits to keep when a point crosses the shape more than once: all of them, the closest,
      * the farthest, or both of those.
      * @default all
      */
-    projectionType: pointProjectionTypeEnum = pointProjectionTypeEnum.all;
+    projectionType?: pointProjectionTypeEnum | undefined = pointProjectionTypeEnum.all;
 }
 /**
  * A shape and deflection settings for `shapes.wire.wiresToPoints`, which traces every wire of the
@@ -126,7 +126,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    angularDeflection = 0.1;
+    angularDeflection?: number | undefined = 0.1;
     /**
      * The largest distance, in model units, the polyline may stray from the curve; smaller follows
      * it more closely.
@@ -135,7 +135,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    curvatureDeflection = 0.1;
+    curvatureDeflection?: number | undefined = 0.1;
     /**
      * The fewest points any edge is traced with, however straight.
      * @default 2
@@ -143,7 +143,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minimumOfPoints = 2;
+    minimumOfPoints?: number | undefined = 2;
     /**
      * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
@@ -151,7 +151,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-9
      */
-    uTolerance = 1.0e-9;
+    uTolerance?: number | undefined = 1.0e-9;
     /**
      * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
@@ -159,7 +159,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-7
      */
-    minimumLength = 1.0e-7;
+    minimumLength?: number | undefined = 1.0e-7;
 }
 /**
  * A shape and deflection settings for `shapes.edge.edgesToPoints`, which traces every edge of the
@@ -187,7 +187,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    angularDeflection = 0.1;
+    angularDeflection?: number | undefined = 0.1;
     /**
      * The largest distance, in model units, the polyline may stray from the curve; smaller follows
      * it more closely.
@@ -196,7 +196,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    curvatureDeflection = 0.1;
+    curvatureDeflection?: number | undefined = 0.1;
     /**
      * The fewest points any edge is traced with, however straight.
      * @default 2
@@ -204,7 +204,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minimumOfPoints = 2;
+    minimumOfPoints?: number | undefined = 2;
     /**
      * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
@@ -212,7 +212,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-9
      */
-    uTolerance = 1.0e-9;
+    uTolerance?: number | undefined = 1.0e-9;
     /**
      * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
@@ -220,7 +220,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-7
      */
-    minimumLength = 1.0e-7;
+    minimumLength?: number | undefined = 1.0e-7;
 }
 /**
  * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
@@ -246,7 +246,7 @@ export class ProjectWiresDto<T, U> {
      * The direction the wires are cast along; only its direction matters.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * Wires or edges and a division count for `divideWiresByParamsToPoints`,
@@ -272,17 +272,17 @@ export class DivideShapesDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrOfDivisions = 10;
+    nrOfDivisions?: number | undefined = 10;
     /**
      * When true, the point at the start of each curve is left out.
      * @default false
      */
-    removeStartPoint = false;
+    removeStartPoint?: boolean | undefined = false;
     /**
      * When true, the point at the end of each curve is left out.
      * @default false
      */
-    removeEndPoint = false;
+    removeEndPoint?: boolean | undefined = false;
 }
 /**
  * A wire, edge or 2D curve and a parameter for the `...AtParam` methods, such as
@@ -306,7 +306,7 @@ export class DataOnGeometryAtParamDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
 }
 /**
  * Several edges and one parameter for `shapes.edge.pointsOnEdgesAtParam` and
@@ -329,7 +329,7 @@ export class DataOnGeometryesAtParamDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
 }
 /**
  * A wire and a spacing for `shapes.wire.pointsOnWireAtEqualLength`, which places points every
@@ -355,22 +355,22 @@ export class PointsOnWireAtEqualLengthDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
     /**
      * When true, one more point is asked for a step beyond the last one that fit.
      * @default false
      */
-    tryNext = false;
+    tryNext?: boolean | undefined = false;
     /**
      * When true, the point at the start of the wire is kept.
      * @default false
      */
-    includeFirst = false;
+    includeFirst?: boolean | undefined = false;
     /**
      * When true, the end point of the wire is appended whatever the spacing.
      * @default false
      */
-    includeLast = false;
+    includeLast?: boolean | undefined = false;
 }
 
 
@@ -400,17 +400,17 @@ export class PointsOnWireAtPatternOfLengthsDto<T> {
      * When true, one more point is asked for at the next gap beyond the last one that fit.
      * @default false
      */
-    tryNext = false;
+    tryNext?: boolean | undefined = false;
     /**
      * When true, the point at the start of the wire is kept.
      * @default false
      */
-    includeFirst = false;
+    includeFirst?: boolean | undefined = false;
     /**
      * When true, the end point of the wire is appended whatever the pattern.
      * @default false
      */
-    includeLast = false;
+    includeLast?: boolean | undefined = false;
 }
 /**
  * A wire or edge and a distance for the `...AtLength` methods, such as
@@ -433,7 +433,7 @@ export class DataOnGeometryAtLengthDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
 }
 
 /**
@@ -457,7 +457,7 @@ export class DataOnGeometryesAtLengthDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
 }
 
 /**
@@ -496,17 +496,17 @@ export class CircleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * The point the circle is centered on.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the circle lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A rectangle, hexagon counts and optional patterns for `shapes.wire.hexagonsInGrid` and

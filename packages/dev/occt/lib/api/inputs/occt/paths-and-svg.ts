@@ -109,27 +109,27 @@ export class PathArcSegment {
      * The half-width of the ellipse along its rotated x axis.
      * @default 0
      */
-    rx = 0;
+    rx?: number | undefined = 0;
     /**
      * The half-width of the ellipse along its rotated y axis.
      * @default 0
      */
-    ry = 0;
+    ry?: number | undefined = 0;
     /**
      * How far the ellipse is turned in the plane, in radians, counterclockwise in path space.
      * @default 0
      */
-    xAxisRotation = 0;
+    xAxisRotation?: number | undefined = 0;
     /**
      * The angle on the ellipse where the arc starts, in radians.
      * @default 0
      */
-    startAngle = 0;
+    startAngle?: number | undefined = 0;
     /**
      * How far the arc sweeps from its start, in radians; negative sweeps clockwise in path space.
      * @default 0
      */
-    deltaAngle = 0;
+    deltaAngle?: number | undefined = 0;
 }
 /**
  * One segment of an SVG-style path: a line, a quadratic or cubic Bezier, or an arc. A path is a
@@ -161,7 +161,7 @@ export class PathSubpath {
      * When true, the run closes from its last point back to `start`.
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
 }
 
 /**
@@ -194,17 +194,17 @@ export class PathPlacementDto {
      * A factor applied to every path coordinate; 1 keeps the size.
      * @default 1
      */
-    scale = 1;
+    scale?: number | undefined = 1;
     /**
      * When true, Y is negated so a drawing made with Y pointing down, as in SVG, comes out upright.
      * @default true
      */
-    flipY = true;
+    flipY?: boolean | undefined = true;
     /**
      * The point the scaled and flipped drawing is moved to.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
 }
 
 /**
@@ -230,32 +230,32 @@ export class ShapeFromPathDto {
      * When true, closed subpaths become faces as well as wires.
      * @default false
      */
-    makeFaces = false;
+    makeFaces?: boolean | undefined = false;
     /**
      * When true, consecutive segments of a subpath are merged into a single edge where they can be.
      * @default true
      */
-    joinSegments = true;
+    joinSegments?: boolean | undefined = true;
     /**
      * How far apart segment ends may be and still join, in model units.
      * @default 1e-7
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * A factor applied to every path coordinate; 1 keeps the size.
      * @default 1
      */
-    scale = 1;
+    scale?: number | undefined = 1;
     /**
      * When true, Y is negated so a drawing made with Y pointing down comes out upright.
      * @default true
      */
-    flipY = true;
+    flipY?: boolean | undefined = true;
     /**
      * The point the scaled and flipped drawing is moved to.
      * @default [0, 0, 0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
 }
 
 /**
@@ -280,60 +280,60 @@ export class LoadSVGDto {
      * The text of the SVG document.
      * @default <svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>
      */
-    svg: string = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
+    svg?: string | undefined = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
     /**
      * How filled shapes become faces: `none` keeps only wires, `auto` follows each element's fill
      * rule, `nonzero` and `evenOdd` force a rule, `perSubpath` makes one face per closed subpath
      * without holes.
      * @default none
      */
-    faceStrategy: svgFaceStrategyEnum = svgFaceStrategyEnum.none;
+    faceStrategy?: svgFaceStrategyEnum | undefined = svgFaceStrategyEnum.none;
     /**
      * Reserved for building ribbon faces from stroked paths; not supported yet, stroked paths stay
      * wires.
      * @default false
      */
-    makeRibbons = false;
+    makeRibbons?: boolean | undefined = false;
     /**
      * When true, elements hidden by `display: none` or `visibility: hidden` are imported too.
      * @default false
      */
-    includeInvisible = false;
+    includeInvisible?: boolean | undefined = false;
     /**
      * When true, consecutive segments of a subpath are merged into a single edge where they can be.
      * @default true
      */
-    joinSegments = true;
+    joinSegments?: boolean | undefined = true;
     /**
      * How far apart segment ends may be and still join, in model units.
      * @default 1e-7
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * A factor applied to the SVG coordinates; 1 keeps the size.
      * @default 1
      */
-    scale = 1;
+    scale?: number | undefined = 1;
     /**
      * When true, Y is negated so the drawing comes out upright, since SVG has Y pointing down.
      * @default true
      */
-    flipY = true;
+    flipY?: boolean | undefined = true;
     /**
      * Which point of the drawing's bounding box sits on `center`; `midMid` centers it.
      * @default midMid
      */
-    alignment: Base.basicAlignmentEnum = Base.basicAlignmentEnum.midMid;
+    alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
     /**
      * The normal of the plane the drawing is laid on; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The point the aligned drawing is placed at.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
 }
 
 /**

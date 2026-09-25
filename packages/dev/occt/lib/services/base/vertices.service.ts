@@ -5,6 +5,7 @@ import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
 import { ShapeGettersService } from "./shape-getters";
 import { WiresService } from "./wires.service";
+import * as Resolved from "../../api/resolved-inputs";
 
 export class VerticesService {
 
@@ -18,11 +19,11 @@ export class VerticesService {
     ) { }
 
 
-    vertexFromXYZ(inputs: Inputs.OCCT.XYZDto): TopoDS_Vertex {
+    vertexFromXYZ(inputs: Resolved.OCCT.XYZDto): TopoDS_Vertex {
         return this.entitiesService.makeVertex([inputs.x, inputs.y, inputs.z]);
     }
 
-    vertexFromPoint(inputs: Inputs.OCCT.PointDto): TopoDS_Vertex {
+    vertexFromPoint(inputs: Resolved.OCCT.PointDto): TopoDS_Vertex {
         return this.entitiesService.makeVertex(inputs.point);
     }
 
@@ -66,7 +67,7 @@ export class VerticesService {
         return this.converterService.vertexToPoint(inputs);
     }
 
-    projectPoints(inputs: Inputs.OCCT.ProjectPointsOnShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
+    projectPoints(inputs: Resolved.OCCT.ProjectPointsOnShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
         const pointsAlongDir = inputs.points.map(p => [p[0] + inputs.direction[0], p[1] + inputs.direction[1], p[2] + inputs.direction[2]] as Inputs.Base.Point3);
         const lines = pointsAlongDir.map((p, i) => ({
             start: inputs.points[i]!,

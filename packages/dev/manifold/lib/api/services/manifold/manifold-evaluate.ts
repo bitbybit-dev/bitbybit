@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Measuring Manifold solids and reading their bookkeeping: surface area and volume, vertex,
@@ -212,7 +214,8 @@ export class ManifoldEvaluate {
      * ```
      */
     minGap(inputs: Inputs.Manifold.ManifoldsMinGapDto<Manifold3D.Manifold>): number {
-        return inputs.manifold1.minGap(inputs.manifold2, inputs.searchLength);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldsMinGapDto, inputs) as Resolved.Manifold.ManifoldsMinGapDto<Manifold3D.Manifold>;
+        return resolved.manifold1.minGap(resolved.manifold2, resolved.searchLength);
     }
 
     /**
@@ -232,7 +235,8 @@ export class ManifoldEvaluate {
      * ```
      */
     rayCast(inputs: Inputs.Manifold.RayCastDto<Manifold3D.Manifold>): Inputs.Manifold.RayHit[] {
-        return inputs.manifold.rayCast(inputs.origin, inputs.endpoint).map((hit) => ({
+        const resolved = resolveDto(Inputs.Manifold.RayCastDto, inputs) as Resolved.Manifold.RayCastDto<Manifold3D.Manifold>;
+        return resolved.manifold.rayCast(resolved.origin, resolved.endpoint).map((hit) => ({
             faceID: hit.faceID,
             distance: hit.distance,
             position: [...hit.position] as Inputs.Base.Point3,

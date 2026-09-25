@@ -41,22 +41,22 @@ describe("IO unit tests", () => {
             expect(result.radius).toBe(50);
         });
 
-        it("should return polyline segment unchanged", () => {
+        it("should return the polyline segment with the values it was given", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
             const segment = new Inputs.IO.DxfPolylineSegmentDto(points, false);
             const result = io.dxf.polylineSegment(segment);
             
-            expect(result).toBe(segment);
+            expect(result).toEqual(segment);
             expect(result.points).toEqual(points);
             expect(result.closed).toBe(false);
         });
 
-        it("should return spline segment unchanged", () => {
+        it("should return the spline segment with the values it was given", () => {
             const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 0]];
             const segment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
             const result = io.dxf.splineSegment(segment);
             
-            expect(result).toBe(segment);
+            expect(result).toEqual(segment);
             expect(result.controlPoints).toEqual(controlPoints);
             expect(result.degree).toBe(3);
             expect(result.closed).toBe(false);
@@ -74,13 +74,13 @@ describe("IO unit tests", () => {
             expect(result.segments).toHaveLength(1);
         });
 
-        it("should return paths part unchanged", () => {
+        it("should return the paths part with the values it was given", () => {
             const lineSegment = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([lineSegment]);
             const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#FF0000", [path]);
             const result = io.dxf.pathsPart(part);
             
-            expect(result).toBe(part);
+            expect(result).toEqual(part);
             expect(result.layer).toBe("TestLayer");
             expect(result.color).toBe("#FF0000");
             expect(result.paths).toHaveLength(1);

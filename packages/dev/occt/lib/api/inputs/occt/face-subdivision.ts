@@ -33,7 +33,7 @@ export class FaceSubdivisionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrDivisionsU = 10;
+    nrDivisionsU?: number | undefined = 10;
     /**
      * How many points along each row across the V range, edge to edge.
      * @default 10
@@ -41,39 +41,39 @@ export class FaceSubdivisionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrDivisionsV = 10;
+    nrDivisionsV?: number | undefined = 10;
     /**
      * When true, every point moves half a step in U; on a closed face such as a cylinder this keeps
      * points off the seam.
      * @default false
      */
-    shiftHalfStepU = false;
+    shiftHalfStepU?: boolean | undefined = false;
     /**
      * When true, the row at the start of the U range is left out.
      * @default false
      */
-    removeStartEdgeU = false;
+    removeStartEdgeU?: boolean | undefined = false;
     /**
      * When true, the row at the end of the U range is left out.
      * @default false
      */
-    removeEndEdgeU = false;
+    removeEndEdgeU?: boolean | undefined = false;
     /**
      * When true, every point moves half a step in V; on a closed face such as a cylinder this keeps
      * points off the seam.
      * @default false
      */
-    shiftHalfStepV = false;
+    shiftHalfStepV?: boolean | undefined = false;
     /**
      * When true, the points at the start of the V range are left out of every row.
      * @default false
      */
-    removeStartEdgeV = false;
+    removeStartEdgeV?: boolean | undefined = false;
     /**
      * When true, the points at the end of the V range are left out of every row.
      * @default false
      */
-    removeEndEdgeV = false;
+    removeEndEdgeV?: boolean | undefined = false;
 }
 
 /**
@@ -106,27 +106,27 @@ export class FaceSubdivisionToWiresDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrDivisions = 10;
+    nrDivisions?: number | undefined = 10;
     /**
      * When true each wire sits at a fixed U and runs across the V range; when false the roles swap.
      * @default true
      */
-    isU = true;
+    isU?: boolean | undefined = true;
     /**
      * When true, every wire moves half a step along the divided direction.
      * @default false
      */
-    shiftHalfStep = false;
+    shiftHalfStep?: boolean | undefined = false;
     /**
      * When true, the wire on the start boundary is left out.
      * @default false
      */
-    removeStart = false;
+    removeStart?: boolean | undefined = false;
     /**
      * When true, the wire on the end boundary is left out.
      * @default false
      */
-    removeEnd = false;
+    removeEnd?: boolean | undefined = false;
 }
 /**
  * A face, a grid of cells and optional patterns for `shapes.face.subdivideToRectangleWires`, which
@@ -160,7 +160,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrRectanglesU = 10;
+    nrRectanglesU?: number | undefined = 10;
     /**
      * How many cells across the V range.
      * @default 10
@@ -168,7 +168,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrRectanglesV = 10;
+    nrRectanglesV?: number | undefined = 10;
     /**
      * Sizes of the rectangles along U as fractions of their cell, from 0 to 1, applied in turn; 1
      * fills the cell, and leaving the list out means no scaling.
@@ -204,7 +204,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      * @maximum 0.5
      * @step 0.01
      */
-    offsetFromBorderU = 0;
+    offsetFromBorderU?: number | undefined = 0;
     /**
      * A fraction of the V range trimmed at each end before dividing into cells, so the pattern
      * keeps clear of the border; keep it below 0.5.
@@ -213,7 +213,7 @@ export class FaceSubdivideToRectangleWiresDto<T> {
      * @maximum 0.5
      * @step 0.01
      */
-    offsetFromBorderV = 0;
+    offsetFromBorderV?: number | undefined = 0;
 }
 /**
  * A face, hexagon counts and optional patterns for `shapes.face.subdivideToHexagonWires`, which
@@ -270,7 +270,7 @@ export class FaceSubdivideToHexagonWiresDto<T> {
      * that way.
      * @default false
      */
-    flatU = false;
+    flatU?: boolean | undefined = false;
     /**
      * Sizes of the hexagons along U as fractions of their full size, applied in turn about each
      * hexagon's center; 1 or no list means no scaling.
@@ -394,7 +394,7 @@ export class FaceSubdivideToHexagonHolesDto<T> {
      * that way.
      * @default false
      */
-    flatU = false;
+    flatU?: boolean | undefined = false;
     /**
      * When true, the result also carries one face per hole after the perforated face.
      * @default false
@@ -481,7 +481,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrRectanglesU = 10;
+    nrRectanglesU?: number | undefined = 10;
     /**
      * How many cells across the V range.
      * @default 10
@@ -489,7 +489,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrRectanglesV = 10;
+    nrRectanglesV?: number | undefined = 10;
     /**
      * Sizes of the holes along U as fractions of their cell, applied in turn; leaving the list out
      * uses 0.5.
@@ -521,7 +521,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * When true, the result also carries one face per hole after the perforated face.
      * @default false
      */
-    holesToFaces = false;
+    holesToFaces?: boolean | undefined = false;
     /**
      * A fraction of the U range trimmed at each end before dividing into cells, so the holes keep
      * clear of the border; keep it below 0.5.
@@ -530,7 +530,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * @maximum 0.5
      * @step 0.01
      */
-    offsetFromBorderU = 0;
+    offsetFromBorderU?: number | undefined = 0;
     /**
      * A fraction of the V range trimmed at each end before dividing into cells, so the holes keep
      * clear of the border; keep it below 0.5.
@@ -539,7 +539,7 @@ export class FaceSubdivideToRectangleHolesDto<T> {
      * @maximum 0.5
      * @step 0.01
      */
-    offsetFromBorderV = 0;
+    offsetFromBorderV?: number | undefined = 0;
 }
 /**
  * A face, a grid of divisions and nth-row rules for `shapes.face.subdivideToPointsControlled`,
@@ -579,7 +579,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrDivisionsU = 10;
+    nrDivisionsU?: number | undefined = 10;
     /**
      * How many points along each row across the V range, edge to edge.
      * @default 10
@@ -587,7 +587,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrDivisionsV = 10;
+    nrDivisionsV?: number | undefined = 10;
     /**
      * Every how-manyth V row is pushed half a step in U; 0 shifts none.
      * @default 0
@@ -595,7 +595,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    shiftHalfStepNthU = 0;
+    shiftHalfStepNthU?: number | undefined = 0;
     /**
      * Which V row the counting for the U shift starts at.
      * @default 0
@@ -603,7 +603,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    shiftHalfStepUOffsetN = 0;
+    shiftHalfStepUOffsetN?: number | undefined = 0;
     /**
      * Every how-manyth point is dropped from the first U row; 0 keeps them all.
      * @default 0
@@ -611,7 +611,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeStartEdgeNthU = 0;
+    removeStartEdgeNthU?: number | undefined = 0;
     /**
      * Which point the counting for the first U row removal starts at.
      * @default 0
@@ -619,7 +619,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeStartEdgeUOffsetN = 0;
+    removeStartEdgeUOffsetN?: number | undefined = 0;
     /**
      * Every how-manyth point is dropped from the last U row; 0 keeps them all.
      * @default 0
@@ -627,7 +627,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeEndEdgeNthU = 0;
+    removeEndEdgeNthU?: number | undefined = 0;
     /**
      * Which point the counting for the last U row removal starts at.
      * @default 0
@@ -635,7 +635,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeEndEdgeUOffsetN = 0;
+    removeEndEdgeUOffsetN?: number | undefined = 0;
     /**
      * Every how-manyth U row is pushed half a step in V; 0 shifts none.
      * @default 0
@@ -643,7 +643,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    shiftHalfStepNthV = 0;
+    shiftHalfStepNthV?: number | undefined = 0;
     /**
      * Which U row the counting for the V shift starts at.
      * @default 0
@@ -651,7 +651,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    shiftHalfStepVOffsetN = 0;
+    shiftHalfStepVOffsetN?: number | undefined = 0;
     /**
      * Every how-manyth point is dropped from the first V row; 0 keeps them all.
      * @default 0
@@ -659,7 +659,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeStartEdgeNthV = 0;
+    removeStartEdgeNthV?: number | undefined = 0;
     /**
      * Which point the counting for the first V row removal starts at.
      * @default 0
@@ -667,7 +667,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeStartEdgeVOffsetN = 0;
+    removeStartEdgeVOffsetN?: number | undefined = 0;
     /**
      * Every how-manyth point is dropped from the last V row; 0 keeps them all.
      * @default 0
@@ -675,7 +675,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeEndEdgeNthV = 0;
+    removeEndEdgeNthV?: number | undefined = 0;
     /**
      * Which point the counting for the last V row removal starts at.
      * @default 0
@@ -683,7 +683,7 @@ export class FaceSubdivisionControlledDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    removeEndEdgeVOffsetN = 0;
+    removeEndEdgeVOffsetN?: number | undefined = 0;
 }
 /**
  * A face and one line across its UV range for `shapes.face.subdivideToPointsOnParam` and
@@ -713,7 +713,7 @@ export class FaceLinearSubdivisionDto<T> {
      * roles swap.
      * @default true
      */
-    isU = true;
+    isU?: boolean | undefined = true;
     /**
      * Where the line sits, as a fraction from 0 to 1 of the fixed direction's range.
      * @default 0.5
@@ -721,7 +721,7 @@ export class FaceLinearSubdivisionDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
     /**
      * How many points along the line, edge to edge.
      * @default 10
@@ -729,21 +729,21 @@ export class FaceLinearSubdivisionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrPoints = 10;
+    nrPoints?: number | undefined = 10;
     /**
      * When true, every point moves half a step along the line; on a closed face this keeps points
      * off the seam.
      * @default false
      */
-    shiftHalfStep = false;
+    shiftHalfStep?: boolean | undefined = false;
     /**
      * When true, the first point is left out.
      * @default false
      */
-    removeStartPoint = false;
+    removeStartPoint?: boolean | undefined = false;
     /**
      * When true, the last point is left out.
      * @default false
      */
-    removeEndPoint = false;
+    removeEndPoint?: boolean | undefined = false;
 }

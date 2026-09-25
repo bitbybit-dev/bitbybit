@@ -68,13 +68,14 @@ export class CreateAssemblyPartDto<T> {
      */
     name!: string;
     /**
-     * The color of the part as `{ r, g, b, a }` with every channel from 0 to 1; leave it out for
-     * the default gray.
-     * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
+     * The color of the part as `{ r, g, b, a }` from 0 to 1; left out, the part has no color of
+     * its own.
+     * @default undefined
+     * @optional true
      * @minimum 0
      * @maximum 1
      */
-    colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+    colorRgba?: Base.ColorRGBA | undefined;
 }
 
 /**
@@ -273,12 +274,12 @@ export class CombineAssemblyStructureDto<T> {
      * The part definitions from `createPart`, the shapes that instances place.
      * @default []
      */
-    parts: Models.OCCT.AssemblyPartDef<T>[] = [];
+    parts?: Models.OCCT.AssemblyPartDef<T>[] | undefined = [];
     /**
      * The assembly and instance node definitions that make up the tree.
      * @default []
      */
-    nodes: Models.OCCT.AssemblyNodeDef[] = [];
+    nodes?: Models.OCCT.AssemblyNodeDef[] | undefined = [];
     /**
      * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
      * new one.
@@ -335,7 +336,7 @@ export class CreateImportedPartDto {
      * 0.
      * @default 0
      */
-    sourceDocumentIndex = 0;
+    sourceDocumentIndex?: number | undefined = 0;
     /**
      * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
      * shape of the source document.
@@ -394,7 +395,7 @@ export class SetDocLabelColorDto<T> {
      * @maximum 1
      * @step 0.01
      */
-    r = 0.5;
+    r?: number | undefined = 0.5;
     /**
      * The green channel, from 0 to 1.
      * @default 0.5
@@ -402,7 +403,7 @@ export class SetDocLabelColorDto<T> {
      * @maximum 1
      * @step 0.01
      */
-    g = 0.5;
+    g?: number | undefined = 0.5;
     /**
      * The blue channel, from 0 to 1.
      * @default 0.5
@@ -410,7 +411,7 @@ export class SetDocLabelColorDto<T> {
      * @maximum 1
      * @step 0.01
      */
-    b = 0.5;
+    b?: number | undefined = 0.5;
     /**
      * The opacity, from 0 for transparent to 1 for opaque.
      * @default 1.0
@@ -418,7 +419,7 @@ export class SetDocLabelColorDto<T> {
      * @maximum 1
      * @step 0.01
      */
-    a = 1.0;
+    a?: number | undefined = 1.0;
 }
 
 /**
@@ -444,7 +445,7 @@ export class SetDocLabelNameDto<T> {
      * The new name written to the label.
      * @default Renamed
      */
-    name = "Renamed";
+    name?: string | undefined = "Renamed";
 }
 
 /**
@@ -526,28 +527,28 @@ export class ExportDocumentToStepDto<T> {
      * The file name written into the STEP header and used for the download.
      * @default assembly.step
      */
-    fileName = "assembly.step";
+    fileName?: string | undefined = "assembly.step";
     /**
      * The author written into the STEP header.
      * @default Bitbybit user
      */
-    author = "Bitbybit user";
+    author?: string | undefined = "Bitbybit user";
     /**
      * The organization written into the STEP header.
      * @default Bitbybit
      */
-    organization = "Bitbybit";
+    organization?: string | undefined = "Bitbybit";
     /**
      * When true, the file is written as gzip-compressed STEP-Z.
      * @default false
      */
-    compress = false;
+    compress?: boolean | undefined = false;
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the bytes.
      * @default false
      */
-    tryDownload = false;
+    tryDownload?: boolean | undefined = false;
 }
 
 /**
@@ -580,47 +581,47 @@ export class ExportDocumentToGltfDto<T> {
      * How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh.
      * @default 0.1
      */
-    meshDeflection = 0.1;
+    meshDeflection?: number | undefined = 0.1;
     /**
      * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
      * smoother curves.
      * @default 0.5
      */
-    meshAngle = 0.5;
+    meshAngle?: number | undefined = 0.5;
     /**
      * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
      * speed.
      * @default false
      */
-    internalVerticesMode = false;
+    internalVerticesMode?: boolean | undefined = false;
     /**
      * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
      * speed.
      * @default false
      */
-    controlSurfaceDeflection = false;
+    controlSurfaceDeflection?: boolean | undefined = false;
     /**
      * When true, faces with the same material are joined into one mesh; false keeps every face
      * separate.
      * @default false
      */
-    mergeFaces = false;
+    mergeFaces?: boolean | undefined = false;
     /**
      * When true, texture coordinates are written even for meshes without textures.
      * @default false
      */
-    forceUVExport = false;
+    forceUVExport?: boolean | undefined = false;
     /**
      * The name the downloaded file gets; it should end in `.glb`.
      * @default assembly.glb
      */
-    fileName = "assembly.glb";
+    fileName?: string | undefined = "assembly.glb";
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
      * itself only returns the bytes.
      * @default false
      */
-    tryDownload = false;
+    tryDownload?: boolean | undefined = false;
 }
 
 /**
@@ -643,7 +644,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * When true, the geometry is compressed with Draco.
      * @default true
      */
-    useDraco = true;
+    useDraco?: boolean | undefined = true;
     /**
      * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
      * @default 7
@@ -651,7 +652,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 10
      * @step 1
      */
-    dracoCompressionLevel = 7;
+    dracoCompressionLevel?: number | undefined = 7;
     /**
      * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
      * @default 14
@@ -659,7 +660,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 31
      * @step 1
      */
-    dracoQuantizePositionBits = 14;
+    dracoQuantizePositionBits?: number | undefined = 14;
     /**
      * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
      * @default 10
@@ -667,7 +668,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeNormalBits = 10;
+    dracoQuantizeNormalBits?: number | undefined = 10;
     /**
      * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
      * precision.
@@ -676,7 +677,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeTexcoordBits = 12;
+    dracoQuantizeTexcoordBits?: number | undefined = 12;
     /**
      * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
      * @default 8
@@ -684,7 +685,7 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeColorBits = 8;
+    dracoQuantizeColorBits?: number | undefined = 8;
     /**
      * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
      * precision.
@@ -693,11 +694,11 @@ export class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto
      * @maximum 31
      * @step 1
      */
-    dracoQuantizeGenericBits = 12;
+    dracoQuantizeGenericBits?: number | undefined = 12;
     /**
      * When true, one quantization grid is used for every attribute instead of one per attribute.
      * @default false
      */
-    dracoUnifiedQuantization = false;
+    dracoUnifiedQuantization?: boolean | undefined = false;
 }
 

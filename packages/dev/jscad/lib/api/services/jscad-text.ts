@@ -1,6 +1,7 @@
-import { Base } from "@bitbybit-dev/base";
+import { Base, resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Writing text with JSCAD's built-in stroke font. `createVectorText` gives the pen strokes of the
@@ -29,15 +30,16 @@ export class JSCADText {
      * ```
      */
     cylindricalText(inputs: Inputs.JSCAD.CylinderTextDto): Inputs.JSCAD.JSCADEntity[] {
-        const text = this.createVectorText(inputs);
+        const resolved = resolveDto(Inputs.JSCAD.CylinderTextDto, inputs) as Resolved.JSCAD.CylinderTextDto;
+        const text = this.createVectorText(resolved);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {
             const cylinders = txt.map(center => {
                 return this.jscad.primitives.cylinder({
                     center: [center[0], center[1], 0],
-                    height: inputs.extrusionHeight,
-                    radius: inputs.extrusionSize,
-                    segments: inputs.segments,
+                    height: resolved.extrusionHeight,
+                    radius: resolved.extrusionSize,
+                    segments: resolved.segments,
                 });
             });
             return this.jscad.hulls.hullChain(...cylinders);
@@ -61,14 +63,15 @@ export class JSCADText {
      * ```
      */
     sphericalText(inputs: Inputs.JSCAD.SphereTextDto): Inputs.JSCAD.JSCADEntity[] {
-        const text = this.createVectorText(inputs);
+        const resolved = resolveDto(Inputs.JSCAD.SphereTextDto, inputs) as Resolved.JSCAD.SphereTextDto;
+        const text = this.createVectorText(resolved);
         this.adjustTextToBeOnCenter(text);
         return text.map(txt => {
             const spheres = txt.map(center => {
                 return this.jscad.primitives.sphere({
                     center: [center[0], center[1], 0],
-                    radius: inputs.radius,
-                    segments: inputs.segments,
+                    radius: resolved.radius,
+                    segments: resolved.segments,
                 });
             });
             return this.jscad.hulls.hullChain(...spheres);
@@ -112,15 +115,16 @@ export class JSCADText {
      * ```
      */
     createVectorText(inputs: Inputs.JSCAD.TextDto): Base.Point2[][] {
+        const resolved = resolveDto(Inputs.JSCAD.TextDto, inputs) as Resolved.JSCAD.TextDto;
         return this.jscad.text.vectorText({
-            input: inputs.text,
-            xOffset: inputs.xOffset,
-            yOffset: inputs.yOffset,
-            height: inputs.height,
-            lineSpacing: inputs.lineSpacing,
-            letterSpacing: inputs.letterSpacing,
-            align: inputs.align,
-            extrudeOffset: inputs.extrudeOffset,
+            input: resolved.text,
+            xOffset: resolved.xOffset,
+            yOffset: resolved.yOffset,
+            height: resolved.height,
+            lineSpacing: resolved.lineSpacing,
+            letterSpacing: resolved.letterSpacing,
+            align: resolved.align,
+            extrudeOffset: resolved.extrudeOffset,
         });
     }
 }

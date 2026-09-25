@@ -37,7 +37,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * The Y value, the second entry; Y is up.
          * @default 0
@@ -45,7 +45,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        y = 0;
+        y?: number | undefined = 0;
         /**
          * The Z value, the third entry.
          * @default 0
@@ -53,7 +53,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        z = 0;
+        z?: number | undefined = 0;
     }
     /**
      * The two values `point.pointXY` puts together into `[x, y]`.
@@ -70,7 +70,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * The Y value, the second entry.
          * @default 0
@@ -78,7 +78,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        y = 0;
+        y?: number | undefined = 0;
     }
     /**
      * A list of points for the methods that read them together: `point.boundingBoxOfPoints`,
@@ -322,17 +322,17 @@ export namespace Point {
          * Distance to move along X, in model units.
          * @default 0
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * Distance to move along Y, which is up, in model units.
          * @default 1
          */
-        y = 1;
+        y?: number | undefined = 1;
         /**
          * Distance to move along Z, in model units.
          * @default 0
          */
-        z = 0;
+        z?: number | undefined = 0;
     }
 
     /**
@@ -353,13 +353,13 @@ export namespace Point {
          * The point that stays in place while the others move away from it or toward it.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The factor for each axis as `[x, y, z]`: `[1, 2, 1]` doubles distances along Y and leaves
          * X and Z as they are.
          * @default [1, 1, 1]
          */
-        scaleXyz: Base.Vector3 = [1, 1, 1];
+        scaleXyz?: Base.Vector3 | undefined = [1, 1, 1];
     }
 
     /**
@@ -421,17 +421,17 @@ export namespace Point {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * The direction of the axis to turn around.
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * A point the axis passes through.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Points and one transformation per point for `point.transformsForPoints`; the two lists must
@@ -485,7 +485,7 @@ export namespace Point {
          * When true, the normal is flipped to point the other way.
          * @default false
          */
-        reverseNormal = false;
+        reverseNormal?: boolean | undefined = false;
     }
     /**
      * A corner for `point.maxFilletRadius` and `point.maxFilletRadiusHalfLine`: the corner point is
@@ -521,7 +521,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * A polyline's points for `point.maxFilletsHalfLine` and `point.safestPointsMaxFilletHalfLine`,
@@ -582,7 +582,7 @@ export namespace Point {
          * cleanly.
          * @default false
          */
-        checkFirstAndLast = false;
+        checkFirstAndLast?: boolean | undefined = false;
     }
     /**
      * A point and a list to search for `point.closestPointFromPoints`,
@@ -711,7 +711,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        phi = 0.9;
+        phi?: number | undefined = 0.9;
         /**
          * How many points to place along the spiral.
          * @default 200
@@ -719,7 +719,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 10
          */
-        numberPoints = 200;
+        numberPoints?: number | undefined = 200;
         /**
          * How much the spiral widens per turn; larger values spread the turns further apart.
          * @default 3
@@ -727,7 +727,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        widening = 3;
+        widening?: number | undefined = 3;
         /**
          * The distance from the origin the last point reaches, in model units.
          * @default 6
@@ -735,7 +735,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 6;
+        radius?: number | undefined = 6;
         /**
          * Scales the distance before the angle is computed, which turns the whole spiral; 1 leaves
          * it as it is.
@@ -744,7 +744,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        factor = 1;
+        factor?: number | undefined = 1;
     }
     /**
      * The area, counts and orientation for `point.hexGridScaledToFit`, which sizes hexagons so the
@@ -852,7 +852,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsY = 21;
+        nrHexagonsY?: number | undefined = 21;
         /**
          * How many columns of hexagons along X.
          * @default 21
@@ -860,7 +860,7 @@ export namespace Point {
          * @maximum Infinity
          * @step 1
          */
-        nrHexagonsX = 21;
+        nrHexagonsX?: number | undefined = 21;
         /**
          * Distance from a hexagon's center to one of its corners, in model units.
          * @default 0.2
@@ -868,16 +868,16 @@ export namespace Point {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusHexagon: number = 0.2;
+        radiusHexagon?: number | undefined = 0.2;
         /**
          * When true, the middle of the grid sits at the origin instead of its corner.
          * @default false
          */
-        orientOnCenter = false;
+        orientOnCenter?: boolean | undefined = false;
         /**
          * When true, the grid lies on the XZ ground plane (Y becomes 0) instead of the XY plane.
          * @default false
          */
-        pointsOnGround = false;
+        pointsOnGround?: boolean | undefined = false;
     }
 }

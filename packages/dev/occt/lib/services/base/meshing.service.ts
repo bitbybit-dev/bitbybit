@@ -2,6 +2,8 @@ import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape, TopoDS_Wire 
 import * as Inputs from "../../api/inputs";
 import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
+import * as Resolved from "../../api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 export class MeshingService {
 
@@ -11,7 +13,7 @@ export class MeshingService {
         public readonly base: BaseBitByBit
     ) { }
 
-    shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+    shapeFacesToPolygonPoints(inputs: Resolved.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const def = this.shapeToMesh({
             shape: inputs.shape,
             precision: inputs.precision,
@@ -41,7 +43,7 @@ export class MeshingService {
         return res;
     }
 
-    shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
+    shapesToMeshes(inputs: Resolved.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
         return inputs.shapes.map(shape => this.shapeToMesh({
             shape,
             precision: inputs.precision,
@@ -54,23 +56,24 @@ export class MeshingService {
     }
 
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
-        if (!inputs.shape || inputs.shape.IsNull()) {
+        const resolved = resolveDto(Inputs.OCCT.ShapeToMeshDto, inputs) as Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>;
+        if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
       
         const json = this.occ.ShapeToMeshJson(
-            inputs.shape,
-            inputs.precision,
-            inputs.adjustYtoZ ?? false,
-            inputs.computeMetadata ?? false,
-            inputs.keepMeshData ?? false,
-            inputs.allowQualityDecrease ?? true,
-            inputs.forceFaceDeflection ?? false,
+            resolved.shape,
+            resolved.precision,
+            resolved.adjustYtoZ,
+            resolved.computeMetadata,
+            resolved.keepMeshData,
+            resolved.allowQualityDecrease,
+            resolved.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
     }
 
-    docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
+    docToMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return [];
@@ -79,16 +82,16 @@ export class MeshingService {
         const json = this.occ.DocumentToMeshesJson(
             doc.get(),
             inputs.precision,
-            inputs.adjustYtoZ ?? false,
-            inputs.computeMetadata ?? false,
-            inputs.keepMeshData ?? false,
-            inputs.allowQualityDecrease ?? true,
-            inputs.forceFaceDeflection ?? false,
+            inputs.adjustYtoZ,
+            inputs.computeMetadata,
+            inputs.keepMeshData,
+            inputs.allowQualityDecrease,
+            inputs.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto[];
     }
 
-    docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
+    docToMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
         const doc = inputs.document;
         if (!doc || typeof doc.get !== "function" || typeof doc.IsNull !== "function" || doc.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
@@ -97,21 +100,21 @@ export class MeshingService {
         const json = this.occ.DocumentToMeshJson(
             doc.get(),
             inputs.precision,
-            inputs.adjustYtoZ ?? false,
-            inputs.computeMetadata ?? false,
-            inputs.keepMeshData ?? false,
-            inputs.allowQualityDecrease ?? true,
-            inputs.forceFaceDeflection ?? false,
+            inputs.adjustYtoZ,
+            inputs.computeMetadata,
+            inputs.keepMeshData,
+            inputs.allowQualityDecrease,
+            inputs.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
     }
 
-    meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
+    meshMeshIntersectionWires(inputs: Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         const res = this.base.mesh.meshMeshIntersectionPolylines({
             mesh1, mesh2
@@ -136,17 +139,17 @@ export class MeshingService {
         return wires;
     }
 
-    meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+    meshMeshIntersectionPoints(inputs: Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const shape1 = inputs.shape1;
         const shape2 = inputs.shape2;
 
-        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
-        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2 ?? 0.01, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh1 = this.shapeFacesToPolygonPoints({ shape: shape1, precision: inputs.precision1, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
+        const mesh2 = this.shapeFacesToPolygonPoints({ shape: shape2, precision: inputs.precision2, adjustYtoZ: false, reversedPoints: false }) as Inputs.Base.Mesh3;
 
         return this.base.mesh.meshMeshIntersectionPoints({ mesh1, mesh2 });
     }
 
-    meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
+    meshMeshIntersectionOfShapesWires(inputs: Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
         const wireIntersections: TopoDS_Wire[] = [];
 
         inputs.shapes.forEach((_shape, index) => {
@@ -166,7 +169,7 @@ export class MeshingService {
         return wireIntersections;
     }
 
-    meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+    meshMeshIntersectionOfShapesPoints(inputs: Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const pointIntersections: Inputs.Base.Point3[][] = [];
 
         inputs.shapes.forEach((_shape, index) => {

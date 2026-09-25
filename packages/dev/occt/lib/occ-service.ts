@@ -16,6 +16,8 @@ import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 import { OCCTPath } from "./services/path";
 import { OCCTSVG } from "./services/svg";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "./api/resolved-inputs";
 
 /**
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
@@ -83,7 +85,8 @@ export class OCCTService {
      * ```
      */
     shapeFacesToPolygonPoints(inputs: Inputs.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.meshingService.shapeFacesToPolygonPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeFacesToPolygonPointsDto, inputs) as Resolved.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>;
+        return this.och.meshingService.shapeFacesToPolygonPoints(resolved);
     }
 
     /**
@@ -105,7 +108,8 @@ export class OCCTService {
      * ```
      */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {
-        return this.och.meshingService.shapeToMesh(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeToMeshDto, inputs) as Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>;
+        return this.och.meshingService.shapeToMesh(resolved);
     }
 
     /**
@@ -121,7 +125,8 @@ export class OCCTService {
      * ```
      */
     shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto[] {
-        return this.och.meshingService.shapesToMeshes(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapesToMeshesDto, inputs) as Resolved.OCCT.ShapesToMeshesDto<TopoDS_Shape>;
+        return this.och.meshingService.shapesToMeshes(resolved);
     }
 
     /**
@@ -132,7 +137,8 @@ export class OCCTService {
      * @ignore true
      */
     docToMesh(inputs: Inputs.OCCT.DocToMeshDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto {
-        return this.och.meshingService.docToMesh(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DocToMeshDto, inputs) as Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>;
+        return this.och.meshingService.docToMesh(resolved);
     }
 
     /**
@@ -143,7 +149,8 @@ export class OCCTService {
      * @ignore true
      */
     docToMeshes(inputs: Inputs.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
-        return this.och.meshingService.docToMeshes(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DocToMeshesDto, inputs) as Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>;
+        return this.och.meshingService.docToMeshes(resolved);
     }
 
 

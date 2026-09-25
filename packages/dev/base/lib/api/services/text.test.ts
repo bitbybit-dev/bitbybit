@@ -10,6 +10,9 @@ import { Lists } from "./lists";
 import { VectorFont } from "../models/simplex";
 
 
+const SIMPLEX_LINE_SPACING = 2.142857142857143;
+const SIMPLEX_LETTER_SPACING = 1;
+
 describe("Text unit tests", () => {
     let text: TextBitByBit;
 
@@ -470,11 +473,23 @@ describe("Text unit tests", () => {
             ]);
         });
 
+        it("should space lines and letters by the documented defaults when the call leaves them out", () => {
+            // Arrange
+            const txt = "A\nAB";
+
+            // Act
+            const leftOut = text.vectorText({ text: txt, font: mockFont, height: 10 } as Mocked<Inputs.Text.VectorTextDto>);
+            const spelled = text.vectorText({ text: txt, font: mockFont, height: 10, lineSpacing: 1.4, letterSpacing: 0 } as Mocked<Inputs.Text.VectorTextDto>);
+
+            // Assert
+            expect(leftOut).toEqual(spelled);
+        });
+
         it("should align text center", () => {
             const txt = "A\nAB";
             const height = 10;
 
-            const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.center } as Mocked<Inputs.Text.VectorTextDto>);
+            const result = text.vectorText({ text: txt, font: mockFont, height: height, lineSpacing: SIMPLEX_LINE_SPACING, letterSpacing: SIMPLEX_LETTER_SPACING, align: Inputs.Base.horizontalAlignEnum.center } as Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
 
             expect(result[0]!.chars[0]!.paths).toEqual([[[14.285714285714285, 0, 10], [10.476190476190476, 0, 0]], [[14.285714285714285, 0, 10], [18.095238095238095, 0, 0]], [[11.904761904761905, 0, 3.333333333333333], [16.666666666666664, 0, 3.333333333333333]]]);
@@ -484,7 +499,7 @@ describe("Text unit tests", () => {
             const txt = "A\nAB";
             const height = 10;
 
-            const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.right } as Mocked<Inputs.Text.VectorTextDto>);
+            const result = text.vectorText({ text: txt, font: mockFont, height: height, lineSpacing: SIMPLEX_LINE_SPACING, letterSpacing: SIMPLEX_LETTER_SPACING, align: Inputs.Base.horizontalAlignEnum.right } as Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
             expect(result[0]!.chars[0]!.paths).toEqual([
                 [[24.285714285714285, 0, 10], [20.476190476190474, 0, 0]],

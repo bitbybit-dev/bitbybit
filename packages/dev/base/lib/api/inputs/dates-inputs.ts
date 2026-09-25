@@ -55,7 +55,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        seconds = 30;
+        seconds?: number | undefined = 30;
     }
 
     /**
@@ -78,7 +78,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        day = 1;
+        day?: number | undefined = 1;
     }
 
     /**
@@ -102,7 +102,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        year = 1;
+        year?: number | undefined = 1;
     }
 
     /**
@@ -126,7 +126,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        month = 1;
+        month?: number | undefined = 1;
     }
 
     /**
@@ -149,7 +149,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        hours = 1;
+        hours?: number | undefined = 1;
     }
 
     /**
@@ -172,7 +172,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        minutes = 1;
+        minutes?: number | undefined = 1;
     }
 
     /**
@@ -196,7 +196,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        milliseconds = 1;
+        milliseconds?: number | undefined = 1;
     }
 
     /**
@@ -219,7 +219,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        time = 1;
+        time?: number | undefined = 1;
     }
     /**
      * A Unix timestamp for `dates.createFromUnixTimeStamp`, which turns it into a date.
@@ -235,7 +235,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        unixTimeStamp = 1;
+        unixTimeStamp?: number | undefined = 1;
     }
     /**
      * The parts of a date for `dates.createDate` and `dates.createDateUTC`; a part outside its
@@ -258,7 +258,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        year = 1;
+        year?: number | undefined = 1;
         /**
          * The month counting from 0: 0 is January, 11 December.
          * @default 1
@@ -266,7 +266,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        month = 1;
+        month?: number | undefined = 1;
         /**
          * The day of the month, from 1 to 31.
          * @default 1
@@ -274,7 +274,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        day = 1;
+        day?: number | undefined = 1;
         /**
          * The hour, from 0 to 23.
          * @default 1
@@ -282,7 +282,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        hours = 1;
+        hours?: number | undefined = 1;
         /**
          * The minutes, from 0 to 59.
          * @default 1
@@ -290,7 +290,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        minutes = 1;
+        minutes?: number | undefined = 1;
         /**
          * The seconds, from 0 to 59.
          * @default 1
@@ -298,7 +298,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        seconds = 1;
+        seconds?: number | undefined = 1;
 
         /**
          * The milliseconds, from 0 to 999.
@@ -307,7 +307,7 @@ export namespace Dates {
          * @maximum Infinity
          * @step 1
          */
-        milliseconds = 1;
+        milliseconds?: number | undefined = 1;
     }
 
 }

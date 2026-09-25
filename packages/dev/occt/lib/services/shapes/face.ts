@@ -3,6 +3,8 @@ import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Faces in OpenCascade: bounded pieces of a surface, flat or curved, with an outer boundary wire
@@ -39,7 +41,8 @@ export class OCCTFace {
      * ```
      */
     rebuildFaceDegree(inputs: Inputs.OCCT.RebuildFaceDegreeDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.RebuildFaceDegree(inputs.shape, inputs.uDegree, inputs.vDegree, inputs.tolerance, inputs.keepTrim);
+        const resolved = resolveDto(Inputs.OCCT.RebuildFaceDegreeDto, inputs) as Resolved.OCCT.RebuildFaceDegreeDto<TopoDS_Face>;
+        return this.occ.RebuildFaceDegree(resolved.shape, resolved.uDegree, resolved.vDegree, resolved.tolerance, resolved.keepTrim);
     }
 
     /**
@@ -60,7 +63,8 @@ export class OCCTFace {
      * ```
      */
     flipFaceUV(inputs: Inputs.OCCT.FlipFaceUVDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.FlipFaceUV(inputs.shape, inputs.swapUV, inputs.reverseU, inputs.reverseV);
+        const resolved = resolveDto(Inputs.OCCT.FlipFaceUVDto, inputs) as Resolved.OCCT.FlipFaceUVDto<TopoDS_Face>;
+        return this.occ.FlipFaceUV(resolved.shape, resolved.swapUV, resolved.reverseU, resolved.reverseV);
     }
 
     /**
@@ -80,7 +84,8 @@ export class OCCTFace {
      * ```
      */
     normalizeFaceParametrization(inputs: Inputs.OCCT.NormalizeFaceParametrizationDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.NormalizeFaceParametrization(inputs.shape, inputs.normalizeU, inputs.normalizeV, inputs.samples, inputs.tolerance);
+        const resolved = resolveDto(Inputs.OCCT.NormalizeFaceParametrizationDto, inputs) as Resolved.OCCT.NormalizeFaceParametrizationDto<TopoDS_Face>;
+        return this.occ.NormalizeFaceParametrization(resolved.shape, resolved.normalizeU, resolved.normalizeV, resolved.samples, resolved.tolerance);
     }
 
     /**
@@ -168,7 +173,8 @@ export class OCCTFace {
      * ```
      */
     createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.createFacesFromWiresOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FacesFromWiresOnFaceDto, inputs) as Resolved.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFacesFromWiresOnFace(resolved);
     }
 
     /**
@@ -188,7 +194,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWireOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWireOnFaceDto, inputs) as Resolved.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFaceFromWireOnFace(resolved);
     }
 
     /**
@@ -209,7 +216,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWireDto, inputs) as Resolved.OCCT.FaceFromWireDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromWire(resolved);
     }
 
     /**
@@ -231,7 +239,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWires(inputs: Inputs.OCCT.FaceFromWiresDto<TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWiresDto, inputs) as Resolved.OCCT.FaceFromWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromWires(resolved);
     }
 
     /**
@@ -251,7 +260,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWiresOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWiresOnFaceDto, inputs) as Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFaceFromWiresOnFace(resolved);
     }
 
     /**
@@ -270,7 +280,8 @@ export class OCCTFace {
      * ```
      */
     createFacesFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
-        return this.och.facesService.createFacesFromWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FacesFromWiresDto, inputs) as Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFacesFromWires(resolved);
     }
 
     /**
@@ -299,7 +310,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromMultipleCircleTanWiresDto, inputs) as Resolved.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromMultipleCircleTanWires(resolved);
     }
 
     /**
@@ -325,7 +337,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto, inputs) as Resolved.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(resolved);
     }
 
 
@@ -345,7 +358,8 @@ export class OCCTFace {
      * ```
      */
     faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
-        return this.och.facesService.faceFromSurface(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeWithToleranceDto, inputs) as Resolved.OCCT.ShapeWithToleranceDto<Geom_Surface>;
+        return this.och.facesService.faceFromSurface(resolved);
     }
 
     /**
@@ -365,7 +379,8 @@ export class OCCTFace {
      * ```
      */
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.faceFromSurfaceAndWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromSurfaceAndWireDto, inputs) as Resolved.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>;
+        return this.och.facesService.faceFromSurfaceAndWire(resolved);
     }
 
     /**
@@ -402,7 +417,8 @@ export class OCCTFace {
      * ```
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -431,7 +447,8 @@ export class OCCTFace {
      * ```
      */
     hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Face[] {
-        const hexagonWires = this.och.wiresService.hexagonsInGrid(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HexagonsInGridDto, inputs) as Resolved.OCCT.HexagonsInGridDto;
+        const hexagonWires = this.och.wiresService.hexagonsInGrid(resolved);
         return this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true });
     }
 
@@ -451,7 +468,8 @@ export class OCCTFace {
      * ```
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -469,7 +487,8 @@ export class OCCTFace {
      * ```
      */
     createSquareFace(inputs: Inputs.OCCT.SquareDto): TopoDS_Face {
-        return this.och.facesService.createSquareFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SquareDto, inputs) as Resolved.OCCT.SquareDto;
+        return this.och.facesService.createSquareFace(resolved);
     }
 
     /**
@@ -488,7 +507,8 @@ export class OCCTFace {
      * ```
      */
     createRectangleFace(inputs: Inputs.OCCT.RectangleDto): TopoDS_Face {
-        return this.och.facesService.createRectangleFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RectangleDto, inputs) as Resolved.OCCT.RectangleDto;
+        return this.och.facesService.createRectangleFace(resolved);
     }
 
     /**
@@ -518,7 +538,8 @@ export class OCCTFace {
      * ```
      */
     createLPolygonFace(inputs: Inputs.OCCT.LPolygonDto): TopoDS_Face {
-        const wire = this.och.wiresService.createLPolygonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LPolygonDto, inputs) as Resolved.OCCT.LPolygonDto;
+        const wire = this.och.wiresService.createLPolygonWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -540,7 +561,8 @@ export class OCCTFace {
      * ```
      */
     createStarFace(inputs: Inputs.OCCT.StarDto): TopoDS_Face {
-        const wire = this.och.wiresService.createStarWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.StarDto, inputs) as Resolved.OCCT.StarDto;
+        const wire = this.och.wiresService.createStarWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -573,7 +595,8 @@ export class OCCTFace {
      * ```
      */
     createChristmasTreeFace(inputs: Inputs.OCCT.ChristmasTreeDto): TopoDS_Face {
-        const wire = this.och.wiresService.createChristmasTreeWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChristmasTreeDto, inputs) as Resolved.OCCT.ChristmasTreeDto;
+        const wire = this.och.wiresService.createChristmasTreeWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -595,7 +618,8 @@ export class OCCTFace {
      * ```
      */
     createParallelogramFace(inputs: Inputs.OCCT.ParallelogramDto): TopoDS_Face {
-        const wire = this.och.wiresService.createParallelogramWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ParallelogramDto, inputs) as Resolved.OCCT.ParallelogramDto;
+        const wire = this.och.wiresService.createParallelogramWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -615,7 +639,8 @@ export class OCCTFace {
      * ```
      */
     createHeartFace(inputs: Inputs.OCCT.Heart2DDto): TopoDS_Face {
-        const wire = this.och.wiresService.createHeartWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Heart2DDto, inputs) as Resolved.OCCT.Heart2DDto;
+        const wire = this.och.wiresService.createHeartWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -634,7 +659,8 @@ export class OCCTFace {
      * ```
      */
     createNGonFace(inputs: Inputs.OCCT.NGonWireDto): TopoDS_Face {
-        const wire = this.och.wiresService.createNGonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.NGonWireDto, inputs) as Resolved.OCCT.NGonWireDto;
+        const wire = this.och.wiresService.createNGonWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -666,7 +692,8 @@ export class OCCTFace {
      * ```
      */
     createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IBeamProfileDto, inputs) as Resolved.OCCT.IBeamProfileDto;
+        const wire = this.och.wiresService.createIBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -681,7 +708,8 @@ export class OCCTFace {
      * @returns The UV pairs along the line, in order
      */
     subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUVOnParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceLinearSubdivisionDto, inputs) as Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToUVOnParam(resolved);
     }
 
     /**
@@ -711,7 +739,8 @@ export class OCCTFace {
      * ```
      */
     createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HBeamProfileDto, inputs) as Resolved.OCCT.HBeamProfileDto;
+        const wire = this.och.wiresService.createHBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -724,7 +753,8 @@ export class OCCTFace {
      * @returns The real U and V values
      */
     uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
-        return this.och.facesService.uvOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.uvOnFace(resolved);
     }
 
     /**
@@ -754,7 +784,8 @@ export class OCCTFace {
      * ```
      */
     createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TBeamProfileDto, inputs) as Resolved.OCCT.TBeamProfileDto;
+        const wire = this.och.wiresService.createTBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -786,7 +817,8 @@ export class OCCTFace {
      * ```
      */
     createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UBeamProfileDto, inputs) as Resolved.OCCT.UBeamProfileDto;
+        const wire = this.och.wiresService.createUBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -807,7 +839,8 @@ export class OCCTFace {
      * ```
      */
     getFace(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face {
-        return this.och.shapeGettersService.getFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeIndexDto, inputs) as Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>;
+        return this.och.shapeGettersService.getFace(resolved);
     }
 
     /**
@@ -876,7 +909,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPoints(resolved);
     }
 
     /**
@@ -897,7 +931,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionToWiresDto, inputs) as Resolved.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToWires(resolved);
     }
 
     /**
@@ -928,7 +963,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToRectangleWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToRectangleWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToRectangleWires(resolved);
     }
 
     /**
@@ -959,7 +995,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToRectangleHoles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToRectangleHolesDto, inputs) as Resolved.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToRectangleHoles(resolved);
     }
 
     /**
@@ -991,7 +1028,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToHexagonWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToHexagonWires(resolved);
     }
 
     /**
@@ -1023,7 +1061,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToHexagonHoles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonHolesDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToHexagonHoles(resolved);
     }
 
     /**
@@ -1060,7 +1099,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsControlled(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionControlledDto, inputs) as Resolved.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPointsControlled(resolved);
     }
 
     /**
@@ -1090,7 +1130,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.subdivideToNormals(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToNormals(resolved);
     }
 
     /**
@@ -1119,7 +1160,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToUV(resolved);
     }
 
     /**
@@ -1138,7 +1180,8 @@ export class OCCTFace {
      * ```
      */
     pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
-        return this.och.facesService.pointOnUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.pointOnUV(resolved);
     }
 
     /**
@@ -1157,7 +1200,8 @@ export class OCCTFace {
      * ```
      */
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
-        return this.och.facesService.faceNormalOnUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.faceNormalOnUV(resolved);
     }
 
     /**
@@ -1175,7 +1219,8 @@ export class OCCTFace {
      * ```
      */
     pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.pointsOnUVs(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        return this.och.facesService.pointsOnUVs(resolved);
     }
 
     /**
@@ -1195,7 +1240,8 @@ export class OCCTFace {
      * ```
      */
     normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.normalsOnUVs(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        return this.och.facesService.normalsOnUVs(resolved);
     }
 
     /**
@@ -1216,7 +1262,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsOnParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceLinearSubdivisionDto, inputs) as Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPointsOnParam(resolved);
     }
 
     /**
@@ -1235,7 +1282,8 @@ export class OCCTFace {
      * ```
      */
     wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
-        return this.och.facesService.wireAlongParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WireAlongParamDto, inputs) as Resolved.OCCT.WireAlongParamDto<TopoDS_Face>;
+        return this.och.facesService.wireAlongParam(resolved);
     }
 
     /**
@@ -1254,7 +1302,8 @@ export class OCCTFace {
      * ```
      */
     wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.wiresAlongParams(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WiresAlongParamsDto, inputs) as Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>;
+        return this.och.facesService.wiresAlongParams(resolved);
     }
 
     /**
@@ -1417,7 +1466,8 @@ export class OCCTFace {
      * ```
      */
     filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.filterFacePoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilterFacePointsDto, inputs) as Resolved.OCCT.FilterFacePointsDto<TopoDS_Face>;
+        return this.och.facesService.filterFacePoints(resolved);
     }
 
     /**
@@ -1447,8 +1497,9 @@ export class OCCTFace {
      * ```
      */
     filterFacesPoints(inputs: Inputs.OCCT.FilterFacesPointsDto<TopoDS_Face>): Base.Point3[] | Base.Point3[][] {
-        let res: Base.Point3[] | Base.Point3[][] = inputs.shapes.map(s => this.och.facesService.filterFacePoints({ ...inputs, shape: s }));
-        if (inputs.flatPointsArray) {
+        const resolved = resolveDto(Inputs.OCCT.FilterFacesPointsDto, inputs) as Resolved.OCCT.FilterFacesPointsDto<TopoDS_Face>;
+        let res: Base.Point3[] | Base.Point3[][] = resolved.shapes.map(s => this.och.facesService.filterFacePoints({ ...resolved, shape: s }));
+        if (resolved.flatPointsArray) {
             res = res.flat();
         }
         return res;

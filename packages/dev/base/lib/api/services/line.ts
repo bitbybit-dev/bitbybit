@@ -2,6 +2,8 @@ import { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
 import { Point } from "./point";
 import { Vector } from "./vector";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Straight lines between two points, held as plain objects of the form `{ start, end }`, and the
@@ -186,9 +188,10 @@ export class Line {
      * ```
      */
     getPointOnLine(inputs: Inputs.Line.PointOnLineDto): Inputs.Base.Point3 {
-        const point1 = inputs.line.start;
-        const point2 = inputs.line.end;
-        const parameter = inputs.param ?? 0.5;
+        const resolved = resolveDto(Inputs.Line.PointOnLineDto, inputs) as Resolved.Line.PointOnLineDto;
+        const point1 = resolved.line.start;
+        const point2 = resolved.line.end;
+        const parameter = resolved.param;
 
         const direction = [point2[0] - point1[0], point2[1] - point1[1], point2[2] - point1[2]];
 
@@ -323,11 +326,12 @@ export class Line {
      * ```
      */
     lineLineIntersection(inputs: Inputs.Line.LineLineIntersectionDto): Inputs.Base.Point3 | undefined {
-        const epsilon = inputs.tolerance || 1e-6;
-        const checkSegments = inputs.checkSegmentsOnly;
+        const resolved = resolveDto(Inputs.Line.LineLineIntersectionDto, inputs) as Resolved.Line.LineLineIntersectionDto;
+        const epsilon = resolved.tolerance || 1e-6;
+        const checkSegments = resolved.checkSegmentsOnly;
     
-        const line1 = inputs.line1;
-        const line2 = inputs.line2;
+        const line1 = resolved.line1;
+        const line2 = resolved.line2;
     
         if (!line1?.start || !line1.end || !line2?.start || !line2.end ||
             line1.start.length !== 3 || line1.end.length !== 3 ||

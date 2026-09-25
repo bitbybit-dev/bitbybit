@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Combining Manifold solids: fusing, cutting and intersecting two or many at once, and splitting a
@@ -243,7 +245,8 @@ export class ManifoldBooleans {
      * ```
      */
     splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
-        return inputs.manifold.splitByPlane(inputs.normal, inputs.originOffset);
+        const resolved = resolveDto(Inputs.Manifold.SplitByPlaneDto, inputs) as Resolved.Manifold.SplitByPlaneDto<Manifold3D.Manifold>;
+        return resolved.manifold.splitByPlane(resolved.normal, resolved.originOffset);
     }
 
     /**
@@ -264,16 +267,17 @@ export class ManifoldBooleans {
      * ```
      */
     splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        const resolved = resolveDto(Inputs.Manifold.SplitByPlaneOnOffsetsDto, inputs) as Resolved.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>;
         const pieces: Manifold3D.Manifold[] = [];
         const junk: Manifold3D.Manifold[] = [];
 
-        let remainder: Manifold3D.Manifold | undefined = inputs.manifold.asOriginal();
+        let remainder: Manifold3D.Manifold | undefined = resolved.manifold.asOriginal();
 
-        inputs.originOffsets.forEach((offset) => {
+        resolved.originOffsets.forEach((offset) => {
             if (!remainder) {
                 return;
             }
-            const halfs = remainder.splitByPlane(inputs.normal, offset);
+            const halfs = remainder.splitByPlane(resolved.normal, offset);
             junk.push(remainder);
             remainder = undefined;
 
@@ -312,7 +316,8 @@ export class ManifoldBooleans {
      * ```
      */
     trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.asOriginal().trimByPlane(inputs.normal, inputs.originOffset);
+        const resolved = resolveDto(Inputs.Manifold.TrimByPlaneDto, inputs) as Resolved.Manifold.TrimByPlaneDto<Manifold3D.Manifold>;
+        return resolved.manifold.asOriginal().trimByPlane(resolved.normal, resolved.originOffset);
     }
 
 }

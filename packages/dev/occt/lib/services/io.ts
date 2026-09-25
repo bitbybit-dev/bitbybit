@@ -3,6 +3,8 @@ import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import * as Models from "../api/models";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Reading and writing OpenCascade shapes in exchange formats: STEP and IGES in, STEP, STL and DXF
@@ -37,11 +39,12 @@ export class OCCTIO {
      * ```
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
-        const shapeToUse = inputs.shape;
+        const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
+        const shapeToUse = resolved.shape;
         let adjustedShape;
-        if (inputs.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
-            if (inputs.fromRightHanded) {
+        if (resolved.adjustYtoZ) {
+            const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
+            if (resolved.fromRightHanded) {
                 adjustedShape = rotatedShape;
             } else {
                 adjustedShape = this.och.transformsService.mirrorAlongNormal(
@@ -107,13 +110,14 @@ export class OCCTIO {
      * ```
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string {
-        const shapeToUse = inputs.shape;
+        const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
+        const shapeToUse = resolved.shape;
 
         this.occ.BRepTools.Clean(shapeToUse);
 
         let adjustedShape;
-        if (inputs.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
+        if (resolved.adjustYtoZ) {
+            const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
             adjustedShape = this.och.transformsService.mirrorAlongNormal(
                 { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
             );
@@ -128,7 +132,7 @@ export class OCCTIO {
             transferShape = shapeToUse;
         }
         let result: string;
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, inputs.precision, false, 0.5, false);
+        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, false);
 
         const writeResult = writer.Write(transferShape, fileName);
         if (writeResult) {
@@ -161,8 +165,9 @@ export class OCCTIO {
      * @returns The shape, or undefined when the file could not be read
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined {
-        const fileName = inputs.fileName;
-        const fileText = inputs.filetext;
+        const resolved = resolveDto(Inputs.OCCT.LoadStepOrIgesDto, inputs) as Resolved.OCCT.LoadStepOrIgesDto;
+        const fileName = resolved.fileName;
+        const fileText = resolved.filetext;
         const extension = fileName.toLowerCase().split(".").pop();
         
         const fileType = (() => {
@@ -228,7 +233,7 @@ export class OCCTIO {
         }
         
         let adjustedShape;
-        if (inputs.adjustZtoY && stepShape) {
+        if (resolved.adjustZtoY && stepShape) {
             const mirroredShape = this.och.transformsService.mirrorAlongNormal(
                 { shape: stepShape, origin: [0, 0, 0], normal: [0, 0, 1] }
             );
@@ -268,7 +273,8 @@ export class OCCTIO {
      * ```
      */
     shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
-        return this.och.dxfService.shapeToDxfPaths(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeToDxfPathsDto, inputs) as Resolved.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>;
+        return this.och.dxfService.shapeToDxfPaths(resolved);
     }
 
     /**
@@ -287,7 +293,8 @@ export class OCCTIO {
      * ```
      */
     dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
-        return this.och.dxfService.dxfPathsWithLayer(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DxfPathsWithLayerDto, inputs) as Resolved.OCCT.DxfPathsWithLayerDto;
+        return this.och.dxfService.dxfPathsWithLayer(resolved);
     }
 
     /**
@@ -313,7 +320,8 @@ export class OCCTIO {
      * ```
      */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
-        return this.och.dxfService.dxfCreate(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DxfPathsPartsListDto, inputs) as Resolved.OCCT.DxfPathsPartsListDto;
+        return this.och.dxfService.dxfCreate(resolved);
     }
 
     /**
@@ -334,15 +342,16 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltf(inputs: Inputs.OCCT.ConvertStepToGltfDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfDto, inputs) as Resolved.OCCT.ConvertStepToGltfDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let result: Uint8Array;
 
-            const meshPrecision = inputs.meshPrecision ?? 0.005;
-            const meshAngle = inputs.meshAngle ?? 0.5;
-            const meshRelative = inputs.meshRelative ?? true;
-            const internalVerticesMode = inputs.internalVerticesMode ?? false;
-            const controlSurfaceDeflection = inputs.controlSurfaceDeflection ?? false;
+            const meshPrecision = resolved.meshPrecision;
+            const meshAngle = resolved.meshAngle;
+            const meshRelative = resolved.meshRelative;
+            const internalVerticesMode = resolved.internalVerticesMode;
+            const controlSurfaceDeflection = resolved.controlSurfaceDeflection;
 
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinary(
@@ -414,93 +423,94 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfAdvanced(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let result: Uint8Array;
             
-            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
+            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.nodeNameFormat);
+            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
+            const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
             
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     stepData,
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else if (stepData instanceof ArrayBuffer) {
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     new Uint8Array(stepData),
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else if (typeof stepData === "string") {
                 const encoder = new TextEncoder();
                 const binaryData = encoder.encode(stepData);
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     binaryData,
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
@@ -539,8 +549,9 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfWithDracoDto, inputs) as Resolved.OCCT.ConvertStepToGltfWithDracoDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let binaryData: Uint8Array;
 
             if (stepData instanceof Uint8Array) {
@@ -555,20 +566,20 @@ export class OCCTIO {
 
             const result = this.occ.ConvertStepToGltfFromBinaryWithDraco(
                 binaryData,
-                inputs.meshPrecision ?? 0.005,
-                inputs.meshAngle ?? 0.5,
-                inputs.meshRelative ?? true,
-                inputs.internalVerticesMode ?? false,
-                inputs.controlSurfaceDeflection ?? false,
+                resolved.meshPrecision,
+                resolved.meshAngle,
+                resolved.meshRelative,
+                resolved.internalVerticesMode,
+                resolved.controlSurfaceDeflection,
                 -1,
-                inputs.useDraco ?? true,
-                inputs.dracoCompressionLevel ?? 7,
-                inputs.dracoQuantizePositionBits ?? 14,
-                inputs.dracoQuantizeNormalBits ?? 10,
-                inputs.dracoQuantizeTexcoordBits ?? 12,
-                inputs.dracoQuantizeColorBits ?? 8,
-                inputs.dracoQuantizeGenericBits ?? 12,
-                inputs.dracoUnifiedQuantization ?? false
+                resolved.useDraco,
+                resolved.dracoCompressionLevel,
+                resolved.dracoQuantizePositionBits,
+                resolved.dracoQuantizeNormalBits,
+                resolved.dracoQuantizeTexcoordBits,
+                resolved.dracoQuantizeColorBits,
+                resolved.dracoQuantizeGenericBits,
+                resolved.dracoUnifiedQuantization
             );
 
             if (result.length === 0) {
@@ -604,8 +615,9 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedWithDracoDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let binaryData: Uint8Array;
 
             if (stepData instanceof Uint8Array) {
@@ -618,42 +630,42 @@ export class OCCTIO {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
-            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
+            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.nodeNameFormat);
+            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
+            const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
 
             const result = this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
                 binaryData,
-                inputs.readColors ?? true,
-                inputs.readNames ?? true,
-                inputs.readMaterials ?? true,
-                inputs.readLayers ?? false,
-                inputs.readProps ?? false,
-                inputs.meshDeflection ?? 0.005,
-                inputs.meshAngle ?? 0.5,
-                inputs.meshParallel ?? true,
-                inputs.meshRelative ?? true,
-                inputs.internalVerticesMode ?? false,
-                inputs.controlSurfaceDeflection ?? false,
-                inputs.faceCountThreshold ?? -1,
-                inputs.mergeFaces ?? true,
-                inputs.splitIndices16 ?? true,
-                inputs.parallelWrite ?? true,
-                inputs.embedTextures ?? true,
-                inputs.forceUVExport ?? false,
+                resolved.readColors,
+                resolved.readNames,
+                resolved.readMaterials,
+                resolved.readLayers,
+                resolved.readProps,
+                resolved.meshDeflection,
+                resolved.meshAngle,
+                resolved.meshParallel,
+                resolved.meshRelative,
+                resolved.internalVerticesMode,
+                resolved.controlSurfaceDeflection,
+                resolved.faceCountThreshold,
+                resolved.mergeFaces,
+                resolved.splitIndices16,
+                resolved.parallelWrite,
+                resolved.embedTextures,
+                resolved.forceUVExport,
                 nodeNameFormatNum,
                 meshNameFormatNum,
                 transformFormatNum,
-                inputs.adjustZtoY ?? true,
-                inputs.scale ?? 1.0,
-                inputs.useDraco ?? true,
-                inputs.dracoCompressionLevel ?? 7,
-                inputs.dracoQuantizePositionBits ?? 14,
-                inputs.dracoQuantizeNormalBits ?? 10,
-                inputs.dracoQuantizeTexcoordBits ?? 12,
-                inputs.dracoQuantizeColorBits ?? 8,
-                inputs.dracoQuantizeGenericBits ?? 12,
-                inputs.dracoUnifiedQuantization ?? false
+                resolved.adjustZtoY,
+                resolved.scale,
+                resolved.useDraco,
+                resolved.dracoCompressionLevel,
+                resolved.dracoQuantizePositionBits,
+                resolved.dracoQuantizeNormalBits,
+                resolved.dracoQuantizeTexcoordBits,
+                resolved.dracoQuantizeColorBits,
+                resolved.dracoQuantizeGenericBits,
+                resolved.dracoUnifiedQuantization
             );
 
             if (result.length === 0) {

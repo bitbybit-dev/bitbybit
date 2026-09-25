@@ -165,12 +165,12 @@ export namespace IO {
          * Layer name for all paths in this part
          * @default Default
          */
-        layer = "Default";
+        layer?: string | undefined = "Default";
         /**
          * Color for all paths in this part
          * @default #000000
          */
-        color: Base.Color = "#000000";
+        color?: Base.Color | undefined = "#000000";
         /**
          * Array of paths, each containing multiple segments
          * @default undefined

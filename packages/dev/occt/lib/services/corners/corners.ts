@@ -3,6 +3,8 @@ import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Rounding and beveling single corners of an OpenCascade shell or solid, picked by a point near
@@ -43,9 +45,10 @@ export class OCCTCorners {
      * ```
      */
     filletCornerByPoint(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
-        const points = this.pointsToVectorDouble(inputs.points);
-        const mode = this.cornerModeToNumber(inputs.mode);
-        const result = this.occ.FilletCornerByPoint(inputs.shape, points, inputs.radius, inputs.taperFactor, inputs.snapTolerance, mode);
+        const resolved = resolveDto(Inputs.OCCT.FilletCornerByPointDto, inputs) as Resolved.OCCT.FilletCornerByPointDto<TopoDS_Shape>;
+        const points = this.pointsToVectorDouble(resolved.points);
+        const mode = this.cornerModeToNumber(resolved.mode);
+        const result = this.occ.FilletCornerByPoint(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode);
         points.delete();
         if (result.IsNull()) {
             result.delete();
@@ -80,9 +83,10 @@ export class OCCTCorners {
      * ```
      */
     chamferCornerByPoint(inputs: Inputs.OCCT.ChamferCornerByPointDto<TopoDS_Shape>): TopoDS_Shape {
-        const points = this.pointsToVectorDouble(inputs.points);
-        const mode = this.cornerModeToNumber(inputs.mode);
-        const result = this.occ.ChamferCornerByPoint(inputs.shape, points, inputs.distance, inputs.angle, inputs.snapTolerance, mode);
+        const resolved = resolveDto(Inputs.OCCT.ChamferCornerByPointDto, inputs) as Resolved.OCCT.ChamferCornerByPointDto<TopoDS_Shape>;
+        const points = this.pointsToVectorDouble(resolved.points);
+        const mode = this.cornerModeToNumber(resolved.mode);
+        const result = this.occ.ChamferCornerByPoint(resolved.shape, points, resolved.distance, resolved.angle, resolved.snapTolerance, mode);
         points.delete();
         if (result.IsNull()) {
             result.delete();
@@ -112,8 +116,9 @@ export class OCCTCorners {
      * ```
      */
     classifyCornerByPoint(inputs: Inputs.OCCT.ClassifyCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
-        const points = this.pointsToVectorDouble(inputs.points);
-        const json = this.occ.ClassifyCornerByPoint(inputs.shape, points, inputs.snapTolerance);
+        const resolved = resolveDto(Inputs.OCCT.ClassifyCornerByPointDto, inputs) as Resolved.OCCT.ClassifyCornerByPointDto<TopoDS_Shape>;
+        const points = this.pointsToVectorDouble(resolved.points);
+        const json = this.occ.ClassifyCornerByPoint(resolved.shape, points, resolved.snapTolerance);
         points.delete();
         return JSON.parse(json) as Models.OCCT.CornerByPointReport;
     }
@@ -143,9 +148,10 @@ export class OCCTCorners {
      * ```
      */
     cornerByPointReport(inputs: Inputs.OCCT.FilletCornerByPointDto<TopoDS_Shape>): Models.OCCT.CornerByPointReport {
-        const points = this.pointsToVectorDouble(inputs.points);
-        const mode = this.cornerModeToNumber(inputs.mode);
-        const json = this.occ.CornerByPointReport(inputs.shape, points, inputs.radius, inputs.taperFactor, inputs.snapTolerance, mode);
+        const resolved = resolveDto(Inputs.OCCT.FilletCornerByPointDto, inputs) as Resolved.OCCT.FilletCornerByPointDto<TopoDS_Shape>;
+        const points = this.pointsToVectorDouble(resolved.points);
+        const mode = this.cornerModeToNumber(resolved.mode);
+        const json = this.occ.CornerByPointReport(resolved.shape, points, resolved.radius, resolved.taperFactor, resolved.snapTolerance, mode);
         points.delete();
         return JSON.parse(json) as Models.OCCT.CornerByPointReport;
     }

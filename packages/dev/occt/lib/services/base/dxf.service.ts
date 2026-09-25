@@ -1,13 +1,13 @@
 import {
     TopoDS_Edge, TopoDS_Shape
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { EdgesService } from "./edges.service";
 import { ShapeGettersService } from "./shape-getters";
 import { BaseBitByBit } from "../../base";
 import { WiresService } from "./wires.service";
+import * as Resolved from "../../api/resolved-inputs";
 export class DxfService {
 
     constructor(
@@ -21,7 +21,7 @@ export class DxfService {
      * Step 1: Convert OCCT shape to DXF paths (without layer/color info)
      * This analyzes the shape geometry and creates appropriate DXF segments
      */
-    shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
+    shapeToDxfPaths(inputs: Resolved.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
         const wires = this.shapeGettersService.getWires({ shape: inputs.shape });
         
         const paths: IO.DxfPathDto[] = [];
@@ -82,7 +82,7 @@ export class DxfService {
      * Step 2: Add layer and color information to DXF paths
      * Takes paths from shapeToDxfPaths and adds styling
      */
-    dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
+    dxfPathsWithLayer(inputs: Resolved.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
         return {
             layer: inputs.layer,
             color: inputs.color,
@@ -94,7 +94,7 @@ export class DxfService {
      * Step 3: Assemble multiple path parts into a complete DXF file
      * Takes multiple outputs from dxfPathsWithLayer and creates final DXF
      */
-    dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
+    dxfCreate(inputs: Resolved.OCCT.DxfPathsPartsListDto): string {
         const model = {
             dxfPathsParts: inputs.pathsParts,
             colorFormat: inputs.colorFormat,
@@ -126,7 +126,7 @@ export class DxfService {
     private tryCreateUnifiedPolyline(
         edges: TopoDS_Edge[],
         startIndex: number,
-        inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>,
+        inputs: Resolved.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>,
         shouldBeClosed: boolean
     ): { polyline: IO.DxfPolylineSegmentDto, nextIndex: number } | null {
         

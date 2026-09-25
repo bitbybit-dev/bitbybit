@@ -16,6 +16,7 @@ import { WiresService } from "./wires.service";
 import { FacesService } from "./faces.service";
 import { ShellsService } from "./shells.service";
 import { SolidsService } from "./solids.service";
+import * as Resolved from "../../api/resolved-inputs";
 
 export class OperationsService {
 
@@ -36,7 +37,7 @@ export class OperationsService {
 
     ) { }
 
-    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
         if (inputs.periodic && !inputs.closed) {
             throw new Error("Cant construct periodic non closed loft.");
         }
@@ -196,7 +197,7 @@ export class OperationsService {
         });
     }
 
-    loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
         inputs.shapes.forEach((wire) => {
             if (this.enumService.getShapeTypeEnum(wire) === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -212,11 +213,11 @@ export class OperationsService {
         return res;
     }
 
-    offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
+    offset(inputs: Resolved.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         return this.offsetAdv({ shape: inputs.shape, face: inputs.face, distance: inputs.distance, tolerance: inputs.tolerance, joinType: Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false });
     }
 
-    offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
+    offsetAdv(inputs: Resolved.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         const tolerance = inputs.tolerance || 0.1;
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
@@ -281,7 +282,7 @@ export class OperationsService {
         return result;
     }
 
-    offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
+    offset3DWire(inputs: Resolved.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
         const extrusion = this.extrude({
             shape: inputs.shape,
             direction: inputs.direction,
@@ -320,7 +321,7 @@ export class OperationsService {
 
     }
 
-    extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+    extrudeShapes(inputs: Resolved.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         return inputs.shapes.map(shape => {
             const extruded = this.extrude({ shape, direction: inputs.direction });
             const result = this.converterService.getActualTypeOfShape(extruded);
@@ -329,7 +330,7 @@ export class OperationsService {
         });
     }
 
-    extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+    extrude(inputs: Resolved.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();
@@ -338,7 +339,7 @@ export class OperationsService {
         return prismShape;
     }
 
-    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
+    splitShapeWithShapes(inputs: Resolved.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
         const bopalgoBuilder = new this.occ.BOPAlgo_Builder();
         bopalgoBuilder.SetNonDestructive(inputs.nonDestructive);
         bopalgoBuilder.SetFuzzyValue(inputs.localFuzzyTolerance);
@@ -360,7 +361,7 @@ export class OperationsService {
         return shapes;
     }
 
-    revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
+    revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
         const angle = inputs.angle || 360.0;
         const direction = inputs.direction || [0, 0, 1];
         let result;
@@ -386,7 +387,7 @@ export class OperationsService {
         return actual;
     }
 
-    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+    rotatedExtrude(inputs: Resolved.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const bbox = this.boundingBoxOfShape({ shape: inputs.shape });
         const shapeStartY = bbox.min[1];
         const shapeEndY = shapeStartY + inputs.height;
@@ -429,7 +430,7 @@ export class OperationsService {
         pipe.Add(upperPolygon, false, false);
         pipe.Build();
 
-        if (inputs.makeSolid || inputs.makeSolid === undefined) {
+        if (inputs.makeSolid) {
             pipe.MakeSolid();
         }
 
@@ -458,7 +459,7 @@ export class OperationsService {
         return result;
     }
 
-    pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
+    pipePolylineWireNGon(inputs: Resolved.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
         const wire = inputs.shape;
 
         const edge = this.shapeGettersService.getEdge({ shape: wire, index: 0 });
@@ -498,7 +499,7 @@ export class OperationsService {
         return result;
     }
 
-    pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
+    pipeWireCylindrical(inputs: Resolved.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
         const wire = inputs.shape;
 
         const edges = this.shapeGettersService.getEdges({ shape: wire });
@@ -528,13 +529,13 @@ export class OperationsService {
         return result;
     }
 
-    pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
+    pipeWiresCylindrical(inputs: Resolved.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
         return inputs.shapes.map(wire => {
             return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, makeSolid: inputs.makeSolid, trihedronEnum: inputs.trihedronEnum, forceApproxC1: inputs.forceApproxC1 });
         });
     }
 
-    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
+    makeThickSolidSimple(inputs: Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
         maker.Build();
@@ -553,7 +554,7 @@ export class OperationsService {
         return res2;
     }
 
-    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
+    makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
         const facesToRemove = new this.occ.TopTools_ListOfShape();
         inputs.shapes.forEach(shape => {
             facesToRemove.Append(shape);
@@ -598,7 +599,7 @@ export class OperationsService {
         return res;
     }
 
-    slice(inputs: Inputs.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
+    slice(inputs: Resolved.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
         if (inputs.step <= 0) {
             throw new Error("Step needs to be positive.");
         }
@@ -619,7 +620,7 @@ export class OperationsService {
         return res;
     }
 
-    sliceInStepPattern(inputs: Inputs.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
+    sliceInStepPattern(inputs: Resolved.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
         if (!inputs.steps || inputs.steps.length === 0) {
             throw new Error("Steps must be provided with at elast one positive value");
         }
@@ -697,7 +698,7 @@ export class OperationsService {
         }
 
         shapesToSlice.forEach(s => {
-            const intInputs = new Inputs.OCCT.IntersectionDto<TopoDS_Shape>();
+            const intInputs = new Inputs.OCCT.IntersectionDto<TopoDS_Shape>() as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
             intInputs.keepEdges = true;
             intInputs.shapes = [s];
 

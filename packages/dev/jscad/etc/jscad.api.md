@@ -4,7 +4,7 @@
 
 ```ts
 
-import * as JSCAD_2 from '@jscad/modeling';
+import * as JSCAD_3 from '@jscad/modeling';
 
 // @public
 export namespace Base {
@@ -124,34 +124,34 @@ export namespace Base {
 export namespace Color {
     export class HexDto {
         constructor(color?: Base.Color);
-        color: Base.Color;
+        color?: Base.Color | undefined;
     }
     export class HexDtoMapped {
         constructor(color?: Base.Color, from?: number, to?: number);
-        color: Base.Color;
-        from: number;
-        to: number;
+        color?: Base.Color | undefined;
+        from?: number | undefined;
+        to?: number | undefined;
     }
     export class InvertHexDto {
         constructor(color?: Base.Color);
-        blackAndWhite: boolean;
-        color: Base.Color;
+        blackAndWhite?: boolean | undefined;
+        color?: Base.Color | undefined;
     }
     export class Rgb1Dto {
         constructor(colorRgb?: Base.ColorRGB);
-        colorRgb: Base.ColorRGB;
+        colorRgb?: Base.ColorRGB | undefined;
     }
     export class Rgb255Dto {
         constructor(colorRgb?: Base.ColorRGB);
-        colorRgb: Base.ColorRGB;
+        colorRgb?: Base.ColorRGB | undefined;
     }
     export class Rgba1Dto {
         constructor(colorRgba?: Base.ColorRGBA);
-        colorRgba: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
     export class Rgba255Dto {
         constructor(colorRgba?: Base.ColorRGBA);
-        colorRgba: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
     export class RgbaAttomic1Dto {
         constructor(r?: number, g?: number, b?: number, a?: number);
@@ -169,23 +169,23 @@ export namespace Color {
     }
     export class RgbAttomic1Dto {
         constructor(r?: number, g?: number, b?: number);
-        b: number;
-        g: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        r?: number | undefined;
     }
     export class RgbAttomic255Dto {
         constructor(r?: number, g?: number, b?: number);
-        b: number;
-        g: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        r?: number | undefined;
     }
     export class RGBMinMaxDto {
         constructor(r?: number, g?: number, b?: number, min?: number, max?: number);
-        b: number;
-        g: number;
-        max: number;
-        min: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        r?: number | undefined;
     }
     export class RGBObjectDto {
         constructor(rgb?: Base.ColorRGB);
@@ -193,32 +193,67 @@ export namespace Color {
     }
     export class RGBObjectMaxDto {
         constructor(rgb?: Base.ColorRGB, max?: number);
-        max: number;
-        min: number;
+        max?: number | undefined;
+        min?: number | undefined;
         rgb: Base.ColorRGB;
     }
+}
+
+// @public
+namespace Color_2 {
+    // Warning: (ae-forgotten-export) The symbol "WithDefaults" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Inputs_2" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type HexDto = WithDefaults<Inputs_2.Color.HexDto, "color">;
+    // (undocumented)
+    type HexDtoMapped = WithDefaults<Inputs_2.Color.HexDtoMapped, "color" | "from" | "to">;
+    // (undocumented)
+    type InvertHexDto = WithDefaults<Inputs_2.Color.InvertHexDto, "color" | "blackAndWhite">;
+    // (undocumented)
+    type Rgb1Dto = WithDefaults<Inputs_2.Color.Rgb1Dto, "colorRgb">;
+    // (undocumented)
+    type Rgb255Dto = WithDefaults<Inputs_2.Color.Rgb255Dto, "colorRgb">;
+    // (undocumented)
+    type Rgba1Dto = WithDefaults<Inputs_2.Color.Rgba1Dto, "colorRgba">;
+    // (undocumented)
+    type Rgba255Dto = WithDefaults<Inputs_2.Color.Rgba255Dto, "colorRgba">;
+    // (undocumented)
+    type RgbaAttomic1Dto = WithDefaults<Inputs_2.Color.RgbaAttomic1Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbaAttomic255Dto = WithDefaults<Inputs_2.Color.RgbaAttomic255Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbAttomic1Dto = WithDefaults<Inputs_2.Color.RgbAttomic1Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RgbAttomic255Dto = WithDefaults<Inputs_2.Color.RgbAttomic255Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RGBMinMaxDto = WithDefaults<Inputs_2.Color.RGBMinMaxDto, "r" | "g" | "b" | "min" | "max">;
+    // (undocumented)
+    type RGBObjectDto = Inputs_2.Color.RGBObjectDto;
+    // (undocumented)
+    type RGBObjectMaxDto = WithDefaults<Inputs_2.Color.RGBObjectMaxDto, "min" | "max">;
 }
 
 // @public
 export namespace Dates {
     export class CreateDateDto {
         constructor(year?: number, month?: number, day?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number);
-        day: number;
-        hours: number;
-        milliseconds: number;
-        minutes: number;
-        month: number;
-        seconds: number;
-        year: number;
+        day?: number | undefined;
+        hours?: number | undefined;
+        milliseconds?: number | undefined;
+        minutes?: number | undefined;
+        month?: number | undefined;
+        seconds?: number | undefined;
+        year?: number | undefined;
     }
     export class CreateFromUnixTimeStampDto {
         constructor(unixTimeStamp?: number);
-        unixTimeStamp: number;
+        unixTimeStamp?: number | undefined;
     }
     export class DateDayDto {
         constructor(date?: Date, day?: number);
         date: Date;
-        day: number;
+        day?: number | undefined;
     }
     export class DateDto {
         constructor(date?: Date);
@@ -227,27 +262,27 @@ export namespace Dates {
     export class DateHoursDto {
         constructor(date?: Date, hours?: number);
         date: Date;
-        hours: number;
+        hours?: number | undefined;
     }
     export class DateMillisecondsDto {
         constructor(date?: Date, milliseconds?: number);
         date: Date;
-        milliseconds: number;
+        milliseconds?: number | undefined;
     }
     export class DateMinutesDto {
         constructor(date?: Date, minutes?: number);
         date: Date;
-        minutes: number;
+        minutes?: number | undefined;
     }
     export class DateMonthDto {
         constructor(date?: Date, month?: number);
         date: Date;
-        month: number;
+        month?: number | undefined;
     }
     export class DateSecondsDto {
         constructor(date?: Date, seconds?: number);
         date: Date;
-        seconds: number;
+        seconds?: number | undefined;
     }
     export class DateStringDto {
         constructor(dateString?: string);
@@ -256,13 +291,41 @@ export namespace Dates {
     export class DateTimeDto {
         constructor(date?: Date, time?: number);
         date: Date;
-        time: number;
+        time?: number | undefined;
     }
     export class DateYearDto {
         constructor(date?: Date, year?: number);
         date: Date;
-        year: number;
+        year?: number | undefined;
     }
+}
+
+// @public
+namespace Dates_2 {
+    // (undocumented)
+    type CreateDateDto = WithDefaults<Inputs_2.Dates.CreateDateDto, "year" | "month" | "day" | "hours" | "minutes" | "seconds" | "milliseconds">;
+    // (undocumented)
+    type CreateFromUnixTimeStampDto = WithDefaults<Inputs_2.Dates.CreateFromUnixTimeStampDto, "unixTimeStamp">;
+    // (undocumented)
+    type DateDayDto = WithDefaults<Inputs_2.Dates.DateDayDto, "day">;
+    // (undocumented)
+    type DateDto = Inputs_2.Dates.DateDto;
+    // (undocumented)
+    type DateHoursDto = WithDefaults<Inputs_2.Dates.DateHoursDto, "hours">;
+    // (undocumented)
+    type DateMillisecondsDto = WithDefaults<Inputs_2.Dates.DateMillisecondsDto, "milliseconds">;
+    // (undocumented)
+    type DateMinutesDto = WithDefaults<Inputs_2.Dates.DateMinutesDto, "minutes">;
+    // (undocumented)
+    type DateMonthDto = WithDefaults<Inputs_2.Dates.DateMonthDto, "month">;
+    // (undocumented)
+    type DateSecondsDto = WithDefaults<Inputs_2.Dates.DateSecondsDto, "seconds">;
+    // (undocumented)
+    type DateStringDto = Inputs_2.Dates.DateStringDto;
+    // (undocumented)
+    type DateTimeDto = WithDefaults<Inputs_2.Dates.DateTimeDto, "time">;
+    // (undocumented)
+    type DateYearDto = WithDefaults<Inputs_2.Dates.DateYearDto, "year">;
 }
 
 // @public
@@ -296,8 +359,8 @@ export namespace IO {
     }
     export class DxfPathsPartDto {
         constructor(layer?: string, color?: Base.Color, paths?: DxfPathDto[]);
-        color: Base.Color;
-        layer: string;
+        color?: Base.Color | undefined;
+        layer?: string | undefined;
         paths: DxfPathDto[];
     }
     export class DxfPolylineSegmentDto {
@@ -312,6 +375,26 @@ export namespace IO {
         controlPoints: Base.Point2[];
         degree?: number | undefined;
     }
+}
+
+// @public
+namespace IO_2 {
+    // (undocumented)
+    type DxfArcSegmentDto = Inputs_2.IO.DxfArcSegmentDto;
+    // (undocumented)
+    type DxfCircleSegmentDto = Inputs_2.IO.DxfCircleSegmentDto;
+    // (undocumented)
+    type DxfLineSegmentDto = Inputs_2.IO.DxfLineSegmentDto;
+    // (undocumented)
+    type DxfModelDto = WithDefaults<Inputs_2.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    // (undocumented)
+    type DxfPathDto = Inputs_2.IO.DxfPathDto;
+    // (undocumented)
+    type DxfPathsPartDto = WithDefaults<Inputs_2.IO.DxfPathsPartDto, "layer" | "color">;
+    // (undocumented)
+    type DxfPolylineSegmentDto = WithDefaults<Inputs_2.IO.DxfPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DxfSplineSegmentDto = WithDefaults<Inputs_2.IO.DxfSplineSegmentDto, "degree" | "closed">;
 }
 
 // @public
@@ -332,38 +415,38 @@ export namespace JSCAD {
     }
     export class CircleDto {
         constructor(center?: Base.Point2, radius?: number, segments?: number);
-        center: Base.Point2;
-        radius: number;
-        segments: number;
+        center?: Base.Point2 | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class ColorizeDto {
         constructor(geometry?: JSCADEntity, color?: string);
-        color: string;
+        color?: string | undefined;
         geometry: JSCADEntity | JSCADEntity[];
     }
     export class CubeCentersDto {
         constructor(centers?: Base.Point3[], size?: number);
         centers: Base.Point3[];
-        size: number;
+        size?: number | undefined;
     }
     export class CubeDto {
         constructor(center?: Base.Point3, size?: number);
-        center: Base.Point3;
-        size: number;
+        center?: Base.Point3 | undefined;
+        size?: number | undefined;
     }
     export class CuboidCentersDto {
         constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
         centers: Base.Point3[];
-        height: number;
-        length: number;
-        width: number;
+        height?: number | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
     export class CuboidDto {
         constructor(center?: Base.Point3, width?: number, length?: number, height?: number);
-        center: Base.Point3;
-        height: number;
-        length: number;
-        width: number;
+        center?: Base.Point3 | undefined;
+        height?: number | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
     export class CurveDto {
         constructor(curve?: any);
@@ -372,50 +455,50 @@ export namespace JSCAD {
     export class CylidnerCentersDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        radius: number;
-        segments: number;
+        height?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class CylidnerCentersEllipticDto {
         constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
         centers: Base.Point3[];
-        endRadius: Base.Point2;
-        height: number;
-        segments: number;
-        startRadius: Base.Point2;
+        endRadius?: Base.Point2 | undefined;
+        height?: number | undefined;
+        segments?: number | undefined;
+        startRadius?: Base.Point2 | undefined;
     }
     export class CylidnerDto {
         constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        radius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
+        height?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class CylidnerEllipticDto {
         constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
-        center: Base.Point3;
-        endRadius: Base.Vector2;
-        height: number;
-        segments: number;
-        startRadius: Base.Vector2;
+        center?: Base.Point3 | undefined;
+        endRadius?: Base.Vector2 | undefined;
+        height?: number | undefined;
+        segments?: number | undefined;
+        startRadius?: Base.Vector2 | undefined;
     }
     export class CylinderTextDto {
         constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        extrusionHeight: number;
-        extrusionSize: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        extrusionHeight?: number | undefined;
+        extrusionSize?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     export class DownloadGeometryDto {
         constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: Record<string, unknown>);
-        fileName: string;
+        fileName?: string | undefined;
         geometry: JSCADEntity | JSCADEntity[];
         options?: Record<string, unknown> | undefined;
     }
@@ -464,54 +547,54 @@ export namespace JSCAD {
     }
     export class EllipseDto {
         constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number);
-        center: Base.Point2;
-        radius: Base.Point2;
-        segments: number;
+        center?: Base.Point2 | undefined;
+        radius?: Base.Point2 | undefined;
+        segments?: number | undefined;
     }
     export class EllipsoidCentersDto {
         constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
         centers: Base.Point3[];
-        radius: Base.Point3;
-        segments: number;
+        radius?: Base.Point3 | undefined;
+        segments?: number | undefined;
     }
     export class EllipsoidDto {
         constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number);
-        center: Base.Point3;
-        radius: Base.Point3;
-        segments: number;
+        center?: Base.Point3 | undefined;
+        radius?: Base.Point3 | undefined;
+        segments?: number | undefined;
     }
     export class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
-        corners: solidCornerTypeEnum;
-        delta: number;
+        corners?: solidCornerTypeEnum | undefined;
+        delta?: number | undefined;
         geometry: JSCADEntity;
-        segments: number;
+        segments?: number | undefined;
     }
     export class ExtrudeLinearDto {
         constructor(geometry?: JSCADEntity, height?: number, twistAngle?: number, twistSteps?: number);
         geometry: JSCADEntity;
-        height: number;
-        twistAngle: number;
-        twistSteps: number;
+        height?: number | undefined;
+        twistAngle?: number | undefined;
+        twistSteps?: number | undefined;
     }
     export class ExtrudeRectangularDto {
         constructor(geometry?: JSCADEntity, height?: number, size?: number);
         geometry: JSCADEntity;
-        height: number;
-        size: number;
+        height?: number | undefined;
+        size?: number | undefined;
     }
     export class ExtrudeRectangularPointsDto {
         constructor(points?: Base.Point3[], height?: number, size?: number);
-        height: number;
+        height?: number | undefined;
         points: Base.Point3[];
-        size: number;
+        size?: number | undefined;
     }
     export class ExtrudeRotateDto {
         constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number);
-        angle: number;
+        angle?: number | undefined;
         polygon: JSCADEntity;
-        segments: number;
-        startAngle: number;
+        segments?: number | undefined;
+        startAngle?: number | undefined;
     }
     export class FromPolygonPoints {
         constructor(polygonPoints?: Base.Point3[][]);
@@ -520,14 +603,14 @@ export namespace JSCAD {
     export class GeodesicSphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
         centers: Base.Point3[];
-        frequency: number;
-        radius: number;
+        frequency?: number | undefined;
+        radius?: number | undefined;
     }
     export class GeodesicSphereDto {
         constructor(center?: Base.Point3, radius?: number, frequency?: number);
-        center: Base.Point3;
-        frequency: number;
-        radius: number;
+        center?: Base.Point3 | undefined;
+        frequency?: number | undefined;
+        radius?: number | undefined;
     }
     export class HullDto {
         constructor(meshes?: JSCADEntity[]);
@@ -602,14 +685,14 @@ export namespace JSCAD {
     }
     export class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
-        clockwise: boolean;
-        endPoint: Base.Point2;
-        large: boolean;
+        clockwise?: boolean | undefined;
+        endPoint?: Base.Point2 | undefined;
+        large?: boolean | undefined;
         path: JSCADEntity;
-        radiusX: number;
-        radiusY: number;
-        segments: number;
-        xAxisRotation: number;
+        radiusX?: number | undefined;
+        radiusY?: number | undefined;
+        segments?: number | undefined;
+        xAxisRotation?: number | undefined;
     }
     export class PathAppendPointsDto {
         constructor(points?: Base.Point2[], path?: JSCADEntity);
@@ -627,12 +710,12 @@ export namespace JSCAD {
     }
     export class PathFromPointsDto {
         constructor(points?: Base.Point2[], closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         points: Base.Point2[];
     }
     export class PathFromPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         polyline: PolylinePropertiesDto;
     }
     export class PathsFromPointsDto {
@@ -655,51 +738,51 @@ export namespace JSCAD {
     }
     export class RectangleDto {
         constructor(center?: Base.Point2, width?: number, length?: number);
-        center: Base.Point2;
-        length: number;
-        width: number;
+        center?: Base.Point2 | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
     export class RoundedCuboidCentersDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
+        height?: number | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
     }
     export class RoundedCuboidDto {
         constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
+        center?: Base.Point3 | undefined;
+        height?: number | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
     }
     export class RoundedCylidnerCentersDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        radius: number;
-        roundRadius: number;
-        segments: number;
+        height?: number | undefined;
+        radius?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
     }
     export class RoundedCylidnerDto {
         constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        radius: number;
-        roundRadius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
+        height?: number | undefined;
+        radius?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
     }
     export class RoundedRectangleDto {
         constructor(center?: Base.Point2, roundRadius?: number, segments?: number, width?: number, length?: number);
-        center: Base.Point2;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
+        center?: Base.Point2 | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
     }
     export enum solidCornerTypeEnum {
         chamfer = "chamfer",
@@ -713,64 +796,64 @@ export namespace JSCAD {
     export class SphereCentersDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number);
         centers: Base.Point3[];
-        radius: number;
-        segments: number;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class SphereDto {
         constructor(center?: Base.Point3, radius?: number, segments?: number);
-        center: Base.Point3;
-        radius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class SphereTextDto {
         constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        radius: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     export class SquareDto {
         constructor(center?: Base.Point2, size?: number);
-        center: Base.Point2;
-        size: number;
+        center?: Base.Point2 | undefined;
+        size?: number | undefined;
     }
     export class StarDto {
         constructor(center?: Base.Point2, vertices?: number, density?: number, outerRadius?: number, innerRadius?: number, startAngle?: number);
-        center: Base.Point2;
-        density: number;
-        innerRadius: number;
-        outerRadius: number;
-        startAngle: number;
-        vertices: number;
+        center?: Base.Point2 | undefined;
+        density?: number | undefined;
+        innerRadius?: number | undefined;
+        outerRadius?: number | undefined;
+        startAngle?: number | undefined;
+        vertices?: number | undefined;
     }
     export class TextDto {
         constructor(text?: string, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     export class TorusDto {
         constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number);
-        center: Base.Point3;
-        innerRadius: number;
-        innerRotation: number;
-        innerSegments: number;
-        outerRadius: number;
-        outerRotation: number;
-        outerSegments: number;
-        startAngle: number;
+        center?: Base.Point3 | undefined;
+        innerRadius?: number | undefined;
+        innerRotation?: number | undefined;
+        innerSegments?: number | undefined;
+        outerRadius?: number | undefined;
+        outerRotation?: number | undefined;
+        outerSegments?: number | undefined;
+        startAngle?: number | undefined;
     }
     export class TransformSolidDto {
         constructor(mesh?: JSCADEntity, transformation?: Base.TransformMatrixes);
@@ -786,7 +869,7 @@ export namespace JSCAD {
 
 // @public
 export class Jscad {
-    constructor(jscad: typeof JSCAD_2);
+    constructor(jscad: typeof JSCAD_3);
     // Warning: (ae-forgotten-export) The symbol "JSCADBooleans" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -795,16 +878,16 @@ export class Jscad {
     //
     // (undocumented)
     colors: JSCADColors;
-    downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): {
+    downloadGeometry3MF(inputs: Inputs_3.JSCAD.DownloadGeometryDto): {
         blob: Blob;
     };
-    downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): {
+    downloadGeometryDxf(inputs: Inputs_3.JSCAD.DownloadGeometryDto): {
         blob: Blob;
     };
-    downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): {
+    downloadSolidsSTL(inputs: Inputs_3.JSCAD.DownloadSolidsDto): {
         blob: Blob;
     };
-    downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): {
+    downloadSolidSTL(inputs: Inputs_3.JSCAD.DownloadSolidDto): {
         blob: Blob;
     };
     // Warning: (ae-forgotten-export) The symbol "JSCADExpansions" needs to be exported by the entry point index.d.ts
@@ -831,16 +914,146 @@ export class Jscad {
     //
     // (undocumented)
     shapes: JSCADShapes;
-    shapesToMeshes(inputs: Inputs.JSCAD.MeshesDto): Inputs.JSCAD.JSCADMeshData[];
-    shapeToMesh(inputs: Inputs.JSCAD.MeshDto): Inputs.JSCAD.JSCADMeshData;
+    shapesToMeshes(inputs: Inputs_3.JSCAD.MeshesDto): Inputs_3.JSCAD.JSCADMeshData[];
+    shapeToMesh(inputs: Inputs_3.JSCAD.MeshDto): Inputs_3.JSCAD.JSCADMeshData;
     // Warning: (ae-forgotten-export) The symbol "JSCADText" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     text: JSCADText;
+    // Warning: (ae-forgotten-export) The symbol "Inputs_3" needs to be exported by the entry point index.d.ts
+    toPolygonPoints(inputs: Inputs_3.JSCAD.MeshDto): Base.Mesh3;
+    transformSolid(inputs: Inputs_3.JSCAD.TransformSolidDto): Inputs_3.JSCAD.JSCADEntity;
+    transformSolids(inputs: Inputs_3.JSCAD.TransformSolidsDto): Inputs_3.JSCAD.JSCADEntity[];
+}
+
+// @public
+namespace JSCAD_2 {
     // Warning: (ae-forgotten-export) The symbol "Inputs" needs to be exported by the entry point index.d.ts
-    toPolygonPoints(inputs: Inputs.JSCAD.MeshDto): Base.Mesh3;
-    transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Inputs.JSCAD.JSCADEntity;
-    transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Inputs.JSCAD.JSCADEntity[];
+    //
+    // (undocumented)
+    type BooleanObjectsDto = Inputs.JSCAD.BooleanObjectsDto;
+    // (undocumented)
+    type BooleanObjectsFromDto = Inputs.JSCAD.BooleanObjectsFromDto;
+    // (undocumented)
+    type BooleanTwoObjectsDto = Inputs.JSCAD.BooleanTwoObjectsDto;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs.JSCAD.CircleDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type ColorizeDto = WithDefaults<Inputs.JSCAD.ColorizeDto, "color">;
+    // (undocumented)
+    type CubeCentersDto = WithDefaults<Inputs.JSCAD.CubeCentersDto, "size">;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs.JSCAD.CubeDto, "center" | "size">;
+    // (undocumented)
+    type CuboidCentersDto = WithDefaults<Inputs.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
+    // (undocumented)
+    type CuboidDto = WithDefaults<Inputs.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
+    // (undocumented)
+    type CurveDto = Inputs.JSCAD.CurveDto;
+    // (undocumented)
+    type CylidnerCentersDto = WithDefaults<Inputs.JSCAD.CylidnerCentersDto, "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerCentersEllipticDto = WithDefaults<Inputs.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylidnerDto = WithDefaults<Inputs.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerEllipticDto = WithDefaults<Inputs.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylinderTextDto = WithDefaults<Inputs.JSCAD.CylinderTextDto, "text" | "extrusionHeight" | "extrusionSize" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type DownloadGeometryDto = WithDefaults<Inputs.JSCAD.DownloadGeometryDto, "fileName">;
+    // (undocumented)
+    type DownloadSolidDto = Inputs.JSCAD.DownloadSolidDto;
+    // (undocumented)
+    type DownloadSolidsDto = Inputs.JSCAD.DownloadSolidsDto;
+    // (undocumented)
+    type DrawPathDto<T> = WithDefaults<Inputs.JSCAD.DrawPathDto<T>, "colour" | "opacity" | "width" | "updatable">;
+    // (undocumented)
+    type DrawSolidMeshDto<T> = WithDefaults<Inputs.JSCAD.DrawSolidMeshDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSolidMeshesDto<T> = WithDefaults<Inputs.JSCAD.DrawSolidMeshesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type EllipseDto = WithDefaults<Inputs.JSCAD.EllipseDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidCentersDto = WithDefaults<Inputs.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidDto = WithDefaults<Inputs.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type ExpansionDto = WithDefaults<Inputs.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
+    // (undocumented)
+    type ExtrudeLinearDto = WithDefaults<Inputs.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
+    // (undocumented)
+    type ExtrudeRectangularDto = WithDefaults<Inputs.JSCAD.ExtrudeRectangularDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRectangularPointsDto = WithDefaults<Inputs.JSCAD.ExtrudeRectangularPointsDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRotateDto = WithDefaults<Inputs.JSCAD.ExtrudeRotateDto, "angle" | "startAngle" | "segments">;
+    // (undocumented)
+    type FromPolygonPoints = Inputs.JSCAD.FromPolygonPoints;
+    // (undocumented)
+    type GeodesicSphereCentersDto = WithDefaults<Inputs.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
+    // (undocumented)
+    type GeodesicSphereDto = WithDefaults<Inputs.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
+    // (undocumented)
+    type HullDto = Inputs.JSCAD.HullDto;
+    // (undocumented)
+    type MeshDto = Inputs.JSCAD.MeshDto;
+    // (undocumented)
+    type MeshesDto = Inputs.JSCAD.MeshesDto;
+    // (undocumented)
+    type MinkowskiSumDto = Inputs.JSCAD.MinkowskiSumDto;
+    // (undocumented)
+    type PathAppendArcDto = WithDefaults<Inputs.JSCAD.PathAppendArcDto, "endPoint" | "xAxisRotation" | "clockwise" | "large" | "segments" | "radiusX" | "radiusY">;
+    // (undocumented)
+    type PathAppendPointsDto = Inputs.JSCAD.PathAppendPointsDto;
+    // (undocumented)
+    type PathAppendPolylineDto = Inputs.JSCAD.PathAppendPolylineDto;
+    // (undocumented)
+    type PathDto = Inputs.JSCAD.PathDto;
+    // (undocumented)
+    type PathFromPointsDto = WithDefaults<Inputs.JSCAD.PathFromPointsDto, "closed">;
+    // (undocumented)
+    type PathFromPolylineDto = WithDefaults<Inputs.JSCAD.PathFromPolylineDto, "closed">;
+    // (undocumented)
+    type PathsFromPointsDto = Inputs.JSCAD.PathsFromPointsDto;
+    // (undocumented)
+    type PointsDto = Inputs.JSCAD.PointsDto;
+    // (undocumented)
+    type PolylineDto = Inputs.JSCAD.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs.JSCAD.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs.JSCAD.RectangleDto, "center" | "width" | "length">;
+    // (undocumented)
+    type RoundedCuboidCentersDto = WithDefaults<Inputs.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCuboidDto = WithDefaults<Inputs.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerCentersDto = WithDefaults<Inputs.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerDto = WithDefaults<Inputs.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedRectangleDto = WithDefaults<Inputs.JSCAD.RoundedRectangleDto, "center" | "roundRadius" | "segments" | "width" | "length">;
+    // (undocumented)
+    type SolidDto = Inputs.JSCAD.SolidDto;
+    // (undocumented)
+    type SphereCentersDto = WithDefaults<Inputs.JSCAD.SphereCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs.JSCAD.SphereDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type SphereTextDto = WithDefaults<Inputs.JSCAD.SphereTextDto, "text" | "radius" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs.JSCAD.SquareDto, "center" | "size">;
+    // (undocumented)
+    type StarDto = WithDefaults<Inputs.JSCAD.StarDto, "center" | "vertices" | "density" | "outerRadius" | "innerRadius" | "startAngle">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs.JSCAD.TextDto, "text" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type TorusDto = WithDefaults<Inputs.JSCAD.TorusDto, "center" | "innerRadius" | "outerRadius" | "innerSegments" | "outerSegments" | "innerRotation" | "outerRotation" | "startAngle">;
+    // (undocumented)
+    type TransformSolidDto = Inputs.JSCAD.TransformSolidDto;
+    // (undocumented)
+    type TransformSolidsDto = Inputs.JSCAD.TransformSolidsDto;
 }
 
 // Warning: (ae-forgotten-export) The symbol "DtoRegistry" needs to be exported by the entry point index.d.ts
@@ -928,18 +1141,50 @@ export namespace Line {
 }
 
 // @public
+namespace Line_2 {
+    // (undocumented)
+    type DrawLineDto<T> = WithDefaults<Inputs_2.Line.DrawLineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawLinesDto<T> = WithDefaults<Inputs_2.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type LineDto = Inputs_2.Line.LineDto;
+    // (undocumented)
+    type LineLineIntersectionDto = WithDefaults<Inputs_2.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointsDto = Inputs_2.Line.LinePointsDto;
+    // (undocumented)
+    type LinesDto = Inputs_2.Line.LinesDto;
+    // (undocumented)
+    type LineStartEndPointsDto = Inputs_2.Line.LineStartEndPointsDto;
+    // (undocumented)
+    type PointOnLineDto = WithDefaults<Inputs_2.Line.PointOnLineDto, "param">;
+    // (undocumented)
+    type PointsLinesDto = Inputs_2.Line.PointsLinesDto;
+    // (undocumented)
+    type SegmentDto = Inputs_2.Line.SegmentDto;
+    // (undocumented)
+    type SegmentsDto = Inputs_2.Line.SegmentsDto;
+    // (undocumented)
+    type TransformLineDto = Inputs_2.Line.TransformLineDto;
+    // (undocumented)
+    type TransformLinesDto = Inputs_2.Line.TransformLinesDto;
+    // (undocumented)
+    type TransformsLinesDto = Inputs_2.Line.TransformsLinesDto;
+}
+
+// @public
 export namespace Lists {
     export class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         item: T;
         list: T[];
     }
     export class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
-        indexes: number[];
+        indexes?: number[] | undefined;
         item: T;
         list: T[];
     }
@@ -954,12 +1199,12 @@ export namespace Lists {
         clone?: boolean | undefined;
         item: T;
         list: T[];
-        position: firstLastEnum;
+        position?: firstLastEnum | undefined;
     }
     export class AddItemsAtIndexesDto<T> {
         constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
-        indexes: number[];
+        indexes?: number[] | undefined;
         items: T[];
         list: T[];
     }
@@ -977,7 +1222,7 @@ export namespace Lists {
     export class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]);
         list: T[];
-        pattern: boolean[];
+        pattern?: boolean[] | undefined;
     }
     export class GetLongestListLength<T> {
         constructor(lists?: T[]);
@@ -987,14 +1232,14 @@ export namespace Lists {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        nth: number;
-        offset: number;
+        nth?: number | undefined;
+        offset?: number | undefined;
     }
     export class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean);
-        keepRemainder: boolean;
+        keepRemainder?: boolean | undefined;
         list: T[];
-        nrElements: number;
+        nrElements?: number | undefined;
     }
     export class IncludesDto<T> {
         constructor(list?: T[], item?: T);
@@ -1018,24 +1263,24 @@ export namespace Lists {
     export class ListItemDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         list: T[];
     }
     export class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number);
-        level: number;
+        level?: number | undefined;
         lists: T[];
     }
     export class MultiplyItemDto<T> {
         constructor(item?: T, times?: number);
         item: T;
-        times: number;
+        times?: number | undefined;
     }
     export class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        threshold: number;
+        threshold?: number | undefined;
     }
     export class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean);
@@ -1046,12 +1291,12 @@ export namespace Lists {
         constructor(list?: T[], clone?: boolean, tolerance?: number);
         clone?: boolean | undefined;
         list: T[];
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     export class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         list: T[];
     }
     export class RemoveItemsAtIndexesDto<T> {
@@ -1064,42 +1309,100 @@ export namespace Lists {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        nth: number;
-        offset: number;
+        nth?: number | undefined;
+        offset?: number | undefined;
     }
     export class RepeatInPatternDto<T> {
         constructor(list?: T[]);
         clone?: boolean | undefined;
-        lengthLimit: number;
+        lengthLimit?: number | undefined;
         list: T[];
     }
     export class SortDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        orderAsc: boolean;
+        orderAsc?: boolean | undefined;
     }
     export class SortJsonDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        orderAsc: boolean;
-        property: string;
+        orderAsc?: boolean | undefined;
+        property?: string | undefined;
     }
     export class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean);
         clone?: boolean | undefined;
-        indexEnd: number;
-        indexStart: number;
+        indexEnd?: number | undefined;
+        indexStart?: number | undefined;
         list: T[];
     }
+}
+
+// @public
+namespace Lists_2 {
+    // (undocumented)
+    type AddItemAtIndexDto<T> = WithDefaults<Inputs_2.Lists.AddItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type AddItemAtIndexesDto<T> = WithDefaults<Inputs_2.Lists.AddItemAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type AddItemDto<T> = WithDefaults<Inputs_2.Lists.AddItemDto<T>, "clone">;
+    // (undocumented)
+    type AddItemFirstLastDto<T> = WithDefaults<Inputs_2.Lists.AddItemFirstLastDto<T>, "position" | "clone">;
+    // (undocumented)
+    type AddItemsAtIndexesDto<T> = WithDefaults<Inputs_2.Lists.AddItemsAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type ConcatenateDto<T> = WithDefaults<Inputs_2.Lists.ConcatenateDto<T>, "clone">;
+    // (undocumented)
+    type GetByPatternDto<T> = WithDefaults<Inputs_2.Lists.GetByPatternDto<T>, "pattern">;
+    // (undocumented)
+    type GetLongestListLength<T> = Inputs_2.Lists.GetLongestListLength<T>;
+    // (undocumented)
+    type GetNthItemDto<T> = WithDefaults<Inputs_2.Lists.GetNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type GroupListDto<T> = WithDefaults<Inputs_2.Lists.GroupListDto<T>, "nrElements" | "keepRemainder">;
+    // (undocumented)
+    type IncludesDto<T> = Inputs_2.Lists.IncludesDto<T>;
+    // (undocumented)
+    type InterleaveDto<T> = WithDefaults<Inputs_2.Lists.InterleaveDto<T>, "clone">;
+    // (undocumented)
+    type ListCloneDto<T> = WithDefaults<Inputs_2.Lists.ListCloneDto<T>, "clone">;
+    // (undocumented)
+    type ListDto<T> = Inputs_2.Lists.ListDto<T>;
+    // (undocumented)
+    type ListItemDto<T> = WithDefaults<Inputs_2.Lists.ListItemDto<T>, "index" | "clone">;
+    // (undocumented)
+    type MergeElementsOfLists<T> = WithDefaults<Inputs_2.Lists.MergeElementsOfLists<T>, "level">;
+    // (undocumented)
+    type MultiplyItemDto<T> = WithDefaults<Inputs_2.Lists.MultiplyItemDto<T>, "times">;
+    // (undocumented)
+    type RandomThresholdDto<T> = WithDefaults<Inputs_2.Lists.RandomThresholdDto<T>, "threshold" | "clone">;
+    // (undocumented)
+    type RemoveDuplicatesDto<T> = WithDefaults<Inputs_2.Lists.RemoveDuplicatesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveDuplicatesToleranceDto<T> = WithDefaults<Inputs_2.Lists.RemoveDuplicatesToleranceDto<T>, "tolerance" | "clone">;
+    // (undocumented)
+    type RemoveItemAtIndexDto<T> = WithDefaults<Inputs_2.Lists.RemoveItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type RemoveItemsAtIndexesDto<T> = WithDefaults<Inputs_2.Lists.RemoveItemsAtIndexesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveNthItemDto<T> = WithDefaults<Inputs_2.Lists.RemoveNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type RepeatInPatternDto<T> = WithDefaults<Inputs_2.Lists.RepeatInPatternDto<T>, "clone" | "lengthLimit">;
+    // (undocumented)
+    type SortDto<T> = WithDefaults<Inputs_2.Lists.SortDto<T>, "clone" | "orderAsc">;
+    // (undocumented)
+    type SortJsonDto<T> = WithDefaults<Inputs_2.Lists.SortJsonDto<T>, "clone" | "orderAsc" | "property">;
+    // (undocumented)
+    type SubListDto<T> = WithDefaults<Inputs_2.Lists.SubListDto<T>, "indexStart" | "indexEnd" | "clone">;
 }
 
 // @public
 export namespace Logic {
     export class BooleanDto {
         constructor(boolean?: boolean);
-        boolean: boolean;
+        boolean?: boolean | undefined;
     }
     export class BooleanListDto {
         constructor(booleans?: boolean[]);
@@ -1126,29 +1429,29 @@ export namespace Logic {
     export class ComparisonDto<T> {
         constructor(first?: T, second?: T, operator?: BooleanOperatorsEnum);
         first: T;
-        operator: BooleanOperatorsEnum;
+        operator?: BooleanOperatorsEnum | undefined;
         second: T;
     }
     export class RandomBooleansDto {
         constructor(length?: number);
-        length: number;
-        trueThreshold: number;
+        length?: number | undefined;
+        trueThreshold?: number | undefined;
     }
     export class ThresholdBooleanListDto {
-        inverse: boolean;
+        inverse?: boolean | undefined;
         numbers: number[];
-        threshold: number;
+        threshold?: number | undefined;
     }
     export class ThresholdGapsBooleanListDto {
         gapThresholds: Base.Vector2[];
-        inverse: boolean;
+        inverse?: boolean | undefined;
         numbers: number[];
     }
     export class TwoThresholdRandomGradientDto {
-        nrLevels: number;
+        nrLevels?: number | undefined;
         numbers: number[];
-        thresholdTotalFalse: number;
-        thresholdTotalTrue: number;
+        thresholdTotalFalse?: number | undefined;
+        thresholdTotalTrue?: number | undefined;
     }
     export class TwoValueGateDto<T, U> {
         constructor(value1?: T, value2?: U);
@@ -1157,36 +1460,58 @@ export namespace Logic {
     }
     export class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean);
-        boolean: boolean;
+        boolean?: boolean | undefined;
         value: T;
     }
+}
+
+// @public
+namespace Logic_2 {
+    // (undocumented)
+    type BooleanDto = WithDefaults<Inputs_2.Logic.BooleanDto, "boolean">;
+    // (undocumented)
+    type BooleanListDto = Inputs_2.Logic.BooleanListDto;
+    // (undocumented)
+    type ComparisonDto<T> = WithDefaults<Inputs_2.Logic.ComparisonDto<T>, "operator">;
+    // (undocumented)
+    type RandomBooleansDto = WithDefaults<Inputs_2.Logic.RandomBooleansDto, "length" | "trueThreshold">;
+    // (undocumented)
+    type ThresholdBooleanListDto = WithDefaults<Inputs_2.Logic.ThresholdBooleanListDto, "threshold" | "inverse">;
+    // (undocumented)
+    type ThresholdGapsBooleanListDto = WithDefaults<Inputs_2.Logic.ThresholdGapsBooleanListDto, "inverse">;
+    // (undocumented)
+    type TwoThresholdRandomGradientDto = WithDefaults<Inputs_2.Logic.TwoThresholdRandomGradientDto, "thresholdTotalTrue" | "thresholdTotalFalse" | "nrLevels">;
+    // (undocumented)
+    type TwoValueGateDto<T, U> = Inputs_2.Logic.TwoValueGateDto<T, U>;
+    // (undocumented)
+    type ValueGateDto<T> = WithDefaults<Inputs_2.Logic.ValueGateDto<T>, "boolean">;
 }
 
 // @public
 namespace Math_2 {
     class ActionOnOneNumberDto {
         constructor(number?: number, operation?: mathOneNrOperatorEnum);
-        number: number;
-        operation: mathOneNrOperatorEnum;
+        number?: number | undefined;
+        operation?: mathOneNrOperatorEnum | undefined;
     }
     class ActionOnTwoNumbersDto {
         constructor(first?: number, second?: number, operation?: mathTwoNrOperatorEnum);
-        first: number;
-        operation: mathTwoNrOperatorEnum;
-        second: number;
+        first?: number | undefined;
+        operation?: mathTwoNrOperatorEnum | undefined;
+        second?: number | undefined;
     }
     class ClampDto {
         constructor(number?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        number: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        number?: number | undefined;
     }
     class EaseDto {
         constructor(x?: number);
-        ease: easeEnum;
-        max: number;
-        min: number;
-        x: number;
+        ease?: easeEnum | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        x?: number | undefined;
     }
     enum easeEnum {
         // (undocumented)
@@ -1252,19 +1577,19 @@ namespace Math_2 {
     }
     class EvalArithmeticDto {
         constructor(expression?: string);
-        expression: string;
+        expression?: string | undefined;
     }
     class InverseLerpDto {
         constructor(start?: number, end?: number, value?: number);
-        end: number;
-        start: number;
-        value: number;
+        end?: number | undefined;
+        start?: number | undefined;
+        value?: number | undefined;
     }
     class LerpDto {
         constructor(start?: number, end?: number, t?: number);
-        end: number;
-        start: number;
-        t: number;
+        end?: number | undefined;
+        start?: number | undefined;
+        t?: number | undefined;
     }
     enum mathOneNrOperatorEnum {
         // (undocumented)
@@ -1322,66 +1647,106 @@ namespace Math_2 {
     }
     class ModulusDto {
         constructor(number?: number, modulus?: number);
-        modulus: number;
-        number: number;
+        modulus?: number | undefined;
+        number?: number | undefined;
     }
     class MoveTowardsDto {
         constructor(current?: number, target?: number, maxDelta?: number);
-        current: number;
-        maxDelta: number;
-        target: number;
+        current?: number | undefined;
+        maxDelta?: number | undefined;
+        target?: number | undefined;
     }
     class NumberDto {
         constructor(number?: number);
-        number: number;
+        number?: number | undefined;
     }
     class PingPongDto {
         constructor(t?: number, length?: number);
-        length: number;
-        t: number;
+        length?: number | undefined;
+        t?: number | undefined;
     }
     class RandomNumberDto {
         constructor(low?: number, high?: number);
-        high: number;
-        low: number;
+        high?: number | undefined;
+        low?: number | undefined;
     }
     class RandomNumbersDto {
         constructor(low?: number, high?: number, count?: number);
-        count: number;
-        high: number;
-        low: number;
+        count?: number | undefined;
+        high?: number | undefined;
+        low?: number | undefined;
     }
     class RemapNumberDto {
         constructor(number?: number, fromLow?: number, fromHigh?: number, toLow?: number, toHigh?: number);
-        fromHigh: number;
-        fromLow: number;
-        number: number;
-        toHigh: number;
-        toLow: number;
+        fromHigh?: number | undefined;
+        fromLow?: number | undefined;
+        number?: number | undefined;
+        toHigh?: number | undefined;
+        toLow?: number | undefined;
     }
     class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number);
-        decimalPlaces: number;
-        number: number;
+        decimalPlaces?: number | undefined;
+        number?: number | undefined;
     }
     class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number);
-        decimalPlaces: number;
+        decimalPlaces?: number | undefined;
         number: number;
     }
     class TwoNumbersDto {
         constructor(first?: number, second?: number);
-        first: number;
-        second: number;
+        first?: number | undefined;
+        second?: number | undefined;
     }
     class WrapDto {
         constructor(number?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        number: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        number?: number | undefined;
     }
 }
 export { Math_2 as Math }
+
+// @public
+namespace Math_3 {
+    // (undocumented)
+    type ActionOnOneNumberDto = WithDefaults<Inputs_2.Math.ActionOnOneNumberDto, "number" | "operation">;
+    // (undocumented)
+    type ActionOnTwoNumbersDto = WithDefaults<Inputs_2.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
+    // (undocumented)
+    type ClampDto = WithDefaults<Inputs_2.Math.ClampDto, "number" | "min" | "max">;
+    // (undocumented)
+    type EaseDto = WithDefaults<Inputs_2.Math.EaseDto, "x" | "min" | "max" | "ease">;
+    // (undocumented)
+    type EvalArithmeticDto = WithDefaults<Inputs_2.Math.EvalArithmeticDto, "expression">;
+    // (undocumented)
+    type InverseLerpDto = WithDefaults<Inputs_2.Math.InverseLerpDto, "start" | "end" | "value">;
+    // (undocumented)
+    type LerpDto = WithDefaults<Inputs_2.Math.LerpDto, "start" | "end" | "t">;
+    // (undocumented)
+    type ModulusDto = WithDefaults<Inputs_2.Math.ModulusDto, "number" | "modulus">;
+    // (undocumented)
+    type MoveTowardsDto = WithDefaults<Inputs_2.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    // (undocumented)
+    type NumberDto = WithDefaults<Inputs_2.Math.NumberDto, "number">;
+    // (undocumented)
+    type PingPongDto = WithDefaults<Inputs_2.Math.PingPongDto, "t" | "length">;
+    // (undocumented)
+    type RandomNumberDto = WithDefaults<Inputs_2.Math.RandomNumberDto, "low" | "high">;
+    // (undocumented)
+    type RandomNumbersDto = WithDefaults<Inputs_2.Math.RandomNumbersDto, "low" | "high" | "count">;
+    // (undocumented)
+    type RemapNumberDto = WithDefaults<Inputs_2.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
+    // (undocumented)
+    type RoundToDecimalsDto = WithDefaults<Inputs_2.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    // (undocumented)
+    type ToFixedDto = WithDefaults<Inputs_2.Math.ToFixedDto, "decimalPlaces">;
+    // (undocumented)
+    type TwoNumbersDto = WithDefaults<Inputs_2.Math.TwoNumbersDto, "first" | "second">;
+    // (undocumented)
+    type WrapDto = WithDefaults<Inputs_2.Math.WrapDto, "number" | "min" | "max">;
+}
 
 // @public
 export namespace Mesh {
@@ -1414,6 +1779,20 @@ export namespace Mesh {
 }
 
 // @public
+namespace Mesh_2 {
+    // (undocumented)
+    type MeshMeshToleranceDto = WithDefaults<Inputs_2.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type SignedDistanceFromPlaneToPointDto = Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto;
+    // (undocumented)
+    type TriangleDto = Inputs_2.Mesh.TriangleDto;
+    // (undocumented)
+    type TriangleToleranceDto = WithDefaults<Inputs_2.Mesh.TriangleToleranceDto, "tolerance">;
+    // (undocumented)
+    type TriangleTriangleToleranceDto = WithDefaults<Inputs_2.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+}
+
+// @public
 export namespace Point {
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
@@ -1440,11 +1819,11 @@ export namespace Point {
     }
     export class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);
-        nrHexagonsX: number;
-        nrHexagonsY: number;
-        orientOnCenter: boolean;
-        pointsOnGround: boolean;
-        radiusHexagon: number;
+        nrHexagonsX?: number | undefined;
+        nrHexagonsY?: number | undefined;
+        orientOnCenter?: boolean | undefined;
+        pointsOnGround?: boolean | undefined;
+        radiusHexagon?: number | undefined;
     }
     export class HexGridScaledToFitDto {
         constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean);
@@ -1481,41 +1860,41 @@ export namespace Point {
     }
     export class PointXYDto {
         constructor(x?: number, y?: number);
-        x: number;
-        y: number;
+        x?: number | undefined;
+        y?: number | undefined;
     }
     export class PointXYZDto {
         constructor(x?: number, y?: number, z?: number);
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     export class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean);
-        checkFirstAndLast: boolean;
+        checkFirstAndLast?: boolean | undefined;
         points: Base.Point3[];
         tolerance?: number | undefined;
     }
     export class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
         points: Base.Point3[];
     }
     export class ScalePointsCenterXYZDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, scaleXyz?: Base.Vector3);
-        center: Base.Point3;
+        center?: Base.Point3 | undefined;
         points: Base.Point3[];
-        scaleXyz: Base.Vector3;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     export class SpiralDto {
         constructor(radius?: number, numberPoints?: number, widening?: number, factor?: number, phi?: number);
-        factor: number;
-        numberPoints: number;
-        phi: number;
-        radius: number;
-        widening: number;
+        factor?: number | undefined;
+        numberPoints?: number | undefined;
+        phi?: number | undefined;
+        radius?: number | undefined;
+        widening?: number | undefined;
     }
     export class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3);
@@ -1539,14 +1918,14 @@ export namespace Point {
         point1: Base.Point3;
         point2: Base.Point3;
         point3: Base.Point3;
-        reverseNormal: boolean;
+        reverseNormal?: boolean | undefined;
     }
     export class ThreePointsToleranceDto {
         constructor(start?: Base.Point3, center?: Base.Point3, end?: Base.Point3, tolerance?: number);
         center: Base.Point3;
         end: Base.Point3;
         start: Base.Point3;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     export class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes);
@@ -1576,9 +1955,9 @@ export namespace Point {
     export class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number);
         points: Base.Point3[];
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     export class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3);
@@ -1591,6 +1970,66 @@ export namespace Point {
         point2: Base.Point3;
         tolerance?: number | undefined;
     }
+}
+
+// @public
+namespace Point_2 {
+    // (undocumented)
+    type ClosestPointFromPointsDto = Inputs_2.Point.ClosestPointFromPointsDto;
+    // (undocumented)
+    type DrawPointDto<T> = WithDefaults<Inputs_2.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type DrawPointsDto<T> = WithDefaults<Inputs_2.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type HexGridCentersDto = WithDefaults<Inputs_2.Point.HexGridCentersDto, "nrHexagonsY" | "nrHexagonsX" | "radiusHexagon" | "orientOnCenter" | "pointsOnGround">;
+    // (undocumented)
+    type HexGridScaledToFitDto = WithDefaults<Inputs_2.Point.HexGridScaledToFitDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight" | "centerGrid" | "pointsOnGround">;
+    // (undocumented)
+    type MultiplyPointDto = Inputs_2.Point.MultiplyPointDto;
+    // (undocumented)
+    type PointDto = Inputs_2.Point.PointDto;
+    // (undocumented)
+    type PointsDto = Inputs_2.Point.PointsDto;
+    // (undocumented)
+    type PointsMaxFilletsHalfLineDto = WithDefaults<Inputs_2.Point.PointsMaxFilletsHalfLineDto, "checkLastWithFirst" | "tolerance">;
+    // (undocumented)
+    type PointXYDto = WithDefaults<Inputs_2.Point.PointXYDto, "x" | "y">;
+    // (undocumented)
+    type PointXYZDto = WithDefaults<Inputs_2.Point.PointXYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicatesDto = WithDefaults<Inputs_2.Point.RemoveConsecutiveDuplicatesDto, "tolerance" | "checkFirstAndLast">;
+    // (undocumented)
+    type RotatePointsCenterAxisDto = WithDefaults<Inputs_2.Point.RotatePointsCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type ScalePointsCenterXYZDto = WithDefaults<Inputs_2.Point.ScalePointsCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type SpiralDto = WithDefaults<Inputs_2.Point.SpiralDto, "phi" | "numberPoints" | "widening" | "radius" | "factor">;
+    // (undocumented)
+    type StartEndPointsDto = Inputs_2.Point.StartEndPointsDto;
+    // (undocumented)
+    type StartEndPointsListDto = Inputs_2.Point.StartEndPointsListDto;
+    // (undocumented)
+    type StretchPointsDirFromCenterDto = WithDefaults<Inputs_2.Point.StretchPointsDirFromCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type ThreePointsNormalDto = WithDefaults<Inputs_2.Point.ThreePointsNormalDto, "reverseNormal">;
+    // (undocumented)
+    type ThreePointsToleranceDto = WithDefaults<Inputs_2.Point.ThreePointsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPointDto = Inputs_2.Point.TransformPointDto;
+    // (undocumented)
+    type TransformPointsDto = Inputs_2.Point.TransformPointsDto;
+    // (undocumented)
+    type TransformsForPointsDto = Inputs_2.Point.TransformsForPointsDto;
+    // (undocumented)
+    type TranslatePointsDto = Inputs_2.Point.TranslatePointsDto;
+    // (undocumented)
+    type TranslatePointsWithVectorsDto = Inputs_2.Point.TranslatePointsWithVectorsDto;
+    // (undocumented)
+    type TranslateXYZPointsDto = WithDefaults<Inputs_2.Point.TranslateXYZPointsDto, "x" | "y" | "z">;
+    // (undocumented)
+    type TwoPointsDto = Inputs_2.Point.TwoPointsDto;
+    // (undocumented)
+    type TwoPointsToleranceDto = WithDefaults<Inputs_2.Point.TwoPointsToleranceDto, "tolerance">;
 }
 
 // @public
@@ -1656,75 +2095,118 @@ export namespace Polyline {
 }
 
 // @public
+namespace Polyline_2 {
+    // (undocumented)
+    type DrawPolylineDto<T> = WithDefaults<Inputs_2.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawPolylinesDto<T> = WithDefaults<Inputs_2.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type PolylineCreateDto = WithDefaults<Inputs_2.Polyline.PolylineCreateDto, "isClosed">;
+    // (undocumented)
+    type PolylineDto = Inputs_2.Polyline.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs_2.Polyline.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type PolylinesDto = Inputs_2.Polyline.PolylinesDto;
+    // (undocumented)
+    type PolylineToleranceDto = WithDefaults<Inputs_2.Polyline.PolylineToleranceDto, "tolerance">;
+    // (undocumented)
+    type SegmentsToleranceDto = WithDefaults<Inputs_2.Polyline.SegmentsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPolylineDto = Inputs_2.Polyline.TransformPolylineDto;
+    // (undocumented)
+    type TwoPolylinesToleranceDto = WithDefaults<Inputs_2.Polyline.TwoPolylinesToleranceDto, "tolerance">;
+}
+
+declare namespace Resolved {
+    export {
+        JSCAD_2 as JSCAD,
+        Color_2 as Color,
+        Dates_2 as Dates,
+        IO_2 as IO,
+        Line_2 as Line,
+        Lists_2 as Lists,
+        Logic_2 as Logic,
+        Math_3 as Math,
+        Mesh_2 as Mesh,
+        Point_2 as Point,
+        Polyline_2 as Polyline,
+        Text_3 as Text,
+        Transforms_2 as Transforms,
+        Vector_2 as Vector
+    }
+}
+
+// @public
 namespace Text_2 {
     class TextConcatDto {
         constructor(texts?: string[]);
-        texts: string[];
+        texts?: string[] | undefined;
     }
     class TextDto {
         constructor(text?: string);
-        text: string;
+        text?: string | undefined;
     }
     class TextFormatDto {
         constructor(text?: string, values?: string[]);
-        text: string;
-        values: string[];
+        text?: string | undefined;
+        values?: string[] | undefined;
     }
     class TextIndexDto {
         constructor(text?: string, index?: number);
-        index: number;
-        text: string;
+        index?: number | undefined;
+        text?: string | undefined;
     }
     class TextJoinDto {
         constructor(list?: string[], separator?: string);
         list: string[];
-        separator: string;
+        separator?: string | undefined;
     }
     class TextPadDto {
         constructor(text?: string, length?: number, padString?: string);
-        length: number;
-        padString: string;
-        text: string;
+        length?: number | undefined;
+        padString?: string | undefined;
+        text?: string | undefined;
     }
     class TextRegexDto {
         constructor(text?: string, pattern?: string, flags?: string);
-        flags: string;
-        pattern: string;
-        text: string;
+        flags?: string | undefined;
+        pattern?: string | undefined;
+        text?: string | undefined;
     }
     class TextRegexReplaceDto {
         constructor(text?: string, pattern?: string, flags?: string, replaceWith?: string);
-        flags: string;
-        pattern: string;
-        replaceWith: string;
-        text: string;
+        flags?: string | undefined;
+        pattern?: string | undefined;
+        replaceWith?: string | undefined;
+        text?: string | undefined;
     }
     class TextRepeatDto {
         constructor(text?: string, count?: number);
-        count: number;
-        text: string;
+        count?: number | undefined;
+        text?: string | undefined;
     }
     class TextReplaceDto {
         constructor(text?: string, search?: string, replaceWith?: string);
-        replaceWith: string;
-        search: string;
-        text: string;
+        replaceWith?: string | undefined;
+        search?: string | undefined;
+        text?: string | undefined;
     }
     class TextSearchDto {
         constructor(text?: string, search?: string);
-        search: string;
-        text: string;
+        search?: string | undefined;
+        text?: string | undefined;
     }
     class TextSplitDto {
         constructor(text?: string, separator?: string);
-        separator: string;
-        text: string;
+        separator?: string | undefined;
+        text?: string | undefined;
     }
     class TextSubstringDto {
         constructor(text?: string, start?: number, end?: number);
         end?: number | undefined;
-        start: number;
-        text: string;
+        start?: number | undefined;
+        text?: string | undefined;
     }
     class ToStringDto<T> {
         constructor(item?: T);
@@ -1736,7 +2218,7 @@ namespace Text_2 {
     }
     class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number);
-        char: string;
+        char?: string | undefined;
         extrudeOffset?: number | undefined;
         height?: number | undefined;
         xOffset?: number | undefined;
@@ -1758,33 +2240,71 @@ namespace Text_2 {
 export { Text_2 as Text }
 
 // @public
+namespace Text_3 {
+    // (undocumented)
+    type TextConcatDto = WithDefaults<Inputs_2.Text.TextConcatDto, "texts">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs_2.Text.TextDto, "text">;
+    // (undocumented)
+    type TextFormatDto = WithDefaults<Inputs_2.Text.TextFormatDto, "text" | "values">;
+    // (undocumented)
+    type TextIndexDto = WithDefaults<Inputs_2.Text.TextIndexDto, "text" | "index">;
+    // (undocumented)
+    type TextJoinDto = WithDefaults<Inputs_2.Text.TextJoinDto, "separator">;
+    // (undocumented)
+    type TextPadDto = WithDefaults<Inputs_2.Text.TextPadDto, "text" | "length" | "padString">;
+    // (undocumented)
+    type TextRegexDto = WithDefaults<Inputs_2.Text.TextRegexDto, "text" | "pattern" | "flags">;
+    // (undocumented)
+    type TextRegexReplaceDto = WithDefaults<Inputs_2.Text.TextRegexReplaceDto, "text" | "pattern" | "flags" | "replaceWith">;
+    // (undocumented)
+    type TextRepeatDto = WithDefaults<Inputs_2.Text.TextRepeatDto, "text" | "count">;
+    // (undocumented)
+    type TextReplaceDto = WithDefaults<Inputs_2.Text.TextReplaceDto, "text" | "search" | "replaceWith">;
+    // (undocumented)
+    type TextSearchDto = WithDefaults<Inputs_2.Text.TextSearchDto, "text" | "search">;
+    // (undocumented)
+    type TextSplitDto = WithDefaults<Inputs_2.Text.TextSplitDto, "text" | "separator">;
+    // (undocumented)
+    type TextSubstringDto = WithDefaults<Inputs_2.Text.TextSubstringDto, "text" | "start">;
+    // (undocumented)
+    type ToStringDto<T> = Inputs_2.Text.ToStringDto<T>;
+    // (undocumented)
+    type ToStringEachDto<T> = Inputs_2.Text.ToStringEachDto<T>;
+    // (undocumented)
+    type VectorCharDto = WithDefaults<Inputs_2.Text.VectorCharDto, "char" | "xOffset" | "yOffset" | "height" | "extrudeOffset">;
+    // (undocumented)
+    type VectorTextDto = WithDefaults<Inputs_2.Text.VectorTextDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+}
+
+// @public
 export namespace Transforms {
     export class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
     }
     export class RotationCenterDto {
         constructor(angle?: number, center?: Base.Point3);
-        angle: number;
-        center: Base.Point3;
+        angle?: number | undefined;
+        center?: Base.Point3 | undefined;
     }
     export class RotationCenterYawPitchRollDto {
         constructor(yaw?: number, pitch?: number, roll?: number, center?: Base.Point3);
-        center: Base.Point3;
-        pitch: number;
-        roll: number;
-        yaw: number;
+        center?: Base.Point3 | undefined;
+        pitch?: number | undefined;
+        roll?: number | undefined;
+        yaw?: number | undefined;
     }
     export class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3);
-        center: Base.Point3;
-        scaleXyz: Base.Vector3;
+        center?: Base.Point3 | undefined;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     export class ScaleXYZDto {
         constructor(scaleXyz?: Base.Vector3);
-        scaleXyz: Base.Vector3;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     export class StretchDirCenterDto {
         constructor(scale?: number, center?: Base.Point3, direction?: Base.Vector3);
@@ -1798,17 +2318,41 @@ export namespace Transforms {
     }
     export class TranslationXYZDto {
         constructor(translation?: Base.Vector3);
-        translation: Base.Vector3;
+        translation?: Base.Vector3 | undefined;
     }
     export class UniformScaleDto {
         constructor(scale?: number);
-        scale: number;
+        scale?: number | undefined;
     }
     export class UniformScaleFromCenterDto {
         constructor(scale?: number, center?: Base.Point3);
-        center: Base.Point3;
-        scale: number;
+        center?: Base.Point3 | undefined;
+        scale?: number | undefined;
     }
+}
+
+// @public
+namespace Transforms_2 {
+    // (undocumented)
+    type RotationCenterAxisDto = WithDefaults<Inputs_2.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type RotationCenterDto = WithDefaults<Inputs_2.Transforms.RotationCenterDto, "angle" | "center">;
+    // (undocumented)
+    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_2.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
+    // (undocumented)
+    type ScaleCenterXYZDto = WithDefaults<Inputs_2.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type ScaleXYZDto = WithDefaults<Inputs_2.Transforms.ScaleXYZDto, "scaleXyz">;
+    // (undocumented)
+    type StretchDirCenterDto = WithDefaults<Inputs_2.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type TranslationsXYZDto = Inputs_2.Transforms.TranslationsXYZDto;
+    // (undocumented)
+    type TranslationXYZDto = WithDefaults<Inputs_2.Transforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type UniformScaleDto = WithDefaults<Inputs_2.Transforms.UniformScaleDto, "scale">;
+    // (undocumented)
+    type UniformScaleFromCenterDto = WithDefaults<Inputs_2.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }
 
 // @public
@@ -1816,49 +2360,49 @@ export namespace Vector {
     export class FractionTwoVectorsDto {
         constructor(fraction?: number, first?: Base.Vector3, second?: Base.Vector3);
         first: Base.Vector3;
-        fraction: number;
+        fraction?: number | undefined;
         second: Base.Vector3;
     }
     export class RangeMaxDto {
         constructor(max?: number);
-        max: number;
+        max?: number | undefined;
     }
     export class RayPointDto {
         constructor(point?: Base.Point3, distance?: number, vector?: number[]);
-        distance: number;
+        distance?: number | undefined;
         point: Base.Point3;
         vector: number[];
     }
     export class RemoveAllDuplicateVectorsDto {
         constructor(vectors?: number[][], tolerance?: number);
-        tolerance: number;
+        tolerance?: number | undefined;
         vectors: number[][];
     }
     export class RemoveConsecutiveDuplicateVectorsDto {
         constructor(vectors?: number[][], checkFirstAndLast?: boolean, tolerance?: number);
-        checkFirstAndLast: boolean;
-        tolerance: number;
+        checkFirstAndLast?: boolean | undefined;
+        tolerance?: number | undefined;
         vectors: number[][];
     }
     export class SpanDto {
         constructor(step?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        step: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        step?: number | undefined;
     }
     export class SpanEaseItemsDto {
         constructor(nrItems?: number, min?: number, max?: number, ease?: Math_2.easeEnum);
-        ease: Math_2.easeEnum;
-        intervals: boolean;
-        max: number;
-        min: number;
-        nrItems: number;
+        ease?: Math_2.easeEnum | undefined;
+        intervals?: boolean | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        nrItems?: number | undefined;
     }
     export class SpanLinearItemsDto {
         constructor(nrItems?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        nrItems: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        nrItems?: number | undefined;
     }
     export class TwoVectorsDto {
         constructor(first?: number[], second?: number[]);
@@ -1885,7 +2429,7 @@ export namespace Vector {
     }
     export class VectorScalarDto {
         constructor(scalar?: number, vector?: number[]);
-        scalar: number;
+        scalar?: number | undefined;
         vector: number[];
     }
     export class VectorsDto {
@@ -1894,7 +2438,7 @@ export namespace Vector {
     }
     export class VectorsTheSameDto {
         constructor(vec1?: number[], vec2?: number[], tolerance?: number);
-        tolerance: number;
+        tolerance?: number | undefined;
         vec1: number[];
         vec2: number[];
     }
@@ -1904,15 +2448,57 @@ export namespace Vector {
     }
     export class VectorXYDto {
         constructor(x?: number, y?: number);
-        x: number;
-        y: number;
+        x?: number | undefined;
+        y?: number | undefined;
     }
     export class VectorXYZDto {
         constructor(x?: number, y?: number, z?: number);
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
+}
+
+// @public
+namespace Vector_2 {
+    // (undocumented)
+    type FractionTwoVectorsDto = WithDefaults<Inputs_2.Vector.FractionTwoVectorsDto, "fraction">;
+    // (undocumented)
+    type RangeMaxDto = WithDefaults<Inputs_2.Vector.RangeMaxDto, "max">;
+    // (undocumented)
+    type RayPointDto = WithDefaults<Inputs_2.Vector.RayPointDto, "distance">;
+    // (undocumented)
+    type RemoveAllDuplicateVectorsDto = WithDefaults<Inputs_2.Vector.RemoveAllDuplicateVectorsDto, "tolerance">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicateVectorsDto = WithDefaults<Inputs_2.Vector.RemoveConsecutiveDuplicateVectorsDto, "checkFirstAndLast" | "tolerance">;
+    // (undocumented)
+    type SpanDto = WithDefaults<Inputs_2.Vector.SpanDto, "step" | "min" | "max">;
+    // (undocumented)
+    type SpanEaseItemsDto = WithDefaults<Inputs_2.Vector.SpanEaseItemsDto, "nrItems" | "min" | "max" | "ease" | "intervals">;
+    // (undocumented)
+    type SpanLinearItemsDto = WithDefaults<Inputs_2.Vector.SpanLinearItemsDto, "nrItems" | "min" | "max">;
+    // (undocumented)
+    type TwoVectorsDto = Inputs_2.Vector.TwoVectorsDto;
+    // (undocumented)
+    type TwoVectorsReferenceDto = Inputs_2.Vector.TwoVectorsReferenceDto;
+    // (undocumented)
+    type Vector3Dto = Inputs_2.Vector.Vector3Dto;
+    // (undocumented)
+    type VectorBoolDto = Inputs_2.Vector.VectorBoolDto;
+    // (undocumented)
+    type VectorDto = Inputs_2.Vector.VectorDto;
+    // (undocumented)
+    type VectorScalarDto = WithDefaults<Inputs_2.Vector.VectorScalarDto, "scalar">;
+    // (undocumented)
+    type VectorsDto = Inputs_2.Vector.VectorsDto;
+    // (undocumented)
+    type VectorsTheSameDto = WithDefaults<Inputs_2.Vector.VectorsTheSameDto, "tolerance">;
+    // (undocumented)
+    type VectorStringDto = Inputs_2.Vector.VectorStringDto;
+    // (undocumented)
+    type VectorXYDto = WithDefaults<Inputs_2.Vector.VectorXYDto, "x" | "y">;
+    // (undocumented)
+    type VectorXYZDto = WithDefaults<Inputs_2.Vector.VectorXYZDto, "x" | "y" | "z">;
 }
 
 // (No @packageDocumentation comment for this package)

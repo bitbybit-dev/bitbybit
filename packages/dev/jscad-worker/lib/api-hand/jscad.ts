@@ -2,6 +2,8 @@
 // Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
 // when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
 import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
+import * as Resolved from "@bitbybit-dev/jscad/lib/api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 export class JSCAD {
@@ -22,13 +24,13 @@ export class JSCAD {
     // replaces downloadGeometryDxf
     async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", inputs);
-        this.downloadFile(res.blob, inputs.fileName, "dxf");
+        this.downloadFile(res.blob, (resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto).fileName, "dxf");
     }
 
     // replaces downloadGeometry3MF
     async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
         const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", inputs);
-        this.downloadFile(res.blob, inputs.fileName, "3mf");
+        this.downloadFile(res.blob, (resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto).fileName, "3mf");
     }
 
     // after downloadGeometry3MF

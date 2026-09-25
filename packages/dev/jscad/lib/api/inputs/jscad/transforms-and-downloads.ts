@@ -85,7 +85,7 @@ export class DownloadGeometryDto {
      * Name of the downloaded file without the extension, which is added
      * @default jscad-geometry
      */
-    fileName = "jscad-geometry";
+    fileName?: string | undefined = "jscad-geometry";
     /**
      * Options handed to the DXF or 3MF writer as they are; leave it out for the defaults
      * @default undefined
@@ -132,5 +132,5 @@ export class ColorizeDto {
      * Hex color string the geometry is always drawn in, ahead of the drawing options
      * @default #0000ff
      */
-    color = "#0000ff";
+    color?: string | undefined = "#0000ff";
 }

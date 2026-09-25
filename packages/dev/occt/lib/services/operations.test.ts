@@ -395,9 +395,9 @@ describe("OCCT operations unit tests", () => {
         expect(wires.length).toBe(62);
     });
 
-    it("should not slice in pattern if steps property is undefines", () => {
+    it("should not slice in pattern when the steps list is empty", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: undefined as unknown as number[] })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must be provided with at elast one positive value");
     });
 
     it("should not slice in pattern if steps property is an empty array", () => {

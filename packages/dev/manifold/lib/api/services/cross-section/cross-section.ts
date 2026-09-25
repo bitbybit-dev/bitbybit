@@ -6,6 +6,8 @@ import { CrossSectionTransforms } from "./cross-section-transforms";
 import { CrossSectionBooleans } from "./cross-section-booleans";
 import { CrossSectionEvaluate } from "./cross-section-evaluate";
 import { BaseBitByBit } from "../../../base";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Flat outlines in the Manifold kernel, the 2D shapes that `operations.extrude` and
@@ -58,18 +60,19 @@ export class CrossSection {
      * ```
      */
     crossSectionFromPoints(inputs: Inputs.Manifold.CrossSectionFromPolygonPointsDto): Manifold3D.CrossSection {
-        let points = inputs.points;
+        const resolved = resolveDto(Inputs.Manifold.CrossSectionFromPolygonPointsDto, inputs) as Resolved.Manifold.CrossSectionFromPolygonPointsDto;
+        let points = resolved.points;
         
-        if (inputs.removeDuplicates) {
+        if (resolved.removeDuplicates) {
             points = this.base.point.removeConsecutiveDuplicates({
                 points,
                 checkFirstAndLast: true,
-                tolerance: inputs.tolerance || 1e-7
+                tolerance: resolved.tolerance
             });
         }
         
         const polygon: Manifold3D.SimplePolygon = points.map(p => [p[0], p[1]] as Manifold3D.Vec2);
-        return this.manifold.CrossSection.ofPolygons([polygon], inputs.fillRule);
+        return this.manifold.CrossSection.ofPolygons([polygon], resolved.fillRule);
     }
 
     /**
@@ -94,14 +97,15 @@ export class CrossSection {
      * ```
      */
     crossSectionFromPolygons(inputs: Inputs.Manifold.CrossSectionFromPolygonsPointsDto): Manifold3D.CrossSection {
-        let polygonPoints = inputs.polygonPoints;
+        const resolved = resolveDto(Inputs.Manifold.CrossSectionFromPolygonsPointsDto, inputs) as Resolved.Manifold.CrossSectionFromPolygonsPointsDto;
+        let polygonPoints = resolved.polygonPoints;
         
-        if (inputs.removeDuplicates) {
+        if (resolved.removeDuplicates) {
             polygonPoints = polygonPoints.map(polygon => 
                 this.base.point.removeConsecutiveDuplicates({
                     points: polygon,
                     checkFirstAndLast: true,
-                    tolerance: inputs.tolerance || 1e-7
+                    tolerance: resolved.tolerance
                 })
             );
         }
@@ -109,7 +113,7 @@ export class CrossSection {
         const polygons: Manifold3D.SimplePolygon[] = polygonPoints.map(polygon => 
             polygon.map(p => [p[0], p[1]] as Manifold3D.Vec2)
         );
-        return this.manifold.CrossSection.ofPolygons(polygons, inputs.fillRule);
+        return this.manifold.CrossSection.ofPolygons(polygons, resolved.fillRule);
     }
 
     /**

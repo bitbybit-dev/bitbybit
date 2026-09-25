@@ -21,7 +21,7 @@ export class BSplineDto {
      * When true, the first point is appended again so the ends meet.
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
 }
 /**
  * Several B-spline definitions for `shapes.wire.createBSplines`, which builds one wire per
@@ -41,7 +41,7 @@ export class BSplinesDto {
      * When true, the wires are packed into one compound instead of a list.
      * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }
 /**
  * Two circles in one plane and which pieces to keep for `shapes.wire.createWireFromTwoCirclesTan`,
@@ -70,12 +70,12 @@ export class WireFromTwoCirclesTanDto<T> {
      * `inside` the crossing lines.
      * @default outside
      */
-    keepLines: twoSidesStrictEnum = twoSidesStrictEnum.outside;
+    keepLines?: twoSidesStrictEnum | undefined = twoSidesStrictEnum.outside;
     /**
      * Which arc of each circle stays in the outline: both outside, both inside, or one of each.
      * @default outside
      */
-    circleRemainders: fourSidesStrictEnum = fourSidesStrictEnum.outside;
+    circleRemainders?: fourSidesStrictEnum | undefined = fourSidesStrictEnum.outside;
     /**
      * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
@@ -83,7 +83,7 @@ export class WireFromTwoCirclesTanDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
 }
 /**
  * Circles in one plane and how to pair them for `shapes.face.createFaceFromMultipleCircleTanWires`,
@@ -106,13 +106,13 @@ export class FaceFromMultipleCircleTanWiresDto<T> {
      * the list, `inOrderClosed` also the last with the first.
      * @default allWithAll
      */
-    combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
+    combination?: combinationCirclesForFaceEnum | undefined = combinationCirclesForFaceEnum.allWithAll;
     /**
      * When true, the belt faces are fused into one shape; when false they come back as a compound,
      * which is faster.
      * @default true
      */
-    unify = true;
+    unify?: boolean | undefined = true;
     /**
      * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
@@ -120,7 +120,7 @@ export class FaceFromMultipleCircleTanWiresDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
 }
 /**
  * Lists of circles and how to pair them for
@@ -144,13 +144,13 @@ export class FaceFromMultipleCircleTanWireCollectionsDto<T> {
      * `inOrder` circles at the same position, `inOrderClosed` also closes each list.
      * @default allWithAll
      */
-    combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
+    combination?: combinationCirclesForFaceEnum | undefined = combinationCirclesForFaceEnum.allWithAll;
     /**
      * When true, the belt faces are fused into one shape; when false they come back as a compound,
      * which is faster.
      * @default true
      */
-    unify = true;
+    unify?: boolean | undefined = true;
     /**
      * How close a line must come to a circle to count as touching it, in model units.
      * @default 1e-7
@@ -158,7 +158,7 @@ export class FaceFromMultipleCircleTanWireCollectionsDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
 }
 /**
  * Two wires and a bounce count for `shapes.wire.createZigZagBetweenTwoWires`, which draws a
@@ -191,25 +191,25 @@ export class ZigZagBetweenTwoWiresDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nrZigZags = 20;
+    nrZigZags?: number | undefined = 20;
     /**
      * When true, the zig-zag starts on the second wire instead of the first.
      * @default false
      */
-    inverse: boolean = false;
+    inverse?: boolean | undefined = false;
     /**
      * When true, the bounce points are spaced by length along the wires; when false they follow the
      * curves' parameters, which can be uneven.
      * @default false
      */
-    divideByEqualDistance = false;
+    divideByEqualDistance?: boolean | undefined = false;
 
     /**
      * When true, each edge of the wires gets `nrZigZags` bounces and the wires need matching edge
      * counts; when false the count covers the whole wire.
      * @default true
      */
-    zigZagsPerEdge = true;
+    zigZagsPerEdge?: boolean | undefined = true;
 }
 /**
  * Wires or edges and wire options for
@@ -335,7 +335,7 @@ export class InterpolationDto {
      * When true, the curve closes into a loop that is smooth across the seam.
      * @default false
      */
-    periodic = false;
+    periodic?: boolean | undefined = false;
     /**
      * How far the curve may stray from the points, in model units.
      * @default 1e-7
@@ -343,7 +343,7 @@ export class InterpolationDto {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * How the curve is spaced between points: chord length by default, `centripetal` to resist
      * cusps and overshoot with uneven points, or `uniform`.
@@ -392,7 +392,7 @@ export class InterpolateSymmetricDto {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
 }
 /**
  * Several interpolation definitions for `shapes.wire.interpolateWires`, which builds one wire per
@@ -412,7 +412,7 @@ export class InterpolateWiresDto {
      * When true, the wires are packed into one compound instead of a list.
      * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }
 /**
  * Control points and shape options for `shapes.wire.createBezier`, a smooth curve pulled toward its
@@ -435,7 +435,7 @@ export class BezierDto {
      * When true, the first point is appended again so the ends meet, with a corner at the seam.
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
     /**
      * How many neighboring control points shape each part of the curve; leave it out for a classic
      * Bezier, capped at 25 and bounded automatically above 26 points.
@@ -481,7 +481,7 @@ export class BezierWeightsDto {
      * When true, the first point is appended again so the ends meet, with a corner at the seam.
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
     /**
      * When true, the curve closes into a loop that is smooth across the seam and needs exactly one
      * weight per point; it overrides `closed`.
@@ -521,7 +521,7 @@ export class RebuildCurveDegreeDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    degree = 3;
+    degree?: number | undefined = 3;
     /**
      * How far the rebuilt curve may stray from the old one when the degree is lowered, in model
      * units.
@@ -530,7 +530,7 @@ export class RebuildCurveDegreeDto<T> {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 1e-4;
+    tolerance?: number | undefined = 1e-4;
 }
 /**
  * A closed periodic wire or edge and a parameter for `moveWireSeamByParameter` and
@@ -551,7 +551,7 @@ export class CurveSeamByParameterDto<T> {
      * @default 0
      * @step 0.1
      */
-    parameter = 0;
+    parameter?: number | undefined = 0;
 }
 /**
  * A closed periodic wire or edge and a distance for `moveWireSeamByLength` and
@@ -572,7 +572,7 @@ export class CurveSeamByLengthDto<T> {
      * @default 0
      * @step 0.1
      */
-    length = 0;
+    length?: number | undefined = 0;
 }
 /**
  * A face, target degrees and a tolerance for `shapes.face.rebuildFaceDegree`.
@@ -598,7 +598,7 @@ export class RebuildFaceDegreeDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    uDegree = 3;
+    uDegree?: number | undefined = 3;
     /**
      * The degree to rebuild to in V, with the same rules as `uDegree`.
      * @default 3
@@ -606,7 +606,7 @@ export class RebuildFaceDegreeDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    vDegree = 3;
+    vDegree?: number | undefined = 3;
     /**
      * How far the rebuilt surface may stray from the old one when a degree is lowered, in model
      * units.
@@ -615,13 +615,13 @@ export class RebuildFaceDegreeDto<T> {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 1e-4;
+    tolerance?: number | undefined = 1e-4;
     /**
      * When true, the face keeps its boundary wires, which is reliable when raising; when false it
      * covers the whole rebuilt surface.
      * @default false
      */
-    keepTrim = false;
+    keepTrim?: boolean | undefined = false;
 }
 /**
  * A face and which flips to apply for `shapes.face.flipFaceUV`.
@@ -642,17 +642,17 @@ export class FlipFaceUVDto<T> {
      * When true, U and V change places.
      * @default false
      */
-    swapUV = false;
+    swapUV?: boolean | undefined = false;
     /**
      * When true, U runs the other way.
      * @default false
      */
-    reverseU = false;
+    reverseU?: boolean | undefined = false;
     /**
      * When true, V runs the other way.
      * @default false
      */
-    reverseV = false;
+    reverseV?: boolean | undefined = false;
 }
 /**
  * A face and fitting options for `shapes.face.normalizeFaceParametrization`, which makes equal
@@ -675,12 +675,12 @@ export class NormalizeFaceParametrizationDto<T> {
      * When true, the U parameter is evened out by distance.
      * @default true
      */
-    normalizeU = true;
+    normalizeU?: boolean | undefined = true;
     /**
      * When true, the V parameter is evened out by distance.
      * @default true
      */
-    normalizeV = true;
+    normalizeV?: boolean | undefined = true;
     /**
      * How many points per direction the surface is resampled at; more is closer to the original and
      * slower.
@@ -689,7 +689,7 @@ export class NormalizeFaceParametrizationDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    samples = 24;
+    samples?: number | undefined = 24;
     /**
      * How far the refitted surface may stray from the original, in model units.
      * @default 0.0001
@@ -697,7 +697,7 @@ export class NormalizeFaceParametrizationDto<T> {
      * @maximum Infinity
      * @step 0.0001
      */
-    tolerance = 1e-4;
+    tolerance?: number | undefined = 1e-4;
 }
 /**
  * Several Bezier definitions for `shapes.wire.createBezierWires`, which builds one wire per
@@ -717,5 +717,5 @@ export class BezierWiresDto {
      * When true, the wires are packed into one compound instead of a list.
      * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }

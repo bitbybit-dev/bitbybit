@@ -1,6 +1,8 @@
 import { OccHelper } from "../occ-helper";
 import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Rounding and beveling the edges of OpenCascade shapes: a fillet replaces a sharp edge with a
@@ -37,7 +39,8 @@ export class OCCTFillets {
      * ```
      */
     filletEdges(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.filletsService.filletEdges(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilletDto, inputs) as Resolved.OCCT.FilletDto<TopoDS_Shape>;
+        return this.och.filletsService.filletEdges(resolved);
     }
 
     /**
@@ -76,7 +79,8 @@ export class OCCTFillets {
      * ```
      */
     filletEdgesListOneRadius(inputs: Inputs.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape {
-        return this.och.filletsService.filletEdgesListOneRadius(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilletEdgesListOneRadiusDto, inputs) as Resolved.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>;
+        return this.och.filletsService.filletEdgesListOneRadius(resolved);
     }
 
     /**
@@ -163,7 +167,8 @@ export class OCCTFillets {
      * ```
      */
     fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.filletsService.fillet3DWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Fillet3DWireDto, inputs) as Resolved.OCCT.Fillet3DWireDto<TopoDS_Wire>;
+        return this.och.filletsService.fillet3DWire(resolved);
     }
 
     /**
@@ -180,12 +185,13 @@ export class OCCTFillets {
      * ```
      */
     fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>): TopoDS_Shape[] {
-        return inputs.shapes.map(shape => this.och.filletsService.fillet3DWire({
+        const resolved = resolveDto(Inputs.OCCT.Fillet3DWiresDto, inputs) as Resolved.OCCT.Fillet3DWiresDto<TopoDS_Wire>;
+        return resolved.shapes.map(shape => this.och.filletsService.fillet3DWire({
             shape,
-            radius: inputs.radius,
-            radiusList: inputs.radiusList,
-            indexes: inputs.indexes,
-            direction: inputs.direction
+            radius: resolved.radius,
+            radiusList: resolved.radiusList,
+            indexes: resolved.indexes,
+            direction: resolved.direction
         }));
     }
 
@@ -207,7 +213,8 @@ export class OCCTFillets {
      * ```
      */
     chamferEdges(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdges(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChamferDto, inputs) as Resolved.OCCT.ChamferDto<TopoDS_Shape>;
+        return this.och.filletsService.chamferEdges(resolved);
     }
 
     /**
@@ -248,7 +255,8 @@ export class OCCTFillets {
      * ```
      */
     chamferEdgeTwoDistances(inputs: Inputs.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgeTwoDistances(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChamferEdgeTwoDistancesDto, inputs) as Resolved.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>;
+        return this.och.filletsService.chamferEdgeTwoDistances(resolved);
     }
 
     /**
@@ -267,7 +275,8 @@ export class OCCTFillets {
      * ```
      */
     chamferEdgesTwoDistances(inputs: Inputs.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgesTwoDistances(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChamferEdgesTwoDistancesDto, inputs) as Resolved.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>;
+        return this.och.filletsService.chamferEdgesTwoDistances(resolved);
     }
 
     /**
@@ -313,7 +322,8 @@ export class OCCTFillets {
      * ```
      */
     chamferEdgeDistAngle(inputs: Inputs.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgeDistAngle(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChamferEdgeDistAngleDto, inputs) as Resolved.OCCT.ChamferEdgeDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>;
+        return this.och.filletsService.chamferEdgeDistAngle(resolved);
     }
 
     /**
@@ -332,7 +342,8 @@ export class OCCTFillets {
      * ```
      */
     chamferEdgesDistAngle(inputs: Inputs.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape {
-        return this.och.filletsService.chamferEdgesDistAngle(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChamferEdgesDistAngleDto, inputs) as Resolved.OCCT.ChamferEdgesDistAngleDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>;
+        return this.och.filletsService.chamferEdgesDistAngle(resolved);
     }
 
     /**
@@ -380,7 +391,8 @@ export class OCCTFillets {
      * ```
      */
     fillet2d(inputs: Inputs.OCCT.FilletDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
-        return this.och.filletsService.fillet2d(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilletDto, inputs) as Resolved.OCCT.FilletDto<TopoDS_Wire | TopoDS_Face>;
+        return this.och.filletsService.fillet2d(resolved);
     }
 
     /**
@@ -397,11 +409,12 @@ export class OCCTFillets {
      * ```
      */
     fillet2dShapes(inputs: Inputs.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face[] | TopoDS_Wire[] {
-        return inputs.shapes.map(shape => this.och.filletsService.fillet2d({
+        const resolved = resolveDto(Inputs.OCCT.FilletShapesDto, inputs) as Resolved.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>;
+        return resolved.shapes.map(shape => this.och.filletsService.fillet2d({
             shape,
-            radius: inputs.radius,
-            radiusList: inputs.radiusList,
-            indexes: inputs.indexes
+            radius: resolved.radius,
+            radiusList: resolved.radiusList,
+            indexes: resolved.indexes
         }));
     }
 
@@ -429,18 +442,15 @@ export class OCCTFillets {
      * ```
      */
     filletTwoEdgesInPlaneIntoAWire(inputs: Inputs.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>): TopoDS_Wire {
-        const pln = this.och.entitiesService.gpPln(inputs.planeOrigin, inputs.planeDirection);
-        const fil = new this.occ.ChFi2d_FilletAlgo(inputs.edge1, inputs.edge2, pln);
-        fil.Perform(inputs.radius);
-        const pt = this.och.entitiesService.gpPnt(inputs.planeOrigin);
+        const resolved = resolveDto(Inputs.OCCT.FilletTwoEdgesInPlaneDto, inputs) as Resolved.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>;
+        const pln = this.och.entitiesService.gpPln(resolved.planeOrigin, resolved.planeDirection);
+        const fil = new this.occ.ChFi2d_FilletAlgo(resolved.edge1, resolved.edge2, pln);
+        fil.Perform(resolved.radius);
+        const pt = this.och.entitiesService.gpPnt(resolved.planeOrigin);
         const edge1 = new this.occ.TopoDS_Edge();
         const edge2 = new this.occ.TopoDS_Edge();
 
-        let solution = -1;
-        if (inputs.solution !== undefined) {
-            solution = inputs.solution;
-        }
-        const filletedEdge = fil.Result(pt, edge1, edge2, solution);
+        const filletedEdge = fil.Result(pt, edge1, edge2, resolved.solution);
 
         const result = this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, filletedEdge, edge2] });
         fil.delete();
@@ -469,7 +479,8 @@ export class OCCTFillets {
      * ```
      */
     chamfer2dVertices(inputs: Inputs.OCCT.Chamfer2dVertexDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire {
-        return this.och.filletsService.chamfer2dVertices(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Chamfer2dVertexDto, inputs) as Resolved.OCCT.Chamfer2dVertexDto<TopoDS_Wire | TopoDS_Face>;
+        return this.och.filletsService.chamfer2dVertices(resolved);
     }
 
 }

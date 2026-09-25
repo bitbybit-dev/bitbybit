@@ -467,7 +467,7 @@ export namespace JSCAD {
          * Name of the downloaded file without the extension, which is added
          * @default jscad-geometry
          */
-        fileName = "jscad-geometry";
+        fileName?: string | undefined = "jscad-geometry";
         /**
          * Options handed to the DXF or 3MF writer as they are; leave it out for the defaults
          * @default undefined
@@ -514,7 +514,7 @@ export namespace JSCAD {
          * Hex color string the geometry is always drawn in, ahead of the drawing options
          * @default #0000ff
          */
-        color = "#0000ff";
+        color?: string | undefined = "#0000ff";
     }
     /**
      * Feeds `booleans.union`, `booleans.intersect` and `booleans.subtract` with any number of inputs;
@@ -612,13 +612,13 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        delta = 0.1;
+        delta?: number | undefined = 0.1;
         /**
          * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
          * it; a solid accepts `round` only
          * @default edge
          */
-        corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
+        corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.edge;
         /**
          * Number of straight pieces a `round` corner is made of over a full circle; more makes it
          * smoother
@@ -627,7 +627,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
@@ -653,7 +653,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How far the top is turned relative to the bottom around Z, in degrees; 0 gives a straight
          * extrusion
@@ -662,7 +662,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        twistAngle = 90;
+        twistAngle?: number | undefined = 90;
         /**
          * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
          * heavier mesh
@@ -671,7 +671,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        twistSteps = 15;
+        twistSteps?: number | undefined = 15;
     }
 
     /**
@@ -724,7 +724,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How far the wall reaches to each side of the outline, in model units, so the wall is twice
          * this thick
@@ -733,7 +733,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
@@ -757,7 +757,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How far the wall reaches to each side of the line, in model units, so the wall is twice this
          * thick
@@ -766,7 +766,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
@@ -792,7 +792,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * Where the revolution starts, in degrees from the X axis
          * @default 0
@@ -800,7 +800,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle = 0;
+        startAngle?: number | undefined = 0;
         /**
          * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
          * throws an error
@@ -809,7 +809,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `polygon.createFromPolyline` with the polyline whose points become the outline of a filled
@@ -883,7 +883,7 @@ export namespace JSCAD {
          * When true, the last point joins back to the first and the path accepts no more points
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
     }
     /**
      * Feeds `path.createPathsFromPoints` with several point lists, one 2D path each; a list ending on
@@ -919,7 +919,7 @@ export namespace JSCAD {
          * When true, the last point joins back to the first and the path accepts no more points
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
     }
     /**
      * Feeds `path.appendPoints`: an open 2D path and the points to add after its last point.
@@ -986,7 +986,7 @@ export namespace JSCAD {
          * Where the arc ends, as a 2D point in the XY plane
          * @default [1, 1]
          */
-        endPoint: Base.Point2 = [1, 1];
+        endPoint?: Base.Point2 | undefined = [1, 1];
         /**
          * Tilt of the ellipse the arc is cut from, in degrees from the X axis; it changes nothing for a
          * circle
@@ -995,18 +995,18 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        xAxisRotation = 90;
+        xAxisRotation?: number | undefined = 90;
         /**
          * When true, the arc turns clockwise from the start to the end point; false turns
          * counter-clockwise
          * @default true
          */
-        clockwise = true;
+        clockwise?: boolean | undefined = true;
         /**
          * When true, the longer of the two arcs between the points is taken, more than half the ellipse
          * @default false
          */
-        large = false;
+        large?: boolean | undefined = false;
         /**
          * Number of straight pieces for a full ellipse; the arc gets its proportional share
          * @default 24
@@ -1014,7 +1014,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
         /**
          * Half width of the ellipse along its own X axis, in model units; scaled up when too small to
          * reach the end point
@@ -1023,7 +1023,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusX = 1;
+        radiusX?: number | undefined = 1;
         /**
          * Half height of the ellipse along its own Y axis, in model units; equal to `radiusX` for a
          * circular arc
@@ -1032,7 +1032,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusY = 1;
+        radiusY?: number | undefined = 1;
     }
     /**
      * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the
@@ -1048,7 +1048,7 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * Distance from the center to the rim, in model units
          * @default 1
@@ -1056,7 +1056,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of straight sides around the circle; more makes it rounder
          * @default 24
@@ -1064,7 +1064,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `polygon.ellipse`: a filled ellipse in the XY plane, given by its 2D center, its two
@@ -1080,12 +1080,12 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * The half width along X and the half height along Y, in model units, as `[x, y]`
          * @default [1, 2]
          */
-        radius: Base.Point2 = [1, 2];
+        radius?: Base.Point2 | undefined = [1, 2];
         /**
          * Number of straight sides around the ellipse; more makes it rounder
          * @default 24
@@ -1093,7 +1093,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `polygon.square`: a filled square in the XY plane with sides parallel to the axes, given by
@@ -1108,7 +1108,7 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * Length of each side, in model units
          * @default 1
@@ -1116,7 +1116,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
 
     }
     /**
@@ -1133,7 +1133,7 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * Full size along X, in model units
          * @default 1
@@ -1141,7 +1141,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Y, in model units
          * @default 1
@@ -1149,7 +1149,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
     }
     /**
      * Feeds `polygon.roundedRectangle`: a filled rectangle in the XY plane whose four corners are
@@ -1168,7 +1168,7 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * Radius of each rounded corner, in model units; it must be less than half of the smaller side
          * or an error is thrown
@@ -1177,7 +1177,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 0.2;
+        roundRadius?: number | undefined = 0.2;
         /**
          * Number of straight pieces a full circle of rounding is made of, so each corner gets a
          * quarter; more makes it smoother
@@ -1186,7 +1186,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
         /**
          * Full size along X, in model units
          * @default 1
@@ -1194,7 +1194,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Y, in model units
          * @default 1
@@ -1202,7 +1202,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
     }
     /**
      * Feeds `polygon.star`: a filled star in the XY plane, given by its 2D center, how many tips it
@@ -1221,7 +1221,7 @@ export namespace JSCAD {
          * The 2D center point, as X and Y in the plane
          * @default [0, 0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * Number of tips; the star has as many notches between them
          * @default 10
@@ -1229,7 +1229,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        vertices = 10;
+        vertices?: number | undefined = 10;
         /**
          * Read only when `innerRadius` is 0: how many tips apart the edges connect, 2 for a pentagram,
          * from which the notch radius is derived
@@ -1238,7 +1238,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        density = 1;
+        density?: number | undefined = 1;
         /**
          * Distance from the center to each tip, in model units
          * @default 2
@@ -1246,7 +1246,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius = 2;
+        outerRadius?: number | undefined = 2;
         /**
          * Distance from the center to each notch, in model units; 0 lets `density` decide it
          * @default 1
@@ -1254,7 +1254,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius = 1;
+        innerRadius?: number | undefined = 1;
         /**
          * Direction of the first tip, in degrees counter-clockwise from the X axis
          * @default 0
@@ -1262,7 +1262,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle = 0;
+        startAngle?: number | undefined = 0;
     }
     /**
      * Feeds `shapes.cube`: a cube with faces parallel to the axes, given by its center point and edge
@@ -1277,7 +1277,7 @@ export namespace JSCAD {
          * The point the cube is centered on, so half the edge length lies on each side of it
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Length of every edge, in model units
          * @default 1
@@ -1285,7 +1285,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * Feeds `shapes.cubesOnCenterPoints`: one cube of the same edge length on every center point,
@@ -1308,7 +1308,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
@@ -1325,7 +1325,7 @@ export namespace JSCAD {
          * The point the box is centered on, so half of each size lies on each side of it
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Full size along X, in model units
          * @default 1
@@ -1333,7 +1333,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Z, in model units
          * @default 1
@@ -1341,7 +1341,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
         /**
          * Full size along Y, in model units
          * @default 1
@@ -1349,7 +1349,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
     }
     /**
      * Feeds `shapes.cuboidsOnCenterPoints`: one box of the same sizes on every center point, coming
@@ -1374,7 +1374,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size of every box along Z, in model units
          * @default 1
@@ -1382,7 +1382,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
         /**
          * Full size of every box along Y, in model units
          * @default 1
@@ -1390,7 +1390,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
     }
     /**
      * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
@@ -1409,7 +1409,7 @@ export namespace JSCAD {
          * The point the box is centered on, so half of each size lies on each side of it
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Radius of the rounding on every edge, in model units; it must be less than half of the
          * smallest side or an error is thrown
@@ -1418,7 +1418,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 0.1;
+        roundRadius?: number | undefined = 0.1;
         /**
          * Full size along X, in model units, rounding included
          * @default 1
@@ -1426,7 +1426,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size along Z, in model units, rounding included
          * @default 1
@@ -1434,7 +1434,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
         /**
          * Full size along Y, in model units, rounding included
          * @default 1
@@ -1442,7 +1442,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
          * @default 24
@@ -1450,7 +1450,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.roundedCuboidsOnCenterPoints`: one rounded box of the same sizes and rounding on
@@ -1478,7 +1478,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 0.1;
+        roundRadius?: number | undefined = 0.1;
         /**
          * Full size of every box along X, in model units, rounding included
          * @default 1
@@ -1486,7 +1486,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * Full size of every box along Z, in model units, rounding included
          * @default 1
@@ -1494,7 +1494,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
         /**
          * Full size of every box along Y, in model units, rounding included
          * @default 1
@@ -1502,7 +1502,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
          * @default 24
@@ -1510,7 +1510,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.cylinderElliptic`: a cylinder standing along Z with an elliptical cross-section
@@ -1528,7 +1528,7 @@ export namespace JSCAD {
          * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Full length along Z, in model units
          * @default 1
@@ -1536,17 +1536,17 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * The X and Y radii of the bottom end, in model units, as `[x, y]`
          * @default [1, 2]
          */
-        startRadius: Base.Vector2 = [1, 2];
+        startRadius?: Base.Vector2 | undefined = [1, 2];
         /**
          * The X and Y radii of the top end, in model units, as `[x, y]`; `[0, 0]` closes it to a point
          * @default [2, 3]
          */
-        endRadius: Base.Vector2 = [2, 3];
+        endRadius?: Base.Vector2 | undefined = [2, 3];
         /**
          * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
@@ -1554,7 +1554,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.cylinderEllipticOnCenterPoints`: one elliptic cylinder of the same size on every
@@ -1580,18 +1580,18 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * The X and Y radii of every bottom end, in model units, as `[x, y]`
          * @default [1, 2]
          */
-        startRadius: Base.Point2 = [1, 2];
+        startRadius?: Base.Point2 | undefined = [1, 2];
         /**
          * The X and Y radii of every top end, in model units, as `[x, y]`; `[0, 0]` closes them to a
          * point
          * @default [2, 3]
          */
-        endRadius: Base.Point2 = [2, 3];
+        endRadius?: Base.Point2 | undefined = [2, 3];
         /**
          * Number of flat sides around each cylinder; more makes them rounder
          * @default 24
@@ -1599,7 +1599,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
@@ -1616,7 +1616,7 @@ export namespace JSCAD {
          * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Full length along Z, in model units
          * @default 1
@@ -1624,7 +1624,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Distance from the axis to the side, in model units
          * @default 1
@@ -1632,7 +1632,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
@@ -1640,7 +1640,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.roundedCylinder`: a cylinder standing along Z whose two rims are rounded, given by
@@ -1659,7 +1659,7 @@ export namespace JSCAD {
          * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Radius of the rounding on both rims, in model units; the height must be more than twice it or
          * an error is thrown
@@ -1668,7 +1668,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 0.1;
+        roundRadius?: number | undefined = 0.1;
         /**
          * Full length along Z, in model units, rounding included
          * @default 1
@@ -1676,7 +1676,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Distance from the axis to the side, in model units
          * @default 1
@@ -1684,7 +1684,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother
          * @default 24
@@ -1692,7 +1692,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
@@ -1708,12 +1708,12 @@ export namespace JSCAD {
          * The point the ellipsoid is centered on
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere
          * @default [1, 2, 3]
          */
-        radius: Base.Point3 = [1, 2, 3];
+        radius?: Base.Point3 | undefined = [1, 2, 3];
         /**
          * Number of facets around the ellipsoid; more makes it smoother
          * @default 24
@@ -1721,7 +1721,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.ellipsoidsOnCenterPoints`: one ellipsoid of the same radii on every center point,
@@ -1742,7 +1742,7 @@ export namespace JSCAD {
          * The half sizes of every ellipsoid along X, Y and Z, in model units, as `[x, y, z]`
          * @default [1, 2, 3]
          */
-        radius: Base.Point3 = [1, 2, 3];
+        radius?: Base.Point3 | undefined = [1, 2, 3];
         /**
          * Number of facets around each ellipsoid; more makes them smoother
          * @default 24
@@ -1750,7 +1750,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
@@ -1766,7 +1766,7 @@ export namespace JSCAD {
          * The point the sphere is centered on
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Distance from the center to the surface, in model units
          * @default 1
@@ -1774,7 +1774,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
          * least 6, and higher is rounder
@@ -1783,7 +1783,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        frequency = 12;
+        frequency?: number | undefined = 12;
     }
     /**
      * Feeds `shapes.geodesicSpheresOnCenterPoints`: one geodesic sphere of the same radius on every
@@ -1807,7 +1807,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
          * least 6, and higher is rounder
@@ -1816,7 +1816,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        frequency = 12;
+        frequency?: number | undefined = 12;
     }
     /**
      * Feeds `shapes.cylindersOnCenterPoints`: one round cylinder of the same size standing along Z on
@@ -1841,7 +1841,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Distance from the axis to the side of every cylinder, in model units
          * @default 1
@@ -1849,7 +1849,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of flat sides around each cylinder; more makes them rounder
          * @default 24
@@ -1857,7 +1857,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.roundedCylindersOnCenterPoints`: one rounded cylinder of the same size on every
@@ -1884,7 +1884,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        roundRadius = 0.1;
+        roundRadius?: number | undefined = 0.1;
         /**
          * Full length of every cylinder along Z, in model units, rounding included
          * @default 1
@@ -1892,7 +1892,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Distance from the axis to the side of every cylinder, in model units
          * @default 1
@@ -1900,7 +1900,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of flat sides around each cylinder and pieces in the rounding; more makes them
          * smoother
@@ -1909,7 +1909,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
@@ -1925,7 +1925,7 @@ export namespace JSCAD {
          * The point the sphere is centered on
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Distance from the center to the surface, in model units
          * @default 1
@@ -1933,7 +1933,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of facets around the sphere; more makes it rounder
          * @default 24
@@ -1941,7 +1941,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.spheresOnCenterPoints`: one sphere of the same radius on every center point, coming
@@ -1965,7 +1965,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * Number of facets around each sphere; more makes them rounder
          * @default 24
@@ -1973,7 +1973,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around
@@ -1995,7 +1995,7 @@ export namespace JSCAD {
          * The point the ring is centered on, in model units
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Radius of the tube itself, in model units; it must be less than `outerRadius`
          * @default 1
@@ -2003,7 +2003,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius = 1;
+        innerRadius?: number | undefined = 1;
         /**
          * Distance from the ring's center to the middle of the tube, in model units, so the ring spans
          * twice the sum of both radii
@@ -2012,7 +2012,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius = 2;
+        outerRadius?: number | undefined = 2;
         /**
          * Number of flat pieces around the tube's cross-section; more makes the tube rounder
          * @default 24
@@ -2020,7 +2020,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        innerSegments = 24;
+        innerSegments?: number | undefined = 24;
         /**
          * Number of flat pieces around the ring; more makes the ring rounder
          * @default 24
@@ -2028,7 +2028,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        outerSegments = 24;
+        outerSegments?: number | undefined = 24;
         /**
          * Turn of the tube's cross-section about its own center, in degrees; it shows when
          * `innerSegments` is low enough for the facets to be visible
@@ -2037,7 +2037,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        innerRotation = 0;
+        innerRotation?: number | undefined = 0;
         /**
          * How far the tube is swept around the ring, in degrees; 360 closes the ring and less leaves it
          * open
@@ -2046,7 +2046,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        outerRotation = 360;
+        outerRotation?: number | undefined = 360;
         /**
          * Where the sweep around the ring starts, in degrees from the X axis
          * @default 0
@@ -2054,7 +2054,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        startAngle = 0;
+        startAngle?: number | undefined = 0;
     }
     /**
      * Feeds `text.createVectorText` with the text and the font options: where the text starts, how tall
@@ -2078,7 +2078,7 @@ export namespace JSCAD {
          * becomes a question mark
          * @default Hello World
          */
-        text = "Hello World";
+        text?: string | undefined = "Hello World";
         /**
          * Number of straight pieces used for curved strokes; more makes letters rounder
          * @default 24
@@ -2086,7 +2086,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
         /**
          * Where the text starts along X, in model units
          * @default 0
@@ -2094,7 +2094,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset = 0;
+        xOffset?: number | undefined = 0;
         /**
          * Where the baseline of the first line sits along Y, in model units
          * @default 0
@@ -2102,7 +2102,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset = 0;
+        yOffset?: number | undefined = 0;
         /**
          * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
@@ -2110,7 +2110,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
          * percent gap
@@ -2119,7 +2119,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing = 1.4;
+        lineSpacing?: number | undefined = 1.4;
         /**
          * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
          * letters twice as far apart
@@ -2128,12 +2128,12 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing = 1;
+        letterSpacing?: number | undefined = 1;
         /**
          * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
-        align = jscadTextAlignEnum.center;
+        align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
         /**
          * Thickness the strokes will get later, in model units; the outlines are pulled in by half of
          * it so letters keep their size once thick
@@ -2142,7 +2142,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset = 0;
+        extrudeOffset?: number | undefined = 0;
     }
     /**
      * Feeds `text.cylindricalText`: the text and font options of `TextDto` plus the size of the
@@ -2167,7 +2167,7 @@ export namespace JSCAD {
          * becomes a question mark
          * @default Hello World
          */
-        text = "Hello World";
+        text?: string | undefined = "Hello World";
         /**
          * Length of the cylinders along Z, in model units; the strokes sit on the XY plane with half of
          * it on each side
@@ -2176,7 +2176,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionHeight = 0.5;
+        extrusionHeight?: number | undefined = 0.5;
         /**
          * Radius of the cylinders, in model units, which is half the thickness of the strokes
          * @default 0.1
@@ -2184,7 +2184,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionSize = 0.1;
+        extrusionSize?: number | undefined = 0.1;
         /**
          * Number of flat sides around each cylinder and pieces in curved strokes; more makes the
          * letters rounder
@@ -2193,7 +2193,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
         /**
          * Where the text starts along X before it is centered, in model units
          * @default 0
@@ -2201,7 +2201,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset = 0;
+        xOffset?: number | undefined = 0;
         /**
          * Where the baseline of the first line sits along Y, in model units
          * @default 0
@@ -2209,7 +2209,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset = 0;
+        yOffset?: number | undefined = 0;
         /**
          * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
@@ -2217,7 +2217,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
          * percent gap
@@ -2226,7 +2226,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing = 1.4;
+        lineSpacing?: number | undefined = 1.4;
         /**
          * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
          * letters twice as far apart
@@ -2235,12 +2235,12 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing = 1;
+        letterSpacing?: number | undefined = 1;
         /**
          * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
-        align = jscadTextAlignEnum.center;
+        align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
         /**
          * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
          * intended letter size
@@ -2249,7 +2249,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset = 0;
+        extrudeOffset?: number | undefined = 0;
     }
     /**
      * Feeds `text.sphericalText`: the text and font options of `TextDto` plus the size of the spheres
@@ -2273,7 +2273,7 @@ export namespace JSCAD {
          * becomes a question mark
          * @default Hello World
          */
-        text = "Hello World";
+        text?: string | undefined = "Hello World";
         /**
          * Radius of the spheres, in model units, which is half the thickness of the strokes
          * @default 0.1
@@ -2281,7 +2281,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * Number of facets around each sphere and pieces in curved strokes; more makes the letters
          * rounder
@@ -2290,7 +2290,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 1
          */
-        segments = 24;
+        segments?: number | undefined = 24;
         /**
          * Where the text starts along X before it is centered, in model units
          * @default 0
@@ -2298,7 +2298,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        xOffset = 0;
+        xOffset?: number | undefined = 0;
         /**
          * Where the baseline of the first line sits along Y, in model units
          * @default 0
@@ -2306,7 +2306,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        yOffset = 0;
+        yOffset?: number | undefined = 0;
         /**
          * Height of a capital letter, in model units; the whole text scales with it
          * @default 1
@@ -2314,7 +2314,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
          * percent gap
@@ -2323,7 +2323,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        lineSpacing = 1.4;
+        lineSpacing?: number | undefined = 1.4;
         /**
          * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
          * letters twice as far apart
@@ -2332,12 +2332,12 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        letterSpacing = 1;
+        letterSpacing?: number | undefined = 1;
         /**
          * How the lines of a multi-line text line up: to the left, the center or the right
          * @default center
          */
-        align = jscadTextAlignEnum.center;
+        align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
         /**
          * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
          * intended letter size
@@ -2346,7 +2346,7 @@ export namespace JSCAD {
          * @maximum Infinity
          * @step 0.1
          */
-        extrudeOffset = 0;
+        extrudeOffset?: number | undefined = 0;
     }
     /**
      * Feeds `shapes.fromPolygonPoints` with the faces of a solid, each as the list of points around it,

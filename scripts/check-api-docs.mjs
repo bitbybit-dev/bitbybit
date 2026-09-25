@@ -350,7 +350,10 @@ function checkOptionalAgreement(item) {
  * inferred type prints differently under different compiler flags, and because under
  * exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight on.
  * A defaulted property spelled without `?` is still required in an object literal; that spelling is
- * ratcheted down rather than forbidden.
+ * ratcheted down rather than forbidden. It is counted only on a class some method takes - as a
+ * parameter, or held by one it takes - because a class that is only ever returned carries its
+ * initializers as placeholders, and a result's fields are always there. A constant tag
+ * (`type = "arc" as const`) is not a default either.
  */
 function checkSpelling(item) {
     if (!item.declaration) return;
@@ -361,7 +364,8 @@ function checkSpelling(item) {
     if (!item.initializer && !item.optional && !item.definite) add("required-spelling", item, "neither initialized nor optional, so it is required: spell it `name!: T;`");
     if (item.optional && !/\|\s*undefined\b/.test(item.type)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
     if (item.initializer && optionalTag) add("optional-with-default", item, "@optional true on a property with a default; a default already makes it optional");
-    if (item.initializer && !item.optional) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
+    const constantTag = item.initializer && ts.isAsExpression(item.initializer) && item.initializer.type.getText(item.sf) === "const";
+    if (item.initializer && !item.optional && !constantTag && takenClasses.has(item.className)) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
 }
 
 /** Every constructor parameter names the property it fills, spelled the same; a typo or a stray parameter is a public signature nobody can call by name. */
@@ -507,6 +511,29 @@ for (const file of inputsFiles) {
         visit(sf);
     }
 }
+
+/** The class names some method or function takes: named in a parameter type, or held by a property of one that is. */
+const takenClasses = (() => {
+    const taken = new Set();
+    const propTypes = new Map();
+    for (const p of props) propTypes.set(p.className, [...(propTypes.get(p.className) ?? []), p.type]);
+    const libDirs = [...INPUTS_PACKAGES, "occt-worker", "jscad-worker", "manifold-worker"];
+    for (const file of libDirs.flatMap((pkg) => sourceFiles(path.join(ROOT, DEV, pkg, "lib"))).filter((f) => !f.includes("/api/inputs") && !f.includes("/resolved-inputs") && !isVerb(f))) {
+        const sf = parse(file);
+        const visit = (node) => {
+            if (ts.isParameter(node) && node.type) for (const m of node.type.getText(sf).matchAll(/\b([A-Z]\w*)\b/g)) if (propTypes.has(m[1])) taken.add(m[1]);
+            ts.forEachChild(node, visit);
+        };
+        visit(sf);
+    }
+    const queue = [...taken];
+    while (queue.length) {
+        for (const text of propTypes.get(queue.pop()) ?? []) {
+            for (const m of text.matchAll(/\b([A-Z]\w*)\b/g)) if (propTypes.has(m[1]) && !taken.has(m[1])) { taken.add(m[1]); queue.push(m[1]); }
+        }
+    }
+    return taken;
+})();
 
 for (const m of methods) m.dtoProps = m.dtoName ? dtoPropCount.get(m.dtoName) ?? 0 : 0;
 for (const m of methods) checkMethod(m);

@@ -801,13 +801,17 @@ describe("OCCT fillets unit tests", () => {
             boxFaces = occHelper.shapeGettersService.getFaces({ shape: box });
         });
 
-        it("should refuse to fillet every edge without being told a radius", () => {
+        it("should fillet every edge with the default radius when the call passes none", () => {
             // Arrange
             const inputs = new Inputs.OCCT.FilletDto<TopoDS_Shape>(box);
             Object.assign(inputs, { radius: undefined });
+            const withDefaultRadius = fillets.filletEdges({ shape: box, radius: new Inputs.OCCT.FilletDto().radius });
 
-            // Act & Assert
-            expect(() => fillets.filletEdges(inputs)).toThrow(/Radius not defined/);
+            // Act
+            const filleted = fillets.filletEdges(inputs);
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: filleted })).toBeCloseTo(solid.getSolidVolume({ shape: withDefaultRadius }));
         });
 
         it("should refuse to fillet named edges with no edges named", () => {
@@ -844,13 +848,17 @@ describe("OCCT fillets unit tests", () => {
             })).toThrow(/same length/);
         });
 
-        it("should refuse to chamfer every edge without being told a distance", () => {
+        it("should chamfer every edge with the default distance when the call passes none", () => {
             // Arrange
             const inputs = new Inputs.OCCT.ChamferDto<TopoDS_Shape>(box);
             Object.assign(inputs, { distance: undefined });
+            const withDefaultDistance = fillets.chamferEdges({ shape: box, distance: new Inputs.OCCT.ChamferDto().distance });
 
-            // Act & Assert
-            expect(() => fillets.chamferEdges(inputs)).toThrow(/Distance is undefined/);
+            // Act
+            const chamfered = fillets.chamferEdges(inputs);
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: chamfered })).toBeCloseTo(solid.getSolidVolume({ shape: withDefaultDistance }));
         });
 
         it("should refuse a distance list of a different length from the edge list", () => {

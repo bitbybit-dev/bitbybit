@@ -38,7 +38,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
         /**
          * When true, the item is deep-copied so the caller cannot change the list through it; an
          * item that cannot be copied, such as one with circular references, throws.
@@ -68,7 +68,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        indexStart = 0;
+        indexStart?: number | undefined = 0;
         /**
          * Position just after the last item to take; it is not included.
          * @default 1
@@ -76,7 +76,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        indexEnd = 1;
+        indexEnd?: number | undefined = 1;
         /**
          * When true, the items are deep-copied so the caller cannot change the list through them;
          * an item that cannot be copied throws.
@@ -131,7 +131,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        lengthLimit = 100;
+        lengthLimit?: number | undefined = 100;
     }
     /**
      * A list and a direction for `lists.sortNumber` and `lists.sortTexts`.
@@ -158,7 +158,7 @@ export namespace Lists {
          * reversed.
          * @default true
          */
-        orderAsc = true;
+        orderAsc?: boolean | undefined = true;
     }
     /**
      * Objects, the property to compare and a direction for `lists.sortByPropValue`.
@@ -184,12 +184,12 @@ export namespace Lists {
          * When true, the object with the smallest value comes first; when false the largest.
          * @default true
          */
-        orderAsc = true;
+        orderAsc?: boolean | undefined = true;
         /**
          * Name of the property whose numeric value decides the order.
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
     }
     /**
      * A list for `lists.removeAllItems`, which empties it in place.
@@ -225,13 +225,13 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        nrElements = 2;
+        nrElements?: number | undefined = 2;
         /**
          * When true, the items left over at the end form a shorter last group; when false they are
          * dropped.
          * @default false
          */
-        keepRemainder = false;
+        keepRemainder?: boolean | undefined = false;
     }
     /**
      * An item and a count for `lists.repeat`.
@@ -253,7 +253,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        times: number = 10;
+        times?: number | undefined = 10;
     }
     /**
      * A list, an item and a position for `lists.addItemAtIndex`.
@@ -283,7 +283,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * item is inserted in place.
@@ -316,7 +316,7 @@ export namespace Lists {
          * list are ignored.
          * @default [0]
          */
-        indexes: number[] = [0];
+        indexes?: number[] | undefined = [0];
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * items are inserted in place.
@@ -350,7 +350,7 @@ export namespace Lists {
          * insertion; a wrong count or order throws.
          * @default [0]
          */
-        indexes: number[] = [0];
+        indexes?: number[] | undefined = [0];
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * items are inserted in place.
@@ -380,7 +380,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * item is removed in place.
@@ -437,7 +437,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        nth = 2;
+        nth?: number | undefined = 2;
         /**
          * Position of the first item to remove, counting from 0.
          * @default 0
@@ -445,7 +445,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        offset = 0;
+        offset?: number | undefined = 0;
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * items are removed in place.
@@ -475,7 +475,7 @@ export namespace Lists {
          * @maximum 1
          * @step 0.1
          */
-        threshold = 0.5;
+        threshold?: number | undefined = 0.5;
         /**
          * When true, the list is deep-copied first so the input is never changed.
          * @default true
@@ -524,7 +524,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * When true, the list is deep-copied first so the input is never changed.
          * @default true
@@ -549,7 +549,7 @@ export namespace Lists {
          * the list ends.
          * @default [true, true, false]
          */
-        pattern: boolean[] = [true, true, false];
+        pattern?: boolean[] | undefined = [true, true, false];
     }
     /**
      * A list, a step and an offset for `lists.getNthItem`.
@@ -573,7 +573,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        nth = 2;
+        nth?: number | undefined = 2;
         /**
          * Position of the first item to keep, counting from 0.
          * @default 0
@@ -581,7 +581,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        offset = 0;
+        offset?: number | undefined = 0;
         /**
          * When true, the items are deep-copied so the caller cannot change the list through them.
          * @default true
@@ -622,7 +622,7 @@ export namespace Lists {
          * @maximum Infinity
          * @step 1
          */
-        level = 0;
+        level?: number | undefined = 0;
     }
     /**
      * A list and an item for `lists.addItem` and `lists.prependItem`.
@@ -674,7 +674,7 @@ export namespace Lists {
          * Whether the item goes at the start (`first`) or the end (`last`).
          * @default last
          */
-        position: firstLastEnum = firstLastEnum.last;
+        position?: firstLastEnum | undefined = firstLastEnum.last;
         /**
          * When true, the list is deep-copied first so the input is never changed; when false the
          * item is added in place.

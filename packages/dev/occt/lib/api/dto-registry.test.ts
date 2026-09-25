@@ -47,7 +47,7 @@ describe("the OCCT operation registry", () => {
         const kernel = withDefaults(service, occtDtoRegistry);
 
         // Act
-        const box = kernel.shapes.solid.createBox({ width: 4 } as Inputs.OCCT.BoxDto);
+        const box = kernel.shapes.solid.createBox({ width: 4 });
         const volume = kernel.shapes.solid.getSolidVolume({ shape: box });
 
         // Assert

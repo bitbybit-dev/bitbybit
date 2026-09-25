@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,
@@ -47,11 +49,12 @@ export class OCCTShape {
      * ```
      */
     unifySameDomain(inputs: Inputs.OCCT.UnifySameDomainDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.UnifySameDomainDto, inputs) as Resolved.OCCT.UnifySameDomainDto<TopoDS_Shape>;
         return this.occ.ShapeUpgrade_UnifySameDomain_Perform(
-            inputs.shape, 
-            inputs.unifyEdges, 
-            inputs.unifyFaces, 
-            inputs.concatBSplines
+            resolved.shape, 
+            resolved.unifyEdges, 
+            resolved.unifyFaces, 
+            resolved.concatBSplines
         );
     }
 

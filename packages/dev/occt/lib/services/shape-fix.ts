@@ -1,6 +1,8 @@
 import { OccHelper } from "../occ-helper";
 import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Repairs for OpenCascade shapes that came out of a file or an operation with small defects: gaps
@@ -35,11 +37,12 @@ export class OCCTShapeFix {
      * ```
      */
     basicShapeRepair(inputs: Inputs.OCCT.BasicShapeRepairDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.BasicShapeRepairDto, inputs) as Resolved.OCCT.BasicShapeRepairDto<TopoDS_Shape>;
         const shapeFix = new this.occ.ShapeFix_Shape();
-        shapeFix.Init(inputs.shape);
-        shapeFix.SetPrecision(inputs.precision);
-        shapeFix.SetMaxTolerance(inputs.maxTolerance);
-        shapeFix.SetMinTolerance(inputs.minTolerance);
+        shapeFix.Init(resolved.shape);
+        shapeFix.SetPrecision(resolved.precision);
+        shapeFix.SetMaxTolerance(resolved.maxTolerance);
+        shapeFix.SetMinTolerance(resolved.minTolerance);
         shapeFix.Perform();
         const result = shapeFix.Shape();
         shapeFix.delete();
@@ -63,9 +66,10 @@ export class OCCTShapeFix {
      * ```
      */
     fixSmallEdgeOnWire(inputs: Inputs.OCCT.FixSmallEdgesInWireDto<TopoDS_Wire>): TopoDS_Wire {
+        const resolved = resolveDto(Inputs.OCCT.FixSmallEdgesInWireDto, inputs) as Resolved.OCCT.FixSmallEdgesInWireDto<TopoDS_Wire>;
         const wireFix = new this.occ.ShapeFix_Wire();
-        wireFix.Load(inputs.shape);
-        wireFix.FixSmall(inputs.lockvtx, inputs.precsmall);
+        wireFix.Load(resolved.shape);
+        wireFix.FixSmall(resolved.lockvtx, resolved.precsmall);
         wireFix.Perform();
         const result = wireFix.Wire();
         return result;

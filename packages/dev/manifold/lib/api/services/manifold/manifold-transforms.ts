@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Moving, turning, scaling, mirroring and warping Manifold solids. The kernel combines transforms
@@ -24,7 +26,8 @@ export class ManifoldTransforms {
      * ```
      */
     scale3D(inputs: Inputs.Manifold.Scale3DDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.scale(inputs.vector);
+        const resolved = resolveDto(Inputs.Manifold.Scale3DDto, inputs) as Resolved.Manifold.Scale3DDto<Manifold3D.Manifold>;
+        return resolved.manifold.scale(resolved.vector);
     }
 
     /**
@@ -41,7 +44,8 @@ export class ManifoldTransforms {
      * ```
      */
     scale(inputs: Inputs.Manifold.Scale3DDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.scale(inputs.vector);
+        const resolved = resolveDto(Inputs.Manifold.Scale3DDto, inputs) as Resolved.Manifold.Scale3DDto<Manifold3D.Manifold>;
+        return resolved.manifold.scale(resolved.vector);
     }
 
     /**
@@ -59,7 +63,8 @@ export class ManifoldTransforms {
      * ```
      */
     mirror(inputs: Inputs.Manifold.MirrorDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.mirror(inputs.normal);
+        const resolved = resolveDto(Inputs.Manifold.MirrorDto, inputs) as Resolved.Manifold.MirrorDto<Manifold3D.Manifold>;
+        return resolved.manifold.mirror(resolved.normal);
     }
 
     /**
@@ -109,7 +114,8 @@ export class ManifoldTransforms {
      * ```
      */
     translateXYZ(inputs: Inputs.Manifold.TranslateXYZDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.translate(inputs.x, inputs.y, inputs.z);
+        const resolved = resolveDto(Inputs.Manifold.TranslateXYZDto, inputs) as Resolved.Manifold.TranslateXYZDto<Manifold3D.Manifold>;
+        return resolved.manifold.translate(resolved.x, resolved.y, resolved.z);
     }
 
     /**
@@ -145,7 +151,8 @@ export class ManifoldTransforms {
      * ```
      */
     rotateXYZ(inputs: Inputs.Manifold.RotateXYZDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.rotate(inputs.x, inputs.y, inputs.z);
+        const resolved = resolveDto(Inputs.Manifold.RotateXYZDto, inputs) as Resolved.Manifold.RotateXYZDto<Manifold3D.Manifold>;
+        return resolved.manifold.rotate(resolved.x, resolved.y, resolved.z);
     }
 
     /**

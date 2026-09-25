@@ -185,7 +185,7 @@ export class PointDto {
      * The position of the vertex, in model units.
      * @default [0, 0, 0]
      */
-    point: Base.Point3 = [0, 0, 0];
+    point?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * Three coordinates for `shapes.vertex.vertexFromXYZ`, which turns them into a vertex shape.
@@ -203,7 +203,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    x: number = 0;
+    x?: number | undefined = 0;
     /**
      * The Y coordinate, in model units; Y is up.
      * @default 0
@@ -211,7 +211,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    y: number = 0;
+    y?: number | undefined = 0;
     /**
      * The Z coordinate, in model units.
      * @default 0
@@ -219,7 +219,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    z: number = 0;
+    z?: number | undefined = 0;
 }
 /**
  * A list of points for the methods that build shapes from them, such as
@@ -265,18 +265,18 @@ export class ConstraintTanLinesFromPtToCircleDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: those on one side of the circle, the other side, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Whether to add the piece of the circle between the touching points on one side or the other;
      * `none` adds nothing.
      * @default none
      */
-    circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+    circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
 }
 /**
  * A circle, two points and the filtering options for
@@ -314,18 +314,18 @@ export class ConstraintTanLinesFromTwoPtsToCircleDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: those on one side of the circle, the other side, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Whether to add the piece of the circle between the touching points on one side or the other;
      * `none` adds nothing.
      * @default none
      */
-    circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+    circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
 }
 /**
  * Two circles and the filtering options for `shapes.edge.constraintTanLinesOnTwoCircles` and
@@ -356,18 +356,18 @@ export class ConstraintTanLinesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: the outer pair, the crossing inner pair, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Which pieces of the circles between the touching points to add: the outside arcs, the inside
      * arcs, one of each, or `none`.
      * @default none
      */
-    circleRemainders: twoCircleInclusionEnum = twoCircleInclusionEnum.none;
+    circleRemainders?: twoCircleInclusionEnum | undefined = twoCircleInclusionEnum.none;
 }
 
 /**
@@ -398,7 +398,7 @@ export class ConstraintTanCirclesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * The radius of the circles to draw, in model units.
      * @default 0.3
@@ -406,7 +406,7 @@ export class ConstraintTanCirclesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
 }
 /**
  * A circle, a point and a radius for `shapes.edge.constraintTanCirclesOnCircleAndPnt`, which draws
@@ -436,7 +436,7 @@ export class ConstraintTanCirclesOnCircleAndPntDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * The radius of the circles to draw, in model units.
      * @default 0.3
@@ -444,7 +444,7 @@ export class ConstraintTanCirclesOnCircleAndPntDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
 }
 /**
  * A 2D curve and a surface for `shapes.edge.makeEdgeFromGeom2dCurveAndSurface`, which lays the
@@ -494,12 +494,12 @@ export class FilletTwoEdgesInPlaneDto<T> {
      * it.
      * @default [0, 0, 0]
      */
-    planeOrigin: Base.Point3 = [0, 0, 0];
+    planeOrigin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the edges lie in.
      * @default [0, 1, 0]
      */
-    planeDirection: Base.Vector3 = [0, 1, 0];
+    planeDirection?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The radius of the rounding arc, in model units.
      * @default 0.3
@@ -507,7 +507,7 @@ export class FilletTwoEdgesInPlaneDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
     /**
      * Which arc to use when several fit, counted from 0; -1 takes the one nearest `planeOrigin`.
      * @default -1
@@ -686,7 +686,7 @@ export class FaceFromSurfaceAndWireDto<T, U> {
      * own direction decides.
      * @default true
      */
-    inside = true;
+    inside?: boolean | undefined = true;
 }
 /**
  * A flat wire and a face for `shapes.wire.placeWireOnFace`, which maps the wire onto the face's

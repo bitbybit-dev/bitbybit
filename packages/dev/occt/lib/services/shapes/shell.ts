@@ -2,6 +2,8 @@ import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Shells in OpenCascade: sets of faces joined along their edges. A shell that closes on itself with
@@ -60,7 +62,8 @@ export class OCCTShell {
      * ```
      */
     sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
-        return this.och.shellsService.sewFaces(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SewDto, inputs) as Resolved.OCCT.SewDto<TopoDS_Face>;
+        return this.och.shellsService.sewFaces(resolved);
     }
 
     /**

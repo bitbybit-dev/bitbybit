@@ -1,4 +1,4 @@
-import { GeometryHelper, Lists, Point, Transforms, Vector } from "@bitbybit-dev/base";
+import { GeometryHelper, Lists, Point, Transforms, Vector, resolveDto } from "@bitbybit-dev/base";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
 import { JSCADExpansions } from "./services/jscad-expansions";
@@ -13,6 +13,7 @@ import { Base } from "./inputs/base-inputs";
 import { JSCADHulls } from "./services/jscad-hulls";
 import { JSCADColors } from "./services/jscad-colors";
 import * as JSCAD from "@jscad/modeling";
+import * as Resolved from "./resolved-inputs";
 
 
 /**
@@ -312,9 +313,10 @@ export class Jscad {
      * ```
      */
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
-        const options = inputs.options ? inputs.options : {};
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const options = resolved.options ? resolved.options : {};
         const rawData = (this.jscad as any).DXFSERIALIZER.serialize(options,
-            inputs.geometry
+            resolved.geometry
         );
         const madeBlob = new Blob(rawData);
         return { blob: madeBlob };
@@ -335,9 +337,10 @@ export class Jscad {
      * ```
      */
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
-        const options = inputs.options ? inputs.options : {};
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const options = resolved.options ? resolved.options : {};
         const rawData = (this.jscad as any).THREEMFSERIALIZER.serialize(options,
-            inputs.geometry
+            resolved.geometry
         );
         const madeBlob = new Blob(rawData);
         return { blob: madeBlob };

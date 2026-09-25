@@ -5,6 +5,8 @@ import { PathBuilder } from "../svg/path-builder";
 import { SvgFaceBuilder, SvgFaceRule } from "../svg/svg-face-builder";
 import { normalizeSvg } from "../svg/svg-normalizer";
 import { SvgElement, SvgStyle, SvgSubpath } from "../svg/svg-models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 type PlacedShape = {
     shape: TopoDS_Shape;
@@ -97,7 +99,7 @@ export class OCCTSVG {
      * primitives), then its combined bounding box is anchored according to `alignment` and finally
      * oriented to `direction` and moved to `center`.
      */
-    private placeAll(shapes: TopoDS_Shape[], inputs: Inputs.OCCT.LoadSVGDto): TopoDS_Shape[] {
+    private placeAll(shapes: TopoDS_Shape[], inputs: Resolved.OCCT.LoadSVGDto): TopoDS_Shape[] {
         if (shapes.length === 0) { return []; }
         const grounded = shapes.map((shape) => this.och.transformsService.rotate({ shape, angle: 90, axis: [1, 0, 0] }));
 
@@ -120,7 +122,7 @@ export class OCCTSVG {
     }
 
     /** Parse, build and place every drawable SVG element; shared by both public entry points. */
-    private buildAndPlace(inputs: Inputs.OCCT.LoadSVGDto): BuiltScene {
+    private buildAndPlace(inputs: Resolved.OCCT.LoadSVGDto): BuiltScene {
         const scene = normalizeSvg(inputs.svg);
         const warnings = [...scene.warnings];
 
@@ -133,7 +135,7 @@ export class OCCTSVG {
             subpaths: el.subpaths.map((sp) => this.toPathSubpath(sp)),
             makeFaces: false,
         }));
-        const placement: Inputs.OCCT.PathPlacementDto = { scale: inputs.scale, flipY: inputs.flipY, origin: [0, 0, 0] };
+        const placement: Resolved.OCCT.PathPlacementDto = { scale: inputs.scale, flipY: inputs.flipY, origin: [0, 0, 0] };
         const built = this.builder.buildGroups(groups, placement, {
             joinSegments: inputs.joinSegments,
             tolerance: inputs.tolerance,
@@ -205,7 +207,8 @@ export class OCCTSVG {
      * ```
      */
     loadSVG(inputs: Inputs.OCCT.LoadSVGDto): TopoDS_Compound {
-        const { placed } = this.buildAndPlace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LoadSVGDto, inputs) as Resolved.OCCT.LoadSVGDto;
+        const { placed } = this.buildAndPlace(resolved);
         const shapes = placed.map((p) => p.shape);
         const compound = this.och.converterService.makeCompound({ shapes });
         shapes.forEach((shape) => shape.delete());
@@ -233,7 +236,8 @@ export class OCCTSVG {
      * ```
      */
     loadSVGStructured(inputs: Inputs.OCCT.LoadSVGDto): Inputs.OCCT.SVGResult<TopoDS_Shape> {
-        const { placed, warnings, viewBox } = this.buildAndPlace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LoadSVGDto, inputs) as Resolved.OCCT.LoadSVGDto;
+        const { placed, warnings, viewBox } = this.buildAndPlace(resolved);
         const shapes = placed.map((p) => ({
             ...p.meta,
             shape: p.shape,

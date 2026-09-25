@@ -2,6 +2,8 @@ import * as Inputs from "../inputs";
 import * as Models from "../models";
 import { defaultsVectorParams } from "../models/simplex";
 import { Point } from "./point";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 type Line = { width: number, height: number, chars: Models.Text.VectorCharData[] };
 
@@ -26,7 +28,8 @@ export class TextBitByBit {
      * @drawable false
      */
     create(inputs: Inputs.Text.TextDto): string {
-        return inputs.text;
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text;
     }
 
     /**
@@ -44,7 +47,8 @@ export class TextBitByBit {
      * ```
      */
     split(inputs: Inputs.Text.TextSplitDto): string[] {
-        return inputs.text.split(inputs.separator);
+        const resolved = resolveDto(Inputs.Text.TextSplitDto, inputs) as Resolved.Text.TextSplitDto;
+        return resolved.text.split(resolved.separator);
     }
 
     /**
@@ -62,7 +66,8 @@ export class TextBitByBit {
      * ```
      */
     replaceAll(inputs: Inputs.Text.TextReplaceDto): string {
-        return inputs.text.split(inputs.search).join(inputs.replaceWith);
+        const resolved = resolveDto(Inputs.Text.TextReplaceDto, inputs) as Resolved.Text.TextReplaceDto;
+        return resolved.text.split(resolved.search).join(resolved.replaceWith);
     }
 
     /**
@@ -80,7 +85,8 @@ export class TextBitByBit {
      * ```
      */
     join(inputs: Inputs.Text.TextJoinDto): string {
-        return inputs.list.join(inputs.separator);
+        const resolved = resolveDto(Inputs.Text.TextJoinDto, inputs) as Resolved.Text.TextJoinDto;
+        return resolved.list.join(resolved.separator);
     }
 
     /**
@@ -128,8 +134,9 @@ export class TextBitByBit {
      * ```
      */
     format(inputs: Inputs.Text.TextFormatDto): string {
-        return inputs.text.replace(/{(\d+)}/g, (match, number) => {
-            return typeof inputs.values[number] !== "undefined" ? inputs.values[number] : match;
+        const resolved = resolveDto(Inputs.Text.TextFormatDto, inputs) as Resolved.Text.TextFormatDto;
+        return resolved.text.replace(/{(\d+)}/g, (match, number) => {
+            return typeof resolved.values[number] !== "undefined" ? resolved.values[number] : match;
         });
     }
 
@@ -148,7 +155,8 @@ export class TextBitByBit {
      * ```
      */
     includes(inputs: Inputs.Text.TextSearchDto): boolean {
-        return inputs.text.includes(inputs.search);
+        const resolved = resolveDto(Inputs.Text.TextSearchDto, inputs) as Resolved.Text.TextSearchDto;
+        return resolved.text.includes(resolved.search);
     }
 
     /**
@@ -166,7 +174,8 @@ export class TextBitByBit {
      * ```
      */
     startsWith(inputs: Inputs.Text.TextSearchDto): boolean {
-        return inputs.text.startsWith(inputs.search);
+        const resolved = resolveDto(Inputs.Text.TextSearchDto, inputs) as Resolved.Text.TextSearchDto;
+        return resolved.text.startsWith(resolved.search);
     }
 
     /**
@@ -184,7 +193,8 @@ export class TextBitByBit {
      * ```
      */
     endsWith(inputs: Inputs.Text.TextSearchDto): boolean {
-        return inputs.text.endsWith(inputs.search);
+        const resolved = resolveDto(Inputs.Text.TextSearchDto, inputs) as Resolved.Text.TextSearchDto;
+        return resolved.text.endsWith(resolved.search);
     }
 
     /**
@@ -203,7 +213,8 @@ export class TextBitByBit {
      * ```
      */
     indexOf(inputs: Inputs.Text.TextSearchDto): number {
-        return inputs.text.indexOf(inputs.search);
+        const resolved = resolveDto(Inputs.Text.TextSearchDto, inputs) as Resolved.Text.TextSearchDto;
+        return resolved.text.indexOf(resolved.search);
     }
 
     /**
@@ -222,7 +233,8 @@ export class TextBitByBit {
      * ```
      */
     lastIndexOf(inputs: Inputs.Text.TextSearchDto): number {
-        return inputs.text.lastIndexOf(inputs.search);
+        const resolved = resolveDto(Inputs.Text.TextSearchDto, inputs) as Resolved.Text.TextSearchDto;
+        return resolved.text.lastIndexOf(resolved.search);
     }
 
     /**
@@ -241,7 +253,8 @@ export class TextBitByBit {
      * ```
      */
     substring(inputs: Inputs.Text.TextSubstringDto): string {
-        return inputs.text.substring(inputs.start, inputs.end);
+        const resolved = resolveDto(Inputs.Text.TextSubstringDto, inputs) as Resolved.Text.TextSubstringDto;
+        return resolved.text.substring(resolved.start, resolved.end);
     }
 
     /**
@@ -260,7 +273,8 @@ export class TextBitByBit {
      * ```
      */
     slice(inputs: Inputs.Text.TextSubstringDto): string {
-        return inputs.text.slice(inputs.start, inputs.end);
+        const resolved = resolveDto(Inputs.Text.TextSubstringDto, inputs) as Resolved.Text.TextSubstringDto;
+        return resolved.text.slice(resolved.start, resolved.end);
     }
 
     /**
@@ -278,7 +292,8 @@ export class TextBitByBit {
      * ```
      */
     charAt(inputs: Inputs.Text.TextIndexDto): string {
-        return inputs.text.charAt(inputs.index);
+        const resolved = resolveDto(Inputs.Text.TextIndexDto, inputs) as Resolved.Text.TextIndexDto;
+        return resolved.text.charAt(resolved.index);
     }
 
     /**
@@ -292,7 +307,8 @@ export class TextBitByBit {
      * @drawable false
      */
     trim(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.trim();
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.trim();
     }
 
     /**
@@ -306,7 +322,8 @@ export class TextBitByBit {
      * @drawable false
      */
     trimStart(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.trimStart();
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.trimStart();
     }
 
     /**
@@ -320,7 +337,8 @@ export class TextBitByBit {
      * @drawable false
      */
     trimEnd(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.trimEnd();
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.trimEnd();
     }
 
     /**
@@ -339,7 +357,8 @@ export class TextBitByBit {
      * ```
      */
     padStart(inputs: Inputs.Text.TextPadDto): string {
-        return inputs.text.padStart(inputs.length, inputs.padString);
+        const resolved = resolveDto(Inputs.Text.TextPadDto, inputs) as Resolved.Text.TextPadDto;
+        return resolved.text.padStart(resolved.length, resolved.padString);
     }
 
     /**
@@ -358,7 +377,8 @@ export class TextBitByBit {
      * ```
      */
     padEnd(inputs: Inputs.Text.TextPadDto): string {
-        return inputs.text.padEnd(inputs.length, inputs.padString);
+        const resolved = resolveDto(Inputs.Text.TextPadDto, inputs) as Resolved.Text.TextPadDto;
+        return resolved.text.padEnd(resolved.length, resolved.padString);
     }
 
     /**
@@ -372,7 +392,8 @@ export class TextBitByBit {
      * @drawable false
      */
     toUpperCase(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.toUpperCase();
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.toUpperCase();
     }
 
     /**
@@ -386,7 +407,8 @@ export class TextBitByBit {
      * @drawable false
      */
     toLowerCase(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.toLowerCase();
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.toLowerCase();
     }
 
     /**
@@ -400,8 +422,9 @@ export class TextBitByBit {
      * @drawable false
      */
     toUpperCaseFirst(inputs: Inputs.Text.TextDto): string {
-        if (!inputs.text) return inputs.text;
-        return inputs.text.charAt(0).toUpperCase() + inputs.text.slice(1);
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        if (!resolved.text) return resolved.text;
+        return resolved.text.charAt(0).toUpperCase() + resolved.text.slice(1);
     }
 
     /**
@@ -415,8 +438,9 @@ export class TextBitByBit {
      * @drawable false
      */
     toLowerCaseFirst(inputs: Inputs.Text.TextDto): string {
-        if (!inputs.text) return inputs.text;
-        return inputs.text.charAt(0).toLowerCase() + inputs.text.slice(1);
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        if (!resolved.text) return resolved.text;
+        return resolved.text.charAt(0).toLowerCase() + resolved.text.slice(1);
     }
 
     /**
@@ -434,7 +458,8 @@ export class TextBitByBit {
      * ```
      */
     repeat(inputs: Inputs.Text.TextRepeatDto): string {
-        return inputs.text.repeat(inputs.count);
+        const resolved = resolveDto(Inputs.Text.TextRepeatDto, inputs) as Resolved.Text.TextRepeatDto;
+        return resolved.text.repeat(resolved.count);
     }
 
     /**
@@ -448,7 +473,8 @@ export class TextBitByBit {
      * @drawable false
      */
     reverse(inputs: Inputs.Text.TextDto): string {
-        return inputs.text.split("").reverse().join("");
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.split("").reverse().join("");
     }
 
     /**
@@ -462,7 +488,8 @@ export class TextBitByBit {
      * @drawable false
      */
     length(inputs: Inputs.Text.TextDto): number {
-        return inputs.text.length;
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return resolved.text.length;
     }
 
     /**
@@ -476,7 +503,8 @@ export class TextBitByBit {
      * @drawable false
      */
     isEmpty(inputs: Inputs.Text.TextDto): boolean {
-        return !inputs.text || inputs.text.trim().length === 0;
+        const resolved = resolveDto(Inputs.Text.TextDto, inputs) as Resolved.Text.TextDto;
+        return !resolved.text || resolved.text.trim().length === 0;
     }
 
     /**
@@ -494,7 +522,8 @@ export class TextBitByBit {
      * ```
      */
     concat(inputs: Inputs.Text.TextConcatDto): string {
-        return inputs.texts.join("");
+        const resolved = resolveDto(Inputs.Text.TextConcatDto, inputs) as Resolved.Text.TextConcatDto;
+        return resolved.texts.join("");
     }
 
     /**
@@ -512,8 +541,9 @@ export class TextBitByBit {
      * ```
      */
     regexTest(inputs: Inputs.Text.TextRegexDto): boolean {
-        const regex = new RegExp(inputs.pattern, inputs.flags);
-        return regex.test(inputs.text);
+        const resolved = resolveDto(Inputs.Text.TextRegexDto, inputs) as Resolved.Text.TextRegexDto;
+        const regex = new RegExp(resolved.pattern, resolved.flags);
+        return regex.test(resolved.text);
     }
 
     /**
@@ -533,8 +563,9 @@ export class TextBitByBit {
      * ```
      */
     regexMatch(inputs: Inputs.Text.TextRegexDto): string[] | null {
-        const regex = new RegExp(inputs.pattern, inputs.flags);
-        const result = inputs.text.match(regex);
+        const resolved = resolveDto(Inputs.Text.TextRegexDto, inputs) as Resolved.Text.TextRegexDto;
+        const regex = new RegExp(resolved.pattern, resolved.flags);
+        const result = resolved.text.match(regex);
         return result ? Array.from(result) : null;
     }
 
@@ -554,8 +585,9 @@ export class TextBitByBit {
      * ```
      */
     regexReplace(inputs: Inputs.Text.TextRegexReplaceDto): string {
-        const regex = new RegExp(inputs.pattern, inputs.flags);
-        return inputs.text.replace(regex, inputs.replaceWith);
+        const resolved = resolveDto(Inputs.Text.TextRegexReplaceDto, inputs) as Resolved.Text.TextRegexReplaceDto;
+        const regex = new RegExp(resolved.pattern, resolved.flags);
+        return resolved.text.replace(regex, resolved.replaceWith);
     }
 
     /**
@@ -574,8 +606,9 @@ export class TextBitByBit {
      * ```
      */
     regexSearch(inputs: Inputs.Text.TextRegexDto): number {
-        const regex = new RegExp(inputs.pattern, inputs.flags);
-        return inputs.text.search(regex);
+        const resolved = resolveDto(Inputs.Text.TextRegexDto, inputs) as Resolved.Text.TextRegexDto;
+        const regex = new RegExp(resolved.pattern, resolved.flags);
+        return resolved.text.search(regex);
     }
 
     /**
@@ -594,8 +627,9 @@ export class TextBitByBit {
      * ```
      */
     regexSplit(inputs: Inputs.Text.TextRegexDto): string[] {
-        const regex = new RegExp(inputs.pattern, inputs.flags);
-        return inputs.text.split(regex);
+        const resolved = resolveDto(Inputs.Text.TextRegexDto, inputs) as Resolved.Text.TextRegexDto;
+        const regex = new RegExp(resolved.pattern, resolved.flags);
+        return resolved.text.split(regex);
     }
 
     /**
@@ -616,9 +650,10 @@ export class TextBitByBit {
      * ```
      */
     vectorChar(inputs: Inputs.Text.VectorCharDto): Models.Text.VectorCharData {
+        const resolved = resolveDto(Inputs.Text.VectorCharDto, inputs) as Resolved.Text.VectorCharDto;
         const {
             xOffset, yOffset, font, input, height, extrudeOffset
-        } = this.vectorParamsChar(inputs);
+        } = this.vectorParamsChar(resolved);
         let code = input.charCodeAt(0);
         if (!code || !font[code]) {
             code = 63;
@@ -669,11 +704,12 @@ export class TextBitByBit {
      * ```
      */
     vectorText(inputs: Inputs.Text.VectorTextDto): Models.Text.VectorTextData[] {
+        const resolved = resolveDto(Inputs.Text.VectorTextDto, inputs) as Resolved.Text.VectorTextDto;
         const {
             xOffset, yOffset, height, align, extrudeOffset, lineSpacing, letterSpacing
-        } = Object.assign({}, defaultsVectorParams, inputs);
+        } = Object.assign({}, defaultsVectorParams, resolved);
 
-        const text = inputs.text;
+        const text = resolved.text;
         if (typeof text !== "string") throw new Error("text must be a string");
 
         const extraLetterSpacing = (height * letterSpacing);
@@ -726,7 +762,7 @@ export class TextBitByBit {
             }
         });
 
-        if (inputs.centerOnOrigin) {
+        if (resolved.centerOnOrigin) {
             const pointsFlat: Inputs.Base.Point3[] = [];
 
             lines.forEach((line) => {
@@ -762,7 +798,7 @@ export class TextBitByBit {
         return lines;
     }
 
-    private vectorParamsChar(inputs: Inputs.Text.VectorCharDto): typeof defaultsVectorParams {
+    private vectorParamsChar(inputs: Resolved.Text.VectorCharDto): typeof defaultsVectorParams {
         const params = Object.assign({}, defaultsVectorParams, inputs);
         params.input = inputs.char || params.char;
         return params;

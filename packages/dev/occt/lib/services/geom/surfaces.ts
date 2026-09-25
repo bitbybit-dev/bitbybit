@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Face, Geom_CylindricalSurface, Geom_Surface } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Construction surfaces of OpenCascade: the infinite mathematical surfaces that faces are cut from.
@@ -35,8 +37,9 @@ export class OCCTSurfaces {
      * ```
      */
     cylindricalSurface(inputs: Inputs.OCCT.GeomCylindricalSurfaceDto): Geom_CylindricalSurface {
-        const ax = this.och.entitiesService.gpAx3_4(inputs.center, inputs.direction);
-        const res = new this.occ.Geom_CylindricalSurface(ax, inputs.radius);
+        const resolved = resolveDto(Inputs.OCCT.GeomCylindricalSurfaceDto, inputs) as Resolved.OCCT.GeomCylindricalSurfaceDto;
+        const ax = this.och.entitiesService.gpAx3_4(resolved.center, resolved.direction);
+        const res = new this.occ.Geom_CylindricalSurface(ax, resolved.radius);
         ax.delete();
         return res;
     }

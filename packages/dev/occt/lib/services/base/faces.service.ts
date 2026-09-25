@@ -11,6 +11,8 @@ import { FilletsService } from "./fillets.service";
 import { TransformsService } from "./transforms.service";
 import { VectorHelperService } from "../../api";
 import { BaseBitByBit } from "../../base";
+import * as Resolved from "../../api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 export class FacesService {
 
@@ -33,17 +35,17 @@ export class FacesService {
         return this.fillets();
     }
 
-    createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+    createFaceFromWireOnFace(inputs: Resolved.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWireOnFace(inputs.face, inputs.wire, inputs.inside);
         return result;
     }
 
-    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
+    createFacesFromWiresOnFace(inputs: Resolved.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
         const result = this.entitiesService.bRepBuilderAPIMakeFacesFromWiresOnFace(inputs.face, inputs.wires, inputs.inside);
         return result;
     }
 
-    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
+    createFaceFromWire(inputs: Resolved.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
         let result: TopoDS_Face;
         if (this.enumService.getShapeTypeEnum(inputs.shape) !== Inputs.OCCT.shapeTypeEnum.wire) {
             throw new Error("Provided input shape is not a wire");
@@ -109,15 +111,15 @@ export class FacesService {
         return inputs.shapes.map(face => this.getFaceCenterOfMass({ shape: face }));
     }
 
-    filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
+    filterFacePoints(inputs: Resolved.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
         const face = inputs.shape;
         const points = inputs.points;
-        const tolerance = inputs.tolerance ?? 1e-4;
+        const tolerance = inputs.tolerance;
         const keepOn = inputs.keepOn !== false;
         const keepIn = inputs.keepIn !== false;
         const keepOut = inputs.keepOut === true;
         const keepUnknown = inputs.keepUnknown === true;
-        const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance ?? 0.1) : undefined;
+        const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance) : undefined;
 
         const result: Base.Point3[] = [];
 
@@ -167,21 +169,21 @@ export class FacesService {
     }
 
 
-    createSquareFace(inputs: Inputs.OCCT.SquareDto): TopoDS_Face {
+    createSquareFace(inputs: Resolved.OCCT.SquareDto): TopoDS_Face {
         const squareWire = this.wiresService.createSquareWire(inputs);
         const faceMakerFromWire = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(squareWire, true);
         squareWire.delete();
         return faceMakerFromWire;
     }
 
-    createRectangleFace(inputs: Inputs.OCCT.RectangleDto): TopoDS_Face {
+    createRectangleFace(inputs: Resolved.OCCT.RectangleDto): TopoDS_Face {
         const rectangleWire = this.wiresService.createRectangleWire(inputs);
         const faceMakerFromWire = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(rectangleWire, true);
         rectangleWire.delete();
         return faceMakerFromWire;
     }
 
-    createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
+    createFaceFromMultipleCircleTanWires(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
         const circleWires = inputs.circles;
         const faces: TopoDS_Face[] = [];
         if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
@@ -232,7 +234,7 @@ export class FacesService {
         return result;
     }
 
-    createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
+    createFaceFromMultipleCircleTanWireCollections(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
         const listsOfCircles = inputs.listsOfCircles;
 
         const faces: TopoDS_Face[] = [];
@@ -321,7 +323,7 @@ export class FacesService {
         return result;
     }
 
-    faceNormalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
+    faceNormalOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -348,25 +350,25 @@ export class FacesService {
             : { uMin: 0, uMax: 0, vMin: 0, vMax: 0 };
     }
 
-    createFaceFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
+    createFaceFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.shapes, inputs.planar);
         return result;
     }
 
-    createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+    createFaceFromWiresOnFace(inputs: Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.wires, false, inputs.face, inputs.inside);
         return result;
     }
 
-    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
+    faceFromSurface(inputs: Resolved.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
         return this.occ.MakeFaceFromSurface(inputs.shape, inputs.tolerance);
     }
 
-    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
+    faceFromSurfaceAndWire(inputs: Resolved.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
         return this.occ.MakeFaceFromSurfaceAndWire(inputs.surface, inputs.wire, inputs.inside);
     }
 
-    createFacesFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
+    createFacesFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
         const result = inputs.shapes.map(shape => {
             return this.createFaceFromWire({ shape, planar: inputs.planar });
         });
@@ -397,7 +399,7 @@ export class FacesService {
         return vMax;
     }
 
-    subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPointsControlled(inputs: Resolved.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -443,7 +445,7 @@ export class FacesService {
         return points;
     }
 
-    subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPoints(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -479,7 +481,7 @@ export class FacesService {
         return points;
     }
 
-    subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToWires(inputs: Resolved.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -519,7 +521,7 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToRectangleWires(inputs: Resolved.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -696,7 +698,7 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
+    subdivideToRectangleHoles(inputs: Resolved.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
         const wires = this.subdivideToRectangleWires({
             ...inputs,
             scalePatternU: inputs.scalePatternU ?? [0.5],
@@ -738,11 +740,12 @@ export class FacesService {
 
 
     subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        if (inputs.shape === undefined) {
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>;
+        if (resolved.shape === undefined) {
             throw new Error("Face not defined");
         }
         const shapesToDelete: TopoDS_Shape[] = [];
-        const face = inputs.shape;
+        const face = resolved.shape;
         const handle = this.occ.BRep_Tool_Surface(face);
         const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
@@ -755,8 +758,8 @@ export class FacesService {
             return [];
         }
 
-        const offsetFromBorderU = inputs.offsetFromBorderU ?? 0;
-        const offsetFromBorderV = inputs.offsetFromBorderV ?? 0;
+        const offsetFromBorderU = resolved.offsetFromBorderU;
+        const offsetFromBorderV = resolved.offsetFromBorderV;
         const gridHeightU = scaleU * (1 - offsetFromBorderU * 2);
         const gridWidthV = scaleV * (1 - offsetFromBorderV * 2);
 
@@ -771,15 +774,15 @@ export class FacesService {
         const hex = this.base.point.hexGridScaledToFit({
             width: gridWidthV,
             height: gridHeightU,
-            nrHexagonsInHeight: inputs.nrHexagonsU,
-            nrHexagonsInWidth: inputs.nrHexagonsV,
+            nrHexagonsInHeight: resolved.nrHexagonsU,
+            nrHexagonsInWidth: resolved.nrHexagonsV,
             centerGrid: false,
             pointsOnGround: true,
-            flatTop: inputs.flatU,
-            extendTop: inputs.extendUUp,
-            extendBottom: inputs.extendUBottom,
-            extendLeft: inputs.extendVBottom,
-            extendRight: inputs.extendVUp,
+            flatTop: resolved.flatU,
+            extendTop: resolved.extendUUp,
+            extendBottom: resolved.extendUBottom,
+            extendLeft: resolved.extendVBottom,
+            extendRight: resolved.extendVUp,
         });
 
         const localHexWires = hex.hexagons.map(hexPoints => {
@@ -811,8 +814,8 @@ export class FacesService {
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
 
-        const nrHexagonsU = inputs.nrHexagonsU ?? 10;
-        const nrHexagonsV = inputs.nrHexagonsV ?? 10;
+        const nrHexagonsU = resolved.nrHexagonsU;
+        const nrHexagonsV = resolved.nrHexagonsV;
         const totalHexagons = nrHexagonsU * nrHexagonsV;
         if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
             console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
@@ -824,26 +827,26 @@ export class FacesService {
                 const hexIndex = i * nrHexagonsV + j;
 
                 let scaleFromPatternU = 1;
-                if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length]!;
+                if (resolved.scalePatternU && resolved.scalePatternU.length > 0) {
+                    scaleFromPatternU = resolved.scalePatternU[currentScalePatternUIndex % resolved.scalePatternU.length]!;
                     currentScalePatternUIndex++;
                 }
 
                 let scaleFromPatternV = 1;
-                if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length]!;
+                if (resolved.scalePatternV && resolved.scalePatternV.length > 0) {
+                    scaleFromPatternV = resolved.scalePatternV[currentScalePatternVIndex % resolved.scalePatternV.length]!;
                     currentScalePatternVIndex++;
                 }
 
                 let include = true;
-                if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length]!;
+                if (resolved.inclusionPattern && resolved.inclusionPattern.length > 0) {
+                    include = resolved.inclusionPattern[currentInclusionPatternIndex % resolved.inclusionPattern.length]!;
                     currentInclusionPatternIndex++;
                 }
 
                 let filletFactor = 0;
-                if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length]!;
+                if (resolved.filletPattern && resolved.filletPattern.length > 0) {
+                    filletFactor = resolved.filletPattern[currentFilletPatternIndex % resolved.filletPattern.length]!;
                     currentFilletPatternIndex++;
                 }
 
@@ -888,7 +891,7 @@ export class FacesService {
         return finalPlacedWires;
     }
 
-    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToHexagonHoles(inputs: Resolved.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
         const wires = this.subdivideToHexagonWires({
             ...inputs,
             scalePatternU: inputs.scalePatternU ?? [0.5],
@@ -928,7 +931,7 @@ export class FacesService {
         return [newFace, ...faces];
     }
 
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
+    subdivideToNormals(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -969,7 +972,7 @@ export class FacesService {
         return points;
     }
 
-    wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
+    wireAlongParam(inputs: Resolved.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1005,7 +1008,7 @@ export class FacesService {
         return placedWire;
     }
 
-    wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
+    wiresAlongParams(inputs: Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1024,7 +1027,7 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPointsOnParam(inputs: Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1070,7 +1073,7 @@ export class FacesService {
         return points;
     }
 
-    subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+    subdivideToUVOnParam(inputs: Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1110,7 +1113,7 @@ export class FacesService {
         return uvs;
     }
 
-    subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+    subdivideToUV(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1141,7 +1144,7 @@ export class FacesService {
         return uvs;
     }
 
-    uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
+    uvOnFace(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1152,7 +1155,7 @@ export class FacesService {
         return [u, v];
     }
 
-    pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
+    pointsOnUVs(inputs: Resolved.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1171,7 +1174,7 @@ export class FacesService {
         return pts;
     }
 
-    normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
+    normalsOnUVs(inputs: Resolved.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1193,7 +1196,7 @@ export class FacesService {
         return nrmls;
     }
 
-    pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
+    pointOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1210,7 +1213,7 @@ export class FacesService {
         return pt;
     }
 
-    normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
+    normalOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
         return this.faceNormalOnUV(inputs);
     }
 

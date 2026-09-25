@@ -75,7 +75,7 @@ export class PathFromPointsDto {
      * When true, the last point joins back to the first and the path accepts no more points
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
 }
 /**
  * Feeds `path.createPathsFromPoints` with several point lists, one 2D path each; a list ending on
@@ -111,7 +111,7 @@ export class PathFromPolylineDto {
      * When true, the last point joins back to the first and the path accepts no more points
      * @default false
      */
-    closed = false;
+    closed?: boolean | undefined = false;
 }
 /**
  * Feeds `path.appendPoints`: an open 2D path and the points to add after its last point.
@@ -178,7 +178,7 @@ export class PathAppendArcDto {
      * Where the arc ends, as a 2D point in the XY plane
      * @default [1, 1]
      */
-    endPoint: Base.Point2 = [1, 1];
+    endPoint?: Base.Point2 | undefined = [1, 1];
     /**
      * Tilt of the ellipse the arc is cut from, in degrees from the X axis; it changes nothing for a
      * circle
@@ -187,18 +187,18 @@ export class PathAppendArcDto {
      * @maximum Infinity
      * @step 1
      */
-    xAxisRotation = 90;
+    xAxisRotation?: number | undefined = 90;
     /**
      * When true, the arc turns clockwise from the start to the end point; false turns
      * counter-clockwise
      * @default true
      */
-    clockwise = true;
+    clockwise?: boolean | undefined = true;
     /**
      * When true, the longer of the two arcs between the points is taken, more than half the ellipse
      * @default false
      */
-    large = false;
+    large?: boolean | undefined = false;
     /**
      * Number of straight pieces for a full ellipse; the arc gets its proportional share
      * @default 24
@@ -206,7 +206,7 @@ export class PathAppendArcDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
     /**
      * Half width of the ellipse along its own X axis, in model units; scaled up when too small to
      * reach the end point
@@ -215,7 +215,7 @@ export class PathAppendArcDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusX = 1;
+    radiusX?: number | undefined = 1;
     /**
      * Half height of the ellipse along its own Y axis, in model units; equal to `radiusX` for a
      * circular arc
@@ -224,5 +224,5 @@ export class PathAppendArcDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radiusY = 1;
+    radiusY?: number | undefined = 1;
 }

@@ -100,15 +100,15 @@ describe("OCCT enum service unit tests", () => {
         });
 
         it("should return solid for a solid shape", () => {
-            const box = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
+            const box = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [0, 0, 0] });
             const res = enumService.getShapeTypeEnum(box);
             expect(res).toEqual(Inputs.OCCT.shapeTypeEnum.solid);
             box.delete();
         });
 
         it("should return compound for a compound shape", () => {
-            const box1 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
-            const box2 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [5, 0, 0] });
+            const box1 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [0, 0, 0] });
+            const box2 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [5, 0, 0] });
             const compound = occHelper.converterService.makeCompound({ shapes: [box1, box2] });
             const res = enumService.getShapeTypeEnum(compound);
             expect(res).toEqual(Inputs.OCCT.shapeTypeEnum.compound);

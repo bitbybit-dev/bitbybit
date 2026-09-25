@@ -106,7 +106,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 1;
+        number?: number | undefined = 1;
         /**
          * The number to divide by; the remainder is smaller than it.
          * @default 2
@@ -114,7 +114,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        modulus = 2;
+        modulus?: number | undefined = 2;
     }
     /**
      * One number for the single-number methods of `math`: `sqrt`, `abs`, `sin`, `degToRad` and the
@@ -131,7 +131,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 1;
+        number?: number | undefined = 1;
     }
     /**
      * A value between 0 and 1, a target range and an easing curve for `math.ease`.
@@ -147,7 +147,7 @@ export namespace Math {
          * @maximum 1
          * @step 0.1
          */
-        x = 0.5;
+        x?: number | undefined = 0.5;
         /**
          * The value at the start of the curve.
          * @default 0
@@ -155,7 +155,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The value at the end of the curve.
          * @default 1
@@ -163,13 +163,13 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        max = 1;
+        max?: number | undefined = 1;
         /**
          * The easing curve: `easeIn` starts slowly, `easeOut` ends slowly, `easeInOut` does both,
          * in sine, quadratic, cubic and other strengths.
          * @default easeInSine
          */
-        ease: easeEnum = easeEnum.easeInSine;
+        ease?: easeEnum | undefined = easeEnum.easeInSine;
     }
     /**
      * A number and a precision for `math.roundToDecimals` and `math.roundAndRemoveTrailingZeros`.
@@ -186,7 +186,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 1.123456;
+        number?: number | undefined = 1.123456;
         /**
          * How many digits to keep after the decimal point; 0 rounds to a whole number.
          * @default 2
@@ -194,7 +194,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 1
          */
-        decimalPlaces = 2;
+        decimalPlaces?: number | undefined = 2;
     }
     /**
      * Two numbers and the arithmetic operation `math.twoNrOperation` applies to them.
@@ -212,7 +212,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        first = 1;
+        first?: number | undefined = 1;
         /**
          * The second operand: the number subtracted, divided by, or used as the exponent.
          * @default 1
@@ -220,12 +220,12 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        second = 1;
+        second?: number | undefined = 1;
         /**
          * The operation to apply to `first` and `second`, in that order
          * @default add
          */
-        operation: mathTwoNrOperatorEnum = mathTwoNrOperatorEnum.add;
+        operation?: mathTwoNrOperatorEnum | undefined = mathTwoNrOperatorEnum.add;
     }
     /**
      * Two numbers for `math.add`, `math.subtract`, `math.multiply`, `math.divide` and `math.power`.
@@ -242,7 +242,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        first = 1;
+        first?: number | undefined = 1;
         /**
          * The second operand: the number subtracted, divided by, or used as the exponent.
          * @default 2
@@ -250,7 +250,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        second = 2;
+        second?: number | undefined = 2;
     }
     /**
      * One number and the operation `math.oneNrOperation` applies to it.
@@ -267,12 +267,12 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 1;
+        number?: number | undefined = 1;
         /**
          * The operation to apply to `number`
          * @default absolute
          */
-        operation: mathOneNrOperatorEnum = mathOneNrOperatorEnum.absolute;
+        operation?: mathOneNrOperatorEnum | undefined = mathOneNrOperatorEnum.absolute;
     }
     /**
      * A number, the range it is in and the range `math.remap` maps it to.
@@ -292,7 +292,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 0.5;
+        number?: number | undefined = 0.5;
         /**
          * The low end of the range the number is in.
          * @default 0
@@ -300,7 +300,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        fromLow = 0;
+        fromLow?: number | undefined = 0;
         /**
          * The high end of the range the number is in.
          * @default 1
@@ -308,7 +308,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        fromHigh = 1;
+        fromHigh?: number | undefined = 1;
         /**
          * The low end of the range to map to; `fromLow` lands here.
          * @default 1
@@ -316,7 +316,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        toLow = 1;
+        toLow?: number | undefined = 1;
         /**
          * The high end of the range to map to; `fromHigh` lands here.
          * @default 2
@@ -324,7 +324,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        toHigh = 2;
+        toHigh?: number | undefined = 2;
     }
     /**
      * The range `math.randomNumber` picks a value from; `low` can be picked, `high` is never quite
@@ -342,7 +342,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        low = 0;
+        low?: number | undefined = 0;
         /**
          * The top of the range; values get close to it but never reach it.
          * @default 1
@@ -350,7 +350,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        high = 1;
+        high?: number | undefined = 1;
     }
 
     /**
@@ -370,7 +370,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        low = 0;
+        low?: number | undefined = 0;
         /**
          * The top of the range; values get close to it but never reach it.
          * @default 1
@@ -378,7 +378,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        high = 1;
+        high?: number | undefined = 1;
         /**
          * How many random numbers to produce.
          * @default 10
@@ -386,7 +386,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 1
          */
-        count = 10;
+        count?: number | undefined = 10;
     }
 
     /**
@@ -412,7 +412,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 1
          */
-        decimalPlaces = 2;
+        decimalPlaces?: number | undefined = 2;
     }
     /**
      * A number and the range `math.clamp` keeps it within.
@@ -430,7 +430,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 0.5;
+        number?: number | undefined = 0.5;
         /**
          * The lowest value allowed; anything below becomes this.
          * @default 0
@@ -438,7 +438,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The highest value allowed; anything above becomes this.
          * @default 1
@@ -446,7 +446,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        max = 1;
+        max?: number | undefined = 1;
     }
     /**
      * A start, an end and a fraction for `math.lerp`, which blends between them.
@@ -464,7 +464,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        start = 0;
+        start?: number | undefined = 0;
         /**
          * The value at fraction 1.
          * @default 1
@@ -472,7 +472,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        end = 1;
+        end?: number | undefined = 1;
         /**
          * How far from start to end, from 0 to 1; values outside that range extrapolate.
          * @default 0.5
@@ -480,7 +480,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.01
          */
-        t = 0.5;
+        t?: number | undefined = 0.5;
     }
     /**
      * A start, an end and a value for `math.inverseLerp`, which finds the value's fraction between
@@ -499,7 +499,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        start = 0;
+        start?: number | undefined = 0;
         /**
          * The value that counts as fraction 1.
          * @default 1
@@ -507,7 +507,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        end = 1;
+        end?: number | undefined = 1;
         /**
          * The value to locate between start and end.
          * @default 0.5
@@ -515,7 +515,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        value = 0.5;
+        value?: number | undefined = 0.5;
     }
     /**
      * A number and the range `math.wrap` cycles it into.
@@ -533,7 +533,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        number = 1.5;
+        number?: number | undefined = 1.5;
         /**
          * The start of the range, included in the result.
          * @default 0
@@ -541,7 +541,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The end of the range, not included: a number reaching it comes back in at `min`.
          * @default 1
@@ -549,7 +549,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        max = 1;
+        max?: number | undefined = 1;
     }
     /**
      * A running value and a length for `math.pingPong`, which bounces the value between 0 and the
@@ -567,7 +567,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        t = 0.5;
+        t?: number | undefined = 0.5;
         /**
          * The turning point: the result rises to it, then falls back to 0.
          * @default 1
@@ -575,7 +575,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
     }
     /**
      * A current value, a target and a step limit for `math.moveTowards`.
@@ -593,7 +593,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        current = 0;
+        current?: number | undefined = 0;
         /**
          * The value to move toward; it is never overshot.
          * @default 1
@@ -601,7 +601,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.1
          */
-        target = 1;
+        target?: number | undefined = 1;
         /**
          * The largest change allowed in one step.
          * @default 0.1
@@ -609,7 +609,7 @@ export namespace Math {
          * @maximum Infinity
          * @step 0.01
          */
-        maxDelta = 0.1;
+        maxDelta?: number | undefined = 0.1;
     }
     /**
      * An expression written as text for `math.evalArithmetic`.
@@ -623,6 +623,6 @@ export namespace Math {
          * such as `(3 + 2) / 4`.
          * @default 1+1
          */
-        expression = "1+1";
+        expression?: string | undefined = "1+1";
     }
 }

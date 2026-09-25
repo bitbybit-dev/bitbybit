@@ -64,7 +64,7 @@ export namespace Vector {
          * @minimum 0
          * @maximum Infinity
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Vectors to filter with `vector.removeConsecutiveDuplicateVectors`: only a vector that repeats
@@ -86,14 +86,14 @@ export namespace Vector {
          * of points cleanly.
          * @default false
          */
-        checkFirstAndLast = false;
+        checkFirstAndLast?: boolean | undefined = false;
         /**
          * Two vectors count as the same when every entry differs by less than this.
          * @default 1e-7
          * @minimum 0
          * @maximum Infinity
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Two vectors to compare with `vector.vectorsTheSame`, and how close their entries must be.
@@ -120,7 +120,7 @@ export namespace Vector {
          * @minimum 0
          * @maximum Infinity
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * One vector of any length for the single-vector methods of `vector`: `sum`, `min`, `max`,
@@ -176,7 +176,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        max: number = 10;
+        max?: number | undefined = 10;
     }
     /**
      * The three values `vector.vectorXYZ` puts together into `[x, y, z]`.
@@ -194,7 +194,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        x: number = 0;
+        x?: number | undefined = 0;
         /**
          * The Y value, the second entry; Y is up.
          * @default 0
@@ -202,7 +202,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        y: number = 0;
+        y?: number | undefined = 0;
         /**
          * The Z value, the third entry.
          * @default 0
@@ -210,7 +210,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        z: number = 0;
+        z?: number | undefined = 0;
     }
     /**
      * The two values `vector.vectorXY` puts together into `[x, y]`.
@@ -227,7 +227,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        x: number = 0;
+        x?: number | undefined = 0;
         /**
          * The Y value, the second entry.
          * @default 0
@@ -235,7 +235,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.5
          */
-        y: number = 0;
+        y?: number | undefined = 0;
     }
     /**
      * A start, an end and a step for `vector.span`, which lists every number from `min` to `max` in
@@ -255,7 +255,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.1
          */
-        step = 0.1;
+        step?: number | undefined = 0.1;
         /**
          * The first number of the span.
          * @default 0
@@ -263,7 +263,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The end of the span; included when a step lands on it.
          * @default 1
@@ -271,7 +271,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        max = 1;
+        max?: number | undefined = 1;
     }
     /**
      * A start, an end, a count and an easing curve for `vector.spanEaseItems`, which spaces the
@@ -291,7 +291,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        nrItems = 100;
+        nrItems?: number | undefined = 100;
         /**
          * The first number.
          * @default 0
@@ -299,7 +299,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The last number.
          * @default 1
@@ -307,19 +307,19 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        max = 1;
+        max?: number | undefined = 1;
         /**
          * The easing curve that spaces the numbers: an `easeIn` curve bunches them near `min`, an
          * `easeOut` curve near `max`, an `easeInOut` curve at both ends.
          * @default easeInSine
          */
-        ease: Math.easeEnum = Math.easeEnum.easeInSine;
+        ease?: Math.easeEnum | undefined = Math.easeEnum.easeInSine;
         /**
          * When true, the result holds the gaps between neighboring numbers instead of the numbers
          * themselves; the first entry is `min`.
          * @default false
          */
-        intervals = false;
+        intervals?: boolean | undefined = false;
     }
     /**
      * A start, an end and a count for `vector.spanLinearItems`, which spaces the numbers evenly.
@@ -337,7 +337,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        nrItems = 100;
+        nrItems?: number | undefined = 100;
         /**
          * The first number.
          * @default 0
@@ -345,7 +345,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The last number.
          * @default 1
@@ -353,7 +353,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        max = 1;
+        max?: number | undefined = 1;
     }
     /**
      * A start point, a direction and a distance for `vector.onRay`, which finds the point that far
@@ -378,7 +378,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 1
          */
-        distance: number = 1;
+        distance?: number | undefined = 1;
         /**
          * The direction to travel in, used as given; a unit vector makes `distance` a length in
          * model units.
@@ -417,7 +417,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.1
          */
-        fraction = 0.5;
+        fraction?: number | undefined = 0.5;
         /**
          * The vector the blend reaches at fraction 1.
          * @default undefined
@@ -445,7 +445,7 @@ export namespace Vector {
          * @maximum Infinity
          * @step 0.1
          */
-        scalar: number = 1;
+        scalar?: number | undefined = 1;
         /**
          * The vector to scale.
          * @default undefined

@@ -2,6 +2,8 @@ import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../..
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 export type { Handle_TDocStd_Document };
 
@@ -37,11 +39,12 @@ export class OCCTAssemblyManager {
      * ```
      */
     createPart(inputs: Inputs.OCCT.CreateAssemblyPartDto<TopoDS_Shape>): Models.OCCT.AssemblyPartDef<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.CreateAssemblyPartDto, inputs) as Resolved.OCCT.CreateAssemblyPartDto<TopoDS_Shape>;
         return {
-            id: inputs.id,
-            shape: inputs.shape,
-            name: inputs.name,
-            colorRgba: inputs.colorRgba
+            id: resolved.id,
+            shape: resolved.shape,
+            name: resolved.name,
+            colorRgba: resolved.colorRgba
         };
     }
 
@@ -63,13 +66,14 @@ export class OCCTAssemblyManager {
      * ```
      */
     createAssemblyNode(inputs: Inputs.OCCT.CreateAssemblyNodeDto): Models.OCCT.AssemblyNodeDef {
+        const resolved = resolveDto(Inputs.OCCT.CreateAssemblyNodeDto, inputs) as Resolved.OCCT.CreateAssemblyNodeDto;
         return {
-            id: inputs.id,
+            id: resolved.id,
             type: "assembly",
-            name: inputs.name,
-            parentId: inputs.parentId,
-            colorRgba: inputs.colorRgba,
-            matrix: inputs.matrix
+            name: resolved.name,
+            parentId: resolved.parentId,
+            colorRgba: resolved.colorRgba,
+            matrix: resolved.matrix
         };
     }
 
@@ -93,12 +97,13 @@ export class OCCTAssemblyManager {
      * ```
      */
     createImportedPart(inputs: Inputs.OCCT.CreateImportedPartDto): Models.OCCT.AssemblyLoadedPartDef {
+        const resolved = resolveDto(Inputs.OCCT.CreateImportedPartDto, inputs) as Resolved.OCCT.CreateImportedPartDto;
         return {
-            id: inputs.id,
-            sourceDocumentIndex: inputs.sourceDocumentIndex,
-            sourceLabel: inputs.sourceLabel,
-            name: inputs.name,
-            colorRgba: inputs.colorRgba
+            id: resolved.id,
+            sourceDocumentIndex: resolved.sourceDocumentIndex,
+            sourceLabel: resolved.sourceLabel,
+            name: resolved.name,
+            colorRgba: resolved.colorRgba
         };
     }
 
@@ -121,17 +126,18 @@ export class OCCTAssemblyManager {
      * ```
      */
     createInstanceNode(inputs: Inputs.OCCT.CreateInstanceNodeDto): Models.OCCT.AssemblyNodeDef {
+        const resolved = resolveDto(Inputs.OCCT.CreateInstanceNodeDto, inputs) as Resolved.OCCT.CreateInstanceNodeDto;
         return {
-            id: inputs.id,
+            id: resolved.id,
             type: "instance",
-            name: inputs.name,
-            parentId: inputs.parentId,
-            partId: inputs.partId,
-            translation: inputs.translation,
-            rotation: inputs.rotation,
-            scale: inputs.scale,
-            matrix: inputs.matrix,
-            colorRgba: inputs.colorRgba
+            name: resolved.name,
+            parentId: resolved.parentId,
+            partId: resolved.partId,
+            translation: resolved.translation,
+            rotation: resolved.rotation,
+            scale: resolved.scale,
+            matrix: resolved.matrix,
+            colorRgba: resolved.colorRgba
         };
     }
 
@@ -182,13 +188,14 @@ export class OCCTAssemblyManager {
      * ```
      */
     combineStructure(inputs: Inputs.OCCT.CombineAssemblyStructureDto<TopoDS_Shape>): Models.OCCT.AssemblyStructureDef<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.CombineAssemblyStructureDto, inputs) as Resolved.OCCT.CombineAssemblyStructureDto<TopoDS_Shape>;
         return {
-            parts: inputs.parts ?? [],
-            nodes: inputs.nodes ?? [],
-            removals: inputs.removals,
-            partUpdates: inputs.partUpdates,
-            clearDocument: inputs.clearDocument ?? false,
-            loadedParts: inputs.loadedParts
+            parts: resolved.parts,
+            nodes: resolved.nodes,
+            removals: resolved.removals,
+            partUpdates: resolved.partUpdates,
+            clearDocument: resolved.clearDocument,
+            loadedParts: resolved.loadedParts
         };
     }
 
@@ -335,7 +342,8 @@ export class OCCTAssemblyManager {
      * ```
      */
     setDocLabelColor(inputs: Inputs.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>): boolean {
-        return this.occ.SetDocLabelColor(inputs.document, inputs.label, inputs.r, inputs.g, inputs.b, inputs.a);
+        const resolved = resolveDto(Inputs.OCCT.SetDocLabelColorDto, inputs) as Resolved.OCCT.SetDocLabelColorDto<Handle_TDocStd_Document>;
+        return this.occ.SetDocLabelColor(resolved.document, resolved.label, resolved.r, resolved.g, resolved.b, resolved.a);
     }
 
     /**
@@ -351,7 +359,8 @@ export class OCCTAssemblyManager {
      * ```
      */
     setDocLabelName(inputs: Inputs.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>): boolean {
-        return this.occ.SetDocLabelName(inputs.document, inputs.label, inputs.name);
+        const resolved = resolveDto(Inputs.OCCT.SetDocLabelNameDto, inputs) as Resolved.OCCT.SetDocLabelNameDto<Handle_TDocStd_Document>;
+        return this.occ.SetDocLabelName(resolved.document, resolved.label, resolved.name);
     }
 
     /**
@@ -371,9 +380,10 @@ export class OCCTAssemblyManager {
      * ```
      */
     exportDocumentToStep(inputs: Inputs.OCCT.ExportDocumentToStepDto<Handle_TDocStd_Document>): Uint8Array {
-        const result = inputs.compress
-            ? this.occ.ExportDocumentToStepZ(inputs.document, inputs.fileName, inputs.author, inputs.organization)
-            : this.occ.ExportDocumentToStep(inputs.document, inputs.fileName, inputs.author, inputs.organization);
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToStepDto, inputs) as Resolved.OCCT.ExportDocumentToStepDto<Handle_TDocStd_Document>;
+        const result = resolved.compress
+            ? this.occ.ExportDocumentToStepZ(resolved.document, resolved.fileName, resolved.author, resolved.organization)
+            : this.occ.ExportDocumentToStep(resolved.document, resolved.fileName, resolved.author, resolved.organization);
         
         if (!result) {
             throw new Error("Failed to export document to STEP");
@@ -398,14 +408,15 @@ export class OCCTAssemblyManager {
      * ```
      */
     exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Handle_TDocStd_Document>): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfDto, inputs) as Resolved.OCCT.ExportDocumentToGltfDto<Handle_TDocStd_Document>;
         const result = this.occ.ExportDocumentToGltf(
-            inputs.document,
-            inputs.meshDeflection,
-            inputs.meshAngle,
-            inputs.internalVerticesMode ?? false,
-            inputs.controlSurfaceDeflection ?? false,
-            inputs.mergeFaces,
-            inputs.forceUVExport
+            resolved.document,
+            resolved.meshDeflection,
+            resolved.meshAngle,
+            resolved.internalVerticesMode,
+            resolved.controlSurfaceDeflection,
+            resolved.mergeFaces,
+            resolved.forceUVExport
         );
         
         if (!result) {
@@ -436,22 +447,23 @@ export class OCCTAssemblyManager {
      * ```
      */
     exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfWithDracoDto, inputs) as Resolved.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>;
         const result = this.occ.ExportDocumentToGltfWithDraco(
-            inputs.document,
-            inputs.meshDeflection ?? 0.1,
-            inputs.meshAngle ?? 0.5,
-            inputs.internalVerticesMode ?? false,
-            inputs.controlSurfaceDeflection ?? false,
-            inputs.mergeFaces ?? false,
-            inputs.forceUVExport ?? false,
-            inputs.useDraco ?? true,
-            inputs.dracoCompressionLevel ?? 7,
-            inputs.dracoQuantizePositionBits ?? 14,
-            inputs.dracoQuantizeNormalBits ?? 10,
-            inputs.dracoQuantizeTexcoordBits ?? 12,
-            inputs.dracoQuantizeColorBits ?? 8,
-            inputs.dracoQuantizeGenericBits ?? 12,
-            inputs.dracoUnifiedQuantization ?? false
+            resolved.document,
+            resolved.meshDeflection,
+            resolved.meshAngle,
+            resolved.internalVerticesMode,
+            resolved.controlSurfaceDeflection,
+            resolved.mergeFaces,
+            resolved.forceUVExport,
+            resolved.useDraco,
+            resolved.dracoCompressionLevel,
+            resolved.dracoQuantizePositionBits,
+            resolved.dracoQuantizeNormalBits,
+            resolved.dracoQuantizeTexcoordBits,
+            resolved.dracoQuantizeColorBits,
+            resolved.dracoQuantizeGenericBits,
+            resolved.dracoUnifiedQuantization
         );
 
         if (!result) {

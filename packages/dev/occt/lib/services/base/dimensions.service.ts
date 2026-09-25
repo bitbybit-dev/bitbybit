@@ -9,6 +9,7 @@ import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
 import { EdgesService } from "./edges.service";
 import { EntitiesService } from "./entities.service";
+import * as Resolved from "../../api/resolved-inputs";
 
 export class DimensionsService {
 
@@ -154,13 +155,13 @@ export class DimensionsService {
         return result;
     }
 
-    simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
+    simpleLinearLengthDimension(inputs: Resolved.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
         const shapesToDelete: TopoDS_Shape[] = [];
         const lineBetweenPoints = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
             end: inputs.end,
-            extensionStart: inputs.crossingSize ?? 0.2,
-            extensionEnd: inputs.crossingSize ?? 0.2,
+            extensionStart: inputs.crossingSize,
+            extensionEnd: inputs.crossingSize,
         });
         shapesToDelete.push(lineBetweenPoints);
 
@@ -180,15 +181,15 @@ export class DimensionsService {
         const startLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
             start: inputs.start,
             end: translatedStartPt,
-            extensionStart: -(inputs.offsetFromPoints ?? 0),
-            extensionEnd: inputs.crossingSize ?? 0.2,
+            extensionStart: -(inputs.offsetFromPoints),
+            extensionEnd: inputs.crossingSize,
         });
 
         const endLineToTranslatedPoint = this.wiresService.createLineWireWithExtensions({
             start: inputs.end,
             end: translatedEndPt,
-            extensionStart: -(inputs.offsetFromPoints ?? 0),
-            extensionEnd: inputs.crossingSize ?? 0.2,
+            extensionStart: -(inputs.offsetFromPoints),
+            extensionEnd: inputs.crossingSize,
         });
 
         const midPt = this.wiresService.midPointOnWire({ shape: translatedLine });
@@ -200,8 +201,8 @@ export class DimensionsService {
         const labelText = this.formatDimensionLabel(
             length,
             inputs.labelOverwrite,
-            inputs.decimalPlaces ?? 2,
-            inputs.labelSuffix ?? "(cm)",
+            inputs.decimalPlaces,
+            inputs.labelSuffix,
             inputs.removeTrailingZeros
         );
 
@@ -277,7 +278,7 @@ export class DimensionsService {
         if (!normDir) {
             throw new Error("Dimension direction must not be a zero vector");
         }
-        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset ?? 0.3 });
+        const offsetLabelVec = this.base.vector.mul({ vector: normDir, scalar: inputs.labelOffset });
 
         const addToDir = this.base.vector.add({
             first: midPt,
@@ -298,8 +299,8 @@ export class DimensionsService {
                 tipPoint: translatedStartPt,
                 direction: dirStartEnd,
                 normal: normalThreePoints,
-                size: inputs.arrowSize ?? 0.3,
-                angle: inputs.arrowAngle ?? 30,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(startArrow);
@@ -309,8 +310,8 @@ export class DimensionsService {
                 tipPoint: translatedEndPt,
                 direction: endArrowDir,
                 normal: normalThreePoints,
-                size: inputs.arrowSize ?? 0.3,
-                angle: inputs.arrowAngle ?? 30,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(endArrow);
@@ -325,7 +326,7 @@ export class DimensionsService {
         return res;
     }
 
-    simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
+    simpleAngularDimension(inputs: Resolved.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
         const shapesToDelete: TopoDS_Shape[] = [];
 
         const normDir1 = this.base.vector.normalized({ vector: inputs.direction1 });
@@ -502,8 +503,8 @@ export class DimensionsService {
                 tipPoint: arcStartPoint,
                 direction: arcStartTangent,
                 normal: normalThreePoints,
-                size: inputs.arrowSize ?? 0.3,
-                angle: inputs.arrowAngle ?? 30,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(startArrow);
@@ -517,8 +518,8 @@ export class DimensionsService {
                 tipPoint: arcEndPoint,
                 direction: reversedEndTangent,
                 normal: normalThreePoints,
-                size: inputs.arrowSize ?? 0.3,
-                angle: inputs.arrowAngle ?? 30,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(endArrow);
@@ -533,13 +534,13 @@ export class DimensionsService {
         return res;
     }
 
-    pinWithLabel(inputs: Inputs.OCCT.PinWithLabelDto): TopoDS_Compound {
-        const endPoint = inputs.endPoint ?? [0, 5, 2];
-        const direction = inputs.direction ?? [0, 0, 1];
+    pinWithLabel(inputs: Resolved.OCCT.PinWithLabelDto): TopoDS_Compound {
+        const endPoint = inputs.endPoint;
+        const direction = inputs.direction;
         const pinLine = this.wiresService.createLineWireWithExtensions({
             start: inputs.startPoint,
             end: endPoint,
-            extensionStart: -(inputs.offsetFromStart ?? 0),
+            extensionStart: -(inputs.offsetFromStart),
             extensionEnd: 0,
         });
 
@@ -560,7 +561,7 @@ export class DimensionsService {
         if (!dirNorm) {
             throw new Error("Pin direction must not be a zero vector");
         }
-        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset ?? 0.3) });
+        const offsetLabelVec = this.base.vector.mul({ vector: dirNorm, scalar: textWidth / 2 + (inputs.labelOffset) });
 
         const endPtLabelLine = this.base.point.translatePoints({
             points: [endPoint],
@@ -647,8 +648,8 @@ export class DimensionsService {
                 tipPoint: inputs.startPoint,
                 direction: pinDirection,
                 normal: normalThreePoints,
-                size: inputs.arrowSize ?? 0.3,
-                angle: inputs.arrowAngle ?? 30,
+                size: inputs.arrowSize,
+                angle: inputs.arrowAngle,
                 flipped: !inputs.arrowsFlipped
             });
             shapesToInclude.push(arrow);

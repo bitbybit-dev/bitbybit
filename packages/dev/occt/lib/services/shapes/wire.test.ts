@@ -606,7 +606,7 @@ describe("OCCT wire unit tests", () => {
 
     it("should get wire of a box at 0 index if index is undefined", async () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(3, 4, 5, [0, 0, 0]);
-        const w = wire.getWire({ shape: b, index: undefined as unknown as number });
+        const w = wire.getWire({ shape: b, index: undefined });
         const length = wire.getWireLength({ shape: w });
         expect(length).toEqual(18);
         b.delete();

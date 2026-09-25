@@ -8,6 +8,7 @@ import { EnumService } from "./enum.service";
 import { ConverterService } from "./converter.service";
 import { TransformsService } from "./transforms.service";
 import { VectorHelperService } from "../../api/vector-helper.service";
+import * as Resolved from "../../api/resolved-inputs";
 export class SolidsService {
 
     constructor(
@@ -30,7 +31,7 @@ export class SolidsService {
         return result;
     }
 
-    createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
+    createBox(inputs: Resolved.OCCT.BoxDto): TopoDS_Solid {
         let center = [...inputs.center];
         if (inputs.originOnCenter === false) {
             center = [center[0]!, center[1]! + inputs.height / 2, center[2]!];
@@ -38,7 +39,7 @@ export class SolidsService {
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, center);
     }
 
-    createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
+    createCube(inputs: Resolved.OCCT.CubeDto): TopoDS_Solid {
         let center = [...inputs.center];
         if (inputs.originOnCenter === false) {
             center = [center[0]!, center[1]! + inputs.size / 2, center[2]!];
@@ -46,22 +47,17 @@ export class SolidsService {
         return this.entitiesService.bRepPrimAPIMakeBox(inputs.size, inputs.size, inputs.size, center);
     }
 
-    createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): TopoDS_Solid {
+    createBoxFromCorner(inputs: Resolved.OCCT.BoxFromCornerDto): TopoDS_Solid {
         const box = this.entitiesService.bRepPrimAPIMakeBox(inputs.width, inputs.length, inputs.height, inputs.corner);
         const cornerBox = this.transformsService.translate({ shape: box, translation: [inputs.width / 2, inputs.height / 2, inputs.length / 2] });
         box.delete();
         return cornerBox;
     }
 
-    createCylinder(inputs: Inputs.OCCT.CylinderDto): TopoDS_Solid {
+    createCylinder(inputs: Resolved.OCCT.CylinderDto): TopoDS_Solid {
         const dir = inputs.direction ? inputs.direction : [0., 1., 0.];
         let result;
-        let angle;
-        if (inputs.angle === undefined) {
-            angle = Math.PI * 2;
-        } else {
-            angle = this.vectorHelperService.degToRad(inputs.angle);
-        }
+        const angle = this.vectorHelperService.degToRad(inputs.angle);
         const cyl = this.entitiesService.bRepPrimAPIMakeCylinder(
             inputs.center,
             dir as Base.Vector3,
@@ -81,7 +77,7 @@ export class SolidsService {
         return result;
     }
 
-    createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
+    createCylindersOnLines(inputs: Resolved.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
         const cylinders = inputs.lines.map(line => {
             return this.entitiesService.bRepPrimAPIMakeCylinderBetweenPoints(
                 line.start,
@@ -92,13 +88,13 @@ export class SolidsService {
         return cylinders;
     }
 
-    createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
+    createSphere(inputs: Resolved.OCCT.SphereDto): TopoDS_Solid {
         return this.entitiesService.bRepPrimAPIMakeSphere(inputs.center, [0., 0., 1.], inputs.radius);
     }
 
-    createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
+    createCone(inputs: Resolved.OCCT.ConeDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const angle = inputs.angle === undefined ? Math.PI * 2 : this.vectorHelperService.degToRad(inputs.angle);
+        const angle = this.vectorHelperService.degToRad(inputs.angle);
         const makeCone = new this.occ.BRepPrimAPI_MakeCone(ax, inputs.radius1, inputs.radius2, inputs.height, angle);
         const coneShape = makeCone.Shape();
         makeCone.delete();
@@ -106,11 +102,9 @@ export class SolidsService {
         return coneShape;
     }
 
-    createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
+    createTorus(inputs: Resolved.OCCT.TorusDto): TopoDS_Solid {
         const ax = this.entitiesService.gpAx2(inputs.center, inputs.direction);
-        const angle = inputs.angle === undefined || inputs.angle === null
-            ? 2 * Math.PI
-            : this.vectorHelperService.degToRad(inputs.angle);
+        const angle = this.vectorHelperService.degToRad(inputs.angle);
         let makeTorus;
         if (angle >= 2 * Math.PI - 1e-7) {
             makeTorus = new this.occ.BRepPrimAPI_MakeTorus(ax, inputs.majorRadius, inputs.minorRadius);
@@ -123,7 +117,7 @@ export class SolidsService {
         return torusShape;
     }
 
-    filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
+    filterSolidPoints(inputs: Resolved.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
         const points: Base.Point3[] = [];
         if (inputs.points.length > 0) {
             inputs.points.forEach(pt => {

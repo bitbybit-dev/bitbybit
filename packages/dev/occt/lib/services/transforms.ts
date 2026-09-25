@@ -2,6 +2,8 @@ import { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbyb
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { Base } from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Moving, turning, scaling and mirroring OpenCascade shapes, and building the 4x4 matrices that
@@ -43,9 +45,10 @@ export class OCCTTransforms {
      * ```
      */
     transform(inputs: Inputs.OCCT.TransformDto<TopoDS_Shape>): TopoDS_Shape {
-        const scaledShape = this.scale({ shape: inputs.shape, factor: inputs.scaleFactor });
-        const rotatedShape = this.rotate({ shape: scaledShape, axis: inputs.rotationAxis, angle: inputs.rotationAngle });
-        const translatedShape = this.translate({ shape: rotatedShape, translation: inputs.translation });
+        const resolved = resolveDto(Inputs.OCCT.TransformDto, inputs) as Resolved.OCCT.TransformDto<TopoDS_Shape>;
+        const scaledShape = this.scale({ shape: resolved.shape, factor: resolved.scaleFactor });
+        const rotatedShape = this.rotate({ shape: scaledShape, axis: resolved.rotationAxis, angle: resolved.rotationAngle });
+        const translatedShape = this.translate({ shape: rotatedShape, translation: resolved.translation });
         scaledShape.delete();
         rotatedShape.delete();
         return translatedShape;
@@ -68,7 +71,8 @@ export class OCCTTransforms {
      * ```
      */
     rotate(inputs: Inputs.OCCT.RotateDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.rotate(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RotateDto, inputs) as Resolved.OCCT.RotateDto<TopoDS_Shape>;
+        return this.och.transformsService.rotate(resolved);
     }
 
     /**
@@ -87,10 +91,11 @@ export class OCCTTransforms {
      * ```
      */
     rotateAroundCenter(inputs: Inputs.OCCT.RotateAroundCenterDto<TopoDS_Shape>): TopoDS_Shape {
-        const shapeTranslated = this.translate({ shape: inputs.shape, translation: inputs.center.map(c => -c) as Base.Vector3 });
-        const angle = inputs.angle;
-        const rotatedShape = this.rotate({ shape: shapeTranslated, axis: inputs.axis, angle });
-        const result = this.translate({ shape: rotatedShape, translation: inputs.center });
+        const resolved = resolveDto(Inputs.OCCT.RotateAroundCenterDto, inputs) as Resolved.OCCT.RotateAroundCenterDto<TopoDS_Shape>;
+        const shapeTranslated = this.translate({ shape: resolved.shape, translation: resolved.center.map(c => -c) as Base.Vector3 });
+        const angle = resolved.angle;
+        const rotatedShape = this.rotate({ shape: shapeTranslated, axis: resolved.axis, angle });
+        const result = this.translate({ shape: rotatedShape, translation: resolved.center });
         rotatedShape.delete();
         shapeTranslated.delete();
         return result;
@@ -119,7 +124,8 @@ export class OCCTTransforms {
      * ```
      */
     align(inputs: Inputs.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.align(inputs);
+        const resolved = resolveDto(Inputs.OCCT.AlignDto, inputs) as Resolved.OCCT.AlignDto<TopoDS_Shape>;
+        return this.och.transformsService.align(resolved);
     }
 
     /**
@@ -147,7 +153,8 @@ export class OCCTTransforms {
      * ```
      */
     alignNormAndAxis(inputs: Inputs.OCCT.AlignNormAndAxisDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.alignNormAndAxis(inputs);
+        const resolved = resolveDto(Inputs.OCCT.AlignNormAndAxisDto, inputs) as Resolved.OCCT.AlignNormAndAxisDto<TopoDS_Shape>;
+        return this.och.transformsService.alignNormAndAxis(resolved);
     }
 
     /**
@@ -167,7 +174,8 @@ export class OCCTTransforms {
      * ```
      */
     alignAndTranslate(inputs: Inputs.OCCT.AlignAndTranslateDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.alignAndTranslate(inputs);
+        const resolved = resolveDto(Inputs.OCCT.AlignAndTranslateDto, inputs) as Resolved.OCCT.AlignAndTranslateDto<TopoDS_Shape>;
+        return this.och.transformsService.alignAndTranslate(resolved);
     }
 
     /**
@@ -183,7 +191,8 @@ export class OCCTTransforms {
      * ```
      */
     translate(inputs: Inputs.OCCT.TranslateDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.translate(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TranslateDto, inputs) as Resolved.OCCT.TranslateDto<TopoDS_Shape>;
+        return this.och.transformsService.translate(resolved);
     }
 
     /**
@@ -202,10 +211,11 @@ export class OCCTTransforms {
      * ```
      */
     scale(inputs: Inputs.OCCT.ScaleDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.ScaleDto, inputs) as Resolved.OCCT.ScaleDto<TopoDS_Shape>;
         const transformation = new this.occ.gp_Trsf();
         const gpPnt = this.och.entitiesService.gpPnt([0.0, 0.0, 0.0]);
-        transformation.SetScale(gpPnt, inputs.factor);
-        const transf = new this.occ.BRepBuilderAPI_Transform(inputs.shape, transformation, true);
+        transformation.SetScale(gpPnt, resolved.factor);
+        const transf = new this.occ.BRepBuilderAPI_Transform(resolved.shape, transformation, true);
         const s = transf.Shape();
         const result = this.och.converterService.getActualTypeOfShape(s);
         gpPnt.delete();
@@ -232,7 +242,8 @@ export class OCCTTransforms {
      * ```
      */
     scale3d(inputs: Inputs.OCCT.Scale3DDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.scale3d(inputs); 
+        const resolved = resolveDto(Inputs.OCCT.Scale3DDto, inputs) as Resolved.OCCT.Scale3DDto<TopoDS_Shape>;
+        return this.och.transformsService.scale3d(resolved); 
     }
 
 
@@ -252,7 +263,8 @@ export class OCCTTransforms {
      * ```
      */
     mirror(inputs: Inputs.OCCT.MirrorDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.mirror(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorDto, inputs) as Resolved.OCCT.MirrorDto<TopoDS_Shape>;
+        return this.och.transformsService.mirror(resolved);
     }
 
     /**
@@ -271,7 +283,8 @@ export class OCCTTransforms {
      * ```
      */
     mirrorAlongNormal(inputs: Inputs.OCCT.MirrorAlongNormalDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.mirrorAlongNormal(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorAlongNormalDto, inputs) as Resolved.OCCT.MirrorAlongNormalDto<TopoDS_Shape>;
+        return this.och.transformsService.mirrorAlongNormal(resolved);
     }
 
     /**
@@ -296,13 +309,14 @@ export class OCCTTransforms {
      * ```
      */
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.translations, inputs.rotationAxes, inputs.rotationAngles, inputs.scaleFactors]);
-        return inputs.shapes.map((s, index) => this.transform({
+        const resolved = resolveDto(Inputs.OCCT.TransformShapesDto, inputs) as Resolved.OCCT.TransformShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.translations, resolved.rotationAxes, resolved.rotationAngles, resolved.scaleFactors]);
+        return resolved.shapes.map((s, index) => this.transform({
             shape: s,
-            translation: inputs.translations[index]!,
-            rotationAxis: inputs.rotationAxes[index]!,
-            rotationAngle: inputs.rotationAngles[index]!,
-            scaleFactor: inputs.scaleFactors[index]!,
+            translation: resolved.translations[index]!,
+            rotationAxis: resolved.rotationAxes[index]!,
+            rotationAngle: resolved.rotationAngles[index]!,
+            scaleFactor: resolved.scaleFactors[index]!,
         }));
     }
 
@@ -322,11 +336,12 @@ export class OCCTTransforms {
      * ```
      */
     rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
-        return inputs.shapes.map((s, index) => this.rotate({
+        const resolved = resolveDto(Inputs.OCCT.RotateShapesDto, inputs) as Resolved.OCCT.RotateShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
+        return resolved.shapes.map((s, index) => this.rotate({
             shape: s,
-            axis: inputs.axes[index]!,
-            angle: inputs.angles[index]!,
+            axis: resolved.axes[index]!,
+            angle: resolved.angles[index]!,
         }));
     }
 
@@ -351,12 +366,13 @@ export class OCCTTransforms {
      * ```
      */
     rotateAroundCenterShapes(inputs: Inputs.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([inputs.shapes, inputs.axes, inputs.angles]);
-        return inputs.shapes.map((s, index) => this.rotateAroundCenter({
+        const resolved = resolveDto(Inputs.OCCT.RotateAroundCenterShapesDto, inputs) as Resolved.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
+        return resolved.shapes.map((s, index) => this.rotateAroundCenter({
             shape: s,
-            axis: inputs.axes[index]!,
-            angle: inputs.angles[index]!,
-            center: inputs.centers[index]!,
+            axis: resolved.axes[index]!,
+            angle: resolved.angles[index]!,
+            center: resolved.centers[index]!,
         }));
     }
 
@@ -381,13 +397,14 @@ export class OCCTTransforms {
      * ```
      */
     alignShapes(inputs: Inputs.OCCT.AlignShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([inputs.shapes, inputs.fromOrigins, inputs.fromDirections, inputs.toOrigins, inputs.toDirections]);
-        return inputs.shapes.map((s, index) => this.align({
+        const resolved = resolveDto(Inputs.OCCT.AlignShapesDto, inputs) as Resolved.OCCT.AlignShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([resolved.shapes, resolved.fromOrigins, resolved.fromDirections, resolved.toOrigins, resolved.toDirections]);
+        return resolved.shapes.map((s, index) => this.align({
             shape: s,
-            fromOrigin: inputs.fromOrigins[index]!,
-            fromDirection: inputs.fromDirections[index]!,
-            toOrigin: inputs.toOrigins[index]!,
-            toDirection: inputs.toDirections[index]!
+            fromOrigin: resolved.fromOrigins[index]!,
+            fromDirection: resolved.fromDirections[index]!,
+            toOrigin: resolved.toOrigins[index]!,
+            toDirection: resolved.toDirections[index]!
         }));
     }
 
@@ -410,11 +427,12 @@ export class OCCTTransforms {
      * ```
      */
     alignAndTranslateShapes(inputs: Inputs.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.centers, inputs.directions]);
-        return inputs.shapes.map((s, index) => this.alignAndTranslate({
+        const resolved = resolveDto(Inputs.OCCT.AlignAndTranslateShapesDto, inputs) as Resolved.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.centers, resolved.directions]);
+        return resolved.shapes.map((s, index) => this.alignAndTranslate({
             shape: s,
-            center: inputs.centers[index]!,
-            direction: inputs.directions[index]!,
+            center: resolved.centers[index]!,
+            direction: resolved.directions[index]!,
         }));
     }
 
@@ -433,10 +451,11 @@ export class OCCTTransforms {
      * ```
      */
     translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([inputs.shapes, inputs.translations]);
-        return inputs.shapes.map((s, index) => this.translate({
+        const resolved = resolveDto(Inputs.OCCT.TranslateShapesDto, inputs) as Resolved.OCCT.TranslateShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.translations]);
+        return resolved.shapes.map((s, index) => this.translate({
             shape: s,
-            translation: inputs.translations[index]!,
+            translation: resolved.translations[index]!,
         }));
     }
 
@@ -455,10 +474,11 @@ export class OCCTTransforms {
      * ```
      */
     scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | number>([inputs.shapes, inputs.factors]);
-        return inputs.shapes.map((s, index) => this.scale({
+        const resolved = resolveDto(Inputs.OCCT.ScaleShapesDto, inputs) as Resolved.OCCT.ScaleShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | number>([resolved.shapes, resolved.factors]);
+        return resolved.shapes.map((s, index) => this.scale({
             shape: s,
-            factor: inputs.factors[index]!,
+            factor: resolved.factors[index]!,
         }));
     }
 
@@ -481,11 +501,12 @@ export class OCCTTransforms {
      * ```
      */
     scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.scales, inputs.centers]);
-        return inputs.shapes.map((s, index) => this.scale3d({
+        const resolved = resolveDto(Inputs.OCCT.Scale3DShapesDto, inputs) as Resolved.OCCT.Scale3DShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.scales, resolved.centers]);
+        return resolved.shapes.map((s, index) => this.scale3d({
             shape: s,
-            scale: inputs.scales[index]!,
-            center: inputs.centers[index]!,
+            scale: resolved.scales[index]!,
+            center: resolved.centers[index]!,
         }));
     }
 
@@ -509,11 +530,12 @@ export class OCCTTransforms {
      * ```
      */
     mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.directions, inputs.origins]);
-        return inputs.shapes.map((s, index) => this.mirror({
+        const resolved = resolveDto(Inputs.OCCT.MirrorShapesDto, inputs) as Resolved.OCCT.MirrorShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.directions, resolved.origins]);
+        return resolved.shapes.map((s, index) => this.mirror({
             shape: s,
-            origin: inputs.origins[index]!,
-            direction: inputs.directions[index]!,
+            origin: resolved.origins[index]!,
+            direction: resolved.directions[index]!,
         }));
     }
 
@@ -536,11 +558,12 @@ export class OCCTTransforms {
      * ```
      */
     mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([inputs.shapes, inputs.normals, inputs.origins]);
-        return inputs.shapes.map((s, index) => this.mirrorAlongNormal({
+        const resolved = resolveDto(Inputs.OCCT.MirrorAlongNormalShapesDto, inputs) as Resolved.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>;
+        this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.normals, resolved.origins]);
+        return resolved.shapes.map((s, index) => this.mirrorAlongNormal({
             shape: s,
-            normal: inputs.normals[index]!,
-            origin: inputs.origins[index]!,
+            normal: resolved.normals[index]!,
+            origin: resolved.origins[index]!,
         }));
     }
 
@@ -559,7 +582,8 @@ export class OCCTTransforms {
      * ```
      */
     scaleFromCenter(inputs: Inputs.OCCT.ScaleFromCenterDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.scaleFromCenter(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ScaleFromCenterDto, inputs) as Resolved.OCCT.ScaleFromCenterDto<TopoDS_Shape>;
+        return this.och.transformsService.scaleFromCenter(resolved);
     }
 
     /**
@@ -578,7 +602,8 @@ export class OCCTTransforms {
      * ```
      */
     mirrorAboutPoint(inputs: Inputs.OCCT.MirrorAboutPointDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.mirrorAboutPoint(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorAboutPointDto, inputs) as Resolved.OCCT.MirrorAboutPointDto<TopoDS_Shape>;
+        return this.och.transformsService.mirrorAboutPoint(resolved);
     }
 
     /**
@@ -598,7 +623,8 @@ export class OCCTTransforms {
      * ```
      */
     rotateByQuaternion(inputs: Inputs.OCCT.RotateByQuaternionDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.transformsService.rotateByQuaternion(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RotateByQuaternionDto, inputs) as Resolved.OCCT.RotateByQuaternionDto<TopoDS_Shape>;
+        return this.och.transformsService.rotateByQuaternion(resolved);
     }
 
     /**
@@ -695,7 +721,8 @@ export class OCCTTransforms {
      * ```
      */
     composeTransform(inputs: Inputs.OCCT.ComposeTransformDto): Base.TransformMatrix {
-        return this.och.transformsService.composeTransform(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ComposeTransformDto, inputs) as Resolved.OCCT.ComposeTransformDto;
+        return this.och.transformsService.composeTransform(resolved);
     }
 
     /**
@@ -747,7 +774,8 @@ export class OCCTTransforms {
      * ```
      */
     translationToMatrix(inputs: Inputs.OCCT.TranslationToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.translationToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TranslationToMatrixDto, inputs) as Resolved.OCCT.TranslationToMatrixDto;
+        return this.och.transformsService.translationToMatrix(resolved);
     }
 
     /**
@@ -766,7 +794,8 @@ export class OCCTTransforms {
      * ```
      */
     rotationAxisAngleToMatrix(inputs: Inputs.OCCT.RotationAxisAngleToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.rotationAxisAngleToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RotationAxisAngleToMatrixDto, inputs) as Resolved.OCCT.RotationAxisAngleToMatrixDto;
+        return this.och.transformsService.rotationAxisAngleToMatrix(resolved);
     }
 
     /**
@@ -783,7 +812,8 @@ export class OCCTTransforms {
      * ```
      */
     scaleUniformToMatrix(inputs: Inputs.OCCT.ScaleUniformToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.scaleUniformToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ScaleUniformToMatrixDto, inputs) as Resolved.OCCT.ScaleUniformToMatrixDto;
+        return this.och.transformsService.scaleUniformToMatrix(resolved);
     }
 
     /**
@@ -799,7 +829,8 @@ export class OCCTTransforms {
      * ```
      */
     mirrorPointToMatrix(inputs: Inputs.OCCT.MirrorPointToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.mirrorPointToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorPointToMatrixDto, inputs) as Resolved.OCCT.MirrorPointToMatrixDto;
+        return this.och.transformsService.mirrorPointToMatrix(resolved);
     }
 
     /**
@@ -816,7 +847,8 @@ export class OCCTTransforms {
      * ```
      */
     mirrorAxisToMatrix(inputs: Inputs.OCCT.MirrorAxisToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.mirrorAxisToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorAxisToMatrixDto, inputs) as Resolved.OCCT.MirrorAxisToMatrixDto;
+        return this.och.transformsService.mirrorAxisToMatrix(resolved);
     }
 
     /**
@@ -833,7 +865,8 @@ export class OCCTTransforms {
      * ```
      */
     mirrorPlaneToMatrix(inputs: Inputs.OCCT.MirrorPlaneToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.mirrorPlaneToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MirrorPlaneToMatrixDto, inputs) as Resolved.OCCT.MirrorPlaneToMatrixDto;
+        return this.och.transformsService.mirrorPlaneToMatrix(resolved);
     }
 
     /**
@@ -851,7 +884,8 @@ export class OCCTTransforms {
      * ```
      */
     quaternionToMatrix(inputs: Inputs.OCCT.QuaternionToMatrixDto): Base.TransformMatrix {
-        return this.och.transformsService.quaternionToMatrix(inputs);
+        const resolved = resolveDto(Inputs.OCCT.QuaternionToMatrixDto, inputs) as Resolved.OCCT.QuaternionToMatrixDto;
+        return this.och.transformsService.quaternionToMatrix(resolved);
     }
 
     private checkIfListsEqualLength<T>(lists: T[][]) {

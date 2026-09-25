@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Shape,TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Combining OpenCascade shapes with each other: union fuses them into one, difference cuts one away
@@ -35,7 +37,8 @@ export class OCCTBooleans {
      * ```
      */
     union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.booleansService.union(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UnionDto, inputs) as Resolved.OCCT.UnionDto<TopoDS_Shape>;
+        return this.och.booleansService.union(resolved);
     }
 
     /**
@@ -56,7 +59,8 @@ export class OCCTBooleans {
      * ```
      */
     difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.booleansService.difference(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DifferenceDto, inputs) as Resolved.OCCT.DifferenceDto<TopoDS_Shape>;
+        return this.och.booleansService.difference(resolved);
     }
 
     /**
@@ -76,7 +80,8 @@ export class OCCTBooleans {
      * ```
      */
     intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
-        const int = this.och.booleansService.intersection(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IntersectionDto, inputs) as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
+        const int = this.och.booleansService.intersection(resolved);
         const res = this.och.converterService.makeCompound({ shapes: int });
         return res;
     }
@@ -99,7 +104,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
-        return this.och.meshingService.meshMeshIntersectionWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshIntersectionTwoShapesDto, inputs) as Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionWires(resolved);
     }
 
     /**
@@ -119,7 +125,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.meshingService.meshMeshIntersectionPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshIntersectionTwoShapesDto, inputs) as Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionPoints(resolved);
     }
 
     /**
@@ -139,7 +146,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
-        return this.och.meshingService.meshMeshIntersectionOfShapesWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, inputs) as Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionOfShapesWires(resolved);
     }
 
     /**
@@ -159,7 +167,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.meshingService.meshMeshIntersectionOfShapesPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, inputs) as Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionOfShapesPoints(resolved);
     }
 
 

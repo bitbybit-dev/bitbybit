@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * The grid a vertex is snapped onto before it is used as a de-duplication key.
@@ -140,9 +142,10 @@ export class ManifoldShapes {
      * ```
      */
     cube(inputs: Inputs.Manifold.CubeDto): Manifold3D.Manifold {
+        const resolved = resolveDto(Inputs.Manifold.CubeDto, inputs) as Resolved.Manifold.CubeDto;
         const { Manifold } = this.manifold;
         const { cube } = Manifold;
-        return cube(inputs.size, inputs.center);
+        return cube(resolved.size, resolved.center);
     }
 
     /**
@@ -161,9 +164,10 @@ export class ManifoldShapes {
      * ```
      */
     sphere(inputs: Inputs.Manifold.SphereDto): Manifold3D.Manifold {
+        const resolved = resolveDto(Inputs.Manifold.SphereDto, inputs) as Resolved.Manifold.SphereDto;
         const { Manifold } = this.manifold;
         const { sphere } = Manifold;
-        return sphere(inputs.radius, inputs.circularSegments);
+        return sphere(resolved.radius, resolved.circularSegments);
     }
 
     /**
@@ -202,9 +206,10 @@ export class ManifoldShapes {
      * ```
      */
     cylinder(inputs: Inputs.Manifold.CylinderDto): Manifold3D.Manifold {
+        const resolved = resolveDto(Inputs.Manifold.CylinderDto, inputs) as Resolved.Manifold.CylinderDto;
         const { Manifold } = this.manifold;
         const { cylinder } = Manifold;
-        return cylinder(inputs.height, inputs.radiusLow, inputs.radiusHigh, inputs.circularSegments, inputs.center);
+        return cylinder(resolved.height, resolved.radiusLow, resolved.radiusHigh, resolved.circularSegments, resolved.center);
     }
 
 }

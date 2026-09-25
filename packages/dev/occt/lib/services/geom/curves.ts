@@ -1,6 +1,8 @@
 import { Geom2d_Curve, BitbybitOcctModule, TopoDS_Wire, Handle_Geom2d_Curve } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Construction curves of OpenCascade: 2D curves in a plane or in the UV space of a surface
@@ -32,9 +34,10 @@ export class OCCTCurves {
      * ```
      */
     geom2dEllipse(inputs: Inputs.OCCT.Geom2dEllipseDto): Handle_Geom2d_Curve {
-        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]];
-        const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
-        const res = this.occ.CreateGeom2d_Ellipse(axis2d, inputs.radiusMajor, inputs.radiusMinor);
+        const resolved = resolveDto(Inputs.OCCT.Geom2dEllipseDto, inputs) as Resolved.OCCT.Geom2dEllipseDto;
+        const dir2: Inputs.Base.Vector2 = [-resolved.direction[1], resolved.direction[0]];
+        const axis2d = this.och.entitiesService.gpAx22d(resolved.center, resolved.direction, dir2);
+        const res = this.occ.CreateGeom2d_Ellipse(axis2d, resolved.radiusMajor, resolved.radiusMinor);
         axis2d.delete();
         return res;
     }
@@ -48,9 +51,10 @@ export class OCCTCurves {
      * @returns The 2D circle curve
      */
     geom2dCircle(inputs: Inputs.OCCT.Geom2dCircleDto): Handle_Geom2d_Curve {
-        const dir2: Inputs.Base.Vector2 = [-inputs.direction[1], inputs.direction[0]];
-        const axis2d = this.och.entitiesService.gpAx22d(inputs.center, inputs.direction, dir2);
-        const res = this.occ.CreateGeom2d_Circle(axis2d, inputs.radius);
+        const resolved = resolveDto(Inputs.OCCT.Geom2dCircleDto, inputs) as Resolved.OCCT.Geom2dCircleDto;
+        const dir2: Inputs.Base.Vector2 = [-resolved.direction[1], resolved.direction[0]];
+        const axis2d = this.och.entitiesService.gpAx22d(resolved.center, resolved.direction, dir2);
+        const res = this.occ.CreateGeom2d_Circle(axis2d, resolved.radius);
         axis2d.delete();
         return res;
     }
@@ -70,7 +74,8 @@ export class OCCTCurves {
      * ```
      */
     geom2dTrimmedCurve(inputs: Inputs.OCCT.Geom2dTrimmedCurveDto<Handle_Geom2d_Curve>): Handle_Geom2d_Curve {
-        return this.occ.CreateGeom2d_TrimmedCurve(inputs.shape, inputs.u1, inputs.u2);
+        const resolved = resolveDto(Inputs.OCCT.Geom2dTrimmedCurveDto, inputs) as Resolved.OCCT.Geom2dTrimmedCurveDto<Handle_Geom2d_Curve>;
+        return this.occ.CreateGeom2d_TrimmedCurve(resolved.shape, resolved.u1, resolved.u2);
     }
 
     /**
@@ -88,8 +93,9 @@ export class OCCTCurves {
      * ```
      */
     geom2dSegment(inputs: Inputs.OCCT.Geom2dSegmentDto): Handle_Geom2d_Curve {
-        const pt1 = this.och.entitiesService.gpPnt2d(inputs.start);
-        const pt2 = this.och.entitiesService.gpPnt2d(inputs.end);
+        const resolved = resolveDto(Inputs.OCCT.Geom2dSegmentDto, inputs) as Resolved.OCCT.Geom2dSegmentDto;
+        const pt1 = this.och.entitiesService.gpPnt2d(resolved.start);
+        const pt2 = this.och.entitiesService.gpPnt2d(resolved.end);
         const res = this.occ.CreateGeom2d_Segment(pt1, pt2);
         pt1.delete();
         pt2.delete();
@@ -111,7 +117,8 @@ export class OCCTCurves {
      * ```
      */
     get2dPointFrom2dCurveOnParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Geom2d_Curve>): Inputs.Base.Point2 {
-        const pt2d = inputs.shape.Value(inputs.param);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<Geom2d_Curve>;
+        const pt2d = resolved.shape.Value(resolved.param);
         const pt: Inputs.Base.Point2 = [pt2d.X(), pt2d.Y()];
         pt2d.delete();
         return pt;
@@ -133,7 +140,8 @@ export class OCCTCurves {
      * ```
      */
     geomCircleCurve(inputs: Inputs.OCCT.CircleDto): TopoDS_Wire {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -153,7 +161,8 @@ export class OCCTCurves {
      * ```
      */
     geomEllipseCurve(inputs: Inputs.OCCT.EllipseDto): TopoDS_Wire {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
 }

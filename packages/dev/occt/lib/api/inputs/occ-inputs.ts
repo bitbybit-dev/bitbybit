@@ -561,7 +561,7 @@ export namespace OCCT {
          * The position of the vertex, in model units.
          * @default [0, 0, 0]
          */
-        point: Base.Point3 = [0, 0, 0];
+        point?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Three coordinates for `shapes.vertex.vertexFromXYZ`, which turns them into a vertex shape.
@@ -579,7 +579,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        x: number = 0;
+        x?: number | undefined = 0;
         /**
          * The Y coordinate, in model units; Y is up.
          * @default 0
@@ -587,7 +587,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        y: number = 0;
+        y?: number | undefined = 0;
         /**
          * The Z coordinate, in model units.
          * @default 0
@@ -595,7 +595,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        z: number = 0;
+        z?: number | undefined = 0;
     }
     /**
      * A list of points for the methods that build shapes from them, such as
@@ -641,18 +641,18 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * Which lines to keep: those on one side of the circle, the other side, or all of them.
          * @default all
          */
-        positionResult: positionResultEnum = positionResultEnum.all;
+        positionResult?: positionResultEnum | undefined = positionResultEnum.all;
         /**
          * Whether to add the piece of the circle between the touching points on one side or the other;
          * `none` adds nothing.
          * @default none
          */
-        circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+        circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
     }
     /**
      * A circle, two points and the filtering options for
@@ -690,18 +690,18 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * Which lines to keep: those on one side of the circle, the other side, or all of them.
          * @default all
          */
-        positionResult: positionResultEnum = positionResultEnum.all;
+        positionResult?: positionResultEnum | undefined = positionResultEnum.all;
         /**
          * Whether to add the piece of the circle between the touching points on one side or the other;
          * `none` adds nothing.
          * @default none
          */
-        circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+        circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
     }
     /**
      * Two circles and the filtering options for `shapes.edge.constraintTanLinesOnTwoCircles` and
@@ -732,18 +732,18 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * Which lines to keep: the outer pair, the crossing inner pair, or all of them.
          * @default all
          */
-        positionResult: positionResultEnum = positionResultEnum.all;
+        positionResult?: positionResultEnum | undefined = positionResultEnum.all;
         /**
          * Which pieces of the circles between the touching points to add: the outside arcs, the inside
          * arcs, one of each, or `none`.
          * @default none
          */
-        circleRemainders: twoCircleInclusionEnum = twoCircleInclusionEnum.none;
+        circleRemainders?: twoCircleInclusionEnum | undefined = twoCircleInclusionEnum.none;
     }
 
     /**
@@ -774,7 +774,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * The radius of the circles to draw, in model units.
          * @default 0.3
@@ -782,7 +782,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 0.3;
+        radius?: number | undefined = 0.3;
     }
     /**
      * A circle, a point and a radius for `shapes.edge.constraintTanCirclesOnCircleAndPnt`, which draws
@@ -812,7 +812,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * The radius of the circles to draw, in model units.
          * @default 0.3
@@ -820,7 +820,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 0.3;
+        radius?: number | undefined = 0.3;
     }
     /**
      * A 2D curve and a surface for `shapes.edge.makeEdgeFromGeom2dCurveAndSurface`, which lays the
@@ -870,12 +870,12 @@ export namespace OCCT {
          * it.
          * @default [0, 0, 0]
          */
-        planeOrigin: Base.Point3 = [0, 0, 0];
+        planeOrigin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the edges lie in.
          * @default [0, 1, 0]
          */
-        planeDirection: Base.Vector3 = [0, 1, 0];
+        planeDirection?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The radius of the rounding arc, in model units.
          * @default 0.3
@@ -883,7 +883,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 0.3;
+        radius?: number | undefined = 0.3;
         /**
          * Which arc to use when several fit, counted from 0; -1 takes the one nearest `planeOrigin`.
          * @default -1
@@ -1062,7 +1062,7 @@ export namespace OCCT {
          * own direction decides.
          * @default true
          */
-        inside = true;
+        inside?: boolean | undefined = true;
     }
     /**
      * A flat wire and a face for `shapes.wire.placeWireOnFace`, which maps the wire onto the face's
@@ -1500,7 +1500,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrDivisionsU = 10;
+        nrDivisionsU?: number | undefined = 10;
         /**
          * How many points along each row across the V range, edge to edge.
          * @default 10
@@ -1508,39 +1508,39 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrDivisionsV = 10;
+        nrDivisionsV?: number | undefined = 10;
         /**
          * When true, every point moves half a step in U; on a closed face such as a cylinder this keeps
          * points off the seam.
          * @default false
          */
-        shiftHalfStepU = false;
+        shiftHalfStepU?: boolean | undefined = false;
         /**
          * When true, the row at the start of the U range is left out.
          * @default false
          */
-        removeStartEdgeU = false;
+        removeStartEdgeU?: boolean | undefined = false;
         /**
          * When true, the row at the end of the U range is left out.
          * @default false
          */
-        removeEndEdgeU = false;
+        removeEndEdgeU?: boolean | undefined = false;
         /**
          * When true, every point moves half a step in V; on a closed face such as a cylinder this keeps
          * points off the seam.
          * @default false
          */
-        shiftHalfStepV = false;
+        shiftHalfStepV?: boolean | undefined = false;
         /**
          * When true, the points at the start of the V range are left out of every row.
          * @default false
          */
-        removeStartEdgeV = false;
+        removeStartEdgeV?: boolean | undefined = false;
         /**
          * When true, the points at the end of the V range are left out of every row.
          * @default false
          */
-        removeEndEdgeV = false;
+        removeEndEdgeV?: boolean | undefined = false;
     }
 
     /**
@@ -1573,27 +1573,27 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrDivisions = 10;
+        nrDivisions?: number | undefined = 10;
         /**
          * When true each wire sits at a fixed U and runs across the V range; when false the roles swap.
          * @default true
          */
-        isU = true;
+        isU?: boolean | undefined = true;
         /**
          * When true, every wire moves half a step along the divided direction.
          * @default false
          */
-        shiftHalfStep = false;
+        shiftHalfStep?: boolean | undefined = false;
         /**
          * When true, the wire on the start boundary is left out.
          * @default false
          */
-        removeStart = false;
+        removeStart?: boolean | undefined = false;
         /**
          * When true, the wire on the end boundary is left out.
          * @default false
          */
-        removeEnd = false;
+        removeEnd?: boolean | undefined = false;
     }
     /**
      * A face, a grid of cells and optional patterns for `shapes.face.subdivideToRectangleWires`, which
@@ -1627,7 +1627,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrRectanglesU = 10;
+        nrRectanglesU?: number | undefined = 10;
         /**
          * How many cells across the V range.
          * @default 10
@@ -1635,7 +1635,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrRectanglesV = 10;
+        nrRectanglesV?: number | undefined = 10;
         /**
          * Sizes of the rectangles along U as fractions of their cell, from 0 to 1, applied in turn; 1
          * fills the cell, and leaving the list out means no scaling.
@@ -1671,7 +1671,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderU = 0;
+        offsetFromBorderU?: number | undefined = 0;
         /**
          * A fraction of the V range trimmed at each end before dividing into cells, so the pattern
          * keeps clear of the border; keep it below 0.5.
@@ -1680,7 +1680,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderV = 0;
+        offsetFromBorderV?: number | undefined = 0;
     }
     /**
      * A face, hexagon counts and optional patterns for `shapes.face.subdivideToHexagonWires`, which
@@ -1737,7 +1737,7 @@ export namespace OCCT {
          * that way.
          * @default false
          */
-        flatU = false;
+        flatU?: boolean | undefined = false;
         /**
          * Sizes of the hexagons along U as fractions of their full size, applied in turn about each
          * hexagon's center; 1 or no list means no scaling.
@@ -1861,7 +1861,7 @@ export namespace OCCT {
          * that way.
          * @default false
          */
-        flatU = false;
+        flatU?: boolean | undefined = false;
         /**
          * When true, the result also carries one face per hole after the perforated face.
          * @default false
@@ -1948,7 +1948,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrRectanglesU = 10;
+        nrRectanglesU?: number | undefined = 10;
         /**
          * How many cells across the V range.
          * @default 10
@@ -1956,7 +1956,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrRectanglesV = 10;
+        nrRectanglesV?: number | undefined = 10;
         /**
          * Sizes of the holes along U as fractions of their cell, applied in turn; leaving the list out
          * uses 0.5.
@@ -1988,7 +1988,7 @@ export namespace OCCT {
          * When true, the result also carries one face per hole after the perforated face.
          * @default false
          */
-        holesToFaces = false;
+        holesToFaces?: boolean | undefined = false;
         /**
          * A fraction of the U range trimmed at each end before dividing into cells, so the holes keep
          * clear of the border; keep it below 0.5.
@@ -1997,7 +1997,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderU = 0;
+        offsetFromBorderU?: number | undefined = 0;
         /**
          * A fraction of the V range trimmed at each end before dividing into cells, so the holes keep
          * clear of the border; keep it below 0.5.
@@ -2006,7 +2006,7 @@ export namespace OCCT {
          * @maximum 0.5
          * @step 0.01
          */
-        offsetFromBorderV = 0;
+        offsetFromBorderV?: number | undefined = 0;
     }
     /**
      * A face, a grid of divisions and nth-row rules for `shapes.face.subdivideToPointsControlled`,
@@ -2046,7 +2046,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrDivisionsU = 10;
+        nrDivisionsU?: number | undefined = 10;
         /**
          * How many points along each row across the V range, edge to edge.
          * @default 10
@@ -2054,7 +2054,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrDivisionsV = 10;
+        nrDivisionsV?: number | undefined = 10;
         /**
          * Every how-manyth V row is pushed half a step in U; 0 shifts none.
          * @default 0
@@ -2062,7 +2062,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        shiftHalfStepNthU = 0;
+        shiftHalfStepNthU?: number | undefined = 0;
         /**
          * Which V row the counting for the U shift starts at.
          * @default 0
@@ -2070,7 +2070,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        shiftHalfStepUOffsetN = 0;
+        shiftHalfStepUOffsetN?: number | undefined = 0;
         /**
          * Every how-manyth point is dropped from the first U row; 0 keeps them all.
          * @default 0
@@ -2078,7 +2078,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeStartEdgeNthU = 0;
+        removeStartEdgeNthU?: number | undefined = 0;
         /**
          * Which point the counting for the first U row removal starts at.
          * @default 0
@@ -2086,7 +2086,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeStartEdgeUOffsetN = 0;
+        removeStartEdgeUOffsetN?: number | undefined = 0;
         /**
          * Every how-manyth point is dropped from the last U row; 0 keeps them all.
          * @default 0
@@ -2094,7 +2094,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeEndEdgeNthU = 0;
+        removeEndEdgeNthU?: number | undefined = 0;
         /**
          * Which point the counting for the last U row removal starts at.
          * @default 0
@@ -2102,7 +2102,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeEndEdgeUOffsetN = 0;
+        removeEndEdgeUOffsetN?: number | undefined = 0;
         /**
          * Every how-manyth U row is pushed half a step in V; 0 shifts none.
          * @default 0
@@ -2110,7 +2110,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        shiftHalfStepNthV = 0;
+        shiftHalfStepNthV?: number | undefined = 0;
         /**
          * Which U row the counting for the V shift starts at.
          * @default 0
@@ -2118,7 +2118,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        shiftHalfStepVOffsetN = 0;
+        shiftHalfStepVOffsetN?: number | undefined = 0;
         /**
          * Every how-manyth point is dropped from the first V row; 0 keeps them all.
          * @default 0
@@ -2126,7 +2126,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeStartEdgeNthV = 0;
+        removeStartEdgeNthV?: number | undefined = 0;
         /**
          * Which point the counting for the first V row removal starts at.
          * @default 0
@@ -2134,7 +2134,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeStartEdgeVOffsetN = 0;
+        removeStartEdgeVOffsetN?: number | undefined = 0;
         /**
          * Every how-manyth point is dropped from the last V row; 0 keeps them all.
          * @default 0
@@ -2142,7 +2142,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeEndEdgeNthV = 0;
+        removeEndEdgeNthV?: number | undefined = 0;
         /**
          * Which point the counting for the last V row removal starts at.
          * @default 0
@@ -2150,7 +2150,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        removeEndEdgeVOffsetN = 0;
+        removeEndEdgeVOffsetN?: number | undefined = 0;
     }
     /**
      * A face and one line across its UV range for `shapes.face.subdivideToPointsOnParam` and
@@ -2180,7 +2180,7 @@ export namespace OCCT {
          * roles swap.
          * @default true
          */
-        isU = true;
+        isU?: boolean | undefined = true;
         /**
          * Where the line sits, as a fraction from 0 to 1 of the fixed direction's range.
          * @default 0.5
@@ -2188,7 +2188,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        param = 0.5;
+        param?: number | undefined = 0.5;
         /**
          * How many points along the line, edge to edge.
          * @default 10
@@ -2196,23 +2196,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrPoints = 10;
+        nrPoints?: number | undefined = 10;
         /**
          * When true, every point moves half a step along the line; on a closed face this keeps points
          * off the seam.
          * @default false
          */
-        shiftHalfStep = false;
+        shiftHalfStep?: boolean | undefined = false;
         /**
          * When true, the first point is left out.
          * @default false
          */
-        removeStartPoint = false;
+        removeStartPoint?: boolean | undefined = false;
         /**
          * When true, the last point is left out.
          * @default false
          */
-        removeEndPoint = false;
+        removeEndPoint?: boolean | undefined = false;
     }
     /**
      * A face, a direction and a fraction for `shapes.face.wireAlongParam`, which draws a wire across
@@ -2236,7 +2236,7 @@ export namespace OCCT {
          * When true the wire sits at a fixed U and runs across the V range; when false the roles swap.
          * @default true
          */
-        isU = true;
+        isU?: boolean | undefined = true;
         /**
          * Where the wire sits, as a fraction from 0 to 1 of the fixed direction's range.
          * @default 0.5
@@ -2244,7 +2244,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        param = 0.5;
+        param?: number | undefined = 0.5;
     }
 
     /**
@@ -2269,7 +2269,7 @@ export namespace OCCT {
          * When true each wire sits at a fixed U and runs across the V range; when false the roles swap.
          * @default true
          */
-        isU = true;
+        isU?: boolean | undefined = true;
         /**
          * Where the wires sit, as fractions from 0 to 1 of the fixed direction's range, one wire each.
          * @default undefined
@@ -2301,7 +2301,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        paramU = 0.5;
+        paramU?: number | undefined = 0.5;
         /**
          * The V position as a fraction from 0 to 1 of the face's V range.
          * @default 0.5
@@ -2309,7 +2309,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        paramV = 0.5;
+        paramV?: number | undefined = 0.5;
     }
     /**
      * A face and several UV positions for `shapes.face.pointsOnUVs` and `normalsOnUVs`.
@@ -2332,7 +2332,7 @@ export namespace OCCT {
          * each.
          * @default [[0.5, 0.5]]
          */
-        paramsUV: [number, number][] = [[0.5, 0.5]];
+        paramsUV?: [number, number][] | undefined = [[0.5, 0.5]];
     }
     /**
      * Corner points for `shapes.wire.createPolygonWire`, `shapes.face.createPolygonFace` and
@@ -2366,7 +2366,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * Points for `shapes.wire.createPolylineWire`, an open chain of straight edges through them.
@@ -2508,7 +2508,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * A side length and a placement for `shapes.wire.createSquareWire` and
@@ -2527,17 +2527,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * The point the square is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the square lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A width, a length and a placement for `shapes.wire.createRectangleWire` and
@@ -2558,7 +2558,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * The side along Z on the ground plane, in model units, before the rectangle is turned to face
          * `direction`.
@@ -2567,17 +2567,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        length = 2;
+        length?: number | undefined = 2;
         /**
          * The point the rectangle is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the rectangle lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The two legs of an L shape and its placement for `shapes.wire.createLPolygonWire` and
@@ -2601,7 +2601,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        widthFirst = 1;
+        widthFirst?: number | undefined = 1;
         /**
          * The length of the first leg, in model units.
          * @default 2
@@ -2609,7 +2609,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        lengthFirst = 2;
+        lengthFirst?: number | undefined = 2;
         /**
          * The thickness of the second leg, in model units.
          * @default 0.5
@@ -2617,7 +2617,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        widthSecond = 0.5;
+        widthSecond?: number | undefined = 0.5;
         /**
          * The length of the second leg, in model units.
          * @default 2
@@ -2625,13 +2625,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        lengthSecond = 2;
+        lengthSecond?: number | undefined = 2;
         /**
          * Where the corner of the L sits relative to the legs: on their outside, their inside or their
          * middle.
          * @default outside
          */
-        align = directionEnum.outside;
+        align?: directionEnum | undefined = directionEnum.outside;
         /**
          * How far the shape is turned in its plane, in degrees.
          * @default 0
@@ -2639,17 +2639,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point the shape is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the shape lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The cross-section of an I-beam, two horizontal flanges joined by a vertical web, for
@@ -2673,7 +2673,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 2;
+        width?: number | undefined = 2;
         /**
          * The total height of the profile, in model units.
          * @default 3
@@ -2681,7 +2681,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 3;
+        height?: number | undefined = 3;
         /**
          * The thickness of the vertical web, in model units.
          * @default 0.2
@@ -2689,7 +2689,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        webThickness = 0.2;
+        webThickness?: number | undefined = 0.2;
         /**
          * The thickness of each horizontal flange, in model units.
          * @default 0.3
@@ -2697,13 +2697,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        flangeThickness = 0.3;
+        flangeThickness?: number | undefined = 0.3;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          * @default midMid
          */
-        alignment = Base.basicAlignmentEnum.midMid;
+        alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
@@ -2711,17 +2711,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point the profile is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the profile lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The cross-section of an H-beam, two vertical flanges joined by a horizontal web, for
@@ -2745,7 +2745,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 2;
+        width?: number | undefined = 2;
         /**
          * The height of the flanges, in model units.
          * @default 3
@@ -2753,7 +2753,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 3;
+        height?: number | undefined = 3;
         /**
          * The thickness of the horizontal web, in model units.
          * @default 0.2
@@ -2761,7 +2761,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        webThickness = 0.2;
+        webThickness?: number | undefined = 0.2;
         /**
          * The thickness of each vertical flange, in model units.
          * @default 0.3
@@ -2769,13 +2769,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        flangeThickness = 0.3;
+        flangeThickness?: number | undefined = 0.3;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          * @default midMid
          */
-        alignment = Base.basicAlignmentEnum.midMid;
+        alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
@@ -2783,17 +2783,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point the profile is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the profile lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The cross-section of a T-beam, a horizontal flange with a vertical web hanging from its middle,
@@ -2817,7 +2817,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 2;
+        width?: number | undefined = 2;
         /**
          * The total height of the profile, in model units.
          * @default 2
@@ -2825,7 +2825,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 2;
+        height?: number | undefined = 2;
         /**
          * The thickness of the vertical web, in model units.
          * @default 0.2
@@ -2833,7 +2833,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        webThickness = 0.2;
+        webThickness?: number | undefined = 0.2;
         /**
          * The thickness of the flange, in model units.
          * @default 0.3
@@ -2841,13 +2841,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        flangeThickness = 0.3;
+        flangeThickness?: number | undefined = 0.3;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          * @default midMid
          */
-        alignment = Base.basicAlignmentEnum.midMid;
+        alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
@@ -2855,17 +2855,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point the profile is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the profile lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The cross-section of a U-beam, a channel with two flanges standing up from a web, for
@@ -2890,7 +2890,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 2;
+        width?: number | undefined = 2;
         /**
          * The total height of the profile, in model units.
          * @default 3
@@ -2898,7 +2898,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 3;
+        height?: number | undefined = 3;
         /**
          * The thickness of the web at the back of the channel, in model units.
          * @default 0.2
@@ -2906,7 +2906,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        webThickness = 0.2;
+        webThickness?: number | undefined = 0.2;
         /**
          * The thickness of each flange, in model units.
          * @default 0.3
@@ -2914,7 +2914,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        flangeThickness = 0.3;
+        flangeThickness?: number | undefined = 0.3;
         /**
          * How far each flange reaches inward from the side of the channel, in model units.
          * @default 0.5
@@ -2922,13 +2922,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        flangeWidth = 0.5;
+        flangeWidth?: number | undefined = 0.5;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          * @default midMid
          */
-        alignment = Base.basicAlignmentEnum.midMid;
+        alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
@@ -2936,17 +2936,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point the profile is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the profile lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * How far a flat profile is extruded each way along its normal, the part the beam profile solid
@@ -3003,7 +3003,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the profile grows against its normal, in model units.
          * @default 0
@@ -3011,7 +3011,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * An H-beam profile and the extrusion lengths for `shapes.solid.createHBeamProfileSolid`; at least
@@ -3030,7 +3030,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the profile grows against its normal, in model units.
          * @default 0
@@ -3038,7 +3038,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A T-beam profile and the extrusion lengths for `shapes.solid.createTBeamProfileSolid`; at least
@@ -3057,7 +3057,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the profile grows against its normal, in model units.
          * @default 0
@@ -3065,7 +3065,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A U-beam profile and the extrusion lengths for `shapes.solid.createUBeamProfileSolid`; at least
@@ -3084,7 +3084,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the profile grows against its normal, in model units.
          * @default 0
@@ -3092,7 +3092,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * The three sides of a box and where it sits, for `shapes.solid.createBox`; `width` runs along X,
@@ -3113,7 +3113,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * The side along Z, in model units.
          * @default 2
@@ -3121,7 +3121,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 2;
+        length?: number | undefined = 2;
         /**
          * The side along Y, which is up, in model units.
          * @default 3
@@ -3129,12 +3129,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 3;
+        height?: number | undefined = 3;
         /**
          * The point the box is centered on, or stands on when `originOnCenter` is false.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * When true, the box is centered on `center`; when false it stands on it, so `center` is the
          * middle of the bottom face.
@@ -3158,12 +3158,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
         /**
          * The point the cube is centered on, or stands on when `originOnCenter` is false.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * When true, the cube is centered on `center`; when false it stands on it, so `center` is the
          * middle of the bottom face.
@@ -3189,7 +3189,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 1;
+        width?: number | undefined = 1;
         /**
          * The side along Z, in model units.
          * @default 2
@@ -3197,7 +3197,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 2;
+        length?: number | undefined = 2;
         /**
          * The side along Y, which is up, in model units.
          * @default 3
@@ -3205,12 +3205,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 3;
+        height?: number | undefined = 3;
         /**
          * The corner with the smallest X, Y and Z; the box extends from it along the positive axes.
          * @default [0, 0, 0]
          */
-        corner: Base.Point3 = [0, 0, 0];
+        corner?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A radius and a center for `shapes.solid.createSphere`.
@@ -3227,12 +3227,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * The point the sphere is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * The two radii, height and placement of a cone or truncated cone for `shapes.solid.createCone`.
@@ -3253,7 +3253,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius1 = 2;
+        radius1?: number | undefined = 2;
         /**
          * The radius at the top, in model units; 0 makes a pointed cone.
          * @default 1
@@ -3261,7 +3261,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius2 = 1;
+        radius2?: number | undefined = 1;
         /**
          * The distance from the base to the top along `direction`, in model units.
          * @default 2
@@ -3269,7 +3269,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 2;
+        height?: number | undefined = 2;
         /**
          * How much of the full round to build, in degrees; less than 360 cuts a wedge out.
          * @default 360
@@ -3277,17 +3277,17 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        angle = 360;
+        angle?: number | undefined = 360;
         /**
          * The center of the base.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction from the base to the top.
          * @default [0, 1, 0]
          */
-        direction: Base.Point3 = [0, 1, 0];
+        direction?: Base.Point3 | undefined = [0, 1, 0];
 
     }
     /**
@@ -3308,7 +3308,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        majorRadius = 2;
+        majorRadius?: number | undefined = 2;
         /**
          * The radius of the tube itself, in model units.
          * @default 0.5
@@ -3316,17 +3316,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        minorRadius = 0.5;
+        minorRadius?: number | undefined = 0.5;
         /**
          * The point the ring is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The axis the ring goes around; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How much of the full ring to build, in degrees; less than 360 gives a partial ring.
          * @default 360
@@ -3349,12 +3349,12 @@ export namespace OCCT {
          * The point the line starts at.
          * @default [0, 0, 0]
          */
-        start: Base.Point3 = [0, 0, 0];
+        start?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The point the line ends at.
          * @default [0, 1, 0]
          */
-        end: Base.Point3 = [0, 1, 0];
+        end?: Base.Point3 | undefined = [0, 1, 0];
     }
 
     /**
@@ -3372,12 +3372,12 @@ export namespace OCCT {
          * The point the line starts at, before the extension.
          * @default [0, 0, 0]
          */
-        start: Base.Point3 = [0, 0, 0];
+        start?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The point the line ends at, before the extension.
          * @default [0, 1, 0]
          */
-        end: Base.Point3 = [0, 1, 0];
+        end?: Base.Point3 | undefined = [0, 1, 0];
         /**
          * How far the line is lengthened past its start, in model units.
          * @default 0.1
@@ -3385,7 +3385,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extensionStart = 0.1;
+        extensionStart?: number | undefined = 0.1;
         /**
          * How far the line is lengthened past its end, in model units.
          * @default 0.1
@@ -3393,7 +3393,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extensionEnd = 0.1;
+        extensionEnd?: number | undefined = 0.1;
     }
     /**
      * Several line definitions for `shapes.wire.createLines`, which builds one wire per line.
@@ -3412,7 +3412,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * Two points and a starting direction for `shapes.edge.arcThroughTwoPointsAndTangent`, a circular
@@ -3428,17 +3428,17 @@ export namespace OCCT {
          * The point the arc begins at, where the tangent applies.
          * @default [0, 0, 0]
          */
-        start: Base.Point3 = [0, 0, 0];
+        start?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction the arc leaves the start point in; it fixes the plane and radius of the arc.
          * @default [0, 1, 0]
          */
-        tangentVec: Base.Vector3 = [0, 1, 0];
+        tangentVec?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The point the arc finishes at.
          * @default [0, 0, 1]
          */
-        end: Base.Point3 = [0, 0, 1];
+        end?: Base.Point3 | undefined = [0, 0, 1];
     }
     /**
      * A circle edge and two points on it for `shapes.edge.arcFromCircleAndTwoPoints`, which cuts the
@@ -3460,18 +3460,18 @@ export namespace OCCT {
          * The point on the circle where the arc starts.
          * @default [0, 0, 0]
          */
-        start: Base.Point3 = [0, 0, 0];
+        start?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The point on the circle where the arc ends.
          * @default [0, 0, 1]
          */
-        end: Base.Point3 = [0, 0, 1];
+        end?: Base.Point3 | undefined = [0, 0, 1];
         /**
          * Which way round the circle the arc runs from start to end: true follows the circle's own
          * direction, false goes the other way.
          * @default true
          */
-        sense = true;
+        sense?: boolean | undefined = true;
     }
     /**
      * A circle edge and two angles for `shapes.edge.arcFromCircleAndTwoAngles`, which cuts the arc
@@ -3496,7 +3496,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        alphaAngle1 = 0;
+        alphaAngle1?: number | undefined = 0;
         /**
          * The angle where the arc ends, in degrees around the circle from its own start.
          * @default 90
@@ -3504,13 +3504,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        alphaAngle2 = 90;
+        alphaAngle2?: number | undefined = 90;
         /**
          * Which way round the circle the arc runs from the first angle to the second: true follows the
          * circle's own direction, false goes the other way.
          * @default true
          */
-        sense = true;
+        sense?: boolean | undefined = true;
     }
     /**
      * A circle edge, a point on it and an angle for `shapes.edge.arcFromCirclePointAndAngle`, which
@@ -3539,13 +3539,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        alphaAngle = 90;
+        alphaAngle?: number | undefined = 90;
         /**
          * Which way round the circle the arc runs: true follows the circle's own direction, false goes
          * the other way.
          * @default true
          */
-        sense = true;
+        sense?: boolean | undefined = true;
     }
     /**
      * Three points for `shapes.edge.arcThroughThreePoints`, the circular arc that passes through all
@@ -3561,17 +3561,17 @@ export namespace OCCT {
          * The point the arc begins at.
          * @default [0, 0, 0]
          */
-        start: Base.Point3 = [0, 0, 0];
+        start?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * A point the arc passes through on its way; it fixes the plane and radius.
          * @default [0, 1, 0]
          */
-        middle: Base.Point3 = [0, 1, 0];
+        middle?: Base.Point3 | undefined = [0, 1, 0];
         /**
          * The point the arc finishes at.
          * @default [0, 0, 1]
          */
-        end: Base.Point3 = [0, 0, 1];
+        end?: Base.Point3 | undefined = [0, 0, 1];
     }
     /**
      * The size and placement of a cylinder for `shapes.solid.createCylinder`, which stands it on a
@@ -3593,7 +3593,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How far the cylinder grows from its base along `direction`, in model units.
          * @default 2
@@ -3601,12 +3601,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 2;
+        height?: number | undefined = 2;
         /**
          * The center of the base, or the middle of the cylinder when `originOnCenter` is true.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction the cylinder grows in; the default stands it up along Y.
          * @default [0, 1, 0]
@@ -3643,7 +3643,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius: number = 1;
+        radius?: number | undefined = 1;
         /**
          * The lines the cylinders follow, each from its start to its end.
          * @default undefined
@@ -3779,7 +3779,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 0.1;
+        radius?: number | undefined = 0.1;
     }
     /**
      * A shape, one of its edges and a radius profile for `fillets.filletEdgeVariableRadius`;
@@ -3924,7 +3924,7 @@ export namespace OCCT {
          * the wire and must leave room for the radius.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
@@ -3969,7 +3969,7 @@ export namespace OCCT {
          * wire and must leave room for the radius.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` pairs
@@ -4071,7 +4071,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance = 0.1;
+        distance?: number | undefined = 0.1;
         /**
          * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
          * @default 45
@@ -4079,7 +4079,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        angle = 45;
+        angle?: number | undefined = 45;
     }
 
     /**
@@ -4116,7 +4116,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance1 = 0.1;
+        distance1?: number | undefined = 0.1;
         /**
          * How far the bevel reaches from the edge on the other face, in model units.
          * @default 0.2
@@ -4124,7 +4124,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance2 = 0.2;
+        distance2?: number | undefined = 0.2;
     }
     /**
      * A shape, some of its edges, one face per edge and two distances per edge for
@@ -4198,7 +4198,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance1 = 0.1;
+        distance1?: number | undefined = 0.1;
         /**
          * How far the bevel reaches from each edge on the other face, in model units.
          * @default 0.2
@@ -4206,7 +4206,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance2 = 0.2;
+        distance2?: number | undefined = 0.2;
     }
     /**
      * A shape, some of its edges, one face, distance and angle per edge for
@@ -4281,7 +4281,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        distance = 0.1;
+        distance?: number | undefined = 0.1;
         /**
          * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
          * @default 45
@@ -4289,7 +4289,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        angle = 45;
+        angle?: number | undefined = 45;
     }
     /**
      * Points and a closing flag for `shapes.wire.createBSpline`, which fits a smooth curve close to the
@@ -4309,7 +4309,7 @@ export namespace OCCT {
          * When true, the first point is appended again so the ends meet.
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
     }
     /**
      * Several B-spline definitions for `shapes.wire.createBSplines`, which builds one wire per
@@ -4329,7 +4329,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * Two circles in one plane and which pieces to keep for `shapes.wire.createWireFromTwoCirclesTan`,
@@ -4358,12 +4358,12 @@ export namespace OCCT {
          * `inside` the crossing lines.
          * @default outside
          */
-        keepLines: twoSidesStrictEnum = twoSidesStrictEnum.outside;
+        keepLines?: twoSidesStrictEnum | undefined = twoSidesStrictEnum.outside;
         /**
          * Which arc of each circle stays in the outline: both outside, both inside, or one of each.
          * @default outside
          */
-        circleRemainders: fourSidesStrictEnum = fourSidesStrictEnum.outside;
+        circleRemainders?: fourSidesStrictEnum | undefined = fourSidesStrictEnum.outside;
         /**
          * How close a line must come to a circle to count as touching it, in model units.
          * @default 1e-7
@@ -4371,7 +4371,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Circles in one plane and how to pair them for `shapes.face.createFaceFromMultipleCircleTanWires`,
@@ -4394,13 +4394,13 @@ export namespace OCCT {
          * the list, `inOrderClosed` also the last with the first.
          * @default allWithAll
          */
-        combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
+        combination?: combinationCirclesForFaceEnum | undefined = combinationCirclesForFaceEnum.allWithAll;
         /**
          * When true, the belt faces are fused into one shape; when false they come back as a compound,
          * which is faster.
          * @default true
          */
-        unify = true;
+        unify?: boolean | undefined = true;
         /**
          * How close a line must come to a circle to count as touching it, in model units.
          * @default 1e-7
@@ -4408,7 +4408,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Lists of circles and how to pair them for
@@ -4432,13 +4432,13 @@ export namespace OCCT {
          * `inOrder` circles at the same position, `inOrderClosed` also closes each list.
          * @default allWithAll
          */
-        combination: combinationCirclesForFaceEnum = combinationCirclesForFaceEnum.allWithAll;
+        combination?: combinationCirclesForFaceEnum | undefined = combinationCirclesForFaceEnum.allWithAll;
         /**
          * When true, the belt faces are fused into one shape; when false they come back as a compound,
          * which is faster.
          * @default true
          */
-        unify = true;
+        unify?: boolean | undefined = true;
         /**
          * How close a line must come to a circle to count as touching it, in model units.
          * @default 1e-7
@@ -4446,7 +4446,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Two wires and a bounce count for `shapes.wire.createZigZagBetweenTwoWires`, which draws a
@@ -4479,25 +4479,25 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrZigZags = 20;
+        nrZigZags?: number | undefined = 20;
         /**
          * When true, the zig-zag starts on the second wire instead of the first.
          * @default false
          */
-        inverse: boolean = false;
+        inverse?: boolean | undefined = false;
         /**
          * When true, the bounce points are spaced by length along the wires; when false they follow the
          * curves' parameters, which can be uneven.
          * @default false
          */
-        divideByEqualDistance = false;
+        divideByEqualDistance?: boolean | undefined = false;
 
         /**
          * When true, each edge of the wires gets `nrZigZags` bounces and the wires need matching edge
          * counts; when false the count covers the whole wire.
          * @default true
          */
-        zigZagsPerEdge = true;
+        zigZagsPerEdge?: boolean | undefined = true;
     }
     /**
      * Wires or edges and wire options for
@@ -4623,7 +4623,7 @@ export namespace OCCT {
          * When true, the curve closes into a loop that is smooth across the seam.
          * @default false
          */
-        periodic = false;
+        periodic?: boolean | undefined = false;
         /**
          * How far the curve may stray from the points, in model units.
          * @default 1e-7
@@ -4631,7 +4631,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * How the curve is spaced between points: chord length by default, `centripetal` to resist
          * cusps and overshoot with uneven points, or `uniform`.
@@ -4680,7 +4680,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
     }
     /**
      * Several interpolation definitions for `shapes.wire.interpolateWires`, which builds one wire per
@@ -4700,7 +4700,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * Control points and shape options for `shapes.wire.createBezier`, a smooth curve pulled toward its
@@ -4723,7 +4723,7 @@ export namespace OCCT {
          * When true, the first point is appended again so the ends meet, with a corner at the seam.
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
         /**
          * How many neighboring control points shape each part of the curve; leave it out for a classic
          * Bezier, capped at 25 and bounded automatically above 26 points.
@@ -4769,7 +4769,7 @@ export namespace OCCT {
          * When true, the first point is appended again so the ends meet, with a corner at the seam.
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
         /**
          * When true, the curve closes into a loop that is smooth across the seam and needs exactly one
          * weight per point; it overrides `closed`.
@@ -4809,7 +4809,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        degree = 3;
+        degree?: number | undefined = 3;
         /**
          * How far the rebuilt curve may stray from the old one when the degree is lowered, in model
          * units.
@@ -4818,7 +4818,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 1e-4;
+        tolerance?: number | undefined = 1e-4;
     }
     /**
      * A closed periodic wire or edge and a parameter for `moveWireSeamByParameter` and
@@ -4839,7 +4839,7 @@ export namespace OCCT {
          * @default 0
          * @step 0.1
          */
-        parameter = 0;
+        parameter?: number | undefined = 0;
     }
     /**
      * A closed periodic wire or edge and a distance for `moveWireSeamByLength` and
@@ -4860,7 +4860,7 @@ export namespace OCCT {
          * @default 0
          * @step 0.1
          */
-        length = 0;
+        length?: number | undefined = 0;
     }
     /**
      * A face, target degrees and a tolerance for `shapes.face.rebuildFaceDegree`.
@@ -4886,7 +4886,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        uDegree = 3;
+        uDegree?: number | undefined = 3;
         /**
          * The degree to rebuild to in V, with the same rules as `uDegree`.
          * @default 3
@@ -4894,7 +4894,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        vDegree = 3;
+        vDegree?: number | undefined = 3;
         /**
          * How far the rebuilt surface may stray from the old one when a degree is lowered, in model
          * units.
@@ -4903,13 +4903,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 1e-4;
+        tolerance?: number | undefined = 1e-4;
         /**
          * When true, the face keeps its boundary wires, which is reliable when raising; when false it
          * covers the whole rebuilt surface.
          * @default false
          */
-        keepTrim = false;
+        keepTrim?: boolean | undefined = false;
     }
     /**
      * A face and which flips to apply for `shapes.face.flipFaceUV`.
@@ -4930,17 +4930,17 @@ export namespace OCCT {
          * When true, U and V change places.
          * @default false
          */
-        swapUV = false;
+        swapUV?: boolean | undefined = false;
         /**
          * When true, U runs the other way.
          * @default false
          */
-        reverseU = false;
+        reverseU?: boolean | undefined = false;
         /**
          * When true, V runs the other way.
          * @default false
          */
-        reverseV = false;
+        reverseV?: boolean | undefined = false;
     }
     /**
      * A face and fitting options for `shapes.face.normalizeFaceParametrization`, which makes equal
@@ -4963,12 +4963,12 @@ export namespace OCCT {
          * When true, the U parameter is evened out by distance.
          * @default true
          */
-        normalizeU = true;
+        normalizeU?: boolean | undefined = true;
         /**
          * When true, the V parameter is evened out by distance.
          * @default true
          */
-        normalizeV = true;
+        normalizeV?: boolean | undefined = true;
         /**
          * How many points per direction the surface is resampled at; more is closer to the original and
          * slower.
@@ -4977,7 +4977,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        samples = 24;
+        samples?: number | undefined = 24;
         /**
          * How far the refitted surface may stray from the original, in model units.
          * @default 0.0001
@@ -4985,7 +4985,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 1e-4;
+        tolerance?: number | undefined = 1e-4;
     }
     /**
      * Several Bezier definitions for `shapes.wire.createBezierWires`, which builds one wire per
@@ -5005,7 +5005,7 @@ export namespace OCCT {
          * When true, the wires are packed into one compound instead of a list.
          * @default false
          */
-        returnCompound = false;
+        returnCompound?: boolean | undefined = false;
     }
     /**
      * A wire or edge and a division count for `divideWireByParamsToPoints`,
@@ -5068,7 +5068,7 @@ export namespace OCCT {
          * The direction the wire is cast along; only its direction matters.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * Points, a shape and a direction for `shapes.vertex.projectPoints`, which casts each point onto
@@ -5096,13 +5096,13 @@ export namespace OCCT {
          * length are not found.
          * @default [0, 10, 0]
          */
-        direction: Base.Vector3 = [0, 10, 0];
+        direction?: Base.Vector3 | undefined = [0, 10, 0];
         /**
          * Which hits to keep when a point crosses the shape more than once: all of them, the closest,
          * the farthest, or both of those.
          * @default all
          */
-        projectionType: pointProjectionTypeEnum = pointProjectionTypeEnum.all;
+        projectionType?: pointProjectionTypeEnum | undefined = pointProjectionTypeEnum.all;
     }
     /**
      * A shape and deflection settings for `shapes.wire.wiresToPoints`, which traces every wire of the
@@ -5130,7 +5130,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        angularDeflection = 0.1;
+        angularDeflection?: number | undefined = 0.1;
         /**
          * The largest distance, in model units, the polyline may stray from the curve; smaller follows
          * it more closely.
@@ -5139,7 +5139,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        curvatureDeflection = 0.1;
+        curvatureDeflection?: number | undefined = 0.1;
         /**
          * The fewest points any edge is traced with, however straight.
          * @default 2
@@ -5147,7 +5147,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        minimumOfPoints = 2;
+        minimumOfPoints?: number | undefined = 2;
         /**
          * How close two parameter values must be to count as the same point.
          * @default 1.0e-9
@@ -5155,7 +5155,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-9
          */
-        uTolerance = 1.0e-9;
+        uTolerance?: number | undefined = 1.0e-9;
         /**
          * Edges shorter than this, in model units, are traced with the minimum number of points.
          * @default 1.0e-7
@@ -5163,7 +5163,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-7
          */
-        minimumLength = 1.0e-7;
+        minimumLength?: number | undefined = 1.0e-7;
     }
     /**
      * A shape and deflection settings for `shapes.edge.edgesToPoints`, which traces every edge of the
@@ -5191,7 +5191,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        angularDeflection = 0.1;
+        angularDeflection?: number | undefined = 0.1;
         /**
          * The largest distance, in model units, the polyline may stray from the curve; smaller follows
          * it more closely.
@@ -5200,7 +5200,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        curvatureDeflection = 0.1;
+        curvatureDeflection?: number | undefined = 0.1;
         /**
          * The fewest points any edge is traced with, however straight.
          * @default 2
@@ -5208,7 +5208,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        minimumOfPoints = 2;
+        minimumOfPoints?: number | undefined = 2;
         /**
          * How close two parameter values must be to count as the same point.
          * @default 1.0e-9
@@ -5216,7 +5216,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-9
          */
-        uTolerance = 1.0e-9;
+        uTolerance?: number | undefined = 1.0e-9;
         /**
          * Edges shorter than this, in model units, are traced with the minimum number of points.
          * @default 1.0e-7
@@ -5224,7 +5224,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-7
          */
-        minimumLength = 1.0e-7;
+        minimumLength?: number | undefined = 1.0e-7;
     }
     /**
      * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
@@ -5250,7 +5250,7 @@ export namespace OCCT {
          * The direction the wires are cast along; only its direction matters.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * Wires or edges and a division count for `divideWiresByParamsToPoints`,
@@ -5276,17 +5276,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrOfDivisions = 10;
+        nrOfDivisions?: number | undefined = 10;
         /**
          * When true, the point at the start of each curve is left out.
          * @default false
          */
-        removeStartPoint = false;
+        removeStartPoint?: boolean | undefined = false;
         /**
          * When true, the point at the end of each curve is left out.
          * @default false
          */
-        removeEndPoint = false;
+        removeEndPoint?: boolean | undefined = false;
     }
     /**
      * A wire, edge or 2D curve and a parameter for the `...AtParam` methods, such as
@@ -5310,7 +5310,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        param = 0.5;
+        param?: number | undefined = 0.5;
     }
     /**
      * Several edges and one parameter for `shapes.edge.pointsOnEdgesAtParam` and
@@ -5333,7 +5333,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        param = 0.5;
+        param?: number | undefined = 0.5;
     }
     /**
      * A wire and a spacing for `shapes.wire.pointsOnWireAtEqualLength`, which places points every
@@ -5359,22 +5359,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 0.5;
+        length?: number | undefined = 0.5;
         /**
          * When true, one more point is asked for a step beyond the last one that fit.
          * @default false
          */
-        tryNext = false;
+        tryNext?: boolean | undefined = false;
         /**
          * When true, the point at the start of the wire is kept.
          * @default false
          */
-        includeFirst = false;
+        includeFirst?: boolean | undefined = false;
         /**
          * When true, the end point of the wire is appended whatever the spacing.
          * @default false
          */
-        includeLast = false;
+        includeLast?: boolean | undefined = false;
     }
 
 
@@ -5404,17 +5404,17 @@ export namespace OCCT {
          * When true, one more point is asked for at the next gap beyond the last one that fit.
          * @default false
          */
-        tryNext = false;
+        tryNext?: boolean | undefined = false;
         /**
          * When true, the point at the start of the wire is kept.
          * @default false
          */
-        includeFirst = false;
+        includeFirst?: boolean | undefined = false;
         /**
          * When true, the end point of the wire is appended whatever the pattern.
          * @default false
          */
-        includeLast = false;
+        includeLast?: boolean | undefined = false;
     }
     /**
      * A wire or edge and a distance for the `...AtLength` methods, such as
@@ -5437,7 +5437,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 0.5;
+        length?: number | undefined = 0.5;
     }
 
     /**
@@ -5461,7 +5461,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 0.5;
+        length?: number | undefined = 0.5;
     }
 
     /**
@@ -5500,17 +5500,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * The point the circle is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the circle lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A rectangle, hexagon counts and optional patterns for `shapes.wire.hexagonsInGrid` and
@@ -5641,7 +5641,7 @@ export namespace OCCT {
          * When true, the loft is capped into a solid; the sections must be closed for that.
          * @default false
          */
-        makeSolid = false;
+        makeSolid?: boolean | undefined = false;
     }
     /**
      * Section wires and fitting options for `operations.loftAdvanced`: ruled or smooth patches, a
@@ -5671,24 +5671,24 @@ export namespace OCCT {
          * When true, the loft is capped into a solid; the sections must be closed for that.
          * @default false
          */
-        makeSolid = false;
+        makeSolid?: boolean | undefined = false;
         /**
          * When true, the surface loops from the last section back to the first.
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
         /**
          * When true, the closed loop is made smooth across the seam by resampling the sections; needs
          * `closed`.
          * @default false
          */
-        periodic = false;
+        periodic?: boolean | undefined = false;
         /**
          * When true, the patches between sections are ruled surfaces with straight lines instead of a
          * smooth blend.
          * @default false
          */
-        straight = false;
+        straight?: boolean | undefined = false;
         /**
          * How many points each section is resampled into for a periodic loft.
          * @default 10
@@ -5696,17 +5696,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrPeriodicSections = 10;
+        nrPeriodicSections?: number | undefined = 10;
         /**
          * When true, the kernel smooths the fitted surface.
          * @default false
          */
-        useSmoothing = false;
+        useSmoothing?: boolean | undefined = false;
         /**
          * The highest polynomial degree the surface may use across the sections.
          * @default 3
          */
-        maxUDegree = 3;
+        maxUDegree?: number | undefined = 3;
         /**
          * How far the fitted surface may stray from the sections, in model units.
          * @default 1.0e-7
@@ -5714,13 +5714,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.0e-7;
+        tolerance?: number | undefined = 1.0e-7;
         /**
          * How the sections are parametrized before fitting: by chord length, centripetal, or
          * isoparametric; centripetal handles uneven sections best.
          * @default approxCentripetal
          */
-        parType: approxParametrizationTypeEnum = approxParametrizationTypeEnum.approxCentripetal;
+        parType?: approxParametrizationTypeEnum | undefined = approxParametrizationTypeEnum.approxCentripetal;
         /**
          * A point the loft closes to before the first section, making a pointed end; leave it out for
          * an open end.
@@ -5767,7 +5767,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        distance = 0.2;
+        distance?: number | undefined = 0.2;
         /**
          * How close two points must be to count as the same when the offset is built, in model units.
          * @default 0.1
@@ -5775,7 +5775,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        tolerance = 0.1;
+        tolerance?: number | undefined = 0.1;
     }
     /**
      * A shape, a distance and corner options for `operations.offsetAdv`, which moves the shape's
@@ -5810,7 +5810,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        distance = 0.2;
+        distance?: number | undefined = 0.2;
         /**
          * How close two points must be to count as the same when the offset is built, in model units.
          * @default 0.1
@@ -5818,18 +5818,18 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        tolerance = 0.1;
+        tolerance?: number | undefined = 0.1;
         /**
          * How the offset pieces meet at corners: `arc` rounds them, `intersection` extends them to a
          * sharp corner, `tangent` keeps them tangent.
          * @default arc
          */
-        joinType = joinTypeEnum.arc;
+        joinType?: joinTypeEnum | undefined = joinTypeEnum.arc;
         /**
          * When true, the internal edges the offset can leave behind are removed from the result.
          * @default false
          */
-        removeIntEdges = false;
+        removeIntEdges?: boolean | undefined = false;
     }
     /**
      * A profile, an angle and an axis for `operations.revolve`, which spins the profile about the axis
@@ -5854,17 +5854,17 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        angle = 360;
+        angle?: number | undefined = 360;
         /**
          * The direction of the axis, which passes through the origin.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true, the profile's geometry is copied instead of shared with the result.
          * @default false
          */
-        copy = false;
+        copy?: boolean | undefined = false;
     }
     /**
      * A path wire and profile shapes for `operations.pipe`, and generally one shape with a list of
@@ -5930,23 +5930,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        radius = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * When true, the tubes are solids; when false they are open shells.
          * @default true
          */
-        makeSolid = true;
+        makeSolid?: boolean | undefined = true;
         /**
          * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
          * modes follow the curve's bending.
          * @default isConstantNormal
          */
-        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
         /**
          * When true, a swept surface that came out with kinks is refitted to be smooth.
          * @default false
          */
-        forceApproxC1 = false;
+        forceApproxC1?: boolean | undefined = false;
     }
     /**
      * A path wire, a radius and sweep options for `operations.pipeWireCylindrical`, which makes a round
@@ -5972,23 +5972,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        radius = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * When true, the tube is a solid; when false it is an open shell.
          * @default true
          */
-        makeSolid = true;
+        makeSolid?: boolean | undefined = true;
         /**
          * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
          * modes follow the curve's bending.
          * @default isConstantNormal
          */
-        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
         /**
          * When true, a swept surface that came out with kinks is refitted to be smooth.
          * @default false
          */
-        forceApproxC1 = false;
+        forceApproxC1?: boolean | undefined = false;
     }
     /**
      * A path wire, a polygon size and sweep options for `operations.pipePolylineWireNGon`, which makes
@@ -6015,7 +6015,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        radius = 0.1;
+        radius?: number | undefined = 0.1;
         /**
          * How many corners, and so flat sides, the tube has.
          * @default 6
@@ -6023,23 +6023,23 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrCorners = 6;
+        nrCorners?: number | undefined = 6;
         /**
          * When true, the tube is a solid; when false it is an open shell.
          * @default true
          */
-        makeSolid = true;
+        makeSolid?: boolean | undefined = true;
         /**
          * How the profile turns as it follows the path; `isConstantNormal` keeps it steady, the Frenet
          * modes follow the curve's bending.
          * @default isConstantNormal
          */
-        trihedronEnum = geomFillTrihedronEnum.isConstantNormal;
+        trihedronEnum?: geomFillTrihedronEnum | undefined = geomFillTrihedronEnum.isConstantNormal;
         /**
          * When true, a swept surface that came out with kinks is refitted to be smooth.
          * @default false
          */
-        forceApproxC1 = false;
+        forceApproxC1?: boolean | undefined = false;
     }
     /**
      * A shape and a vector for `operations.extrude`, which sweeps the shape in a straight line.
@@ -6058,7 +6058,7 @@ export namespace OCCT {
          * The direction and distance of the sweep as one vector, in model units.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
 
     /**
@@ -6079,7 +6079,7 @@ export namespace OCCT {
          * The direction and distance of the sweep as one vector, in model units.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
 
     /**
@@ -6108,13 +6108,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        localFuzzyTolerance = 1.0e-4;
+        localFuzzyTolerance?: number | undefined = 1.0e-4;
         /**
          * When true, the inputs stay untouched and the result holds the pieces of every shape involved;
          * when false only the pieces of `shape` come back.
          * @default true
          */
-        nonDestructive = true;
+        nonDestructive?: boolean | undefined = true;
     }
     /**
      * Shapes and an edge flag for `booleans.union`, which fuses them into one.
@@ -6134,7 +6134,7 @@ export namespace OCCT {
          * every edge of the inputs stays.
          * @default false
          */
-        keepEdges = false;
+        keepEdges?: boolean | undefined = false;
     }
     /**
      * A main shape and the shapes to cut away from it for `booleans.difference`.
@@ -6160,7 +6160,7 @@ export namespace OCCT {
          * edge stays.
          * @default false
          */
-        keepEdges = false;
+        keepEdges?: boolean | undefined = false;
     }
 
     /**
@@ -6182,7 +6182,7 @@ export namespace OCCT {
          * stays.
          * @default false
          */
-        keepEdges = false;
+        keepEdges?: boolean | undefined = false;
     }
     /**
      * One shape for the many methods that take nothing else, such as `shapes.shape.isValid`,
@@ -6313,7 +6313,7 @@ export namespace OCCT {
          * gaps.
          * @default false
          */
-        lockvtx = false;
+        lockvtx?: boolean | undefined = false;
         /**
          * Edges shorter than this, in model units, are removed; 0 uses the wire's own tolerance.
          * @default 0
@@ -6321,7 +6321,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0000000001
          */
-        precsmall = 0.0;
+        precsmall?: number | undefined = 0.0;
     }
     /**
      * A shape and tolerance bounds for `shapeFix.basicShapeRepair`, the kernel's general repair.
@@ -6345,7 +6345,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0000000001
          */
-        precision = 0.001;
+        precision?: number | undefined = 0.001;
         /**
          * The largest tolerance the repair may give a part of the shape while closing gaps, in model
          * units; a gap needing more stays open.
@@ -6354,7 +6354,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0000000001
          */
-        maxTolerance = 0.01;
+        maxTolerance?: number | undefined = 0.01;
         /**
          * The smallest tolerance the repair may use, in model units; edges shorter than this are
          * removed.
@@ -6363,7 +6363,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0000000001
          */
-        minTolerance = 0.0001;
+        minTolerance?: number | undefined = 0.0001;
     }
     /**
      * A shape and a tolerance for `shapes.face.faceFromSurface`, `shapes.shell.sewFaces` and the other
@@ -6386,7 +6386,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.0e-7;
+        tolerance?: number | undefined = 1.0e-7;
     }
 
     /**
@@ -6411,7 +6411,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
     }
     /**
      * A shape and a position for `shapes.edge.getEdge`.
@@ -6434,7 +6434,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
     }
     /**
      * A flat profile, a height and a twist for `operations.rotatedExtrude`, which extrudes the profile
@@ -6459,7 +6459,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How far the profile turns about the Y axis over the height, in degrees.
          * @default 360
@@ -6467,12 +6467,12 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        angle = 360;
+        angle?: number | undefined = 360;
         /**
          * When true, a face profile gives a closed solid; when false the result is a shell.
          * @default true
          */
-        makeSolid = true;
+        makeSolid?: boolean | undefined = true;
     }
     // Threading : Create Surfaces
     /**
@@ -6507,7 +6507,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offset = 1;
+        offset?: number | undefined = 1;
         /**
          * How close two points must be to count as the same when the offset walls are joined, in model
          * units.
@@ -6516,30 +6516,30 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.e-3;
+        tolerance?: number | undefined = 1.e-3;
         /**
          * When true, the offset faces are intersected with each other rather than joined by their
          * parallels; the kernel's default is false.
          * @default false
          */
-        intersection = false;
+        intersection?: boolean | undefined = false;
         /**
          * Whether the kernel should look for self-intersections in the result; not implemented by the
          * kernel, so leave it false.
          * @default false
          */
-        selfIntersection = false;
+        selfIntersection?: boolean | undefined = false;
         /**
          * How the offset walls meet at corners: `arc` rounds them, `intersection` extends them to a
          * sharp corner, `tangent` keeps them tangent.
          * @default arc
          */
-        joinType = joinTypeEnum.arc;
+        joinType?: joinTypeEnum | undefined = joinTypeEnum.arc;
         /**
          * When true, the internal edges the offset can leave on the walls are removed from the result.
          * @default false
          */
-        removeIntEdges = false;
+        removeIntEdges?: boolean | undefined = false;
     }
     /**
      * A shape and a scale, rotation and translation for `transforms.transform`, applied in that order
@@ -6562,12 +6562,12 @@ export namespace OCCT {
          * The vector the shape moves by, in model units, applied last.
          * @default [0,0,0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
         /**
          * The direction of the rotation axis, which passes through the origin.
          * @default [0,1,0]
          */
-        rotationAxis: Base.Vector3 = [0, 1, 0];
+        rotationAxis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The rotation about the axis, in degrees, applied after the scale.
          * @default 0
@@ -6575,7 +6575,7 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        rotationAngle = 0;
+        rotationAngle?: number | undefined = 0;
         /**
          * The uniform scale about the origin, applied first; 1 keeps the size.
          * @default 1
@@ -6583,7 +6583,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleFactor = 1;
+        scaleFactor?: number | undefined = 1;
     }
     /**
      * Shapes and one scale, rotation and translation each for `transforms.transformShapes`; all the
@@ -6607,22 +6607,22 @@ export namespace OCCT {
          * One translation vector per shape, in model units.
          * @default [[0,0,0]]
          */
-        translations: Base.Vector3[] = [[0, 0, 0]];
+        translations?: Base.Vector3[] | undefined = [[0, 0, 0]];
         /**
          * One rotation axis direction per shape, each through the origin.
          * @default [[0,1,0]]
          */
-        rotationAxes: Base.Vector3[] = [[0, 1, 0]];
+        rotationAxes?: Base.Vector3[] | undefined = [[0, 1, 0]];
         /**
          * One rotation angle per shape, in degrees.
          * @default [0]
          */
-        rotationAngles: number[] = [0];
+        rotationAngles?: number[] | undefined = [0];
         /**
          * One uniform scale factor per shape, about the origin.
          * @default [1]
          */
-        scaleFactors: number[] = [1];
+        scaleFactors?: number[] | undefined = [1];
     }
     /**
      * A shape and a vector for `transforms.translate`.
@@ -6641,7 +6641,7 @@ export namespace OCCT {
          * The vector the shape moves by, in model units.
          * @default [0, 0, 0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
     }
     /**
      * Shapes and one vector each for `transforms.translateShapes`; the two lists must have the same
@@ -6661,7 +6661,7 @@ export namespace OCCT {
          * One vector per shape, in model units.
          * @default [[0, 0, 0]]
          */
-        translations: Base.Vector3[] = [[0, 0, 0]];
+        translations?: Base.Vector3[] | undefined = [[0, 0, 0]];
     }
     /**
      * A shape and two full frames for `transforms.alignNormAndAxis`: the point, normal and axis the
@@ -6686,33 +6686,33 @@ export namespace OCCT {
          * The point on the shape that is carried onto `toOrigin`.
          * @default [0, 0, 0]
          */
-        fromOrigin: Base.Point3 = [0, 0, 0];
+        fromOrigin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal direction at the shape's frame, carried onto `toNorm`.
          * @default [1, 0, 0]
          */
-        fromNorm: Base.Vector3 = [1, 0, 0];
+        fromNorm?: Base.Vector3 | undefined = [1, 0, 0];
         /**
          * An axis direction in the plane of the normal at the shape's frame, carried onto `toAx`; it
          * fixes the spin about the normal.
          * @default [0, 0, 1]
          */
-        fromAx: Base.Vector3 = [0, 0, 1];
+        fromAx?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * The point `fromOrigin` lands on.
          * @default [0, 1, 0]
          */
-        toOrigin: Base.Point3 = [0, 1, 0];
+        toOrigin?: Base.Point3 | undefined = [0, 1, 0];
         /**
          * The direction `fromNorm` lands on.
          * @default [0, 1, 0]
          */
-        toNorm: Base.Vector3 = [0, 1, 0];
+        toNorm?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The direction `fromAx` lands on.
          * @default [0, 0, 1]
          */
-        toAx: Base.Vector3 = [0, 0, 1];
+        toAx?: Base.Vector3 | undefined = [0, 0, 1];
     }
     /**
      * A shape, a point and direction on it, and the point and direction to land on, for
@@ -6735,22 +6735,22 @@ export namespace OCCT {
          * The point on the shape that is carried onto `toOrigin`.
          * @default [0, 0, 0]
          */
-        fromOrigin: Base.Point3 = [0, 0, 0];
+        fromOrigin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction at the shape's frame that is carried onto `toDirection`.
          * @default [0, 0, 1]
          */
-        fromDirection: Base.Vector3 = [0, 0, 1];
+        fromDirection?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * The point `fromOrigin` lands on.
          * @default [0, 1, 0]
          */
-        toOrigin: Base.Point3 = [0, 1, 0];
+        toOrigin?: Base.Point3 | undefined = [0, 1, 0];
         /**
          * The direction `fromDirection` lands on.
          * @default [0, 1, 0]
          */
-        toDirection: Base.Vector3 = [0, 1, 0];
+        toDirection?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * Shapes and one from and to frame each for `transforms.alignShapes`; all the lists must have the
@@ -6773,22 +6773,22 @@ export namespace OCCT {
          * One point per shape that is carried onto the matching `toOrigins` entry.
          * @default [[0, 0, 0]]
          */
-        fromOrigins: Base.Point3[] = [[0, 0, 0]];
+        fromOrigins?: Base.Point3[] | undefined = [[0, 0, 0]];
         /**
          * One direction per shape that is carried onto the matching `toDirections` entry.
          * @default [[0, 0, 1]]
          */
-        fromDirections: Base.Vector3[] = [[0, 0, 1]];
+        fromDirections?: Base.Vector3[] | undefined = [[0, 0, 1]];
         /**
          * One point per shape for its `fromOrigins` entry to land on.
          * @default [[0, 1, 0]]
          */
-        toOrigins: Base.Point3[] = [[0, 1, 0]];
+        toOrigins?: Base.Point3[] | undefined = [[0, 1, 0]];
         /**
          * One direction per shape for its `fromDirections` entry to land on.
          * @default [[0, 1, 0]]
          */
-        toDirections: Base.Vector3[] = [[0, 1, 0]];
+        toDirections?: Base.Vector3[] | undefined = [[0, 1, 0]];
     }
 
     /**
@@ -6810,12 +6810,12 @@ export namespace OCCT {
          * A point on the mirror axis.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the mirror axis.
          * @default [0, 0, 1]
          */
-        direction: Base.Vector3 = [0, 0, 1];
+        direction?: Base.Vector3 | undefined = [0, 0, 1];
     }
     /**
      * Shapes and one mirror axis each for `transforms.mirrorShapes`; all the lists must have the same
@@ -6836,12 +6836,12 @@ export namespace OCCT {
          * One point per shape on its mirror axis.
          * @default [[0, 0, 0]]
          */
-        origins: Base.Point3[] = [[0, 0, 0]];
+        origins?: Base.Point3[] | undefined = [[0, 0, 0]];
         /**
          * One mirror axis direction per shape.
          * @default [[0, 0, 1]]
          */
-        directions: Base.Vector3[] = [[0, 0, 1]];
+        directions?: Base.Vector3[] | undefined = [[0, 0, 1]];
     }
     /**
      * A shape and a plane for `transforms.mirrorAlongNormal`, which mirrors the shape across the plane
@@ -6862,12 +6862,12 @@ export namespace OCCT {
          * A point on the mirror plane.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the mirror plane.
          * @default [0, 0, 1]
          */
-        normal: Base.Vector3 = [0, 0, 1];
+        normal?: Base.Vector3 | undefined = [0, 0, 1];
     }
     /**
      * Shapes and one mirror plane each for `transforms.mirrorAlongNormalShapes`; all the lists must
@@ -6888,12 +6888,12 @@ export namespace OCCT {
          * One point per shape on its mirror plane.
          * @default [[0, 0, 0]]
          */
-        origins: Base.Point3[] = [[0, 0, 0]];
+        origins?: Base.Point3[] | undefined = [[0, 0, 0]];
         /**
          * One mirror plane normal per shape.
          * @default [[0, 0, 1]]
          */
-        normals: Base.Vector3[] = [[0, 0, 1]];
+        normals?: Base.Vector3[] | undefined = [[0, 0, 1]];
     }
     /**
      * A shape, a direction for its Y axis and a point to move it to, for
@@ -6914,12 +6914,12 @@ export namespace OCCT {
          * The direction the shape's Y axis should point along after placing.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The point the shape's origin is moved to, in model units.
          * @default [0, 0, 0]
          */
-        center: Base.Vector3 = [0, 0, 0];
+        center?: Base.Vector3 | undefined = [0, 0, 0];
     }
     /**
      * A shape and what to merge for `shapes.shape.unifySameDomain`, which joins faces and edges that
@@ -6941,17 +6941,17 @@ export namespace OCCT {
          * When true, edges that continue each other on one curve are merged into one.
          * @default true
          */
-        unifyEdges = true;
+        unifyEdges?: boolean | undefined = true;
         /**
          * When true, faces that lie on one surface are merged into one.
          * @default true
          */
-        unifyFaces = true;
+        unifyFaces?: boolean | undefined = true;
         /**
          * When true, neighboring B-spline edges are joined into a single B-spline where possible.
          * @default true
          */
-        concatBSplines = true;
+        concatBSplines?: boolean | undefined = true;
     }
 
     /**
@@ -6988,13 +6988,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.0e-4;
+        tolerance?: number | undefined = 1.0e-4;
         /**
          * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
          * outside without the exact test; a quick reject for many points far from the face.
          * @default false
          */
-        useBndBox = false;
+        useBndBox?: boolean | undefined = false;
         /**
          * How far beyond the bounding box a point may lie and still get the exact test when
          * `useBndBox` is on, in model units.
@@ -7003,33 +7003,33 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        gapTolerance = 0.1;
+        gapTolerance?: number | undefined = 0.1;
         /**
          * When true, points inside a face are kept.
          * @default true
          */
-        keepIn = true;
+        keepIn?: boolean | undefined = true;
         /**
          * When true, points on the boundary of a face are kept.
          * @default true
          */
-        keepOn = true;
+        keepOn?: boolean | undefined = true;
         /**
          * When true, points outside a face are kept.
          * @default false
          */
-        keepOut = false;
+        keepOut?: boolean | undefined = false;
         /**
          * When true, points the kernel cannot place inside, on or outside a face are kept.
          * @default false
          */
-        keepUnknown = false;
+        keepUnknown?: boolean | undefined = false;
         /**
          * When true, the kept points of all faces come back in one list; when false, one list per face
          * in the order given.
          * @default true
          */
-        flatPointsArray = true;
+        flatPointsArray?: boolean | undefined = true;
     }
     /**
      * A face, points and which groups to keep for `shapes.face.filterFacePoints`, which sorts each
@@ -7064,13 +7064,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.0e-4;
+        tolerance?: number | undefined = 1.0e-4;
         /**
          * When true, a point outside the face's bounding box, grown by `gapTolerance`, counts as
          * outside without the exact test; a quick reject for many points far from the face.
          * @default false
          */
-        useBndBox = false;
+        useBndBox?: boolean | undefined = false;
         /**
          * How far beyond the bounding box a point may lie and still get the exact test when
          * `useBndBox` is on, in model units.
@@ -7079,27 +7079,27 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        gapTolerance = 0.1;
+        gapTolerance?: number | undefined = 0.1;
         /**
          * When true, points inside the face are kept.
          * @default true
          */
-        keepIn = true;
+        keepIn?: boolean | undefined = true;
         /**
          * When true, points on the boundary of the face are kept.
          * @default true
          */
-        keepOn = true;
+        keepOn?: boolean | undefined = true;
         /**
          * When true, points outside the face are kept.
          * @default false
          */
-        keepOut = false;
+        keepOut?: boolean | undefined = false;
         /**
          * When true, points the kernel cannot place inside, on or outside the face are kept.
          * @default false
          */
-        keepUnknown = false;
+        keepUnknown?: boolean | undefined = false;
     }
     /**
      * A solid, points and which groups to keep for `shapes.solid.filterSolidPoints`, which sorts each
@@ -7132,27 +7132,27 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.000001
          */
-        tolerance = 1.0e-4;
+        tolerance?: number | undefined = 1.0e-4;
         /**
          * When true, points inside the solid are kept.
          * @default true
          */
-        keepIn = true;
+        keepIn?: boolean | undefined = true;
         /**
          * When true, points on the surface of the solid are kept.
          * @default true
          */
-        keepOn = true;
+        keepOn?: boolean | undefined = true;
         /**
          * When true, points outside the solid are kept.
          * @default false
          */
-        keepOut = false;
+        keepOut?: boolean | undefined = false;
         /**
          * When true, points the kernel could not classify are kept.
          * @default false
          */
-        keepUnknown = false;
+        keepUnknown?: boolean | undefined = false;
     }
     /**
      * Shapes and one direction and point each for `transforms.alignAndTranslateShapes`; all the lists
@@ -7173,12 +7173,12 @@ export namespace OCCT {
          * One direction per shape for its Y axis to point along.
          * @default [[0, 1, 0]]
          */
-        directions: Base.Vector3[] = [[0, 1, 0]];
+        directions?: Base.Vector3[] | undefined = [[0, 1, 0]];
         /**
          * One point per shape for its origin to move to, in model units.
          * @default [[0, 0, 0]]
          */
-        centers: Base.Vector3[] = [[0, 0, 0]];
+        centers?: Base.Vector3[] | undefined = [[0, 0, 0]];
     }
     /**
      * A shape, an axis through the origin and an angle for `transforms.rotate`.
@@ -7198,7 +7198,7 @@ export namespace OCCT {
          * The direction of the rotation axis, which passes through the origin.
          * @default [0, 0, 1]
          */
-        axis: Base.Vector3 = [0, 0, 1];
+        axis?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * The rotation in degrees, following the right-hand rule about the axis.
          * @default 0
@@ -7206,7 +7206,7 @@ export namespace OCCT {
          * @maximum 360
          * @step 1
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
     /**
      * A shape, an angle, a center and an axis for `transforms.rotateAroundCenter`, which rotates about
@@ -7228,17 +7228,17 @@ export namespace OCCT {
          * The rotation in degrees, following the right-hand rule about the axis.
          * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
         /**
          * The point the rotation axis passes through.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the rotation axis.
          * @default [0, 0, 1]
          */
-        axis: Base.Vector3 = [0, 0, 1];
+        axis?: Base.Vector3 | undefined = [0, 0, 1];
     }
     /**
      * Shapes and one axis and angle each for `transforms.rotateShapes`; all the lists must have the
@@ -7259,12 +7259,12 @@ export namespace OCCT {
          * One rotation axis direction per shape, each through the origin.
          * @default [[0, 0, 1]]
          */
-        axes: Base.Vector3[] = [[0, 0, 1]];
+        axes?: Base.Vector3[] | undefined = [[0, 0, 1]];
         /**
          * One rotation angle per shape, in degrees.
          * @default [0]
          */
-        angles: number[] = [0];
+        angles?: number[] | undefined = [0];
     }
     /**
      * Shapes and one angle, center and axis each for `transforms.rotateAroundCenterShapes`; all the
@@ -7286,17 +7286,17 @@ export namespace OCCT {
          * One rotation angle per shape, in degrees.
          * @default [0]
          */
-        angles = [0];
+        angles?: number[] | undefined = [0];
         /**
          * One point per shape for its rotation axis to pass through.
          * @default [[0, 0, 0]]
          */
-        centers: Base.Point3[] = [[0, 0, 0]];
+        centers?: Base.Point3[] | undefined = [[0, 0, 0]];
         /**
          * One rotation axis direction per shape.
          * @default [[0, 0, 1]]
          */
-        axes: Base.Vector3[] = [[0, 0, 1]];
+        axes?: Base.Vector3[] | undefined = [[0, 0, 1]];
     }
     /**
      * A shape and a factor for `transforms.scale`, which scales uniformly about the origin.
@@ -7318,7 +7318,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        factor = 1;
+        factor?: number | undefined = 1;
     }
     /**
      * Shapes and one factor each for `transforms.scaleShapes`; the two lists must have the same length.
@@ -7337,7 +7337,7 @@ export namespace OCCT {
          * One uniform scale factor per shape, about the origin.
          * @default [1]
          */
-        factors: number[] = [1];
+        factors?: number[] | undefined = [1];
     }
     /**
      * A shape, three factors and a center for `transforms.scale3d`, which scales each axis on its own
@@ -7358,12 +7358,12 @@ export namespace OCCT {
          * The factors along X, Y and Z; unequal factors stretch the shape.
          * @default [1, 1, 1]
          */
-        scale: Base.Vector3 = [1, 1, 1];
+        scale?: Base.Vector3 | undefined = [1, 1, 1];
         /**
          * The point that stays in place while everything else scales away from or toward it.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Shapes and one factor triple and center each for `transforms.scale3dShapes`; all the lists must
@@ -7384,12 +7384,12 @@ export namespace OCCT {
          * One set of X, Y and Z factors per shape.
          * @default [[1, 1, 1]]
          */
-        scales: Base.Vector3[] = [[1, 1, 1]];
+        scales?: Base.Vector3[] | undefined = [[1, 1, 1]];
         /**
          * One point per shape that stays in place while it scales.
          * @default [[0, 0, 0]]
          */
-        centers: Base.Point3[] = [[0, 0, 0]];
+        centers?: Base.Point3[] | undefined = [[0, 0, 0]];
     }
     // Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
     // matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
@@ -7469,12 +7469,12 @@ export namespace OCCT {
          * @default 1
          * @step 0.1
          */
-        factor = 1;
+        factor?: number | undefined = 1;
         /**
          * The point that stays in place while everything else scales away from or toward it.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A shape and a point for `transforms.mirrorAboutPoint`, which mirrors the shape through the point.
@@ -7493,7 +7493,7 @@ export namespace OCCT {
          * The point every part of the shape is mirrored through.
          * @default [0, 0, 0]
          */
-        point: Base.Point3 = [0, 0, 0];
+        point?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A shape and a quaternion for `transforms.rotateByQuaternion`, which rotates the shape about the
@@ -7514,7 +7514,7 @@ export namespace OCCT {
          * rotation.
          * @default [0, 0, 0, 1]
          */
-        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+        quaternion?: [number, number, number, number] | undefined = [0, 0, 0, 1];
     }
     /**
      * A translation, Euler rotation and uniform scale for `transforms.composeTransform`, combined into
@@ -7530,19 +7530,19 @@ export namespace OCCT {
          * The move as `[x, y, z]`, in model units, applied last.
          * @default [0, 0, 0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
         /**
          * Euler angles `[rx, ry, rz]` in degrees about the X, Y and Z axes; the Z turn is applied
          * first, then Y, then X.
          * @default [0, 0, 0]
          */
-        rotation: Base.Vector3 = [0, 0, 0];
+        rotation?: Base.Vector3 | undefined = [0, 0, 0];
         /**
          * The uniform scale about the origin, applied first; 1 keeps the size.
          * @default 1
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
     }
     /**
      * A matrix, or a list of matrices, for `transforms.multiplyTransforms`, which folds them into one.
@@ -7582,7 +7582,7 @@ export namespace OCCT {
          * The move as `[x, y, z]`, in model units.
          * @default [0, 0, 0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
     }
     /**
      * An axis, an angle and an optional center for `transforms.rotationAxisAngleToMatrix`.
@@ -7597,18 +7597,18 @@ export namespace OCCT {
          * The direction of the rotation axis.
          * @default [0, 0, 1]
          */
-        axis: Base.Vector3 = [0, 0, 1];
+        axis?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * The rotation in degrees, following the right-hand rule about the axis.
          * @default 0
          * @step 1
          */
-        angle = 0;
+        angle?: number | undefined = 0;
         /**
          * The point the axis passes through; the origin when left at its default.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A factor and an optional center for `transforms.scaleUniformToMatrix`.
@@ -7623,13 +7623,13 @@ export namespace OCCT {
          * @default 1
          * @step 0.1
          */
-        factor = 1;
+        factor?: number | undefined = 1;
         /**
          * The point that stays in place while everything else scales; the origin when left at its
          * default.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A point for `transforms.mirrorPointToMatrix`, the matrix of a mirror through that point.
@@ -7642,7 +7642,7 @@ export namespace OCCT {
          * The point every part of a shape is mirrored through.
          * @default [0, 0, 0]
          */
-        point: Base.Point3 = [0, 0, 0];
+        point?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * An axis for `transforms.mirrorAxisToMatrix`, the matrix of a mirror across the line through
@@ -7657,12 +7657,12 @@ export namespace OCCT {
          * A point on the mirror axis.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the mirror axis; any length will do, but not a zero vector.
          * @default [1, 0, 0]
          */
-        direction: Base.Vector3 = [1, 0, 0];
+        direction?: Base.Vector3 | undefined = [1, 0, 0];
     }
     /**
      * A plane for `transforms.mirrorPlaneToMatrix`, the matrix of a mirror across the plane through
@@ -7677,12 +7677,12 @@ export namespace OCCT {
          * A point on the mirror plane.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the mirror plane; any length will do, but not a zero vector.
          * @default [0, 0, 1]
          */
-        normal: Base.Vector3 = [0, 0, 1];
+        normal?: Base.Vector3 | undefined = [0, 0, 1];
     }
     /**
      * A quaternion for `transforms.quaternionToMatrix`, which builds the matrix of that rotation.
@@ -7696,7 +7696,7 @@ export namespace OCCT {
          * rotation.
          * @default [0, 0, 0, 1]
          */
-        quaternion: [number, number, number, number] = [0, 0, 0, 1];
+        quaternion?: [number, number, number, number] | undefined = [0, 0, 0, 1];
     }
     /**
      * Decomposed placement transform of a shape or label.
@@ -7742,14 +7742,14 @@ export namespace OCCT {
          * What kind of part the node is: solid, shell, face, wire, edge, vertex, compound or compsolid.
          * @default solid
          */
-        kind: brepGraphNodeKindEnum = brepGraphNodeKindEnum.solid;
+        kind?: brepGraphNodeKindEnum | undefined = brepGraphNodeKindEnum.solid;
         /**
          * The position of the node among the parts of its kind, counting from 0, as the graph queries
          * report it.
          * @default 0
          * @step 1
          */
-        index = 0;
+        index?: number | undefined = 0;
     }
     /**
      * A shape and one of its sub-shapes for `brepGraph.nodeOfShape`, which finds the graph node
@@ -7793,13 +7793,13 @@ export namespace OCCT {
          * Points near the corners to round; the vertex nearest each point is the one treated.
          * @default []
          */
-        points: Base.Point3[] = [];
+        points?: Base.Point3[] | undefined = [];
         /**
          * The rounding radius, in model units.
          * @default 1
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * For 3D corners, how far the rounding reaches along the meeting edges: 0 for the tightest,
          * almost spherical corner, 1 for the full reach.
@@ -7808,20 +7808,20 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.1
          */
-        taperFactor = 1;
+        taperFactor?: number | undefined = 1;
         /**
          * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
          * nearest vertex whatever the distance.
          * @default 0
          * @step 0.1
          */
-        snapTolerance = 0;
+        snapTolerance?: number | undefined = 0;
         /**
          * `auto` rounds planar corners in place and 3D corners with a taper; `planarOnly` skips 3D
          * corners.
          * @default auto
          */
-        mode: cornerModeEnum = cornerModeEnum.auto;
+        mode?: cornerModeEnum | undefined = cornerModeEnum.auto;
     }
     /**
      * A shell or solid, points near its corners and bevel settings for `corners.chamferCornerByPoint`,
@@ -7845,32 +7845,32 @@ export namespace OCCT {
          * Points near the corners to bevel; the vertex nearest each point is the one treated.
          * @default []
          */
-        points: Base.Point3[] = [];
+        points?: Base.Point3[] | undefined = [];
         /**
          * How far the bevel reaches back from the corner along its edges, in model units.
          * @default 1
          * @step 0.1
          */
-        distance = 1;
+        distance?: number | undefined = 1;
         /**
          * The slope of the bevel in degrees, used for planar corners.
          * @default 45
          * @step 1
          */
-        angle = 45;
+        angle?: number | undefined = 45;
         /**
          * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
          * nearest vertex whatever the distance.
          * @default 0
          * @step 0.1
          */
-        snapTolerance = 0;
+        snapTolerance?: number | undefined = 0;
         /**
          * `auto` bevels planar corners in place and 3D corners with a local plane cut; `planarOnly`
          * skips 3D corners.
          * @default auto
          */
-        mode: cornerModeEnum = cornerModeEnum.auto;
+        mode?: cornerModeEnum | undefined = cornerModeEnum.auto;
     }
     /**
      * A shell or solid and points near its corners for `corners.classifyCornerByPoint`, which reports
@@ -7891,14 +7891,14 @@ export namespace OCCT {
          * Points near the corners to classify; the vertex nearest each point is the one reported.
          * @default []
          */
-        points: Base.Point3[] = [];
+        points?: Base.Point3[] | undefined = [];
         /**
          * How far a point may be from a vertex and still pick it, in model units; 0 or less accepts the
          * nearest vertex whatever the distance.
          * @default 0
          * @step 0.1
          */
-        snapTolerance = 0;
+        snapTolerance?: number | undefined = 0;
     }
     /**
      * A flat wire or face, a distance, an angle and optional corner indexes for
@@ -7921,13 +7921,13 @@ export namespace OCCT {
          * @default 1
          * @step 0.1
          */
-        distance = 1;
+        distance?: number | undefined = 1;
         /**
          * The angle of the bevel to that edge, in degrees; 45 gives an even chamfer.
          * @default 45
          * @step 1
          */
-        angle = 45;
+        angle?: number | undefined = 45;
         /**
          * Which corners to bevel, counted from 1 along the outline; leave it out to bevel them all.
          * @default undefined
@@ -7963,29 +7963,29 @@ export namespace OCCT {
          * The pull direction, the way the part leaves the mold; the taper is measured against it.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The draft angle, in degrees.
          * @default 5
          * @step 1
          */
-        angle = 5;
+        angle?: number | undefined = 5;
         /**
          * A point on the neutral plane, the plane that stays where it is while the faces pivot about
          * it.
          * @default [0, 0, 0]
          */
-        neutralPlaneOrigin: Base.Point3 = [0, 0, 0];
+        neutralPlaneOrigin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the neutral plane.
          * @default [0, 0, 1]
          */
-        neutralPlaneDirection: Base.Vector3 = [0, 0, 1];
+        neutralPlaneDirection?: Base.Vector3 | undefined = [0, 0, 1];
         /**
          * When true, the faces taper on the standard side; false tapers them the other way.
          * @default true
          */
-        flag = true;
+        flag?: boolean | undefined = true;
     }
     /**
      * A wire or shape, a direction, an angle and a length for `draft.makeDraft`, which grows a tapered
@@ -8008,25 +8008,25 @@ export namespace OCCT {
          * The direction the skirt grows along, the pull direction of the mold.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far the skirt leans from the direction, in degrees.
          * @default 5
          * @step 1
          */
-        angle = 5;
+        angle?: number | undefined = 5;
         /**
          * How long the skirt may grow, in model units, measured along the corner edges between its
          * faces.
          * @default 10
          * @step 0.1
          */
-        lengthMax = 10;
+        lengthMax?: number | undefined = 10;
         /**
          * When true, the skirt leans inward instead of outward.
          * @default false
          */
-        internal = false;
+        internal?: boolean | undefined = false;
     }
     /**
      * A wire or shape, a direction, an angle and a stop shape for `draft.makeDraftToShape`, which grows
@@ -8050,13 +8050,13 @@ export namespace OCCT {
          * The direction the skirt grows along, the pull direction of the mold.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far the skirt leans from the direction, in degrees.
          * @default 5
          * @step 1
          */
-        angle = 5;
+        angle?: number | undefined = 5;
         /**
          * The shape the skirt grows up to and stops at.
          * @default undefined
@@ -8066,12 +8066,12 @@ export namespace OCCT {
          * When true, the part of the stop shape outside the skirt is kept in the result.
          * @default false
          */
-        keepOut = false;
+        keepOut?: boolean | undefined = false;
         /**
          * When true, the skirt leans inward instead of outward.
          * @default false
          */
-        internal = false;
+        internal?: boolean | undefined = false;
     }
     /**
      * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing.
@@ -8099,13 +8099,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance and neighbors, at extra cost.
@@ -8155,19 +8155,19 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the points are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, the three points of each triangle come in the opposite order, for tools that wind
          * triangles the other way.
          * @default false
          */
-        reversedPoints = false;
+        reversedPoints?: boolean | undefined = false;
     }
     /**
      * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
@@ -8196,13 +8196,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance and neighbors, at extra cost.
@@ -8256,13 +8256,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -8316,13 +8316,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, each face and edge entry also carries its area or length, center of mass, surface
          * or curve type, tolerance, neighbors and ids, at extra cost.
@@ -8368,12 +8368,12 @@ export namespace OCCT {
          * The name the downloaded file gets; `.step` is appended when missing.
          * @default shape.step
          */
-        fileName = "shape.step";
+        fileName?: string | undefined = "shape.step";
         /**
          * When true, the shape is turned so this library's Y-up becomes STEP's Z-up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, the axis swap skips its mirror step, for shapes that were built in a right-handed
          * system.
@@ -8409,18 +8409,18 @@ export namespace OCCT {
          * The name the downloaded file gets.
          * @default shape.stl
          */
-        fileName = "shape.stl";
+        fileName?: string | undefined = "shape.stl";
         /**
          * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
          * and makes a bigger file.
          * @default 0.01
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * When true, the shape is turned so this library's Y-up becomes Z-up.
          * @default false
          */
-        adjustYtoZ = false;
+        adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text.
@@ -8460,7 +8460,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.01
          */
-        angularDeflection = 0.1;
+        angularDeflection?: number | undefined = 0.1;
         /**
          * The largest distance, in model units, the traced polyline may stray from the curve; smaller
          * follows it more closely.
@@ -8469,7 +8469,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.001
          */
-        curvatureDeflection = 0.1;
+        curvatureDeflection?: number | undefined = 0.1;
         /**
          * The fewest points any edge is traced with, however straight.
          * @default 2
@@ -8477,7 +8477,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        minimumOfPoints = 2;
+        minimumOfPoints?: number | undefined = 2;
         /**
          * How close two parameter values must be to count as the same point.
          * @default 1.0e-9
@@ -8485,7 +8485,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-9
          */
-        uTolerance = 1.0e-9;
+        uTolerance?: number | undefined = 1.0e-9;
         /**
          * Edges shorter than this, in model units, are traced with the minimum number of points.
          * @default 1.0e-7
@@ -8493,7 +8493,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1.0e-7
          */
-        minimumLength = 1.0e-7;
+        minimumLength?: number | undefined = 1.0e-7;
     }
 
     /**
@@ -8515,12 +8515,12 @@ export namespace OCCT {
          * The name of the DXF layer the paths go on.
          * @default Default
          */
-        layer = "Default";
+        layer?: string | undefined = "Default";
         /**
          * The color of the paths as a hex string such as `#000000`.
          * @default #000000
          */
-        color: Base.Color = "#000000";
+        color?: Base.Color | undefined = "#000000";
     }
 
     /**
@@ -8542,12 +8542,12 @@ export namespace OCCT {
          * How colors are written: `aci` as AutoCAD's indexed colors, `truecolor` as RGB.
          * @default aci
          */
-        colorFormat: dxfColorFormatEnum = dxfColorFormatEnum.aci;
+        colorFormat?: dxfColorFormatEnum | undefined = dxfColorFormatEnum.aci;
         /**
          * The DXF version to write: `AC1009` is R12, the most widely readable, `AC1015` is 2000.
          * @default AC1009
          */
-        acadVersion: dxfAcadVersionEnum = dxfAcadVersionEnum.AC1009;
+        acadVersion?: dxfAcadVersionEnum | undefined = dxfAcadVersionEnum.AC1009;
         /**
          * The name the downloaded file gets.
          * @default bitbybit-dev.dxf
@@ -8627,12 +8627,12 @@ export namespace OCCT {
          * compressed.
          * @default shape.step
          */
-        fileName = "shape.step";
+        fileName?: string | undefined = "shape.step";
         /**
          * When true, the shape is turned so the file's Z-up becomes this library's Y-up.
          * @default true
          */
-        adjustZtoY = true;
+        adjustZtoY?: boolean | undefined = true;
     }
 
     /**
@@ -8673,7 +8673,7 @@ export namespace OCCT {
          * @maximum 10
          * @step 0.001
          */
-        meshPrecision = 0.005;
+        meshPrecision?: number | undefined = 0.005;
         /**
          * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
          * smoother curves and more triangles.
@@ -8682,25 +8682,25 @@ export namespace OCCT {
          * @maximum 3.14159
          * @step 0.05
          */
-        meshAngle = 0.5;
+        meshAngle?: number | undefined = 0.5;
         /**
          * When true, `meshPrecision` scales with each part's size, so small fasteners and large
          * housings both mesh well; when false it is an absolute distance.
          * @default true
          */
-        meshRelative = true;
+        meshRelative?: boolean | undefined = true;
         /**
          * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
          * speed.
          * @default false
          */
-        internalVerticesMode = false;
+        internalVerticesMode?: boolean | undefined = false;
         /**
          * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
          * speed.
          * @default false
          */
-        controlSurfaceDeflection = false;
+        controlSurfaceDeflection?: boolean | undefined = false;
     }
 
     /**
@@ -8715,7 +8715,7 @@ export namespace OCCT {
          * When true, the geometry is compressed with Draco.
          * @default true
          */
-        useDraco = true;
+        useDraco?: boolean | undefined = true;
         /**
          * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
          * @default 7
@@ -8723,7 +8723,7 @@ export namespace OCCT {
          * @maximum 10
          * @step 1
          */
-        dracoCompressionLevel = 7;
+        dracoCompressionLevel?: number | undefined = 7;
         /**
          * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
          * @default 14
@@ -8731,7 +8731,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizePositionBits = 14;
+        dracoQuantizePositionBits?: number | undefined = 14;
         /**
          * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
          * @default 10
@@ -8739,7 +8739,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeNormalBits = 10;
+        dracoQuantizeNormalBits?: number | undefined = 10;
         /**
          * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
          * precision.
@@ -8748,7 +8748,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeTexcoordBits = 12;
+        dracoQuantizeTexcoordBits?: number | undefined = 12;
         /**
          * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
          * @default 8
@@ -8756,7 +8756,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeColorBits = 8;
+        dracoQuantizeColorBits?: number | undefined = 8;
         /**
          * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
          * precision.
@@ -8765,12 +8765,12 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeGenericBits = 12;
+        dracoQuantizeGenericBits?: number | undefined = 12;
         /**
          * When true, one quantization grid is used for every attribute instead of one per attribute.
          * @default false
          */
-        dracoUnifiedQuantization = false;
+        dracoUnifiedQuantization?: boolean | undefined = false;
     }
 
     /**
@@ -8829,32 +8829,32 @@ export namespace OCCT {
          * When true, colors are read from the file; needed for a colored glTF.
          * @default true
          */
-        readColors = true;
+        readColors?: boolean | undefined = true;
 
         /**
          * When true, part names are read from the file; switch it off for faster parsing when names are
          * not needed.
          * @default true
          */
-        readNames = true;
+        readNames?: boolean | undefined = true;
 
         /**
          * When true, materials are read from the file; needed for material properties in the glTF.
          * @default true
          */
-        readMaterials = true;
+        readMaterials?: boolean | undefined = true;
 
         /**
          * When true, layer information is read from the file; rarely needed for glTF.
          * @default false
          */
-        readLayers = false;
+        readLayers?: boolean | undefined = false;
 
         /**
          * When true, validation properties are read from the file; rarely needed for glTF.
          * @default false
          */
-        readProps = false;
+        readProps?: boolean | undefined = false;
 
         // ==================== Mesh Options ====================
 
@@ -8866,7 +8866,7 @@ export namespace OCCT {
          * @maximum 10
          * @step 0.001
          */
-        meshDeflection = 0.005;
+        meshDeflection?: number | undefined = 0.005;
 
         /**
          * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
@@ -8876,13 +8876,13 @@ export namespace OCCT {
          * @maximum 3.14159
          * @step 0.1
          */
-        meshAngle = 0.5;
+        meshAngle?: number | undefined = 0.5;
 
         /**
          * When true, faces are meshed on several threads where the build allows it.
          * @default true
          */
-        meshParallel = true;
+        meshParallel?: boolean | undefined = true;
 
         /**
          * Above this many faces the assembly is meshed solid by solid to save memory; -1 meshes
@@ -8892,28 +8892,28 @@ export namespace OCCT {
          * @maximum 500000
          * @step 10000
          */
-        faceCountThreshold = -1;
+        faceCountThreshold?: number | undefined = -1;
 
         /**
          * When true, `meshDeflection` scales with each part's size, so small fasteners and large
          * housings both mesh well; when false it is an absolute distance.
          * @default true
          */
-        meshRelative = true;
+        meshRelative?: boolean | undefined = true;
 
         /**
          * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
          * speed.
          * @default false
          */
-        internalVerticesMode = false;
+        internalVerticesMode?: boolean | undefined = false;
 
         /**
          * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
          * speed.
          * @default false
          */
-        controlSurfaceDeflection = false;
+        controlSurfaceDeflection?: boolean | undefined = false;
 
         // ==================== glTF Writer Options ====================
 
@@ -8921,50 +8921,50 @@ export namespace OCCT {
          * When true, the faces of a part are joined into one mesh, which makes a smaller file.
          * @default true
          */
-        mergeFaces = true;
+        mergeFaces?: boolean | undefined = true;
 
         /**
          * When true, merged meshes use 16-bit indexes where they fit, which makes a smaller file.
          * @default true
          */
-        splitIndices16 = true;
+        splitIndices16?: boolean | undefined = true;
 
         /**
          * When true, the glTF is written on several threads, which helps with large files.
          * @default true
          */
-        parallelWrite = true;
+        parallelWrite?: boolean | undefined = true;
 
         /**
          * When true, textures are embedded in the GLB instead of referenced as separate files.
          * @default true
          */
-        embedTextures = true;
+        embedTextures?: boolean | undefined = true;
 
         /**
          * When true, texture coordinates are written even for meshes without textures.
          * @default false
          */
-        forceUVExport = false;
+        forceUVExport?: boolean | undefined = false;
 
         /**
          * What the glTF nodes are named after: the instance, the product, a combination, or nothing.
          * @default instance
          */
-        nodeNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+        nodeNameFormat?: gltfNameFormatEnum | undefined = gltfNameFormatEnum.instance;
 
         /**
          * What the glTF meshes are named after: the instance, the product, a combination, or nothing.
          * @default instance
          */
-        meshNameFormat: gltfNameFormatEnum = gltfNameFormatEnum.instance;
+        meshNameFormat?: gltfNameFormatEnum | undefined = gltfNameFormatEnum.instance;
 
         /**
          * How node placements are written: `compact` as translation, rotation and scale where possible,
          * `mat4` always as a matrix, `trs` always as the three parts.
          * @default compact
          */
-        transformFormat: gltfTransformFormatEnum = gltfTransformFormatEnum.compact;
+        transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
 
         // ==================== Coordinate System Options ====================
 
@@ -8972,7 +8972,7 @@ export namespace OCCT {
          * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
          * @default true
          */
-        adjustZtoY = true;
+        adjustZtoY?: boolean | undefined = true;
 
         /**
          * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
@@ -8982,7 +8982,7 @@ export namespace OCCT {
          * @maximum 1000000
          * @step 0.001
          */
-        scale = 1.0;
+        scale?: number | undefined = 1.0;
     }
 
     /**
@@ -8997,7 +8997,7 @@ export namespace OCCT {
          * When true, the geometry is compressed with Draco.
          * @default true
          */
-        useDraco = true;
+        useDraco?: boolean | undefined = true;
         /**
          * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
          * @default 7
@@ -9005,7 +9005,7 @@ export namespace OCCT {
          * @maximum 10
          * @step 1
          */
-        dracoCompressionLevel = 7;
+        dracoCompressionLevel?: number | undefined = 7;
         /**
          * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
          * @default 14
@@ -9013,7 +9013,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizePositionBits = 14;
+        dracoQuantizePositionBits?: number | undefined = 14;
         /**
          * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
          * @default 10
@@ -9021,7 +9021,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeNormalBits = 10;
+        dracoQuantizeNormalBits?: number | undefined = 10;
         /**
          * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
          * precision.
@@ -9030,7 +9030,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeTexcoordBits = 12;
+        dracoQuantizeTexcoordBits?: number | undefined = 12;
         /**
          * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
          * @default 8
@@ -9038,7 +9038,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeColorBits = 8;
+        dracoQuantizeColorBits?: number | undefined = 8;
         /**
          * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
          * precision.
@@ -9047,12 +9047,12 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeGenericBits = 12;
+        dracoQuantizeGenericBits?: number | undefined = 12;
         /**
          * When true, one quantization grid is used for every attribute instead of one per attribute.
          * @default false
          */
-        dracoUnifiedQuantization = false;
+        dracoUnifiedQuantization?: boolean | undefined = false;
     }
 
     // =====================================================
@@ -9126,13 +9126,14 @@ export namespace OCCT {
          */
         name!: string;
         /**
-         * The color of the part as `{ r, g, b, a }` with every channel from 0 to 1; leave it out for
-         * the default gray.
-         * @default {"r":0.5,"g":0.5,"b":0.5,"a":1}
+         * The color of the part as `{ r, g, b, a }` from 0 to 1; left out, the part has no color of
+         * its own.
+         * @default undefined
+         * @optional true
          * @minimum 0
          * @maximum 1
          */
-        colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
+        colorRgba?: Base.ColorRGBA | undefined;
     }
 
     /**
@@ -9331,12 +9332,12 @@ export namespace OCCT {
          * The part definitions from `createPart`, the shapes that instances place.
          * @default []
          */
-        parts: Models.OCCT.AssemblyPartDef<T>[] = [];
+        parts?: Models.OCCT.AssemblyPartDef<T>[] | undefined = [];
         /**
          * The assembly and instance node definitions that make up the tree.
          * @default []
          */
-        nodes: Models.OCCT.AssemblyNodeDef[] = [];
+        nodes?: Models.OCCT.AssemblyNodeDef[] | undefined = [];
         /**
          * Labels of parts, instances or assemblies to remove from an existing document; ignored for a
          * new one.
@@ -9393,7 +9394,7 @@ export namespace OCCT {
          * 0.
          * @default 0
          */
-        sourceDocumentIndex = 0;
+        sourceDocumentIndex?: number | undefined = 0;
         /**
          * The label of the sub-tree to copy, such as `0:1:1:1`; leave it out to copy every top-level
          * shape of the source document.
@@ -9452,7 +9453,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.01
          */
-        r = 0.5;
+        r?: number | undefined = 0.5;
         /**
          * The green channel, from 0 to 1.
          * @default 0.5
@@ -9460,7 +9461,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.01
          */
-        g = 0.5;
+        g?: number | undefined = 0.5;
         /**
          * The blue channel, from 0 to 1.
          * @default 0.5
@@ -9468,7 +9469,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.01
          */
-        b = 0.5;
+        b?: number | undefined = 0.5;
         /**
          * The opacity, from 0 for transparent to 1 for opaque.
          * @default 1.0
@@ -9476,7 +9477,7 @@ export namespace OCCT {
          * @maximum 1
          * @step 0.01
          */
-        a = 1.0;
+        a?: number | undefined = 1.0;
     }
 
     /**
@@ -9502,7 +9503,7 @@ export namespace OCCT {
          * The new name written to the label.
          * @default Renamed
          */
-        name = "Renamed";
+        name?: string | undefined = "Renamed";
     }
 
     /**
@@ -9584,28 +9585,28 @@ export namespace OCCT {
          * The file name written into the STEP header and used for the download.
          * @default assembly.step
          */
-        fileName = "assembly.step";
+        fileName?: string | undefined = "assembly.step";
         /**
          * The author written into the STEP header.
          * @default Bitbybit user
          */
-        author = "Bitbybit user";
+        author?: string | undefined = "Bitbybit user";
         /**
          * The organization written into the STEP header.
          * @default Bitbybit
          */
-        organization = "Bitbybit";
+        organization?: string | undefined = "Bitbybit";
         /**
          * When true, the file is written as gzip-compressed STEP-Z.
          * @default false
          */
-        compress = false;
+        compress?: boolean | undefined = false;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the bytes.
          * @default false
          */
-        tryDownload = false;
+        tryDownload?: boolean | undefined = false;
     }
 
     /**
@@ -9638,47 +9639,47 @@ export namespace OCCT {
          * How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh.
          * @default 0.1
          */
-        meshDeflection = 0.1;
+        meshDeflection?: number | undefined = 0.1;
         /**
          * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
          * smoother curves.
          * @default 0.5
          */
-        meshAngle = 0.5;
+        meshAngle?: number | undefined = 0.5;
         /**
          * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
          * speed.
          * @default false
          */
-        internalVerticesMode = false;
+        internalVerticesMode?: boolean | undefined = false;
         /**
          * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
          * speed.
          * @default false
          */
-        controlSurfaceDeflection = false;
+        controlSurfaceDeflection?: boolean | undefined = false;
         /**
          * When true, faces with the same material are joined into one mesh; false keeps every face
          * separate.
          * @default false
          */
-        mergeFaces = false;
+        mergeFaces?: boolean | undefined = false;
         /**
          * When true, texture coordinates are written even for meshes without textures.
          * @default false
          */
-        forceUVExport = false;
+        forceUVExport?: boolean | undefined = false;
         /**
          * The name the downloaded file gets; it should end in `.glb`.
          * @default assembly.glb
          */
-        fileName = "assembly.glb";
+        fileName?: string | undefined = "assembly.glb";
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the bytes.
          * @default false
          */
-        tryDownload = false;
+        tryDownload?: boolean | undefined = false;
     }
 
     /**
@@ -9701,7 +9702,7 @@ export namespace OCCT {
          * When true, the geometry is compressed with Draco.
          * @default true
          */
-        useDraco = true;
+        useDraco?: boolean | undefined = true;
         /**
          * How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest.
          * @default 7
@@ -9709,7 +9710,7 @@ export namespace OCCT {
          * @maximum 10
          * @step 1
          */
-        dracoCompressionLevel = 7;
+        dracoCompressionLevel?: number | undefined = 7;
         /**
          * How many bits each vertex position keeps; fewer bits mean a smaller file and less precision.
          * @default 14
@@ -9717,7 +9718,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizePositionBits = 14;
+        dracoQuantizePositionBits?: number | undefined = 14;
         /**
          * How many bits each normal keeps; fewer bits mean a smaller file and less precision.
          * @default 10
@@ -9725,7 +9726,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeNormalBits = 10;
+        dracoQuantizeNormalBits?: number | undefined = 10;
         /**
          * How many bits each texture coordinate keeps; fewer bits mean a smaller file and less
          * precision.
@@ -9734,7 +9735,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeTexcoordBits = 12;
+        dracoQuantizeTexcoordBits?: number | undefined = 12;
         /**
          * How many bits each vertex color keeps; fewer bits mean a smaller file and less precision.
          * @default 8
@@ -9742,7 +9743,7 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeColorBits = 8;
+        dracoQuantizeColorBits?: number | undefined = 8;
         /**
          * How many bits other vertex attributes keep; fewer bits mean a smaller file and less
          * precision.
@@ -9751,12 +9752,12 @@ export namespace OCCT {
          * @maximum 31
          * @step 1
          */
-        dracoQuantizeGenericBits = 12;
+        dracoQuantizeGenericBits?: number | undefined = 12;
         /**
          * When true, one quantization grid is used for every attribute instead of one per attribute.
          * @default false
          */
-        dracoUnifiedQuantization = false;
+        dracoUnifiedQuantization?: boolean | undefined = false;
     }
 
     /**
@@ -9795,7 +9796,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offset = 1;
+        offset?: number | undefined = 1;
     }
     /**
      * A wire, an offset and an extrusion direction for `operations.offset3DWire`, which offsets a wire
@@ -9819,13 +9820,13 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offset = 1;
+        offset?: number | undefined = 1;
         /**
          * The direction the wire is extruded along to build the offset; it must not be parallel to the
          * wire.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A closed wire and a planar flag for `shapes.face.createFaceFromWire`.
@@ -9845,7 +9846,7 @@ export namespace OCCT {
          * fitted through the wire's edges.
          * @default false
          */
-        planar = false;
+        planar?: boolean | undefined = false;
     }
     /**
      * A wire, a guiding face and a side for `shapes.face.createFaceFromWireOnFace`, which cuts a face
@@ -9872,7 +9873,7 @@ export namespace OCCT {
          * own direction decides.
          * @default true
          */
-        inside = true;
+        inside?: boolean | undefined = true;
     }
     /**
      * Wires, a guiding face and a side for `shapes.face.createFacesFromWiresOnFace`, which cuts one
@@ -9899,7 +9900,7 @@ export namespace OCCT {
          * own direction decides.
          * @default true
          */
-        inside = true;
+        inside?: boolean | undefined = true;
     }
     /**
      * Wires and a planar flag for `shapes.face.createFaceFromWires`, which makes one face with the
@@ -9919,7 +9920,7 @@ export namespace OCCT {
          * When true the wires must lie in one plane and the face is flat.
          * @default false
          */
-        planar = false;
+        planar?: boolean | undefined = false;
     }
     /**
      * Wires and a planar flag for `shapes.face.createFacesFromWires`, which makes one face per wire.
@@ -9939,7 +9940,7 @@ export namespace OCCT {
          * fitted through each.
          * @default false
          */
-        planar = false;
+        planar?: boolean | undefined = false;
     }
     /**
      * Wires, a guiding face and a side for `shapes.face.createFaceFromWiresOnFace`, which makes one
@@ -9967,7 +9968,7 @@ export namespace OCCT {
          * false its own direction decides.
          * @default true
          */
-        inside = true;
+        inside?: boolean | undefined = true;
     }
     /**
      * Faces and a tolerance for `shapes.shell.sewFaces`, which stitches faces that share edges into one
@@ -9990,7 +9991,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.00001
          */
-        tolerance = 1.0e-7;
+        tolerance?: number | undefined = 1.0e-7;
     }
     /**
      * A center, a major axis direction and two radii for `geom.curves.geom2dEllipse`, a 2D construction
@@ -10008,12 +10009,12 @@ export namespace OCCT {
          * The center of the ellipse as a 2D point.
          * @default [0,0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * The direction of the major axis in the plane.
          * @default [1,0]
          */
-        direction: Base.Vector2 = [1, 0];
+        direction?: Base.Vector2 | undefined = [1, 0];
         /**
          * The half-width across the ellipse's short axis; must not exceed `radiusMajor`.
          * @default 1
@@ -10021,7 +10022,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusMinor = 1;
+        radiusMinor?: number | undefined = 1;
         /**
          * The half-width along the ellipse's long axis.
          * @default 2
@@ -10029,12 +10030,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusMajor = 2;
+        radiusMajor?: number | undefined = 2;
         /**
          * When true, the curve runs the other way round.
          * @default false
          */
-        sense = false;
+        sense?: boolean | undefined = false;
     }
     /**
      * A center, a start direction and a radius for `geom.curves.geom2dCircle`, a 2D construction curve.
@@ -10050,12 +10051,12 @@ export namespace OCCT {
          * The center of the circle as a 2D point.
          * @default [0,0]
          */
-        center: Base.Point2 = [0, 0];
+        center?: Base.Point2 | undefined = [0, 0];
         /**
          * The direction in the plane where the curve's parameter starts.
          * @default [1,0]
          */
-        direction: Base.Vector2 = [1, 0];
+        direction?: Base.Vector2 | undefined = [1, 0];
         /**
          * The distance from the center to the curve.
          * @default 1
@@ -10063,12 +10064,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * When true, the curve runs the other way round.
          * @default false
          */
-        sense = false;
+        sense?: boolean | undefined = false;
     }
     /**
      * The proportions of a stylized Christmas tree for `shapes.wire.createChristmasTreeWire` and
@@ -10094,7 +10095,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 6;
+        height?: number | undefined = 6;
         /**
          * How far the branches reach from the trunk line at the notches of the lowest skirt, in model
          * units.
@@ -10103,7 +10104,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        innerDist = 1.5;
+        innerDist?: number | undefined = 1.5;
         /**
          * How far the branches reach from the trunk line at the tips of the lowest skirt, in model
          * units.
@@ -10112,7 +10113,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        outerDist = 3;
+        outerDist?: number | undefined = 3;
         /**
          * How many layers of branches, the triangle-like skirts, the tree has.
          * @default 5
@@ -10120,7 +10121,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrSkirts = 5;
+        nrSkirts?: number | undefined = 5;
         /**
          * The height of the trunk below the branches, in model units; 0 leaves the trunk out.
          * @default 1
@@ -10128,7 +10129,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        trunkHeight = 1;
+        trunkHeight?: number | undefined = 1;
         /**
          * The width of the trunk, in model units; used only when the trunk height is above 0.
          * @default 1
@@ -10136,12 +10137,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        trunkWidth = 1;
+        trunkWidth?: number | undefined = 1;
         /**
          * When true, only one side of the tree is built, as an open wire.
          * @default false
          */
-        half = false;
+        half?: boolean | undefined = false;
         /**
          * How far the tree is spun about its trunk-to-tip axis, in degrees.
          * @default 0
@@ -10149,17 +10150,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The point at the base of the trunk.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction from the trunk to the tip; the default stands the tree up along Y.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * The proportions of a star for `shapes.wire.createStarWire` and `shapes.face.createStarFace`,
@@ -10179,12 +10180,12 @@ export namespace OCCT {
          * The point the star is centered on.
          * @default [0,0,0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the star lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How many points the star has.
          * @default 7
@@ -10192,7 +10193,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        numRays = 7;
+        numRays?: number | undefined = 7;
         /**
          * The distance from the center to the tip of each ray, in model units.
          * @default 2
@@ -10200,7 +10201,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        outerRadius: number = 2;
+        outerRadius?: number | undefined = 2;
         /**
          * The distance from the center to the notch between two rays, in model units.
          * @default 1
@@ -10208,7 +10209,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        innerRadius: number = 1;
+        innerRadius?: number | undefined = 1;
         /**
          * Lifts the ray tips out of the plane along the normal, in model units, making a 3D star; keep
          * it 0 for a face.
@@ -10222,7 +10223,7 @@ export namespace OCCT {
          * When true, only the first half of the rays are built, as an open wire.
          * @default false
          */
-        half = false;
+        half?: boolean | undefined = false;
     }
     /**
      * The size, lean and placement of a parallelogram for `shapes.wire.createParallelogramWire` and
@@ -10241,18 +10242,18 @@ export namespace OCCT {
          * The point the shape is centered on, or starts from when `aroundCenter` is false.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the shape lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true the shape is centered on `center`; when false it starts there and extends in the
          * positive directions.
          * @default true
          */
-        aroundCenter = true;
+        aroundCenter?: boolean | undefined = true;
         /**
          * The width of the shape's bounding rectangle, in model units.
          * @default 2
@@ -10260,7 +10261,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        width = 2;
+        width?: number | undefined = 2;
         /**
          * The height of the shape's bounding rectangle, in model units.
          * @default 1
@@ -10268,7 +10269,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How far the sides lean over from a rectangle, in degrees; 0 gives a rectangle.
          * @default 15
@@ -10276,7 +10277,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        angle = 15;
+        angle?: number | undefined = 15;
     }
     /**
      * The size and placement of a heart outline for `shapes.wire.createHeartWire` and
@@ -10293,12 +10294,12 @@ export namespace OCCT {
          * The point the heart is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the heart lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far the heart is turned in its plane, in degrees.
          * @default 0
@@ -10306,7 +10307,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 15
          */
-        rotation = 0;
+        rotation?: number | undefined = 0;
         /**
          * The side of the square the heart roughly fits into, in model units.
          * @default 2
@@ -10314,7 +10315,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        sizeApprox = 2;
+        sizeApprox?: number | undefined = 2;
     }
     /**
      * A corner count, a radius and a placement for `shapes.wire.createNGonWire` and
@@ -10331,12 +10332,12 @@ export namespace OCCT {
          * The point the polygon is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the polygon lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How many corners, and so how many equal sides, the polygon has.
          * @default 6
@@ -10344,7 +10345,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        nrCorners = 6;
+        nrCorners?: number | undefined = 6;
         /**
          * The distance from the center to each corner, in model units.
          * @default 1
@@ -10352,7 +10353,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
     }
     /**
      * A center, a plane normal and two radii for the ellipse edge, wire and face methods of `shapes`
@@ -10369,12 +10370,12 @@ export namespace OCCT {
          * The point the ellipse is centered on.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the ellipse lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The half-width across the ellipse's short axis, in model units; must not exceed
          * `radiusMajor`.
@@ -10383,7 +10384,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusMinor = 1;
+        radiusMinor?: number | undefined = 1;
         /**
          * The half-width along the ellipse's long axis, in model units.
          * @default 2
@@ -10391,7 +10392,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusMajor = 2;
+        radiusMajor?: number | undefined = 2;
     }
     /**
      * The size of a coil for `shapes.wire.createHelixWire`: its radius, how much it climbs per turn and
@@ -10414,7 +10415,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How far the coil climbs along the axis in one full turn, in model units.
          * @default 1
@@ -10422,7 +10423,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        pitch = 1;
+        pitch?: number | undefined = 1;
         /**
          * The total climb of the coil along the axis, in model units.
          * @default 5
@@ -10430,22 +10431,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 5;
+        height?: number | undefined = 5;
         /**
          * The point on the axis where the coil starts climbing from.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis the coil climbs along.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true, the coil winds clockwise seen from the tip of the axis.
          * @default false
          */
-        clockwise = false;
+        clockwise?: boolean | undefined = false;
         /**
          * How far the fitted curve may stray from the exact helix, in model units.
          * @default 0.0001
@@ -10453,7 +10454,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 0.0001;
+        tolerance?: number | undefined = 0.0001;
     }
     /**
      * The size of a coil for `shapes.wire.createHelixWireByTurns`: its radius, how much it climbs per
@@ -10476,7 +10477,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How far the coil climbs along the axis in one full turn, in model units.
          * @default 1
@@ -10484,7 +10485,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        pitch = 1;
+        pitch?: number | undefined = 1;
         /**
          * How many full turns the coil makes; fractions are allowed.
          * @default 5
@@ -10492,22 +10493,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.5
          */
-        numTurns = 5;
+        numTurns?: number | undefined = 5;
         /**
          * The point on the axis where the coil starts climbing from.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis the coil climbs along.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true, the coil winds clockwise seen from the tip of the axis.
          * @default false
          */
-        clockwise = false;
+        clockwise?: boolean | undefined = false;
         /**
          * How far the fitted curve may stray from the exact helix, in model units.
          * @default 0.0001
@@ -10515,7 +10516,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 0.0001;
+        tolerance?: number | undefined = 0.0001;
     }
     /**
      * The size of a conical coil for `shapes.wire.createTaperedHelixWire`: the radius at each end, the
@@ -10539,7 +10540,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        startRadius = 2;
+        startRadius?: number | undefined = 2;
         /**
          * The distance from the axis to the coil at its top, in model units.
          * @default 0.5
@@ -10547,7 +10548,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        endRadius = 0.5;
+        endRadius?: number | undefined = 0.5;
         /**
          * How far the coil climbs along the axis in one full turn, in model units.
          * @default 1
@@ -10555,7 +10556,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        pitch = 1;
+        pitch?: number | undefined = 1;
         /**
          * The total climb of the coil along the axis, in model units.
          * @default 5
@@ -10563,22 +10564,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 5;
+        height?: number | undefined = 5;
         /**
          * The point on the axis where the coil starts climbing from.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis the coil climbs along.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true, the coil winds clockwise seen from the tip of the axis.
          * @default false
          */
-        clockwise = false;
+        clockwise?: boolean | undefined = false;
         /**
          * How far the fitted curve may stray from the exact helix, in model units.
          * @default 0.0001
@@ -10586,7 +10587,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 0.0001;
+        tolerance?: number | undefined = 0.0001;
     }
     /**
      * The size of a flat spiral for `shapes.wire.createFlatSpiralWire`: the radius at each end and the
@@ -10609,7 +10610,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        startRadius = 0.5;
+        startRadius?: number | undefined = 0.5;
         /**
          * The distance from the center where the spiral ends, in model units.
          * @default 5
@@ -10617,7 +10618,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        endRadius = 5;
+        endRadius?: number | undefined = 5;
         /**
          * How many full turns the spiral makes between the two radii; fractions are allowed.
          * @default 5
@@ -10625,22 +10626,22 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.5
          */
-        numTurns = 5;
+        numTurns?: number | undefined = 5;
         /**
          * The point the spiral winds around.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The normal of the plane the spiral lies in; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * When true, the spiral winds clockwise seen from the tip of the normal.
          * @default false
          */
-        clockwise = false;
+        clockwise?: boolean | undefined = false;
         /**
          * How far the fitted curve may stray from the exact spiral, in model units.
          * @default 0.0001
@@ -10648,7 +10649,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.0001
          */
-        tolerance = 0.0001;
+        tolerance?: number | undefined = 0.0001;
     }
     /**
      * Text and its layout for `shapes.wire.textWires` and `textWiresWithData`, which write it as stroke
@@ -10729,7 +10730,7 @@ export namespace OCCT {
          * When true, the middle of the whole text block is moved to the origin.
          * @default false
          */
-        centerOnOrigin = false;
+        centerOnOrigin?: boolean | undefined = false;
     }
     /**
      * A radius and an axis for `geom.surfaces.cylindricalSurface`, an infinite construction surface.
@@ -10747,17 +10748,17 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * A point on the axis of the cylinder.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis of the cylinder.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A 2D curve and two parameters for `geom.curves.geom2dTrimmedCurve`, which keeps the piece between
@@ -10783,7 +10784,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        u1 = 0;
+        u1?: number | undefined = 0;
         /**
          * The parameter where the piece ends.
          * @default 1
@@ -10791,18 +10792,18 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        u2 = 1;
+        u2?: number | undefined = 1;
         /**
          * On a closed curve, which of the two possible pieces is kept: true keeps the one running the
          * curve's own way.
          * @default true
          */
-        sense = true;
+        sense?: boolean | undefined = true;
         /**
          * When true, the parameters of a periodic curve are brought into its period first.
          * @default true
          */
-        adjustPeriodic = true;
+        adjustPeriodic?: boolean | undefined = true;
     }
     /**
      * Two 2D points for `geom.curves.geom2dSegment`, a straight construction curve between them.
@@ -10816,12 +10817,12 @@ export namespace OCCT {
          * The 2D point the segment starts at.
          * @default [0, 0]
          */
-        start: Base.Point2 = [0, 0];
+        start?: Base.Point2 | undefined = [0, 0];
         /**
          * The 2D point the segment ends at.
          * @default [1, 0]
          */
-        end: Base.Point2 = [1, 0];
+        end?: Base.Point2 | undefined = [1, 0];
     }
     /**
      * A solid, a spacing and a direction for `operations.slice`, which cuts it into parallel slices.
@@ -10844,12 +10845,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        step = 0.1;
+        step?: number | undefined = 0.1;
         /**
          * The direction the slices are stacked along; each cutting plane is perpendicular to it.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A solid, a pattern of spacings and a direction for `operations.sliceInStepPattern`, which cuts it
@@ -10871,12 +10872,12 @@ export namespace OCCT {
          * the top is reached.
          * @default [0.1, 0.2]
          */
-        steps = [0.1, 0.2];
+        steps?: number[] | undefined = [0.1, 0.2];
         /**
          * The direction the slices are stacked along; each cutting plane is perpendicular to it.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * Two points and the drawing settings for `dimensions.simpleLinearLengthDimension`: where the
@@ -11052,17 +11053,17 @@ export namespace OCCT {
          * The direction of the first leg of the angle, from the center.
          * @default [1, 0, 0]
          */
-        direction1: Base.Point3 = [1, 0, 0];
+        direction1?: Base.Point3 | undefined = [1, 0, 0];
         /**
          * The direction of the second leg of the angle, from the center.
          * @default [0, 0, 1]
          */
-        direction2: Base.Point3 = [0, 0, 1];
+        direction2?: Base.Point3 | undefined = [0, 0, 1];
         /**
          * The point the angle is measured at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The distance from the center to the dimension arc, in model units.
          * @default 4
@@ -11070,7 +11071,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 4;
+        radius?: number | undefined = 4;
         /**
          * The gap between the center and the start of each extension line, in model units.
          * @default 0.5
@@ -11078,7 +11079,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offsetFromCenter = 0.5;
+        offsetFromCenter?: number | undefined = 0.5;
         /**
          * How far the extension lines stick out past the arc, in model units.
          * @default 0
@@ -11086,7 +11087,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extraSize = 0;
+        extraSize?: number | undefined = 0;
         /**
          * How many decimals the angle is rounded to in the label.
          * @default 2
@@ -11094,12 +11095,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 1
          */
-        decimalPlaces = 2;
+        decimalPlaces?: number | undefined = 2;
         /**
          * Text written after the number, such as the unit.
          * @default (deg)
          */
-        labelSuffix = "(deg)";
+        labelSuffix?: string | undefined = "(deg)";
         /**
          * The height of the label's capital letters, in model units.
          * @default 0.1
@@ -11107,7 +11108,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelSize = 0.1;
+        labelSize?: number | undefined = 0.1;
         /**
          * How far the label sits from the arc, in model units.
          * @default 0.3
@@ -11115,12 +11116,12 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        labelOffset = 0.3;
+        labelOffset?: number | undefined = 0.3;
         /**
          * When true, the angle is written in radians instead of degrees.
          * @default false
          */
-        radians = false;
+        radians?: boolean | undefined = false;
         /**
          * What the arc ends with: nothing, or an arrowhead.
          * @default none
@@ -11202,7 +11203,7 @@ export namespace OCCT {
          * The spot on the model the pin marks.
          * @default [0, 0, 0]
          */
-        startPoint: Base.Point3 = [0, 0, 0];
+        startPoint?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The point the pin line ends at, where the label is written.
          * @default [0, 5, 2]
@@ -11304,7 +11305,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the star grows against its plane normal, in model units.
          * @default 0
@@ -11312,7 +11313,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A regular polygon and the extrusion lengths for `shapes.solid.createNGonSolid`; at least one
@@ -11331,7 +11332,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the polygon grows against its plane normal, in model units.
          * @default 0
@@ -11339,7 +11340,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A parallelogram and the extrusion lengths for `shapes.solid.createParallelogramSolid`; at least
@@ -11358,7 +11359,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the parallelogram grows against its plane normal, in model units.
          * @default 0
@@ -11366,7 +11367,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A heart outline and the extrusion lengths for `shapes.solid.createHeartSolid`; at least one
@@ -11385,7 +11386,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the heart grows against its plane normal, in model units.
          * @default 0
@@ -11393,7 +11394,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * A tree outline and the extrusion lengths for `shapes.solid.createChristmasTreeSolid`; at least
@@ -11412,7 +11413,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the tree grows against its plane normal, in model units.
          * @default 0
@@ -11420,7 +11421,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
     /**
      * An L shape and the extrusion lengths for `shapes.solid.createLPolygonSolid`; at least one length
@@ -11439,7 +11440,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthFront = 1;
+        extrusionLengthFront?: number | undefined = 1;
         /**
          * How far the L shape grows against its plane normal, in model units.
          * @default 0
@@ -11447,7 +11448,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        extrusionLengthBack = 0;
+        extrusionLengthBack?: number | undefined = 0;
     }
 
     /**
@@ -11557,27 +11558,27 @@ export namespace OCCT {
          * The half-width of the ellipse along its rotated x axis.
          * @default 0
          */
-        rx = 0;
+        rx?: number | undefined = 0;
         /**
          * The half-width of the ellipse along its rotated y axis.
          * @default 0
          */
-        ry = 0;
+        ry?: number | undefined = 0;
         /**
          * How far the ellipse is turned in the plane, in radians, counterclockwise in path space.
          * @default 0
          */
-        xAxisRotation = 0;
+        xAxisRotation?: number | undefined = 0;
         /**
          * The angle on the ellipse where the arc starts, in radians.
          * @default 0
          */
-        startAngle = 0;
+        startAngle?: number | undefined = 0;
         /**
          * How far the arc sweeps from its start, in radians; negative sweeps clockwise in path space.
          * @default 0
          */
-        deltaAngle = 0;
+        deltaAngle?: number | undefined = 0;
     }
     /**
      * One segment of an SVG-style path: a line, a quadratic or cubic Bezier, or an arc. A path is a
@@ -11609,7 +11610,7 @@ export namespace OCCT {
          * When true, the run closes from its last point back to `start`.
          * @default false
          */
-        closed = false;
+        closed?: boolean | undefined = false;
     }
 
     /**
@@ -11642,17 +11643,17 @@ export namespace OCCT {
          * A factor applied to every path coordinate; 1 keeps the size.
          * @default 1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * When true, Y is negated so a drawing made with Y pointing down, as in SVG, comes out upright.
          * @default true
          */
-        flipY = true;
+        flipY?: boolean | undefined = true;
         /**
          * The point the scaled and flipped drawing is moved to.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
     }
 
     /**
@@ -11678,32 +11679,32 @@ export namespace OCCT {
          * When true, closed subpaths become faces as well as wires.
          * @default false
          */
-        makeFaces = false;
+        makeFaces?: boolean | undefined = false;
         /**
          * When true, consecutive segments of a subpath are merged into a single edge where they can be.
          * @default true
          */
-        joinSegments = true;
+        joinSegments?: boolean | undefined = true;
         /**
          * How far apart segment ends may be and still join, in model units.
          * @default 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * A factor applied to every path coordinate; 1 keeps the size.
          * @default 1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * When true, Y is negated so a drawing made with Y pointing down comes out upright.
          * @default true
          */
-        flipY = true;
+        flipY?: boolean | undefined = true;
         /**
          * The point the scaled and flipped drawing is moved to.
          * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
     }
 
     /**
@@ -11728,60 +11729,60 @@ export namespace OCCT {
          * The text of the SVG document.
          * @default <svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>
          */
-        svg: string = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
+        svg?: string | undefined = '<svg width="19.125pt" height="19.125pt" viewBox="0 0 19.125 19.125" overflow="visible" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M11.122705,15.698935 L15.272235,15.698935 C15.57419,15.729545 15.91649,15.387245 15.88588,15.08529 L15.88588,4.039708 C15.91649,3.737754 15.57419,3.395453 15.272235,3.426065 L9.572815,3.426065 C9.27086,3.395453 8.92856,3.737754 8.95917,4.039708 L8.95917,6.945415 C8.95604,7.118435 9.042725,7.30507 9.17695,7.414295 C9.30713,7.528305 9.50566,7.58247 9.675705,7.55037 C10.575375,7.32287 11.76631,8.055895 11.96849,8.96159 C12.311025,9.824045 11.739055,11.10017 10.86733,11.418385 C10.660165,11.503245 10.50001,11.752675 10.509065,11.976365 L10.509065,15.08529 C10.47845,15.387245 10.82075,15.729545 11.122705,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /><path d="M8.913155,15.698935 L4.226653,15.698935 C3.924699,15.729545 3.582398,15.387245 3.613009,15.08529 L3.613009,4.039708 C3.582398,3.737754 3.924699,3.395453 4.226653,3.426065 L7.36326,3.426065 C7.665215,3.395453 8.00752,3.737754 7.976905,4.039708 L7.976905,9.5625 C7.9468,10.306505 8.479485,11.13613 9.16853,11.418385 C9.375695,11.503245 9.53585,11.752675 9.5268,11.976365 L9.5268,15.08529 C9.55741,15.387245 9.21511,15.729545 8.913155,15.698935 z" stroke="#f0cebb" stroke-width="0.5" fill-opacity="0" /></svg>';
         /**
          * How filled shapes become faces: `none` keeps only wires, `auto` follows each element's fill
          * rule, `nonzero` and `evenOdd` force a rule, `perSubpath` makes one face per closed subpath
          * without holes.
          * @default none
          */
-        faceStrategy: svgFaceStrategyEnum = svgFaceStrategyEnum.none;
+        faceStrategy?: svgFaceStrategyEnum | undefined = svgFaceStrategyEnum.none;
         /**
          * Reserved for building ribbon faces from stroked paths; not supported yet, stroked paths stay
          * wires.
          * @default false
          */
-        makeRibbons = false;
+        makeRibbons?: boolean | undefined = false;
         /**
          * When true, elements hidden by `display: none` or `visibility: hidden` are imported too.
          * @default false
          */
-        includeInvisible = false;
+        includeInvisible?: boolean | undefined = false;
         /**
          * When true, consecutive segments of a subpath are merged into a single edge where they can be.
          * @default true
          */
-        joinSegments = true;
+        joinSegments?: boolean | undefined = true;
         /**
          * How far apart segment ends may be and still join, in model units.
          * @default 1e-7
          */
-        tolerance = 1e-7;
+        tolerance?: number | undefined = 1e-7;
         /**
          * A factor applied to the SVG coordinates; 1 keeps the size.
          * @default 1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * When true, Y is negated so the drawing comes out upright, since SVG has Y pointing down.
          * @default true
          */
-        flipY = true;
+        flipY?: boolean | undefined = true;
         /**
          * Which point of the drawing's bounding box sits on `center`; `midMid` centers it.
          * @default midMid
          */
-        alignment: Base.basicAlignmentEnum = Base.basicAlignmentEnum.midMid;
+        alignment?: Base.basicAlignmentEnum | undefined = Base.basicAlignmentEnum.midMid;
         /**
          * The normal of the plane the drawing is laid on; the default lays it flat on the ground.
          * @default [0, 1, 0]
          */
-        direction: Base.Vector3 = [0, 1, 0];
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * The point the aligned drawing is placed at.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
 
     /**

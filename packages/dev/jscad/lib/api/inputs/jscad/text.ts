@@ -25,7 +25,7 @@ export class TextDto {
      * becomes a question mark
      * @default Hello World
      */
-    text = "Hello World";
+    text?: string | undefined = "Hello World";
     /**
      * Number of straight pieces used for curved strokes; more makes letters rounder
      * @default 24
@@ -33,7 +33,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
     /**
      * Where the text starts along X, in model units
      * @default 0
@@ -41,7 +41,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    xOffset = 0;
+    xOffset?: number | undefined = 0;
     /**
      * Where the baseline of the first line sits along Y, in model units
      * @default 0
@@ -49,7 +49,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    yOffset = 0;
+    yOffset?: number | undefined = 0;
     /**
      * Height of a capital letter, in model units; the whole text scales with it
      * @default 1
@@ -57,7 +57,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
      * percent gap
@@ -66,7 +66,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    lineSpacing = 1.4;
+    lineSpacing?: number | undefined = 1.4;
     /**
      * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
      * letters twice as far apart
@@ -75,12 +75,12 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    letterSpacing = 1;
+    letterSpacing?: number | undefined = 1;
     /**
      * How the lines of a multi-line text line up: to the left, the center or the right
      * @default center
      */
-    align = jscadTextAlignEnum.center;
+    align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
     /**
      * Thickness the strokes will get later, in model units; the outlines are pulled in by half of
      * it so letters keep their size once thick
@@ -89,7 +89,7 @@ export class TextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrudeOffset = 0;
+    extrudeOffset?: number | undefined = 0;
 }
 /**
  * Feeds `text.cylindricalText`: the text and font options of `TextDto` plus the size of the
@@ -114,7 +114,7 @@ export class CylinderTextDto {
      * becomes a question mark
      * @default Hello World
      */
-    text = "Hello World";
+    text?: string | undefined = "Hello World";
     /**
      * Length of the cylinders along Z, in model units; the strokes sit on the XY plane with half of
      * it on each side
@@ -123,7 +123,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionHeight = 0.5;
+    extrusionHeight?: number | undefined = 0.5;
     /**
      * Radius of the cylinders, in model units, which is half the thickness of the strokes
      * @default 0.1
@@ -131,7 +131,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionSize = 0.1;
+    extrusionSize?: number | undefined = 0.1;
     /**
      * Number of flat sides around each cylinder and pieces in curved strokes; more makes the
      * letters rounder
@@ -140,7 +140,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
     /**
      * Where the text starts along X before it is centered, in model units
      * @default 0
@@ -148,7 +148,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    xOffset = 0;
+    xOffset?: number | undefined = 0;
     /**
      * Where the baseline of the first line sits along Y, in model units
      * @default 0
@@ -156,7 +156,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    yOffset = 0;
+    yOffset?: number | undefined = 0;
     /**
      * Height of a capital letter, in model units; the whole text scales with it
      * @default 1
@@ -164,7 +164,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
      * percent gap
@@ -173,7 +173,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    lineSpacing = 1.4;
+    lineSpacing?: number | undefined = 1.4;
     /**
      * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
      * letters twice as far apart
@@ -182,12 +182,12 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    letterSpacing = 1;
+    letterSpacing?: number | undefined = 1;
     /**
      * How the lines of a multi-line text line up: to the left, the center or the right
      * @default center
      */
-    align = jscadTextAlignEnum.center;
+    align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
     /**
      * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
      * intended letter size
@@ -196,7 +196,7 @@ export class CylinderTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrudeOffset = 0;
+    extrudeOffset?: number | undefined = 0;
 }
 /**
  * Feeds `text.sphericalText`: the text and font options of `TextDto` plus the size of the spheres
@@ -220,7 +220,7 @@ export class SphereTextDto {
      * becomes a question mark
      * @default Hello World
      */
-    text = "Hello World";
+    text?: string | undefined = "Hello World";
     /**
      * Radius of the spheres, in model units, which is half the thickness of the strokes
      * @default 0.1
@@ -228,7 +228,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
     /**
      * Number of facets around each sphere and pieces in curved strokes; more makes the letters
      * rounder
@@ -237,7 +237,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
     /**
      * Where the text starts along X before it is centered, in model units
      * @default 0
@@ -245,7 +245,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    xOffset = 0;
+    xOffset?: number | undefined = 0;
     /**
      * Where the baseline of the first line sits along Y, in model units
      * @default 0
@@ -253,7 +253,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    yOffset = 0;
+    yOffset?: number | undefined = 0;
     /**
      * Height of a capital letter, in model units; the whole text scales with it
      * @default 1
@@ -261,7 +261,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Step from one line down to the next as a multiple of the letter height; 1.4 leaves a 40
      * percent gap
@@ -270,7 +270,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    lineSpacing = 1.4;
+    lineSpacing?: number | undefined = 1.4;
     /**
      * Multiplies the step from one letter to the next; 1 is the font's own spacing and 2 spreads
      * letters twice as far apart
@@ -279,12 +279,12 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    letterSpacing = 1;
+    letterSpacing?: number | undefined = 1;
     /**
      * How the lines of a multi-line text line up: to the left, the center or the right
      * @default center
      */
-    align = jscadTextAlignEnum.center;
+    align?: jscadTextAlignEnum | undefined = jscadTextAlignEnum.center;
     /**
      * Pulls the strokes inward by half this amount, in model units, so thick strokes keep the
      * intended letter size
@@ -293,7 +293,7 @@ export class SphereTextDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrudeOffset = 0;
+    extrudeOffset?: number | undefined = 0;
 }
 /**
  * Feeds `shapes.fromPolygonPoints` with the faces of a solid, each as the list of points around it,

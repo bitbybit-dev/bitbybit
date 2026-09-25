@@ -5,6 +5,7 @@ import {
 import * as Inputs from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { IteratorService } from "./iterator.service";
+import * as Resolved from "../../api/resolved-inputs";
 
 interface TopoDS_ShapeHash extends TopoDS_Shape {
     hash?: number;
@@ -68,7 +69,7 @@ export class ShapeGettersService {
         return edges;
     }
 
-    getEdge(inputs: Inputs.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {
+    getEdge(inputs: Resolved.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {
         if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.WIRE) || inputs.shape.IsNull()) {
             throw (new Error("Edge can not be found for shape that is not provided or is of incorrect type"));
         }
@@ -97,7 +98,7 @@ export class ShapeGettersService {
         return wires;
     }
 
-    getWire(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Wire {
+    getWire(inputs: Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Wire {
         if (!inputs.shape || inputs.shape.IsNull()) {
             throw (new Error("Shape is not provided or is null"));
         }
@@ -134,7 +135,7 @@ export class ShapeGettersService {
         return solids;
     }
 
-    getFace(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face {
+    getFace(inputs: Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face {
         if (!inputs.shape || inputs.shape.IsNull()) {
             throw new Error("Shape is not provided or is null");
         }

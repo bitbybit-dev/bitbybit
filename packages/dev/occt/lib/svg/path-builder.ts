@@ -13,6 +13,8 @@
 import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import * as Resolved from "../api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 export interface BuiltElement {
     shape: TopoDS_Shape;
@@ -32,14 +34,15 @@ export class PathBuilder {
     ) { }
 
     /** Map a 2D path-space point into 3D CAD space per placement options. */
-    private toCad(p: Inputs.Base.Point2, o: Inputs.OCCT.PathPlacementDto): Inputs.Base.Point3 {
+    private toCad(p: Inputs.Base.Point2, o: Resolved.OCCT.PathPlacementDto): Inputs.Base.Point3 {
         const x = p[0] * o.scale;
         const y = (o.flipY ? -p[1] : p[1]) * o.scale;
         return [o.origin[0] + x, o.origin[1] + y, o.origin[2]];
     }
 
     /** Apply uniform-scale + optional Y-flip + translate to an arc (analytic, exact). */
-    private placeArc(arc: Inputs.OCCT.PathArcSegment, o: Inputs.OCCT.PathPlacementDto): Inputs.OCCT.PathArcSegment {
+    private placeArc(segment: Inputs.OCCT.PathArcSegment, o: Resolved.OCCT.PathPlacementDto): Resolved.OCCT.PathArcSegment {
+        const arc = resolveDto(Inputs.OCCT.PathArcSegment, segment) as Resolved.OCCT.PathArcSegment;
         const sx = o.scale;
         const sy = o.flipY ? -o.scale : o.scale;
         const flip = o.flipY;
@@ -61,7 +64,7 @@ export class PathBuilder {
      */
     buildGroups(
         groups: PathGroup[],
-        o: Inputs.OCCT.PathPlacementDto,
+        o: Resolved.OCCT.PathPlacementDto,
         opts: { joinSegments: boolean; tolerance: number; warnings: string[] }
     ): (BuiltElement | undefined)[] {
         if (groups.length === 0) { return []; }
@@ -153,7 +156,7 @@ export class PathBuilder {
     }
 
     /** Public generic entry: build a single shape from a ShapeFromPathDto. */
-    shapeFromPath(inputs: Inputs.OCCT.ShapeFromPathDto): TopoDS_Shape | undefined {
+    shapeFromPath(inputs: Resolved.OCCT.ShapeFromPathDto): TopoDS_Shape | undefined {
         const warnings: string[] = [];
         const built = this.buildGroups([{ subpaths: inputs.subpaths, makeFaces: inputs.makeFaces }], inputs, {
             joinSegments: inputs.joinSegments,

@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Building Manifold cross-sections, the flat outlines that become solids: squares, rectangles,
@@ -31,8 +33,9 @@ export class CrossSectionShapes {
      * ```
      */
     create(inputs: Inputs.Manifold.CreateContourSectionDto): Manifold3D.CrossSection {
+        const resolved = resolveDto(Inputs.Manifold.CreateContourSectionDto, inputs) as Resolved.Manifold.CreateContourSectionDto;
         const { CrossSection } = this.manifold;
-        return new CrossSection(inputs.polygons, inputs.fillRule);
+        return new CrossSection(resolved.polygons, resolved.fillRule);
     }
 
     /**
@@ -49,9 +52,10 @@ export class CrossSectionShapes {
      * ```
      */
     square(inputs: Inputs.Manifold.SquareDto): Manifold3D.CrossSection {
+        const resolved = resolveDto(Inputs.Manifold.SquareDto, inputs) as Resolved.Manifold.SquareDto;
         const { CrossSection } = this.manifold;
         const { square } = CrossSection;
-        return square(inputs.size, inputs.center);
+        return square(resolved.size, resolved.center);
     }
 
     /**
@@ -68,9 +72,10 @@ export class CrossSectionShapes {
      * ```
      */
     circle(inputs: Inputs.Manifold.CircleDto): Manifold3D.CrossSection {
+        const resolved = resolveDto(Inputs.Manifold.CircleDto, inputs) as Resolved.Manifold.CircleDto;
         const { CrossSection } = this.manifold;
         const { circle } = CrossSection;
-        return circle(inputs.radius, inputs.circularSegments);
+        return circle(resolved.radius, resolved.circularSegments);
     }
 
     /**
@@ -87,8 +92,9 @@ export class CrossSectionShapes {
      * ```
      */
     rectangle(inputs: Inputs.Manifold.RectangleDto): Manifold3D.CrossSection {
+        const resolved = resolveDto(Inputs.Manifold.RectangleDto, inputs) as Resolved.Manifold.RectangleDto;
         const { CrossSection } = this.manifold;
         const { square } = CrossSection;
-        return square([inputs.length, inputs.height], inputs.center);
+        return square([resolved.length, resolved.height], resolved.center);
     }
 }

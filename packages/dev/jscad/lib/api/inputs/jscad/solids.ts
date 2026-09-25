@@ -15,7 +15,7 @@ export class CubeDto {
      * The point the cube is centered on, so half the edge length lies on each side of it
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Length of every edge, in model units
      * @default 1
@@ -23,7 +23,7 @@ export class CubeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * Feeds `shapes.cubesOnCenterPoints`: one cube of the same edge length on every center point,
@@ -46,7 +46,7 @@ export class CubeCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 }
 /**
  * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
@@ -63,7 +63,7 @@ export class CuboidDto {
      * The point the box is centered on, so half of each size lies on each side of it
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Full size along X, in model units
      * @default 1
@@ -71,7 +71,7 @@ export class CuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size along Z, in model units
      * @default 1
@@ -79,7 +79,7 @@ export class CuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
     /**
      * Full size along Y, in model units
      * @default 1
@@ -87,7 +87,7 @@ export class CuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
 }
 /**
  * Feeds `shapes.cuboidsOnCenterPoints`: one box of the same sizes on every center point, coming
@@ -112,7 +112,7 @@ export class CuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size of every box along Z, in model units
      * @default 1
@@ -120,7 +120,7 @@ export class CuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
     /**
      * Full size of every box along Y, in model units
      * @default 1
@@ -128,7 +128,7 @@ export class CuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
 }
 /**
  * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
@@ -147,7 +147,7 @@ export class RoundedCuboidDto {
      * The point the box is centered on, so half of each size lies on each side of it
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Radius of the rounding on every edge, in model units; it must be less than half of the
      * smallest side or an error is thrown
@@ -156,7 +156,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 0.1;
+    roundRadius?: number | undefined = 0.1;
     /**
      * Full size along X, in model units, rounding included
      * @default 1
@@ -164,7 +164,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size along Z, in model units, rounding included
      * @default 1
@@ -172,7 +172,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
     /**
      * Full size along Y, in model units, rounding included
      * @default 1
@@ -180,7 +180,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
      * @default 24
@@ -188,7 +188,7 @@ export class RoundedCuboidDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.roundedCuboidsOnCenterPoints`: one rounded box of the same sizes and rounding on
@@ -216,7 +216,7 @@ export class RoundedCuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 0.1;
+    roundRadius?: number | undefined = 0.1;
     /**
      * Full size of every box along X, in model units, rounding included
      * @default 1
@@ -224,7 +224,7 @@ export class RoundedCuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size of every box along Z, in model units, rounding included
      * @default 1
@@ -232,7 +232,7 @@ export class RoundedCuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
     /**
      * Full size of every box along Y, in model units, rounding included
      * @default 1
@@ -240,7 +240,7 @@ export class RoundedCuboidCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
      * @default 24
@@ -248,7 +248,7 @@ export class RoundedCuboidCentersDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.cylinderElliptic`: a cylinder standing along Z with an elliptical cross-section
@@ -266,7 +266,7 @@ export class CylidnerEllipticDto {
      * The point halfway up the axis; half the height lies above it along Z and half below
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Full length along Z, in model units
      * @default 1
@@ -274,17 +274,17 @@ export class CylidnerEllipticDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * The X and Y radii of the bottom end, in model units, as `[x, y]`
      * @default [1, 2]
      */
-    startRadius: Base.Vector2 = [1, 2];
+    startRadius?: Base.Vector2 | undefined = [1, 2];
     /**
      * The X and Y radii of the top end, in model units, as `[x, y]`; `[0, 0]` closes it to a point
      * @default [2, 3]
      */
-    endRadius: Base.Vector2 = [2, 3];
+    endRadius?: Base.Vector2 | undefined = [2, 3];
     /**
      * Number of flat sides around the cylinder; more makes it rounder
      * @default 24
@@ -292,7 +292,7 @@ export class CylidnerEllipticDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.cylinderEllipticOnCenterPoints`: one elliptic cylinder of the same size on every
@@ -318,18 +318,18 @@ export class CylidnerCentersEllipticDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * The X and Y radii of every bottom end, in model units, as `[x, y]`
      * @default [1, 2]
      */
-    startRadius: Base.Point2 = [1, 2];
+    startRadius?: Base.Point2 | undefined = [1, 2];
     /**
      * The X and Y radii of every top end, in model units, as `[x, y]`; `[0, 0]` closes them to a
      * point
      * @default [2, 3]
      */
-    endRadius: Base.Point2 = [2, 3];
+    endRadius?: Base.Point2 | undefined = [2, 3];
     /**
      * Number of flat sides around each cylinder; more makes them rounder
      * @default 24
@@ -337,7 +337,7 @@ export class CylidnerCentersEllipticDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
@@ -354,7 +354,7 @@ export class CylidnerDto {
      * The point halfway up the axis; half the height lies above it along Z and half below
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Full length along Z, in model units
      * @default 1
@@ -362,7 +362,7 @@ export class CylidnerDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Distance from the axis to the side, in model units
      * @default 1
@@ -370,7 +370,7 @@ export class CylidnerDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of flat sides around the cylinder; more makes it rounder
      * @default 24
@@ -378,7 +378,7 @@ export class CylidnerDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.roundedCylinder`: a cylinder standing along Z whose two rims are rounded, given by
@@ -397,7 +397,7 @@ export class RoundedCylidnerDto {
      * The point halfway up the axis; half the height lies above it along Z and half below
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Radius of the rounding on both rims, in model units; the height must be more than twice it or
      * an error is thrown
@@ -406,7 +406,7 @@ export class RoundedCylidnerDto {
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 0.1;
+    roundRadius?: number | undefined = 0.1;
     /**
      * Full length along Z, in model units, rounding included
      * @default 1
@@ -414,7 +414,7 @@ export class RoundedCylidnerDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Distance from the axis to the side, in model units
      * @default 1
@@ -422,7 +422,7 @@ export class RoundedCylidnerDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother
      * @default 24
@@ -430,7 +430,7 @@ export class RoundedCylidnerDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
@@ -446,12 +446,12 @@ export class EllipsoidDto {
      * The point the ellipsoid is centered on
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere
      * @default [1, 2, 3]
      */
-    radius: Base.Point3 = [1, 2, 3];
+    radius?: Base.Point3 | undefined = [1, 2, 3];
     /**
      * Number of facets around the ellipsoid; more makes it smoother
      * @default 24
@@ -459,7 +459,7 @@ export class EllipsoidDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.ellipsoidsOnCenterPoints`: one ellipsoid of the same radii on every center point,
@@ -480,7 +480,7 @@ export class EllipsoidCentersDto {
      * The half sizes of every ellipsoid along X, Y and Z, in model units, as `[x, y, z]`
      * @default [1, 2, 3]
      */
-    radius: Base.Point3 = [1, 2, 3];
+    radius?: Base.Point3 | undefined = [1, 2, 3];
     /**
      * Number of facets around each ellipsoid; more makes them smoother
      * @default 24
@@ -488,7 +488,7 @@ export class EllipsoidCentersDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
@@ -504,7 +504,7 @@ export class GeodesicSphereDto {
      * The point the sphere is centered on
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Distance from the center to the surface, in model units
      * @default 1
@@ -512,7 +512,7 @@ export class GeodesicSphereDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
      * least 6, and higher is rounder
@@ -521,7 +521,7 @@ export class GeodesicSphereDto {
      * @maximum Infinity
      * @step 1
      */
-    frequency = 12;
+    frequency?: number | undefined = 12;
 }
 /**
  * Feeds `shapes.geodesicSpheresOnCenterPoints`: one geodesic sphere of the same radius on every
@@ -545,7 +545,7 @@ export class GeodesicSphereCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
      * least 6, and higher is rounder
@@ -554,7 +554,7 @@ export class GeodesicSphereCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    frequency = 12;
+    frequency?: number | undefined = 12;
 }
 /**
  * Feeds `shapes.cylindersOnCenterPoints`: one round cylinder of the same size standing along Z on
@@ -579,7 +579,7 @@ export class CylidnerCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Distance from the axis to the side of every cylinder, in model units
      * @default 1
@@ -587,7 +587,7 @@ export class CylidnerCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of flat sides around each cylinder; more makes them rounder
      * @default 24
@@ -595,7 +595,7 @@ export class CylidnerCentersDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.roundedCylindersOnCenterPoints`: one rounded cylinder of the same size on every
@@ -622,7 +622,7 @@ export class RoundedCylidnerCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 0.1;
+    roundRadius?: number | undefined = 0.1;
     /**
      * Full length of every cylinder along Z, in model units, rounding included
      * @default 1
@@ -630,7 +630,7 @@ export class RoundedCylidnerCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * Distance from the axis to the side of every cylinder, in model units
      * @default 1
@@ -638,7 +638,7 @@ export class RoundedCylidnerCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of flat sides around each cylinder and pieces in the rounding; more makes them
      * smoother
@@ -647,7 +647,7 @@ export class RoundedCylidnerCentersDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
@@ -663,7 +663,7 @@ export class SphereDto {
      * The point the sphere is centered on
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Distance from the center to the surface, in model units
      * @default 1
@@ -671,7 +671,7 @@ export class SphereDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of facets around the sphere; more makes it rounder
      * @default 24
@@ -679,7 +679,7 @@ export class SphereDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.spheresOnCenterPoints`: one sphere of the same radius on every center point, coming
@@ -703,7 +703,7 @@ export class SphereCentersDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of facets around each sphere; more makes them rounder
      * @default 24
@@ -711,7 +711,7 @@ export class SphereCentersDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around
@@ -733,7 +733,7 @@ export class TorusDto {
      * The point the ring is centered on, in model units
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Radius of the tube itself, in model units; it must be less than `outerRadius`
      * @default 1
@@ -741,7 +741,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 0.1
      */
-    innerRadius = 1;
+    innerRadius?: number | undefined = 1;
     /**
      * Distance from the ring's center to the middle of the tube, in model units, so the ring spans
      * twice the sum of both radii
@@ -750,7 +750,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 0.1
      */
-    outerRadius = 2;
+    outerRadius?: number | undefined = 2;
     /**
      * Number of flat pieces around the tube's cross-section; more makes the tube rounder
      * @default 24
@@ -758,7 +758,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 1
      */
-    innerSegments = 24;
+    innerSegments?: number | undefined = 24;
     /**
      * Number of flat pieces around the ring; more makes the ring rounder
      * @default 24
@@ -766,7 +766,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 1
      */
-    outerSegments = 24;
+    outerSegments?: number | undefined = 24;
     /**
      * Turn of the tube's cross-section about its own center, in degrees; it shows when
      * `innerSegments` is low enough for the facets to be visible
@@ -775,7 +775,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 1
      */
-    innerRotation = 0;
+    innerRotation?: number | undefined = 0;
     /**
      * How far the tube is swept around the ring, in degrees; 360 closes the ring and less leaves it
      * open
@@ -784,7 +784,7 @@ export class TorusDto {
      * @maximum Infinity
      * @step 1
      */
-    outerRotation = 360;
+    outerRotation?: number | undefined = 360;
     /**
      * Where the sweep around the ring starts, in degrees from the X axis
      * @default 0
@@ -792,5 +792,5 @@ export class TorusDto {
      * @maximum Infinity
      * @step 1
      */
-    startAngle = 0;
+    startAngle?: number | undefined = 0;
 }

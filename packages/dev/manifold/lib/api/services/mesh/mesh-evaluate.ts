@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Reading Manifold mesh data: the position and extra properties of a vertex, the vertices of a
@@ -24,7 +26,8 @@ export class MeshEvaluate {
      * ```
      */
     position(inputs: Inputs.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>): Inputs.Base.Point3 {
-        const res = inputs.mesh.position(inputs.vertexIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshVertexIndexDto, inputs) as Resolved.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>;
+        const res = resolved.mesh.position(resolved.vertexIndex);
         return [res[0]!, res[1]!, res[2]!];
     }
 
@@ -41,7 +44,8 @@ export class MeshEvaluate {
      * ```
      */
     verts(inputs: Inputs.Manifold.MeshTriangleIndexDto<Manifold3D.Mesh>): number[] {
-        const res = inputs.mesh.verts(inputs.triangleIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshTriangleIndexDto, inputs) as Resolved.Manifold.MeshTriangleIndexDto<Manifold3D.Mesh>;
+        const res = resolved.mesh.verts(resolved.triangleIndex);
         return [res[0]!, res[1]!, res[2]!];
     }
 
@@ -62,7 +66,8 @@ export class MeshEvaluate {
      * ```
      */
     tangent(inputs: Inputs.Manifold.MeshHalfEdgeIndexDto<Manifold3D.Mesh>): number[] {
-        const res = inputs.mesh.tangent(inputs.halfEdgeIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshHalfEdgeIndexDto, inputs) as Resolved.Manifold.MeshHalfEdgeIndexDto<Manifold3D.Mesh>;
+        const res = resolved.mesh.tangent(resolved.halfEdgeIndex);
         return [res[0]!, res[1]!, res[2]!, res[3]!];
     }
 
@@ -80,7 +85,8 @@ export class MeshEvaluate {
      * ```
      */
     extras(inputs: Inputs.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>): number[] {
-        const res = inputs.mesh.extras(inputs.vertexIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshVertexIndexDto, inputs) as Resolved.Manifold.MeshVertexIndexDto<Manifold3D.Mesh>;
+        const res = resolved.mesh.extras(resolved.vertexIndex);
         return [...res];
     }
 
@@ -98,7 +104,8 @@ export class MeshEvaluate {
      * ```
      */
     transform(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>): number[] {
-        const res = inputs.mesh.transform(inputs.triangleRunIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshTriangleRunIndexDto, inputs) as Resolved.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>;
+        const res = resolved.mesh.transform(resolved.triangleRunIndex);
         return [...res];
     }
 
@@ -117,7 +124,8 @@ export class MeshEvaluate {
      * ```
      */
     backside(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>): boolean {
-        return inputs.mesh.backside(inputs.triangleRunIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshTriangleRunIndexDto, inputs) as Resolved.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>;
+        return resolved.mesh.backside(resolved.triangleRunIndex);
     }
 
     /**
@@ -134,7 +142,8 @@ export class MeshEvaluate {
      * ```
      */
     hasNormals(inputs: Inputs.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>): boolean {
-        return inputs.mesh.hasNormals(inputs.triangleRunIndex);
+        const resolved = resolveDto(Inputs.Manifold.MeshTriangleRunIndexDto, inputs) as Resolved.Manifold.MeshTriangleRunIndexDto<Manifold3D.Mesh>;
+        return resolved.mesh.hasNormals(resolved.triangleRunIndex);
     }
 
     /**

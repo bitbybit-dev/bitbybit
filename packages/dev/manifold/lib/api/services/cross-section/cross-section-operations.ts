@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Working with Manifold cross-sections beyond booleans: turning them into solids by extruding along
@@ -49,7 +51,8 @@ export class CrossSectionOperations {
      * ```
      */
     extrude(inputs: Inputs.Manifold.ExtrudeDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
-        return inputs.crossSection.extrude(inputs.height, inputs.nDivisions, inputs.twistDegrees, [inputs.scaleTopX, inputs.scaleTopY], inputs.center);
+        const resolved = resolveDto(Inputs.Manifold.ExtrudeDto, inputs) as Resolved.Manifold.ExtrudeDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.extrude(resolved.height, resolved.nDivisions, resolved.twistDegrees, [resolved.scaleTopX, resolved.scaleTopY], resolved.center);
     }
 
     /**
@@ -70,8 +73,9 @@ export class CrossSectionOperations {
      * ```
      */
     revolve(inputs: Inputs.Manifold.RevolveDto<Manifold3D.CrossSection>): Manifold3D.Manifold {
-        const res = inputs.crossSection.revolve(inputs.circularSegments, inputs.revolveDegrees);
-        if (inputs.matchProfile) {
+        const resolved = resolveDto(Inputs.Manifold.RevolveDto, inputs) as Resolved.Manifold.RevolveDto<Manifold3D.CrossSection>;
+        const res = resolved.crossSection.revolve(resolved.circularSegments, resolved.revolveDegrees);
+        if (resolved.matchProfile) {
             return res.rotate([-90, 0, 0]);
         } else {
             return res;
@@ -96,7 +100,8 @@ export class CrossSectionOperations {
      * ```
      */
     offset(inputs: Inputs.Manifold.OffsetDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.offset(inputs.delta, inputs.joinType as Manifold3D.JoinType, inputs.miterLimit, inputs.circularSegments);
+        const resolved = resolveDto(Inputs.Manifold.OffsetDto, inputs) as Resolved.Manifold.OffsetDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.offset(resolved.delta, resolved.joinType as Manifold3D.JoinType, resolved.miterLimit, resolved.circularSegments);
     }
 
     /**
@@ -116,7 +121,8 @@ export class CrossSectionOperations {
      * ```
      */
     simplify(inputs: Inputs.Manifold.SimplifyDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
-        return inputs.crossSection.simplify(inputs.epsilon);
+        const resolved = resolveDto(Inputs.Manifold.SimplifyDto, inputs) as Resolved.Manifold.SimplifyDto<Manifold3D.CrossSection>;
+        return resolved.crossSection.simplify(resolved.epsilon);
     }
 
     /**

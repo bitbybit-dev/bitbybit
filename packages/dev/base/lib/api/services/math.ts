@@ -1,4 +1,6 @@
 import * as Inputs from "../inputs";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Arithmetic, rounding, ranges, random numbers and the trigonometric functions on plain numbers.
@@ -20,7 +22,8 @@ export class MathBitByBit {
      * @drawable false
      */
     number(inputs: Inputs.Math.NumberDto): number {
-        return inputs.number;
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return resolved.number;
     }
 
     /**
@@ -41,25 +44,26 @@ export class MathBitByBit {
      * ```
      */
     twoNrOperation(inputs: Inputs.Math.ActionOnTwoNumbersDto): number {
+        const resolved = resolveDto(Inputs.Math.ActionOnTwoNumbersDto, inputs) as Resolved.Math.ActionOnTwoNumbersDto;
         let result!: number;
-        switch (inputs.operation) {
+        switch (resolved.operation) {
             case Inputs.Math.mathTwoNrOperatorEnum.add:
-                result = inputs.first + inputs.second;
+                result = resolved.first + resolved.second;
                 break;
             case Inputs.Math.mathTwoNrOperatorEnum.subtract:
-                result = inputs.first - inputs.second;
+                result = resolved.first - resolved.second;
                 break;
             case Inputs.Math.mathTwoNrOperatorEnum.multiply:
-                result = inputs.first * inputs.second;
+                result = resolved.first * resolved.second;
                 break;
             case Inputs.Math.mathTwoNrOperatorEnum.divide:
-                result = inputs.first / inputs.second;
+                result = resolved.first / resolved.second;
                 break;
             case Inputs.Math.mathTwoNrOperatorEnum.power:
-                result = Math.pow(inputs.first, inputs.second);
+                result = Math.pow(resolved.first, resolved.second);
                 break;
             case Inputs.Math.mathTwoNrOperatorEnum.modulus:
-                result = inputs.first % inputs.second;
+                result = resolved.first % resolved.second;
                 break;
             default:
                 break;
@@ -83,7 +87,8 @@ export class MathBitByBit {
      * ```
      */
     modulus(inputs: Inputs.Math.ModulusDto): number {
-        return this.twoNrOperation({ first: inputs.number, second: inputs.modulus, operation: Inputs.Math.mathTwoNrOperatorEnum.modulus });
+        const resolved = resolveDto(Inputs.Math.ModulusDto, inputs) as Resolved.Math.ModulusDto;
+        return this.twoNrOperation({ first: resolved.number, second: resolved.modulus, operation: Inputs.Math.mathTwoNrOperatorEnum.modulus });
     }
 
     /**
@@ -101,7 +106,8 @@ export class MathBitByBit {
      * ```
      */
     roundToDecimals(inputs: Inputs.Math.RoundToDecimalsDto): number {
-        return Math.round(inputs.number * Math.pow(10, inputs.decimalPlaces)) / Math.pow(10, inputs.decimalPlaces);
+        const resolved = resolveDto(Inputs.Math.RoundToDecimalsDto, inputs) as Resolved.Math.RoundToDecimalsDto;
+        return Math.round(resolved.number * Math.pow(10, resolved.decimalPlaces)) / Math.pow(10, resolved.decimalPlaces);
     }
 
     /**
@@ -121,8 +127,9 @@ export class MathBitByBit {
      * ```
      */
     roundAndRemoveTrailingZeros(inputs: Inputs.Math.RoundToDecimalsDto): number {
-        const rounded = Math.round(inputs.number * Math.pow(10, inputs.decimalPlaces)) / Math.pow(10, inputs.decimalPlaces);
-        return parseFloat(rounded.toFixed(inputs.decimalPlaces));
+        const resolved = resolveDto(Inputs.Math.RoundToDecimalsDto, inputs) as Resolved.Math.RoundToDecimalsDto;
+        const rounded = Math.round(resolved.number * Math.pow(10, resolved.decimalPlaces)) / Math.pow(10, resolved.decimalPlaces);
+        return parseFloat(rounded.toFixed(resolved.decimalPlaces));
     }
 
     /**
@@ -143,64 +150,65 @@ export class MathBitByBit {
      * ```
      */
     oneNrOperation(inputs: Inputs.Math.ActionOnOneNumberDto): number {
+        const resolved = resolveDto(Inputs.Math.ActionOnOneNumberDto, inputs) as Resolved.Math.ActionOnOneNumberDto;
         let result!: number;
-        switch (inputs.operation) {
+        switch (resolved.operation) {
             case Inputs.Math.mathOneNrOperatorEnum.absolute:
-                result = Math.abs(inputs.number);
+                result = Math.abs(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.negate:
-                result = -inputs.number;
+                result = -resolved.number;
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.ln:
-                result = Math.log(inputs.number);
+                result = Math.log(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.log10:
-                result = Math.log10(inputs.number);
+                result = Math.log10(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.tenPow:
-                result = Math.pow(10, inputs.number);
+                result = Math.pow(10, resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.round:
-                result = Math.round(inputs.number);
+                result = Math.round(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.floor:
-                result = Math.floor(inputs.number);
+                result = Math.floor(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.ceil:
-                result = Math.ceil(inputs.number);
+                result = Math.ceil(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.sqrt:
-                result = Math.sqrt(inputs.number);
+                result = Math.sqrt(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.sin:
-                result = Math.sin(inputs.number);
+                result = Math.sin(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.cos:
-                result = Math.cos(inputs.number);
+                result = Math.cos(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.tan:
-                result = Math.tan(inputs.number);
+                result = Math.tan(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.asin:
-                result = Math.asin(inputs.number);
+                result = Math.asin(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.acos:
-                result = Math.acos(inputs.number);
+                result = Math.acos(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.atan:
-                result = Math.atan(inputs.number);
+                result = Math.atan(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.log:
-                result = Math.log(inputs.number);
+                result = Math.log(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.exp:
-                result = Math.exp(inputs.number);
+                result = Math.exp(resolved.number);
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.degToRad:
-                result = inputs.number * Math.PI / 180;
+                result = resolved.number * Math.PI / 180;
                 break;
             case Inputs.Math.mathOneNrOperatorEnum.radToDeg:
-                result = inputs.number * 180 / Math.PI;
+                result = resolved.number * 180 / Math.PI;
                 break;
             default:
                 break;
@@ -224,7 +232,8 @@ export class MathBitByBit {
      * ```
      */
     remap(inputs: Inputs.Math.RemapNumberDto): number {
-        return (inputs.number - inputs.fromLow) * (inputs.toHigh - inputs.toLow) / (inputs.fromHigh - inputs.fromLow) + inputs.toLow;
+        const resolved = resolveDto(Inputs.Math.RemapNumberDto, inputs) as Resolved.Math.RemapNumberDto;
+        return (resolved.number - resolved.fromLow) * (resolved.toHigh - resolved.toLow) / (resolved.fromHigh - resolved.fromLow) + resolved.toLow;
     }
 
     /**
@@ -255,7 +264,8 @@ export class MathBitByBit {
      * ```
      */
     randomNumber(inputs: Inputs.Math.RandomNumberDto): number {
-        return Math.random() * (inputs.high - inputs.low) + inputs.low;
+        const resolved = resolveDto(Inputs.Math.RandomNumberDto, inputs) as Resolved.Math.RandomNumberDto;
+        return Math.random() * (resolved.high - resolved.low) + resolved.low;
     }
 
     /**
@@ -273,9 +283,10 @@ export class MathBitByBit {
      * ```
      */
     randomNumbers(inputs: Inputs.Math.RandomNumbersDto): number[] {
+        const resolved = resolveDto(Inputs.Math.RandomNumbersDto, inputs) as Resolved.Math.RandomNumbersDto;
         const result = [];
-        for (let i = 0; i < inputs.count; i++) {
-            result.push(this.randomNumber(inputs));
+        for (let i = 0; i < resolved.count; i++) {
+            result.push(this.randomNumber(resolved));
         }
         return result;
     }
@@ -308,7 +319,8 @@ export class MathBitByBit {
      * ```
      */
     toFixed(inputs: Inputs.Math.ToFixedDto): string {
-        return inputs.number.toFixed(inputs.decimalPlaces);
+        const resolved = resolveDto(Inputs.Math.ToFixedDto, inputs) as Resolved.Math.ToFixedDto;
+        return resolved.number.toFixed(resolved.decimalPlaces);
     }
 
     /**
@@ -326,7 +338,8 @@ export class MathBitByBit {
      * ```
      */
     add(inputs: Inputs.Math.TwoNumbersDto): number {
-        return inputs.first + inputs.second;
+        const resolved = resolveDto(Inputs.Math.TwoNumbersDto, inputs) as Resolved.Math.TwoNumbersDto;
+        return resolved.first + resolved.second;
     }
 
     /**
@@ -344,7 +357,8 @@ export class MathBitByBit {
      * ```
      */
     subtract(inputs: Inputs.Math.TwoNumbersDto): number {
-        return inputs.first - inputs.second;
+        const resolved = resolveDto(Inputs.Math.TwoNumbersDto, inputs) as Resolved.Math.TwoNumbersDto;
+        return resolved.first - resolved.second;
     }
 
     /**
@@ -362,7 +376,8 @@ export class MathBitByBit {
      * ```
      */
     multiply(inputs: Inputs.Math.TwoNumbersDto): number {
-        return inputs.first * inputs.second;
+        const resolved = resolveDto(Inputs.Math.TwoNumbersDto, inputs) as Resolved.Math.TwoNumbersDto;
+        return resolved.first * resolved.second;
     }
 
     /**
@@ -381,7 +396,8 @@ export class MathBitByBit {
      * ```
      */
     divide(inputs: Inputs.Math.TwoNumbersDto): number {
-        return inputs.first / inputs.second;
+        const resolved = resolveDto(Inputs.Math.TwoNumbersDto, inputs) as Resolved.Math.TwoNumbersDto;
+        return resolved.first / resolved.second;
     }
 
     /**
@@ -399,7 +415,8 @@ export class MathBitByBit {
      * ```
      */
     power(inputs: Inputs.Math.TwoNumbersDto): number {
-        return Math.pow(inputs.first, inputs.second);
+        const resolved = resolveDto(Inputs.Math.TwoNumbersDto, inputs) as Resolved.Math.TwoNumbersDto;
+        return Math.pow(resolved.first, resolved.second);
     }
 
     /**
@@ -414,7 +431,8 @@ export class MathBitByBit {
      * @drawable false
      */
     sqrt(inputs: Inputs.Math.NumberDto): number {
-        return Math.sqrt(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.sqrt(resolved.number);
     }
 
     /**
@@ -428,7 +446,8 @@ export class MathBitByBit {
      * @drawable false
      */
     abs(inputs: Inputs.Math.NumberDto): number {
-        return Math.abs(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.abs(resolved.number);
     }
 
     /**
@@ -442,7 +461,8 @@ export class MathBitByBit {
      * @drawable false
      */
     round(inputs: Inputs.Math.NumberDto): number {
-        return Math.round(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.round(resolved.number);
     }
 
     /**
@@ -456,7 +476,8 @@ export class MathBitByBit {
      * @drawable false
      */
     floor(inputs: Inputs.Math.NumberDto): number {
-        return Math.floor(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.floor(resolved.number);
     }
 
     /**
@@ -470,7 +491,8 @@ export class MathBitByBit {
      * @drawable false
      */
     ceil(inputs: Inputs.Math.NumberDto): number {
-        return Math.ceil(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.ceil(resolved.number);
     }
 
     /**
@@ -484,7 +506,8 @@ export class MathBitByBit {
      * @drawable false
      */
     negate(inputs: Inputs.Math.NumberDto): number {
-        return -inputs.number;
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return -resolved.number;
     }
 
     /**
@@ -498,7 +521,8 @@ export class MathBitByBit {
      * @drawable false
      */
     ln(inputs: Inputs.Math.NumberDto): number {
-        return Math.log(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.log(resolved.number);
     }
 
     /**
@@ -512,7 +536,8 @@ export class MathBitByBit {
      * @drawable false
      */
     log10(inputs: Inputs.Math.NumberDto): number {
-        return Math.log10(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.log10(resolved.number);
     }
 
     /**
@@ -526,7 +551,8 @@ export class MathBitByBit {
      * @drawable false
      */
     tenPow(inputs: Inputs.Math.NumberDto): number {
-        return Math.pow(10, inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.pow(10, resolved.number);
     }
 
     /**
@@ -540,7 +566,8 @@ export class MathBitByBit {
      * @drawable false
      */
     sin(inputs: Inputs.Math.NumberDto): number {
-        return Math.sin(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.sin(resolved.number);
     }
 
     /**
@@ -554,7 +581,8 @@ export class MathBitByBit {
      * @drawable false
      */
     cos(inputs: Inputs.Math.NumberDto): number {
-        return Math.cos(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.cos(resolved.number);
     }
 
     /**
@@ -568,7 +596,8 @@ export class MathBitByBit {
      * @drawable false
      */
     tan(inputs: Inputs.Math.NumberDto): number {
-        return Math.tan(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.tan(resolved.number);
     }
 
     /**
@@ -582,7 +611,8 @@ export class MathBitByBit {
      * @drawable false
      */
     asin(inputs: Inputs.Math.NumberDto): number {
-        return Math.asin(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.asin(resolved.number);
     }
 
     /**
@@ -596,7 +626,8 @@ export class MathBitByBit {
      * @drawable false
      */
     acos(inputs: Inputs.Math.NumberDto): number {
-        return Math.acos(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.acos(resolved.number);
     }
 
     /**
@@ -610,7 +641,8 @@ export class MathBitByBit {
      * @drawable false
      */
     atan(inputs: Inputs.Math.NumberDto): number {
-        return Math.atan(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.atan(resolved.number);
     }
 
     /**
@@ -624,7 +656,8 @@ export class MathBitByBit {
      * @drawable false
      */
     exp(inputs: Inputs.Math.NumberDto): number {
-        return Math.exp(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.exp(resolved.number);
     }
 
     /**
@@ -638,7 +671,8 @@ export class MathBitByBit {
      * @drawable false
      */
     degToRad(inputs: Inputs.Math.NumberDto): number {
-        return inputs.number * Math.PI / 180;
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return resolved.number * Math.PI / 180;
     }
 
     /**
@@ -652,7 +686,8 @@ export class MathBitByBit {
      * @drawable false
      */
     radToDeg(inputs: Inputs.Math.NumberDto): number {
-        return inputs.number * 180 / Math.PI;
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return resolved.number * 180 / Math.PI;
     }
 
     /**
@@ -673,11 +708,12 @@ export class MathBitByBit {
      * ```
      */
     ease(inputs: Inputs.Math.EaseDto) {
-        const x = inputs.x;
-        const min = inputs.min;
-        const max = inputs.max;
+        const resolved = resolveDto(Inputs.Math.EaseDto, inputs) as Resolved.Math.EaseDto;
+        const x = resolved.x;
+        const min = resolved.min;
+        const max = resolved.max;
 
-        const y = this[inputs.ease](x);
+        const y = this[resolved.ease](x);
         const res = this.remap({ number: y, fromLow: 0, fromHigh: 1, toLow: min, toHigh: max });
         return res;
     }
@@ -697,7 +733,8 @@ export class MathBitByBit {
      * ```
      */
     clamp(inputs: Inputs.Math.ClampDto): number {
-        return Math.max(inputs.min, Math.min(inputs.max, inputs.number));
+        const resolved = resolveDto(Inputs.Math.ClampDto, inputs) as Resolved.Math.ClampDto;
+        return Math.max(resolved.min, Math.min(resolved.max, resolved.number));
     }
 
     /**
@@ -717,7 +754,8 @@ export class MathBitByBit {
      * ```
      */
     lerp(inputs: Inputs.Math.LerpDto): number {
-        return inputs.start + (inputs.end - inputs.start) * inputs.t;
+        const resolved = resolveDto(Inputs.Math.LerpDto, inputs) as Resolved.Math.LerpDto;
+        return resolved.start + (resolved.end - resolved.start) * resolved.t;
     }
 
     /**
@@ -736,10 +774,11 @@ export class MathBitByBit {
      * ```
      */
     inverseLerp(inputs: Inputs.Math.InverseLerpDto): number {
-        if (inputs.start === inputs.end) {
+        const resolved = resolveDto(Inputs.Math.InverseLerpDto, inputs) as Resolved.Math.InverseLerpDto;
+        if (resolved.start === resolved.end) {
             return 0;
         }
-        return (inputs.value - inputs.start) / (inputs.end - inputs.start);
+        return (resolved.value - resolved.start) / (resolved.end - resolved.start);
     }
 
     /**
@@ -754,7 +793,8 @@ export class MathBitByBit {
      * @drawable false
      */
     smoothstep(inputs: Inputs.Math.NumberDto): number {
-        const t = Math.max(0, Math.min(1, inputs.number));
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        const t = Math.max(0, Math.min(1, resolved.number));
         return t * t * (3 - 2 * t);
     }
 
@@ -769,7 +809,8 @@ export class MathBitByBit {
      * @drawable false
      */
     sign(inputs: Inputs.Math.NumberDto): number {
-        return Math.sign(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return Math.sign(resolved.number);
     }
 
     /**
@@ -784,7 +825,8 @@ export class MathBitByBit {
      * @drawable false
      */
     fract(inputs: Inputs.Math.NumberDto): number {
-        return inputs.number - Math.floor(inputs.number);
+        const resolved = resolveDto(Inputs.Math.NumberDto, inputs) as Resolved.Math.NumberDto;
+        return resolved.number - Math.floor(resolved.number);
     }
 
     /**
@@ -804,12 +846,13 @@ export class MathBitByBit {
      * ```
      */
     wrap(inputs: Inputs.Math.WrapDto): number {
-        const range = inputs.max - inputs.min;
+        const resolved = resolveDto(Inputs.Math.WrapDto, inputs) as Resolved.Math.WrapDto;
+        const range = resolved.max - resolved.min;
         if (range === 0) {
-            return inputs.min;
+            return resolved.min;
         }
-        const normalized = (inputs.number - inputs.min) % range;
-        return normalized < 0 ? normalized + inputs.max : normalized + inputs.min;
+        const normalized = (resolved.number - resolved.min) % range;
+        return normalized < 0 ? normalized + resolved.max : normalized + resolved.min;
     }
 
     /**
@@ -828,8 +871,9 @@ export class MathBitByBit {
      * ```
      */
     pingPong(inputs: Inputs.Math.PingPongDto): number {
-        const t = Math.abs(inputs.t) % (inputs.length * 2);
-        return t > inputs.length ? inputs.length * 2 - t : t;
+        const resolved = resolveDto(Inputs.Math.PingPongDto, inputs) as Resolved.Math.PingPongDto;
+        const t = Math.abs(resolved.t) % (resolved.length * 2);
+        return t > resolved.length ? resolved.length * 2 - t : t;
     }
 
     /**
@@ -847,11 +891,12 @@ export class MathBitByBit {
      * ```
      */
     moveTowards(inputs: Inputs.Math.MoveTowardsDto): number {
-        const delta = inputs.target - inputs.current;
-        if (Math.abs(delta) <= inputs.maxDelta) {
-            return inputs.target;
+        const resolved = resolveDto(Inputs.Math.MoveTowardsDto, inputs) as Resolved.Math.MoveTowardsDto;
+        const delta = resolved.target - resolved.current;
+        if (Math.abs(delta) <= resolved.maxDelta) {
+            return resolved.target;
         }
-        return inputs.current + Math.sign(delta) * inputs.maxDelta;
+        return resolved.current + Math.sign(delta) * resolved.maxDelta;
     }
 
     /**
@@ -872,7 +917,8 @@ export class MathBitByBit {
      * ```
      */
     evalArithmetic(inputs: Inputs.Math.EvalArithmeticDto): number {
-        const expr = inputs.expression;
+        const resolved = resolveDto(Inputs.Math.EvalArithmeticDto, inputs) as Resolved.Math.EvalArithmeticDto;
+        const expr = resolved.expression;
         const tokens: string[] = [];
         let i = 0;
         while (i < expr.length) {

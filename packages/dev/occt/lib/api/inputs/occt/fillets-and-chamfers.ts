@@ -131,7 +131,7 @@ export class FilletEdgesListOneRadiusDto<T, U> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
 }
 /**
  * A shape, one of its edges and a radius profile for `fillets.filletEdgeVariableRadius`;
@@ -276,7 +276,7 @@ export class Fillet3DWiresDto<T> {
      * the wire and must leave room for the radius.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
@@ -321,7 +321,7 @@ export class Fillet3DWireDto<T> {
      * wire and must leave room for the radius.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` pairs
@@ -423,7 +423,7 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance = 0.1;
+    distance?: number | undefined = 0.1;
     /**
      * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
      * @default 45
@@ -431,7 +431,7 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      * @maximum Infinity
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
 }
 
 /**
@@ -468,7 +468,7 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance1 = 0.1;
+    distance1?: number | undefined = 0.1;
     /**
      * How far the bevel reaches from the edge on the other face, in model units.
      * @default 0.2
@@ -476,7 +476,7 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance2 = 0.2;
+    distance2?: number | undefined = 0.2;
 }
 /**
  * A shape, some of its edges, one face per edge and two distances per edge for
@@ -550,7 +550,7 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance1 = 0.1;
+    distance1?: number | undefined = 0.1;
     /**
      * How far the bevel reaches from each edge on the other face, in model units.
      * @default 0.2
@@ -558,7 +558,7 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance2 = 0.2;
+    distance2?: number | undefined = 0.2;
 }
 /**
  * A shape, some of its edges, one face, distance and angle per edge for
@@ -633,7 +633,7 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      * @maximum Infinity
      * @step 0.01
      */
-    distance = 0.1;
+    distance?: number | undefined = 0.1;
     /**
      * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
      * @default 45
@@ -641,5 +641,5 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      * @maximum Infinity
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
 }

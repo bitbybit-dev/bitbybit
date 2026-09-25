@@ -1,6 +1,6 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
+import * as Resolved from "../../api/resolved-inputs";
 
 export class BooleansService {
 
@@ -9,7 +9,7 @@ export class BooleansService {
         private readonly shapeGettersService: ShapeGettersService
     ) { }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
+    intersection(inputs: Resolved.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
         if (inputs.shapes.length < 2) {
             throw (new Error("Intersection requires 2 or more shapes to be given"));
         }
@@ -40,7 +40,7 @@ export class BooleansService {
         return intersectionResults;
     }
 
-    difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
+    difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         let difference = inputs.shape;
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
@@ -65,7 +65,7 @@ export class BooleansService {
         return difference;
     }
 
-    union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
+    union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
         let combined = inputs.shapes[0]!;
         for (let i = 0; i < inputs.shapes.length; i++) {
             const combinedFuse = new this.occ.BRepAlgoAPI_Fuse(combined, inputs.shapes[i]!);

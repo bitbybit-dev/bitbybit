@@ -49,35 +49,8 @@
     "packages/dev/babylonjs/lib/api/inputs/scene-inputs.ts": {
       "defaulted-spelling": 77
     },
-    "packages/dev/base/lib/api/inputs/color-inputs.ts": {
-      "defaulted-spelling": 31
-    },
-    "packages/dev/base/lib/api/inputs/dates-inputs.ts": {
-      "defaulted-spelling": 16
-    },
-    "packages/dev/base/lib/api/inputs/io-inputs.ts": {
-      "defaulted-spelling": 2
-    },
-    "packages/dev/base/lib/api/inputs/lists-inputs.ts": {
-      "defaulted-spelling": 23
-    },
-    "packages/dev/base/lib/api/inputs/logic-inputs.ts": {
-      "defaulted-spelling": 11
-    },
-    "packages/dev/base/lib/api/inputs/math-inputs.ts": {
-      "defaulted-spelling": 45
-    },
     "packages/dev/base/lib/api/inputs/point-inputs.ts": {
-      "defaulted-spelling": 34
-    },
-    "packages/dev/base/lib/api/inputs/text-inputs.ts": {
-      "defaulted-spelling": 29
-    },
-    "packages/dev/base/lib/api/inputs/transforms-inputs.ts": {
-      "defaulted-spelling": 16
-    },
-    "packages/dev/base/lib/api/inputs/vector-inputs.ts": {
-      "defaulted-spelling": 24
+      "defaulted-spelling": 8
     },
     "packages/dev/core/lib/api/inputs/asset-inputs.ts": {
       "defaulted-spelling": 7
@@ -91,98 +64,20 @@
     "packages/dev/core/lib/api/inputs/tag-inputs.ts": {
       "defaulted-spelling": 6
     },
-    "packages/dev/jscad/lib/api/inputs/jscad/expansions-and-extrusions.ts": {
-      "defaulted-spelling": 13
-    },
     "packages/dev/jscad/lib/api/inputs/jscad/meshes-and-drawing.ts": {
       "defaulted-spelling": 18
-    },
-    "packages/dev/jscad/lib/api/inputs/jscad/paths.ts": {
-      "defaulted-spelling": 9
-    },
-    "packages/dev/jscad/lib/api/inputs/jscad/shapes-2d.ts": {
-      "defaulted-spelling": 22
-    },
-    "packages/dev/jscad/lib/api/inputs/jscad/solids.ts": {
-      "defaulted-spelling": 69
-    },
-    "packages/dev/jscad/lib/api/inputs/jscad/text.ts": {
-      "defaulted-spelling": 30
-    },
-    "packages/dev/jscad/lib/api/inputs/jscad/transforms-and-downloads.ts": {
-      "defaulted-spelling": 2
-    },
-    "packages/dev/manifold/lib/api/inputs/manifold/booleans-and-splits.ts": {
-      "defaulted-spelling": 6
-    },
-    "packages/dev/manifold/lib/api/inputs/manifold/creation.ts": {
-      "defaulted-spelling": 17
-    },
-    "packages/dev/manifold/lib/api/inputs/manifold/cross-sections.ts": {
-      "defaulted-spelling": 20
     },
     "packages/dev/manifold/lib/api/inputs/manifold/drawing.ts": {
       "defaulted-spelling": 18
     },
-    "packages/dev/manifold/lib/api/inputs/manifold/hulls-slices-and-meshes.ts": {
-      "defaulted-spelling": 5
-    },
-    "packages/dev/manifold/lib/api/inputs/manifold/manifold-queries.ts": {
-      "defaulted-spelling": 7
-    },
-    "packages/dev/manifold/lib/api/inputs/manifold/refinement.ts": {
-      "defaulted-spelling": 7
-    },
     "packages/dev/manifold/lib/api/inputs/manifold/transforms.ts": {
-      "defaulted-spelling": 9
-    },
-    "packages/dev/occt/lib/api/inputs/occt/assembly-documents.ts": {
-      "defaulted-spelling": 29
-    },
-    "packages/dev/occt/lib/api/inputs/occt/brep-graph-corners-and-draft.ts": {
-      "defaulted-spelling": 29
-    },
-    "packages/dev/occt/lib/api/inputs/occt/curves-interpolation-and-parametrization.ts": {
-      "defaulted-spelling": 37
-    },
-    "packages/dev/occt/lib/api/inputs/occt/dimensions-and-shaped-solids.ts": {
-      "defaulted-spelling": 24
-    },
-    "packages/dev/occt/lib/api/inputs/occt/division-projection-and-points.ts": {
-      "defaulted-spelling": 31
-    },
-    "packages/dev/occt/lib/api/inputs/occt/face-subdivision.ts": {
-      "defaulted-spelling": 44
-    },
-    "packages/dev/occt/lib/api/inputs/occt/faces-2d-curves-and-decorative-wires.ts": {
-      "defaulted-spelling": 96
-    },
-    "packages/dev/occt/lib/api/inputs/occt/fillets-and-chamfers.ts": {
-      "defaulted-spelling": 11
-    },
-    "packages/dev/occt/lib/api/inputs/occt/lines-arcs-and-cylinders.ts": {
-      "defaulted-spelling": 25
-    },
-    "packages/dev/occt/lib/api/inputs/occt/lofts-pipes-booleans-and-repair.ts": {
-      "defaulted-spelling": 50
+      "defaulted-spelling": 1
     },
     "packages/dev/occt/lib/api/inputs/occt/meshes-points-and-constraints.ts": {
-      "defaulted-spelling": 73
+      "defaulted-spelling": 46
     },
     "packages/dev/occt/lib/api/inputs/occt/meshing-and-file-io.ts": {
-      "defaulted-spelling": 73
-    },
-    "packages/dev/occt/lib/api/inputs/occt/paths-and-svg.ts": {
-      "defaulted-spelling": 30
-    },
-    "packages/dev/occt/lib/api/inputs/occt/profiles-and-primitive-solids.ts": {
-      "defaulted-spelling": 82
-    },
-    "packages/dev/occt/lib/api/inputs/occt/thick-solids-and-transforms.ts": {
-      "defaulted-spelling": 100
-    },
-    "packages/dev/occt/lib/api/inputs/occt/wires-along-params-and-base-geometry.ts": {
-      "defaulted-spelling": 8
+      "defaulted-spelling": 3
     },
     "packages/dev/playcanvas/lib/api/inputs/draw-inputs.ts": {
       "defaulted-spelling": 67

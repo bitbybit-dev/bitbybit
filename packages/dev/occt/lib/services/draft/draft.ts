@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Draft angles for OpenCascade shapes: the slight taper cast and molded parts need so they slide
@@ -41,12 +43,13 @@ export class OCCTDraft {
      * ```
      */
     draftAngle(inputs: Inputs.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        const draft = new this.occ.BRepOffsetAPI_DraftAngle(inputs.shape);
-        const direction = this.och.entitiesService.gpDir(inputs.direction);
-        const neutralPlane = this.och.entitiesService.gpPln(inputs.neutralPlaneOrigin, inputs.neutralPlaneDirection);
-        const angle = this.och.vecHelper.degToRad(inputs.angle);
+        const resolved = resolveDto(Inputs.OCCT.DraftAngleDto, inputs) as Resolved.OCCT.DraftAngleDto<TopoDS_Shape, TopoDS_Face>;
+        const draft = new this.occ.BRepOffsetAPI_DraftAngle(resolved.shape);
+        const direction = this.och.entitiesService.gpDir(resolved.direction);
+        const neutralPlane = this.och.entitiesService.gpPln(resolved.neutralPlaneOrigin, resolved.neutralPlaneDirection);
+        const angle = this.och.vecHelper.degToRad(resolved.angle);
 
-        inputs.faces.forEach(face => draft.Add(face, direction, angle, neutralPlane, inputs.flag));
+        resolved.faces.forEach(face => draft.Add(face, direction, angle, neutralPlane, resolved.flag));
         draft.Build();
 
         if (!draft.IsDone()) {
@@ -80,11 +83,12 @@ export class OCCTDraft {
      * ```
      */
     makeDraft(inputs: Inputs.OCCT.MakeDraftDto<TopoDS_Shape>): TopoDS_Shape {
-        const direction = this.och.entitiesService.gpDir(inputs.direction);
-        const angle = this.och.vecHelper.degToRad(inputs.angle);
-        const maker = new this.occ.BRepOffsetAPI_MakeDraft(inputs.shape, direction, angle);
-        maker.SetDraft(inputs.internal);
-        maker.Perform(inputs.lengthMax);
+        const resolved = resolveDto(Inputs.OCCT.MakeDraftDto, inputs) as Resolved.OCCT.MakeDraftDto<TopoDS_Shape>;
+        const direction = this.och.entitiesService.gpDir(resolved.direction);
+        const angle = this.och.vecHelper.degToRad(resolved.angle);
+        const maker = new this.occ.BRepOffsetAPI_MakeDraft(resolved.shape, direction, angle);
+        maker.SetDraft(resolved.internal);
+        maker.Perform(resolved.lengthMax);
 
         if (!maker.IsDone()) {
             direction.delete();
@@ -114,11 +118,12 @@ export class OCCTDraft {
      * ```
      */
     makeDraftToShape(inputs: Inputs.OCCT.MakeDraftToShapeDto<TopoDS_Shape>): TopoDS_Shape {
-        const direction = this.och.entitiesService.gpDir(inputs.direction);
-        const angle = this.och.vecHelper.degToRad(inputs.angle);
-        const maker = new this.occ.BRepOffsetAPI_MakeDraft(inputs.shape, direction, angle);
-        maker.SetDraft(inputs.internal);
-        maker.PerformToShape(inputs.stopShape, inputs.keepOut);
+        const resolved = resolveDto(Inputs.OCCT.MakeDraftToShapeDto, inputs) as Resolved.OCCT.MakeDraftToShapeDto<TopoDS_Shape>;
+        const direction = this.och.entitiesService.gpDir(resolved.direction);
+        const angle = this.och.vecHelper.degToRad(resolved.angle);
+        const maker = new this.occ.BRepOffsetAPI_MakeDraft(resolved.shape, direction, angle);
+        maker.SetDraft(resolved.internal);
+        maker.PerformToShape(resolved.stopShape, resolved.keepOut);
 
         if (!maker.IsDone()) {
             direction.delete();

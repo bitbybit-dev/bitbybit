@@ -47,7 +47,7 @@ export class ExtrudeDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How many extra copies of the outline are inserted along the way; more keeps a twist or taper
      * smooth.
@@ -56,7 +56,7 @@ export class ExtrudeDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    nDivisions = 1;
+    nDivisions?: number | undefined = 1;
     /**
      * How far the top is turned against the bottom, in degrees.
      * @default 0
@@ -64,7 +64,7 @@ export class ExtrudeDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    twistDegrees = 0;
+    twistDegrees?: number | undefined = 0;
     /**
      * How much the top is scaled along X; 1 keeps it, 0 with `scaleTopY` at 0 makes a cone.
      * @default 1
@@ -72,7 +72,7 @@ export class ExtrudeDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    scaleTopX = 1;
+    scaleTopX?: number | undefined = 1;
     /**
      * How much the top is scaled along Y; 1 keeps it, 0 with `scaleTopX` at 0 makes a cone.
      * @default 1
@@ -80,12 +80,12 @@ export class ExtrudeDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    scaleTopY = 1;
+    scaleTopY?: number | undefined = 1;
     /**
      * When true, the solid is centered on the XY plane; when false it stands on it.
      * @default true
      */
-    center = true;
+    center?: boolean | undefined = true;
 }
 
 /**
@@ -110,13 +110,13 @@ export class RevolveDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    revolveDegrees: number = 360;
+    revolveDegrees?: number | undefined = 360;
     /**
      * When true, the result is turned back to keep the profile's orientation; when false it stands
      * along Z as the kernel makes it.
      * @default true
      */
-    matchProfile = true;
+    matchProfile?: boolean | undefined = true;
     /**
      * How many segments go around the turn; more is rounder.
      * @default 32
@@ -124,7 +124,7 @@ export class RevolveDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    circularSegments = 32;
+    circularSegments?: number | undefined = 32;
 }
 /**
  * A cross-section and the offset settings for `crossSection.operations.offset`.
@@ -149,12 +149,12 @@ export class OffsetDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    delta: number = 1;
+    delta?: number | undefined = 1;
     /**
      * How corners are treated: `round`, `square`, `miter` or `bevel`.
      * @default round
      */
-    joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
+    joinType?: manifoldJoinTypeEnum | undefined = manifoldJoinTypeEnum.round;
     /**
      * For `miter` joins, how far a corner may reach as a multiple of `delta` before it is squared
      * off; 2 is the smallest allowed.
@@ -163,7 +163,7 @@ export class OffsetDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    miterLimit = 2;
+    miterLimit?: number | undefined = 2;
     /**
      * For `round` joins, how many segments a full circle of rounding gets.
      * @default 32
@@ -171,7 +171,7 @@ export class OffsetDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    circularSegments = 32;
+    circularSegments?: number | undefined = 32;
 }
 
 /**
@@ -193,7 +193,7 @@ export class SimplifyDto<T> {
      * @maximum Infinity
      * @step 1e-7
      */
-    epsilon = 1e-6;
+    epsilon?: number | undefined = 1e-6;
 }
 
 /**
@@ -225,7 +225,7 @@ export class MirrorCrossSectionDto<T> {
      * The normal of the mirror line through the origin; `[1, 0]` mirrors left to right.
      * @default [1,0]
      */
-    normal: Base.Vector2 = [1, 0];
+    normal?: Base.Vector2 | undefined = [1, 0];
 }
 /**
  * A cross-section and two factors for `crossSection.transforms.scale2D`.
@@ -243,7 +243,7 @@ export class Scale2DCrossSectionDto<T> {
      * The factors along X and Y, about the origin; 1 keeps an axis as it is.
      * @default [2,2]
      */
-    vector: Base.Vector2 = [2, 2];
+    vector?: Base.Vector2 | undefined = [2, 2];
 }
 /**
  * A cross-section and a vector for `crossSection.transforms.translate`.
@@ -282,7 +282,7 @@ export class RotateCrossSectionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    degrees: number = 45;
+    degrees?: number | undefined = 45;
 }
 /**
  * A cross-section and a factor for `crossSection.transforms.scale`.
@@ -300,7 +300,7 @@ export class ScaleCrossSectionDto<T> {
      * The uniform scale about the origin; 2 doubles every size.
      * @default 2
      */
-    factor = 2;
+    factor?: number | undefined = 2;
 }
 /**
  * A cross-section and two distances for `crossSection.transforms.translateXY`.
@@ -322,7 +322,7 @@ export class TranslateXYCrossSectionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    x = 0;
+    x?: number | undefined = 0;
     /**
      * How far to move along Y, in model units.
      * @default 0
@@ -330,7 +330,7 @@ export class TranslateXYCrossSectionDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    y = 0;
+    y?: number | undefined = 0;
 }
 
 /**

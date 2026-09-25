@@ -3,6 +3,8 @@ import {
 } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * The modeling operations that turn OpenCascade wires and faces into surfaces and solids and
@@ -39,7 +41,8 @@ export class OCCTOperations {
      * ```
      */
     loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
-        return this.och.operationsService.loft(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LoftDto, inputs) as Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>;
+        return this.och.operationsService.loft(resolved);
     }
 
     /**
@@ -72,7 +75,8 @@ export class OCCTOperations {
      * ```
      */
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
-        return this.och.operationsService.loftAdvanced(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LoftAdvancedDto, inputs) as Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>;
+        return this.och.operationsService.loftAdvanced(resolved);
     }
 
     /**
@@ -349,7 +353,8 @@ export class OCCTOperations {
      * ```
      */
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.extrude(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ExtrudeDto, inputs) as Resolved.OCCT.ExtrudeDto<TopoDS_Shape>;
+        return this.och.operationsService.extrude(resolved);
     }
 
     /**
@@ -365,7 +370,8 @@ export class OCCTOperations {
      * ```
      */
     extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
-        return this.och.operationsService.extrudeShapes(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ExtrudeShapesDto, inputs) as Resolved.OCCT.ExtrudeShapesDto<TopoDS_Shape>;
+        return this.och.operationsService.extrudeShapes(resolved);
     }
 
     /**
@@ -386,7 +392,8 @@ export class OCCTOperations {
      * ```
      */
     splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
-        return this.och.operationsService.splitShapeWithShapes(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SplitDto, inputs) as Resolved.OCCT.SplitDto<TopoDS_Shape>;
+        return this.och.operationsService.splitShapeWithShapes(resolved);
     }
 
     /**
@@ -407,7 +414,8 @@ export class OCCTOperations {
      * ```
      */
     revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.revolve(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RevolveDto, inputs) as Resolved.OCCT.RevolveDto<TopoDS_Shape>;
+        return this.och.operationsService.revolve(resolved);
     }
 
     /**
@@ -428,7 +436,8 @@ export class OCCTOperations {
      * ```
      */
     rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.rotatedExtrude(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RotationExtrudeDto, inputs) as Resolved.OCCT.RotationExtrudeDto<TopoDS_Shape>;
+        return this.och.operationsService.rotatedExtrude(resolved);
     }
 
     /**
@@ -475,7 +484,8 @@ export class OCCTOperations {
      * ```
      */
     pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.operationsService.pipePolylineWireNGon(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PipePolygonWireNGonDto, inputs) as Resolved.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>;
+        return this.och.operationsService.pipePolylineWireNGon(resolved);
     }
 
     /**
@@ -498,7 +508,8 @@ export class OCCTOperations {
      * ```
      */
     pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
-        return this.och.operationsService.pipeWiresCylindrical(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PipeWiresCylindricalDto, inputs) as Resolved.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>;
+        return this.och.operationsService.pipeWiresCylindrical(resolved);
     }
 
     /**
@@ -524,7 +535,8 @@ export class OCCTOperations {
      * ```
      */
     pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.operationsService.pipeWireCylindrical(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PipeWireCylindricalDto, inputs) as Resolved.OCCT.PipeWireCylindricalDto<TopoDS_Wire>;
+        return this.och.operationsService.pipeWireCylindrical(resolved);
     }
 
     /**
@@ -544,7 +556,8 @@ export class OCCTOperations {
      * ```
      */
     offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        return this.och.operationsService.offset(inputs);
+        const resolved = resolveDto(Inputs.OCCT.OffsetDto, inputs) as Resolved.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>;
+        return this.och.operationsService.offset(resolved);
     }
 
     /**
@@ -569,7 +582,8 @@ export class OCCTOperations {
      * ```
      */
     offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        return this.och.operationsService.offsetAdv(inputs);
+        const resolved = resolveDto(Inputs.OCCT.OffsetAdvancedDto, inputs) as Resolved.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>;
+        return this.och.operationsService.offsetAdv(resolved);
     }
 
     /**
@@ -589,7 +603,8 @@ export class OCCTOperations {
      * ```
      */
     makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.makeThickSolidSimple(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ThisckSolidSimpleDto, inputs) as Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>;
+        return this.och.operationsService.makeThickSolidSimple(resolved);
     }
 
     /**
@@ -621,7 +636,8 @@ export class OCCTOperations {
      * ```
      */
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.operationsService.makeThickSolidByJoin(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ThickSolidByJoinDto, inputs) as Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>;
+        return this.och.operationsService.makeThickSolidByJoin(resolved);
     }
 
     /**
@@ -641,7 +657,8 @@ export class OCCTOperations {
      * ```
      */
     slice(inputs: Inputs.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
-        return this.och.operationsService.slice(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SliceDto, inputs) as Resolved.OCCT.SliceDto<TopoDS_Shape>;
+        return this.och.operationsService.slice(resolved);
     }
 
     /**
@@ -660,7 +677,8 @@ export class OCCTOperations {
      * ```
      */
     sliceInStepPattern(inputs: Inputs.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
-        return this.och.operationsService.sliceInStepPattern(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SliceInStepPatternDto, inputs) as Resolved.OCCT.SliceInStepPatternDto<TopoDS_Shape>;
+        return this.och.operationsService.sliceInStepPattern(resolved);
     }
 
     /**
@@ -680,6 +698,7 @@ export class OCCTOperations {
      * ```
      */
     offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
-        return this.och.operationsService.offset3DWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Offset3DWireDto, inputs) as Resolved.OCCT.Offset3DWireDto<TopoDS_Wire>;
+        return this.och.operationsService.offset3DWire(resolved);
     }
 }

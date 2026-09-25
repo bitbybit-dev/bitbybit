@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Compound } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * Measurement annotations drawn as OpenCascade wires: a linear dimension between two points, an
@@ -44,7 +46,8 @@ export class OCCTDimensions {
      * ```
      */
     simpleLinearLengthDimension(inputs: Inputs.OCCT.SimpleLinearLengthDimensionDto): TopoDS_Compound {
-        return this.och.dimensionsService.simpleLinearLengthDimension(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SimpleLinearLengthDimensionDto, inputs) as Resolved.OCCT.SimpleLinearLengthDimensionDto;
+        return this.och.dimensionsService.simpleLinearLengthDimension(resolved);
     }
 
     /**
@@ -76,7 +79,8 @@ export class OCCTDimensions {
      * ```
      */
     simpleAngularDimension(inputs: Inputs.OCCT.SimpleAngularDimensionDto): TopoDS_Compound {
-        return this.och.dimensionsService.simpleAngularDimension(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SimpleAngularDimensionDto, inputs) as Resolved.OCCT.SimpleAngularDimensionDto;
+        return this.och.dimensionsService.simpleAngularDimension(resolved);
     }
 
     /**
@@ -103,7 +107,8 @@ export class OCCTDimensions {
      * ```
      */
     pinWithLabel(inputs: Inputs.OCCT.PinWithLabelDto): TopoDS_Compound {
-        return this.och.dimensionsService.pinWithLabel(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PinWithLabelDto, inputs) as Resolved.OCCT.PinWithLabelDto;
+        return this.och.dimensionsService.pinWithLabel(resolved);
     }
     
     
