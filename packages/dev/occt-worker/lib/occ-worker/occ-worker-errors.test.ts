@@ -18,7 +18,7 @@ vi.mock("@bitbybit-dev/occt", () => {
         boom = (): unknown => { throw thrown.value; };
         echo = (inputs: unknown): unknown => inputs;
     }
-    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService };
+    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry: {} };
 });
 
 const A_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
@@ -31,7 +31,7 @@ describe("what the worker says when a call fails", () => {
         onMessageInput(call, post ?? ((message: unknown) => messages.push(message)));
     };
 
-    const answer = (): { error?: string; result?: unknown } => messages[1] as { error?: string; result?: unknown };
+    const answer = (): { error?: string; result?: unknown; errorKind?: string; stack?: string } => messages[1] as { error?: string; result?: unknown; errorKind?: string; stack?: string };
 
     beforeEach(() => {
         messages = [];
@@ -44,12 +44,15 @@ describe("what the worker says when a call fails", () => {
     });
 
     describe("the error the kernel threw", () => {
-        it("should report an Error with its stack", () => {
+        it("should report an Error by its message and its stack apart from it", () => {
             // Act
             run({ functionName: "boom", inputs: {} });
 
             // Assert
             expect(answer().error).toContain("the kernel refused");
+            expect(answer().error).not.toContain("\n");
+            expect(answer().stack).toContain("the kernel refused");
+            expect(answer().errorKind).toBe("kernel");
         });
 
         it("should report an Error with no stack by its name and message", () => {
@@ -108,6 +111,25 @@ describe("what the worker says when a call fails", () => {
             expect(answer().error).toContain("OCCT computation failed:");
         });
 
+        it("should report a call that named no function at all", () => {
+            // Act
+            run({ inputs: {} } as { functionName: string; inputs: Record<string, unknown> });
+
+            // Assert
+            expect(answer().error).toContain("OCCT computation failed:");
+        });
+
+        it("should report a message that carried no action at all", () => {
+            // Arrange
+            const call = { uid: "uid-1" } as DataInput;
+
+            // Act
+            onMessageInput(call, (message: unknown) => messages.push(message));
+
+            // Assert
+            expect(answer().error).toContain("OCCT computation failed:");
+        });
+
         it("should report a failure that carried no inputs at all", () => {
             // Act
             run({ functionName: "boom" });
@@ -131,7 +153,7 @@ describe("what the worker says when a call fails", () => {
             run({ functionName: "boom", inputs: { stepData: new Uint8Array([1, 2, 3]) } });
 
             // Assert
-            expect(answer().error).toContain("stepData: [Uint8Array length=3]");
+            expect(answer().error).toContain("stepData: [Uint8Array byteLength=3]");
         });
 
         it("should describe a buffer by its length rather than its content", () => {

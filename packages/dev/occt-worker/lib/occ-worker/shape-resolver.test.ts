@@ -529,7 +529,7 @@ describe("Function Path Resolver Unit Tests", () => {
             
             expect(() => {
                 functionPathResolver.callFunction(root, "shapes.wire.create", {});
-            }).toThrow("Cannot resolve path \"shapes.wire.create\"");
+            }).toThrow("Cannot resolve \"shapes.wire.create\": \"shapes\" is not an object");
         });
 
         it("should throw error when function does not exist", () => {
@@ -632,13 +632,21 @@ describe("Shape Resolver edge cases", () => {
     });
 
     describe("callFunction", () => {
+        it("should say so when the root is not an object", () => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+
+            // Act & Assert
+            expect(() => resolver.callFunction(null, "shapes.createSphere", {})).toThrow("Cannot resolve \"shapes.createSphere\": the root is not an object");
+        });
+
         it("should say so when the path names a parent that is not there", () => {
             // Arrange
             const resolver = new FunctionPathResolver();
 
             // Act & Assert
             expect(() => resolver.callFunction({ shapes: null }, "shapes.createSphere", {}))
-                .toThrow("Cannot resolve path \"shapes.createSphere\"");
+                .toThrow("Cannot resolve \"shapes.createSphere\": \"shapes\" is not an object");
         });
     });
 });

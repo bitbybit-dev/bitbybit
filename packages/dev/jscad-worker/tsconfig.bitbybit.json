@@ -36,6 +36,9 @@
     },
     "references": [
         {
+            "path": "../base/tsconfig.bitbybit.json"
+        },
+        {
             "path": "../jscad/tsconfig.bitbybit.json"
         }
     ]

@@ -119,6 +119,7 @@
     },
     "type": "module",
     "dependencies": {
+        "@bitbybit-dev/base": "1.3.2",
         "@bitbybit-dev/manifold": "1.3.2",
         "rxjs": "7.8.2"
     },

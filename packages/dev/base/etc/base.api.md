@@ -119,6 +119,9 @@ export namespace Base {
 }
 
 // @public
+export function callByPath(root: object, path: string, inputs: unknown): unknown;
+
+// @public
 export class Color {
     constructor(math: MathBitByBit);
     getBlueParam(inputs: Inputs_2.Color.HexDtoMapped): number;
@@ -333,6 +336,21 @@ namespace Dates_2 {
     }
 }
 
+// @public
+export function describeKernelFailure(kernel: string, functionName: string, inputs: unknown, error: unknown): KernelFailure;
+
+// @public
+export type DtoConstructor<T extends object = object> = new () => T;
+
+// @public
+export type DtoEntry = {
+    readonly dto?: DtoConstructor;
+    readonly nested?: Readonly<Record<string, DtoConstructor>>;
+};
+
+// @public
+export type DtoRegistry = Readonly<Record<string, DtoEntry>>;
+
 // @public (undocumented)
 export class GeometryHelper {
     approxEq(num1: number, num2: number, tolerance: number): boolean;
@@ -352,6 +370,12 @@ export class GeometryHelper {
 export class GlobalCDNProvider {
     // (undocumented)
     static BITBYBIT_CDN_URL: string;
+}
+
+// @public
+export class InputError extends Error {
+    constructor(message: string, property?: string);
+    readonly property: string | undefined;
 }
 
 declare namespace Inputs {
@@ -430,6 +454,27 @@ export class IoBitByBit {
     // (undocumented)
     dxf: Dxf;
 }
+
+// @public
+export function isRegisteredOperation(registry: DtoRegistry, path: string): boolean;
+
+// @public
+export class KernelCallError extends Error {
+    constructor(message: string, functionName: string, kind?: KernelFailureKind, workerStack?: string);
+    readonly functionName: string;
+    readonly kind: KernelFailureKind;
+    readonly workerStack: string | undefined;
+}
+
+// @public
+export type KernelFailure = {
+    message: string;
+    kind: KernelFailureKind;
+    stack: string | undefined;
+};
+
+// @public
+export type KernelFailureKind = "input" | "kernel";
 
 // @public
 export class Line {
@@ -1437,6 +1482,18 @@ namespace Polyline_2 {
 }
 
 // @public
+export type ReferenceHash = (value: object) => string | number | undefined;
+
+// @public
+export function rehydrateReferences(value: unknown, hashOf: ReferenceHash, lookup: (hash: string | number) => unknown, opaque?: (value: object) => boolean): unknown;
+
+// @public
+export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unknown, nested?: Readonly<Record<string, DtoConstructor>>): T;
+
+// @public
+export function resolveInputs(registry: DtoRegistry, path: string, inputs: unknown): unknown;
+
+// @public
 namespace Text_2 {
     class TextConcatDto {
         constructor(texts?: string[]);
@@ -1796,6 +1853,14 @@ namespace Vector_2 {
         z: number;
     }
 }
+
+// @public
+export type WithDefaults<T, K extends keyof T> = Omit<T, K> & {
+    [P in K]-?: Exclude<T[P], undefined>;
+};
+
+// @public
+export function withDefaults<T extends object>(root: T, registry: DtoRegistry): T;
 
 // (No @packageDocumentation comment for this package)
 

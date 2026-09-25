@@ -1,10 +1,11 @@
+import { KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { OCCTWorkerManager } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
 import { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -182,8 +183,20 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBeInstanceOf(Error);
-            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createSphere", kind: "kernel" });
+            await expect(pending).rejects.toThrow("radius must be positive");
+        });
+
+        it("should carry the kind of failure and the stack the worker reported", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "shapes.solid.createSphere: `radius` must be positive", errorKind: "input", stack: "at kernel" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ kind: "input", workerStack: "at kernel" });
         });
 
         it("should pass the error to the error callback when one is registered", async () => {
@@ -194,7 +207,7 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Act
             answer({ uid: uidOf(0), error: "radius must be positive" });
-            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
+            await expect(pending).rejects.toThrow("radius must be positive");
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("radius must be positive");
@@ -210,7 +223,7 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toThrow(new Error("radius must be positive"));
+            await expect(pending).rejects.toThrow("radius must be positive");
             vi.restoreAllMocks();
         });
 

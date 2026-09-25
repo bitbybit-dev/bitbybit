@@ -5387,27 +5387,27 @@ namespace OCCT {
         radius: number;
     }
     class DataOnGeometryAtLengthDto<T> {
-        constructor(shape: T, length?: number);
+        constructor(shape?: T, length?: number);
         length: number;
         shape: T;
     }
     class DataOnGeometryAtLengthsDto<T> {
-        constructor(shape: T, lengths?: number[]);
+        constructor(shape?: T, lengths?: number[]);
         lengths: number[];
         shape: T;
     }
     class DataOnGeometryAtParamDto<T> {
-        constructor(shape: T, param?: number);
+        constructor(shape?: T, param?: number);
         param: number;
         shape: T;
     }
     class DataOnGeometryesAtLengthDto<T> {
-        constructor(shapes: T[], length?: number);
+        constructor(shapes?: T[], length?: number);
         length: number;
         shapes: T[];
     }
     class DataOnGeometryesAtParamDto<T> {
-        constructor(shapes: T[], param?: number);
+        constructor(shapes?: T[], param?: number);
         param: number;
         shapes: T[];
     }
@@ -5487,7 +5487,7 @@ namespace OCCT {
         shape: T;
     }
     class DivideShapesDto<T> {
-        constructor(shapes: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
+        constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         nrOfDivisions: number;
         removeEndPoint: boolean;
         removeStartPoint: boolean;
@@ -6549,7 +6549,7 @@ namespace OCCT {
         points: Base.Point3[];
     }
     class PointsOnWireAtEqualLengthDto<T> {
-        constructor(shape: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
+        constructor(shape?: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
         includeFirst: boolean;
         includeLast: boolean;
         length: number;
@@ -6557,7 +6557,7 @@ namespace OCCT {
         tryNext: boolean;
     }
     class PointsOnWireAtPatternOfLengthsDto<T> {
-        constructor(shape: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
+        constructor(shape?: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
         includeFirst: boolean;
         includeLast: boolean;
         lengths: number[];

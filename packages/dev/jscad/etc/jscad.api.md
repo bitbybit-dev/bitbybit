@@ -843,6 +843,11 @@ export class Jscad {
     transformSolids(inputs: Inputs.JSCAD.TransformSolidsDto): Inputs.JSCAD.JSCADEntity[];
 }
 
+// Warning: (ae-forgotten-export) The symbol "DtoRegistry" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const jscadDtoRegistry: DtoRegistry;
+
 // @public
 export namespace Line {
     export class DrawLineDto<T> {

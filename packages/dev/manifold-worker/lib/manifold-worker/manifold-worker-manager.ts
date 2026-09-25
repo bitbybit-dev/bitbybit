@@ -1,10 +1,11 @@
+import { KernelCallError, KernelFailureKind } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import { ManifoldInfo } from "./manifold-info";
 import { ManifoldStateEnum } from "./manifold-state.enum";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
 
-type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
-type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, stack?: string };
+type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
  * This is a manager of Manifold worker. Promisified API allows to deal with the worker in a more natural
@@ -44,7 +45,7 @@ export class ManifoldWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(new Error(data.error));
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack));
                     }
                 } else if (promise) {
                     promise.resolve!(data.result);
@@ -77,7 +78,7 @@ export class ManifoldWorkerManager {
      */
     genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: PendingCall = { uid };
+        const obj: PendingCall = { uid, functionName };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;

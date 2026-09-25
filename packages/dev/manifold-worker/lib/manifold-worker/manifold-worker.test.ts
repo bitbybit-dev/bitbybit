@@ -13,7 +13,10 @@ const { FakeCacheHelper, latest, kernelCalls } = vi.hoisted(() => {
             return this.entries.has(hash) ? this.entries.get(hash) : null;
         }
 
-        cacheOp(_action: unknown, cacheMiss: () => unknown): unknown {
+        ops: unknown[] = [];
+
+        cacheOp(action: unknown, cacheMiss: () => unknown): unknown {
+            this.ops.push(structuredClone(action));
             return cacheMiss();
         }
 
@@ -67,14 +70,18 @@ vi.mock("@bitbybit-dev/manifold", () => {
         plugins = kernel.hasPlugins ? { dependencies: kernel.dependencies } : undefined;
         manifold = {
             manifoldToMesh: call("manifold.manifoldToMesh"),
-            shapes: { cube: call("manifold.shapes.cube") },
+            shapes: { cube: call("manifold.shapes.cube"), sphere: call("manifold.shapes.sphere") },
             booleans: { subtract: call("manifold.booleans.subtract") },
         };
         decomposeManifoldOrCrossSection = call("decomposeManifoldOrCrossSection");
         decomposeManifoldsOrCrossSections = call("decomposeManifoldsOrCrossSections");
         toPolygonPoints = call("toPolygonPoints");
     }
-    return { ManifoldService };
+    class SphereDto {
+        radius = 1;
+        circularSegments = 32;
+    }
+    return { ManifoldService, manifoldDtoRegistry: { "manifold.shapes.sphere": { dto: SphereDto } } };
 });
 
 const cacheOf = () => latest.cache;
@@ -234,6 +241,41 @@ describe("the worker message loop", () => {
         });
     });
 
+    describe("the defaults of the DTO an operation takes", () => {
+        it("should give a property the call left out its default", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 3 } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ radius: 3, circularSegments: 32 });
+        });
+
+        it("should give a property the call passed as undefined its default", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: undefined } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ radius: 1, circularSegments: 32 });
+        });
+
+        it("should cache a call that leaves defaults out under the same inputs as one that spells them", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: {} }, "uid-1");
+            run({ functionName: "manifold.shapes.sphere", inputs: { circularSegments: 32, radius: 1 } }, "uid-2");
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify(cacheOf().ops[1]));
+        });
+
+        it("should pass the inputs of an operation the registry does not list through as they are", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { size: 2 } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ size: 2 });
+        });
+    });
+
     describe("resolving hashed shapes against the cache", () => {
         it("should replace a hashed input with the shape the cache holds", () => {
             // Act
@@ -284,6 +326,34 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(kernelCalls[0]?.inputs).toEqual({ shapes: [[{ hash: CACHED_HASH, kernel: "shape" }]] });
+        });
+
+        it("should replace a hashed shape nested inside an object", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { options: { target: { type: "manifold-shape", hash: CACHED_HASH } } } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ options: { target: { hash: CACHED_HASH, kernel: "shape" } } });
+        });
+
+        it("should replace a hashed shape that is not the first item of its list", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { items: [5, { type: "manifold-shape", hash: CACHED_HASH }] } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ items: [5, { hash: CACHED_HASH, kernel: "shape" }] });
+        });
+
+        it("should leave the posted inputs as they were and cache the call under them", () => {
+            // Arrange
+            const inputs = { shape: { type: "manifold-shape", hash: CACHED_HASH } };
+
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs });
+
+            // Assert
+            expect(inputs).toEqual({ shape: { type: "manifold-shape", hash: CACHED_HASH } });
+            expect(cacheOf().ops[0]).toEqual({ functionName: "manifold.shapes.cube", inputs: { shape: { type: "manifold-shape", hash: CACHED_HASH } } });
         });
 
         it("should fail the call when one shape in a list of lists is no longer cached", () => {
@@ -495,7 +565,7 @@ describe("the worker message loop", () => {
             run({ functionName: "manifold.shapes.nothingLikeThis", inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("While executing function - manifold.shapes.nothingLikeThis");
+            expect(answer().error).toContain("Manifold computation failed while executing function 'manifold.shapes.nothingLikeThis'");
         });
 
         it("should repeat the inputs it was given", () => {

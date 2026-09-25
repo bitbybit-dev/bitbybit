@@ -126,7 +126,7 @@ const SEVERITY = {
     "missing-returns": "warn", "missing-param": "warn", "unknown-tag": "warn", "code-in-description": "warn",
     "example-unfenced": "warn", "example-syntax": "warn", "wrapped-list-marker": "warn",
     "stray-tag": "error", "unsafe-description": "error", "multiple-doc-blocks": "error", "forbidden-words": "error", "version-string": "error",
-    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error",
+    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error",
     "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
     "defaulted-spelling": "warn",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
@@ -384,6 +384,7 @@ function checkConstructor(item) {
     for (const param of ctor.parameters) {
         if (ts.getCombinedModifierFlags(param) & ts.ModifierFlags.ParameterPropertyModifier) continue;
         const name = param.name.getText(item.sf);
+        if (!param.questionToken && !param.initializer && !param.dotDotDotToken) add("ctor-param-required", item, `constructor parameter "${name}" is required, so \`new ${item.name}()\` - the DTO with its defaults - does not type-check`);
         if (passedToParent.has(name)) continue;
         const target = assigned.get(name);
         if (target === undefined) add("ctor-param-mismatch", item, `constructor parameter "${name}" is never stored on the instance`);

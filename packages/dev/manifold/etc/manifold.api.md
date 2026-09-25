@@ -1080,6 +1080,11 @@ export namespace Manifold {
     }
 }
 
+// Warning: (ae-forgotten-export) The symbol "DtoRegistry" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const manifoldDtoRegistry: DtoRegistry;
+
 // @public
 export class ManifoldService {
     constructor(wasm: Manifold3D.ManifoldToplevel);

@@ -123,7 +123,7 @@ describe("the worker message loop over the real kernel", () => {
             const answer = answerTo({ functionName: "nonExistentFunction", inputs: { test: "data" } });
 
             // Assert
-            expect(answer.error).toContain("JSCAD computation failed when executing function - nonExistentFunction");
+            expect(answer.error).toContain("JSCAD computation failed while executing function 'nonExistentFunction'");
         });
     });
 

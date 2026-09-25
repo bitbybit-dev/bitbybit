@@ -13,7 +13,10 @@ const { FakeCacheHelper, latest } = vi.hoisted(() => {
             return this.entries.has(hash) ? this.entries.get(hash) : null;
         }
 
-        cacheOp(_action: unknown, cacheMiss: () => unknown): unknown {
+        ops: unknown[] = [];
+
+        cacheOp(action: unknown, cacheMiss: () => unknown): unknown {
+            this.ops.push(structuredClone(action));
             return cacheMiss();
         }
 
@@ -37,10 +40,14 @@ vi.mock("./cache-helper", () => ({
 vi.mock("@bitbybit-dev/jscad", () => {
     class Jscad {
         constructor(public readonly kernel: unknown) { }
-        shapes = { cube: (inputs: unknown) => ({ made: "cube", from: inputs }) };
+        shapes = { cube: (inputs: unknown) => ({ made: "cube", from: inputs }), sphere: (inputs: unknown) => ({ made: "sphere", from: inputs }) };
         toPolygonPoints = (inputs: unknown) => ({ made: "points", from: inputs });
     }
-    return { Jscad };
+    class SphereDto {
+        radius = 1;
+        segments = 32;
+    }
+    return { Jscad, jscadDtoRegistry: { "shapes.sphere": { dto: SphereDto } } };
 });
 
 const cacheOf = () => latest.cache;
@@ -135,6 +142,41 @@ describe("the worker message loop", () => {
         });
     });
 
+    describe("the defaults of the DTO an operation takes", () => {
+        it("should give a property the call left out its default", () => {
+            // Act
+            run({ functionName: "shapes.sphere", inputs: { radius: 3 } });
+
+            // Assert
+            expect(answer().result).toEqual({ made: "sphere", from: { radius: 3, segments: 32 } });
+        });
+
+        it("should give a property the call passed as undefined its default", () => {
+            // Act
+            run({ functionName: "shapes.sphere", inputs: { radius: undefined } });
+
+            // Assert
+            expect(answer().result).toEqual({ made: "sphere", from: { radius: 1, segments: 32 } });
+        });
+
+        it("should cache a call that leaves defaults out under the same inputs as one that spells them", () => {
+            // Act
+            run({ functionName: "shapes.sphere", inputs: {} }, "uid-1");
+            run({ functionName: "shapes.sphere", inputs: { segments: 32, radius: 1 } }, "uid-2");
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify(cacheOf().ops[1]));
+        });
+
+        it("should pass the inputs of an operation the registry does not list through as they are", () => {
+            // Act
+            run({ functionName: "shapes.cube", inputs: { size: 2 } });
+
+            // Assert
+            expect(answer().result).toEqual({ made: "cube", from: { size: 2 } });
+        });
+    });
+
     describe("resolving hashed geometry against the cache", () => {
         it("should replace a hashed input with the geometry the cache holds", () => {
             // Act
@@ -142,6 +184,37 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(answer().result).toEqual({ made: "cube", from: { geometry: { geometry: "from-cache" } } });
+        });
+
+        it("should replace a hashed input nested inside an object", () => {
+            // Act
+            run({ functionName: "shapes.cube", inputs: { options: { target: { type: "jscad-geometry", hash: CACHED_HASH } } } });
+
+            // Assert
+            expect(answer().result).toEqual({ made: "cube", from: { options: { target: { geometry: "from-cache" } } } });
+        });
+
+        it("should hand a geometry on without walking into it", () => {
+            // Arrange
+            const solid = { polygons: [{ type: "jscad-geometry", hash: CACHED_HASH }] };
+
+            // Act
+            run({ functionName: "shapes.cube", inputs: { solid } });
+
+            // Assert
+            expect(answer().result).toEqual({ made: "cube", from: { solid } });
+        });
+
+        it("should leave the posted inputs as they were and cache the call under them", () => {
+            // Arrange
+            const inputs = { geometry: { type: "jscad-geometry", hash: CACHED_HASH } };
+
+            // Act
+            run({ functionName: "shapes.cube", inputs });
+
+            // Assert
+            expect(inputs).toEqual({ geometry: { type: "jscad-geometry", hash: CACHED_HASH } });
+            expect(cacheOf().ops[0]).toEqual({ functionName: "shapes.cube", inputs: { geometry: { type: "jscad-geometry", hash: CACHED_HASH } } });
         });
 
         it("should fail the call when the hashed input is no longer cached", () => {
@@ -265,7 +338,7 @@ describe("the worker message loop", () => {
             run({ functionName: "shapes.nothingLikeThis", inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("failed when executing function - shapes.nothingLikeThis");
+            expect(answer().error).toContain("JSCAD computation failed while executing function 'shapes.nothingLikeThis'");
         });
 
         it("should repeat the inputs it was given", () => {
@@ -289,7 +362,7 @@ describe("the worker message loop", () => {
             run({ inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("failed when executing function undefined");
+            expect(answer().error).toContain("JSCAD computation failed: ");
         });
 
         it("should still answer when there are no inputs to repeat", () => {
@@ -297,7 +370,7 @@ describe("the worker message loop", () => {
             run({ functionName: "shapes.nothingLikeThis", inputs: undefined });
 
             // Assert
-            expect(answer().error).toContain("failed when executing function - shapes.nothingLikeThis");
+            expect(answer().error).toContain("JSCAD computation failed while executing function 'shapes.nothingLikeThis'");
         });
     });
 

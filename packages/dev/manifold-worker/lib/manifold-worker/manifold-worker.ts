@@ -1,5 +1,6 @@
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
-import { ManifoldService } from "@bitbybit-dev/manifold";
+import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
+import { callByPath, describeKernelFailure, rehydrateReferences, resolveInputs } from "@bitbybit-dev/base";
 
 /**
  * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
@@ -33,76 +34,71 @@ export type DataInput = {
 };
 
 type HashedManifold = { hash: string | number };
-type Callable = (inputs: unknown) => unknown;
+
+const MANIFOLD_REFERENCE = "manifold-shape";
+
+/** Commands the worker answers itself rather than by calling a kernel method. */
+const WORKER_COMMANDS = new Set([
+    "manifoldToMesh", "manifoldsToMeshes", "deleteManifoldOrCrossSection", "deleteManifoldsOrCrossSections",
+    "manifoldToMeshPointer", "startedTheRun", "cleanAllCache", "addManifoldPluginDependency",
+]);
+
+const manifoldHash = (value: object): string | number | undefined => {
+    const candidate = value as { type?: unknown; hash?: unknown };
+    return candidate.type === MANIFOLD_REFERENCE && (typeof candidate.hash === "string" || typeof candidate.hash === "number") ? candidate.hash : undefined;
+};
+
+const lookupManifold = (hash: string | number): unknown => {
+    const cached = cacheHelper.checkCache(hash);
+    if (!cached) {
+        throw new Error(`Manifold with hash ${hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
+    }
+    return cached;
+};
+
+type Hashed = { hash: string | number };
+
+const isObjectDefinition = (value: unknown): value is ObjectDefinition<unknown, Hashed> => {
+    const candidate = value as { compound?: unknown; data?: unknown; manifolds?: unknown[] } | null;
+    return !!candidate && !!candidate.compound && !!candidate.data && Array.isArray(candidate.manifolds) && candidate.manifolds.length > 0;
+};
+
+const serializeResult = (res: unknown): unknown => {
+    if (!cacheHelper.isManifoldObject(res)) {
+        if (isObjectDefinition(res)) {
+            return {
+                ...res,
+                manifolds: res.manifolds!.map(s => ({ id: s.id, manifold: { hash: s.manifold.hash, type: MANIFOLD_REFERENCE } })),
+                compound: { hash: res.compound!.hash, type: MANIFOLD_REFERENCE },
+            };
+        }
+        return res;
+    }
+    if (Array.isArray(res)) {
+        return res.map((r: Hashed) => ({ hash: r.hash, type: MANIFOLD_REFERENCE }));
+    }
+    return { hash: (res as Hashed).hash, type: MANIFOLD_REFERENCE };
+};
+
+/**
+ * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes, references
+ * in them become the manifolds they stand for, the dotted path is called on the kernel, the result is
+ * cached under the inputs as resolved, before any reference was replaced, and every manifold in it
+ * goes back as a reference.
+ */
+const executeStandardFunction = (action: DataInput["action"]): unknown => {
+    const inputs = resolveInputs(manifoldDtoRegistry, action.functionName, action.inputs);
+    const rehydrated = rehydrateReferences(inputs, manifoldHash, lookupManifold);
+    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => callByPath(manifold, action.functionName, rehydrated)));
+};
 
 export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {
     postMessage("busy");
 
     let result;
     try {
-        if (d.action.functionName !== "manifoldToMesh" &&
-            d.action.functionName !== "manifoldsToMeshes" &&
-            d.action.functionName !== "deleteManifoldOrCrossSection" &&
-            d.action.functionName !== "deleteManifoldsOrCrossSections" &&
-            d.action.functionName !== "manifoldToMeshPointer" &&
-            d.action.functionName !== "startedTheRun" &&
-            d.action.functionName !== "cleanAllCache" &&
-            d.action.functionName !== "addManifoldPluginDependency") {
-            Object.keys(d.action.inputs).forEach(key => {
-                const val = d.action.inputs[key];
-                if (val && val.type && val.type === "manifold-shape" && val.hash) {
-                    const cachedManifold = cacheHelper.checkCache(d.action.inputs[key].hash);
-                    if (!cachedManifold) {
-                        throw new Error(`Manifold with hash ${d.action.inputs[key].hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-                    }
-                    d.action.inputs[key] = cachedManifold;
-                }
-                if (val && Array.isArray(val) && val.length > 0) {
-                    if ((val[0].type && val[0].type === "manifold-shape" && val[0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map((manifold: HashedManifold) => {
-                            const cachedManifold = cacheHelper.checkCache(manifold.hash);
-                            if (!cachedManifold) {
-                                throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-                            }
-                            return cachedManifold;
-                        });
-                    } else if ((Array.isArray(val[0]) && val[0][0].type && val[0][0].type === "manifold-shape" && val[0][0].hash)) {
-                        d.action.inputs[key] = d.action.inputs[key].map((manifolds: HashedManifold[]) => manifolds.map((manifold: HashedManifold) => {
-                            const cachedManifold = cacheHelper.checkCache(manifold.hash);
-                            if (!cachedManifold) {
-                                throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-                            }
-                            return cachedManifold;
-                        }));
-                    }
-                }
-            });
-
-            const path = d.action.functionName.split(".");
-            let res;
-            if (path.length === 3) {
-                res = cacheHelper.cacheOp(d.action, () => (manifold as unknown as Record<string, Record<string, Record<string, Callable>>>)[path[0]!]![path[1]!]![path[2]!]!(d.action.inputs));
-            } else if (path.length === 2) {
-                res = cacheHelper.cacheOp(d.action, () => (manifold as unknown as Record<string, Record<string, Callable>>)[path[0]!]![path[1]!]!(d.action.inputs));
-            } else {
-                res = cacheHelper.cacheOp(d.action, () => (manifold as unknown as Record<string, Callable>)[d.action.functionName]!(d.action.inputs));
-            }
-
-            if (!cacheHelper.isManifoldObject(res)) {
-                if (res && res.compound && res.data && res.manifolds && res.manifolds.length > 0) {
-                    const r: ObjectDefinition<any, any> = res;
-                    r.manifolds = r.manifolds!.map(s => ({ id: s.id, manifold: { hash: s.manifold.hash, type: "manifold-shape" } }));
-                    r.compound = { hash: r.compound.hash, type: "manifold-shape" };
-                    result = r;
-                } else {
-                    result = res;
-                }
-            }
-            else if (Array.isArray(res)) {
-                result = res.map(r => ({ hash: r.hash, type: "manifold-shape" }));
-            } else {
-                result = { hash: res.hash, type: "manifold-shape" };
-            }
+        if (!WORKER_COMMANDS.has(d.action.functionName)) {
+            result = executeStandardFunction(d.action);
         }
         if (d.action.functionName === "addManifoldPluginDependency") {
             if (manifold && manifold.plugins) {
@@ -169,19 +165,13 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result
         });
     } catch (e) {
-        let props;
-        if (d && d.action && d.action.inputs) {
-            props = `Input values were: {${Object.keys(d.action.inputs).map(key => `${key}: ${JSON.stringify(d.action.inputs[key])}`).join(",")}}. `;
-        }
-        let fun;
-        if (d && d.action && d.action.functionName) {
-            fun = `- ${d.action.functionName}`;
-        }
-
+        const failure = describeKernelFailure("Manifold", d?.action?.functionName ?? "", d?.action?.inputs, e);
         postMessage({
             uid: d.uid,
             result: undefined,
-            error: `Manifold computation failed. ${e} While executing function ${fun}. ${props}`
+            error: failure.message,
+            errorKind: failure.kind,
+            stack: failure.stack,
         });
     }
 };

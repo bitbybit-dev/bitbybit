@@ -1,10 +1,11 @@
+import { KernelCallError, KernelFailureKind } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import { OccInfo } from "./occ-info";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
-type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, stack?: string };
+type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
  * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural
@@ -63,7 +64,7 @@ export class OCCTWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(new Error(data.error));
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack));
                     }
                 } else if (promise) {
                     promise.resolve!(data.result);
@@ -95,7 +96,7 @@ export class OCCTWorkerManager {
      */
     genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: PendingCall = { uid };
+        const obj: PendingCall = { uid, functionName };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;

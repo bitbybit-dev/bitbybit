@@ -88,6 +88,11 @@
             "types": "./dist/lib/api/inputs/index.d.ts",
             "default": "./dist/lib/api/inputs/index.js"
         },
+        "./lib/api/kernel-calls": {
+            "@bitbybit-dev/source": "./lib/api/kernel-calls/index.ts",
+            "types": "./dist/lib/api/kernel-calls/index.d.ts",
+            "default": "./dist/lib/api/kernel-calls/index.js"
+        },
         "./lib/api/models": {
             "@bitbybit-dev/source": "./lib/api/models/index.ts",
             "types": "./dist/lib/api/models/index.d.ts",

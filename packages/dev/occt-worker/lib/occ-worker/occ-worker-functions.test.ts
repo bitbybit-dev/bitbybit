@@ -146,6 +146,58 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
     });
 
+    describe("the defaults of the DTO an operation takes", () => {
+        type Answer = { result?: { type?: string; hash?: number }; error?: string };
+        const answerTo = (functionName: string, inputs: Record<string, unknown>): Answer => {
+            const messages: unknown[] = [];
+            onMessageInput({ action: { functionName, inputs }, uid: "defaults" }, (message: unknown) => messages.push(message));
+            return messages[1] as Answer;
+        };
+        const fullySpelledBox = (): Record<string, unknown> => ({ ...new Inputs.OCCT.BoxDto() });
+
+        it("should build a box from a call that names no property at all", () => {
+            // Act
+            const answer = answerTo("shapes.solid.createBox", {});
+
+            // Assert
+            expect(answer.error).toBeUndefined();
+            expect(answer.result?.type).toBe("occ-shape");
+        });
+
+        it("should answer a call that leaves defaults out from the cache entry of the fully spelled call", () => {
+            // Arrange
+            const full = answerTo("shapes.solid.createBox", fullySpelledBox());
+
+            // Act
+            const partial = answerTo("shapes.solid.createBox", { width: 1 });
+
+            // Assert
+            expect(partial.result?.hash).toBe(full.result?.hash);
+        });
+
+        it("should give a property passed as undefined its default", () => {
+            // Arrange
+            const full = answerTo("shapes.solid.createBox", fullySpelledBox());
+
+            // Act
+            const withUndefined = answerTo("shapes.solid.createBox", { width: undefined, height: 3 });
+
+            // Assert
+            expect(withUndefined.result?.hash).toBe(full.result?.hash);
+        });
+
+        it("should build a different box when a default is overridden", () => {
+            // Arrange
+            const full = answerTo("shapes.solid.createBox", fullySpelledBox());
+
+            // Act
+            const wider = answerTo("shapes.solid.createBox", { width: 5 });
+
+            // Assert
+            expect(wider.result?.hash).not.toBe(full.result?.hash);
+        });
+    });
+
     describe("onMessageInput - cache validation", () => {
         it("should throw error when shape not found in cache", () => new Promise<void>((done) => {
             const dataInput = {

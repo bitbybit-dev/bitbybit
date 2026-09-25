@@ -1,3 +1,4 @@
+import { callByPath } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { isShapeReference, isEntityReference, createShapeReference, createEntityReference } from "./constants";
 
@@ -230,26 +231,9 @@ export class FunctionPathResolver {
      * @throws Error if the path cannot be resolved or the function doesn't exist
      */
     callFunction(root: unknown, functionPath: string, inputs: unknown): unknown {
-        const pathParts = functionPath.split(".");
-        
-        let current: unknown = root;
-        for (let i = 0; i < pathParts.length - 1; i++) {
-            if (current === null || current === undefined || typeof current !== "object") {
-                throw new Error(`Cannot resolve path "${functionPath}": "${pathParts[i]}" is not an object`);
-            }
-            current = (current as Record<string, unknown>)[pathParts[i]!];
+        if (root === null || typeof root !== "object") {
+            throw new Error(`Cannot resolve "${functionPath}": the root is not an object`);
         }
-
-        const functionName = pathParts[pathParts.length - 1]!;
-        if (current === null || current === undefined || typeof current !== "object") {
-            throw new Error(`Cannot resolve path "${functionPath}": parent is not an object`);
-        }
-        
-        const fn = (current as Record<string, unknown>)[functionName];
-        if (typeof fn !== "function") {
-            throw new Error(`"${functionPath}" is not a function`);
-        }
-
-        return fn.call(current, inputs);
+        return callByPath(root, functionPath, inputs);
     }
 }

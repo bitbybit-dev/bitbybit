@@ -46,10 +46,19 @@ npm run lint
   compiler flags, and under exactOptionalPropertyTypes only that spelling lets a caller pass an
   optional value straight through (`{ tolerance: inputs.tolerance }`). Many defaulted properties are
   still spelled `tolerance = 1e-7;`, which an object literal must pass; the `defaulted-spelling`
-  count may only fall. Only `new Dto()` runs an initializer - an object literal does not - so a
-  service reading a property spelled with `?` applies the default where it reads it
-  (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop, after a length check, or of
-  a regex group the pattern guarantees carry a non-null assertion; everything else narrows.
+  count may only fall. Only `new Dto()` runs an initializer - an object literal does not. The three
+  workers therefore lay every call's inputs over the defaults of the DTO it takes before the kernel
+  runs (`resolveInputs` from base, over the kernel's generated `*DtoRegistry`), and `withDefaults`
+  does the same for a kernel used in the same thread; a kernel called directly with a literal gets
+  no defaults, so a service reading a property spelled with `?` still applies the default where it
+  reads it (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop, after a length
+  check, or of a regex group the pattern guarantees carry a non-null assertion; everything else
+  narrows.
+- **Each kernel's operation registry is generated; do not edit it.** `occt/lib/api/dto-registry.ts`,
+  `jscad/lib/api/dto-registry.ts` and `manifold/lib/api/dto-registry.ts` list every public operation
+  by dotted path with the DTO it takes, walked from the kernel root like the worker API. A new or
+  changed kernel method, or a DTO property that holds another DTO, needs `npm run gen:dto-meta` at
+  the repository root; `check:dto-meta` in `npm test` fails on a stale registry.
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
   `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
   files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
@@ -151,7 +160,13 @@ almost every rule here follows from that.
   object either fails structured clone or hands over a meaningless pointer.
 - **`uid` is the only correlation key**, echoed unchanged on success and failure. A request that
   produces no reply leaves its caller waiting forever, which is why the error path wraps its own
-  `postMessage` in a second try/catch.
+  `postMessage` in a second try/catch. The managers settle a call on every reply, a falsy or absent
+  result included, and reject with a `KernelCallError` (base) that carries the dotted path, whether
+  the inputs or the kernel failed, and the worker's stack apart from the message.
+- **One call shape in every worker:** the inputs are laid over the DTO's defaults, the call is cached
+  under those resolved inputs, references in them are replaced by the cached objects - a new
+  structure, the posted inputs untouched - and the dotted path is called with `callByPath`. A failure
+  is described by `describeKernelFailure`, so the three kernels report it the same way.
 - **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
   `instanceof`. That is why worker-side types are plain records.
 - **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so

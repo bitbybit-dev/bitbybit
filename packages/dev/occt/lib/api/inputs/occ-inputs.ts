@@ -5257,7 +5257,7 @@ export namespace OCCT {
      * `divideEdgesByEqualDistanceToPoints` and their siblings.
      */
     export class DivideShapesDto<T> {
-        constructor(shapes: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
             if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -5293,7 +5293,7 @@ export namespace OCCT {
      * `shapes.wire.pointOnWireAtParam` and `shapes.edge.tangentOnEdgeAtParam`.
      */
     export class DataOnGeometryAtParamDto<T> {
-        constructor(shape: T, param?: number) {
+        constructor(shape?: T, param?: number) {
             if (shape !== undefined) { this.shape = shape; }
             if (param !== undefined) { this.param = param; }
         }
@@ -5317,7 +5317,7 @@ export namespace OCCT {
      * `tangentsOnEdgesAtParam`.
      */
     export class DataOnGeometryesAtParamDto<T> {
-        constructor(shapes: T[], param?: number) {
+        constructor(shapes?: T[], param?: number) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (param !== undefined) { this.param = param; }
         }
@@ -5340,7 +5340,7 @@ export namespace OCCT {
      * `length` units from the start.
      */
     export class PointsOnWireAtEqualLengthDto<T> {
-        constructor(shape: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
+        constructor(shape?: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (length !== undefined) { this.length = length; }
             if (tryNext !== undefined) { this.tryNext = tryNext; }
@@ -5382,7 +5382,7 @@ export namespace OCCT {
      * A wire and a repeating pattern of gaps for `shapes.wire.pointsOnWireAtPatternOfLengths`.
      */
     export class PointsOnWireAtPatternOfLengthsDto<T> {
-        constructor(shape: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
+        constructor(shape?: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (lengths !== undefined) { this.lengths = lengths; }
             if (tryNext !== undefined) { this.tryNext = tryNext; }
@@ -5421,7 +5421,7 @@ export namespace OCCT {
      * `shapes.wire.pointOnWireAtLength` and `shapes.edge.tangentOnEdgeAtLength`.
      */
     export class DataOnGeometryAtLengthDto<T> {
-        constructor(shape: T, length?: number) {
+        constructor(shape?: T, length?: number) {
             if (shape !== undefined) { this.shape = shape; }
             if (length !== undefined) { this.length = length; }
         }
@@ -5445,7 +5445,7 @@ export namespace OCCT {
      * `tangentsOnEdgesAtLength`.
      */
     export class DataOnGeometryesAtLengthDto<T> {
-        constructor(shapes: T[], length?: number) {
+        constructor(shapes?: T[], length?: number) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (length !== undefined) { this.length = length; }
         }
@@ -5468,7 +5468,7 @@ export namespace OCCT {
      * A wire and several distances for `shapes.wire.pointsOnWireAtLengths`.
      */
     export class DataOnGeometryAtLengthsDto<T> {
-        constructor(shape: T, lengths?: number[]) {
+        constructor(shape?: T, lengths?: number[]) {
             if (shape !== undefined) { this.shape = shape; }
             if (lengths !== undefined) { this.lengths = lengths; }
         }

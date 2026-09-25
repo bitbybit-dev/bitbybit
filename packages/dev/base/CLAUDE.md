@@ -21,3 +21,12 @@ Vectors it cannot place - a non-finite component, a tolerance that is not positi
 magnitude where the cell arithmetic stops being exact - fall back to the plain scan and are also held
 in a side list the grid path consults, so neither path can miss a duplicate the other holds.
 `removeConsecutiveDuplicates` remains the cheaper call when only neighbours matter.
+
+**`lib/api/kernel-calls/` is public on purpose**, unlike `helpers/`: it is how a call reaches a kernel,
+and the kernels, the workers and the code that dispatches to a kernel from outside all share it.
+`resolveDto` and `resolveInputs` lay a caller's inputs over a DTO's defaults and return a new plain
+object, never the caller's and never a class instance - a walk over the inputs treats a class instance
+as opaque. `withDefaults` does the same for a kernel used in the same thread, wrapping only the objects
+on the way to a registered operation. `callByPath`, `rehydrateReferences` and `describeKernelFailure`
+are the three pieces every worker used to keep its own copy of, and `InputError` / `KernelCallError`
+are the two errors a caller can tell apart.

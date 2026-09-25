@@ -1,5 +1,6 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService } from "@bitbybit-dev/occt";
+import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry } from "@bitbybit-dev/occt";
+import { describeKernelFailure, resolveInputs } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -92,65 +93,23 @@ function createCommandContext(): CommandContext {
  * Executes a standard (cacheable) OCCT function.
  * 
  * This handles the common flow:
- * 1. Recursively resolve shape references in inputs
- * 2. Execute the function with caching
- * 3. Serialize the result for transmission
+ * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out or
+ *    passed as undefined gets its default, and cache the call under those inputs
+ * 2. Recursively resolve shape references in inputs
+ * 3. Execute the function with caching
+ * 4. Serialize the result for transmission
  */
 function executeStandardFunction(
     action: DataInput["action"]
 ): unknown {
-    const resolvedInputs = shapeResolver.resolveShapeReferences(action.inputs);
+    const inputs = resolveInputs(occtDtoRegistry, action.functionName, action.inputs);
+    const resolvedInputs = shapeResolver.resolveShapeReferences(inputs);
 
-    const res = cacheHelper.cacheOp(action, () => {
+    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
         return functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
     });
 
     return resultSerializer.serializeResult(res);
-}
-
-/**
- * Formats error information for transmission.
- */
-function formatError(error: unknown, action: DataInput["action"]): string {
-    let errorMessage: string;
-    if (error instanceof Error) {
-        errorMessage = error.stack || `${error.name}: ${error.message}`;
-    } else if (typeof error === "string") {
-        errorMessage = error;
-    } else {
-        try {
-            errorMessage = JSON.stringify(error);
-        } catch {
-            errorMessage = String(error);
-        }
-    }
-
-    let props = "";
-    if (action?.inputs) {
-        const inputDetails = Object.entries(action.inputs)
-            .map(([key, value]) => {
-                if (ArrayBuffer.isView(value)) {
-                    return `${key}: [${value.constructor.name} length=${(value as Uint8Array).byteLength}]`;
-                }
-                if (value instanceof ArrayBuffer) {
-                    return `${key}: [ArrayBuffer byteLength=${value.byteLength}]`;
-                }
-                try {
-                    const str = JSON.stringify(value);
-                    return str.length > 200
-                        ? `${key}: ${str.slice(0, 200)}…(truncated)`
-                        : `${key}: ${str}`;
-                } catch {
-                    return `${key}: [unserializable]`;
-                }
-            })
-            .join(", ");
-        props = ` Input values were: {${inputDetails}}.`;
-    }
-
-    const funcName = action?.functionName ? ` while executing function '${action.functionName}'` : "";
-
-    return `OCCT computation failed${funcName}: ${errorMessage}.${props}`;
 }
 
 /**
@@ -188,10 +147,13 @@ export const onMessageInput = (
         });
     } catch (e) {
         try {
+            const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, e);
             postMessage({
                 uid: d.uid,
                 result: undefined,
-                error: formatError(e, d.action),
+                error: failure.message,
+                errorKind: failure.kind,
+                stack: failure.stack,
             });
         } catch (fmtErr) {
             postMessage({

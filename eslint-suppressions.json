@@ -333,12 +333,6 @@
   "packages/dev/jscad-worker/lib/jscad-worker/jscad-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 3
-    },
-    "@typescript-eslint/restrict-template-expressions": {
-      "count": 1
-    },
-    "bitbybit/no-double-assertion": {
-      "count": 2
     }
   },
   "packages/dev/jscad/lib/api/inputs/jscad/paths.ts": {
@@ -396,12 +390,6 @@
   },
   "packages/dev/manifold-worker/lib/manifold-worker/manifold-worker.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 5
-    },
-    "@typescript-eslint/restrict-template-expressions": {
-      "count": 1
-    },
-    "bitbybit/no-double-assertion": {
       "count": 3
     }
   },
