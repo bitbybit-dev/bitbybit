@@ -5601,8 +5601,8 @@ export interface OperationParams {
         /** The name of the part, written into STEP files and shown by viewers. */
         name: string | PipelineRef;
         /**
-         * The color of the part as `{ r, g, b, a }` with every channel from 0 to 1; leave it out for
-         * the default gray.
+         * The color of the part as `{ r, g, b, a }` from 0 to 1; left out, the part has no color of
+         * its own.
          */
         colorRgba?: unknown | PipelineRef;
     };
