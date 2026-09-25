@@ -122,25 +122,37 @@ The part still ships as its own order line and still decrements stock. It simply
 
 ## When it runs out
 
-Name the shopper choices that should be crossed out while this part cannot be sold, and they are marked unavailable as soon as your catalogue says so.
+Tell the configurator which shopper choices this part depends on, for when your catalogue says it is sold out. There are two ways to write it, and they behave differently.
+
+**A list of choices** suits a part that one choice decides. While the part is sold out, every choice in the list is crossed out, and a shopper who is already on one is moved off it - the choices are tried in the order you listed them - with a short note saying what changed.
+
+**Only while** suits a part that a combination decides, and is described [below](#a-part-that-exists-only-under-a-combination). Nothing is crossed out outright: the configurator keeps what the shopper just picked, changes as few of the named choices as it can to reach a configuration you can sell, and tells the shopper what changed.
+
+With **Only while**, or with nothing named at all, shoppers see three kinds of choice:
+
+- **Available** - picking it changes nothing else.
+- **Marked** - it is out of stock with their current choices, but picking it still works: the configurator changes another choice to make it sellable. The choice is dimmed and its tooltip says what picking it changes, for example *Out of stock with your current choices - picking it changes Finish to Walnut*. After the click, a note beside Add to cart says what changed, and the choice that changed is briefly highlighted.
+- **Crossed out** - nothing can make it sellable, so it cannot be picked.
+
+A tick box add-on never changes the main choices: if its kit is sold out for the current size, the add-on is crossed out rather than switching the size.
 
 :::caution Two things have to be true before this field does anything
 The part has to **link a store product** - a part with a typed price has no stock to run out of - and the project has to have **Disable options that cannot currently be sold (live catalog)** switched on in the [Pricing](/learn/3d-bits/composer/gui/pricing) tab. With either of those missing, filling this in is harmless but nothing is ever crossed out.
 :::
 
-Naming nothing is safe: a shopper who picks a configuration needing a part you cannot sell is refused at Add to cart regardless. The only thing this field decides is whether they find out early or late.
+Naming nothing is safe too: the choices the part is included for may change instead, just as with **Only while**, and a configuration that still needs a part you cannot sell is refused at Add to cart. When nothing may change, the shopper keeps what they picked and Add to cart tells them what is out of stock. A choice that needs an answer is never left empty to get around stock; an optional one may be cleared, and an add-on switched off.
 
 ### A part that exists only under a combination
 
-Naming a choice outright says "cross this out whenever the part is unsellable". That is right for a part decided by one choice, and wrong for a part decided by two.
+Take a handle that comes in two finishes. If the brass bar handle is sold out, a list naming **Bar** would cross it out, and that is too much: the steel bar handle is in stock and perfectly sellable.
 
-Take a handle that comes in two finishes. If the brass one is sold out, crossing out **Bar** is too much: the steel bar handle is in stock and perfectly sellable, and a shopper who wanted it in steel has just lost a choice you could have sold them.
+**Only while** is that case. Give it the same condition you would write in *Included when* - `Handle Equals Bar` **and** `Finish Equals Brass` - and the choices it names are the ones that may change, in the order written. A shopper on brass who picks **Bar** keeps Bar and is moved to steel, with a short notice saying so; **Bar** is only crossed out when no finish can make it sellable.
 
-**Only while** is that case. Give it the same condition you would write in *Included when* - `Handle is Bar` **and** `Finish is Brass` - and each choice it names is crossed out only while the rest of the condition holds. **Bar** greys out once the shopper is on brass, and comes back the moment they switch to steel. Because it is judged against what the shopper has picked so far, it also works the other way round: with Bar already chosen, it is **Brass** that greys out.
+Only a choice written with **Equals** may change. Write it with **Includes** (or any other test) and it becomes context: it still decides when the part is needed, but the configurator never changes it. Use that to protect a choice you never want moved.
 
 **Copy from "Included when"** fills it in from the condition the part already carries, which is usually exactly what you want.
 
-Two things to know. A choice named in *When it runs out* wins, so use one field or the other on a given part. And a condition written as a typed expression rather than with the condition builder crosses nothing out - there is no single choice to read out of an expression, and greying out the wrong one is worse than greying out none.
+Two things to know. A choice named in *When it runs out* wins, so use one field or the other on a given part. And a condition written as a typed expression rather than with the condition builder names no choice that may change - there is no single choice to read out of an expression.
 
 ## Where your parts appear
 

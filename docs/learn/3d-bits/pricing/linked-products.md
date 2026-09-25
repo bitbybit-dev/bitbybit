@@ -88,11 +88,11 @@ Stock level changes do not need a publish, but they are not nothing either: a li
 
 In the **Pricing** tab there is a switch called **Disable options that cannot currently be sold**.
 
-With it on, the configurator checks the real products behind your priced options when the page loads, and greys out any that are out of stock or whose price no longer matches what you published. The shopper sees the choice crossed out with a short message instead of discovering the problem at checkout.
+With it on, the configurator checks the real products behind your priced options and parts when the page loads, again while the shopper configures, and right before Add to cart. When something the shopper's configuration needs is out of stock, it keeps the choice they just clicked and changes as few other choices as it can to reach one you can sell, telling the shopper what changed - the choices each part may change are set under [When it runs out](/learn/3d-bits/composer/gui/parts#when-it-runs-out). A choice nothing can make sellable, or whose price no longer matches what you published, is crossed out with a short message instead of the shopper discovering the problem at checkout. When nothing may change, the shopper keeps their configuration and Add to cart tells them what is out of stock.
 
 Three things worth knowing:
 
-- **It never changes what anyone is charged.** It can only take a choice away, never add one or alter a price. To change prices you still publish.
+- **It never changes what anyone is charged.** It can take a choice away or move the shopper to another choice they could have picked themselves, never add a paid extra or alter a price. To change prices you still publish.
 - **If the check cannot run, nothing changes.** A slow or failed lookup leaves the configurator behaving exactly as it does without the switch.
 - **You can write the message.** It defaults to "Out of stock", or "Temporarily unavailable" when it is the price that has moved.
 

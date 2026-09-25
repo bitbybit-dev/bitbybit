@@ -50,7 +50,7 @@ Publishing enforces the same rule across every configuration a shopper can reach
 A quantity control multiplies the **price** of one configured set. It does not change how many you ship. If you want a shopper to buy six of what they configured, add a **Quantity** element in the [Layout](/learn/3d-bits/composer/gui/layout) tab instead.
 :::
 
-**Disable options that cannot currently be sold** checks the real products behind your priced options when the page loads, and greys out any that are out of stock or whose price no longer matches what you published. It only ever takes a choice away - it never changes what anyone is charged. You can write the message a shopper sees. See [Linked products](/learn/3d-bits/pricing/linked-products#showing-what-cannot-be-bought-right-now).
+**Disable options that cannot currently be sold** checks the real products behind your priced options and parts when the page loads and while the shopper configures. When something is out of stock it moves the shopper to the nearest configuration you can sell and says what changed, and it greys out any choice nothing can make sellable or whose price no longer matches what you published. It never changes what anyone is charged. You can write the message a shopper sees. See [Linked products](/learn/3d-bits/pricing/linked-products#showing-what-cannot-be-bought-right-now).
 
 **Save the configuration on the order** writes the shopper's choices onto the order as line item properties, so your team can read what to make.
 
