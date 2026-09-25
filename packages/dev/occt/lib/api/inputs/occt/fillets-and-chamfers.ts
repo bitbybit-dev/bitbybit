@@ -25,7 +25,6 @@ export class FilletDto<T> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
@@ -65,7 +64,6 @@ export class FilletShapesDto<T> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
@@ -259,7 +257,6 @@ export class Fillet3DWiresDto<T> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
@@ -305,7 +302,6 @@ export class Fillet3DWireDto<T> {
      * @minimum 0
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
@@ -349,7 +345,6 @@ export class ChamferDto<T> {
      * @default 0.1
      * @minimum 0
      * @maximum Infinity
-     * @optional true
      * @step 0.1
      */
     distance?: number | undefined = 0.1;

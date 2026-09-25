@@ -580,6 +580,7 @@ export namespace Point {
         /**
          * When true, a last point that repeats the first is dropped as well, which closes a loop
          * cleanly.
+         * @default false
          */
         checkFirstAndLast = false;
     }

@@ -31,17 +31,25 @@ npm run lint
   process per file, or a module to stand in for another. Standing one module in for another goes
   through the shared `alias` option, not `resolve.alias`: Vite never shows an alias a relative
   import, and the emscripten glue is reached as a relative path from inside the package that ships it.
-- **The shape of a DTO property is load-bearing for the declarations.** A property the service always
-  reads is required, `line!: LinePointsDto;` - the constructors assign conditionally, so that is a
-  definite-assignment assertion, not an initializer. A property a caller may omit is optional, spelled
-  with an explicit type that admits undefined, `tolerance?: number | undefined = 1e-7;`: the
-  constructors and the services treat an explicit undefined as "use the default", and under
-  exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight through
-  (`{ tolerance: inputs.tolerance }`). Write the type out - an inferred one prints differently in the
-  declarations depending on the compiler flags, and the published declarations must not move with a flag. The service applies the default itself where it reads the property
-  (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
-  script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
-  the pattern guarantees carry a non-null assertion; everything else narrows.
+- **The shape of a DTO property is load-bearing for the declarations.** Every property is one of
+  three kinds, each with one spelling, and `check:api-docs` holds them:
+  - **required**, `line!: LinePointsDto;` - no initializer; the constructors assign conditionally,
+    so that is a definite-assignment assertion. `@default undefined` or no `@default`.
+  - **defaulted**, `tolerance?: number | undefined = 1e-7;` - the initializer is the default, and
+    `@default` repeats it exactly (`default-mismatch`, `default-needs-initializer`,
+    `default-tag-missing`). A default already makes it optional, so it never carries `@optional`.
+  - **optional**, `indexes?: number[] | undefined;` - `@default undefined` and `@optional true`;
+    left out, it stays unset and the service decides what that means.
+
+  Constructors take every parameter as optional and assign it only when it is not undefined. Write
+  the `| undefined` out - an inferred type prints differently in the declarations depending on the
+  compiler flags, and under exactOptionalPropertyTypes only that spelling lets a caller pass an
+  optional value straight through (`{ tolerance: inputs.tolerance }`). Many defaulted properties are
+  still spelled `tolerance = 1e-7;`, which an object literal must pass; the `defaulted-spelling`
+  count may only fall. Only `new Dto()` runs an initializer - an object literal does not - so a
+  service reading a property spelled with `?` applies the default where it reads it
+  (`inputs.tolerance ?? 1e-7`). Index reads inside a bounds-checked loop, after a length check, or of
+  a regex group the pattern guarantees carry a non-null assertion; everything else narrows.
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
   `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
   files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its

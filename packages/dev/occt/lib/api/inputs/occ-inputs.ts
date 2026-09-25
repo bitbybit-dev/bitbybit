@@ -887,7 +887,6 @@ export namespace OCCT {
         /**
          * Which arc to use when several fit, counted from 0; -1 takes the one nearest `planeOrigin`.
          * @default -1
-         * @optional true
          */
         solution?: number | undefined = -1;
     }
@@ -1736,6 +1735,7 @@ export namespace OCCT {
         /**
          * When true, the hexagons turn a flat side toward the U direction; when false a corner points
          * that way.
+         * @default false
          */
         flatU = false;
         /**
@@ -1859,6 +1859,7 @@ export namespace OCCT {
         /**
          * When true, the hexagons turn a flat side toward the U direction; when false a corner points
          * that way.
+         * @default false
          */
         flatU = false;
         /**
@@ -2363,6 +2364,7 @@ export namespace OCCT {
         polygons!: PolygonDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -2504,6 +2506,7 @@ export namespace OCCT {
         polylines!: PolylineDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -3407,6 +3410,7 @@ export namespace OCCT {
         lines!: LineDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -3669,7 +3673,6 @@ export namespace OCCT {
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
-         * @optional true
          */
         radius?: number | undefined = 0.1;
         /**
@@ -3709,7 +3712,6 @@ export namespace OCCT {
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
-         * @optional true
          */
         radius?: number | undefined = 0.1;
         /**
@@ -3903,7 +3905,6 @@ export namespace OCCT {
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
-         * @optional true
          */
         radius?: number | undefined = 0.1;
         /**
@@ -3949,7 +3950,6 @@ export namespace OCCT {
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
-         * @optional true
          */
         radius?: number | undefined = 0.1;
         /**
@@ -3993,7 +3993,6 @@ export namespace OCCT {
          * @default 0.1
          * @minimum 0
          * @maximum Infinity
-         * @optional true
          * @step 0.1
          */
         distance?: number | undefined = 0.1;
@@ -4328,6 +4327,7 @@ export namespace OCCT {
         bSplines!: BSplineDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -4637,7 +4637,7 @@ export namespace OCCT {
          * cusps and overshoot with uneven points, or `uniform`.
          * @default chordLength
          */
-        parametrization?: bSplineParametrizationEnum | undefined;
+        parametrization?: bSplineParametrizationEnum | undefined = bSplineParametrizationEnum.chordLength;
         /**
          * A direction the curve must leave the first point in; only for open curves.
          * @default undefined
@@ -4698,6 +4698,7 @@ export namespace OCCT {
         interpolations!: InterpolationDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -4737,7 +4738,6 @@ export namespace OCCT {
          * When true, the curve closes into a loop that is smooth across the seam, using `degree` or a
          * default; it overrides `closed`.
          * @default false
-         * @optional true
          */
         periodic?: boolean | undefined = false;
     }
@@ -4774,7 +4774,6 @@ export namespace OCCT {
          * When true, the curve closes into a loop that is smooth across the seam and needs exactly one
          * weight per point; it overrides `closed`.
          * @default false
-         * @optional true
          */
         periodic?: boolean | undefined = false;
         /**
@@ -5004,6 +5003,7 @@ export namespace OCCT {
         bezierWires!: BezierDto[];
         /**
          * When true, the wires are packed into one compound instead of a list.
+         * @default false
          */
         returnCompound = false;
     }
@@ -6917,6 +6917,7 @@ export namespace OCCT {
         direction: Base.Vector3 = [0, 1, 0];
         /**
          * The point the shape's origin is moved to, in model units.
+         * @default [0, 0, 0]
          */
         center: Base.Vector3 = [0, 0, 0];
     }
@@ -7175,6 +7176,7 @@ export namespace OCCT {
         directions: Base.Vector3[] = [[0, 1, 0]];
         /**
          * One point per shape for its origin to move to, in model units.
+         * @default [[0, 0, 0]]
          */
         centers: Base.Vector3[] = [[0, 0, 0]];
     }
@@ -8575,6 +8577,7 @@ export namespace OCCT {
         text!: string;
         /**
          * Whether the text is STEP or IGES.
+         * @default step
          */
         fileType: fileTypeEnum = fileTypeEnum.step;
         /**
@@ -9129,7 +9132,7 @@ export namespace OCCT {
          * @minimum 0
          * @maximum 1
          */
-        colorRgba?: Base.ColorRGBA | undefined;
+        colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
     }
 
     /**
@@ -10214,7 +10217,7 @@ export namespace OCCT {
          * @maximum Infinity
          * @step 0.1
          */
-        offsetOuterEdges?: number | undefined;
+        offsetOuterEdges?: number | undefined = 0;
         /**
          * When true, only the first half of the rays are built, as an open wire.
          * @default false
@@ -10712,7 +10715,7 @@ export namespace OCCT {
          * How lines of different length line up: at their left edge, their center or their right edge.
          * @default left
          */
-        align?: Base.horizontalAlignEnum | undefined;
+        align?: Base.horizontalAlignEnum | undefined = Base.horizontalAlignEnum.left;
         /**
          * A margin in model units taken off the height and split above and below each character, so
          * extruded text keeps its full size.
@@ -11010,7 +11013,6 @@ export namespace OCCT {
          * An expression written instead of the plain number, with `val` standing for the distance, such
          * as `100*val` or `Length: val mm`.
          * @default 1*val
-         * @optional true
          */
         labelOverwrite?: string | undefined = "1*val";
         /**
@@ -11167,7 +11169,6 @@ export namespace OCCT {
          * An expression written instead of the plain number, with `val` standing for the angle, such as
          * `100*val` or `Angle: val deg`.
          * @default 1*val
-         * @optional true
          */
         labelOverwrite?: string | undefined = "1*val";
         /**

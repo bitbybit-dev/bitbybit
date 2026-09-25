@@ -100,6 +100,19 @@ export class FilletDto<T> {
   `@optional`) stay exactly as they are.
 - The same DTO may serve several methods with different semantics; say so per method, as the
   fillet docs do, rather than choosing one.
+- Every property is one of three kinds, and the spelling and the tags say which:
+
+  | kind | spelling | tags |
+  |---|---|---|
+  | required | `shape!: T;` | `@default undefined`, or no `@default` |
+  | defaulted | `tolerance?: number \| undefined = 1e-7;` | `@default` repeating the initializer |
+  | optional | `indexes?: number[] \| undefined;` | `@default undefined` and `@optional true` |
+
+  The initializer is the default - `new Dto()` runs it - and `@default` must name the same value, so
+  a `@default` value with no initializer, or an initializer with no `@default`, is an error. A
+  default already makes a property optional, so `@optional true` never sits beside one. Older
+  defaulted properties are still spelled `tolerance = 1e-7;`, which an object literal must pass;
+  `check:api-docs` counts them (`defaulted-spelling`) and the count may only fall.
 
 ## An API class
 

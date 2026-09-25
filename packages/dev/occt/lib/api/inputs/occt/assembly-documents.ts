@@ -74,7 +74,7 @@ export class CreateAssemblyPartDto<T> {
      * @minimum 0
      * @maximum 1
      */
-    colorRgba?: Base.ColorRGBA | undefined;
+    colorRgba?: Base.ColorRGBA | undefined = { r: 0.5, g: 0.5, b: 0.5, a: 1 };
 }
 
 /**

@@ -90,7 +90,7 @@ export class PolylinePropertiesDto {
     /**
      * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
      * and ignore this flag
-     * @optional true
+     * @default false
      */
     isClosed?: boolean | undefined = false;
     /**

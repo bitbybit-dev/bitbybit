@@ -508,6 +508,7 @@ export class ImportStepIgesFromTextDto {
     text!: string;
     /**
      * Whether the text is STEP or IGES.
+     * @default step
      */
     fileType: fileTypeEnum = fileTypeEnum.step;
     /**

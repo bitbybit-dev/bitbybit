@@ -101,7 +101,7 @@ export namespace JSCAD {
         /**
          * Whether the last point joins back to the first; the JSCAD methods decide closure on their own
          * and ignore this flag
-         * @optional true
+         * @default false
          */
         isClosed?: boolean | undefined = false;
         /**
@@ -835,7 +835,7 @@ export namespace JSCAD {
         /**
          * A NURBS curve that can be sampled into points; only X and Y of the samples are used
          */
-        curve: any;
+        curve!: any;
     }
     /**
      * Feeds `polygon.createFromPoints` with the outline points of a filled 2D shape, listed in order

@@ -511,7 +511,6 @@ export class FilletTwoEdgesInPlaneDto<T> {
     /**
      * Which arc to use when several fit, counted from 0; -1 takes the one nearest `planeOrigin`.
      * @default -1
-     * @optional true
      */
     solution?: number | undefined = -1;
 }

@@ -140,7 +140,6 @@ export class SimpleLinearLengthDimensionDto {
      * An expression written instead of the plain number, with `val` standing for the distance, such
      * as `100*val` or `Length: val mm`.
      * @default 1*val
-     * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**
@@ -297,7 +296,6 @@ export class SimpleAngularDimensionDto {
      * An expression written instead of the plain number, with `val` standing for the angle, such as
      * `100*val` or `Angle: val deg`.
      * @default 1*val
-     * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**

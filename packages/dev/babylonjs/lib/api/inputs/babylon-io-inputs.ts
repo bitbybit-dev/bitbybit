@@ -24,7 +24,6 @@ export namespace BabylonIO {
         /**
          * When true, the skybox and ground meshes this library adds are left out of the file
          * @default false
-         * @optional true
          */
         discardSkyboxAndGrid?: boolean | undefined = false;
     }
@@ -46,13 +45,11 @@ export namespace BabylonIO {
         /**
          * When true, the skybox and ground meshes this library adds are left out of the file
          * @default false
-         * @optional true
          */
         discardSkyboxAndGrid?: boolean | undefined = false;
         /**
          * When true, the mesh geometry is compressed with Draco, which makes the file smaller and slower to open
          * @default false
-         * @optional true
          */
         compressWithDraco?: boolean | undefined = false;
     }

@@ -268,6 +268,7 @@ export class FaceSubdivideToHexagonWiresDto<T> {
     /**
      * When true, the hexagons turn a flat side toward the U direction; when false a corner points
      * that way.
+     * @default false
      */
     flatU = false;
     /**
@@ -391,6 +392,7 @@ export class FaceSubdivideToHexagonHolesDto<T> {
     /**
      * When true, the hexagons turn a flat side toward the U direction; when false a corner points
      * that way.
+     * @default false
      */
     flatU = false;
     /**

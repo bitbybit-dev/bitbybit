@@ -76,6 +76,7 @@ export class LinesDto {
     lines!: LineDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }

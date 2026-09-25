@@ -152,6 +152,7 @@ export class PolygonsDto {
     polygons!: PolygonDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }
@@ -293,6 +294,7 @@ export class PolylinesDto {
     polylines!: PolylineDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }

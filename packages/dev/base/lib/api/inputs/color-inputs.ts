@@ -241,6 +241,7 @@ export namespace Color {
         /**
          * When true, the result is black for a light color and white for a dark one instead of the
          * exact inverse; useful for readable text.
+         * @default false
          */
         blackAndWhite = false;
     }

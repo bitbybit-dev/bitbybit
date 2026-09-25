@@ -761,18 +761,18 @@ export namespace BabylonGizmo {
      * appear on.
      */
     export class AttachToMeshDto {
-        constructor(mesh: BABYLON.AbstractMesh, gizmoManager: BABYLON.GizmoManager) {
-            this.mesh = mesh;
-            this.gizmoManager = gizmoManager;
+        constructor(mesh?: BABYLON.AbstractMesh, gizmoManager?: BABYLON.GizmoManager) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (gizmoManager !== undefined) { this.gizmoManager = gizmoManager; }
         }
         /**
          * The mesh the gizmos attach to; the mesh attached before is released
          */
-        mesh: BABYLON.AbstractMesh;
+        mesh!: BABYLON.AbstractMesh;
         /**
          * The gizmo manager, as `createGizmoManager` gave it
          */
-        gizmoManager: BABYLON.GizmoManager;
+        gizmoManager!: BABYLON.GizmoManager;
     }
 
     /**
@@ -780,39 +780,39 @@ export namespace BabylonGizmo {
      * the drag event to select.
      */
     export class PositionGizmoObservableSelectorDto {
-        constructor(selector: positionGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: positionGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: positionGizmoObservableSelectorEnum;
+        selector!: positionGizmoObservableSelectorEnum;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.createBoundingBoxGizmoObservableSelector` with the name
      * of the handle event to select.
      */
     export class BoundingBoxGizmoObservableSelectorDto {
-        constructor(selector: boundingBoxGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: boundingBoxGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: a drag start, or a scale box or rotation sphere drag and its end
          */
-        selector: boundingBoxGizmoObservableSelectorEnum;
+        selector!: boundingBoxGizmoObservableSelectorEnum;
     }
     /**
      * Feeds `babylon.gizmo.rotationGizmo.createRotationGizmoObservableSelector` with the name of
      * the drag event to select.
      */
     export class RotationGizmoObservableSelectorDto {
-        constructor(selector: rotationGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: rotationGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: rotationGizmoObservableSelectorEnum;
+        selector!: rotationGizmoObservableSelectorEnum;
     }
 
     /**
@@ -820,12 +820,12 @@ export namespace BabylonGizmo {
      * event to select.
      */
     export class ScaleGizmoObservableSelectorDto {
-        constructor(selector: scaleGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: scaleGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: scaleGizmoObservableSelectorEnum;
+        selector!: scaleGizmoObservableSelectorEnum;
     }
 }

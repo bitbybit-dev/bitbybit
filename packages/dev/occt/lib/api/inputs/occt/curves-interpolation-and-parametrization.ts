@@ -39,6 +39,7 @@ export class BSplinesDto {
     bSplines!: BSplineDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }
@@ -348,7 +349,7 @@ export class InterpolationDto {
      * cusps and overshoot with uneven points, or `uniform`.
      * @default chordLength
      */
-    parametrization?: bSplineParametrizationEnum | undefined;
+    parametrization?: bSplineParametrizationEnum | undefined = bSplineParametrizationEnum.chordLength;
     /**
      * A direction the curve must leave the first point in; only for open curves.
      * @default undefined
@@ -409,6 +410,7 @@ export class InterpolateWiresDto {
     interpolations!: InterpolationDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }
@@ -448,7 +450,6 @@ export class BezierDto {
      * When true, the curve closes into a loop that is smooth across the seam, using `degree` or a
      * default; it overrides `closed`.
      * @default false
-     * @optional true
      */
     periodic?: boolean | undefined = false;
 }
@@ -485,7 +486,6 @@ export class BezierWeightsDto {
      * When true, the curve closes into a loop that is smooth across the seam and needs exactly one
      * weight per point; it overrides `closed`.
      * @default false
-     * @optional true
      */
     periodic?: boolean | undefined = false;
     /**
@@ -715,6 +715,7 @@ export class BezierWiresDto {
     bezierWires!: BezierDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
     returnCompound = false;
 }

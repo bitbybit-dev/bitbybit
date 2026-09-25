@@ -190,7 +190,7 @@ export namespace PlayCanvasCamera {
          * The orbit camera controller, as `create` gave it
          * @default undefined
          */
-        orbitCamera: any;
+        orbitCamera!: any;
         /**
          * The point the camera looks at and circles around
          * @default [0, 0, 0]
@@ -211,7 +211,7 @@ export namespace PlayCanvasCamera {
          * The orbit camera controller, as `create` gave it
          * @default undefined
          */
-        orbitCamera: any;
+        orbitCamera!: any;
         /**
          * The entity the camera backs off to fit in view
          * @default undefined
@@ -234,7 +234,7 @@ export namespace PlayCanvasCamera {
          * The orbit camera controller, as `create` gave it
          * @default undefined
          */
-        orbitCamera: any;
+        orbitCamera!: any;
         /**
          * How far around the vertical axis, in degrees
          * @default 45

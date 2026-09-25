@@ -675,14 +675,17 @@ export namespace BabylonMesh {
         mesh!: BABYLON.Mesh;
         /**
          * A point the axis passes through
+         * @default [0, 0, 0]
          */
         position: Base.Point3 = [0, 0, 0];
         /**
          * The direction of the axis; any length will do, but not a zero vector
+         * @default [0, 1, 0]
          */
         axis: Base.Vector3 = [0, 1, 0];
         /**
          * How far to turn, in degrees; positive follows the right-hand rule around the axis
+         * @default 0
          */
         angle = 0;
     }

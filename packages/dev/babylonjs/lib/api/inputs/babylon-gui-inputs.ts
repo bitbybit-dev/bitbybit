@@ -151,13 +151,13 @@ export namespace BabylonGui {
          * When true, the layer is drawn in front of the scene; when false, behind it
          * @default true
          */
-        foreground?: boolean | undefined;
+        foreground?: boolean | undefined = true;
         /**
          * When true, the layer scales with the screen's pixel density so controls keep their size
          * on dense displays
          * @default false
          */
-        adaptiveScaling?: boolean | undefined;
+        adaptiveScaling?: boolean | undefined = false;
     }
 
     /**
@@ -365,98 +365,98 @@ export namespace BabylonGui {
      * Feeds the slider observable selector method with the name of the slider event to select.
      */
     export class SliderObservableSelectorDto {
-        constructor(selector: sliderObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: sliderObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which slider event, by its observable name
          * @default onValueChangedObservable
          */
-        selector: sliderObservableSelectorEnum;
+        selector: sliderObservableSelectorEnum = sliderObservableSelectorEnum.onValueChangedObservable;
     }
     /**
      * Feeds the color picker observable selector method with the name of the color picker event to
      * select.
      */
     export class ColorPickerObservableSelectorDto {
-        constructor(selector: colorPickerObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: colorPickerObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which color picker event, by its observable name
          * @default onValueChangedObservable
          */
-        selector: colorPickerObservableSelectorEnum;
+        selector: colorPickerObservableSelectorEnum = colorPickerObservableSelectorEnum.onValueChangedObservable;
     }
     /**
      * Feeds the text field observable selector method with the name of the text field event to
      * select.
      */
     export class InputTextObservableSelectorDto {
-        constructor(selector: inputTextObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: inputTextObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which text field event, by its observable name
          * @default onTextChangedObservable
          */
-        selector: inputTextObservableSelectorEnum;
+        selector: inputTextObservableSelectorEnum = inputTextObservableSelectorEnum.onTextChangedObservable;
     }
     /**
      * Feeds the radio button observable selector method with the name of the radio button event to
      * select.
      */
     export class RadioButtonObservableSelectorDto {
-        constructor(selector: radioButtonObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: radioButtonObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which radio button event, by its observable name
          * @default onIsCheckedChangedObservable
          */
-        selector: radioButtonObservableSelectorEnum;
+        selector: radioButtonObservableSelectorEnum = radioButtonObservableSelectorEnum.onIsCheckedChangedObservable;
     }
 
     /**
      * Feeds the checkbox observable selector method with the name of the checkbox event to select.
      */
     export class CheckboxObservableSelectorDto {
-        constructor(selector: checkboxObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: checkboxObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which checkbox event, by its observable name
          * @default onIsCheckedChangedObservable
          */
-        selector: checkboxObservableSelectorEnum;
+        selector: checkboxObservableSelectorEnum = checkboxObservableSelectorEnum.onIsCheckedChangedObservable;
     }
 
     /**
      * Feeds the control observable selector method with the name of the control event to select.
      */
     export class ControlObservableSelectorDto {
-        constructor(selector: controlObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: controlObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which control event, by its observable name
          * @default onPointerClickObservable
          */
-        selector: controlObservableSelectorEnum;
+        selector: controlObservableSelectorEnum = controlObservableSelectorEnum.onPointerClickObservable;
     }
     /**
      * Feeds the text block observable selector method with the name of the text block event to
      * select.
      */
     export class TextBlockObservableSelectorDto {
-        constructor(selector: textBlockObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: textBlockObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which text block event, by its observable name
          * @default onTextChangedObservable
          */
-        selector: textBlockObservableSelectorEnum;
+        selector: textBlockObservableSelectorEnum = textBlockObservableSelectorEnum.onTextChangedObservable;
     }
     /**
      * Feeds the `babylon.gui.container` getters with the container to read from.
@@ -778,7 +778,7 @@ export namespace BabylonGui {
         height?: number | string | undefined;
         /**
          * Width and height together, as a pixel string or a fraction; it overrides both when given
-         * @default 300px
+         * @default undefined
          * @optional true
          */
         size?: number | string | undefined;
@@ -819,9 +819,8 @@ export namespace BabylonGui {
         /**
          * Width and height together, as a pixel string or a fraction
          * @default 300px
-         * @optional true
          */
-        size?: number | string | undefined;
+        size?: number | string | undefined = "300px";
     }
     /**
      * Feeds the `babylon.gui.colorPicker` getters with the color picker to read from.
@@ -1120,12 +1119,12 @@ export namespace BabylonGui {
          * The text the field starts with; empty shows the placeholder
          * @default
          */
-        text!: string;
+        text = "";
         /**
          * The hint shown while the field is empty
          * @default
          */
-        placeholder!: string;
+        placeholder = "";
         /**
          * CSS color of the typed text
          * @default #f0cebb
@@ -1187,7 +1186,7 @@ export namespace BabylonGui {
          * The text the field holds from then on; the change fires its event like typing
          * @default
          */
-        text!: string;
+        text = "";
     }
     /**
      * Feeds `babylon.gui.inputText.setPlaceholder` with a text field and its new hint.
@@ -1206,7 +1205,7 @@ export namespace BabylonGui {
          * The hint shown while the field is empty
          * @default
          */
-        placeholder!: string;
+        placeholder = "";
     }
     /**
      * Feeds the `babylon.gui.inputText` getters with the text field to read from.
@@ -1327,7 +1326,7 @@ export namespace BabylonGui {
          * The group joined; only one radio button per group can be checked
          * @default
          */
-        group!: string;
+        group = "";
     }
     /**
      * Feeds `babylon.gui.radioButton.setBackground` with a radio button and the color of its

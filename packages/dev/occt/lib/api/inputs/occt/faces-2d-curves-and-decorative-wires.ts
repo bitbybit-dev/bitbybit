@@ -460,7 +460,7 @@ export class StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    offsetOuterEdges?: number | undefined;
+    offsetOuterEdges?: number | undefined = 0;
     /**
      * When true, only the first half of the rays are built, as an open wire.
      * @default false
@@ -958,7 +958,7 @@ export class TextWiresDto {
      * How lines of different length line up: at their left edge, their center or their right edge.
      * @default left
      */
-    align?: Base.horizontalAlignEnum | undefined;
+    align?: Base.horizontalAlignEnum | undefined = Base.horizontalAlignEnum.left;
     /**
      * A margin in model units taken off the height and split above and below each character, so
      * extruded text keeps its full size.

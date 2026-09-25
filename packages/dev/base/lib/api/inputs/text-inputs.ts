@@ -383,7 +383,7 @@ export namespace Text {
          * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
-         * @optional true
+         * @default 0
          */
         yOffset?: number | undefined = 0;
         /**
@@ -425,7 +425,7 @@ export namespace Text {
          * The text to draw; a line break starts a new line.
          * @default Hello World
          */
-        text?: string | undefined;
+        text?: string | undefined = "Hello World";
         /**
          * How far to shift the whole block along X, in model units.
          * @default 0
@@ -473,7 +473,7 @@ export namespace Text {
          * edge.
          * @default left
          */
-        align?: Base.horizontalAlignEnum | undefined;
+        align?: Base.horizontalAlignEnum | undefined = Base.horizontalAlignEnum.left;
         /**
          * A margin, in model units, taken off the height and split above and below each character,
          * so extruded text keeps its full size.

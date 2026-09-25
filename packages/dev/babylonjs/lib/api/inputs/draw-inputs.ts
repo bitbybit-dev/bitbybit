@@ -778,7 +778,7 @@ export namespace Draw {
          * The engine material the faces are drawn with
          * @default undefined
          */
-        faceMaterial;
+        faceMaterial!: any;
 
         /**
         * You can turn off drawing of edges via this property

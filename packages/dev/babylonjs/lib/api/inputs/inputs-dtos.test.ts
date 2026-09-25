@@ -277,26 +277,11 @@ const DTOS: [string, AnyDto][] = [
     ["BabylonScene.SceneCanvasBackgroundImageDto", Inputs.BabylonScene.SceneCanvasBackgroundImageDto],
 ];
 
-const REQUIRES_ITS_ARGUMENTS = new Set([
-    "BabylonGizmo.AttachToMeshDto",
-    "BabylonGizmo.PositionGizmoObservableSelectorDto",
-    "BabylonGizmo.BoundingBoxGizmoObservableSelectorDto",
-    "BabylonGizmo.RotationGizmoObservableSelectorDto",
-    "BabylonGizmo.ScaleGizmoObservableSelectorDto",
-    "BabylonGui.SliderObservableSelectorDto",
-    "BabylonGui.ColorPickerObservableSelectorDto",
-    "BabylonGui.InputTextObservableSelectorDto",
-    "BabylonGui.RadioButtonObservableSelectorDto",
-    "BabylonGui.CheckboxObservableSelectorDto",
-    "BabylonGui.ControlObservableSelectorDto",
-    "BabylonGui.TextBlockObservableSelectorDto",
-]);
-
 const sentinels = (count: number): unknown[] => Array.from({ length: count }, (_, index) => ({ argument: index }));
 
 describe("the BabylonJS input DTOs", () => {
     describe("constructed with nothing", () => {
-        it.each(DTOS.filter(([name]) => !REQUIRES_ITS_ARGUMENTS.has(name)))(
+        it.each(DTOS)(
             "%s should carry no property it left undefined",
             (_name, Dto) => {
                 // Act
@@ -304,16 +289,6 @@ describe("the BabylonJS input DTOs", () => {
 
                 // Assert
                 expect(Object.entries(built).filter(([, value]) => value === undefined)).toEqual([]);
-            });
-
-        it.each(DTOS.filter(([name]) => REQUIRES_ITS_ARGUMENTS.has(name)))(
-            "%s should leave unset what it has no default for",
-            (_name, Dto) => {
-                // Act
-                const built = new Dto();
-
-                // Assert
-                expect(Object.values(built).every((value) => value === undefined)).toBe(true);
             });
     });
 

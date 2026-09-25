@@ -308,7 +308,7 @@ namespace BabylonGaussianSplatting {
 // @public
 namespace BabylonGizmo {
     class AttachToMeshDto {
-        constructor(mesh: BABYLON_2.AbstractMesh, gizmoManager: BABYLON_2.GizmoManager);
+        constructor(mesh?: BABYLON_2.AbstractMesh, gizmoManager?: BABYLON_2.GizmoManager);
         gizmoManager: BABYLON_2.GizmoManager;
         mesh: BABYLON_2.AbstractMesh;
     }
@@ -325,7 +325,7 @@ namespace BabylonGizmo {
         boundingBoxGizmo: BABYLON_2.BoundingBoxGizmo;
     }
     class BoundingBoxGizmoObservableSelectorDto {
-        constructor(selector: boundingBoxGizmoObservableSelectorEnum);
+        constructor(selector?: boundingBoxGizmoObservableSelectorEnum);
         selector: boundingBoxGizmoObservableSelectorEnum;
     }
     // (undocumented)
@@ -368,7 +368,7 @@ namespace BabylonGizmo {
         positionGizmo: BABYLON_2.IPositionGizmo;
     }
     class PositionGizmoObservableSelectorDto {
-        constructor(selector: positionGizmoObservableSelectorEnum);
+        constructor(selector?: positionGizmoObservableSelectorEnum);
         selector: positionGizmoObservableSelectorEnum;
     }
     // (undocumented)
@@ -382,7 +382,7 @@ namespace BabylonGizmo {
         rotationGizmo: BABYLON_2.IRotationGizmo;
     }
     class RotationGizmoObservableSelectorDto {
-        constructor(selector: rotationGizmoObservableSelectorEnum);
+        constructor(selector?: rotationGizmoObservableSelectorEnum);
         selector: rotationGizmoObservableSelectorEnum;
     }
     // (undocumented)
@@ -396,7 +396,7 @@ namespace BabylonGizmo {
         scaleGizmo: BABYLON_2.IScaleGizmo;
     }
     class ScaleGizmoObservableSelectorDto {
-        constructor(selector: scaleGizmoObservableSelectorEnum);
+        constructor(selector?: scaleGizmoObservableSelectorEnum);
         selector: scaleGizmoObservableSelectorEnum;
     }
     // (undocumented)
@@ -589,7 +589,7 @@ namespace BabylonGui {
         checkbox: BABYLON_3.GUI.Checkbox;
     }
     class CheckboxObservableSelectorDto {
-        constructor(selector: checkboxObservableSelectorEnum);
+        constructor(selector?: checkboxObservableSelectorEnum);
         selector: checkboxObservableSelectorEnum;
     }
     // (undocumented)
@@ -608,7 +608,7 @@ namespace BabylonGui {
         colorPicker: BABYLON_3.GUI.ColorPicker;
     }
     class ColorPickerObservableSelectorDto {
-        constructor(selector: colorPickerObservableSelectorEnum);
+        constructor(selector?: colorPickerObservableSelectorEnum);
         selector: colorPickerObservableSelectorEnum;
     }
     // (undocumented)
@@ -624,7 +624,7 @@ namespace BabylonGui {
         control: BABYLON_3.GUI.Control;
     }
     class ControlObservableSelectorDto {
-        constructor(selector: controlObservableSelectorEnum);
+        constructor(selector?: controlObservableSelectorEnum);
         selector: controlObservableSelectorEnum;
     }
     // (undocumented)
@@ -778,7 +778,7 @@ namespace BabylonGui {
         inputText: BABYLON_3.GUI.InputText;
     }
     class InputTextObservableSelectorDto {
-        constructor(selector: inputTextObservableSelectorEnum);
+        constructor(selector?: inputTextObservableSelectorEnum);
         selector: inputTextObservableSelectorEnum;
     }
     // (undocumented)
@@ -803,7 +803,7 @@ namespace BabylonGui {
         radioButton: BABYLON_3.GUI.RadioButton;
     }
     class RadioButtonObservableSelectorDto {
-        constructor(selector: radioButtonObservableSelectorEnum);
+        constructor(selector?: radioButtonObservableSelectorEnum);
         selector: radioButtonObservableSelectorEnum;
     }
     // (undocumented)
@@ -986,7 +986,7 @@ namespace BabylonGui {
         slider: BABYLON_3.GUI.Slider;
     }
     class SliderObservableSelectorDto {
-        constructor(selector: sliderObservableSelectorEnum);
+        constructor(selector?: sliderObservableSelectorEnum);
         selector: sliderObservableSelectorEnum;
     }
     // (undocumented)
@@ -1011,7 +1011,7 @@ namespace BabylonGui {
         textBlock: BABYLON_3.GUI.TextBlock;
     }
     class TextBlockObservableSelectorDto {
-        constructor(selector: textBlockObservableSelectorEnum);
+        constructor(selector?: textBlockObservableSelectorEnum);
         selector: textBlockObservableSelectorEnum;
     }
     // (undocumented)

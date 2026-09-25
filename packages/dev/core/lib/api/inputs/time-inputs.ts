@@ -17,7 +17,7 @@ export namespace Time {
         /**
          * The value to send; it is copied across, so it must be serializable
          */
-        data: any;
+        data!: any;
         /**
          * Origin of the page allowed to receive the message, such as `https://example.com`; only a
          * page from that origin gets it

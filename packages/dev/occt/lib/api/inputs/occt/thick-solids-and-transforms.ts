@@ -446,6 +446,7 @@ export class AlignAndTranslateDto<T> {
     direction: Base.Vector3 = [0, 1, 0];
     /**
      * The point the shape's origin is moved to, in model units.
+     * @default [0, 0, 0]
      */
     center: Base.Vector3 = [0, 0, 0];
 }
@@ -704,6 +705,7 @@ export class AlignAndTranslateShapesDto<T> {
     directions: Base.Vector3[] = [[0, 1, 0]];
     /**
      * One point per shape for its origin to move to, in model units.
+     * @default [[0, 0, 0]]
      */
     centers: Base.Vector3[] = [[0, 0, 0]];
 }

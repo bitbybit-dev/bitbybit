@@ -374,6 +374,7 @@ export namespace BabylonScene {
         position: Base.Point3 = [10, 10, 10];
         /**
          * The point the camera looks at and orbits around
+         * @default [0, 0, 0]
          */
         lookAt: Base.Point3 = [0, 0, 0];
         /**
@@ -580,7 +581,6 @@ export namespace BabylonScene {
         /**
          * Resolution the sky texture is loaded at, in pixels per face; used for `.hdr` files
          * @default 512
-         * @optional true
          */
         textureSize?: number | undefined = 512;
         /**

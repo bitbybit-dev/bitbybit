@@ -127,6 +127,8 @@ const SEVERITY = {
     "example-unfenced": "warn", "example-syntax": "warn", "wrapped-list-marker": "warn",
     "stray-tag": "error", "unsafe-description": "error", "multiple-doc-blocks": "error", "forbidden-words": "error", "version-string": "error",
     "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error",
+    "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
+    "defaulted-spelling": "warn",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
 };
 const BUDGET = { M: [8, 60], C: [15, 120], D: [8, 40], P: [3, 30] };
@@ -336,6 +338,32 @@ function checkOptionalAgreement(item) {
     if (item.optional && !optionalTag && !hasDefaultValue) add("optional-mismatch", item, "spelled with `?` but has neither @optional true nor a @default value, so a node gates on it while a script may omit it");
 }
 
+/**
+ * A DTO property is one of three kinds, and each has one spelling:
+ *
+ *   required    `x!: T;`                  no initializer; a caller must pass it
+ *   defaulted   `x?: T | undefined = d;`  the initializer is the default, and `@default` repeats it
+ *   optional    `x?: T | undefined;`      `@optional true`; left unset, it stays unset
+ *
+ * `new Dto()` runs the initializer and nothing else sets a default, so a `@default` value without
+ * one is a default that exists only in the documentation. `| undefined` is written out because an
+ * inferred type prints differently under different compiler flags, and because under
+ * exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight on.
+ * A defaulted property spelled without `?` is still required in an object literal; that spelling is
+ * ratcheted down rather than forbidden.
+ */
+function checkSpelling(item) {
+    if (!item.declaration) return;
+    const optionalTag = item.doc?.tags.some((t) => t.name === "optional" && t.text === "true") ?? false;
+    const defaultTag = item.doc?.tags.find((t) => t.name === "default");
+    if (defaultTag !== undefined && defaultTag.text !== "undefined" && !item.initializer) add("default-needs-initializer", item, `@default ${defaultTag.text} but no initializer, so \`new ${item.className}()\` leaves it unset`);
+    if (item.initializer && defaultTag === undefined) add("default-tag-missing", item, `initialized to ${item.initializer.getText(item.sf)} but no @default says so`);
+    if (!item.initializer && !item.optional && !item.definite) add("required-spelling", item, "neither initialized nor optional, so it is required: spell it `name!: T;`");
+    if (item.optional && !/\|\s*undefined\b/.test(item.type)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
+    if (item.initializer && optionalTag) add("optional-with-default", item, "@optional true on a property with a default; a default already makes it optional");
+    if (item.initializer && !item.optional) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
+}
+
 /** Every constructor parameter names the property it fills, spelled the same; a typo or a stray parameter is a public signature nobody can call by name. */
 function checkConstructor(item) {
     const ctor = item.node.members.find(ts.isConstructorDeclaration);
@@ -367,6 +395,7 @@ function checkConstructor(item) {
 function checkProperty(item) {
     checkOptionalAgreement(item);
     checkDefaultAgreement(item);
+    checkSpelling(item);
     if (!item.doc) { add("missing-doc", item, "no JSDoc"); return; }
     checkDescription(item, item.doc);
     checkTags(item, item.doc);
@@ -466,7 +495,7 @@ for (const file of inputsFiles) {
                         if (!name || !isPublic(member) || !(ts.isPropertyDeclaration(member) || ts.isParameter(member))) continue;
                         const pdoc = docOf(member);
                         if (pdoc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
-                        own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, sf });
+                        own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, definite: ts.isPropertyDeclaration(member) && !!member.exclamationToken, declaration: ts.isPropertyDeclaration(member), sf });
                     }
                     props.push(...own);
                     dtoPropCount.set(className, own.filter((p) => !/shape|Pointer|manifold|entity/i.test(p.type)).length);

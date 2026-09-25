@@ -27,7 +27,7 @@ export class CurveDto {
     /**
      * A NURBS curve that can be sampled into points; only X and Y of the samples are used
      */
-    curve: any;
+    curve!: any;
 }
 /**
  * Feeds `polygon.createFromPoints` with the outline points of a filled 2D shape, listed in order

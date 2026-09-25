@@ -54,7 +54,8 @@ export namespace Polyline {
         /**
          * A color used when the polyline is drawn, as a hex text such as `#ff0000` or as `[r, g,
          * b]` values from 0 to 1.
-         * @default #444444
+         * @default undefined
+         * @optional true
          */
         color?: string | number[] | undefined;
     }

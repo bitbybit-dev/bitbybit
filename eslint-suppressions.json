@@ -103,7 +103,7 @@
   },
   "packages/dev/babylonjs/lib/api/inputs/draw-inputs.ts": {
     "@typescript-eslint/no-explicit-any": {
-      "count": 1
+      "count": 2
     }
   },
   "packages/dev/base/lib/api/inputs/base-inputs.ts": {
