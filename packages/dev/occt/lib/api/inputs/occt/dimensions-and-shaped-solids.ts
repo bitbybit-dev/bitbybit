@@ -95,8 +95,8 @@ export class SimpleLinearLengthDimensionDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;
@@ -277,8 +277,8 @@ export class SimpleAngularDimensionDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;
@@ -398,8 +398,8 @@ export class PinWithLabelDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;

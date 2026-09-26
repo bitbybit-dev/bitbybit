@@ -993,7 +993,7 @@ export namespace BabylonMeshBuilder {
         /**
          * How far the profile turns around the path at each step, in radians; 0 keeps it straight
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */

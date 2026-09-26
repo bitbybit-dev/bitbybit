@@ -24,9 +24,9 @@ export class JSCADPolygon {
      * Builds a filled 2D shape from the outline points, taken in order and closed back to the
      * first.
      *
-     * Only X and Y are used, Z is dropped; repeated consecutive points are removed and at least
-     * three distinct points are needed. Counter-clockwise order gives a normal shape, clockwise
-     * gives a negative one.
+     * The points may be 2D or 3D; only X and Y are used. Repeated consecutive points are removed
+     * and at least three distinct points are needed. Counter-clockwise order gives a normal shape,
+     * clockwise gives a negative one.
      * @param inputs - The outline points
      * @returns The 2D shape
      * @group from
@@ -37,7 +37,7 @@ export class JSCADPolygon {
      * const triangle = await bitbybit.jscad.polygon.createFromPoints({ points: [[0, 0, 0], [10, 0, 0], [5, 8, 0]] });
      * ```
      */
-    createFromPoints(inputs: Inputs.Point.PointsDto): Inputs.JSCAD.JSCADEntity {
+    createFromPoints(inputs: Inputs.JSCAD.PolygonPointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]) as Inputs.Base.Point2[];
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }

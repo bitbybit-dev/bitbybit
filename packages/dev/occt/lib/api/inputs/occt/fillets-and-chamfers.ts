@@ -409,7 +409,9 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 90
+     * @exclusiveMaximum true
      * @step 1
      */
     angle?: number | undefined = 45;
@@ -619,7 +621,9 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 90
+     * @exclusiveMaximum true
      * @step 1
      */
     angle?: number | undefined = 45;

@@ -128,7 +128,7 @@ export class LPolygonDto {
     /**
      * How far the shape is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -200,7 +200,7 @@ export class IBeamProfileDto {
     /**
      * How far the profile is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -272,7 +272,7 @@ export class HBeamProfileDto {
     /**
      * How far the profile is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -344,7 +344,7 @@ export class TBeamProfileDto {
     /**
      * How far the profile is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -425,7 +425,7 @@ export class UBeamProfileDto {
     /**
      * How far the profile is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -603,6 +603,7 @@ export class BoxDto {
      * The side along X, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -611,6 +612,7 @@ export class BoxDto {
      * The side along Z, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -619,6 +621,7 @@ export class BoxDto {
      * The side along Y, which is up, in model units.
      * @default 3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -648,6 +651,7 @@ export class CubeDto {
      * The length of every side, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -679,6 +683,7 @@ export class BoxFromCornerDto {
      * The side along X, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -687,6 +692,7 @@ export class BoxFromCornerDto {
      * The side along Z, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -695,6 +701,7 @@ export class BoxFromCornerDto {
      * The side along Y, which is up, in model units.
      * @default 3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -717,6 +724,7 @@ export class SphereDto {
      * The distance from the center to the surface, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -759,6 +767,7 @@ export class ConeDto {
      * The distance from the base to the top along `direction`, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -767,6 +776,7 @@ export class ConeDto {
      * How much of the full round to build, in degrees; less than 360 cuts a wedge out.
      * @default 360
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum 360
      * @step 1
      */
@@ -798,6 +808,7 @@ export class TorusDto {
      * The distance from the center of the ring to the middle of its tube, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -806,6 +817,7 @@ export class TorusDto {
      * The radius of the tube itself, in model units.
      * @default 0.5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -824,6 +836,7 @@ export class TorusDto {
      * How much of the full ring to build, in degrees; less than 360 gives a partial ring.
      * @default 360
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum 360
      * @step 1
      */

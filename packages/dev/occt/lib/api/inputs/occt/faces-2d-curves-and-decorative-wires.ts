@@ -388,7 +388,7 @@ export class ChristmasTreeDto {
     /**
      * How far the tree is spun about its trunk-to-tip axis, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -545,7 +545,7 @@ export class Heart2DDto {
     /**
      * How far the heart is turned in its plane, in degrees.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 15
      */
@@ -933,7 +933,7 @@ export class TextWiresDto {
     /**
      * The height of a capital letter, in model units.
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -1022,7 +1022,7 @@ export class Geom2dTrimmedCurveDto<T> {
     /**
      * The parameter where the piece starts; the piece runs from `u1` to `u2`, whichever is larger.
      * @default 0
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */
@@ -1030,7 +1030,7 @@ export class Geom2dTrimmedCurveDto<T> {
     /**
      * The parameter where the piece ends.
      * @default 1
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */

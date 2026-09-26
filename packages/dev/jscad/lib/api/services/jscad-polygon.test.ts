@@ -122,7 +122,7 @@ describe("JSCADPolygon", () => {
     describe("createFromPoints", () => {
         it("should build the polygon those points enclose", () => {
             // Arrange
-            const inputs = new Inputs.Point.PointsDto(TRIANGLE as unknown as Inputs.Base.Point3[]);
+            const inputs = new Inputs.JSCAD.PolygonPointsDto(TRIANGLE);
 
             // Act
             const triangle = expectRegion(jscad.polygon.createFromPoints(inputs));

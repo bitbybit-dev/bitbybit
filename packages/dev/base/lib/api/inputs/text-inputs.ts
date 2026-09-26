@@ -390,7 +390,7 @@ export namespace Text {
         /**
          * The height of a capital letter, in model units; the strokes are scaled to it.
          * @default 1
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
@@ -446,7 +446,7 @@ export namespace Text {
         /**
          * The height of a capital letter, in model units.
          * @default 1
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */

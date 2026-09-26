@@ -1411,7 +1411,7 @@ export namespace BabylonGui {
         /**
          * The increment the value moves in; 1 gives whole numbers, 0 moves smoothly
          * @default 0.01
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.01
          */

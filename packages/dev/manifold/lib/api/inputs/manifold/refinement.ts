@@ -128,7 +128,7 @@ export class ManifoldSetPropertiesDto<T> {
     /**
      * How many properties each vertex has afterwards.
      * @default 3
-     * @minimum 3
+     * @minimum 0
      * @maximum Infinity
      * @step 1
      */
@@ -157,8 +157,8 @@ export class ManifoldSmoothOutDto<T> {
      * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
      * smoothed.
      * @default 60
-     * @minimum -Infinity
-     * @maximum Infinity
+     * @minimum 0
+     * @maximum 180
      * @step 1
      */
     minSharpAngle?: number | undefined = 60;

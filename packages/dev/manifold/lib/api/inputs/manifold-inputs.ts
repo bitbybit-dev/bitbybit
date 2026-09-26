@@ -852,7 +852,7 @@ export namespace Manifold {
         /**
          * How many properties each vertex has afterwards.
          * @default 3
-         * @minimum 3
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -881,8 +881,8 @@ export namespace Manifold {
          * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
          * smoothed.
          * @default 60
-         * @minimum -Infinity
-         * @maximum Infinity
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         minSharpAngle?: number | undefined = 60;
@@ -1129,6 +1129,7 @@ export namespace Manifold {
          * How far to spin, in degrees; 360 gives a full turn.
          * @default 360
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */

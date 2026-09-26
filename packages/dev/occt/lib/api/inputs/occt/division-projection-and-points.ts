@@ -289,8 +289,8 @@ export class DataOnGeometryAtParamDto<T> {
      * Where to evaluate, as a fraction from 0 at the start to 1 at the end; for a raw 2D curve it
      * is the curve's own parameter.
      * @default 0.5
-     * @minimum 0
-     * @maximum 1
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 0.1
      */
     param?: number | undefined = 0.5;
@@ -338,7 +338,8 @@ export class PointsOnWireAtEqualLengthDto<T> {
     /**
      * The distance between points along the wire, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -416,7 +417,7 @@ export class DataOnGeometryAtLengthDto<T> {
     /**
      * The distance from the start along the curve, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -440,7 +441,7 @@ export class DataOnGeometryesAtLengthDto<T> {
     /**
      * The distance from the start of each edge along its curve, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */

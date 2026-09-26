@@ -517,7 +517,7 @@ export namespace Point {
          * A segment shorter than this, or an angle within it of straight or folded back, gives a
          * radius of 0.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */
@@ -548,7 +548,7 @@ export namespace Point {
          * A segment shorter than this, or an angle within it of straight or folded back, gives a
          * radius of 0.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */
@@ -626,7 +626,7 @@ export namespace Point {
         /**
          * The points count as equal when the distance between them is below this.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */

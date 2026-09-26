@@ -190,7 +190,7 @@ export namespace Math {
         /**
          * How many digits to keep after the decimal point; 0 rounds to a whole number.
          * @default 2
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -382,7 +382,7 @@ export namespace Math {
         /**
          * How many random numbers to produce.
          * @default 10
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -408,7 +408,7 @@ export namespace Math {
         /**
          * How many digits to show after the decimal point, padding with zeros.
          * @default 2
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */

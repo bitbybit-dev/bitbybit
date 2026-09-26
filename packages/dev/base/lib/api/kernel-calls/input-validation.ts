@@ -1,4 +1,4 @@
-import { DtoConstraints, PropertyConstraint, ValueKind } from "./constraints";
+import { DtoConstraints, NumberBounds, PropertyConstraint, ValueKind } from "./constraints";
 import { DtoConstructor, DtoRegistry, isRegisteredOperation } from "./resolve-dto";
 
 /**
@@ -47,6 +47,17 @@ const TUPLE_LENGTH: Partial<Record<ValueKind, number>> = { point2: 2, vector2: 2
 const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);
 const issue = (property: string, code: string, message: string, params?: Record<string, unknown>): InputIssue => (params ? { property, code, message, params } : { property, code, message });
 
+function checkBounds(property: string, value: number, bounds: NumberBounds): InputIssue | undefined {
+    const { min, max, exclusiveMin, exclusiveMax } = bounds;
+    if (min !== undefined && (exclusiveMin ? value <= min : value < min)) {
+        return issue(property, "minimum", `must be ${exclusiveMin ? "above" : "at least"} ${min}`, { limit: min, exclusive: !!exclusiveMin, actual: value });
+    }
+    if (max !== undefined && (exclusiveMax ? value >= max : value > max)) {
+        return issue(property, "maximum", `must be ${exclusiveMax ? "below" : "at most"} ${max}`, { limit: max, exclusive: !!exclusiveMax, actual: value });
+    }
+    return undefined;
+}
+
 function checkValue(property: string, value: unknown, constraint: PropertyConstraint): InputIssue | undefined {
     if (value === undefined || value === null) {
         return constraint.required ? issue(property, "required", "is required") : undefined;
@@ -54,21 +65,25 @@ function checkValue(property: string, value: unknown, constraint: PropertyConstr
     switch (constraint.kind) {
         case "number":
             if (typeof value !== "number") return issue(property, "type", "must be a number");
-            return Number.isNaN(value) ? issue(property, "not-a-number", "is not a number (NaN)") : undefined;
+            if (Number.isNaN(value)) return issue(property, "not-a-number", "is not a number (NaN)");
+            return constraint.bounds ? checkBounds(property, value, constraint.bounds) : undefined;
         case "boolean":
             return typeof value === "boolean" ? undefined : issue(property, "type", "must be true or false");
         case "string":
             return typeof value === "string" ? undefined : issue(property, "type", "must be text");
         case "color":
             return typeof value === "string" && HEX_COLOR.test(value) ? undefined : issue(property, "color", "must be a hex color such as #ff0000");
+        case "point":
         case "point2":
         case "point3":
         case "vector2":
         case "vector3": {
-            const expected = TUPLE_LENGTH[constraint.kind]!;
-            if (!Array.isArray(value)) return issue(property, "type", `must be a list of ${expected} numbers`);
-            if (value.length !== expected) return issue(property, "arity", `must have ${expected} numbers, not ${value.length}`, { expected, actual: value.length });
-            return value.every((n) => typeof n === "number" && !Number.isNaN(n)) ? undefined : issue(property, "type", `must be a list of ${expected} numbers`);
+            const expected = TUPLE_LENGTH[constraint.kind];
+            const count = expected === undefined ? "2 or 3" : String(expected);
+            if (!Array.isArray(value)) return issue(property, "type", `must be a list of ${count} numbers`);
+            const fits = expected === undefined ? value.length === 2 || value.length === 3 : value.length === expected;
+            if (!fits) return issue(property, "arity", `must have ${count} numbers, not ${value.length}`, { expected: expected ?? [2, 3], actual: value.length });
+            return value.every((n) => typeof n === "number" && !Number.isNaN(n)) ? undefined : issue(property, "type", `must be a list of ${count} numbers`);
         }
         case "list": {
             if (!Array.isArray(value) && !ArrayBuffer.isView(value)) return issue(property, "type", "must be a list");

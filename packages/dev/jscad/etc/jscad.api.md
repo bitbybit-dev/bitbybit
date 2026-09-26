@@ -724,6 +724,10 @@ export namespace JSCAD {
         constructor(points?: Base.Point3[]);
         points: Base.Point3[];
     }
+    export class PolygonPointsDto {
+        constructor(points?: (Base.Point2 | Base.Point3)[]);
+        points: (Base.Point2 | Base.Point3)[];
+    }
     export class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto);
         polyline: PolylinePropertiesDto;
@@ -1021,6 +1025,8 @@ namespace JSCAD_2 {
     type PathsFromPointsDto = Inputs.JSCAD.PathsFromPointsDto;
     // (undocumented)
     type PointsDto = Inputs.JSCAD.PointsDto;
+    // (undocumented)
+    type PolygonPointsDto = Inputs.JSCAD.PolygonPointsDto;
     // (undocumented)
     type PolylineDto = Inputs.JSCAD.PolylineDto;
     // (undocumented)

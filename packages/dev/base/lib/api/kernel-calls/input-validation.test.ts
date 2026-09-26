@@ -33,6 +33,8 @@ describe("checkStructure", () => {
         ["a point with two coordinates", k.point3, [0, 0], "arity"],
         ["a point with a coordinate that is not a number", k.point3, [0, "1", 0], "type"],
         ["a point with a NaN coordinate", k.vector3, [0, NaN, 0], "type"],
+        ["a point of either kind with four coordinates", k.point, [0, 0, 0, 0], "arity"],
+        ["a point of either kind that is not a list", k.point, 5, "type"],
         ["a list that is not one", k.list(k.number), 3, "type"],
         ["a value its enum does not list", k.oneOf(["a", "b"]), "c", "enum"],
     ])("should report %s", (_what, constraint, value, code) => {
@@ -41,6 +43,43 @@ describe("checkStructure", () => {
 
         // Assert
         expect(issues.map((found) => [found.property, found.code])).toEqual([["value", code]]);
+    });
+
+    it.each([
+        ["below an inclusive minimum", { min: 0 }, -1, "minimum", "must be at least 0"],
+        ["on an exclusive minimum", { min: 0, exclusiveMin: true }, 0, "minimum", "must be above 0"],
+        ["above an inclusive maximum", { max: 1 }, 2, "maximum", "must be at most 1"],
+        ["on an exclusive maximum", { max: 90, exclusiveMax: true }, 90, "maximum", "must be below 90"],
+    ])("should report a number %s", (_what, bounds, value, code, message) => {
+        // Act
+        const issues = checkStructure({ value: k.between(k.number, bounds) }, { value });
+
+        // Assert
+        expect(issues).toEqual([{ property: "value", code, message, params: expect.objectContaining({ actual: value }) }]);
+    });
+
+    it("should pass numbers within their bounds, the inclusive limits included, and the items of a bounded list", () => {
+        // Act
+        const issues = checkStructure({ a: k.between(k.number, { min: 0, max: 1 }), b: k.between(k.number, { min: 0, max: 1 }), c: k.between(k.number, { min: 0, exclusiveMin: true }), list: k.list(k.between(k.number, { min: 0 })) }, { a: 0, b: 1, c: 0.1, list: [0, 2] });
+
+        // Assert
+        expect(issues).toEqual([]);
+    });
+
+    it("should report the item of a bounded list that falls outside", () => {
+        // Act
+        const [found] = checkStructure({ list: k.list(k.between(k.number, { min: 0 })) }, { list: [1, -1] });
+
+        // Assert
+        expect(found?.message).toBe("item 1 must be at least 0");
+    });
+
+    it("should take a point of either kind with two or three coordinates", () => {
+        // Act
+        const issues = checkStructure({ flat: k.point, spatial: k.point }, { flat: [1, 2], spatial: [1, 2, 3] });
+
+        // Assert
+        expect(issues).toEqual([]);
     });
 
     it("should report a required property left out, and take null for left out", () => {

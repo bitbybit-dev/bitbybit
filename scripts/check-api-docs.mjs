@@ -97,8 +97,8 @@ const stem = (w) => w.replace(/(ies)$/, "y").replace(/(es|s)$/, "").replace(/(in
 const nameTokens = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_.]/g, " ").toLowerCase().split(/\s+/).filter(Boolean).map(stem);
 const proseTokens = (text) => words(text).map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, "")).filter((w) => w && !STOP.has(w) && !VENDOR.has(w)).map(stem);
 
-const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws"]);
-const BOOLEAN_TAGS = new Set(["drawable", "optional", "ignore", "disposableOutput"]);
+const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws"]);
+const BOOLEAN_TAGS = new Set(["drawable", "optional", "ignore", "disposableOutput", "exclusiveMinimum", "exclusiveMaximum"]);
 const NUMERIC_TAGS = new Set(["minimum", "maximum", "step"]);
 
 // Words that must not appear in a library doc, each with the reason a reader would not know.
@@ -129,6 +129,7 @@ const SEVERITY = {
     "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error",
     "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
     "defaulted-spelling": "error",
+    "exclusive-without-bound": "error",
     "pair-parity": "warn",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
 };
@@ -365,6 +366,11 @@ function checkSpelling(item) {
     if (!item.initializer && !item.optional && !item.definite) add("required-spelling", item, "neither initialized nor optional, so it is required: spell it `name!: T;`");
     if (item.optional && !/\|\s*undefined\b/.test(item.type)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
     if (item.initializer && optionalTag) add("optional-with-default", item, "@optional true on a property with a default; a default already makes it optional");
+    for (const [flag, bound] of [["exclusiveMinimum", "minimum"], ["exclusiveMaximum", "maximum"]]) {
+        const tag = item.doc?.tags.find((t) => t.name === flag);
+        const limit = item.doc?.tags.find((t) => t.name === bound);
+        if (tag && (!limit || !Number.isFinite(Number(limit.text)))) add("exclusive-without-bound", item, `@${flag} needs a finite @${bound} beside it to make exclusive`);
+    }
     const constantTag = item.initializer && ts.isAsExpression(item.initializer) && item.initializer.type.getText(item.sf) === "const";
     if (item.initializer && !item.optional && !constantTag && takenClasses.has(item.className)) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
 }

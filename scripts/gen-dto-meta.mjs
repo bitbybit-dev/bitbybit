@@ -40,6 +40,21 @@ const KERNELS = [
 const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
 
 /**
+ * The finite range a number property's JSDoc gives it: `@minimum` and `@maximum`, each made
+ * exclusive by `@exclusiveMinimum true` or `@exclusiveMaximum true`. An infinite bound is no bound.
+ */
+function boundsOf(member) {
+    const docs = ts.getJSDocCommentsAndTags(member).filter(ts.isJSDoc);
+    const tags = new Map((docs[docs.length - 1]?.tags ?? []).map((t) => [t.tagName.text, (ts.getTextOfJSDocComment(t.comment) ?? "").trim()]));
+    const finite = (name) => (tags.has(name) && Number.isFinite(Number(tags.get(name))) ? Number(tags.get(name)) : undefined);
+    const bounds = { min: finite("minimum"), max: finite("maximum") };
+    if (bounds.min !== undefined && tags.get("exclusiveMinimum") === "true") bounds.exclusiveMin = true;
+    if (bounds.max !== undefined && tags.get("exclusiveMaximum") === "true") bounds.exclusiveMax = true;
+    const entries = Object.entries(bounds).filter(([, v]) => v !== undefined);
+    return entries.length ? `{ ${entries.map(([k, v]) => `${k}: ${v}`).join(", ")} }` : undefined;
+}
+
+/**
  * `Namespace.Class` -> { props: [{ name, type }], extends } for every class inside an exported namespace
  * of the files, and on the side every name each namespace declares, for qualifying a type parameter's
  * constraint outside the namespace.
@@ -66,7 +81,7 @@ function dtoClasses(files, declared = new Map(), enums = new Map()) {
                 const parent = heritage && heritage.types[0] ? heritage.types[0].expression.getText(sf) : undefined;
                 const props = node.members
                     .filter((m) => ts.isPropertyDeclaration(m) && m.name && ts.isIdentifier(m.name))
-                    .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken }));
+                    .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken, bounds: boundsOf(m) }));
                 const typeParams = (node.typeParameters || []).map((tp) => ({ name: tp.name.text, text: tp.getText(sf) }));
                 classes.set(`${namespace}.${node.name.text}`, { namespace, name: node.name.text, props, parent, typeParams });
             }
@@ -112,6 +127,9 @@ function constraintOf(type, namespace, enums) {
     const tuple = /^(?:Base\.)?(Point|Vector)([23])$/.exec(t);
     if (tuple) return `k.${tuple[1].toLowerCase()}${tuple[2]}`;
     if (/^"[^"]*"( \| "[^"]*")+$/.test(t)) return `k.oneOf([${[...t.matchAll(/"([^"]*)"/g)].map((m) => JSON.stringify(m[1])).join(", ")}])`;
+    if (/^(Base\.)?Point2 \| (Base\.)?Point3$|^(Base\.)?Point3 \| (Base\.)?Point2$/.test(t)) return "k.point";
+    const grouped = /^\((.+)\)\[\]$/.exec(t);
+    if (grouped) return `k.list(${constraintOf(grouped[1], namespace, enums)})`;
     if (t.endsWith("[]") && !t.includes("|") && !t.includes("(")) return `k.list(${constraintOf(t.slice(0, -2), namespace, enums)})`;
     const values = enums.get(t.includes(".") ? t : `${namespace}.${t}`);
     if (values) return `k.oneOf([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
@@ -126,7 +144,9 @@ function constraintsOf(classes, key, enums) {
     for (const prop of allProps(classes, key)) {
         if (seen.has(prop.name)) continue;
         seen.add(prop.name);
-        const constraint = constraintOf(prop.type, namespace, enums);
+        let constraint = constraintOf(prop.type, namespace, enums);
+        if (prop.bounds && constraint === "k.number") constraint = `k.between(k.number, ${prop.bounds})`;
+        if (prop.bounds && constraint === "k.list(k.number)") constraint = `k.list(k.between(k.number, ${prop.bounds}))`;
         entries.push(`${prop.name}: ${prop.required ? `k.required(${constraint})` : constraint}`);
     }
     return `{ ${entries.join(", ")} }`;

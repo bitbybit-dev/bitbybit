@@ -230,7 +230,7 @@ export namespace Polyline {
         /**
          * Two segment ends closer than this, in model units, count as touching.
          * @default 1e-5
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-5
          */
@@ -253,7 +253,7 @@ export namespace Polyline {
         /**
          * Distance, in model units, below which two points count as the same.
          * @default 1e-5
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-5
          */
@@ -281,7 +281,7 @@ export namespace Polyline {
         /**
          * Crossing points closer together than this, in model units, are reported once.
          * @default 1e-5
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-5
          */

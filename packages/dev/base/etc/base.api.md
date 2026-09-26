@@ -270,6 +270,7 @@ export const constraintKinds: {
     boolean: PropertyConstraint;
     string: PropertyConstraint;
     color: PropertyConstraint;
+    point: PropertyConstraint;
     point2: PropertyConstraint;
     point3: PropertyConstraint;
     vector2: PropertyConstraint;
@@ -278,6 +279,7 @@ export const constraintKinds: {
     list: (items: PropertyConstraint) => PropertyConstraint;
     oneOf: (values: readonly string[]) => PropertyConstraint;
     required: (constraint: PropertyConstraint) => PropertyConstraint;
+    between: (constraint: PropertyConstraint, bounds: NumberBounds) => PropertyConstraint;
 };
 
 // @public
@@ -1499,6 +1501,14 @@ export class MeshBitByBit {
 export function notZeroVector<T>(property: Key<T>): InputRule<T>;
 
 // @public
+export type NumberBounds = {
+    readonly min?: number;
+    readonly max?: number;
+    readonly exclusiveMin?: boolean;
+    readonly exclusiveMax?: boolean;
+};
+
+// @public
 export class Point {
     constructor(geometryHelper: GeometryHelper, transforms: Transforms, vector: Vector, lists: Lists);
     averagePoint(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.Point3;
@@ -1887,6 +1897,7 @@ export type PropertyConstraint = {
     readonly required?: boolean;
     readonly items?: PropertyConstraint;
     readonly values?: readonly string[];
+    readonly bounds?: NumberBounds;
 };
 
 // @public
@@ -2220,7 +2231,7 @@ export function unknownProperties(registry: DtoRegistry, path: string, inputs: u
 export function validateInputs(registry: DtoRegistry, path: string, inputs: unknown, rules?: RuleBook): InputIssue[];
 
 // @public
-export type ValueKind = "number" | "boolean" | "string" | "color" | "point2" | "point3" | "vector2" | "vector3" | "list" | "oneOf" | "opaque";
+export type ValueKind = "number" | "boolean" | "string" | "color" | "point" | "point2" | "point3" | "vector2" | "vector3" | "list" | "oneOf" | "opaque";
 
 // @public
 export class Vector {

@@ -32,8 +32,9 @@ are the three pieces every worker used to keep its own copy of, and `InputError`
 are the two errors a caller can tell apart.
 
 **`validateInputs` checks a call before a kernel runs it**, in two layers. The constraints a
-generated registry carries per property - required, a number that is not NaN, a point of the right
-arity, a hex color, a value of the enum - come from the DTO's declared types, so a property whose
+generated registry carries per property - required, a number that is not NaN and lies within its
+`@minimum`/`@maximum` (strict under `@exclusiveMinimum true`), a point of the right arity, a hex
+color, a value of the enum - come from the DTO's declared types and tags, so a property whose
 type they cannot read (a shape, a `T`, a union) is only checked for presence. The rules across
 properties are written by hand beside each kernel with `defineRules` and the combinators
 (`sameLength`, `lessThan`, `distinct`, `notZeroVector`, `atLeastOne`, `when`, `custom`), against

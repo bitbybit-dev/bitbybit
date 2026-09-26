@@ -119,8 +119,8 @@ export namespace ThreeJSCamera {
         /**
          * How far around the vertical axis the camera starts, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         yaw?: number | undefined = 45;
@@ -160,7 +160,7 @@ export namespace ThreeJSCamera {
          * How far a pointer drag turns the camera; higher turns faster
          * @default 0.3
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
         orbitSensitivity?: number | undefined = 0.3;
@@ -168,7 +168,7 @@ export namespace ThreeJSCamera {
          * How far a wheel step zooms the camera; higher zooms faster
          * @default 0.15
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.01
          */
         distanceSensitivity?: number | undefined = 0.15;
@@ -176,7 +176,7 @@ export namespace ThreeJSCamera {
          * How far a pan drag moves the pivot; higher pans faster
          * @default 1
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
         panSensitivity?: number | undefined = 1;
@@ -303,7 +303,7 @@ export namespace ThreeJSCamera {
          * much room
          * @default 1.5
          * @minimum 1
-         * @maximum 5
+         * @maximum Infinity
          * @step 0.1
          */
         padding?: number | undefined = 1.5;
@@ -328,8 +328,8 @@ export namespace ThreeJSCamera {
         /**
          * How far around the vertical axis, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         yaw?: number | undefined = 45;

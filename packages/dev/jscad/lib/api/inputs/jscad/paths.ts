@@ -211,7 +211,7 @@ export class PathAppendArcDto {
      * Half width of the ellipse along its own X axis, in model units; scaled up when too small to
      * reach the end point
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -220,7 +220,7 @@ export class PathAppendArcDto {
      * Half height of the ellipse along its own Y axis, in model units; equal to `radiusX` for a
      * circular arc
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */

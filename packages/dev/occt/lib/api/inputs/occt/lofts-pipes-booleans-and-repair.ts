@@ -231,7 +231,7 @@ export class RevolveDto<T> {
      * How far to spin, in degrees; 360 or more gives a full turn.
      * @default 360
      * @minimum 0
-     * @maximum 360
+     * @maximum Infinity
      * @step 1
      */
     angle?: number | undefined = 360;
@@ -639,6 +639,7 @@ export class MeshMeshesIntersectionOfShapesDto<T> {
      * and costs more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -843,8 +844,8 @@ export class RotationExtrudeDto<T> {
     /**
      * How far the profile turns about the Y axis over the height, in degrees.
      * @default 360
-     * @minimum 0
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     angle?: number | undefined = 360;

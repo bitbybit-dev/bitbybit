@@ -116,7 +116,8 @@ export namespace PlayCanvasScene {
         /**
          * The size of the scene in world units. This determines ground size, light positions, and shadow bounds.
          * @default 20
-         * @minimum 1
+         * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 10
          */
@@ -150,7 +151,7 @@ export namespace PlayCanvasScene {
          * Scale factor for the ground size relative to scene size. Values greater than 1 make the ground larger than the scene size.
          * @default 2
          * @minimum 0.5
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.5
          */
         groundScaleFactor?: number | undefined = 2;
@@ -180,7 +181,7 @@ export namespace PlayCanvasScene {
          * Intensity factor for ambient light (applied to RGB values).
          * @default 1
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
         ambientLightIntensity?: number | undefined = 1;
@@ -195,7 +196,7 @@ export namespace PlayCanvasScene {
          * Brightness of the sun-like light that casts the shadows, 1 being full strength
          * @default 1.5
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
         directionalLightIntensity?: number | undefined = 1.5;

@@ -3,6 +3,21 @@
 import { Base } from "../base-inputs";
 
 /**
+ * Feeds `polygon.createFromPoints`: the outline of a filled 2D shape, as 2D points or as 3D points
+ * whose Z is dropped.
+ */
+export class PolygonPointsDto {
+    constructor(points?: (Base.Point2 | Base.Point3)[]) {
+        if (points !== undefined) { this.points = points; }
+    }
+    /**
+     * The outline points in order, each 2D or 3D; only X and Y are used
+     * @default undefined
+     */
+    points!: (Base.Point2 | Base.Point3)[];
+}
+
+/**
  * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the
  * number of straight sides that approximate it.
  */
@@ -20,7 +35,7 @@ export class CircleDto {
     /**
      * Distance from the center to the rim, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -80,7 +95,7 @@ export class SquareDto {
     /**
      * Length of each side, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -105,7 +120,7 @@ export class RectangleDto {
     /**
      * Full size along X, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -113,7 +128,7 @@ export class RectangleDto {
     /**
      * Full size along Y, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -141,7 +156,7 @@ export class RoundedRectangleDto {
      * Radius of each rounded corner, in model units; it must be less than half of the smaller side
      * or an error is thrown
      * @default 0.2
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -158,7 +173,7 @@ export class RoundedRectangleDto {
     /**
      * Full size along X, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
@@ -166,7 +181,7 @@ export class RoundedRectangleDto {
     /**
      * Full size along Y, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */

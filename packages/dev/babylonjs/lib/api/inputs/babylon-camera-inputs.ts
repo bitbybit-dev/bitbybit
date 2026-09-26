@@ -44,16 +44,16 @@ export namespace BabylonCamera {
         /**
          * The camera's angle around the vertical axis, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         alpha?: number | undefined = 45;
         /**
          * The camera's angle down from straight above, in degrees; 90 is level with the target
          * @default 70
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         beta?: number | undefined = 70;
@@ -61,7 +61,7 @@ export namespace BabylonCamera {
          * The closest the camera may zoom to the target, in scene units; left out, there is no
          * limit
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -71,7 +71,7 @@ export namespace BabylonCamera {
          * The farthest the camera may zoom from the target, in scene units; left out, there is no
          * limit
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -81,8 +81,8 @@ export namespace BabylonCamera {
          * The smallest angle around the vertical axis the camera may orbit to, in degrees; left
          * out, it orbits freely
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -91,8 +91,8 @@ export namespace BabylonCamera {
          * The largest angle around the vertical axis the camera may orbit to, in degrees; left out,
          * it orbits freely
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -101,8 +101,8 @@ export namespace BabylonCamera {
          * How close to straight above the camera may go, in degrees down from the top; 0 would look
          * straight down
          * @default 1
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         lowerBetaLimit?: number | undefined = 1;
@@ -110,8 +110,8 @@ export namespace BabylonCamera {
          * How close to straight below the camera may go, in degrees down from the top; 180 would
          * look straight up
          * @default 179
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         upperBetaLimit?: number | undefined = 179;

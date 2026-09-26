@@ -107,6 +107,7 @@ export class RevolveDto<T> {
      * How far to spin, in degrees; 360 gives a full turn.
      * @default 360
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */

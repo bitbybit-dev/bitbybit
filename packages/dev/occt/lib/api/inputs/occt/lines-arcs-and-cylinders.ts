@@ -256,6 +256,7 @@ export class CylinderDto {
      * The radius of the round base, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -264,6 +265,7 @@ export class CylinderDto {
      * How far the cylinder grows from its base along `direction`, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -283,7 +285,8 @@ export class CylinderDto {
      * of cake.
      * @default 360
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 360
      * @step 1
      */
     angle?: number | undefined = 360;
@@ -306,6 +309,7 @@ export class CylindersOnLinesDto {
      * The radius shared by every cylinder, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

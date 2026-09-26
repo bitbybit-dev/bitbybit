@@ -251,7 +251,8 @@ export namespace Vector {
          * Distance between neighboring numbers; the last number is `max` only when a step lands on
          * it.
          * @default 0.1
-         * @minimum -Infinity
+         * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */

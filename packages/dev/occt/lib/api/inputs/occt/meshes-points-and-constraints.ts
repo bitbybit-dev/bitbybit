@@ -786,6 +786,7 @@ export abstract class DrawShapeBaseDto {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */

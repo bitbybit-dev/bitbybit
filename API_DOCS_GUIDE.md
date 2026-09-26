@@ -98,6 +98,13 @@ export class FilletDto<T> {
   omitting it does for an optional, and how it relates to its siblings. It never restates the type
   or the name. Thirty words at most. The tags below it (`@default`, `@minimum`, `@maximum`, `@step`,
   `@optional`) stay exactly as they are.
+- `@minimum` and `@maximum` are the limits of what the property accepts, not the range an editor
+  should suggest: `validateInputs` reports a value outside them. A rotation, an offset or anything
+  else that may be negative or past a full turn is `-Infinity` to `Infinity`; a size or a count
+  that cannot be negative has a floor. When the limit itself is invalid - a box of width 0, a
+  meshing precision of 0 - `@exclusiveMinimum true` (or `@exclusiveMaximum true`) beside the bound
+  makes it strict. A bound belongs to the DTO, so it has to hold for every method that takes it:
+  a parameter that is a fraction on an edge but a raw value on a 2D curve has no bound.
 - The same DTO may serve several methods with different semantics; say so per method, as the
   fillet docs do, rather than choosing one.
 - Every property is one of three kinds, and the spelling and the tags say which:

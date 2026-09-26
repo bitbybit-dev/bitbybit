@@ -381,7 +381,7 @@ export namespace BabylonScene {
          * The closest the camera may zoom to the target, in scene units; left out, it is not
          * changed
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -391,7 +391,7 @@ export namespace BabylonScene {
          * The farthest the camera may zoom from the target, in scene units; left out, it is not
          * changed
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -401,8 +401,8 @@ export namespace BabylonScene {
          * The smallest angle around the vertical axis the camera may orbit to, in degrees; left
          * out, it is not changed
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -411,8 +411,8 @@ export namespace BabylonScene {
          * The largest angle around the vertical axis the camera may orbit to, in degrees; left out,
          * it is not changed
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -421,8 +421,8 @@ export namespace BabylonScene {
          * How close to straight above the camera may go, in degrees down from the top; 0 would look
          * straight down
          * @default 1
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         lowerBetaLimit?: number | undefined = 1;
@@ -430,8 +430,8 @@ export namespace BabylonScene {
          * How close to straight below the camera may go, in degrees down from the top; 180 would
          * look straight up
          * @default 179
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
         upperBetaLimit?: number | undefined = 179;

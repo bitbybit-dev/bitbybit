@@ -1162,6 +1162,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2493,7 +2494,7 @@ export namespace OCCT {
         /**
          * How far the shape is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -2565,7 +2566,7 @@ export namespace OCCT {
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -2637,7 +2638,7 @@ export namespace OCCT {
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -2709,7 +2710,7 @@ export namespace OCCT {
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -2790,7 +2791,7 @@ export namespace OCCT {
         /**
          * How far the profile is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -2968,6 +2969,7 @@ export namespace OCCT {
          * The side along X, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2976,6 +2978,7 @@ export namespace OCCT {
          * The side along Z, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2984,6 +2987,7 @@ export namespace OCCT {
          * The side along Y, which is up, in model units.
          * @default 3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3013,6 +3017,7 @@ export namespace OCCT {
          * The length of every side, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3044,6 +3049,7 @@ export namespace OCCT {
          * The side along X, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3052,6 +3058,7 @@ export namespace OCCT {
          * The side along Z, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3060,6 +3067,7 @@ export namespace OCCT {
          * The side along Y, which is up, in model units.
          * @default 3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3082,6 +3090,7 @@ export namespace OCCT {
          * The distance from the center to the surface, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3124,6 +3133,7 @@ export namespace OCCT {
          * The distance from the base to the top along `direction`, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3132,6 +3142,7 @@ export namespace OCCT {
          * How much of the full round to build, in degrees; less than 360 cuts a wedge out.
          * @default 360
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum 360
          * @step 1
          */
@@ -3163,6 +3174,7 @@ export namespace OCCT {
          * The distance from the center of the ring to the middle of its tube, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3171,6 +3183,7 @@ export namespace OCCT {
          * The radius of the tube itself, in model units.
          * @default 0.5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3189,6 +3202,7 @@ export namespace OCCT {
          * How much of the full ring to build, in degrees; less than 360 gives a partial ring.
          * @default 360
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum 360
          * @step 1
          */
@@ -3448,6 +3462,7 @@ export namespace OCCT {
          * The radius of the round base, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3456,6 +3471,7 @@ export namespace OCCT {
          * How far the cylinder grows from its base along `direction`, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3475,7 +3491,8 @@ export namespace OCCT {
          * of cake.
          * @default 360
          * @minimum 0
-         * @maximum Infinity
+         * @exclusiveMinimum true
+         * @maximum 360
          * @step 1
          */
         angle?: number | undefined = 360;
@@ -3498,6 +3515,7 @@ export namespace OCCT {
          * The radius shared by every cylinder, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3915,7 +3933,9 @@ export namespace OCCT {
          * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
          * @default 45
          * @minimum 0
-         * @maximum Infinity
+         * @exclusiveMinimum true
+         * @maximum 90
+         * @exclusiveMaximum true
          * @step 1
          */
         angle?: number | undefined = 45;
@@ -4125,7 +4145,9 @@ export namespace OCCT {
          * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
          * @default 45
          * @minimum 0
-         * @maximum Infinity
+         * @exclusiveMinimum true
+         * @maximum 90
+         * @exclusiveMaximum true
          * @step 1
          */
         angle?: number | undefined = 45;
@@ -5132,8 +5154,8 @@ export namespace OCCT {
          * Where to evaluate, as a fraction from 0 at the start to 1 at the end; for a raw 2D curve it
          * is the curve's own parameter.
          * @default 0.5
-         * @minimum 0
-         * @maximum 1
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 0.1
          */
         param?: number | undefined = 0.5;
@@ -5181,7 +5203,8 @@ export namespace OCCT {
         /**
          * The distance between points along the wire, in model units.
          * @default 0.5
-         * @minimum -Infinity
+         * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -5259,7 +5282,7 @@ export namespace OCCT {
         /**
          * The distance from the start along the curve, in model units.
          * @default 0.5
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
@@ -5283,7 +5306,7 @@ export namespace OCCT {
         /**
          * The distance from the start of each edge along its curve, in model units.
          * @default 0.5
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
@@ -5677,7 +5700,7 @@ export namespace OCCT {
          * How far to spin, in degrees; 360 or more gives a full turn.
          * @default 360
          * @minimum 0
-         * @maximum 360
+         * @maximum Infinity
          * @step 1
          */
         angle?: number | undefined = 360;
@@ -6085,6 +6108,7 @@ export namespace OCCT {
          * and costs more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -6289,8 +6313,8 @@ export namespace OCCT {
         /**
          * How far the profile turns about the Y axis over the height, in degrees.
          * @default 360
-         * @minimum 0
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         angle?: number | undefined = 360;
@@ -6329,7 +6353,7 @@ export namespace OCCT {
         /**
          * The wall thickness in model units; negative grows the wall inward.
          * @default 1
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
@@ -6397,8 +6421,8 @@ export namespace OCCT {
         /**
          * The rotation about the axis, in degrees, applied after the scale.
          * @default 0
-         * @minimum 0
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         rotationAngle?: number | undefined = 0;
@@ -7028,8 +7052,8 @@ export namespace OCCT {
         /**
          * The rotation in degrees, following the right-hand rule about the axis.
          * @default 0
-         * @minimum 0
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         angle?: number | undefined = 0;
@@ -7922,6 +7946,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.001
          */
@@ -7978,6 +8003,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.001
          */
@@ -8019,6 +8045,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.001
          */
@@ -8079,6 +8106,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.001
          */
@@ -8139,6 +8167,7 @@ export namespace OCCT {
          * with more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.001
          */
@@ -8496,7 +8525,7 @@ export namespace OCCT {
          * edge's length, otherwise an absolute distance in model units.
          * @default 0.005
          * @minimum 0.0001
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.001
          */
         meshPrecision?: number | undefined = 0.005;
@@ -8689,7 +8718,7 @@ export namespace OCCT {
          * edge's length, otherwise an absolute distance in model units.
          * @default 0.005
          * @minimum 0.0001
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.001
          */
         meshDeflection?: number | undefined = 0.005;
@@ -8715,7 +8744,7 @@ export namespace OCCT {
          * everything in one pass, which is fastest.
          * @default -1
          * @minimum -1
-         * @maximum 500000
+         * @maximum Infinity
          * @step 10000
          */
         faceCountThreshold?: number | undefined = -1;
@@ -9972,7 +10001,7 @@ export namespace OCCT {
         /**
          * How far the tree is spun about its trunk-to-tip axis, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -10129,7 +10158,7 @@ export namespace OCCT {
         /**
          * How far the heart is turned in its plane, in degrees.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 15
          */
@@ -10517,7 +10546,7 @@ export namespace OCCT {
         /**
          * The height of a capital letter, in model units.
          * @default 1
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
@@ -10606,7 +10635,7 @@ export namespace OCCT {
         /**
          * The parameter where the piece starts; the piece runs from `u1` to `u2`, whichever is larger.
          * @default 0
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
@@ -10614,7 +10643,7 @@ export namespace OCCT {
         /**
          * The parameter where the piece ends.
          * @default 1
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
@@ -10795,8 +10824,8 @@ export namespace OCCT {
         /**
          * Extra rotation of the label in its plane, in degrees.
          * @default 0
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         labelRotation?: number | undefined = 0;
@@ -10977,8 +11006,8 @@ export namespace OCCT {
         /**
          * Extra rotation of the label in its plane, in degrees.
          * @default 0
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         labelRotation?: number | undefined = 0;
@@ -11098,8 +11127,8 @@ export namespace OCCT {
         /**
          * Extra rotation of the label in its plane, in degrees.
          * @default 0
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
         labelRotation?: number | undefined = 0;

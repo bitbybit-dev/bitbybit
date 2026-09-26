@@ -27,6 +27,7 @@ export class ShapeToMeshDto<T> {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.001
      */
@@ -83,6 +84,7 @@ export class ShapeFacesToPolygonPointsDto<T> {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.001
      */
@@ -124,6 +126,7 @@ export class ShapesToMeshesDto<T> {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.001
      */
@@ -184,6 +187,7 @@ export class DocToMeshDto<U> {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.001
      */
@@ -244,6 +248,7 @@ export class DocToMeshesDto<U> {
      * with more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.001
      */
@@ -601,7 +606,7 @@ export class ConvertStepToGltfDto {
      * edge's length, otherwise an absolute distance in model units.
      * @default 0.005
      * @minimum 0.0001
-     * @maximum 10
+     * @maximum Infinity
      * @step 0.001
      */
     meshPrecision?: number | undefined = 0.005;
@@ -794,7 +799,7 @@ export class ConvertStepToGltfAdvancedDto {
      * edge's length, otherwise an absolute distance in model units.
      * @default 0.005
      * @minimum 0.0001
-     * @maximum 10
+     * @maximum Infinity
      * @step 0.001
      */
     meshDeflection?: number | undefined = 0.005;
@@ -820,7 +825,7 @@ export class ConvertStepToGltfAdvancedDto {
      * everything in one pass, which is fastest.
      * @default -1
      * @minimum -1
-     * @maximum 500000
+     * @maximum Infinity
      * @step 10000
      */
     faceCountThreshold?: number | undefined = -1;

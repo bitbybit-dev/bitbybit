@@ -32,7 +32,7 @@ export class ThickSolidByJoinDto<T> {
     /**
      * The wall thickness in model units; negative grows the wall inward.
      * @default 1
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */
@@ -100,8 +100,8 @@ export class TransformDto<T> {
     /**
      * The rotation about the axis, in degrees, applied after the scale.
      * @default 0
-     * @minimum 0
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     rotationAngle?: number | undefined = 0;
@@ -731,8 +731,8 @@ export class RotateDto<T> {
     /**
      * The rotation in degrees, following the right-hand rule about the axis.
      * @default 0
-     * @minimum 0
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     angle?: number | undefined = 0;
