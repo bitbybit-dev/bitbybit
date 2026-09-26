@@ -40,8 +40,7 @@
       "downloadSolidSTL": "the kernel hands back a blob; the worker triggers the download and resolves void",
       "downloadSolidsSTL": "the kernel hands back a blob; the worker triggers the download and resolves void",
       "downloadGeometryDxf": "the kernel hands back a blob; the worker triggers the download and resolves void",
-      "downloadGeometry3MF": "the kernel hands back a blob; the worker triggers the download and resolves void",
-      "polygon.createFromPoints": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field"
+      "downloadGeometry3MF": "the kernel hands back a blob; the worker triggers the download and resolves void"
     }
   },
   "manifold": {

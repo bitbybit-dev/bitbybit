@@ -43,7 +43,7 @@ const JSCAD_PathDto: DtoConstraints = { path: k.required(k.opaque) };
 const JSCAD_PathFromPointsDto: DtoConstraints = { points: k.required(k.list(k.point2)), closed: k.boolean };
 const JSCAD_PathFromPolylineDto: DtoConstraints = { polyline: k.required(k.opaque), closed: k.boolean };
 const JSCAD_PathsFromPointsDto: DtoConstraints = { pointsLists: k.required(k.opaque) };
-const JSCAD_PolygonPointsDto: DtoConstraints = { points: k.required(k.list(k.point)) };
+const JSCAD_PointsDto: DtoConstraints = { points: k.required(k.list(k.point)) };
 const JSCAD_PolylineDto: DtoConstraints = { polyline: k.required(k.opaque) };
 const JSCAD_RectangleDto: DtoConstraints = { center: k.point2, width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }) };
 const JSCAD_RoundedCuboidCentersDto: DtoConstraints = { roundRadius: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }), centers: k.required(k.list(k.point3)) };
@@ -102,7 +102,7 @@ export const jscadDtoRegistry: DtoRegistry = {
     "polygon.circle": { dto: Inputs.JSCAD.CircleDto, constraints: JSCAD_CircleDto },
     "polygon.createFromCurve": { dto: Inputs.JSCAD.CurveDto, constraints: JSCAD_CurveDto },
     "polygon.createFromPath": { dto: Inputs.JSCAD.PathDto, constraints: JSCAD_PathDto },
-    "polygon.createFromPoints": { dto: Inputs.JSCAD.PolygonPointsDto, constraints: JSCAD_PolygonPointsDto },
+    "polygon.createFromPoints": { dto: Inputs.JSCAD.PointsDto, constraints: JSCAD_PointsDto },
     "polygon.createFromPolyline": { dto: Inputs.JSCAD.PolylineDto, nested: { polyline: Inputs.JSCAD.PolylinePropertiesDto }, constraints: JSCAD_PolylineDto },
     "polygon.ellipse": { dto: Inputs.JSCAD.EllipseDto, constraints: JSCAD_EllipseDto },
     "polygon.rectangle": { dto: Inputs.JSCAD.RectangleDto, constraints: JSCAD_RectangleDto },

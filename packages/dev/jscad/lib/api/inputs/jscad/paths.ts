@@ -34,13 +34,13 @@ export class CurveDto {
  * around it.
  */
 export class PointsDto {
-    constructor(points?: Base.Point3[]) {
+    constructor(points?: (Base.Point2 | Base.Point3)[]) {
         if (points !== undefined) { this.points = points; }
     }
     /**
-     * The outline points in order, at least three; only X and Y are used
+     * The outline points in order, at least three, each 2D or 3D; only X and Y are used
      */
-    points!: Base.Point3[];
+    points!: (Base.Point2 | Base.Point3)[];
 }
 /**
  * Feeds `path.close` and `polygon.createFromPath` with the one 2D path to work on; a 2D shape or a

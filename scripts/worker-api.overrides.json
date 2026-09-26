@@ -12,9 +12,7 @@
     "operations.offset3DWire": { "returns": "Inputs.OCCT.TopoDSWirePointer", "reason": "the kernel returns the loose edges when no wire can be built; the worker exposes the wire" },
     "path.shapeFromPath": { "returns": "Inputs.OCCT.TopoDSShapePointer", "reason": "the kernel may return undefined for an empty path; the worker exposes the shape" }
   },
-  "jscad": {
-    "polygon.createFromPoints": { "params": ["Inputs.JSCAD.PointsDto"], "reason": "Inputs.JSCAD.PointsDto and Inputs.Point.PointsDto carry the same points field; the node is generated from the JSCAD one" }
-  },
+  "jscad": {},
   "manifold": {
     "decomposeManifoldOrCrossSection": { "returns": "Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][]", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },
     "decomposeManifoldsOrCrossSections": { "returns": "(Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][])[]", "reason": "the worker thread serialises Manifold3D.Mesh into DecomposedManifoldMeshDto before replying" },

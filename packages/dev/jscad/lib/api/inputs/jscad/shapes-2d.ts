@@ -3,21 +3,6 @@
 import { Base } from "../base-inputs";
 
 /**
- * Feeds `polygon.createFromPoints`: the outline of a filled 2D shape, as 2D points or as 3D points
- * whose Z is dropped.
- */
-export class PolygonPointsDto {
-    constructor(points?: (Base.Point2 | Base.Point3)[]) {
-        if (points !== undefined) { this.points = points; }
-    }
-    /**
-     * The outline points in order, each 2D or 3D; only X and Y are used
-     * @default undefined
-     */
-    points!: (Base.Point2 | Base.Point3)[];
-}
-
-/**
  * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the
  * number of straight sides that approximate it.
  */

@@ -833,13 +833,13 @@ export namespace JSCAD {
      * around it.
      */
     export class PointsDto {
-        constructor(points?: Base.Point3[]) {
+        constructor(points?: (Base.Point2 | Base.Point3)[]) {
             if (points !== undefined) { this.points = points; }
         }
         /**
-         * The outline points in order, at least three; only X and Y are used
+         * The outline points in order, at least three, each 2D or 3D; only X and Y are used
          */
-        points!: Base.Point3[];
+        points!: (Base.Point2 | Base.Point3)[];
     }
     /**
      * Feeds `path.close` and `polygon.createFromPath` with the one 2D path to work on; a 2D shape or a
@@ -1025,21 +1025,6 @@ export namespace JSCAD {
          */
         radiusY?: number | undefined = 1;
     }
-    /**
-     * Feeds `polygon.createFromPoints`: the outline of a filled 2D shape, as 2D points or as 3D points
-     * whose Z is dropped.
-     */
-    export class PolygonPointsDto {
-        constructor(points?: (Base.Point2 | Base.Point3)[]) {
-            if (points !== undefined) { this.points = points; }
-        }
-        /**
-         * The outline points in order, each 2D or 3D; only X and Y are used
-         * @default undefined
-         */
-        points!: (Base.Point2 | Base.Point3)[];
-    }
-
     /**
      * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the
      * number of straight sides that approximate it.

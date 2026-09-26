@@ -59,7 +59,6 @@ export namespace JSCAD {
     export type PathFromPolylineDto = WithDefaults<Inputs.JSCAD.PathFromPolylineDto, "closed">;
     export type PathsFromPointsDto = Inputs.JSCAD.PathsFromPointsDto;
     export type PointsDto = Inputs.JSCAD.PointsDto;
-    export type PolygonPointsDto = Inputs.JSCAD.PolygonPointsDto;
     export type PolylineDto = Inputs.JSCAD.PolylineDto;
     export type PolylinePropertiesDto = WithDefaults<Inputs.JSCAD.PolylinePropertiesDto, "isClosed">;
     export type RectangleDto = WithDefaults<Inputs.JSCAD.RectangleDto, "center" | "width" | "length">;

@@ -37,7 +37,7 @@ export class JSCADPolygon {
      * const triangle = await bitbybit.jscad.polygon.createFromPoints({ points: [[0, 0, 0], [10, 0, 0], [5, 8, 0]] });
      * ```
      */
-    createFromPoints(inputs: Inputs.JSCAD.PolygonPointsDto): Inputs.JSCAD.JSCADEntity {
+    createFromPoints(inputs: Inputs.JSCAD.PointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]) as Inputs.Base.Point2[];
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
