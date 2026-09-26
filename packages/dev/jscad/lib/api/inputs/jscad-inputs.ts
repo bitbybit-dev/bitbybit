@@ -703,11 +703,35 @@ export namespace JSCAD {
         mesh!: JSCADEntity;
     }
     /**
+     * The wall a rectangular extrusion builds, shared by `ExtrudeRectangularDto` and
+     * `ExtrudeRectangularPointsDto`: how thick and how tall.
+     */
+    export abstract class ExtrudeRectangularBaseDto {
+        /**
+         * How tall the wall is along Z, in model units, standing on the XY plane
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        height?: number | undefined = 1;
+        /**
+         * How far the wall reaches to each side of the path, in model units, so the wall is twice this
+         * thick
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        size?: number | undefined = 1;
+    }
+    /**
      * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
      * Z and its half thickness.
      */
-    export class ExtrudeRectangularDto {
+    export class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
         constructor(geometry?: JSCADEntity, height?: number, size?: number) {
+            super();
             if (geometry !== undefined) { this.geometry = geometry; }
             if (height !== undefined) { this.height = height; }
             if (size !== undefined) { this.size = size; }
@@ -717,30 +741,14 @@ export namespace JSCAD {
          * @default undefined
          */
         geometry!: JSCADEntity;
-        /**
-         * How tall the wall is along Z, in model units, standing on the XY plane
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
-        /**
-         * How far the wall reaches to each side of the outline, in model units, so the wall is twice
-         * this thick
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        size?: number | undefined = 1;
     }
     /**
      * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
      * wall's height along Z and its half thickness.
      */
-    export class ExtrudeRectangularPointsDto {
+    export class ExtrudeRectangularPointsDto extends ExtrudeRectangularBaseDto {
         constructor(points?: Base.Point3[], height?: number, size?: number) {
+            super();
             if (points !== undefined) { this.points = points; }
             if (height !== undefined) { this.height = height; }
             if (size !== undefined) { this.size = size; }
@@ -750,23 +758,6 @@ export namespace JSCAD {
          * @default undefined
          */
         points!: Base.Point3[];
-        /**
-         * How tall the wall is along Z, in model units, standing on the XY plane
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
-        /**
-         * How far the wall reaches to each side of the line, in model units, so the wall is twice this
-         * thick
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        size?: number | undefined = 1;
     }
     /**
      * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
@@ -1281,7 +1272,7 @@ export namespace JSCAD {
         /**
          * Length of every edge, in model units
          * @default 1
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
@@ -1311,21 +1302,9 @@ export namespace JSCAD {
         size?: number | undefined = 1;
     }
     /**
-     * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
-     * sizes along X, Y and Z.
+     * The size of a box, shared by `CuboidDto` and `CuboidCentersDto`.
      */
-    export class CuboidDto {
-        constructor(center?: Base.Point3, width?: number, length?: number, height?: number) {
-            if (center !== undefined) { this.center = center; }
-            if (width !== undefined) { this.width = width; }
-            if (length !== undefined) { this.length = length; }
-            if (height !== undefined) { this.height = height; }
-        }
-        /**
-         * The point the box is centered on, so half of each size lies on each side of it
-         * @default [0, 0, 0]
-         */
-        center?: Base.Point3 | undefined = [0, 0, 0];
+    export abstract class CuboidBaseDto {
         /**
          * Full size along X, in model units
          * @default 1
@@ -1352,11 +1331,30 @@ export namespace JSCAD {
         height?: number | undefined = 1;
     }
     /**
+     * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
+     * sizes along X, Y and Z.
+     */
+    export class CuboidDto extends CuboidBaseDto {
+        constructor(center?: Base.Point3, width?: number, length?: number, height?: number) {
+            super();
+            if (center !== undefined) { this.center = center; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+        }
+        /**
+         * The point the box is centered on, so half of each size lies on each side of it
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
      * Feeds `shapes.cuboidsOnCenterPoints`: one box of the same sizes on every center point, coming
      * back in the same order.
      */
-    export class CuboidCentersDto {
+    export class CuboidCentersDto extends CuboidBaseDto {
         constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (width !== undefined) { this.width = width; }
             if (length !== undefined) { this.length = length; }
@@ -1367,49 +1365,12 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Full size of every box along X, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        width?: number | undefined = 1;
-        /**
-         * Full size of every box along Z, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        length?: number | undefined = 1;
-        /**
-         * Full size of every box along Y, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
     }
     /**
-     * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
-     * sizes along X, Y and Z, the rounding radius and how finely the rounding is faceted.
+     * The size and rounding of a rounded box, shared by `RoundedCuboidDto` and
+     * `RoundedCuboidCentersDto`.
      */
-    export class RoundedCuboidDto {
-        constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
-            if (center !== undefined) { this.center = center; }
-            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
-            if (width !== undefined) { this.width = width; }
-            if (length !== undefined) { this.length = length; }
-            if (height !== undefined) { this.height = height; }
-            if (segments !== undefined) { this.segments = segments; }
-        }
-        /**
-         * The point the box is centered on, so half of each size lies on each side of it
-         * @default [0, 0, 0]
-         */
-        center?: Base.Point3 | undefined = [0, 0, 0];
+    export abstract class RoundedCuboidBaseDto {
         /**
          * Radius of the rounding on every edge, in model units; it must be less than half of the
          * smallest side or an error is thrown
@@ -1453,11 +1414,32 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
+     * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
+     * sizes along X, Y and Z, the rounding radius and how finely the rounding is faceted.
+     */
+    export class RoundedCuboidDto extends RoundedCuboidBaseDto {
+        constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
+            super();
+            if (center !== undefined) { this.center = center; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (width !== undefined) { this.width = width; }
+            if (length !== undefined) { this.length = length; }
+            if (height !== undefined) { this.height = height; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The point the box is centered on, so half of each size lies on each side of it
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
      * Feeds `shapes.roundedCuboidsOnCenterPoints`: one rounded box of the same sizes and rounding on
      * every center point, coming back in the same order.
      */
-    export class RoundedCuboidCentersDto {
+    export class RoundedCuboidCentersDto extends RoundedCuboidBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
             if (width !== undefined) { this.width = width; }
@@ -1470,47 +1452,6 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Radius of the rounding on every edge, in model units; it must be less than half of the
-         * smallest side or an error is thrown
-         * @default 0.1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        roundRadius?: number | undefined = 0.1;
-        /**
-         * Full size of every box along X, in model units, rounding included
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        width?: number | undefined = 1;
-        /**
-         * Full size of every box along Z, in model units, rounding included
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        length?: number | undefined = 1;
-        /**
-         * Full size of every box along Y, in model units, rounding included
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
-        /**
-         * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.cylinderElliptic`: a cylinder standing along Z with an elliptical cross-section
@@ -1602,21 +1543,9 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
-     * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
-     * axis, its height, its radius and how many flat sides approximate it.
+     * The size and smoothness of a cylinder, shared by `CylidnerDto` and `CylidnerCentersDto`.
      */
-    export class CylidnerDto {
-        constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number) {
-            if (center !== undefined) { this.center = center; }
-            if (height !== undefined) { this.height = height; }
-            if (radius !== undefined) { this.radius = radius; }
-            if (segments !== undefined) { this.segments = segments; }
-        }
-        /**
-         * The point halfway up the axis; half the height lies above it along Z and half below
-         * @default [0, 0, 0]
-         */
-        center?: Base.Point3 | undefined = [0, 0, 0];
+    export abstract class CylinderBaseDto {
         /**
          * Full length along Z, in model units
          * @default 1
@@ -1643,14 +1572,13 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
-     * Feeds `shapes.roundedCylinder`: a cylinder standing along Z whose two rims are rounded, given by
-     * the point halfway up its axis, the rounding radius, its height and radius and how finely it is
-     * faceted.
+     * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
+     * axis, its height, its radius and how many flat sides approximate it.
      */
-    export class RoundedCylidnerDto {
-        constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number) {
+    export class CylidnerDto extends CylinderBaseDto {
+        constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number) {
+            super();
             if (center !== undefined) { this.center = center; }
-            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
             if (height !== undefined) { this.height = height; }
             if (radius !== undefined) { this.radius = radius; }
             if (segments !== undefined) { this.segments = segments; }
@@ -1660,6 +1588,12 @@ export namespace JSCAD {
          * @default [0, 0, 0]
          */
         center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
+     * The size, rounding and smoothness of a rounded cylinder, shared by `RoundedCylidnerDto` and
+     * `RoundedCylidnerCentersDto`.
+     */
+    export abstract class RoundedCylinderBaseDto {
         /**
          * Radius of the rounding on both rims, in model units; the height must be more than twice it or
          * an error is thrown
@@ -1695,20 +1629,29 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
-     * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
-     * its three radii and how finely it is faceted.
+     * Feeds `shapes.roundedCylinder`: a cylinder standing along Z whose two rims are rounded, given by
+     * the point halfway up its axis, the rounding radius, its height and radius and how finely it is
+     * faceted.
      */
-    export class EllipsoidDto {
-        constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number) {
+    export class RoundedCylidnerDto extends RoundedCylinderBaseDto {
+        constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number) {
+            super();
             if (center !== undefined) { this.center = center; }
+            if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
+            if (height !== undefined) { this.height = height; }
             if (radius !== undefined) { this.radius = radius; }
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * The point the ellipsoid is centered on
+         * The point halfway up the axis; half the height lies above it along Z and half below
          * @default [0, 0, 0]
          */
         center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
+     * The size and smoothness of an ellipsoid, shared by `EllipsoidDto` and `EllipsoidCentersDto`.
+     */
+    export abstract class EllipsoidBaseDto {
         /**
          * The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere
          * @default [1, 2, 3]
@@ -1724,11 +1667,29 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
+     * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
+     * its three radii and how finely it is faceted.
+     */
+    export class EllipsoidDto extends EllipsoidBaseDto {
+        constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number) {
+            super();
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The point the ellipsoid is centered on
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
      * Feeds `shapes.ellipsoidsOnCenterPoints`: one ellipsoid of the same radii on every center point,
      * coming back in the same order.
      */
-    export class EllipsoidCentersDto {
+    export class EllipsoidCentersDto extends EllipsoidBaseDto {
         constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (radius !== undefined) { this.radius = radius; }
             if (segments !== undefined) { this.segments = segments; }
@@ -1738,35 +1699,12 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * The half sizes of every ellipsoid along X, Y and Z, in model units, as `[x, y, z]`
-         * @default [1, 2, 3]
-         */
-        radius?: Base.Point3 | undefined = [1, 2, 3];
-        /**
-         * Number of facets around each ellipsoid; more makes them smoother
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments?: number | undefined = 24;
     }
     /**
-     * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
-     * radius and how finely the twenty starting faces are subdivided.
+     * The size and subdivision of a geodesic sphere, shared by `GeodesicSphereDto` and
+     * `GeodesicSphereCentersDto`.
      */
-    export class GeodesicSphereDto {
-        constructor(center?: Base.Point3, radius?: number, frequency?: number) {
-            if (center !== undefined) { this.center = center; }
-            if (radius !== undefined) { this.radius = radius; }
-            if (frequency !== undefined) { this.frequency = frequency; }
-        }
-        /**
-         * The point the sphere is centered on
-         * @default [0, 0, 0]
-         */
-        center?: Base.Point3 | undefined = [0, 0, 0];
+    export abstract class GeodesicSphereBaseDto {
         /**
          * Distance from the center to the surface, in model units
          * @default 1
@@ -1786,11 +1724,29 @@ export namespace JSCAD {
         frequency?: number | undefined = 12;
     }
     /**
+     * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
+     * radius and how finely the twenty starting faces are subdivided.
+     */
+    export class GeodesicSphereDto extends GeodesicSphereBaseDto {
+        constructor(center?: Base.Point3, radius?: number, frequency?: number) {
+            super();
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (frequency !== undefined) { this.frequency = frequency; }
+        }
+        /**
+         * The point the sphere is centered on
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
      * Feeds `shapes.geodesicSpheresOnCenterPoints`: one geodesic sphere of the same radius on every
      * center point, coming back in the same order.
      */
-    export class GeodesicSphereCentersDto {
+    export class GeodesicSphereCentersDto extends GeodesicSphereBaseDto {
         constructor(centers?: Base.Point3[], radius?: number, frequency?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (radius !== undefined) { this.radius = radius; }
             if (frequency !== undefined) { this.frequency = frequency; }
@@ -1800,30 +1756,14 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Distance from each center to its surface, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        radius?: number | undefined = 1;
-        /**
-         * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
-         * least 6, and higher is rounder
-         * @default 12
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        frequency?: number | undefined = 12;
     }
     /**
      * Feeds `shapes.cylindersOnCenterPoints`: one round cylinder of the same size standing along Z on
      * every center point, coming back in the same order.
      */
-    export class CylidnerCentersDto {
+    export class CylidnerCentersDto extends CylinderBaseDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (height !== undefined) { this.height = height; }
             if (radius !== undefined) { this.radius = radius; }
@@ -1834,37 +1774,14 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Full length of every cylinder along Z, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
-        /**
-         * Distance from the axis to the side of every cylinder, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        radius?: number | undefined = 1;
-        /**
-         * Number of flat sides around each cylinder; more makes them rounder
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.roundedCylindersOnCenterPoints`: one rounded cylinder of the same size on every
      * center point, coming back in the same order.
      */
-    export class RoundedCylidnerCentersDto {
+    export class RoundedCylidnerCentersDto extends RoundedCylinderBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (roundRadius !== undefined) { this.roundRadius = roundRadius; }
             if (height !== undefined) { this.height = height; }
@@ -1876,56 +1793,11 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Radius of the rounding on both rims of every cylinder, in model units; the height must be
-         * more than twice it or an error is thrown
-         * @default 0.1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        roundRadius?: number | undefined = 0.1;
-        /**
-         * Full length of every cylinder along Z, in model units, rounding included
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        height?: number | undefined = 1;
-        /**
-         * Distance from the axis to the side of every cylinder, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        radius?: number | undefined = 1;
-        /**
-         * Number of flat sides around each cylinder and pieces in the rounding; more makes them
-         * smoother
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments?: number | undefined = 24;
     }
     /**
-     * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
-     * approximate it.
+     * The size and smoothness of a sphere, shared by `SphereDto` and `SphereCentersDto`.
      */
-    export class SphereDto {
-        constructor(center?: Base.Point3, radius?: number, segments?: number) {
-            if (center !== undefined) { this.center = center; }
-            if (radius !== undefined) { this.radius = radius; }
-            if (segments !== undefined) { this.segments = segments; }
-        }
-        /**
-         * The point the sphere is centered on
-         * @default [0, 0, 0]
-         */
-        center?: Base.Point3 | undefined = [0, 0, 0];
+    export abstract class SphereBaseDto {
         /**
          * Distance from the center to the surface, in model units
          * @default 1
@@ -1944,11 +1816,29 @@ export namespace JSCAD {
         segments?: number | undefined = 24;
     }
     /**
+     * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
+     * approximate it.
+     */
+    export class SphereDto extends SphereBaseDto {
+        constructor(center?: Base.Point3, radius?: number, segments?: number) {
+            super();
+            if (center !== undefined) { this.center = center; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The point the sphere is centered on
+         * @default [0, 0, 0]
+         */
+        center?: Base.Point3 | undefined = [0, 0, 0];
+    }
+    /**
      * Feeds `shapes.spheresOnCenterPoints`: one sphere of the same radius on every center point, coming
      * back in the same order.
      */
-    export class SphereCentersDto {
+    export class SphereCentersDto extends SphereBaseDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number) {
+            super();
             if (centers !== undefined) { this.centers = centers; }
             if (radius !== undefined) { this.radius = radius; }
             if (segments !== undefined) { this.segments = segments; }
@@ -1958,22 +1848,6 @@ export namespace JSCAD {
          * @default undefined
          */
         centers!: Base.Point3[];
-        /**
-         * Distance from each center to its surface, in model units
-         * @default 1
-         * @minimum 0
-         * @maximum Infinity
-         * @step 0.1
-         */
-        radius?: number | undefined = 1;
-        /**
-         * Number of facets around each sphere; more makes them rounder
-         * @default 24
-         * @minimum 0
-         * @maximum Infinity
-         * @step 1
-         */
-        segments?: number | undefined = 24;
     }
     /**
      * Feeds `shapes.torus`: a ring with a round cross-section lying flat in the XY plane around

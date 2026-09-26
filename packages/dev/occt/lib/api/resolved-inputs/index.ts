@@ -87,6 +87,7 @@ export namespace OCCT {
     export type DecomposedFaceDto = Inputs.OCCT.DecomposedFaceDto;
     export type DecomposedMeshDto = Inputs.OCCT.DecomposedMeshDto;
     export type DifferenceDto<T> = WithDefaults<Inputs.OCCT.DifferenceDto<T>, "keepEdges">;
+    export type DivideBaseDto = WithDefaults<Inputs.OCCT.DivideBaseDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     export type DivideDto<T> = WithDefaults<Inputs.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     export type DivideShapesDto<T> = WithDefaults<Inputs.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     export type DocToMeshDto<U> = WithDefaults<Inputs.OCCT.DocToMeshDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
@@ -94,6 +95,7 @@ export namespace OCCT {
     export type DocumentLabelQueryDto<T> = Inputs.OCCT.DocumentLabelQueryDto<T>;
     export type DocumentQueryDto<T> = Inputs.OCCT.DocumentQueryDto<T>;
     export type DraftAngleDto<T, U> = WithDefaults<Inputs.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    export type DrawShapeBaseDto = WithDefaults<Inputs.OCCT.DrawShapeBaseDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type DrawShapeDto<T> = WithDefaults<Inputs.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type DrawShapesDto<T> = WithDefaults<Inputs.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type DxfPathsPartsListDto = WithDefaults<Inputs.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
@@ -124,6 +126,7 @@ export namespace OCCT {
     export type FaceSubdivisionControlledDto<T> = WithDefaults<Inputs.OCCT.FaceSubdivisionControlledDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepNthU" | "shiftHalfStepUOffsetN" | "removeStartEdgeNthU" | "removeStartEdgeUOffsetN" | "removeEndEdgeNthU" | "removeEndEdgeUOffsetN" | "shiftHalfStepNthV" | "shiftHalfStepVOffsetN" | "removeStartEdgeNthV" | "removeStartEdgeVOffsetN" | "removeEndEdgeNthV" | "removeEndEdgeVOffsetN">;
     export type FaceSubdivisionDto<T> = WithDefaults<Inputs.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
     export type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    export type Fillet3DWireBaseDto = WithDefaults<Inputs.OCCT.Fillet3DWireBaseDto, "radius" | "direction">;
     export type Fillet3DWireDto<T> = WithDefaults<Inputs.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
     export type Fillet3DWiresDto<T> = WithDefaults<Inputs.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
     export type FilletCornerByPointDto<T> = WithDefaults<Inputs.OCCT.FilletCornerByPointDto<T>, "points" | "radius" | "taperFactor" | "snapTolerance" | "mode">;
@@ -218,6 +221,7 @@ export namespace OCCT {
     export type PolylinesBaseDto = Inputs.OCCT.PolylinesBaseDto;
     export type PolylinesDto = WithDefaults<Inputs.OCCT.PolylinesDto, "returnCompound">;
     export type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    export type ProjectWireBaseDto<U> = WithDefaults<Inputs.OCCT.ProjectWireBaseDto<U>, "direction">;
     export type ProjectWireDto<T, U> = WithDefaults<Inputs.OCCT.ProjectWireDto<T, U>, "direction">;
     export type ProjectWiresDto<T, U> = WithDefaults<Inputs.OCCT.ProjectWiresDto<T, U>, "direction">;
     export type QuaternionToMatrixDto = WithDefaults<Inputs.OCCT.QuaternionToMatrixDto, "quaternion">;

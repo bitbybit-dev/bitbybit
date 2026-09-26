@@ -709,238 +709,10 @@ export class WireOnFaceDto<T, U> {
     face!: U;
 }
 /**
- * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
- * faces, edges and vertices, what to show, and how finely to mesh the shape.
+ * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
+ * edges and vertices, what to show, and how finely to mesh the shape.
  */
-export class DrawShapeDto<T> {
-    /**
-     * Provide options without default values
-     */
-    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
-        if (shape !== undefined) { this.shape = shape; }
-        if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
-        if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
-        if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
-        if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
-        if (faceColour !== undefined) { this.faceColour = faceColour; }
-        if (vertexColour !== undefined) { this.vertexColour = vertexColour; }
-        if (vertexSize !== undefined) { this.vertexSize = vertexSize; }
-        if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
-        if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
-        if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
-        if (drawVertices !== undefined) { this.drawVertices = drawVertices; }
-        if (precision !== undefined) { this.precision = precision; }
-        if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
-        if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
-        if (edgeIndexColour !== undefined) { this.edgeIndexColour = edgeIndexColour; }
-        if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
-        if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
-        if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
-        if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
-        if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
-        if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
-        if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
-        if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
-        if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
-    }
-    /**
-     * The shape to draw; it is meshed at `precision` first.
-     * @default undefined
-     * @optional true
-     */
-    shape?: T | undefined;
-    /**
-     * How opaque the faces are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    faceOpacity?: number | undefined = 1;
-    /**
-     * How opaque the edges are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    edgeOpacity?: number | undefined = 1;
-    /**
-     * The color of the edges as a hex string such as `#ffffff`.
-     * @default #ffffff
-     */
-    edgeColour?: Base.Color | undefined = "#ffffff";
-    /**
-     * A material for the faces from the rendering engine; when given it replaces the face color.
-     * @default undefined
-     * @optional true
-     */
-    faceMaterial?: Base.Material | undefined;
-    /**
-     * The color of the faces as a hex string such as `#ff0000`.
-     * @default #ff0000
-     */
-    faceColour?: Base.Color | undefined = "#ff0000";
-    /**
-     * How thick the edge lines are drawn.
-     * @default 2
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    edgeWidth?: number | undefined = 2;
-    /**
-     * When false, the edges are not drawn.
-     * @default true
-     */
-    drawEdges?: boolean | undefined = true;
-    /**
-     * When false, the faces are not drawn.
-     * @default true
-     */
-    drawFaces?: boolean | undefined = true;
-    /**
-     * When true, the vertices are drawn as small markers.
-     * @default false
-     */
-    drawVertices?: boolean | undefined = false;
-    /**
-     * The color of the vertex markers as a hex string.
-     * @default #ff00ff
-     */
-    vertexColour?: string | undefined = "#ff00ff";
-    /**
-     * The size of the vertex markers, in model units.
-     * @default 0.03
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    vertexSize?: number | undefined = 0.03;
-    /**
-     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
-     * with more triangles.
-     * @default 0.01
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    precision?: number | undefined = 0.01;
-    /**
-     * When true, each edge's index is written next to it, handy for picking edges to fillet.
-     * @default false
-     */
-    drawEdgeIndexes?: boolean | undefined = false;
-    /**
-     * The height of the edge index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    edgeIndexHeight?: number | undefined = 0.06;
-    /**
-     * The color of the edge index labels as a hex string.
-     * @default #ff00ff
-     */
-    edgeIndexColour?: Base.Color | undefined = "#ff00ff";
-    /**
-     * When true, each face's index is written on it, handy for picking faces.
-     * @default false
-     */
-    drawFaceIndexes?: boolean | undefined = false;
-    /**
-     * The height of the face index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    faceIndexHeight?: number | undefined = 0.06;
-    /**
-     * The color of the face index labels as a hex string.
-     * @default #0000ff
-     */
-    faceIndexColour?: Base.Color | undefined = "#0000ff";
-    /**
-     * When true, the back of each face is drawn in its own color, which shows which way faces
-     * point.
-     * @default true
-     */
-    drawTwoSided?: boolean | undefined = true;
-    /**
-     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
-     * @default #0000ff
-     */
-    backFaceColour?: Base.Color | undefined = "#0000ff";
-    /**
-     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    backFaceOpacity?: number | undefined = 1;
-    /**
-     * When true, the triangulation stays cached on the shape after drawing; when false it is
-     * cleared so memory does not grow across draws.
-     * @default false
-     */
-    keepMeshData?: boolean | undefined = false;
-    /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
-     * @default true
-     */
-    allowQualityDecrease?: boolean | undefined = true;
-    /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
-     * @default false
-     */
-    forceFaceDeflection?: boolean | undefined = false;
-}
-/**
- * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
- * `DrawShapeDto`, applied to every shape in the list.
- */
-export class DrawShapesDto<T> {
-
-    /**
-     * Provide options without default values
-     */
-    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
-        if (shapes !== undefined) { this.shapes = shapes; }
-        if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
-        if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
-        if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
-        if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
-        if (faceColour !== undefined) { this.faceColour = faceColour; }
-        if (vertexColour !== undefined) { this.vertexColour = vertexColour; }
-        if (vertexSize !== undefined) { this.vertexSize = vertexSize; }
-        if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
-        if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
-        if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
-        if (drawVertices !== undefined) { this.drawVertices = drawVertices; }
-        if (precision !== undefined) { this.precision = precision; }
-        if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
-        if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
-        if (edgeIndexColour !== undefined) { this.edgeIndexColour = edgeIndexColour; }
-        if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
-        if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
-        if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
-        if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
-        if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
-        if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
-        if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
-        if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
-        if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
-    }
-    /**
-     * The shapes to draw with the same options.
-     * @default undefined
-     */
-    shapes!: T[];
+export abstract class DrawShapeBaseDto {
     /**
      * How opaque the faces are, from 0 for invisible to 1 for solid.
      * @default 1
@@ -1091,4 +863,90 @@ export class DrawShapesDto<T> {
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
+}
+/**
+ * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
+ * faces, edges and vertices, what to show, and how finely to mesh the shape.
+ */
+export class DrawShapeDto<T> extends DrawShapeBaseDto {
+    /**
+     * Provide options without default values
+     */
+    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        super();
+        if (shape !== undefined) { this.shape = shape; }
+        if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+        if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
+        if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+        if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+        if (faceColour !== undefined) { this.faceColour = faceColour; }
+        if (vertexColour !== undefined) { this.vertexColour = vertexColour; }
+        if (vertexSize !== undefined) { this.vertexSize = vertexSize; }
+        if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+        if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+        if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
+        if (drawVertices !== undefined) { this.drawVertices = drawVertices; }
+        if (precision !== undefined) { this.precision = precision; }
+        if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
+        if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
+        if (edgeIndexColour !== undefined) { this.edgeIndexColour = edgeIndexColour; }
+        if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
+        if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
+        if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+        if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+        if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+        if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+        if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+        if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+        if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+    }
+    /**
+     * The shape to draw; it is meshed at `precision` first.
+     * @default undefined
+     * @optional true
+     */
+    shape?: T | undefined;
+}
+/**
+ * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
+ * `DrawShapeDto`, applied to every shape in the list.
+ */
+export class DrawShapesDto<T> extends DrawShapeBaseDto {
+
+    /**
+     * Provide options without default values
+     */
+    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        super();
+        if (shapes !== undefined) { this.shapes = shapes; }
+        if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
+        if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
+        if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
+        if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
+        if (faceColour !== undefined) { this.faceColour = faceColour; }
+        if (vertexColour !== undefined) { this.vertexColour = vertexColour; }
+        if (vertexSize !== undefined) { this.vertexSize = vertexSize; }
+        if (edgeWidth !== undefined) { this.edgeWidth = edgeWidth; }
+        if (drawEdges !== undefined) { this.drawEdges = drawEdges; }
+        if (drawFaces !== undefined) { this.drawFaces = drawFaces; }
+        if (drawVertices !== undefined) { this.drawVertices = drawVertices; }
+        if (precision !== undefined) { this.precision = precision; }
+        if (drawEdgeIndexes !== undefined) { this.drawEdgeIndexes = drawEdgeIndexes; }
+        if (edgeIndexHeight !== undefined) { this.edgeIndexHeight = edgeIndexHeight; }
+        if (edgeIndexColour !== undefined) { this.edgeIndexColour = edgeIndexColour; }
+        if (drawFaceIndexes !== undefined) { this.drawFaceIndexes = drawFaceIndexes; }
+        if (faceIndexHeight !== undefined) { this.faceIndexHeight = faceIndexHeight; }
+        if (faceIndexColour !== undefined) { this.faceIndexColour = faceIndexColour; }
+        if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
+        if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
+        if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+        if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
+        if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
+        if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+    }
+    /**
+     * The shapes to draw with the same options.
+     * @default undefined
+     */
+    shapes!: T[];
 }

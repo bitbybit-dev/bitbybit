@@ -5910,18 +5910,17 @@ namespace OCCT {
         // (undocumented)
         outside = "outside"
     }
-    class DivideDto<T> {
-        constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
+    abstract class DivideBaseDto {
         nrOfDivisions?: number | undefined;
         removeEndPoint?: boolean | undefined;
         removeStartPoint?: boolean | undefined;
+    }
+    class DivideDto<T> extends DivideBaseDto {
+        constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         shape: T;
     }
-    class DivideShapesDto<T> {
+    class DivideShapesDto<T> extends DivideBaseDto {
         constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
-        nrOfDivisions?: number | undefined;
-        removeEndPoint?: boolean | undefined;
-        removeStartPoint?: boolean | undefined;
         shapes: T[];
     }
     class DocToMeshDto<U> {
@@ -5963,8 +5962,7 @@ namespace OCCT {
         neutralPlaneOrigin?: Base.Point3 | undefined;
         shape: T;
     }
-    class DrawShapeDto<T> {
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+    abstract class DrawShapeBaseDto {
         allowQualityDecrease?: boolean | undefined;
         backFaceColour?: Base.Color | undefined;
         backFaceOpacity?: number | undefined;
@@ -5987,37 +5985,16 @@ namespace OCCT {
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
-        shape?: T | undefined;
         vertexColour?: string | undefined;
         vertexSize?: number | undefined;
     }
-    class DrawShapesDto<T> {
+    class DrawShapeDto<T> extends DrawShapeBaseDto {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+        shape?: T | undefined;
+    }
+    class DrawShapesDto<T> extends DrawShapeBaseDto {
         constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease?: boolean | undefined;
-        backFaceColour?: Base.Color | undefined;
-        backFaceOpacity?: number | undefined;
-        drawEdgeIndexes?: boolean | undefined;
-        drawEdges?: boolean | undefined;
-        drawFaceIndexes?: boolean | undefined;
-        drawFaces?: boolean | undefined;
-        drawTwoSided?: boolean | undefined;
-        drawVertices?: boolean | undefined;
-        edgeColour?: Base.Color | undefined;
-        edgeIndexColour?: Base.Color | undefined;
-        edgeIndexHeight?: number | undefined;
-        edgeOpacity?: number | undefined;
-        edgeWidth?: number | undefined;
-        faceColour?: Base.Color | undefined;
-        faceIndexColour?: Base.Color | undefined;
-        faceIndexHeight?: number | undefined;
-        faceMaterial?: Base.Material | undefined;
-        faceOpacity?: number | undefined;
-        forceFaceDeflection?: boolean | undefined;
-        keepMeshData?: boolean | undefined;
-        precision?: number | undefined;
         shapes: T[];
-        vertexColour?: string | undefined;
-        vertexSize?: number | undefined;
     }
     enum dxfAcadVersionEnum {
         // (undocumented)
@@ -6279,20 +6256,18 @@ namespace OCCT {
         // (undocumented)
         step = "step"
     }
-    class Fillet3DWireDto<T> {
-        constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
+    abstract class Fillet3DWireBaseDto {
         direction?: Base.Vector3 | undefined;
         indexes?: number[] | undefined;
         radius?: number | undefined;
         radiusList?: number[] | undefined;
+    }
+    class Fillet3DWireDto<T> extends Fillet3DWireBaseDto {
+        constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
         shape: T;
     }
-    class Fillet3DWiresDto<T> {
+    class Fillet3DWiresDto<T> extends Fillet3DWireBaseDto {
         constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
-        direction?: Base.Vector3 | undefined;
-        indexes?: number[] | undefined;
-        radius?: number | undefined;
-        radiusList?: number[] | undefined;
         shapes: T[];
     }
     class FilletCornerByPointDto<T> {
@@ -7036,16 +7011,16 @@ namespace OCCT {
         projectionType?: pointProjectionTypeEnum | undefined;
         shape: T;
     }
-    class ProjectWireDto<T, U> {
-        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
+    abstract class ProjectWireBaseDto<U> {
         direction?: Base.Vector3 | undefined;
         shape: U;
+    }
+    class ProjectWireDto<T, U> extends ProjectWireBaseDto<U> {
+        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
         wire: T;
     }
-    class ProjectWiresDto<T, U> {
+    class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
         constructor(wires?: T[], shape?: U, direction?: Base.Vector3);
-        direction?: Base.Vector3 | undefined;
-        shape: U;
         wires: T[];
     }
     class QuaternionToMatrixDto {
@@ -7950,6 +7925,8 @@ namespace OCCT_3 {
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges">;
     // (undocumented)
+    type DivideBaseDto = WithDefaults<Inputs_2.OCCT.DivideBaseDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
     type DivideDto<T> = WithDefaults<Inputs_2.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
     type DivideShapesDto<T> = WithDefaults<Inputs_2.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
@@ -7963,6 +7940,8 @@ namespace OCCT_3 {
     type DocumentQueryDto<T> = Inputs_2.OCCT.DocumentQueryDto<T>;
     // (undocumented)
     type DraftAngleDto<T, U> = WithDefaults<Inputs_2.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    // (undocumented)
+    type DrawShapeBaseDto = WithDefaults<Inputs_2.OCCT.DrawShapeBaseDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
     type DrawShapeDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
@@ -8023,6 +8002,8 @@ namespace OCCT_3 {
     type FaceSubdivisionDto<T> = WithDefaults<Inputs_2.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
     // (undocumented)
     type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_2.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    // (undocumented)
+    type Fillet3DWireBaseDto = WithDefaults<Inputs_2.OCCT.Fillet3DWireBaseDto, "radius" | "direction">;
     // (undocumented)
     type Fillet3DWireDto<T> = WithDefaults<Inputs_2.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
     // (undocumented)
@@ -8211,6 +8192,8 @@ namespace OCCT_3 {
     type PolylinesDto = WithDefaults<Inputs_2.OCCT.PolylinesDto, "returnCompound">;
     // (undocumented)
     type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_2.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    // (undocumented)
+    type ProjectWireBaseDto<U> = WithDefaults<Inputs_2.OCCT.ProjectWireBaseDto<U>, "direction">;
     // (undocumented)
     type ProjectWireDto<T, U> = WithDefaults<Inputs_2.OCCT.ProjectWireDto<T, U>, "direction">;
     // (undocumented)

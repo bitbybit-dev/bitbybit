@@ -1688,8 +1688,8 @@ export interface OperationParams {
         /** How tall the wall is along Z, in model units, standing on the XY plane */
         height?: number | PipelineRef;
         /**
-         * How far the wall reaches to each side of the outline, in model units, so the wall is twice
-         * this thick
+         * How far the wall reaches to each side of the path, in model units, so the wall is twice this
+         * thick
          */
         size?: number | PipelineRef;
     };
@@ -1706,7 +1706,7 @@ export interface OperationParams {
         /** How tall the wall is along Z, in model units, standing on the XY plane */
         height?: number | PipelineRef;
         /**
-         * How far the wall reaches to each side of the line, in model units, so the wall is twice this
+         * How far the wall reaches to each side of the path, in model units, so the wall is twice this
          * thick
          */
         size?: number | PipelineRef;
@@ -2072,11 +2072,11 @@ export interface OperationParams {
     "jscad.shapes.cuboidsOnCenterPoints": {
         /** The points the boxes are centered on, one box each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
-        /** Full size of every box along X, in model units */
+        /** Full size along X, in model units */
         width?: number | PipelineRef;
-        /** Full size of every box along Z, in model units */
+        /** Full size along Z, in model units */
         length?: number | PipelineRef;
-        /** Full size of every box along Y, in model units */
+        /** Full size along Y, in model units */
         height?: number | PipelineRef;
     };
     /**
@@ -2140,11 +2140,11 @@ export interface OperationParams {
     "jscad.shapes.cylindersOnCenterPoints": {
         /** The points halfway up each axis, one cylinder each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
-        /** Full length of every cylinder along Z, in model units */
+        /** Full length along Z, in model units */
         height?: number | PipelineRef;
-        /** Distance from the axis to the side of every cylinder, in model units */
+        /** Distance from the axis to the side, in model units */
         radius?: number | PipelineRef;
-        /** Number of flat sides around each cylinder; more makes them rounder */
+        /** Number of flat sides around the cylinder; more makes it rounder */
         segments?: number | PipelineRef;
     };
     /**
@@ -2167,9 +2167,9 @@ export interface OperationParams {
     "jscad.shapes.ellipsoidsOnCenterPoints": {
         /** The points the ellipsoids are centered on, one each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
-        /** The half sizes of every ellipsoid along X, Y and Z, in model units, as `[x, y, z]` */
+        /** The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere */
         radius?: [number, number, number] | PipelineRef;
-        /** Number of facets around each ellipsoid; more makes them smoother */
+        /** Number of facets around the ellipsoid; more makes it smoother */
         segments?: number | PipelineRef;
     };
     /**
@@ -2211,7 +2211,7 @@ export interface OperationParams {
     "jscad.shapes.geodesicSpheresOnCenterPoints": {
         /** The points the spheres are centered on, one each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
-        /** Distance from each center to its surface, in model units */
+        /** Distance from the center to the surface, in model units */
         radius?: number | PipelineRef;
         /**
          * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
@@ -2255,11 +2255,11 @@ export interface OperationParams {
          * smallest side or an error is thrown
          */
         roundRadius?: number | PipelineRef;
-        /** Full size of every box along X, in model units, rounding included */
+        /** Full size along X, in model units, rounding included */
         width?: number | PipelineRef;
-        /** Full size of every box along Z, in model units, rounding included */
+        /** Full size along Z, in model units, rounding included */
         length?: number | PipelineRef;
-        /** Full size of every box along Y, in model units, rounding included */
+        /** Full size along Y, in model units, rounding included */
         height?: number | PipelineRef;
         /** Number of straight pieces a full circle of rounding is made of; more makes the edges smoother */
         segments?: number | PipelineRef;
@@ -2293,18 +2293,15 @@ export interface OperationParams {
         /** The points halfway up each axis, one cylinder each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
         /**
-         * Radius of the rounding on both rims of every cylinder, in model units; the height must be
-         * more than twice it or an error is thrown
+         * Radius of the rounding on both rims, in model units; the height must be more than twice it or
+         * an error is thrown
          */
         roundRadius?: number | PipelineRef;
-        /** Full length of every cylinder along Z, in model units, rounding included */
+        /** Full length along Z, in model units, rounding included */
         height?: number | PipelineRef;
-        /** Distance from the axis to the side of every cylinder, in model units */
+        /** Distance from the axis to the side, in model units */
         radius?: number | PipelineRef;
-        /**
-         * Number of flat sides around each cylinder and pieces in the rounding; more makes them
-         * smoother
-         */
+        /** Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother */
         segments?: number | PipelineRef;
     };
     /**
@@ -2326,9 +2323,9 @@ export interface OperationParams {
     "jscad.shapes.spheresOnCenterPoints": {
         /** The points the spheres are centered on, one each, in the order the results come back */
         centers: [number, number, number][] | PipelineRef;
-        /** Distance from each center to its surface, in model units */
+        /** Distance from the center to the surface, in model units */
         radius?: number | PipelineRef;
-        /** Number of facets around each sphere; more makes them rounder */
+        /** Number of facets around the sphere; more makes it rounder */
         segments?: number | PipelineRef;
     };
     /**
@@ -5689,37 +5686,37 @@ export interface OperationParams {
     "occt.assembly.manager.exportDocumentToGltfWithDraco": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
         document: unknown | PipelineRef;
+        /** How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh. */
+        meshDeflection?: number | PipelineRef;
         /**
-         * When true, a browser download of the file is started where that is possible; the kernel
-         * itself only returns the bytes.
+         * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
+         * smoother curves.
          */
-        tryDownload?: boolean | PipelineRef;
-        /** The name the downloaded file gets; it should end in `.glb`. */
-        fileName?: string | PipelineRef;
-        /** When true, texture coordinates are written even for meshes without textures. */
-        forceUVExport?: boolean | PipelineRef;
-        /**
-         * When true, faces with the same material are joined into one mesh; false keeps every face
-         * separate.
-         */
-        mergeFaces?: boolean | PipelineRef;
-        /**
-         * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
-         * speed.
-         */
-        controlSurfaceDeflection?: boolean | PipelineRef;
+        meshAngle?: number | PipelineRef;
         /**
          * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
          * speed.
          */
         internalVerticesMode?: boolean | PipelineRef;
         /**
-         * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
-         * smoother curves.
+         * When true, an extra pass refines triangles that bulge beyond the deflection, at the cost of
+         * speed.
          */
-        meshAngle?: number | PipelineRef;
-        /** How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh. */
-        meshDeflection?: number | PipelineRef;
+        controlSurfaceDeflection?: boolean | PipelineRef;
+        /**
+         * When true, faces with the same material are joined into one mesh; false keeps every face
+         * separate.
+         */
+        mergeFaces?: boolean | PipelineRef;
+        /** When true, texture coordinates are written even for meshes without textures. */
+        forceUVExport?: boolean | PipelineRef;
+        /** The name the downloaded file gets; it should end in `.glb`. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the bytes.
+         */
+        tryDownload?: boolean | PipelineRef;
         /** When true, the geometry is compressed with Draco. */
         useDraco?: boolean | PipelineRef;
         /** How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest. */
@@ -6815,11 +6812,11 @@ export interface OperationParams {
         radius?: number | PipelineRef;
         /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
         radiusList?: number[] | PipelineRef;
-        /** Which corners to round, counted from 0 along the wire; leave it out to round them all. */
+        /** Which corners to round, counted from 0 along each wire; leave it out to round them all. */
         indexes?: number[] | PipelineRef;
         /**
-         * The direction the wire is extruded along to build the fillets; it must not be parallel to the
-         * wire and must leave room for the radius.
+         * The direction each wire is extruded along to build the fillets; it must not be parallel to
+         * the wire and must leave room for the radius.
          */
         direction?: [number, number, number] | PipelineRef;
     };
@@ -7218,77 +7215,77 @@ export interface OperationParams {
          * is unpacked on its own.
          */
         stepData: unknown | PipelineRef;
+        /** When true, colors are read from the file; needed for a colored glTF. */
+        readColors?: boolean | PipelineRef;
         /**
-         * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
-         * the size.
+         * When true, part names are read from the file; switch it off for faster parsing when names are
+         * not needed.
          */
-        scale?: number | PipelineRef;
-        /** When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up. */
-        adjustZtoY?: boolean | PipelineRef;
+        readNames?: boolean | PipelineRef;
+        /** When true, materials are read from the file; needed for material properties in the glTF. */
+        readMaterials?: boolean | PipelineRef;
+        /** When true, layer information is read from the file; rarely needed for glTF. */
+        readLayers?: boolean | PipelineRef;
+        /** When true, validation properties are read from the file; rarely needed for glTF. */
+        readProps?: boolean | PipelineRef;
         /**
-         * How node placements are written: `compact` as translation, rotation and scale where possible,
-         * `mat4` always as a matrix, `trs` always as the three parts.
+         * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
+         * edge's length, otherwise an absolute distance in model units.
          */
-        transformFormat?: "compact" | "mat4" | "trs" | PipelineRef;
-        /** What the glTF meshes are named after: the instance, the product, a combination, or nothing. */
-        meshNameFormat?: "empty" | "product" | "instance" | "instanceOrProduct" | "productOrInstance" | "productAndInstance" | "productAndInstanceAndOcaf" | PipelineRef;
-        /** What the glTF nodes are named after: the instance, the product, a combination, or nothing. */
-        nodeNameFormat?: "empty" | "product" | "instance" | "instanceOrProduct" | "productOrInstance" | "productAndInstance" | "productAndInstanceAndOcaf" | PipelineRef;
-        /** When true, texture coordinates are written even for meshes without textures. */
-        forceUVExport?: boolean | PipelineRef;
-        /** When true, textures are embedded in the GLB instead of referenced as separate files. */
-        embedTextures?: boolean | PipelineRef;
-        /** When true, the glTF is written on several threads, which helps with large files. */
-        parallelWrite?: boolean | PipelineRef;
-        /** When true, merged meshes use 16-bit indexes where they fit, which makes a smaller file. */
-        splitIndices16?: boolean | PipelineRef;
-        /** When true, the faces of a part are joined into one mesh, which makes a smaller file. */
-        mergeFaces?: boolean | PipelineRef;
+        meshDeflection?: number | PipelineRef;
         /**
-         * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
-         * speed.
+         * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
+         * smoother curves and more triangles.
          */
-        controlSurfaceDeflection?: boolean | PipelineRef;
+        meshAngle?: number | PipelineRef;
+        /** When true, faces are meshed on several threads where the build allows it. */
+        meshParallel?: boolean | PipelineRef;
         /**
-         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-         * speed.
+         * Above this many faces the assembly is meshed solid by solid to save memory; -1 meshes
+         * everything in one pass, which is fastest.
          */
-        internalVerticesMode?: boolean | PipelineRef;
+        faceCountThreshold?: number | PipelineRef;
         /**
          * When true, `meshDeflection` scales with each part's size, so small fasteners and large
          * housings both mesh well; when false it is an absolute distance.
          */
         meshRelative?: boolean | PipelineRef;
         /**
-         * Above this many faces the assembly is meshed solid by solid to save memory; -1 meshes
-         * everything in one pass, which is fastest.
+         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
+         * speed.
          */
-        faceCountThreshold?: number | PipelineRef;
-        /** When true, faces are meshed on several threads where the build allows it. */
-        meshParallel?: boolean | PipelineRef;
+        internalVerticesMode?: boolean | PipelineRef;
         /**
-         * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
-         * smoother curves and more triangles.
+         * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
+         * speed.
          */
-        meshAngle?: number | PipelineRef;
+        controlSurfaceDeflection?: boolean | PipelineRef;
+        /** When true, the faces of a part are joined into one mesh, which makes a smaller file. */
+        mergeFaces?: boolean | PipelineRef;
+        /** When true, merged meshes use 16-bit indexes where they fit, which makes a smaller file. */
+        splitIndices16?: boolean | PipelineRef;
+        /** When true, the glTF is written on several threads, which helps with large files. */
+        parallelWrite?: boolean | PipelineRef;
+        /** When true, textures are embedded in the GLB instead of referenced as separate files. */
+        embedTextures?: boolean | PipelineRef;
+        /** When true, texture coordinates are written even for meshes without textures. */
+        forceUVExport?: boolean | PipelineRef;
+        /** What the glTF nodes are named after: the instance, the product, a combination, or nothing. */
+        nodeNameFormat?: "empty" | "product" | "instance" | "instanceOrProduct" | "productOrInstance" | "productAndInstance" | "productAndInstanceAndOcaf" | PipelineRef;
+        /** What the glTF meshes are named after: the instance, the product, a combination, or nothing. */
+        meshNameFormat?: "empty" | "product" | "instance" | "instanceOrProduct" | "productOrInstance" | "productAndInstance" | "productAndInstanceAndOcaf" | PipelineRef;
         /**
-         * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
-         * edge's length, otherwise an absolute distance in model units.
+         * How node placements are written: `compact` as translation, rotation and scale where possible,
+         * `mat4` always as a matrix, `trs` always as the three parts.
          */
-        meshDeflection?: number | PipelineRef;
-        /** When true, validation properties are read from the file; rarely needed for glTF. */
-        readProps?: boolean | PipelineRef;
-        /** When true, layer information is read from the file; rarely needed for glTF. */
-        readLayers?: boolean | PipelineRef;
-        /** When true, materials are read from the file; needed for material properties in the glTF. */
-        readMaterials?: boolean | PipelineRef;
+        transformFormat?: "compact" | "mat4" | "trs" | PipelineRef;
+        /** When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up. */
+        adjustZtoY?: boolean | PipelineRef;
         /**
-         * When true, part names are read from the file; switch it off for faster parsing when names are
-         * not needed.
+         * A factor applied to the whole model, such as 0.001 to turn millimeters into meters; 1 keeps
+         * the size.
          */
-        readNames?: boolean | PipelineRef;
-        /** When true, colors are read from the file; needed for a colored glTF. */
-        readColors?: boolean | PipelineRef;
+        scale?: number | PipelineRef;
         /** When true, the geometry is compressed with Draco. */
         useDraco?: boolean | PipelineRef;
         /** How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest. */
@@ -7326,30 +7323,30 @@ export interface OperationParams {
          */
         stepData: unknown | PipelineRef;
         /**
-         * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
-         * speed.
+         * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
+         * edge's length, otherwise an absolute distance in model units.
          */
-        controlSurfaceDeflection?: boolean | PipelineRef;
-        /**
-         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
-         * speed.
-         */
-        internalVerticesMode?: boolean | PipelineRef;
-        /**
-         * When true, `meshPrecision` scales with each part's size, so small fasteners and large
-         * housings both mesh well; when false it is an absolute distance.
-         */
-        meshRelative?: boolean | PipelineRef;
+        meshPrecision?: number | PipelineRef;
         /**
          * The largest angle, in radians, between the normals of neighboring triangles; smaller gives
          * smoother curves and more triangles.
          */
         meshAngle?: number | PipelineRef;
         /**
-         * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
-         * edge's length, otherwise an absolute distance in model units.
+         * When true, `meshPrecision` scales with each part's size, so small fasteners and large
+         * housings both mesh well; when false it is an absolute distance.
          */
-        meshPrecision?: number | PipelineRef;
+        meshRelative?: boolean | PipelineRef;
+        /**
+         * When true, extra vertices are added inside curved faces for a closer fit, at the cost of
+         * speed.
+         */
+        internalVerticesMode?: boolean | PipelineRef;
+        /**
+         * When true, an extra pass refines triangles that bulge beyond the precision, at the cost of
+         * speed.
+         */
+        controlSurfaceDeflection?: boolean | PipelineRef;
         /** When true, the geometry is compressed with Draco. */
         useDraco?: boolean | PipelineRef;
         /** How hard Draco compresses, from 0 for fastest and largest to 10 for slowest and smallest. */
@@ -8401,13 +8398,13 @@ export interface OperationParams {
         /** The wire or edge to place points along. */
         shape: unknown | PipelineRef;
         /**
-         * How many steps to divide the curve into; one more point than that is placed, the ends
+         * How many steps to divide each curve into; one more point than that is placed, the ends
          * included.
          */
         nrOfDivisions?: number | PipelineRef;
-        /** When true, the point at the start is left out. */
+        /** When true, the point at the start of each curve is left out. */
         removeStartPoint?: boolean | PipelineRef;
-        /** When true, the point at the end is left out. */
+        /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
     /**
@@ -8421,13 +8418,13 @@ export interface OperationParams {
         /** The wire or edge to place points along. */
         shape: unknown | PipelineRef;
         /**
-         * How many steps to divide the curve into; one more point than that is placed, the ends
+         * How many steps to divide each curve into; one more point than that is placed, the ends
          * included.
          */
         nrOfDivisions?: number | PipelineRef;
-        /** When true, the point at the start is left out. */
+        /** When true, the point at the start of each curve is left out. */
         removeStartPoint?: boolean | PipelineRef;
-        /** When true, the point at the end is left out. */
+        /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
     /**
@@ -10353,32 +10350,32 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createChristmasTreeSolid": {
-        /** The direction from the trunk to the tip; the default stands the tree up along Y. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point at the base of the trunk. */
-        origin?: [number, number, number] | PipelineRef;
-        /** How far the tree is spun about its trunk-to-tip axis, in degrees. */
-        rotation?: number | PipelineRef;
-        /** When true, only one side of the tree is built, as an open wire. */
-        half?: boolean | PipelineRef;
-        /** The width of the trunk, in model units; used only when the trunk height is above 0. */
-        trunkWidth?: number | PipelineRef;
-        /** The height of the trunk below the branches, in model units; 0 leaves the trunk out. */
-        trunkHeight?: number | PipelineRef;
-        /** How many layers of branches, the triangle-like skirts, the tree has. */
-        nrSkirts?: number | PipelineRef;
-        /**
-         * How far the branches reach from the trunk line at the tips of the lowest skirt, in model
-         * units.
-         */
-        outerDist?: number | PipelineRef;
+        /** The height of the tree without the trunk, in model units. */
+        height?: number | PipelineRef;
         /**
          * How far the branches reach from the trunk line at the notches of the lowest skirt, in model
          * units.
          */
         innerDist?: number | PipelineRef;
-        /** The height of the tree without the trunk, in model units. */
-        height?: number | PipelineRef;
+        /**
+         * How far the branches reach from the trunk line at the tips of the lowest skirt, in model
+         * units.
+         */
+        outerDist?: number | PipelineRef;
+        /** How many layers of branches, the triangle-like skirts, the tree has. */
+        nrSkirts?: number | PipelineRef;
+        /** The height of the trunk below the branches, in model units; 0 leaves the trunk out. */
+        trunkHeight?: number | PipelineRef;
+        /** The width of the trunk, in model units; used only when the trunk height is above 0. */
+        trunkWidth?: number | PipelineRef;
+        /** When true, only one side of the tree is built, as an open wire. */
+        half?: boolean | PipelineRef;
+        /** How far the tree is spun about its trunk-to-tip axis, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point at the base of the trunk. */
+        origin?: [number, number, number] | PipelineRef;
+        /** The direction from the trunk to the tip; the default stands the tree up along Y. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the tree grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the tree grows against its plane normal, in model units. */
@@ -10465,25 +10462,25 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createHBeamProfileSolid": {
-        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the profile is placed at. */
-        center?: [number, number, number] | PipelineRef;
-        /** How far the profile is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
+        /** The total width of the profile, in model units. */
+        width?: number | PipelineRef;
+        /** The height of the flanges, in model units. */
+        height?: number | PipelineRef;
+        /** The thickness of the horizontal web, in model units. */
+        webThickness?: number | PipelineRef;
+        /** The thickness of each vertical flange, in model units. */
+        flangeThickness?: number | PipelineRef;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          */
         alignment?: "topLeft" | "topMid" | "topRight" | "midLeft" | "midMid" | "midRight" | "bottomLeft" | "bottomMid" | "bottomRight" | PipelineRef;
-        /** The thickness of each vertical flange, in model units. */
-        flangeThickness?: number | PipelineRef;
-        /** The thickness of the horizontal web, in model units. */
-        webThickness?: number | PipelineRef;
-        /** The height of the flanges, in model units. */
-        height?: number | PipelineRef;
-        /** The total width of the profile, in model units. */
-        width?: number | PipelineRef;
+        /** How far the profile is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point the profile is placed at. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the profile grows along its normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the profile grows against its normal, in model units. */
@@ -10497,14 +10494,14 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createHeartSolid": {
-        /** The side of the square the heart roughly fits into, in model units. */
-        sizeApprox?: number | PipelineRef;
-        /** How far the heart is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
-        /** The normal of the plane the heart lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
         /** The point the heart is centered on. */
         center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the heart lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far the heart is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The side of the square the heart roughly fits into, in model units. */
+        sizeApprox?: number | PipelineRef;
         /** How far the heart grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the heart grows against its plane normal, in model units. */
@@ -10517,25 +10514,25 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createIBeamProfileSolid": {
-        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the profile is placed at. */
-        center?: [number, number, number] | PipelineRef;
-        /** How far the profile is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
+        /** The width of the flanges, in model units. */
+        width?: number | PipelineRef;
+        /** The total height of the profile, in model units. */
+        height?: number | PipelineRef;
+        /** The thickness of the vertical web, in model units. */
+        webThickness?: number | PipelineRef;
+        /** The thickness of each horizontal flange, in model units. */
+        flangeThickness?: number | PipelineRef;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          */
         alignment?: "topLeft" | "topMid" | "topRight" | "midLeft" | "midMid" | "midRight" | "bottomLeft" | "bottomMid" | "bottomRight" | PipelineRef;
-        /** The thickness of each horizontal flange, in model units. */
-        flangeThickness?: number | PipelineRef;
-        /** The thickness of the vertical web, in model units. */
-        webThickness?: number | PipelineRef;
-        /** The total height of the profile, in model units. */
-        height?: number | PipelineRef;
-        /** The width of the flanges, in model units. */
-        width?: number | PipelineRef;
+        /** How far the profile is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point the profile is placed at. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the profile grows along its normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the profile grows against its normal, in model units. */
@@ -10549,25 +10546,25 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createLPolygonSolid": {
-        /** The normal of the plane the shape lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the shape is placed at. */
-        center?: [number, number, number] | PipelineRef;
-        /** How far the shape is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
+        /** The thickness of the first leg, in model units. */
+        widthFirst?: number | PipelineRef;
+        /** The length of the first leg, in model units. */
+        lengthFirst?: number | PipelineRef;
+        /** The thickness of the second leg, in model units. */
+        widthSecond?: number | PipelineRef;
+        /** The length of the second leg, in model units. */
+        lengthSecond?: number | PipelineRef;
         /**
          * Where the corner of the L sits relative to the legs: on their outside, their inside or their
          * middle.
          */
         align?: "outside" | "inside" | "middle" | PipelineRef;
-        /** The length of the second leg, in model units. */
-        lengthSecond?: number | PipelineRef;
-        /** The thickness of the second leg, in model units. */
-        widthSecond?: number | PipelineRef;
-        /** The length of the first leg, in model units. */
-        lengthFirst?: number | PipelineRef;
-        /** The thickness of the first leg, in model units. */
-        widthFirst?: number | PipelineRef;
+        /** How far the shape is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point the shape is placed at. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the shape lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the L shape grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the L shape grows against its plane normal, in model units. */
@@ -10581,14 +10578,14 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createNGonSolid": {
-        /** The distance from the center to each corner, in model units. */
-        radius?: number | PipelineRef;
-        /** How many corners, and so how many equal sides, the polygon has. */
-        nrCorners?: number | PipelineRef;
-        /** The normal of the plane the polygon lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
         /** The point the polygon is centered on. */
         center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the polygon lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How many corners, and so how many equal sides, the polygon has. */
+        nrCorners?: number | PipelineRef;
+        /** The distance from the center to each corner, in model units. */
+        radius?: number | PipelineRef;
         /** How far the polygon grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the polygon grows against its plane normal, in model units. */
@@ -10602,21 +10599,21 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createParallelogramSolid": {
-        /** How far the sides lean over from a rectangle, in degrees; 0 gives a rectangle. */
-        angle?: number | PipelineRef;
-        /** The height of the shape's bounding rectangle, in model units. */
-        height?: number | PipelineRef;
-        /** The width of the shape's bounding rectangle, in model units. */
-        width?: number | PipelineRef;
+        /** The point the shape is centered on, or starts from when `aroundCenter` is false. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the shape lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /**
          * When true the shape is centered on `center`; when false it starts there and extends in the
          * positive directions.
          */
         aroundCenter?: boolean | PipelineRef;
-        /** The normal of the plane the shape lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the shape is centered on, or starts from when `aroundCenter` is false. */
-        center?: [number, number, number] | PipelineRef;
+        /** The width of the shape's bounding rectangle, in model units. */
+        width?: number | PipelineRef;
+        /** The height of the shape's bounding rectangle, in model units. */
+        height?: number | PipelineRef;
+        /** How far the sides lean over from a rectangle, in degrees; 0 gives a rectangle. */
+        angle?: number | PipelineRef;
         /** How far the parallelogram grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the parallelogram grows against its plane normal, in model units. */
@@ -10638,23 +10635,23 @@ export interface OperationParams {
      * `shapes.wire.createStarWire` builds it.
      */
     "occt.shapes.solid.createStarSolid": {
-        /** When true, only the first half of the rays are built, as an open wire. */
-        half?: boolean | PipelineRef;
+        /** The point the star is centered on. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the star lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How many points the star has. */
+        numRays?: number | PipelineRef;
+        /** The distance from the center to the tip of each ray, in model units. */
+        outerRadius?: number | PipelineRef;
+        /** The distance from the center to the notch between two rays, in model units. */
+        innerRadius?: number | PipelineRef;
         /**
          * Lifts the ray tips out of the plane along the normal, in model units, making a 3D star; keep
          * it 0 for a face.
          */
         offsetOuterEdges?: number | PipelineRef;
-        /** The distance from the center to the notch between two rays, in model units. */
-        innerRadius?: number | PipelineRef;
-        /** The distance from the center to the tip of each ray, in model units. */
-        outerRadius?: number | PipelineRef;
-        /** How many points the star has. */
-        numRays?: number | PipelineRef;
-        /** The normal of the plane the star lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the star is centered on. */
-        center?: [number, number, number] | PipelineRef;
+        /** When true, only the first half of the rays are built, as an open wire. */
+        half?: boolean | PipelineRef;
         /** How far the star grows along its plane normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the star grows against its plane normal, in model units. */
@@ -10667,25 +10664,25 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createTBeamProfileSolid": {
-        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the profile is placed at. */
-        center?: [number, number, number] | PipelineRef;
-        /** How far the profile is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
+        /** The width of the flange, in model units. */
+        width?: number | PipelineRef;
+        /** The total height of the profile, in model units. */
+        height?: number | PipelineRef;
+        /** The thickness of the vertical web, in model units. */
+        webThickness?: number | PipelineRef;
+        /** The thickness of the flange, in model units. */
+        flangeThickness?: number | PipelineRef;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          */
         alignment?: "topLeft" | "topMid" | "topRight" | "midLeft" | "midMid" | "midRight" | "bottomLeft" | "bottomMid" | "bottomRight" | PipelineRef;
-        /** The thickness of the flange, in model units. */
-        flangeThickness?: number | PipelineRef;
-        /** The thickness of the vertical web, in model units. */
-        webThickness?: number | PipelineRef;
-        /** The total height of the profile, in model units. */
-        height?: number | PipelineRef;
-        /** The width of the flange, in model units. */
-        width?: number | PipelineRef;
+        /** How far the profile is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point the profile is placed at. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the profile grows along its normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the profile grows against its normal, in model units. */
@@ -10717,27 +10714,27 @@ export interface OperationParams {
      * units; at least one must be above 0 or an error is thrown.
      */
     "occt.shapes.solid.createUBeamProfileSolid": {
-        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
-        direction?: [number, number, number] | PipelineRef;
-        /** The point the profile is placed at. */
-        center?: [number, number, number] | PipelineRef;
-        /** How far the profile is turned in its plane, in degrees. */
-        rotation?: number | PipelineRef;
+        /** The total width of the profile, in model units. */
+        width?: number | PipelineRef;
+        /** The total height of the profile, in model units. */
+        height?: number | PipelineRef;
+        /** The thickness of the web at the back of the channel, in model units. */
+        webThickness?: number | PipelineRef;
+        /** The thickness of each flange, in model units. */
+        flangeThickness?: number | PipelineRef;
+        /** How far each flange reaches inward from the side of the channel, in model units. */
+        flangeWidth?: number | PipelineRef;
         /**
          * Which point of the profile's bounding box sits on `center`, such as its middle or its top
          * left corner.
          */
         alignment?: "topLeft" | "topMid" | "topRight" | "midLeft" | "midMid" | "midRight" | "bottomLeft" | "bottomMid" | "bottomRight" | PipelineRef;
-        /** How far each flange reaches inward from the side of the channel, in model units. */
-        flangeWidth?: number | PipelineRef;
-        /** The thickness of each flange, in model units. */
-        flangeThickness?: number | PipelineRef;
-        /** The thickness of the web at the back of the channel, in model units. */
-        webThickness?: number | PipelineRef;
-        /** The total height of the profile, in model units. */
-        height?: number | PipelineRef;
-        /** The total width of the profile, in model units. */
-        width?: number | PipelineRef;
+        /** How far the profile is turned in its plane, in degrees. */
+        rotation?: number | PipelineRef;
+        /** The point the profile is placed at. */
+        center?: [number, number, number] | PipelineRef;
+        /** The normal of the plane the profile lies in; the default lays it flat on the ground. */
+        direction?: [number, number, number] | PipelineRef;
         /** How far the profile grows along its normal, in model units. */
         extrusionLengthFront?: number | PipelineRef;
         /** How far the profile grows against its normal, in model units. */
@@ -11693,13 +11690,13 @@ export interface OperationParams {
         /** The wire or edge to place points along. */
         shape: unknown | PipelineRef;
         /**
-         * How many steps to divide the curve into; one more point than that is placed, the ends
+         * How many steps to divide each curve into; one more point than that is placed, the ends
          * included.
          */
         nrOfDivisions?: number | PipelineRef;
-        /** When true, the point at the start is left out. */
+        /** When true, the point at the start of each curve is left out. */
         removeStartPoint?: boolean | PipelineRef;
-        /** When true, the point at the end is left out. */
+        /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
     /**
@@ -11713,13 +11710,13 @@ export interface OperationParams {
         /** The wire or edge to place points along. */
         shape: unknown | PipelineRef;
         /**
-         * How many steps to divide the curve into; one more point than that is placed, the ends
+         * How many steps to divide each curve into; one more point than that is placed, the ends
          * included.
          */
         nrOfDivisions?: number | PipelineRef;
-        /** When true, the point at the start is left out. */
+        /** When true, the point at the start of each curve is left out. */
         removeStartPoint?: boolean | PipelineRef;
-        /** When true, the point at the end is left out. */
+        /** When true, the point at the end of each curve is left out. */
         removeEndPoint?: boolean | PipelineRef;
     };
     /** Runs `divideWireByEqualDistanceToPoints` on several wires with the same settings. */
@@ -12131,18 +12128,18 @@ export interface OperationParams {
     "occt.shapes.wire.project": {
         /** The wire to cast onto the shape. */
         wire: unknown | PipelineRef;
-        /** The shape the wire lands on. */
+        /** The shape each wire lands on. */
         shape: unknown | PipelineRef;
-        /** The direction the wire is cast along; only its direction matters. */
+        /** The direction each wire is cast along; only its direction matters. */
         direction?: [number, number, number] | PipelineRef;
     };
     /** Projects several wires onto a shape along one direction, as `project` does for one. */
     "occt.shapes.wire.projectWires": {
         /** The wires to cast onto the shape, one result per wire. */
         wires: unknown[] | PipelineRef;
-        /** The shape the wires land on. */
+        /** The shape each wire lands on. */
         shape: unknown | PipelineRef;
-        /** The direction the wires are cast along; only its direction matters. */
+        /** The direction each wire is cast along; only its direction matters. */
         direction?: [number, number, number] | PipelineRef;
     };
     /**

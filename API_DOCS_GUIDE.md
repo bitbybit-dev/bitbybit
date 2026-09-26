@@ -113,6 +113,15 @@ export class FilletDto<T> {
   default already makes a property optional, so `@optional true` never sits beside one. A class
   that is only ever returned, never taken, keeps `size = 0;`: its readers count on every property
   being there, and `defaulted-spelling` asks the `?` only of a class some method takes.
+- A singular DTO and its plural (`DrawShapeDto` and `DrawShapesDto`, `SphereDto` and
+  `SphereCentersDto`) declare the properties they share once, in an `abstract` parent named
+  `<Singular>BaseDto` just above them in the same file. Each subclass declares only the property
+  that differs, first, and its constructor calls `super()` and fills the inherited properties in
+  its usual order; whatever lists a DTO's properties puts an abstract parent's after the class's own,
+  so the property that differs stays first. The parent's text has to read true for both, so it says
+  "each shape" rather than "the shape". A pair whose shared properties mean different things (a
+  fillet's `indexes`, counted from 0 on edges, from 1 on corners) stays two classes, and
+  `pair-parity` holds such pairs to one type, default and bounds per shared property.
 
 ## An API class
 

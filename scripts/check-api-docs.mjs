@@ -129,6 +129,7 @@ const SEVERITY = {
     "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error",
     "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
     "defaulted-spelling": "error",
+    "pair-parity": "warn",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
 };
 const BUDGET = { M: [8, 60], C: [15, 120], D: [8, 40], P: [3, 30] };
@@ -368,11 +369,38 @@ function checkSpelling(item) {
     if (item.initializer && !item.optional && !constantTag && takenClasses.has(item.className)) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
 }
 
+/**
+ * A singular DTO and its plural - `XDto` beside `XsDto`, `XShapesDto` or `XCentersDto` in the same
+ * file - that keep separate classes still describe the same setting under the same name, so a
+ * property both declare agrees on its type, its default and its bounds. Where the two share their
+ * common properties through an abstract parent there is nothing to compare: each property is
+ * declared once.
+ */
+function checkPairParity() {
+    const facts = (p) => {
+        const tag = (name) => p.doc?.tags.find((t) => t.name === name)?.text ?? "";
+        return { type: p.type.replace(/\s+/g, ""), default: tag("default"), minimum: tag("minimum"), maximum: tag("maximum"), step: tag("step"), optional: tag("optional") };
+    };
+    for (const single of dtos) {
+        const match = /^(.+)Dto$/.exec(single.name);
+        if (!match) continue;
+        const plurals = [`${match[1]}sDto`, `${match[1]}esDto`, `${match[1]}ShapesDto`, `${match[1]}CentersDto`];
+        for (const plural of dtos.filter((d) => d.file === single.file && plurals.includes(d.name))) {
+            const singleProps = new Map(props.filter((p) => p.className === single.name && p.file === single.file).map((p) => [p.name, p]));
+            for (const p of props.filter((x) => x.className === plural.name && x.file === plural.file && singleProps.has(x.name))) {
+                const a = facts(singleProps.get(p.name)), b = facts(p);
+                const differing = Object.keys(a).filter((k) => a[k] !== b[k]);
+                if (differing.length) add("pair-parity", p, `differs from ${single.name}.${p.name} in ${differing.join(", ")}`);
+            }
+        }
+    }
+}
+
 /** Every constructor parameter names the property it fills, spelled the same; a typo or a stray parameter is a public signature nobody can call by name. */
 function checkConstructor(item) {
     const ctor = item.node.members.find(ts.isConstructorDeclaration);
     if (!ctor) return;
-    const propertyNames = new Set(item.node.members.filter(ts.isPropertyDeclaration).map((m) => nameOf(m)).filter(Boolean));
+    const propertyNames = new Set([...item.node.members.filter(ts.isPropertyDeclaration).map((m) => nameOf(m)).filter(Boolean), ...inheritedPropNames(item)]);
     const assigned = new Map();
     const passedToParent = new Set();
     const visit = (node) => {
@@ -512,6 +540,31 @@ for (const file of inputsFiles) {
     }
 }
 
+/**
+ * The class each DTO extends, found in the same file first, as TypeScript scopes an unqualified
+ * `extends`, and the property names a DTO inherits through it. A singular and a plural DTO share
+ * their common properties through an abstract parent; the subclass constructors fill those too.
+ */
+const parentOf = new Map();
+for (const d of dtos) {
+    const heritage = (d.node.heritageClauses || []).find((c) => c.token === ts.SyntaxKind.ExtendsKeyword);
+    if (!heritage) continue;
+    const name = heritage.types[0].expression.getText(d.sf).split(".").pop();
+    const parent = dtos.find((x) => x.name === name && x.file === d.file) ?? dtos.find((x) => x.name === name);
+    if (parent) parentOf.set(d, parent);
+}
+const ownPropNames = (d) => props.filter((p) => p.className === d.name && p.file === d.file).map((p) => p.name);
+function inheritedPropNames(d, seenDtos = new Set()) {
+    const parent = parentOf.get(d);
+    if (!parent || seenDtos.has(parent)) return [];
+    seenDtos.add(parent);
+    return [...ownPropNames(parent), ...inheritedPropNames(parent, seenDtos)];
+}
+for (const d of dtos) {
+    const inherited = inheritedPropNames(d);
+    if (inherited.length) dtoPropCount.set(d.name, (dtoPropCount.get(d.name) ?? 0) + props.filter((p) => inherited.includes(p.name) && p.className === parentOf.get(d)?.name && !/shape|Pointer|manifold|entity/i.test(p.type)).length);
+}
+
 /** The class names some method or function takes: named in a parameter type, or held by a property of one that is. */
 const takenClasses = (() => {
     const taken = new Set();
@@ -528,8 +581,13 @@ const takenClasses = (() => {
     }
     const queue = [...taken];
     while (queue.length) {
-        for (const text of propTypes.get(queue.pop()) ?? []) {
+        const name = queue.pop();
+        for (const text of propTypes.get(name) ?? []) {
             for (const m of text.matchAll(/\b([A-Z]\w*)\b/g)) if (propTypes.has(m[1]) && !taken.has(m[1])) { taken.add(m[1]); queue.push(m[1]); }
+        }
+        for (const d of dtos.filter((x) => x.name === name)) {
+            const parent = parentOf.get(d);
+            if (parent && !taken.has(parent.name)) { taken.add(parent.name); queue.push(parent.name); }
         }
     }
     return taken;
@@ -539,6 +597,7 @@ for (const m of methods) m.dtoProps = m.dtoName ? dtoPropCount.get(m.dtoName) ??
 for (const m of methods) checkMethod(m);
 for (const c of classes) checkClass(c);
 for (const d of dtos) { checkClass(d); checkConstructor(d); }
+checkPairParity();
 for (const p of props) checkProperty(p);
 
 // Review candidates: the same sentence on two members of one class, and a property description that

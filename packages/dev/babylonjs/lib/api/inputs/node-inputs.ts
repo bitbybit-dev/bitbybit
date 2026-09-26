@@ -183,11 +183,38 @@ export namespace BabylonNode {
     }
 
     /**
+     * How a node's axes are drawn, shared by `DrawNodeDto` and `DrawNodesDto`: the color of each
+     * axis line and its length.
+     */
+    export abstract class DrawNodeBaseDto {
+        /**
+         * Hex color of the line drawn along each node's X axis
+         * @default #ff0000
+         */
+        colorX?: string | undefined = "#ff0000";
+        /**
+         * Hex color of the line drawn along each node's Y axis
+         * @default #00ff00
+         */
+        colorY?: string | undefined = "#00ff00";
+        /**
+         * Hex color of the line drawn along each node's Z axis
+         * @default #0000ff
+         */
+        colorZ?: string | undefined = "#0000ff";
+        /**
+         * Length of each axis line, in scene units
+         * @default 2
+         */
+        size?: number | undefined = 2;
+    }
+    /**
      * Feeds `babylon.node.drawNode` with the node to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodeDto {
+    export class DrawNodeDto extends DrawNodeBaseDto {
         constructor(node?: BABYLON.TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+            super();
             if (node !== undefined) { this.node = node; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -198,34 +225,15 @@ export namespace BabylonNode {
          * The transform node the axis lines are parented to
          */
         node!: BABYLON.TransformNode;
-        /**
-         * Hex color of the line along the node's X axis
-         * @default #ff0000
-         */
-        colorX?: string | undefined = "#ff0000";
-        /**
-         * Hex color of the line along the node's Y axis
-         * @default #00ff00
-         */
-        colorY?: string | undefined = "#00ff00";
-        /**
-         * Hex color of the line along the node's Z axis
-         * @default #0000ff
-         */
-        colorZ?: string | undefined = "#0000ff";
-        /**
-         * Length of each axis line, in scene units
-         * @default 2
-         */
-        size?: number | undefined = 2;
     }
 
     /**
      * Feeds `babylon.node.drawNodes` with the nodes to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodesDto {
+    export class DrawNodesDto extends DrawNodeBaseDto {
         constructor(nodes?: BABYLON.TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+            super();
             if (nodes !== undefined) { this.nodes = nodes; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -236,26 +244,6 @@ export namespace BabylonNode {
          * The transform nodes, each getting its own set of axis lines
          */
         nodes!: BABYLON.TransformNode[];
-        /**
-         * Hex color of the lines along the X axes
-         * @default #ff0000
-         */
-        colorX?: string | undefined = "#ff0000";
-        /**
-         * Hex color of the lines along the Y axes
-         * @default #00ff00
-         */
-        colorY?: string | undefined = "#00ff00";
-        /**
-         * Hex color of the lines along the Z axes
-         * @default #0000ff
-         */
-        colorZ?: string | undefined = "#0000ff";
-        /**
-         * Length of each axis line, in scene units
-         * @default 2
-         */
-        size?: number | undefined = 2;
     }
 
 }

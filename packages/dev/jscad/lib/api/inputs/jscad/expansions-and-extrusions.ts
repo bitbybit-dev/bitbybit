@@ -119,11 +119,35 @@ export class SolidDto {
     mesh!: JSCADEntity;
 }
 /**
+ * The wall a rectangular extrusion builds, shared by `ExtrudeRectangularDto` and
+ * `ExtrudeRectangularPointsDto`: how thick and how tall.
+ */
+export abstract class ExtrudeRectangularBaseDto {
+    /**
+     * How tall the wall is along Z, in model units, standing on the XY plane
+     * @default 1
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.1
+     */
+    height?: number | undefined = 1;
+    /**
+     * How far the wall reaches to each side of the path, in model units, so the wall is twice this
+     * thick
+     * @default 1
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.1
+     */
+    size?: number | undefined = 1;
+}
+/**
  * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
  * Z and its half thickness.
  */
-export class ExtrudeRectangularDto {
+export class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
     constructor(geometry?: JSCADEntity, height?: number, size?: number) {
+        super();
         if (geometry !== undefined) { this.geometry = geometry; }
         if (height !== undefined) { this.height = height; }
         if (size !== undefined) { this.size = size; }
@@ -133,30 +157,14 @@ export class ExtrudeRectangularDto {
      * @default undefined
      */
     geometry!: JSCADEntity;
-    /**
-     * How tall the wall is along Z, in model units, standing on the XY plane
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    height?: number | undefined = 1;
-    /**
-     * How far the wall reaches to each side of the outline, in model units, so the wall is twice
-     * this thick
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    size?: number | undefined = 1;
 }
 /**
  * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
  * wall's height along Z and its half thickness.
  */
-export class ExtrudeRectangularPointsDto {
+export class ExtrudeRectangularPointsDto extends ExtrudeRectangularBaseDto {
     constructor(points?: Base.Point3[], height?: number, size?: number) {
+        super();
         if (points !== undefined) { this.points = points; }
         if (height !== undefined) { this.height = height; }
         if (size !== undefined) { this.size = size; }
@@ -166,23 +174,6 @@ export class ExtrudeRectangularPointsDto {
      * @default undefined
      */
     points!: Base.Point3[];
-    /**
-     * How tall the wall is along Z, in model units, standing on the XY plane
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    height?: number | undefined = 1;
-    /**
-     * How far the wall reaches to each side of the line, in model units, so the wall is twice this
-     * thick
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    size?: number | undefined = 1;
 }
 /**
  * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from

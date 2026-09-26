@@ -434,30 +434,26 @@ export namespace JSCAD {
         center?: Base.Point3 | undefined;
         size?: number | undefined;
     }
-    export class CuboidCentersDto {
-        constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
-        centers: Base.Point3[];
+    export abstract class CuboidBaseDto {
         height?: number | undefined;
         length?: number | undefined;
         width?: number | undefined;
     }
-    export class CuboidDto {
+    export class CuboidCentersDto extends CuboidBaseDto {
+        constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
+        centers: Base.Point3[];
+    }
+    export class CuboidDto extends CuboidBaseDto {
         constructor(center?: Base.Point3, width?: number, length?: number, height?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        length?: number | undefined;
-        width?: number | undefined;
     }
     export class CurveDto {
         constructor(curve?: any);
         curve: any;
     }
-    export class CylidnerCentersDto {
+    export class CylidnerCentersDto extends CylinderBaseDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     export class CylidnerCentersEllipticDto {
         constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
@@ -467,12 +463,9 @@ export namespace JSCAD {
         segments?: number | undefined;
         startRadius?: Base.Point2 | undefined;
     }
-    export class CylidnerDto {
+    export class CylidnerDto extends CylinderBaseDto {
         constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     export class CylidnerEllipticDto {
         constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
@@ -481,6 +474,11 @@ export namespace JSCAD {
         height?: number | undefined;
         segments?: number | undefined;
         startRadius?: Base.Vector2 | undefined;
+    }
+    export abstract class CylinderBaseDto {
+        height?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     export class CylinderTextDto {
         constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
@@ -551,17 +549,17 @@ export namespace JSCAD {
         radius?: Base.Point2 | undefined;
         segments?: number | undefined;
     }
-    export class EllipsoidCentersDto {
-        constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
-        centers: Base.Point3[];
+    export abstract class EllipsoidBaseDto {
         radius?: Base.Point3 | undefined;
         segments?: number | undefined;
     }
-    export class EllipsoidDto {
+    export class EllipsoidCentersDto extends EllipsoidBaseDto {
+        constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
+        centers: Base.Point3[];
+    }
+    export class EllipsoidDto extends EllipsoidBaseDto {
         constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number);
         center?: Base.Point3 | undefined;
-        radius?: Base.Point3 | undefined;
-        segments?: number | undefined;
     }
     export class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
@@ -577,17 +575,17 @@ export namespace JSCAD {
         twistAngle?: number | undefined;
         twistSteps?: number | undefined;
     }
-    export class ExtrudeRectangularDto {
-        constructor(geometry?: JSCADEntity, height?: number, size?: number);
-        geometry: JSCADEntity;
+    export abstract class ExtrudeRectangularBaseDto {
         height?: number | undefined;
         size?: number | undefined;
     }
-    export class ExtrudeRectangularPointsDto {
+    export class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
+        constructor(geometry?: JSCADEntity, height?: number, size?: number);
+        geometry: JSCADEntity;
+    }
+    export class ExtrudeRectangularPointsDto extends ExtrudeRectangularBaseDto {
         constructor(points?: Base.Point3[], height?: number, size?: number);
-        height?: number | undefined;
         points: Base.Point3[];
-        size?: number | undefined;
     }
     export class ExtrudeRotateDto {
         constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number);
@@ -600,17 +598,17 @@ export namespace JSCAD {
         constructor(polygonPoints?: Base.Point3[][]);
         polygonPoints: Base.Point3[][];
     }
-    export class GeodesicSphereCentersDto {
-        constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
-        centers: Base.Point3[];
+    export abstract class GeodesicSphereBaseDto {
         frequency?: number | undefined;
         radius?: number | undefined;
     }
-    export class GeodesicSphereDto {
+    export class GeodesicSphereCentersDto extends GeodesicSphereBaseDto {
+        constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
+        centers: Base.Point3[];
+    }
+    export class GeodesicSphereDto extends GeodesicSphereBaseDto {
         constructor(center?: Base.Point3, radius?: number, frequency?: number);
         center?: Base.Point3 | undefined;
-        frequency?: number | undefined;
-        radius?: number | undefined;
     }
     export class HullDto {
         constructor(meshes?: JSCADEntity[]);
@@ -742,35 +740,30 @@ export namespace JSCAD {
         length?: number | undefined;
         width?: number | undefined;
     }
-    export class RoundedCuboidCentersDto {
+    export abstract class RoundedCuboidBaseDto {
+        height?: number | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
+    }
+    export class RoundedCuboidCentersDto extends RoundedCuboidBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        length?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
-        width?: number | undefined;
     }
-    export class RoundedCuboidDto {
+    export class RoundedCuboidDto extends RoundedCuboidBaseDto {
         constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        length?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
-        width?: number | undefined;
     }
-    export class RoundedCylidnerCentersDto {
+    export class RoundedCylidnerCentersDto extends RoundedCylinderBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        radius?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
     }
-    export class RoundedCylidnerDto {
+    export class RoundedCylidnerDto extends RoundedCylinderBaseDto {
         constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
+    }
+    export abstract class RoundedCylinderBaseDto {
         height?: number | undefined;
         radius?: number | undefined;
         roundRadius?: number | undefined;
@@ -793,17 +786,17 @@ export namespace JSCAD {
         constructor(mesh?: JSCADEntity);
         mesh: JSCADEntity;
     }
-    export class SphereCentersDto {
-        constructor(centers?: Base.Point3[], radius?: number, segments?: number);
-        centers: Base.Point3[];
+    export abstract class SphereBaseDto {
         radius?: number | undefined;
         segments?: number | undefined;
     }
-    export class SphereDto {
+    export class SphereCentersDto extends SphereBaseDto {
+        constructor(centers?: Base.Point3[], radius?: number, segments?: number);
+        centers: Base.Point3[];
+    }
+    export class SphereDto extends SphereBaseDto {
         constructor(center?: Base.Point3, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     export class SphereTextDto {
         constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
@@ -945,9 +938,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type CubeDto = WithDefaults<Inputs.JSCAD.CubeDto, "center" | "size">;
     // (undocumented)
+    type CuboidBaseDto = WithDefaults<Inputs.JSCAD.CuboidBaseDto, "width" | "length" | "height">;
+    // (undocumented)
     type CuboidCentersDto = WithDefaults<Inputs.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
     // (undocumented)
-    type CuboidDto = WithDefaults<Inputs.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
+    type CuboidDto = WithDefaults<Inputs.JSCAD.CuboidDto, "width" | "length" | "height" | "center">;
     // (undocumented)
     type CurveDto = Inputs.JSCAD.CurveDto;
     // (undocumented)
@@ -955,9 +950,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type CylidnerCentersEllipticDto = WithDefaults<Inputs.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
     // (undocumented)
-    type CylidnerDto = WithDefaults<Inputs.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
+    type CylidnerDto = WithDefaults<Inputs.JSCAD.CylidnerDto, "height" | "radius" | "segments" | "center">;
     // (undocumented)
     type CylidnerEllipticDto = WithDefaults<Inputs.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylinderBaseDto = WithDefaults<Inputs.JSCAD.CylinderBaseDto, "height" | "radius" | "segments">;
     // (undocumented)
     type CylinderTextDto = WithDefaults<Inputs.JSCAD.CylinderTextDto, "text" | "extrusionHeight" | "extrusionSize" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
     // (undocumented)
@@ -975,13 +972,17 @@ namespace JSCAD_2 {
     // (undocumented)
     type EllipseDto = WithDefaults<Inputs.JSCAD.EllipseDto, "center" | "radius" | "segments">;
     // (undocumented)
+    type EllipsoidBaseDto = WithDefaults<Inputs.JSCAD.EllipsoidBaseDto, "radius" | "segments">;
+    // (undocumented)
     type EllipsoidCentersDto = WithDefaults<Inputs.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
     // (undocumented)
-    type EllipsoidDto = WithDefaults<Inputs.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
+    type EllipsoidDto = WithDefaults<Inputs.JSCAD.EllipsoidDto, "radius" | "segments" | "center">;
     // (undocumented)
     type ExpansionDto = WithDefaults<Inputs.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
     // (undocumented)
     type ExtrudeLinearDto = WithDefaults<Inputs.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
+    // (undocumented)
+    type ExtrudeRectangularBaseDto = WithDefaults<Inputs.JSCAD.ExtrudeRectangularBaseDto, "height" | "size">;
     // (undocumented)
     type ExtrudeRectangularDto = WithDefaults<Inputs.JSCAD.ExtrudeRectangularDto, "height" | "size">;
     // (undocumented)
@@ -991,9 +992,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type FromPolygonPoints = Inputs.JSCAD.FromPolygonPoints;
     // (undocumented)
+    type GeodesicSphereBaseDto = WithDefaults<Inputs.JSCAD.GeodesicSphereBaseDto, "radius" | "frequency">;
+    // (undocumented)
     type GeodesicSphereCentersDto = WithDefaults<Inputs.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
     // (undocumented)
-    type GeodesicSphereDto = WithDefaults<Inputs.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
+    type GeodesicSphereDto = WithDefaults<Inputs.JSCAD.GeodesicSphereDto, "radius" | "frequency" | "center">;
     // (undocumented)
     type HullDto = Inputs.JSCAD.HullDto;
     // (undocumented)
@@ -1025,21 +1028,27 @@ namespace JSCAD_2 {
     // (undocumented)
     type RectangleDto = WithDefaults<Inputs.JSCAD.RectangleDto, "center" | "width" | "length">;
     // (undocumented)
+    type RoundedCuboidBaseDto = WithDefaults<Inputs.JSCAD.RoundedCuboidBaseDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
     type RoundedCuboidCentersDto = WithDefaults<Inputs.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
     // (undocumented)
-    type RoundedCuboidDto = WithDefaults<Inputs.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
+    type RoundedCuboidDto = WithDefaults<Inputs.JSCAD.RoundedCuboidDto, "roundRadius" | "width" | "length" | "height" | "segments" | "center">;
     // (undocumented)
     type RoundedCylidnerCentersDto = WithDefaults<Inputs.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
-    type RoundedCylidnerDto = WithDefaults<Inputs.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
+    type RoundedCylidnerDto = WithDefaults<Inputs.JSCAD.RoundedCylidnerDto, "roundRadius" | "height" | "radius" | "segments" | "center">;
+    // (undocumented)
+    type RoundedCylinderBaseDto = WithDefaults<Inputs.JSCAD.RoundedCylinderBaseDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
     type RoundedRectangleDto = WithDefaults<Inputs.JSCAD.RoundedRectangleDto, "center" | "roundRadius" | "segments" | "width" | "length">;
     // (undocumented)
     type SolidDto = Inputs.JSCAD.SolidDto;
     // (undocumented)
+    type SphereBaseDto = WithDefaults<Inputs.JSCAD.SphereBaseDto, "radius" | "segments">;
+    // (undocumented)
     type SphereCentersDto = WithDefaults<Inputs.JSCAD.SphereCentersDto, "radius" | "segments">;
     // (undocumented)
-    type SphereDto = WithDefaults<Inputs.JSCAD.SphereDto, "center" | "radius" | "segments">;
+    type SphereDto = WithDefaults<Inputs.JSCAD.SphereDto, "radius" | "segments" | "center">;
     // (undocumented)
     type SphereTextDto = WithDefaults<Inputs.JSCAD.SphereTextDto, "text" | "radius" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
     // (undocumented)

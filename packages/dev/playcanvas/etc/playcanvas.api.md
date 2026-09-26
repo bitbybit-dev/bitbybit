@@ -1116,30 +1116,26 @@ namespace JSCAD {
         center?: Base.Point3 | undefined;
         size?: number | undefined;
     }
-    class CuboidCentersDto {
-        constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
-        centers: Base.Point3[];
+    abstract class CuboidBaseDto {
         height?: number | undefined;
         length?: number | undefined;
         width?: number | undefined;
     }
-    class CuboidDto {
+    class CuboidCentersDto extends CuboidBaseDto {
+        constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
+        centers: Base.Point3[];
+    }
+    class CuboidDto extends CuboidBaseDto {
         constructor(center?: Base.Point3, width?: number, length?: number, height?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        length?: number | undefined;
-        width?: number | undefined;
     }
     class CurveDto {
         constructor(curve?: any);
         curve: any;
     }
-    class CylidnerCentersDto {
+    class CylidnerCentersDto extends CylinderBaseDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     class CylidnerCentersEllipticDto {
         constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
@@ -1149,12 +1145,9 @@ namespace JSCAD {
         segments?: number | undefined;
         startRadius?: Base.Point2 | undefined;
     }
-    class CylidnerDto {
+    class CylidnerDto extends CylinderBaseDto {
         constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     class CylidnerEllipticDto {
         constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
@@ -1163,6 +1156,11 @@ namespace JSCAD {
         height?: number | undefined;
         segments?: number | undefined;
         startRadius?: Base.Vector2 | undefined;
+    }
+    abstract class CylinderBaseDto {
+        height?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     class CylinderTextDto {
         constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
@@ -1233,17 +1231,17 @@ namespace JSCAD {
         radius?: Base.Point2 | undefined;
         segments?: number | undefined;
     }
-    class EllipsoidCentersDto {
-        constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
-        centers: Base.Point3[];
+    abstract class EllipsoidBaseDto {
         radius?: Base.Point3 | undefined;
         segments?: number | undefined;
     }
-    class EllipsoidDto {
+    class EllipsoidCentersDto extends EllipsoidBaseDto {
+        constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
+        centers: Base.Point3[];
+    }
+    class EllipsoidDto extends EllipsoidBaseDto {
         constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number);
         center?: Base.Point3 | undefined;
-        radius?: Base.Point3 | undefined;
-        segments?: number | undefined;
     }
     class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
@@ -1259,17 +1257,17 @@ namespace JSCAD {
         twistAngle?: number | undefined;
         twistSteps?: number | undefined;
     }
-    class ExtrudeRectangularDto {
-        constructor(geometry?: JSCADEntity, height?: number, size?: number);
-        geometry: JSCADEntity;
+    abstract class ExtrudeRectangularBaseDto {
         height?: number | undefined;
         size?: number | undefined;
     }
-    class ExtrudeRectangularPointsDto {
+    class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
+        constructor(geometry?: JSCADEntity, height?: number, size?: number);
+        geometry: JSCADEntity;
+    }
+    class ExtrudeRectangularPointsDto extends ExtrudeRectangularBaseDto {
         constructor(points?: Base.Point3[], height?: number, size?: number);
-        height?: number | undefined;
         points: Base.Point3[];
-        size?: number | undefined;
     }
     class ExtrudeRotateDto {
         constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number);
@@ -1282,17 +1280,17 @@ namespace JSCAD {
         constructor(polygonPoints?: Base.Point3[][]);
         polygonPoints: Base.Point3[][];
     }
-    class GeodesicSphereCentersDto {
-        constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
-        centers: Base.Point3[];
+    abstract class GeodesicSphereBaseDto {
         frequency?: number | undefined;
         radius?: number | undefined;
     }
-    class GeodesicSphereDto {
+    class GeodesicSphereCentersDto extends GeodesicSphereBaseDto {
+        constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
+        centers: Base.Point3[];
+    }
+    class GeodesicSphereDto extends GeodesicSphereBaseDto {
         constructor(center?: Base.Point3, radius?: number, frequency?: number);
         center?: Base.Point3 | undefined;
-        frequency?: number | undefined;
-        radius?: number | undefined;
     }
     class HullDto {
         constructor(meshes?: JSCADEntity[]);
@@ -1424,35 +1422,30 @@ namespace JSCAD {
         length?: number | undefined;
         width?: number | undefined;
     }
-    class RoundedCuboidCentersDto {
+    abstract class RoundedCuboidBaseDto {
+        height?: number | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
+    }
+    class RoundedCuboidCentersDto extends RoundedCuboidBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        length?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
-        width?: number | undefined;
     }
-    class RoundedCuboidDto {
+    class RoundedCuboidDto extends RoundedCuboidBaseDto {
         constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        height?: number | undefined;
-        length?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
-        width?: number | undefined;
     }
-    class RoundedCylidnerCentersDto {
+    class RoundedCylidnerCentersDto extends RoundedCylinderBaseDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height?: number | undefined;
-        radius?: number | undefined;
-        roundRadius?: number | undefined;
-        segments?: number | undefined;
     }
-    class RoundedCylidnerDto {
+    class RoundedCylidnerDto extends RoundedCylinderBaseDto {
         constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
+    }
+    abstract class RoundedCylinderBaseDto {
         height?: number | undefined;
         radius?: number | undefined;
         roundRadius?: number | undefined;
@@ -1475,17 +1468,17 @@ namespace JSCAD {
         constructor(mesh?: JSCADEntity);
         mesh: JSCADEntity;
     }
-    class SphereCentersDto {
-        constructor(centers?: Base.Point3[], radius?: number, segments?: number);
-        centers: Base.Point3[];
+    abstract class SphereBaseDto {
         radius?: number | undefined;
         segments?: number | undefined;
     }
-    class SphereDto {
+    class SphereCentersDto extends SphereBaseDto {
+        constructor(centers?: Base.Point3[], radius?: number, segments?: number);
+        centers: Base.Point3[];
+    }
+    class SphereDto extends SphereBaseDto {
         constructor(center?: Base.Point3, radius?: number, segments?: number);
         center?: Base.Point3 | undefined;
-        radius?: number | undefined;
-        segments?: number | undefined;
     }
     class SphereTextDto {
         constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
@@ -1568,9 +1561,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type CubeDto = WithDefaults<Inputs_4.JSCAD.CubeDto, "center" | "size">;
     // (undocumented)
+    type CuboidBaseDto = WithDefaults<Inputs_4.JSCAD.CuboidBaseDto, "width" | "length" | "height">;
+    // (undocumented)
     type CuboidCentersDto = WithDefaults<Inputs_4.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
     // (undocumented)
-    type CuboidDto = WithDefaults<Inputs_4.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
+    type CuboidDto = WithDefaults<Inputs_4.JSCAD.CuboidDto, "width" | "length" | "height" | "center">;
     // (undocumented)
     type CurveDto = Inputs_4.JSCAD.CurveDto;
     // (undocumented)
@@ -1578,9 +1573,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type CylidnerCentersEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
     // (undocumented)
-    type CylidnerDto = WithDefaults<Inputs_4.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
+    type CylidnerDto = WithDefaults<Inputs_4.JSCAD.CylidnerDto, "height" | "radius" | "segments" | "center">;
     // (undocumented)
     type CylidnerEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylinderBaseDto = WithDefaults<Inputs_4.JSCAD.CylinderBaseDto, "height" | "radius" | "segments">;
     // (undocumented)
     type CylinderTextDto = WithDefaults<Inputs_4.JSCAD.CylinderTextDto, "text" | "extrusionHeight" | "extrusionSize" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
     // (undocumented)
@@ -1598,13 +1595,17 @@ namespace JSCAD_2 {
     // (undocumented)
     type EllipseDto = WithDefaults<Inputs_4.JSCAD.EllipseDto, "center" | "radius" | "segments">;
     // (undocumented)
+    type EllipsoidBaseDto = WithDefaults<Inputs_4.JSCAD.EllipsoidBaseDto, "radius" | "segments">;
+    // (undocumented)
     type EllipsoidCentersDto = WithDefaults<Inputs_4.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
     // (undocumented)
-    type EllipsoidDto = WithDefaults<Inputs_4.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
+    type EllipsoidDto = WithDefaults<Inputs_4.JSCAD.EllipsoidDto, "radius" | "segments" | "center">;
     // (undocumented)
     type ExpansionDto = WithDefaults<Inputs_4.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
     // (undocumented)
     type ExtrudeLinearDto = WithDefaults<Inputs_4.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
+    // (undocumented)
+    type ExtrudeRectangularBaseDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularBaseDto, "height" | "size">;
     // (undocumented)
     type ExtrudeRectangularDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularDto, "height" | "size">;
     // (undocumented)
@@ -1614,9 +1615,11 @@ namespace JSCAD_2 {
     // (undocumented)
     type FromPolygonPoints = Inputs_4.JSCAD.FromPolygonPoints;
     // (undocumented)
+    type GeodesicSphereBaseDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereBaseDto, "radius" | "frequency">;
+    // (undocumented)
     type GeodesicSphereCentersDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
     // (undocumented)
-    type GeodesicSphereDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
+    type GeodesicSphereDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereDto, "radius" | "frequency" | "center">;
     // (undocumented)
     type HullDto = Inputs_4.JSCAD.HullDto;
     // (undocumented)
@@ -1648,21 +1651,27 @@ namespace JSCAD_2 {
     // (undocumented)
     type RectangleDto = WithDefaults<Inputs_4.JSCAD.RectangleDto, "center" | "width" | "length">;
     // (undocumented)
+    type RoundedCuboidBaseDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidBaseDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
     type RoundedCuboidCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
     // (undocumented)
-    type RoundedCuboidDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
+    type RoundedCuboidDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidDto, "roundRadius" | "width" | "length" | "height" | "segments" | "center">;
     // (undocumented)
     type RoundedCylidnerCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
-    type RoundedCylidnerDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
+    type RoundedCylidnerDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerDto, "roundRadius" | "height" | "radius" | "segments" | "center">;
+    // (undocumented)
+    type RoundedCylinderBaseDto = WithDefaults<Inputs_4.JSCAD.RoundedCylinderBaseDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
     type RoundedRectangleDto = WithDefaults<Inputs_4.JSCAD.RoundedRectangleDto, "center" | "roundRadius" | "segments" | "width" | "length">;
     // (undocumented)
     type SolidDto = Inputs_4.JSCAD.SolidDto;
     // (undocumented)
+    type SphereBaseDto = WithDefaults<Inputs_4.JSCAD.SphereBaseDto, "radius" | "segments">;
+    // (undocumented)
     type SphereCentersDto = WithDefaults<Inputs_4.JSCAD.SphereCentersDto, "radius" | "segments">;
     // (undocumented)
-    type SphereDto = WithDefaults<Inputs_4.JSCAD.SphereDto, "center" | "radius" | "segments">;
+    type SphereDto = WithDefaults<Inputs_4.JSCAD.SphereDto, "radius" | "segments" | "center">;
     // (undocumented)
     type SphereTextDto = WithDefaults<Inputs_4.JSCAD.SphereTextDto, "text" | "radius" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
     // (undocumented)
@@ -3736,18 +3745,17 @@ namespace OCCT {
         // (undocumented)
         outside = "outside"
     }
-    class DivideDto<T> {
-        constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
+    abstract class DivideBaseDto {
         nrOfDivisions?: number | undefined;
         removeEndPoint?: boolean | undefined;
         removeStartPoint?: boolean | undefined;
+    }
+    class DivideDto<T> extends DivideBaseDto {
+        constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
         shape: T;
     }
-    class DivideShapesDto<T> {
+    class DivideShapesDto<T> extends DivideBaseDto {
         constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
-        nrOfDivisions?: number | undefined;
-        removeEndPoint?: boolean | undefined;
-        removeStartPoint?: boolean | undefined;
         shapes: T[];
     }
     class DocToMeshDto<U> {
@@ -3789,8 +3797,7 @@ namespace OCCT {
         neutralPlaneOrigin?: Base.Point3 | undefined;
         shape: T;
     }
-    class DrawShapeDto<T> {
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+    abstract class DrawShapeBaseDto {
         allowQualityDecrease?: boolean | undefined;
         backFaceColour?: Base.Color | undefined;
         backFaceOpacity?: number | undefined;
@@ -3813,37 +3820,16 @@ namespace OCCT {
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
-        shape?: T | undefined;
         vertexColour?: string | undefined;
         vertexSize?: number | undefined;
     }
-    class DrawShapesDto<T> {
+    class DrawShapeDto<T> extends DrawShapeBaseDto {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+        shape?: T | undefined;
+    }
+    class DrawShapesDto<T> extends DrawShapeBaseDto {
         constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease?: boolean | undefined;
-        backFaceColour?: Base.Color | undefined;
-        backFaceOpacity?: number | undefined;
-        drawEdgeIndexes?: boolean | undefined;
-        drawEdges?: boolean | undefined;
-        drawFaceIndexes?: boolean | undefined;
-        drawFaces?: boolean | undefined;
-        drawTwoSided?: boolean | undefined;
-        drawVertices?: boolean | undefined;
-        edgeColour?: Base.Color | undefined;
-        edgeIndexColour?: Base.Color | undefined;
-        edgeIndexHeight?: number | undefined;
-        edgeOpacity?: number | undefined;
-        edgeWidth?: number | undefined;
-        faceColour?: Base.Color | undefined;
-        faceIndexColour?: Base.Color | undefined;
-        faceIndexHeight?: number | undefined;
-        faceMaterial?: Base.Material | undefined;
-        faceOpacity?: number | undefined;
-        forceFaceDeflection?: boolean | undefined;
-        keepMeshData?: boolean | undefined;
-        precision?: number | undefined;
         shapes: T[];
-        vertexColour?: string | undefined;
-        vertexSize?: number | undefined;
     }
     enum dxfAcadVersionEnum {
         // (undocumented)
@@ -4105,20 +4091,18 @@ namespace OCCT {
         // (undocumented)
         step = "step"
     }
-    class Fillet3DWireDto<T> {
-        constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
+    abstract class Fillet3DWireBaseDto {
         direction?: Base.Vector3 | undefined;
         indexes?: number[] | undefined;
         radius?: number | undefined;
         radiusList?: number[] | undefined;
+    }
+    class Fillet3DWireDto<T> extends Fillet3DWireBaseDto {
+        constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
         shape: T;
     }
-    class Fillet3DWiresDto<T> {
+    class Fillet3DWiresDto<T> extends Fillet3DWireBaseDto {
         constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
-        direction?: Base.Vector3 | undefined;
-        indexes?: number[] | undefined;
-        radius?: number | undefined;
-        radiusList?: number[] | undefined;
         shapes: T[];
     }
     class FilletCornerByPointDto<T> {
@@ -4862,16 +4846,16 @@ namespace OCCT {
         projectionType?: pointProjectionTypeEnum | undefined;
         shape: T;
     }
-    class ProjectWireDto<T, U> {
-        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
+    abstract class ProjectWireBaseDto<U> {
         direction?: Base.Vector3 | undefined;
         shape: U;
+    }
+    class ProjectWireDto<T, U> extends ProjectWireBaseDto<U> {
+        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
         wire: T;
     }
-    class ProjectWiresDto<T, U> {
+    class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
         constructor(wires?: T[], shape?: U, direction?: Base.Vector3);
-        direction?: Base.Vector3 | undefined;
-        shape: U;
         wires: T[];
     }
     class QuaternionToMatrixDto {
@@ -5714,6 +5698,8 @@ namespace OCCT_3 {
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_6.OCCT.DifferenceDto<T>, "keepEdges">;
     // (undocumented)
+    type DivideBaseDto = WithDefaults<Inputs_6.OCCT.DivideBaseDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
     type DivideDto<T> = WithDefaults<Inputs_6.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
     type DivideShapesDto<T> = WithDefaults<Inputs_6.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
@@ -5727,6 +5713,8 @@ namespace OCCT_3 {
     type DocumentQueryDto<T> = Inputs_6.OCCT.DocumentQueryDto<T>;
     // (undocumented)
     type DraftAngleDto<T, U> = WithDefaults<Inputs_6.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    // (undocumented)
+    type DrawShapeBaseDto = WithDefaults<Inputs_6.OCCT.DrawShapeBaseDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
     type DrawShapeDto<T> = WithDefaults<Inputs_6.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
@@ -5787,6 +5775,8 @@ namespace OCCT_3 {
     type FaceSubdivisionDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
     // (undocumented)
     type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    // (undocumented)
+    type Fillet3DWireBaseDto = WithDefaults<Inputs_6.OCCT.Fillet3DWireBaseDto, "radius" | "direction">;
     // (undocumented)
     type Fillet3DWireDto<T> = WithDefaults<Inputs_6.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
     // (undocumented)
@@ -5975,6 +5965,8 @@ namespace OCCT_3 {
     type PolylinesDto = WithDefaults<Inputs_6.OCCT.PolylinesDto, "returnCompound">;
     // (undocumented)
     type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_6.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    // (undocumented)
+    type ProjectWireBaseDto<U> = WithDefaults<Inputs_6.OCCT.ProjectWireBaseDto<U>, "direction">;
     // (undocumented)
     type ProjectWireDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectWireDto<T, U>, "direction">;
     // (undocumented)

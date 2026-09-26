@@ -4,11 +4,37 @@ import { Base } from "@bitbybit-dev/base";
 import { pointProjectionTypeEnum } from "./enums";
 
 /**
+ * How a curve is divided into points, shared by `DivideDto` and `DivideShapesDto`: the number of
+ * steps and whether the end points are kept.
+ */
+export abstract class DivideBaseDto {
+    /**
+     * How many steps to divide each curve into; one more point than that is placed, the ends
+     * included.
+     * @default 10
+     * @minimum 1
+     * @maximum Infinity
+     * @step 1
+     */
+    nrOfDivisions?: number | undefined = 10;
+    /**
+     * When true, the point at the start of each curve is left out.
+     * @default false
+     */
+    removeStartPoint?: boolean | undefined = false;
+    /**
+     * When true, the point at the end of each curve is left out.
+     * @default false
+     */
+    removeEndPoint?: boolean | undefined = false;
+}
+/**
  * A wire or edge and a division count for `divideWireByParamsToPoints`,
  * `divideEdgeByEqualDistanceToPoints` and their siblings in `shapes.wire` and `shapes.edge`.
  */
-export class DivideDto<T> {
+export class DivideDto<T> extends DivideBaseDto {
     constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        super();
         if (shape !== undefined) { this.shape = shape; }
         if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
         if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -19,33 +45,31 @@ export class DivideDto<T> {
      * @default undefined
      */
     shape!: T;
-    /**
-     * How many steps to divide the curve into; one more point than that is placed, the ends
-     * included.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfDivisions?: number | undefined = 10;
-    /**
-     * When true, the point at the start is left out.
-     * @default false
-     */
-    removeStartPoint?: boolean | undefined = false;
-    /**
-     * When true, the point at the end is left out.
-     * @default false
-     */
-    removeEndPoint?: boolean | undefined = false;
 }
 
+/**
+ * Where a wire is projected, shared by `ProjectWireDto` and `ProjectWiresDto`: the shape it lands
+ * on and the direction it is cast along.
+ */
+export abstract class ProjectWireBaseDto<U> {
+    /**
+     * The shape each wire lands on.
+     * @default undefined
+     */
+    shape!: U;
+    /**
+     * The direction each wire is cast along; only its direction matters.
+     * @default [0, 1, 0]
+     */
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
+}
 /**
  * A wire, a shape and a direction for `shapes.wire.project`, which casts the wire onto the shape
  * along the direction.
  */
-export class ProjectWireDto<T, U> {
+export class ProjectWireDto<T, U> extends ProjectWireBaseDto<U> {
     constructor(wire?: T, shape?: U, direction?: Base.Vector3) {
+        super();
         if (wire !== undefined) { this.wire = wire; }
         if (shape !== undefined) { this.shape = shape; }
         if (direction !== undefined) { this.direction = direction; }
@@ -55,16 +79,6 @@ export class ProjectWireDto<T, U> {
      * @default undefined
      */
     wire!: T;
-    /**
-     * The shape the wire lands on.
-     * @default undefined
-     */
-    shape!: U;
-    /**
-     * The direction the wire is cast along; only its direction matters.
-     * @default [0, 1, 0]
-     */
-    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * Points, a shape and a direction for `shapes.vertex.projectPoints`, which casts each point onto
@@ -226,8 +240,9 @@ export class EdgesToPointsDto<T> {
  * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
  * shape along the direction.
  */
-export class ProjectWiresDto<T, U> {
+export class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
     constructor(wires?: T[], shape?: U, direction?: Base.Vector3) {
+        super();
         if (wires !== undefined) { this.wires = wires; }
         if (shape !== undefined) { this.shape = shape; }
         if (direction !== undefined) { this.direction = direction; }
@@ -237,23 +252,14 @@ export class ProjectWiresDto<T, U> {
      * @default undefined
      */
     wires!: T[];
-    /**
-     * The shape the wires land on.
-     * @default undefined
-     */
-    shape!: U;
-    /**
-     * The direction the wires are cast along; only its direction matters.
-     * @default [0, 1, 0]
-     */
-    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * Wires or edges and a division count for `divideWiresByParamsToPoints`,
  * `divideEdgesByEqualDistanceToPoints` and their siblings.
  */
-export class DivideShapesDto<T> {
+export class DivideShapesDto<T> extends DivideBaseDto {
     constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
         if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -264,25 +270,6 @@ export class DivideShapesDto<T> {
      * @default undefined
      */
     shapes!: T[];
-    /**
-     * How many steps to divide each curve into; one more point than that is placed, the ends
-     * included.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfDivisions?: number | undefined = 10;
-    /**
-     * When true, the point at the start of each curve is left out.
-     * @default false
-     */
-    removeStartPoint?: boolean | undefined = false;
-    /**
-     * When true, the point at the end of each curve is left out.
-     * @default false
-     */
-    removeEndPoint?: boolean | undefined = false;
 }
 /**
  * A wire, edge or 2D curve and a parameter for the `...AtParam` methods, such as

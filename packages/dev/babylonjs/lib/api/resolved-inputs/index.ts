@@ -305,6 +305,7 @@ export namespace BabylonMeshBuilder {
  */
 export namespace BabylonNode {
     export type CreateNodeFromRotationDto = WithDefaults<Inputs.BabylonNode.CreateNodeFromRotationDto, "origin" | "rotation">;
+    export type DrawNodeBaseDto = WithDefaults<Inputs.BabylonNode.DrawNodeBaseDto, "colorX" | "colorY" | "colorZ" | "size">;
     export type DrawNodeDto = WithDefaults<Inputs.BabylonNode.DrawNodeDto, "colorX" | "colorY" | "colorZ" | "size">;
     export type DrawNodesDto = WithDefaults<Inputs.BabylonNode.DrawNodesDto, "colorX" | "colorY" | "colorZ" | "size">;
     export type NodeDirectionDto = Inputs.BabylonNode.NodeDirectionDto;
@@ -355,8 +356,9 @@ export namespace BabylonScene {
     export type SceneMultiColorRadialGradientDto = WithDefaults<Inputs.BabylonScene.SceneMultiColorRadialGradientDto, "colors" | "stops" | "position" | "shape">;
     export type SceneTwoColorLinearGradientDto = WithDefaults<Inputs.BabylonScene.SceneTwoColorLinearGradientDto, "colorFrom" | "colorTo" | "direction" | "stopFrom" | "stopTo">;
     export type SceneTwoColorRadialGradientDto = WithDefaults<Inputs.BabylonScene.SceneTwoColorRadialGradientDto, "colorFrom" | "colorTo" | "position" | "stopFrom" | "stopTo" | "shape">;
-    export type SkyboxCustomTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxCustomTextureDto, "textureSize" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
-    export type SkyboxDto = WithDefaults<Inputs.BabylonScene.SkyboxDto, "skybox" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    export type SkyboxBaseDto = WithDefaults<Inputs.BabylonScene.SkyboxBaseDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    export type SkyboxCustomTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxCustomTextureDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight" | "textureSize">;
+    export type SkyboxDto = WithDefaults<Inputs.BabylonScene.SkyboxDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight" | "skybox">;
     export type SkyboxFromTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxFromTextureDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
     export type UseRightHandedSystemDto = WithDefaults<Inputs.BabylonScene.UseRightHandedSystemDto, "use">;
 }
