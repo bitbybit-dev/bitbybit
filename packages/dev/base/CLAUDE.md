@@ -26,10 +26,14 @@ in a side list the grid path consults, so neither path can miss a duplicate the 
 and the kernels, the workers and the code that dispatches to a kernel from outside all share it.
 `resolveDto` and `resolveInputs` lay a caller's inputs over a DTO's defaults and return a new plain
 object, never the caller's and never a class instance - a walk over the inputs treats a class instance
-as opaque. `withDefaults` does the same for a kernel used in the same thread, wrapping only the objects
-on the way to a registered operation. `callByPath`, `rehydrateReferences` and `describeKernelFailure`
+as opaque. A property left out, set to undefined, or set to null where the DTO has a default gets the
+default; null on a property with no default stays null. `withDefaults` does the same for a kernel
+used in the same thread, wrapping only the objects on the way to a registered operation.
+`callByPath`, `rehydrateReferences` and `describeKernelFailure`
 are the three pieces every worker used to keep its own copy of, and `InputError` / `KernelCallError`
-are the two errors a caller can tell apart.
+are the two errors a caller can tell apart. `describeKernelFailure` never throws, and gives binary data
+at any depth by its kind and size and a long input only up to its cut, so describing a failure never
+costs more than the failure.
 
 **`validateInputs` checks a call before a kernel runs it**, in two layers. The constraints a
 generated registry carries per property - required, a number that is not NaN and lies within its
@@ -41,6 +45,9 @@ properties are written by hand beside each kernel with `defineRules` and the com
 the `Resolved` type, since they run after the defaults; a rule for an abstract parent applies to
 every DTO that extends it, and a rule runs only when every property it reads passed its own check.
 A rule belongs to a DTO, so it has to hold for every operation that takes that DTO - "at least two
-points" is not a `PointsDto` rule. The workers report what they find through `reportInputIssues`,
-each distinct issue once, and do not throw yet: a service keeps its own throw until validation
-throws, and the default instance of every DTO has to pass its own checks (`dto-registry.test.ts`).
+points" is not a `PointsDto` rule. The workers go through `prepareKernelCall`, which resolves the
+inputs and, on a cache miss, reports what `validateInputs` finds through `reportInputIssues` - each
+distinct issue once, two rules on one property kept apart, the last thousand remembered - and never
+lets a check or a sink that throws fail the call. Validation does not throw yet: a service keeps its
+own throw until it does, and the default instance of every DTO has to pass its own checks
+(`dto-registry.test.ts`).

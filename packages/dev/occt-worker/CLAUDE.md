@@ -18,10 +18,17 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
   deliberate: making them log or rethrow aborts a cleanup sweep part-way and leaks everything after it.
 - **Non-geometry results are stored wrapped** as `{ value: result }`, so a plain cached value cannot be
   mistaken for a geometry handle.
+- **A result that is a list of kernel objects is stored item by item.** Each item sits under a key
+  derived from the call's key and its position (`itemHash`, never the arguments written out again), and
+  the call's key holds the list of those keys, so an identical call is a hit. A list with an item
+  deleted since is computed again, and the old items still alive are freed as the new ones take their
+  keys - an object the new list hands back again is kept.
 - **Retention is bounded by a count, not by memory.** `startedTheRun` clears everything once more than
-  `CACHE_THRESHOLD` hashes have been used; otherwise `cleanUpCache` keeps only the hashes touched in the
-  run that finished and rolls that set forward. Together they are the only bound on WASM memory growth
-  across a long session.
+  `CACHE_THRESHOLD` hashes have been used, and that is the only bound on WASM memory growth across a
+  long session: until then an entry stays until a delete command or `cleanAllCache` frees it.
+  `cleanUpCache`, which would keep only the hashes the finished run touched, has not been called
+  since 2021, when the per-run sweep was switched off over problems never pinned down; it is kept and
+  tested, but nothing relies on it.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be

@@ -61,14 +61,6 @@ export class Draw extends DrawCore {
         return await this.drawResolvedAsync(inputs) as Inputs.Draw.Drawn<E, THREEJS.Group>;
     }
 
-    /**
-     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
-     *
-     * A package that adds entity kinds overrides this rather than the public signature: two
-     * unresolved conditional types over the same `E` have no provable relation to each other, so a
-     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
-     * @ignore true
-     */
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> | undefined;
 
     /**
@@ -118,6 +110,14 @@ export class Draw extends DrawCore {
         };
     }
 
+    /**
+     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
+     *
+     * A package that adds entity kinds overrides this rather than the public signature: two
+     * unresolved conditional types over the same `E` have no provable relation to each other, so a
+     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
+     * @ignore true
+     */
     protected async drawResolvedAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<DrawnEntity> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
@@ -360,9 +360,9 @@ export class Draw extends DrawCore {
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 jscadMesh: inputs.group,
                 mesh,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
@@ -370,9 +370,9 @@ export class Draw extends DrawCore {
     private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 jscadMesh: inputs.group,
                 meshes,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
     }
@@ -423,9 +423,9 @@ export class Draw extends DrawCore {
                 pts.push(...line);
             }
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: [{ points: pts }],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.line);
     }
@@ -433,9 +433,9 @@ export class Draw extends DrawCore {
     private handlePoint(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoint({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 pointMesh: inputs.group,
                 point: inputs.entity as Inputs.Base.Point3,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.point);
     }
@@ -461,9 +461,9 @@ export class Draw extends DrawCore {
     private handlePolyline(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, type = Inputs.Draw.drawingTypes.polyline): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
+                ...options,
                 polylineMesh: inputs.group,
                 polyline: inputs.entity as Inputs.Polyline.PolylinePropertiesDto,
-                ...options
             });
         }, type);
     }
@@ -471,19 +471,19 @@ export class Draw extends DrawCore {
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurve({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 curveMesh: inputs.group,
                 curve: inputs.entity,
-                ...this.basicOptions(options)
-            });
+            } as Inputs.Verb.DrawCurveDto<THREEJS.Group>);
         }, Inputs.Draw.drawingTypes.verbCurve);
     }
 
     private handleVerbSurface(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSurface({
+                ...this.basicOptions(options),
                 surfaceMesh: inputs.group,
                 surface: inputs.entity,
-                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
@@ -491,9 +491,9 @@ export class Draw extends DrawCore {
     private handlePolylines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, type = Inputs.Draw.drawingTypes.polylines): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: inputs.entity as Inputs.Base.Polyline3[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, type);
     }
@@ -512,9 +512,9 @@ export class Draw extends DrawCore {
                 });
             }
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: pts.map(e => ({ points: [...e] })),
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.lines);
     }
@@ -522,9 +522,9 @@ export class Draw extends DrawCore {
     private handlePoints(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoints({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 pointsMesh: inputs.group,
                 points: inputs.entity as Inputs.Base.Point3[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.points);
     }
@@ -532,19 +532,19 @@ export class Draw extends DrawCore {
     private handleVerbCurves(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurves({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 curvesMesh: inputs.group,
                 curves: inputs.entity as Base.VerbCurve[],
-                ...this.basicOptions(options)
-            });
+            } as Inputs.Verb.DrawCurvesDto<THREEJS.Group>);
         }, Inputs.Draw.drawingTypes.verbCurves);
     }
 
     private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawSurfacesMultiColour({
+                ...this.basicOptions(options),
                 surfacesMesh: inputs.group,
                 surfaces: inputs.entity as Base.VerbSurface[],
-                ...this.basicOptions(options)
             });
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
@@ -554,9 +554,9 @@ export class Draw extends DrawCore {
             updatable: false,
         };
         const result = this.tag.drawTag({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagVariable: inputs.group as any,
             tag: inputs.entity as Inputs.Tag.TagDto,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         const drawnTag = result as Inputs.Draw.DrawnTag;
         drawnTag.userData = { type: Inputs.Draw.drawingTypes.tag, options };
@@ -568,9 +568,9 @@ export class Draw extends DrawCore {
             updatable: false,
         };
         const result = this.tag.drawTags({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagsVariable: inputs.group as any,
             tags: inputs.entity as Inputs.Tag.TagDto[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
         const drawnTags = result as Inputs.Draw.DrawnTags;

@@ -327,7 +327,7 @@ export class Line {
      */
     lineLineIntersection(inputs: Inputs.Line.LineLineIntersectionDto): Inputs.Base.Point3 | undefined {
         const resolved = resolveDto(Inputs.Line.LineLineIntersectionDto, inputs) as Resolved.Line.LineLineIntersectionDto;
-        const epsilon = resolved.tolerance || 1e-6;
+        const epsilon = resolved.tolerance;
         const checkSegments = resolved.checkSegmentsOnly;
     
         const line1 = resolved.line1;
@@ -349,7 +349,7 @@ export class Line {
         const lenSq1 = this.vector.lengthSq({ vector: d1 as Inputs.Base.Vector3 });
         const lenSq2 = this.vector.lengthSq({ vector: d2 as Inputs.Base.Vector3 });
     
-        if (lenSq1 < epsilon * epsilon || lenSq2 < epsilon * epsilon) {
+        if (lenSq1 <= epsilon * epsilon || lenSq2 <= epsilon * epsilon) {
             return undefined;
         }
     
@@ -357,10 +357,10 @@ export class Line {
         const crossMagSq = this.vector.lengthSq({ vector: d1_cross_d2 as Inputs.Base.Vector3 });
     
         const parallel_tolerance_sq = epsilon * epsilon;
-        if (crossMagSq < parallel_tolerance_sq) {
+        if (crossMagSq <= parallel_tolerance_sq) {
             const p21_cross_d1 = this.vector.cross({ first: p21, second: d1 });
             const collinear_tolerance_sq = epsilon * epsilon * lenSq1;
-            if (this.vector.lengthSq({ vector: p21_cross_d1 as Inputs.Base.Vector3 }) < collinear_tolerance_sq) {
+            if (this.vector.lengthSq({ vector: p21_cross_d1 as Inputs.Base.Vector3 }) <= collinear_tolerance_sq) {
                 if (!checkSegments) {
                     return p1;
                 } else {
@@ -403,7 +403,7 @@ export class Line {
     
         const denominator = d1d1 * d2d2 - d1d2 * d1d2;
     
-        if (Math.abs(denominator) < epsilon * epsilon) {
+        if (Math.abs(denominator) <= epsilon * epsilon) {
              console.error("Internal error: Denominator near zero after non-parallel check.");
              return undefined;
         }

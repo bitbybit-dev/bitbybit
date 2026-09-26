@@ -492,6 +492,9 @@ export class WiresService {
     }
 
     pointsOnWireAtPatternOfLengths(inputs: Resolved.OCCT.PointsOnWireAtPatternOfLengthsDto<TopoDS_Wire>): Base.Point3[] {
+        if (inputs.lengths.reduce((sum, length) => sum + length, 0) <= 0) {
+            throw new Error("Lengths must add up to more than 0, or the points never move along the wire.");
+        }
         const wire = inputs.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const wireLength = this.getWireLength({ shape: wire });

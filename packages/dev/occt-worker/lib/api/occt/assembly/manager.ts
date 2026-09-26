@@ -3,6 +3,8 @@
 // Regenerate with `npm run gen:worker-api` at the repository root.
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
+import { Resolved } from "@bitbybit-dev/occt";
+import { resolveDto } from "@bitbybit-dev/base";
 
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
@@ -255,12 +257,13 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToStep(inputs: Inputs.OCCT.ExportDocumentToStepDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToStep", inputs).then((s: Uint8Array) => {
-            if (inputs.tryDownload && typeof document !== "undefined") {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToStepDto, inputs) as Resolved.OCCT.ExportDocumentToStepDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToStep", resolved).then((s: Uint8Array) => {
+            if (resolved.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "application/step" });
                 const blobUrl = URL.createObjectURL(blob);
 
-                const fileName = inputs.fileName || (inputs.compress ? "assembly.stpZ" : "assembly.step");
+                const fileName = resolved.compress && resolved.fileName === new Inputs.OCCT.ExportDocumentToStepDto().fileName ? "assembly.stpZ" : resolved.fileName;
 
                 const fileLink = document.createElement("a");
                 fileLink.href = blobUrl;
@@ -290,12 +293,13 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltf", inputs).then((s: Uint8Array) => {
-            if (inputs.tryDownload && typeof document !== "undefined") {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfDto, inputs) as Resolved.OCCT.ExportDocumentToGltfDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltf", resolved).then((s: Uint8Array) => {
+            if (resolved.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "model/gltf-binary" });
                 const blobUrl = URL.createObjectURL(blob);
 
-                const fileName = inputs.fileName || "assembly.glb";
+                const fileName = resolved.fileName;
 
                 const fileLink = document.createElement("a");
                 fileLink.href = blobUrl;
@@ -330,12 +334,13 @@ export class OCCTAssemblyManager {
      * ```
      */
     async exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Uint8Array> {
-        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltfWithDraco", inputs).then((s: Uint8Array) => {
-            if (inputs.tryDownload && typeof document !== "undefined") {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfWithDracoDto, inputs) as Resolved.OCCT.ExportDocumentToGltfWithDracoDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        return this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("assembly.manager.exportDocumentToGltfWithDraco", resolved).then((s: Uint8Array) => {
+            if (resolved.tryDownload && typeof document !== "undefined") {
                 const blob = new Blob([s.buffer as ArrayBuffer], { type: "model/gltf-binary" });
                 const blobUrl = URL.createObjectURL(blob);
 
-                const fileName = inputs.fileName || "assembly.glb";
+                const fileName = resolved.fileName;
 
                 const fileLink = document.createElement("a");
                 fileLink.href = blobUrl;

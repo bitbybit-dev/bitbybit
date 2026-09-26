@@ -279,6 +279,7 @@ export const constraintKinds: {
     list: (items: PropertyConstraint) => PropertyConstraint;
     oneOf: (values: readonly string[]) => PropertyConstraint;
     required: (constraint: PropertyConstraint) => PropertyConstraint;
+    optional: (constraint: PropertyConstraint) => PropertyConstraint;
     between: (constraint: PropertyConstraint, bounds: NumberBounds) => PropertyConstraint;
 };
 
@@ -1890,6 +1891,15 @@ namespace Polyline_3 {
     // (undocumented)
     type TwoPolylinesToleranceDto = WithDefaults<Inputs_2.Polyline.TwoPolylinesToleranceDto, "tolerance">;
 }
+
+// @public
+export type PreparedKernelCall = {
+    readonly inputs: unknown;
+    readonly reportIssues: () => void;
+};
+
+// @public
+export function prepareKernelCall(kernel: string, registry: DtoRegistry, path: string, given: unknown, rules?: RuleBook): PreparedKernelCall;
 
 // @public
 export type PropertyConstraint = {

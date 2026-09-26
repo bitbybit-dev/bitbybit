@@ -21,6 +21,7 @@ export class CacheHelper {
     addToCache(hash: string | number, object: any): string | number;
     // (undocumented)
     argCache: Record<string, any>;
+    bytesToHash(bytes: Uint8Array): number;
     cacheOp(args: any, cacheMiss: () => any): any;
     checkCache(hash: string | number): any;
     // (undocumented)
@@ -34,6 +35,7 @@ export class CacheHelper {
     hashesFromPreviousRun: Record<string, string | number>;
     // (undocumented)
     isManifoldObject(obj: any): boolean;
+    itemHash(callHash: string | number, position: string | number): number;
     // (undocumented)
     manifoldObjectHashes: Set<string | number>;
     stringToHash(str: string): number;

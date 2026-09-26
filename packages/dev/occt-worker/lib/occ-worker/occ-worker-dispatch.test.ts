@@ -3,6 +3,7 @@ import { InputError, InputIssueReport, setInputIssueSink } from "@bitbybit-dev/b
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
+import { NON_CACHEABLE_FUNCTIONS } from "./constants";
 
 const { failure, kernelCalls } = vi.hoisted(() => {
     const failure: { value: unknown } = { value: undefined };
@@ -42,6 +43,10 @@ vi.mock("@bitbybit-dev/occt", () => {
         falsy = (): number => {
             kernelCalls.push({ path: "falsy", inputs: undefined });
             return 0;
+        };
+        pieces = (): unknown[] => {
+            kernelCalls.push({ path: "pieces", inputs: undefined });
+            return [1, 2].map(() => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: (): void => undefined }));
         };
     }
     class BoxDto {
@@ -89,6 +94,24 @@ describe("the call shape every OCCT operation goes through", () => {
 
     afterEach(() => {
         setInputIssueSink();
+    });
+
+    describe("a reserved name with no handler", () => {
+        afterEach(() => {
+            NON_CACHEABLE_FUNCTIONS.delete("shapes.solid.createBox");
+        });
+
+        it("should answer without running the kernel", () => {
+            // Arrange
+            NON_CACHEABLE_FUNCTIONS.add("shapes.solid.createBox");
+
+            // Act
+            const answer = answerTo({ functionName: "shapes.solid.createBox", inputs: {} });
+
+            // Assert
+            expect(kernelCalls).toEqual([]);
+            expect(answer).toEqual({ uid: "uid-1", result: undefined });
+        });
     });
 
     describe("the defaults of the DTO an operation takes", () => {
@@ -139,6 +162,14 @@ describe("the call shape every OCCT operation goes through", () => {
             expect(Object.values(cacheHelper.usedHashes)).toEqual([cacheHelper.computeHash({ functionName: "shapes.solid.createBox", inputs: { width: 5, length: 2, height: 3 } })]);
         });
 
+        it("should give a defaulted property the call passed as null its default", () => {
+            // Act
+            answerTo({ functionName: "shapes.solid.createBox", inputs: { width: null, height: 7 } });
+
+            // Assert
+            expect(kernelCalls).toEqual([{ path: "shapes.solid.createBox", inputs: { width: 1, length: 2, height: 7 } }]);
+        });
+
         it("should pass the inputs of an operation the registry does not list through as they are", () => {
             // Act
             answerTo({ functionName: "echo", inputs: { size: 2 } });
@@ -175,6 +206,34 @@ describe("the call shape every OCCT operation goes through", () => {
             // Assert
             expect(Object.values(cacheHelper.usedHashes)).toEqual([cacheHelper.computeHash({ functionName: "shapes.solid.createBox", inputs: { ...BOX_DEFAULTS, shape: SHAPE_REFERENCE } })]);
             expect(kernelCalls).toEqual([{ path: "shapes.solid.createBox", inputs: { ...BOX_DEFAULTS, shape: { kernel: "shape", hash: SHAPE_HASH } } }]);
+        });
+
+        it("should answer a call the cache holds without looking up, or asking the kernel about, the shapes it refers to", () => {
+            // Arrange
+            const isNull = vi.fn((): boolean => false);
+            cacheHelper.addToCache(SHAPE_HASH, { $$: {}, IsNull: isNull });
+            answerTo({ functionName: "shapes.solid.createBox", inputs: { shape: SHAPE_REFERENCE } }, "uid-1");
+            isNull.mockClear();
+
+            // Act
+            const answer = answerTo({ functionName: "shapes.solid.createBox", inputs: { shape: SHAPE_REFERENCE } }, "uid-2");
+
+            // Assert
+            expect(answer).toEqual({ uid: "uid-2", result: { made: "shapes.solid.createBox" } });
+            expect(isNull).not.toHaveBeenCalled();
+            expect(kernelCalls).toHaveLength(1);
+        });
+
+        it("should answer a call the cache holds even when a shape it referred to has since been deleted", () => {
+            // Arrange
+            answerTo({ functionName: "shapes.solid.createBox", inputs: { shape: SHAPE_REFERENCE } }, "uid-1");
+            cacheHelper.cleanCacheForHash(String(SHAPE_HASH));
+
+            // Act
+            const answer = answerTo({ functionName: "shapes.solid.createBox", inputs: { shape: SHAPE_REFERENCE } }, "uid-2");
+
+            // Assert
+            expect(answer).toEqual({ uid: "uid-2", result: { made: "shapes.solid.createBox" } });
         });
 
         it("should fail the call when a reference is no longer cached", () => {
@@ -232,6 +291,21 @@ describe("the call shape every OCCT operation goes through", () => {
             expect(reports).toEqual([{ kernel: "OCCT", path: "shapes.solid.createBox", issue: { property: "width", code: "custom", message: "must be at most 100" } }]);
             expect(afterTheHit).toEqual([]);
             expect(kernelCalls).toHaveLength(1);
+        });
+
+        it("should run a call whose issues reach a sink that throws", () => {
+            // Arrange
+            const refusing = vi.fn((): void => {
+                throw new Error("the sink refused");
+            });
+            setInputIssueSink(refusing);
+
+            // Act
+            const answer = answerTo({ functionName: "shapes.solid.createBox", inputs: { width: 200 } });
+
+            // Assert
+            expect(refusing).toHaveBeenCalledTimes(1);
+            expect(answer).toEqual({ uid: "uid-1", result: { made: "shapes.solid.createBox" } });
         });
 
         it("should check a call that misses the cache even when an earlier one was reported", () => {
@@ -306,11 +380,24 @@ describe("the call shape every OCCT operation goes through", () => {
             expect(answer).toEqual({
                 uid: "uid-1",
                 result: {
-                    compound: { type: "occ-shape", hash: cacheHelper.computeHash({ functionName: "assemble", inputs: {}, index: "compound" }) },
+                    compound: { type: "occ-shape", hash: cacheHelper.itemHash(cacheHelper.computeHash({ functionName: "assemble", inputs: {} }), "compound") },
                     data: { name: "assembly" },
-                    shapes: [{ id: "part-1", shape: { type: "occ-shape", hash: cacheHelper.computeHash({ functionName: "assemble", inputs: {}, index: 0 }) } }],
+                    shapes: [{ id: "part-1", shape: { type: "occ-shape", hash: cacheHelper.itemHash(cacheHelper.computeHash({ functionName: "assemble", inputs: {} }), 0) } }],
                 },
             });
+        });
+
+        it("should answer a second identical call whose answer is a list of shapes from the cache, with the same references", () => {
+            // Arrange
+            const first = answerTo({ functionName: "pieces", inputs: {} }, "uid-1");
+
+            // Act
+            const second = answerTo({ functionName: "pieces", inputs: {} }, "uid-2");
+
+            // Assert
+            expect(kernelCalls).toHaveLength(1);
+            expect(second.result).toEqual(first.result);
+            expect(second.result).toHaveLength(2);
         });
 
         it("should answer a cached 0 as 0 without running the kernel again", () => {
@@ -377,7 +464,7 @@ describe("the call shape every OCCT operation goes through", () => {
             const answer = answerTo({ functionName: "boom", inputs: { stepData: new Uint8Array([7, 8, 9]), buffer: new ArrayBuffer(4) } });
 
             // Assert
-            expect(answer.error).toBe("OCCT computation failed while executing function 'boom': the kernel refused. Input values were: {stepData: [Uint8Array byteLength=3], buffer: [ArrayBuffer byteLength=4]}.");
+            expect(answer.error).toBe("OCCT computation failed while executing function 'boom': the kernel refused. Input values were: {stepData: [Uint8Array length=3], buffer: [ArrayBuffer byteLength=4]}.");
         });
     });
 });

@@ -588,8 +588,8 @@ export namespace JSCAD {
         meshes!: JSCADEntity[];
     }
     /**
-     * Feeds `expansions.expand` and `expansions.offset`: the geometry, the signed distance to move its
-     * boundary by and how the corners are shaped on the way.
+     * Feeds `expansions.offset`: the 2D shape or path, the signed distance to build its outline at and
+     * how the corners are shaped, kept sharp unless `corners` says otherwise.
      */
     export class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
@@ -599,14 +599,12 @@ export namespace JSCAD {
             if (segments !== undefined) { this.segments = segments; }
         }
         /**
-         * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
-         * is and a new entity comes back
+         * The 2D shape or path to outline; it stays as it is and a new entity comes back
          * @default undefined
          */
         geometry!: JSCADEntity;
         /**
          * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
-         * (a solid accepts positive only)
          * @default 0.1
          * @minimum -Infinity
          * @maximum Infinity
@@ -615,13 +613,54 @@ export namespace JSCAD {
         delta?: number | undefined = 0.1;
         /**
          * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-         * it; a solid accepts `round` only
+         * it with `segments` pieces
          * @default edge
          */
         corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.edge;
         /**
          * Number of straight pieces a `round` corner is made of over a full circle; more makes it
          * smoother
+         * @default 24
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        segments?: number | undefined = 24;
+    }
+    /**
+     * Feeds `expansions.expand`: the geometry, the signed distance to move its boundary by and how the
+     * corners are shaped, rounded unless `corners` says otherwise.
+     */
+    export class ExpandDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
+            if (geometry !== undefined) { this.geometry = geometry; }
+            if (delta !== undefined) { this.delta = delta; }
+            if (corners !== undefined) { this.corners = corners; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * The 2D shape, path or solid to grow; it stays as it is and a new entity comes back
+         * @default undefined
+         */
+        geometry!: JSCADEntity;
+        /**
+         * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it;
+         * a solid or a path accepts a positive value only
+         * @default 0.1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        delta?: number | undefined = 0.1;
+        /**
+         * How a convex corner is shaped: `round` curves it with `segments` pieces, `chamfer` cuts it
+         * flat, `edge` keeps it sharp; a solid accepts `round` only
+         * @default round
+         */
+        corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.round;
+        /**
+         * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+         * smoother, and a solid needs at least 4
          * @default 24
          * @minimum 0
          * @maximum Infinity
@@ -667,7 +706,7 @@ export namespace JSCAD {
          * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
          * heavier mesh
          * @default 15
-         * @minimum 0
+         * @minimum 1
          * @maximum Infinity
          * @step 1
          */
@@ -711,6 +750,7 @@ export namespace JSCAD {
          * How tall the wall is along Z, in model units, standing on the XY plane
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -720,6 +760,7 @@ export namespace JSCAD {
          * thick
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -796,7 +837,7 @@ export namespace JSCAD {
          * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
          * throws an error
          * @default 24
-         * @minimum 0
+         * @minimum 3
          * @maximum Infinity
          * @step 1
          */
@@ -1001,7 +1042,7 @@ export namespace JSCAD {
         /**
          * Number of straight pieces for a full ellipse; the arc gets its proportional share
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1051,7 +1092,7 @@ export namespace JSCAD {
         /**
          * Number of straight sides around the circle; more makes it rounder
          * @default 24
-         * @minimum 0
+         * @minimum 3
          * @maximum Infinity
          * @step 1
          */
@@ -1080,7 +1121,7 @@ export namespace JSCAD {
         /**
          * Number of straight sides around the ellipse; more makes it rounder
          * @default 24
-         * @minimum 0
+         * @minimum 3
          * @maximum Infinity
          * @step 1
          */
@@ -1173,7 +1214,7 @@ export namespace JSCAD {
          * Number of straight pieces a full circle of rounding is made of, so each corner gets a
          * quarter; more makes it smoother
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1216,7 +1257,7 @@ export namespace JSCAD {
         /**
          * Number of tips; the star has as many notches between them
          * @default 10
-         * @minimum 0
+         * @minimum 2
          * @maximum Infinity
          * @step 1
          */
@@ -1234,6 +1275,7 @@ export namespace JSCAD {
          * Distance from the center to each tip, in model units
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1249,7 +1291,7 @@ export namespace JSCAD {
         /**
          * Direction of the first tip, in degrees counter-clockwise from the X axis
          * @default 0
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -1407,7 +1449,7 @@ export namespace JSCAD {
         /**
          * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1474,6 +1516,7 @@ export namespace JSCAD {
          * Full length along Z, in model units
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1491,7 +1534,7 @@ export namespace JSCAD {
         /**
          * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1518,6 +1561,7 @@ export namespace JSCAD {
          * Full length of every cylinder along Z, in model units
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1536,7 +1580,7 @@ export namespace JSCAD {
         /**
          * Number of flat sides around each cylinder; more makes them rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1565,7 +1609,7 @@ export namespace JSCAD {
         /**
          * Number of flat sides around the cylinder; more makes it rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1622,7 +1666,7 @@ export namespace JSCAD {
         /**
          * Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1660,7 +1704,7 @@ export namespace JSCAD {
         /**
          * Number of facets around the ellipsoid; more makes it smoother
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1717,7 +1761,7 @@ export namespace JSCAD {
          * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
          * least 6, and higher is rounder
          * @default 12
-         * @minimum 0
+         * @minimum 6
          * @maximum Infinity
          * @step 1
          */
@@ -1809,7 +1853,7 @@ export namespace JSCAD {
         /**
          * Number of facets around the sphere; more makes it rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -1874,6 +1918,7 @@ export namespace JSCAD {
          * Radius of the tube itself, in model units; it must be less than `outerRadius`
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1883,6 +1928,7 @@ export namespace JSCAD {
          * twice the sum of both radii
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -1890,7 +1936,7 @@ export namespace JSCAD {
         /**
          * Number of flat pieces around the tube's cross-section; more makes the tube rounder
          * @default 24
-         * @minimum 0
+         * @minimum 3
          * @maximum Infinity
          * @step 1
          */
@@ -1898,7 +1944,7 @@ export namespace JSCAD {
         /**
          * Number of flat pieces around the ring; more makes the ring rounder
          * @default 24
-         * @minimum 0
+         * @minimum 3
          * @maximum Infinity
          * @step 1
          */
@@ -1916,7 +1962,8 @@ export namespace JSCAD {
          * How far the tube is swept around the ring, in degrees; 360 closes the ring and less leaves it
          * open
          * @default 360
-         * @minimum -Infinity
+         * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -1924,7 +1971,7 @@ export namespace JSCAD {
         /**
          * Where the sweep around the ring starts, in degrees from the X axis
          * @default 0
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
@@ -2063,7 +2110,7 @@ export namespace JSCAD {
          * Number of flat sides around each cylinder and pieces in curved strokes; more makes the
          * letters rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */
@@ -2160,7 +2207,7 @@ export namespace JSCAD {
          * Number of facets around each sphere and pieces in curved strokes; more makes the letters
          * rounder
          * @default 24
-         * @minimum 0
+         * @minimum 4
          * @maximum Infinity
          * @step 1
          */

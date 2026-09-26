@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { InputIssue, resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
-import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
 import { VectorHelperService } from "./vector-helper.service";
@@ -93,6 +93,13 @@ const constraintRows: [path: string, what: string, inputs: object, issues: Input
     ["io.dxfPathsWithLayer", "report a hex color without its hash", { paths: [S], color: "ff0000" }, [notAHexColor]],
     ["io.dxfPathsWithLayer", "pass a hex color of six digits", { paths: [S], color: "#ff0000" }, []],
     ["io.dxfPathsWithLayer", "pass a hex color in upper case", { paths: [S], color: "#FF0000" }, []],
+    ["io.convertStepToGltf", "pass a mesh angle of a half turn", { stepData: "ISO-10303-21;", meshAngle: Math.PI }, []],
+    ["io.convertStepToGltfWithDraco", "pass a mesh angle of a half turn", { stepData: "ISO-10303-21;", meshAngle: Math.PI }, []],
+    ["io.convertStepToGltfAdvanced", "pass a mesh angle of a half turn", { stepData: "ISO-10303-21;", meshAngle: Math.PI }, []],
+    ["io.convertStepToGltfAdvancedWithDraco", "pass a mesh angle of a half turn", { stepData: "ISO-10303-21;", meshAngle: Math.PI }, []],
+    ["io.convertStepToGltf", "report a mesh angle beyond a half turn", { stepData: "ISO-10303-21;", meshAngle: 3.2 }, [{ property: "meshAngle", code: "maximum", params: { limit: Math.PI, exclusive: false, actual: 3.2 }, message: `must be at most ${Math.PI}` }]],
+    ["shapes.wire.interpolatePoints", "pass tangents that leave out the tangent at one point", { points: [[0, 0, 0], [1, 1, 0], [2, 0, 0]], tangents: [[1, 0, 0], undefined, [1, 0, 0]] }, []],
+    ["shapes.wire.interpolatePoints", "report a tangent of two coordinates beside one left out", { points: [[0, 0, 0], [1, 1, 0], [2, 0, 0]], tangents: [undefined, [1, 0], [1, 0, 0]] }, [{ property: "tangents", code: "arity", params: { index: 1, expected: 3, actual: 2 }, message: "item 1 must have 3 numbers, not 2" }]],
 ];
 
 describe("what the generated OCCT constraints refuse", () => {
@@ -102,5 +109,113 @@ describe("what the generated OCCT constraints refuse", () => {
 
         // Assert
         expect(found).toEqual(issues);
+    });
+});
+
+type Fixtures = { box: TopoDS_Shape; sphere: TopoDS_Shape; face: TopoDS_Face; edge: TopoDS_Edge; outline: TopoDS_Wire; zigzag: TopoDS_Wire; path: TopoDS_Wire };
+type ZeroRow = [path: string, property: string, inputsOf: (shapes: Fixtures) => object];
+
+const callAt = (root: object, path: string, inputs: object): unknown => {
+    const segments = path.split(".");
+    const owner = methodAt(root, segments.slice(0, -1).join("."));
+    const method = typeof owner === "object" && owner !== null ? Reflect.get(owner, segments[segments.length - 1] ?? "") : undefined;
+    if (typeof method !== "function") throw new Error(`no method at ${path}`);
+    return Reflect.apply(method, owner, [inputs]);
+};
+
+const none = (): object => ({});
+
+const zeroRows: ZeroRow[] = [
+    ["shapes.wire.createSquareWire", "size", none],
+    ["shapes.wire.createRectangleWire", "width", none],
+    ["shapes.wire.createRectangleWire", "length", none],
+    ["shapes.wire.createLPolygonWire", "widthFirst", none],
+    ["shapes.wire.createLPolygonWire", "lengthFirst", none],
+    ["shapes.wire.createLPolygonWire", "widthSecond", none],
+    ["shapes.wire.createLPolygonWire", "lengthSecond", none],
+    ["shapes.wire.createIBeamProfileWire", "width", none],
+    ["shapes.wire.createIBeamProfileWire", "flangeThickness", none],
+    ["shapes.wire.createHBeamProfileWire", "height", none],
+    ["shapes.wire.createHBeamProfileWire", "flangeThickness", none],
+    ["shapes.wire.createTBeamProfileWire", "width", none],
+    ["shapes.wire.createTBeamProfileWire", "webThickness", none],
+    ["shapes.wire.createTBeamProfileWire", "flangeThickness", none],
+    ["shapes.wire.createUBeamProfileWire", "width", none],
+    ["shapes.wire.createUBeamProfileWire", "height", none],
+    ["shapes.wire.createUBeamProfileWire", "webThickness", none],
+    ["shapes.wire.createUBeamProfileWire", "flangeThickness", none],
+    ["shapes.wire.createParallelogramWire", "width", none],
+    ["shapes.wire.createParallelogramWire", "height", none],
+    ["shapes.wire.createHeartWire", "sizeApprox", none],
+    ["shapes.wire.createNGonWire", "radius", none],
+    ["shapes.wire.textWires", "height", none],
+    ["dimensions.simpleLinearLengthDimension", "labelSize", () => ({ start: [0, 0, 0], end: [5, 0, 0], direction: [0, 0, 1] })],
+    ["dimensions.simpleAngularDimension", "labelSize", none],
+    ["dimensions.pinWithLabel", "labelSize", none],
+    ["fillets.filletEdges", "radius", ({ box }) => ({ shape: box })],
+    ["fillets.fillet2d", "radius", ({ outline }) => ({ shape: outline })],
+    ["fillets.fillet2dShapes", "radius", ({ outline }) => ({ shapes: [outline] })],
+    ["fillets.filletEdgesListOneRadius", "radius", ({ box, edge }) => ({ shape: box, edges: [edge] })],
+    ["fillets.fillet3DWire", "radius", ({ zigzag }) => ({ shape: zigzag, direction: [0, 5, 0] })],
+    ["fillets.fillet3DWires", "radius", ({ zigzag }) => ({ shapes: [zigzag], direction: [0, 5, 0] })],
+    ["fillets.chamferEdges", "distance", ({ box }) => ({ shape: box })],
+    ["fillets.chamferEdgeTwoDistances", "distance1", ({ box, edge, face }) => ({ shape: box, edge, face })],
+    ["fillets.chamferEdgeTwoDistances", "distance2", ({ box, edge, face }) => ({ shape: box, edge, face })],
+    ["fillets.chamferEdgesTwoDistances", "distance1", ({ box, edge, face }) => ({ shape: box, edges: [edge], faces: [face] })],
+    ["fillets.chamferEdgesTwoDistances", "distance2", ({ box, edge, face }) => ({ shape: box, edges: [edge], faces: [face] })],
+    ["fillets.chamferEdgeDistAngle", "distance", ({ box, edge, face }) => ({ shape: box, edge, face })],
+    ["fillets.chamferEdgesDistAngle", "distance", ({ box, edge, face }) => ({ shape: box, edges: [edge], faces: [face] })],
+    ["fillets.chamfer2dVertices", "distance", ({ outline }) => ({ shape: outline })],
+    ["operations.pipeWireCylindrical", "radius", ({ path }) => ({ shape: path })],
+    ["operations.pipeWiresCylindrical", "radius", ({ path }) => ({ shapes: [path] })],
+    ["operations.pipePolylineWireNGon", "radius", ({ path }) => ({ shape: path })],
+    ["booleans.meshMeshIntersectionWires", "precision1", ({ box, sphere }) => ({ shape1: box, shape2: sphere })],
+    ["booleans.meshMeshIntersectionWires", "precision2", ({ box, sphere }) => ({ shape1: box, shape2: sphere })],
+];
+
+describe("a value of 0 the OCCT kernel cannot build with", () => {
+    let kernel: OCCTService;
+    let shapes: Fixtures;
+
+    beforeAll(async () => {
+        const occ = await createBitbybitOcct();
+        kernel = withDefaults(new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ)), occtDtoRegistry);
+        const box = kernel.shapes.solid.createBox({ width: 2, length: 2, height: 2 });
+        const face = kernel.shapes.face.getFaces({ shape: box })[0]!;
+        shapes = {
+            box,
+            sphere: kernel.shapes.solid.createSphere({ radius: 1.2 }),
+            face,
+            edge: kernel.shapes.edge.getEdges({ shape: face })[0]!,
+            outline: kernel.shapes.wire.createRectangleWire({ width: 4, length: 2 }),
+            zigzag: kernel.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 1], [4, 0, -1], [6, 0, 0]] }),
+            path: kernel.shapes.wire.createPolylineWire({ points: [[0, 0, 0], [0, 5, 0], [3, 8, 0]] }),
+        };
+    });
+
+    it.each(zeroRows)("%s should report a %s of 0, which the kernel refuses", (path, property, inputsOf) => {
+        // Arrange
+        const inputs = { ...inputsOf(shapes), [property]: 0 };
+
+        // Act
+        const issues = issuesOf(path, inputs);
+        const build = (): unknown => callAt(kernel, path, inputs);
+
+        // Assert
+        expect(issues).toEqual([{ property, code: "minimum", params: { limit: 0, exclusive: true, actual: 0 }, message: "must be above 0" }]);
+        expect(build).toThrow();
+    });
+
+    it.each(zeroRows)("%s should build with a small %s above 0", (path, property, inputsOf) => {
+        // Arrange
+        const inputs = { ...inputsOf(shapes), [property]: 0.05 };
+
+        // Act
+        const issues = issuesOf(path, inputs);
+        const built = callAt(kernel, path, inputs);
+
+        // Assert
+        expect(issues).toEqual([]);
+        expect(built).toBeDefined();
     });
 });

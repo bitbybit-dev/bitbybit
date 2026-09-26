@@ -89,26 +89,34 @@
             "branches": 92.6,
             "functions": 98.9,
             "statements": 97.66
+        },
+        {
+            "measured": "2026-09-26",
+            "tests": 9210,
+            "lines": 97.78,
+            "branches": 92.83,
+            "functions": 98.91,
+            "statements": 97.7
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1985,
+            "tests": 2006,
             "suites": 55,
             "lines": 98.57,
-            "branches": 95.98,
-            "functions": 98.57,
+            "branches": 96.08,
+            "functions": 98.58,
             "statements": 98.75
         },
         "base": {
             "runner": "vitest",
-            "tests": 1441,
-            "suites": 26,
-            "lines": 99.5,
-            "branches": 95.65,
+            "tests": 1465,
+            "suites": 27,
+            "lines": 99.51,
+            "branches": 95.73,
             "functions": 100,
-            "statements": 99.5
+            "statements": 99.51
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -121,7 +129,7 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 307,
+            "tests": 312,
             "suites": 13,
             "lines": 100,
             "branches": 100,
@@ -135,7 +143,7 @@
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 361,
+            "tests": 443,
             "suites": 15,
             "lines": 100,
             "branches": 99.79,
@@ -144,7 +152,7 @@
         },
         "jscad-worker": {
             "runner": "vitest",
-            "tests": 326,
+            "tests": 336,
             "suites": 8,
             "lines": 100,
             "branches": 100,
@@ -162,7 +170,7 @@
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 457,
+            "tests": 476,
             "suites": 7,
             "lines": 100,
             "branches": 100,
@@ -180,38 +188,38 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1493,
+            "tests": 1650,
             "suites": 35,
-            "lines": 95.6,
-            "branches": 84.43,
-            "functions": 97.49,
-            "statements": 95.52
+            "lines": 95.71,
+            "branches": 84.98,
+            "functions": 97.5,
+            "statements": 95.62
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 814,
+            "tests": 848,
             "suites": 15,
             "lines": 100,
-            "branches": 99.71,
+            "branches": 100,
             "functions": 100,
             "statements": 100
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 531,
+            "tests": 549,
             "suites": 10,
-            "lines": 95.47,
-            "branches": 84.67,
+            "lines": 95.48,
+            "branches": 84.92,
             "functions": 97.71,
             "statements": 94.53
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 462,
+            "tests": 480,
             "suites": 9,
             "lines": 97.61,
-            "branches": 90.17,
-            "functions": 98.57,
+            "branches": 90.3,
+            "functions": 98.58,
             "statements": 97.16
         }
     }

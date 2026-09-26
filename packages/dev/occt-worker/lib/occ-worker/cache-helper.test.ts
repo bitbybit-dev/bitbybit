@@ -753,6 +753,22 @@ describe("CacheHelper unit tests", () => {
     });
 
     describe("cleanUpCache", () => {
+        it("should pass over a hash of the previous run that is no longer cached", () => {
+            // Arrange
+            const args = { functionName: "test1" };
+            cacheHelper.cacheOp(args, () => ({ data: "value1" }));
+            cacheHelper.cleanAllCache();
+            cacheHelper.usedHashes = {};
+            cacheHelper.hashesFromPreviousRun = { [cacheHelper.computeHash(args)]: cacheHelper.computeHash(args) };
+
+            // Act
+            const clean = (): void => cacheHelper.cleanUpCache();
+
+            // Assert
+            expect(clean).not.toThrow();
+            expect(Object.keys(cacheHelper.argCache)).toEqual([]);
+        });
+
         it("should remove unused cache entries from previous run", () => {
             const args1 = { functionName: "test1" };
             const args2 = { functionName: "test2" };
@@ -1446,6 +1462,133 @@ describe("CacheHelper unit tests", () => {
             // Assert
             expect(result.inputs.first).toMatchObject({ length: large.length });
             expect(result.inputs.second).toMatchObject({ byteLength: 2 });
+        });
+    });
+
+    describe("an answer that is a list of kernel objects", () => {
+        const handleOf = (): { $$: object; IsNull: () => boolean; delete: () => void } => ({ $$: {}, IsNull: (): boolean => false, delete: vi.fn() });
+        const args = { functionName: "shapes.shape.splitIntoPieces", inputs: { shape: { type: "occ-shape", hash: 1 } } };
+
+        it("should run the kernel once for two identical calls and answer both with the same objects under the same hashes", () => {
+            // Arrange
+            const pieces = [handleOf(), handleOf()];
+            const split = vi.fn(() => pieces);
+            const first = cacheHelper.cacheOp(args, split);
+
+            // Act
+            const second = cacheHelper.cacheOp(args, split);
+
+            // Assert
+            expect(split).toHaveBeenCalledTimes(1);
+            expect(second[0]).toBe(pieces[0]);
+            expect(second.map((piece: { hash: number }) => piece.hash)).toEqual(first.map((piece: { hash: number }) => piece.hash));
+        });
+
+        it("should compute the list again once one of its objects has been deleted, and free the ones it replaces", () => {
+            // Arrange
+            const old = [handleOf(), handleOf()];
+            const first = cacheHelper.cacheOp(args, () => old);
+            cacheHelper.cleanCacheForHash(String(first[0].hash));
+            const fresh = [handleOf(), handleOf()];
+            const split = vi.fn(() => fresh);
+
+            // Act
+            const second = cacheHelper.cacheOp(args, split);
+
+            // Assert
+            expect(split).toHaveBeenCalledTimes(1);
+            expect(second).toBe(fresh);
+            expect(old[1]!.delete).toHaveBeenCalledTimes(1);
+            expect(cacheHelper.checkCache(second[1].hash)).toBe(fresh[1]);
+            expect(fresh[1]!.delete).not.toHaveBeenCalled();
+        });
+
+        it("should free the shapes it replaces the way every cleanup does, triangulation first", () => {
+            // Arrange
+            const makeShape = () => {
+                const point = new occt.gp_Pnt(0, 0, 0);
+                const vertex = new occt.BRepBuilderAPI_MakeVertex(point);
+                const shape = vertex.Vertex();
+                vertex.delete();
+                point.delete();
+                return shape;
+            };
+            const old = [makeShape(), makeShape()];
+            const first = cacheHelper.cacheOp(args, () => old);
+            cacheHelper.cleanCacheForHash(String(first[0].hash));
+            const clean = vi.spyOn(occt, "BRepTools_Clean_Force");
+
+            // Act
+            cacheHelper.cacheOp(args, () => [makeShape(), makeShape()]);
+
+            // Assert
+            expect(clean).toHaveBeenCalledWith(old[1], true);
+            expect(() => old[1]!.IsNull()).toThrow();
+            clean.mockRestore();
+        });
+
+        it("should not free an object the list computed again hands back", () => {
+            // Arrange
+            const kept = handleOf();
+            const first = cacheHelper.cacheOp(args, () => [handleOf(), kept]);
+            cacheHelper.cleanCacheForHash(String(first[0].hash));
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => [kept, handleOf()]);
+
+            // Assert
+            expect(kept.delete).not.toHaveBeenCalled();
+            expect(cacheHelper.checkCache(second[0].hash)).toBe(kept);
+        });
+
+        it("should key every object of the answer from the call's own key, without writing the arguments out again", () => {
+            // Arrange
+            const computeHash = vi.spyOn(cacheHelper, "computeHash");
+
+            // Act
+            const pieces = cacheHelper.cacheOp(args, () => [handleOf(), handleOf(), handleOf()]);
+
+            // Assert
+            expect(computeHash).toHaveBeenCalledTimes(1);
+            expect(new Set(pieces.map((piece: { hash: number }) => piece.hash)).size).toBe(3);
+        });
+
+        it("should key the compound and every shape of an object definition from the call's own key", () => {
+            // Arrange
+            const computeHash = vi.spyOn(cacheHelper, "computeHash");
+
+            // Act
+            const definition = cacheHelper.cacheOp(args, () => ({ compound: handleOf(), data: { name: "parts" }, shapes: [{ id: "a", shape: handleOf() }, { id: "b", shape: handleOf() }] }));
+
+            // Assert
+            expect(computeHash).toHaveBeenCalledTimes(1);
+            expect(new Set([definition.compound.hash, ...definition.shapes.map((entry: { shape: { hash: number } }) => entry.shape.hash)]).size).toBe(3);
+        });
+
+        it("should key the document an answer carries from the call's own key", () => {
+            // Arrange
+            const computeHash = vi.spyOn(cacheHelper, "computeHash");
+
+            // Act
+            const loaded = cacheHelper.cacheOp(args, () => ({ success: true, document: handleOf() }));
+
+            // Assert
+            expect(computeHash).toHaveBeenCalledTimes(1);
+            expect(cacheHelper.checkCache(loaded.document.hash)).toBe(loaded.document);
+        });
+
+        it("should key the shapes nested in an answer from the call's own key", () => {
+            // Arrange
+            const computeHash = vi.spyOn(cacheHelper, "computeHash");
+            const shapeOf = () => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() });
+
+            // Act
+            const imported = cacheHelper.cacheOp(args, () => ({ shapes: [{ shape: shapeOf() }, { shape: shapeOf() }], warnings: [] }));
+
+            // Assert
+            expect(computeHash).toHaveBeenCalledTimes(1);
+            expect(imported.shapes[0].shape.hash).not.toBe(imported.shapes[1].shape.hash);
+            expect(cacheHelper.checkCache(imported.shapes[1].shape.hash)).toBe(imported.shapes[1].shape);
         });
     });
 });

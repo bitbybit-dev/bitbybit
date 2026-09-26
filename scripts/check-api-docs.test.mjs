@@ -109,6 +109,21 @@ describe("optional-spelling", () => {
         // Assert
         assert.deepEqual(reported(audit, "optional-spelling"), []);
     });
+
+    it("should read undefined only as a member of the outer union, in any position", async () => {
+        // Arrange
+        const tagged = (name, type) => `    /**\n     * @default undefined\n     * @optional true\n     */\n    ${name}?: ${type};`;
+        const spellings = boxWith([tagged("inner", "Array<number | undefined>"), tagged("listed", "(number | undefined)[]"), tagged("first", "undefined | number[]"), tagged("wrapped", "(number[] | undefined)")].join("\n"));
+
+        // Act
+        const audit = await auditOf(spellings);
+
+        // Assert
+        assert.deepEqual(reported(audit, "optional-spelling"), [
+            "BoxDto.inner: spelled with `?` but its type does not say `| undefined`",
+            "BoxDto.listed: spelled with `?` but its type does not say `| undefined`",
+        ]);
+    });
 });
 
 describe("optional-with-default", () => {
@@ -160,6 +175,14 @@ describe("exclusive-without-bound", () => {
             "BoxDto.width: @exclusiveMinimum needs a finite @minimum beside it to make exclusive",
             "BoxDto.width: @exclusiveMaximum needs a finite @maximum beside it to make exclusive",
         ]);
+    });
+
+    it("should stay silent on an exclusive flag set to false", async () => {
+        // Act
+        const audit = await auditOf(boxWith("    /**\n     * @default 1\n     * @exclusiveMinimum false\n     * @exclusiveMaximum false\n     */\n    width?: number | undefined = 1;"));
+
+        // Assert
+        assert.deepEqual(reported(audit, "exclusive-without-bound"), []);
     });
 
     it("should stay silent when each exclusive flag has a finite bound", async () => {
@@ -247,6 +270,20 @@ describe("taken classes", () => {
         // Assert
         assert.deepEqual([...audit.takenClasses].sort(), ["BoxDto", "BoxSharedDto", "InnerDto", "ListDto"]);
     });
+
+    it("should take the classes a type alias names, in a parameter and in a property", async () => {
+        // Arrange
+        const inputs = "export class LineSegment {\n    size?: number | undefined = 1;\n}\nexport class CurveSegment {\n    bend = 1;\n}\nexport type Segment = LineSegment | Nested;\nexport type Nested = CurveSegment | Segment;\nexport class PathDto {\n    segments!: Segment[];\n}\nexport class DirectSegment {\n    size = 1;\n}\nexport type Direct = DirectSegment;\n";
+
+        // Act
+        const audit = await auditOf(inputs, "export function draw(a: PathDto, b: Direct): void { return; }\n");
+
+        // Assert
+        assert.deepEqual({ taken: [...audit.takenClasses].sort(), spelling: reported(audit, "defaulted-spelling") }, {
+            taken: ["CurveSegment", "DirectSegment", "LineSegment", "PathDto"],
+            spelling: ["CurveSegment.bend: has a default but is not spelled with `?`, so an object literal must still pass it", "DirectSegment.size: has a default but is not spelled with `?`, so an object literal must still pass it"],
+        });
+    });
 });
 
 describe("ctor-param-required", () => {
@@ -259,6 +296,22 @@ describe("ctor-param-required", () => {
 
         // Assert
         assert.deepEqual(reported(audit, "ctor-param-required"), ["BoxDto: constructor parameter \"width\" is required, so `new BoxDto()` - the DTO with its defaults - does not type-check"]);
+    });
+});
+
+describe("ctor-param-property", () => {
+    it("should refuse a constructor parameter that declares a property", async () => {
+        // Arrange
+        const parameterProperty = "export class BoxDto {\n    constructor(public width: number = 1, readonly depth?: number) {\n    }\n}\n";
+
+        // Act
+        const audit = await auditOf(parameterProperty);
+
+        // Assert
+        assert.deepEqual([...reported(audit, "ctor-param-property"), ...reported(audit, "ctor-param-required"), ...reported(audit, "ctor-param-mismatch")], [
+            "BoxDto: constructor parameter \"width\" declares a property, which the spelling, default and constructor rules do not see; declare it in the class body and assign it",
+            "BoxDto: constructor parameter \"depth\" declares a property, which the spelling, default and constructor rules do not see; declare it in the class body and assign it",
+        ]);
     });
 });
 
@@ -304,9 +357,9 @@ describe("parentOf", () => {
         assert.deepEqual(audit.inheritedPropNames(shape), ["width"]);
     });
 
-    it("should find a qualified parent by its last name, in another file when that is the only one", async () => {
+    it("should find a qualified parent in the namespace its qualifier names, in another file", async () => {
         // Arrange
-        const parentFile = [OTHER_INPUTS_FILE, "export abstract class ShapeSharedDto {\n    other?: number | undefined = 1;\n}\n"];
+        const parentFile = [OTHER_INPUTS_FILE, "export namespace Base {\n    export abstract class ShapeSharedDto {\n        other?: number | undefined = 1;\n    }\n}\nexport namespace Other {\n    export abstract class ShapeSharedDto {\n        decoy?: number | undefined = 1;\n    }\n}\n"];
         const childFile = [INPUTS_FILE, "export class ShapeDto extends Base.ShapeSharedDto {\n    depth?: number | undefined = 1;\n}\nexport class LooseDto extends NotAnInputsDto {\n    size?: number | undefined = 1;\n}\n"];
 
         // Act
@@ -315,7 +368,33 @@ describe("parentOf", () => {
         const loose = audit.dtos.find((d) => d.name === "LooseDto");
 
         // Assert
-        assert.deepEqual({ shape: audit.parentOf.get(shape)?.file, loose: audit.parentOf.has(loose) }, { shape: OTHER_INPUTS_FILE, loose: false });
+        assert.deepEqual({ shape: audit.inheritedPropNames(shape), loose: audit.parentOf.has(loose) }, { shape: ["other"], loose: false });
+    });
+
+    it("should find a parent of the same package before one of another package", async () => {
+        // Arrange
+        const otherPackage = [path.join(ROOT, "packages/dev/other/lib/api/inputs/other-inputs.ts"), "export namespace Base {\n    export abstract class ShapeSharedDto {\n        far?: number | undefined = 1;\n    }\n}\n"];
+        const samePackage = [OTHER_INPUTS_FILE, "export namespace Base {\n    export abstract class ShapeSharedDto {\n        near?: number | undefined = 1;\n    }\n}\n"];
+        const childFile = [INPUTS_FILE, "export class ShapeDto extends Base.ShapeSharedDto {\n    depth?: number | undefined = 1;\n}\n"];
+
+        // Act
+        const audit = await auditOfFiles([otherPackage, samePackage, childFile]);
+
+        // Assert
+        assert.deepEqual(audit.inheritedPropNames(audit.dtos.find((d) => d.name === "ShapeDto")), ["near"]);
+    });
+
+    it("should refuse a parent two classes at the same distance could be", async () => {
+        // Arrange
+        const first = [path.join(ROOT, "packages/dev/one/lib/api/inputs/one-inputs.ts"), "export namespace Base {\n    export abstract class ShapeSharedDto {\n        a?: number | undefined = 1;\n    }\n}\n"];
+        const second = [path.join(ROOT, "packages/dev/two/lib/api/inputs/two-inputs.ts"), "export namespace Base {\n    export abstract class ShapeSharedDto {\n        b?: number | undefined = 1;\n    }\n}\n"];
+        const childFile = [INPUTS_FILE, "export class ShapeDto extends Base.ShapeSharedDto {\n    depth?: number | undefined = 1;\n}\n"];
+
+        // Act
+        const audit = auditOfFiles([first, second, childFile]);
+
+        // Assert
+        await assert.rejects(audit, { message: "packages/dev/fixture/lib/api/inputs/fixture-inputs.ts: ShapeDto extends Base.ShapeSharedDto, which names 2 classes as near as each other (packages/dev/one/lib/api/inputs/one-inputs.ts, packages/dev/two/lib/api/inputs/two-inputs.ts)" });
     });
 });
 
@@ -328,7 +407,7 @@ describe("DTO property counts", () => {
         const audit = await auditOf(sharedAndOwn);
 
         // Assert
-        assert.deepEqual({ shared: audit.dtoPropCount.get("CountSharedDto"), counted: audit.dtoPropCount.get("CountDto") }, { shared: 1, counted: 2 });
+        assert.deepEqual({ shared: audit.dtoPropCount.get(`${INPUTS_FILE}#CountSharedDto`), counted: audit.dtoPropCount.get(`${INPUTS_FILE}#CountDto`) }, { shared: 1, counted: 2 });
     });
 
     it("should count the properties of every ancestor", async () => {
@@ -339,7 +418,7 @@ describe("DTO property counts", () => {
         const audit = await auditOf(threeLevels);
 
         // Assert
-        assert.equal(audit.dtoPropCount.get("BoxDto"), 3);
+        assert.equal(audit.dtoPropCount.get(`${INPUTS_FILE}#BoxDto`), 3);
     });
 
     it("should ask a method whose DTO counts two properties with the inherited one for an example", async () => {
@@ -350,10 +429,24 @@ describe("DTO property counts", () => {
         const audit = await auditOf(sharedAndOwn);
 
         // Act
-        audit.checkMethod({ kind: "M", file: LIB_FILE, line: 7, path: "shapes.box", name: "box", className: "Shapes", doc: audit.docOf(member), params: ["inputs"], returns: "number", dtoName: "BoxDto", blocks: 1, dtoProps: audit.dtoPropCount.get("BoxDto") });
+        audit.checkMethod({ kind: "M", file: LIB_FILE, line: 7, path: "shapes.box", name: "box", className: "Shapes", doc: audit.docOf(member), params: ["inputs"], returns: "number", dtoName: "BoxDto", blocks: 1, dtoProps: audit.dtoPropCount.get(`${INPUTS_FILE}#BoxDto`) });
 
         // Assert
         assert.deepEqual(reported(audit, "missing-example"), ["shapes.box: takes 2 properties and has no @example"]);
+    });
+
+    it("should count a DTO name two packages declare apart, and give a method the one its namespace and package reach", async () => {
+        // Arrange
+        const baseFile = [path.join(ROOT, "packages/dev/base/lib/api/inputs/text-inputs.ts"), "export namespace Text {\n    export class TextDto {\n        text?: string | undefined = \"\";\n    }\n}\n"];
+        const jscadFile = [path.join(ROOT, "packages/dev/jscad/lib/api/inputs/jscad-text-inputs.ts"), "export namespace JSCAD {\n    export class TextDto {\n        text?: string | undefined = \"\";\n        height?: number | undefined = 1;\n        width?: number | undefined = 1;\n    }\n}\n"];
+        const audit = await auditOfFiles([baseFile, jscadFile]);
+        const methodIn = (pkg, dtoNamespace) => ({ file: path.join(ROOT, `packages/dev/${pkg}/lib/api/services/text.ts`), dtoName: "TextDto", dtoNamespace });
+
+        // Act
+        const counts = [audit.dtoPropsOf(methodIn("base", "Text")), audit.dtoPropsOf(methodIn("jscad", "JSCAD")), audit.dtoPropsOf(methodIn("jscad", undefined)), audit.dtoPropsOf(methodIn("base", "JSCAD"))];
+
+        // Assert
+        assert.deepEqual(counts, [1, 3, 3, 3]);
     });
 });
 
@@ -378,6 +471,17 @@ describe("pair-parity", () => {
 
         // Assert
         assert.deepEqual(reported(audit, "pair-parity"), ["BoxesDto.width: differs from BoxDto.width in minimum", "DrawsDto.size: differs from DrawDto.size in type", "DrawShapesDto.size: differs from DrawDto.size in default"]);
+    });
+
+    it("should compare a property one of the pair inherits from a concrete parent", async () => {
+        // Arrange
+        const inherited = "export class RadiusDto {\n    /**\n     * @default 1\n     */\n    radius?: number | undefined = 1;\n}\nexport class SphereDto extends RadiusDto {\n    center!: number[];\n}\nexport class SphereCentersDto {\n    /**\n     * @default 2\n     */\n    radius?: number | undefined = 2;\n}\nexport class CubeDto {\n    /**\n     * @default 3\n     */\n    size?: number | undefined = 3;\n}\nexport class CubeCentersDto extends SizeDto {\n}\nexport class SizeDto {\n    /**\n     * @default 4\n     */\n    size?: number | undefined = 4;\n}\n";
+
+        // Act
+        const audit = await auditOf(inherited);
+
+        // Assert
+        assert.deepEqual(reported(audit, "pair-parity"), ["SphereCentersDto.radius: differs from SphereDto.radius in default", "SizeDto.size: as CubeCentersDto.size, differs from CubeDto.size in default"]);
     });
 
     it("should stay silent on a pair in two files and on a pair sharing an abstract parent", async () => {
@@ -419,6 +523,17 @@ describe("default-mismatch", () => {
 
         // Assert
         assert.deepEqual(reported(audit, "default-mismatch"), ["BoxDto.third: @default down but the initializer is directionEnum.up"]);
+    });
+
+    it("should read an initializer that qualifies its enum by namespace", async () => {
+        // Arrange
+        const qualified = "export namespace Base {\n    export enum alignEnum { left = \"left\", right = \"right\" }\n}\nexport class BoxDto {\n    /**\n     * @default right\n     */\n    first?: Base.alignEnum | undefined = Base.alignEnum.left;\n    /**\n     * @default left\n     */\n    second?: Base.alignEnum | undefined = Base.alignEnum.left;\n}\n";
+
+        // Act
+        const audit = await auditOf(qualified);
+
+        // Assert
+        assert.deepEqual(reported(audit, "default-mismatch"), ["BoxDto.first: @default right but the initializer is Base.alignEnum.left"]);
     });
 
     it("should agree on lists, infinities, escaped line breaks and an unreadable initializer", async () => {
@@ -482,9 +597,45 @@ describe("evaluateInitializer", () => {
         assert.deepEqual([read("mixedEnum.text"), read("mixedEnum.count"), read("mixedEnum.bare"), read("mixedEnum.missing")], [
             { enumName: "mixedEnum", member: "text", value: "words" },
             { enumName: "mixedEnum", member: "count", value: 2 },
-            { enumName: "mixedEnum", member: "bare", value: "bare" },
+            { enumName: "mixedEnum", member: "bare", value: 3 },
             audit.UNREADABLE,
         ]);
+    });
+
+    it("should read a member through the namespace that qualifies its enum", async () => {
+        // Arrange
+        const audit = await freshAudit();
+        audit.collectEnums(sourceOf(INPUTS_FILE, "export namespace Base {\n    export enum alignEnum { left = \"left\", right = \"right\" }\n}\nexport namespace Draw {\n    export enum alignEnum { left = \"start\" }\n}\n"));
+        const read = (text) => audit.evaluateInitializer(...expressionOf(text));
+
+        // Act
+        const values = [read("Base.alignEnum.right"), read("Draw.alignEnum.left"), read("Inputs.Base.alignEnum.left"), read("Base.alignEnum.missing")];
+
+        // Assert
+        assert.deepEqual(values, [
+            { enumName: "Base.alignEnum", member: "right", value: "right" },
+            { enumName: "Draw.alignEnum", member: "left", value: "start" },
+            { enumName: "Inputs.Base.alignEnum", member: "left", value: "left" },
+            audit.UNREADABLE,
+        ]);
+    });
+});
+
+describe("enumValues", () => {
+    it("should number members without an initializer as TypeScript does", async () => {
+        // Arrange
+        const audit = await freshAudit();
+        const node = (text) => { const sf = sourceOf(INPUTS_FILE, text); return [sf.statements[0], sf]; };
+
+        // Act
+        const values = [
+            [...audit.enumValues(...node("enum e { a, b, c }")).values()],
+            [...audit.enumValues(...node("enum e { a = 5, b, c = -1, d }")).values()],
+            [...audit.enumValues(...node("enum e { a = \"x\", b = compute(), c }")).values()],
+        ];
+
+        // Assert
+        assert.deepEqual(values, [[0, 1, 2], [5, 6, -1, 0], ["x", audit.UNREADABLE, audit.UNREADABLE]]);
     });
 });
 

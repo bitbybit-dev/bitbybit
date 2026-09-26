@@ -22,6 +22,7 @@ const DTOS: [string, AnyDto][] = [
     ["BooleanTwoObjectsDto", Inputs.JSCAD.BooleanTwoObjectsDto],
     ["BooleanObjectsFromDto", Inputs.JSCAD.BooleanObjectsFromDto],
     ["ExpansionDto", Inputs.JSCAD.ExpansionDto],
+    ["ExpandDto", Inputs.JSCAD.ExpandDto],
     ["ExtrudeLinearDto", Inputs.JSCAD.ExtrudeLinearDto],
     ["HullDto", Inputs.JSCAD.HullDto],
     ["SolidDto", Inputs.JSCAD.SolidDto],

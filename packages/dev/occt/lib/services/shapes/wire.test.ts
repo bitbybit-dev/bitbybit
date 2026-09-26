@@ -876,6 +876,35 @@ describe("OCCT wire unit tests", () => {
         w.delete();
     });
 
+    it.each<[string, number[]]>([
+        ["no lengths", []],
+        ["a single length of 0", [0]],
+        ["lengths that move back as far as they move forward", [1, -1]],
+        ["lengths that move back further than they move forward", [1, -2]],
+    ])("should refuse a pattern of %s instead of looping forever", (_what, lengths) => {
+        // Arrange
+        const w = wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] });
+
+        // Act
+        const place = (): Inputs.Base.Point3[] => wire.pointsOnWireAtPatternOfLengths({ shape: w, lengths });
+
+        // Assert
+        expect(place).toThrow("Lengths must add up to more than 0, or the points never move along the wire.");
+        w.delete();
+    });
+
+    it("should place points along a pattern that moves back less than it moves forward", () => {
+        // Arrange
+        const w = wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] });
+
+        // Act
+        const pts = wire.pointsOnWireAtPatternOfLengths({ shape: w, lengths: [3, -1] });
+
+        // Assert
+        expect(pts.map((pt) => pt[0])).toEqual([3, 2, 5, 4, 7, 6, 9, 8]);
+        w.delete();
+    });
+
     it("should get points on wire at pattern of lengths and exclude first and last points but try to find next point", async () => {
         const w = wire.createBezier({ points: [[0, 0, 0], [100, 100, 0], [0, 200, 500]], closed: false });
         const pts = wire.pointsOnWireAtPatternOfLengths({ shape: w, lengths: [10, 40, 70, 5], includeFirst: false, includeLast: false, tryNext: true });

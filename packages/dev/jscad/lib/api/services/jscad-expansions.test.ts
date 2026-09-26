@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import type * as Modeling from "@jscad/modeling";
-import { expectRegion, getJscad } from "../__test__/kernel";
+import { expectRegion, expectSolid, getJscad } from "../__test__/kernel";
 import type { Jscad } from "../jscad-service";
 import * as Inputs from "../inputs";
 
@@ -10,6 +10,9 @@ const SQUARE_AREA = 16;
 const DELTA = 1;
 const SEGMENTS = 32;
 const EXPANDED_AREA = SQUARE_AREA + 4 * SQUARE_SIZE * DELTA + Math.PI * DELTA ** 2;
+const CUBE_SIZE = 2;
+const CUBE_DELTA = 0.5;
+const SHARP_CUBE_VOLUME = (CUBE_SIZE + 2 * CUBE_DELTA) ** 3;
 
 describe("JSCADExpansions", () => {
     let jscad: Jscad;
@@ -24,7 +27,7 @@ describe("JSCADExpansions", () => {
     describe("expand", () => {
         it("should grow a square by a rounded border of the given width", () => {
             // Arrange
-            const inputs = new Inputs.JSCAD.ExpansionDto(square, DELTA, Inputs.JSCAD.solidCornerTypeEnum.round, SEGMENTS);
+            const inputs = new Inputs.JSCAD.ExpandDto(square, DELTA, Inputs.JSCAD.solidCornerTypeEnum.round, SEGMENTS);
 
             // Act
             const expanded = jscad.expansions.expand(inputs);
@@ -37,7 +40,7 @@ describe("JSCADExpansions", () => {
 
         it("should shrink the shape when the width is negative", () => {
             // Arrange
-            const inputs = new Inputs.JSCAD.ExpansionDto(square, -DELTA, Inputs.JSCAD.solidCornerTypeEnum.round, SEGMENTS);
+            const inputs = new Inputs.JSCAD.ExpandDto(square, -DELTA, Inputs.JSCAD.solidCornerTypeEnum.round, SEGMENTS);
 
             // Act
             const shrunk = jscad.expansions.expand(inputs);
@@ -65,31 +68,41 @@ describe("JSCADExpansions", () => {
     });
 
     describe("when no corner style was asked for", () => {
-        it("should expand with rounded corners", () => {
+        it("should expand a solid with rounded corners rather than refuse it", () => {
             // Arrange
-            const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
+            const cube = jscad.shapes.cube(new Inputs.JSCAD.CubeDto([0, 0, 0], CUBE_SIZE));
 
             // Act
-            const expanded = jscad.expansions.expand({ geometry: square, delta: 1, segments: 16 });
+            const expanded = expectSolid(jscad.expansions.expand({ geometry: cube, delta: CUBE_DELTA, segments: 8 }));
 
-            expect(kernel.measurements.measureArea(expanded)).toBeGreaterThan(16);
+            // Assert
+            const [min, max] = kernel.measurements.measureBoundingBox(expanded);
+            expect(max[0] - min[0]).toBeCloseTo(CUBE_SIZE + 2 * CUBE_DELTA, 6);
+            expect(kernel.measurements.measureVolume(expanded)).toBeLessThan(SHARP_CUBE_VOLUME - 1);
         });
 
-        it("should offset with edged corners", () => {
-            // Arrange
-            const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
-
+        it("should expand a 2D shape with rounded corners", () => {
             // Act
-            const rounded = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16, corners: Inputs.JSCAD.solidCornerTypeEnum.round });
-            const edged = jscad.expansions.offset({ geometry: square, delta: 1, segments: 16 });
+            const expanded = expectRegion(jscad.expansions.expand({ geometry: square, delta: DELTA, segments: SEGMENTS }));
 
-            expect(kernel.measurements.measureArea(edged)).toBeGreaterThan(kernel.measurements.measureArea(rounded));
+            // Assert
+            expect(expanded.sides.length).toBeGreaterThan(4);
+            expect(kernel.measurements.measureArea(expanded)).toBeCloseTo(EXPANDED_AREA, 1);
+        });
+
+        it("should offset with sharp corners", () => {
+            // Act
+            const offset = expectRegion(jscad.expansions.offset({ geometry: square, delta: DELTA, segments: SEGMENTS }));
+
+            // Assert
+            expect(offset.sides).toHaveLength(4);
+            expect(kernel.measurements.measureArea(offset)).toBeCloseTo((SQUARE_SIZE + 2 * DELTA) ** 2, 6);
         });
 
         it("should not write the chosen corner style back into the caller's options", () => {
             // Arrange
             const square = jscad.polygon.square(new Inputs.JSCAD.SquareDto([0, 0], 4));
-            const expandOptions = { geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto;
+            const expandOptions = { geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpandDto;
             const offsetOptions = { geometry: square, delta: 1, segments: 16 } as Inputs.JSCAD.ExpansionDto;
 
             // Act

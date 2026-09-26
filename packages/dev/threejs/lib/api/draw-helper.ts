@@ -261,24 +261,17 @@ export class DrawHelper extends DrawHelperCore {
 
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined }) {
         const resolved = resolveDto(Inputs.Polyline.DrawPolylinesDto, inputs) as Resolved.Polyline.DrawPolylinesDto<THREEJS.Group> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined };
-        let colours = resolved.colours;
         const strategy = resolved.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-
-        const points = resolved.polylines.map((s, index) => {
-            const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
-            if (s.color) {
-                if (!Array.isArray(colours)) {
-                    const shared = colours;
-                    colours = resolved.polylines.map(() => shared);
-                }
-                if (Array.isArray(s.color)) {
-                    colours[index] = "#" + new THREEJS.Color(s.color[0]!, s.color[1]!, s.color[2]!).getHexString();
-                } else {
-                    colours[index] = s.color;
-                }
+        const points = resolved.polylines.map(s => s.isClosed ? [...s.points, s.points[0]!] : s.points);
+        const own = resolved.polylines.map(s => {
+            if (!s.color) {
+                return undefined;
             }
-            return pts;
+            return Array.isArray(s.color) ? "#" + new THREEJS.Color(s.color[0]!, s.color[1]!, s.color[2]!).getHexString() : s.color;
         });
+        const colours = own.some(c => c !== undefined)
+            ? this.resolveAllColors(resolved.colours, resolved.polylines.length, strategy).map((shared, index) => own[index] ?? shared)
+            : resolved.colours;
 
         let lineSegments: LineSegments2 | undefined;
         if (resolved.polylinesMesh && resolved.updatable) {
@@ -643,7 +636,7 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: THREEJS.Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided: boolean, backFaceColour: string, backFaceOpacity: number }, meshToUpdate: THREEJS.Group, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, 0, () => {
             const mat = new THREEJS.MeshPhysicalMaterial();
             mat.name = this.generateEntityId("jscadMaterial");
@@ -667,7 +660,7 @@ export class DrawHelper extends DrawHelperCore {
             const backFaceMesh = this.createBackFaceMesh(
                 meshData,
                 inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                inputs.backFaceOpacity ?? inputs.opacity,
+                inputs.backFaceOpacity,
                 0
             );
             meshToUpdate.add(backFaceMesh);
@@ -702,6 +695,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>) {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -768,8 +762,8 @@ export class DrawHelper extends DrawHelperCore {
                 resolved.edgeOpacity, 
                 resolved.edgeColour,
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                options.edgeArrowSize,
-                options.edgeArrowAngle
+                resolvedOptions.edgeArrowSize,
+                resolvedOptions.edgeArrowAngle
             );
             shapeGroup.add(line!);
         }
@@ -848,6 +842,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeGroup = new THREEJS.Group();
         shapeGroup.name = this.generateEntityId("brepMesh");
         this.context.scene.add(shapeGroup);
@@ -911,8 +906,8 @@ export class DrawHelper extends DrawHelperCore {
                     resolved.edgeOpacity,
                     resolved.edgeColour,
                     Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                    options.edgeArrowSize,
-                    options.edgeArrowAngle
+                    resolvedOptions.edgeArrowSize,
+                    resolvedOptions.edgeArrowAngle
                 );
                 if (mesh) {
                     mesh.name = `edge ${edge.edgeIndex}`;

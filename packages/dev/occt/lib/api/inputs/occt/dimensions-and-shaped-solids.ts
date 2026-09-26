@@ -80,6 +80,7 @@ export class SimpleLinearLengthDimensionDto {
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -231,6 +232,7 @@ export class SimpleAngularDimensionDto {
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -365,6 +367,7 @@ export class PinWithLabelDto {
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */

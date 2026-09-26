@@ -161,7 +161,7 @@ export class CacheHelper {
             toReturn = cacheMiss();
             if (Array.isArray(toReturn) && this.isJSCADObject(toReturn)) {
                 toReturn.forEach((r, index) => {
-                    const itemHash = this.computeHash({ ...args, index });
+                    const itemHash = this.stringToHash(`${curHash}:${index}`);
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
                     this.usedHashes[itemHash] = itemHash;

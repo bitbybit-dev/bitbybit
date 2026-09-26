@@ -1,5 +1,5 @@
 import { DtoConstraints, NumberBounds, PropertyConstraint, ValueKind } from "./constraints";
-import { DtoConstructor, DtoRegistry, isRegisteredOperation } from "./resolve-dto";
+import { DtoConstructor, DtoRegistry, isRegisteredOperation, resolveInputs } from "./resolve-dto";
 
 /**
  * Something wrong with the inputs of a call. `property` names the input at fault, `code` says what
@@ -89,7 +89,7 @@ function checkValue(property: string, value: unknown, constraint: PropertyConstr
             if (!Array.isArray(value) && !ArrayBuffer.isView(value)) return issue(property, "type", "must be a list");
             if (!constraint.items || !Array.isArray(value)) return undefined;
             for (let index = 0; index < value.length; index++) {
-                const itemIssue = checkValue(property, value[index], { ...constraint.items, required: true });
+                const itemIssue = checkValue(property, value[index], { required: true, ...constraint.items });
                 if (itemIssue) return { ...itemIssue, message: `item ${index} ${itemIssue.message}`, params: { ...itemIssue.params, index } };
             }
             return undefined;
@@ -140,10 +140,14 @@ const rulesOf = (dto: DtoConstructor | undefined, rules: RuleBook | undefined): 
     return found;
 };
 
+const ruleOfIssue = new WeakMap<InputIssue, number>();
+
 /**
  * Everything wrong with the inputs of a call: each property checked against the constraints the
  * registry lists for its operation, then the DTO's rules whose properties all passed. An operation
- * the registry does not list, or lists without constraints, has nothing to check.
+ * the registry does not list, or lists without constraints, has nothing to check. An issue a rule
+ * found remembers which of the DTO's rules found it, so `reportInputIssues` tells apart two rules on
+ * the same property that report the same code.
  * @param registry - A kernel's operations by dotted path
  * @param path - The dotted path of the operation
  * @param inputs - The inputs, with the DTO's defaults already laid under them
@@ -160,11 +164,14 @@ export function validateInputs(registry: DtoRegistry, path: string, inputs: unkn
     }
     const issues = checkStructure(entry.constraints, inputs);
     const failed = new Set(issues.map((found) => found.property));
-    for (const rule of rulesOf(entry.dto, rules)) {
-        if (rule.reads.some((property) => failed.has(property))) continue;
+    rulesOf(entry.dto, rules).forEach((rule, index) => {
+        if (rule.reads.some((property) => failed.has(property))) return;
         const found = rule.check(inputs);
-        if (found) issues.push(found);
-    }
+        if (found) {
+            ruleOfIssue.set(found, index);
+            issues.push(found);
+        }
+    });
     return issues;
 }
 
@@ -198,6 +205,7 @@ const defaultSink = (report: InputIssueReport): void => {
     console.warn(`${report.kernel} ${report.path}: ${report.issue.property} ${report.issue.message}`);
 };
 let sink: (report: InputIssueReport) => void = defaultSink;
+const MAX_REMEMBERED_ISSUES = 1000;
 const reported = new Set<string>();
 
 /**
@@ -213,7 +221,13 @@ export function setInputIssueSink(next?: (report: InputIssueReport) => void): vo
 
 /**
  * Reports the issues of one call, and the properties it passed that the operation does not know,
- * each distinct one once. Nothing is thrown: this is how a kernel says what it would reject.
+ * each distinct one once. An issue is the same one when it comes from the same kernel, operation,
+ * property and code - and, for an issue a rule found, from the same rule, whatever values it fired
+ * on. The last thousand issues are remembered, so a long session does not grow the memory without
+ * bound, and one that fell out of it is reported again when it recurs. Nothing is thrown by the
+ * checks: this is how a kernel says what it would reject. The sink is called as it is, so what it
+ * throws reaches the caller; a worker calls this through `prepareKernelCall`, which keeps it from
+ * failing the call.
  * @param kernel - The kernel the call went to, such as "OCCT"
  * @param path - The dotted path of the operation
  * @param issues - What `validateInputs` found
@@ -222,9 +236,51 @@ export function setInputIssueSink(next?: (report: InputIssueReport) => void): vo
 export function reportInputIssues(kernel: string, path: string, issues: readonly InputIssue[], unknown: readonly string[] = []): void {
     const all = [...issues, ...unknown.map((property) => issue(property, "unknown-property", "is not an input of this operation and is ignored"))];
     for (const found of all) {
-        const key = `${kernel}|${path}|${found.property}|${found.code}`;
+        const rule = ruleOfIssue.get(found);
+        const key = `${kernel}|${path}|${found.property}|${found.code}${rule === undefined ? "" : `|rule ${rule}`}`;
         if (reported.has(key)) continue;
         reported.add(key);
+        if (reported.size > MAX_REMEMBERED_ISSUES) {
+            const oldest = reported.values().next();
+            if (!oldest.done) reported.delete(oldest.value);
+        }
         sink({ kernel, path, issue: found });
     }
+}
+
+/**
+ * A call on its way to a kernel: its inputs over the defaults of the DTO the operation takes, and a
+ * way to report what those inputs would be rejected for.
+ */
+export type PreparedKernelCall = {
+    /** The inputs over the DTO's defaults: what the operation receives and what the call is cached under. */
+    readonly inputs: unknown;
+    /**
+     * Reports what `validateInputs` and `unknownProperties` find in the call, each distinct issue once.
+     * It never throws - neither a failing check nor a sink that throws fails a call while issues are
+     * only reported - so a worker calls it on a cache miss, just before the kernel runs.
+     */
+    readonly reportIssues: () => void;
+};
+
+/**
+ * Prepares a call the way every kernel worker does: the inputs are laid over the DTO's defaults now,
+ * and the report of what they would be rejected for waits until the call misses the cache.
+ * @param kernel - The kernel the call goes to, such as "OCCT"
+ * @param registry - The kernel's operations by dotted path
+ * @param path - The dotted path of the operation
+ * @param given - The inputs as the caller passed them
+ * @param rules - The kernel's rules, when it has any
+ * @returns The resolved inputs and the report of their issues
+ */
+export function prepareKernelCall(kernel: string, registry: DtoRegistry, path: string, given: unknown, rules?: RuleBook): PreparedKernelCall {
+    const inputs = resolveInputs(registry, path, given);
+    const reportIssues = (): void => {
+        try {
+            reportInputIssues(kernel, path, validateInputs(registry, path, inputs, rules), unknownProperties(registry, path, given));
+        } catch {
+            // Issues are only reported for now, so a check or a sink that throws must not fail the call.
+        }
+    };
+    return { inputs, reportIssues };
 }

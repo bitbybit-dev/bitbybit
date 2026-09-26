@@ -27,7 +27,7 @@ import ts from "typescript";
 import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROOT, sourceFiles, parse, classesUnder } from "./lib/surface.mjs";
+import { ROOT, INPUTS_CHAINS, sourceFiles, parse, classesUnder } from "./lib/surface.mjs";
 import { kernelSurface } from "./lib/kernel-surface.mjs";
 
 const check = process.argv.includes("--check");
@@ -39,6 +39,12 @@ const KERNELS = [
 ];
 
 const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
+
+/**
+ * The order every generated list is written in, the same under any locale: a bare `localeCompare`
+ * collates by the machine's locale, and under one that sorts `y` with `i` the files would differ.
+ */
+export const byName = (a, b) => a.localeCompare(b, "en-US");
 
 /**
  * The finite range a number property's JSDoc gives it: `@minimum` and `@maximum`, each made
@@ -56,7 +62,7 @@ export function boundsOf(member) {
 }
 
 /**
- * `Namespace.Class` -> { props: [{ name, type }], extends } for every class inside an exported namespace
+ * `Namespace.Class` -> { props: [{ name, namespace, type }], extends } for every class inside an exported namespace
  * of the files, and on the side every name each namespace declares, for qualifying a type parameter's
  * constraint outside the namespace. A file is a path, or a source file already parsed.
  */
@@ -82,7 +88,7 @@ export function dtoClasses(files, declared = new Map(), enums = new Map()) {
                 const parent = heritage && heritage.types[0] ? heritage.types[0].expression.getText(sf) : undefined;
                 const props = node.members
                     .filter((m) => ts.isPropertyDeclaration(m) && m.name && ts.isIdentifier(m.name))
-                    .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken, bounds: boundsOf(m) }));
+                    .map((m) => ({ name: m.name.text, namespace, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken, bounds: boundsOf(m) }));
                 const typeParams = (node.typeParameters || []).map((tp) => ({ name: tp.name.text, text: tp.getText(sf) }));
                 const abstract = (node.modifiers || []).some((m) => m.kind === ts.SyntaxKind.AbstractKeyword);
                 classes.set(`${namespace}.${node.name.text}`, { namespace, name: node.name.text, props, parent, typeParams, abstract });
@@ -99,13 +105,16 @@ export const bare = (type) => type.replace(/\s+/g, "").split("|").filter((t) => 
 /**
  * Every property of a DTO class, each once, in the order the API index lists them: a concrete
  * parent's first, an abstract parent's after the class's own. A property the class redeclares is
- * the class's declaration, in the place its parent gives it.
+ * the class's declaration, in the place its parent gives it. Each keeps the namespace of the class
+ * that declares it, which is where its type is written. A parent the classes do not hold is an
+ * error: its properties, and their defaults, would be left out without a sign.
  */
 export function allProps(classes, key, seen = new Set()) {
     const entry = classes.get(key);
     if (!entry || seen.has(key)) return [];
     seen.add(key);
     const parentKey = entry.parent ? (entry.parent.includes(".") ? entry.parent : `${entry.namespace}.${entry.parent}`) : undefined;
+    if (parentKey && !classes.has(parentKey)) throw new Error(`${key} extends ${entry.parent}, which is not a class of the inputs read (looked for ${parentKey})`);
     const inherited = parentKey ? allProps(classes, parentKey, seen) : [];
     const own = new Map(entry.props.map((p) => [p.name, p]));
     if (classes.get(parentKey)?.abstract) return [...entry.props, ...inherited.filter((p) => !own.has(p.name))];
@@ -115,11 +124,10 @@ export function allProps(classes, key, seen = new Set()) {
 
 /** The properties of a DTO that hold a single DTO of their own, by the class they hold. */
 export function nestedOf(classes, key) {
-    const { namespace } = classes.get(key);
     const nested = [];
     for (const prop of allProps(classes, key)) {
         const type = bare(prop.type);
-        const target = type.includes(".") ? type : `${namespace}.${type}`;
+        const target = type.includes(".") ? type : `${prop.namespace}.${type}`;
         if (type && !type.includes("|") && !type.endsWith("]") && classes.has(target) && target !== key) nested.push([prop.name, target]);
     }
     return nested;
@@ -139,24 +147,47 @@ export function constraintOf(type, namespace, enums) {
     if (/^"[^"]*"( \| "[^"]*")+$/.test(t)) return `k.oneOf([${[...t.matchAll(/"([^"]*)"/g)].map((m) => JSON.stringify(m[1])).join(", ")}])`;
     if (/^(Base\.)?Point2 \| (Base\.)?Point3$|^(Base\.)?Point3 \| (Base\.)?Point2$/.test(t)) return "k.point";
     const grouped = /^\((.+)\)\[\]$/.exec(t);
-    if (grouped) return `k.list(${constraintOf(grouped[1], namespace, enums)})`;
+    if (grouped) {
+        const members = unionMembers(grouped[1]);
+        const present = members.filter((m) => m !== "undefined" && m !== "null");
+        const item = constraintOf(present.join(" | "), namespace, enums);
+        return `k.list(${present.length < members.length ? `k.optional(${item})` : item})`;
+    }
     if (t.endsWith("[]") && !t.includes("|") && !t.includes("(")) return `k.list(${constraintOf(t.slice(0, -2), namespace, enums)})`;
     const values = enums.get(t.includes(".") ? t : `${namespace}.${t}`);
     if (values) return `k.oneOf([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
     return "k.opaque";
 }
 
+/**
+ * The members of a union type written as text, split at the top level only: a `|` inside
+ * parentheses, brackets, braces or type arguments belongs to a member.
+ */
+export function unionMembers(text) {
+    const members = [];
+    let depth = 0;
+    let current = "";
+    for (const char of text) {
+        if ("(<[{".includes(char)) depth++;
+        if (")>]}".includes(char)) depth--;
+        if (char === "|" && depth === 0) { members.push(current.trim()); current = ""; continue; }
+        current += char;
+    }
+    members.push(current.trim());
+    return members;
+}
+
 /** The constraint table of one DTO, as the source of a `DtoConstraints` object. */
 export function constraintsOf(classes, key, enums) {
-    const { namespace } = classes.get(key);
     const seen = new Set();
     const entries = [];
     for (const prop of allProps(classes, key)) {
         if (seen.has(prop.name)) continue;
         seen.add(prop.name);
-        let constraint = constraintOf(prop.type, namespace, enums);
+        let constraint = constraintOf(prop.type, prop.namespace, enums);
         if (prop.bounds && constraint === "k.number") constraint = `k.between(k.number, ${prop.bounds})`;
         if (prop.bounds && constraint === "k.list(k.number)") constraint = `k.list(k.between(k.number, ${prop.bounds}))`;
+        if (prop.bounds && constraint === "k.list(k.optional(k.number))") constraint = `k.list(k.optional(k.between(k.number, ${prop.bounds})))`;
         entries.push(`${prop.name}: ${prop.required ? `k.required(${constraint})` : constraint}`);
     }
     return `{ ${entries.join(", ")} }`;
@@ -190,14 +221,14 @@ export function registryText(kernel, classes, enums, surface) {
             rows.push([method.path, `{ dto: Inputs.${key}${nestedText}, constraints: ${constant} }`]);
         }
     }
-    rows.sort((a, b) => a[0].localeCompare(b[0]));
+    rows.sort((a, b) => byName(a[0], b[0]));
     return [
         `// GENERATED by scripts/gen-dto-meta.mjs from the ${kernel.kernelRoot} surface - do not edit.`,
         "// Regenerate with `npm run gen:dto-meta` at the repository root.",
         "import { constraintKinds as k, DtoConstraints, DtoRegistry } from \"@bitbybit-dev/base\";",
         "import * as Inputs from \"./inputs\";",
         "",
-        ...[...constraintNames].sort((a, b) => a[0].localeCompare(b[0])).map(([constant, key]) => `const ${constant}: DtoConstraints = ${constraintsOf(classes, key, enums)};`),
+        ...[...constraintNames].sort((a, b) => byName(a[0], b[0])).map(([constant, key]) => `const ${constant}: DtoConstraints = ${constraintsOf(classes, key, enums)};`),
         "",
         "/**",
         ` * Every public operation of the ${kernel.label} kernel by its dotted path, the inputs DTO it`,
@@ -261,16 +292,22 @@ export function mirrorReexports(target, sf = parse(path.join(ROOT, target.inputs
     return lines;
 }
 
+/** The inputs files of the packages below one in its inputs chain, where a parent of its DTOs may be declared. */
+const lowerInputs = (name) => (INPUTS_CHAINS[name] ?? []).slice(1).flatMap((pkg) => sourceFiles(path.join(ROOT, "packages/dev", pkg, "lib/api/inputs")));
+
 /**
  * The `Resolved` mirror of one package's inputs. The inputs files, the parsed inputs index and the
- * namespaces of the mirrors before it default to the package's own and to this run's.
+ * namespaces of the mirrors before it default to the package's own and to this run's. A DTO's
+ * parent is looked up in its own package's inputs first and then in `lowerFiles`, the inputs of the
+ * packages below it; only the package's own classes are emitted.
  */
-export function generateResolved(target, { files = sourceFiles(path.join(ROOT, target.inputsDir)), index, namespaces = mirrorNamespaces } = {}) {
+export function generateResolved(target, { files = sourceFiles(path.join(ROOT, target.inputsDir)), lowerFiles = lowerInputs(target.name), index, namespaces = mirrorNamespaces } = {}) {
     const declared = new Map();
-    const classes = dtoClasses(files, declared);
+    const own = dtoClasses(files, declared);
+    const classes = new Map([...dtoClasses(lowerFiles), ...own]);
     const qualify = (text, namespace) => text.replace(/(^|[^.\w])([A-Za-z_]\w*)\b/g, (whole, lead, name) => (declared.get(namespace)?.has(name) ? `${lead}Inputs.${namespace}.${name}` : whole));
     const byNamespace = new Map();
-    for (const [key, entry] of classes) {
+    for (const [key, entry] of own) {
         const defaulted = [...new Set(allProps(classes, key).filter((p) => p.defaulted).map((p) => p.name))];
         const params = entry.typeParams.length ? `<${entry.typeParams.map((t) => qualify(t.text, entry.namespace)).join(", ")}>` : "";
         const args = entry.typeParams.length ? `<${entry.typeParams.map((t) => t.name).join(", ")}>` : "";
@@ -296,7 +333,7 @@ export function generateResolved(target, { files = sourceFiles(path.join(ROOT, t
             " * the way `resolveDto` hands a DTO to the code that reads it.",
             " */",
             `export namespace ${namespace} {`,
-            ...byNamespace.get(namespace).sort((a, b) => a[0].localeCompare(b[0])).map(([, line]) => line),
+            ...byNamespace.get(namespace).sort((a, b) => byName(a[0], b[0])).map(([, line]) => line),
             "}",
         );
     }

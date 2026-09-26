@@ -28,7 +28,7 @@ export class CircleDto {
     /**
      * Number of straight sides around the circle; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
@@ -57,7 +57,7 @@ export class EllipseDto {
     /**
      * Number of straight sides around the ellipse; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
@@ -150,7 +150,7 @@ export class RoundedRectangleDto {
      * Number of straight pieces a full circle of rounding is made of, so each corner gets a
      * quarter; more makes it smoother
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -193,7 +193,7 @@ export class StarDto {
     /**
      * Number of tips; the star has as many notches between them
      * @default 10
-     * @minimum 0
+     * @minimum 2
      * @maximum Infinity
      * @step 1
      */
@@ -211,6 +211,7 @@ export class StarDto {
      * Distance from the center to each tip, in model units
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -226,7 +227,7 @@ export class StarDto {
     /**
      * Direction of the first tip, in degrees counter-clockwise from the X axis
      * @default 0
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 1
      */

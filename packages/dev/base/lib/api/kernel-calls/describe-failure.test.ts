@@ -116,15 +116,95 @@ describe("describeKernelFailure", () => {
         expect(inputFailure.message).toBe("`width` must be positive");
     });
 
-    it("should give binary inputs by their size only", () => {
+    it("should give binary inputs by their kind and size only", () => {
         // Arrange
-        const inputs = { bytes: new Uint8Array(1024), floats: new Float64Array(2), buffer: new ArrayBuffer(16) };
+        const inputs = { bytes: new Uint8Array(1024), floats: new Float64Array(2), buffer: new ArrayBuffer(16), view: new DataView(new ArrayBuffer(8)) };
 
         // Act
         const failure = describeKernelFailure("OCCT", PATH, inputs, new Error("bad step"));
 
         // Assert
-        expect(failure.message).toBe(`${FAILED}: bad step. Input values were: {bytes: [Uint8Array byteLength=1024], floats: [Float64Array byteLength=16], buffer: [ArrayBuffer byteLength=16]}.`);
+        expect(failure.message).toBe(`${FAILED}: bad step. Input values were: {bytes: [Uint8Array length=1024], floats: [Float64Array length=2], buffer: [ArrayBuffer byteLength=16], view: [DataView byteLength=8]}.`);
+    });
+
+    it("should give binary data nested at any depth by its kind and size only", () => {
+        // Arrange
+        const inputs = { mesh: { numProp: 3, vertProperties: new Float32Array(3000), triVerts: new Uint32Array(3) }, meshes: [{ data: new ArrayBuffer(4) }] };
+
+        // Act
+        const failure = describeKernelFailure("Manifold", PATH, inputs, new Error("not manifold"));
+
+        // Assert
+        expect(failure.message).toBe("Manifold computation failed while executing function 'shapes.solid.createBox': not manifold. Input values were: {mesh: {\"numProp\":3,\"vertProperties\":\"[Float32Array length=3000]\",\"triVerts\":\"[Uint32Array length=3]\"}, meshes: [{\"data\":\"[ArrayBuffer byteLength=4]\"}]}.");
+    });
+
+    it("should give binary data inside a thrown object by its kind and size only", () => {
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, {}, { reason: "bad mesh", mesh: new Float32Array(3000) });
+
+        // Assert
+        expect(failure.message).toBe(`${FAILED}: {"reason":"bad mesh","mesh":"[Float32Array length=3000]"}.`);
+    });
+
+    it("should read a long list only as far as the cut", () => {
+        // Arrange
+        let read = 0;
+        const item = { toJSON: (): number => { read += 1; return 1; } };
+        const inputs = { points: Array.from({ length: 10000 }, () => item) };
+
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, inputs, new Error("failed"));
+
+        // Assert
+        expect(failure.message).toBe(`${FAILED}: failed. Input values were: {points: [${Array.from({ length: 100 }, () => "1").join(",")}…(truncated)}.`);
+        expect(read).toBeLessThanOrEqual(201);
+    });
+
+    it("should stop reading nested lists once the cut is reached", () => {
+        // Arrange
+        let read = 0;
+        const item = { toJSON: (): number => { read += 1; return 1; } };
+        const row = Array.from({ length: 150 }, () => item);
+        const inputs = { grid: Array.from({ length: 150 }, () => row) };
+
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, inputs, new Error("failed"));
+
+        // Assert
+        expect(failure.message).toContain("grid: [[1,1,1");
+        expect(failure.message).toContain("…(truncated)");
+        expect(read).toBeLessThan(400);
+    });
+
+    it("should cut a long thrown object at 1000 characters", () => {
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, {}, { text: "a".repeat(5000) });
+
+        // Assert
+        expect(failure.message).toBe(`${FAILED}: {"text":"${"a".repeat(991)}…(truncated).`);
+    });
+
+    it("should describe a thrown object that has no text form and that JSON cannot write", () => {
+        // Arrange
+        const bare: Record<string, unknown> = Object.create(null);
+        bare["self"] = bare;
+
+        // Act
+        const failure = describeKernelFailure("JSCAD", PATH, {}, bare);
+
+        // Assert
+        expect(failure.message).toBe("JSCAD computation failed while executing function 'shapes.solid.createBox': [object Object].");
+    });
+
+    it("should still describe a failure whose error cannot even be inspected, and not throw", () => {
+        // Arrange
+        const hostile = new Proxy({}, { getPrototypeOf: (): object => { throw new Error("no prototype for you"); } });
+
+        // Act
+        const failure = describeKernelFailure("Manifold", PATH, {}, hostile);
+
+        // Assert
+        expect(failure).toEqual({ message: "Manifold computation failed while executing function 'shapes.solid.createBox', and the failure could not be described.", kind: "kernel", stack: undefined });
     });
 
     it("should cut a long input at 200 characters", () => {

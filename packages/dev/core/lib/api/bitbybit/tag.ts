@@ -51,7 +51,7 @@ export class Tag {
      * ```
      */
     drawTag(inputs: Inputs.Tag.DrawTagDto): Inputs.Tag.TagDto {
-        const resolved = resolveDto(Inputs.Tag.DrawTagDto, inputs) as Resolved.Tag.DrawTagDto;
+        const resolved = resolveDto(Inputs.Tag.DrawTagDto, inputs, { tag: Inputs.Tag.TagDto }) as Resolved.Tag.DrawTagDto;
         if (resolved.tagVariable && resolved.updatable) {
             const tagToUpdate = this.context.tagBag.find(tag => tag.id === resolved.tagVariable!.id)!;
             Object.assign(tagToUpdate, resolved.tag);
@@ -85,11 +85,12 @@ export class Tag {
      */
     drawTags(inputs: Inputs.Tag.DrawTagsDto): Inputs.Tag.TagDto[] {
         const resolved = resolveDto(Inputs.Tag.DrawTagsDto, inputs) as Resolved.Tag.DrawTagsDto;
+        const tags = resolved.tags.map((tag) => resolveDto(Inputs.Tag.TagDto, tag));
         if (resolved.tagsVariable && resolved.updatable) {
 
-            if (resolved.tagsVariable.length < resolved.tags.length) {
-                for (let i = resolved.tagsVariable.length - 1; i < resolved.tags.length - 1; i++) {
-                    const tagToCreate = resolved.tags[i]!;
+            if (resolved.tagsVariable.length < tags.length) {
+                for (let i = resolved.tagsVariable.length - 1; i < tags.length - 1; i++) {
+                    const tagToCreate = tags[i]!;
                     const textNode = document.createElement("span");
                     const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
                     tagToCreate.id = id;
@@ -103,7 +104,7 @@ export class Tag {
 
             resolved.tagsVariable.forEach((tagFromVar, index) => {
                 const tagToUpdate = this.context.tagBag.find(tag => tag.id === tagFromVar.id)!;
-                const tagToUpdateWith = resolved.tags[index];
+                const tagToUpdateWith = tags[index];
                 if (tagToUpdateWith) {
                     Object.assign(tagToUpdate, tagToUpdateWith);
                     tagToUpdate.needsUpdate = true;
@@ -118,7 +119,7 @@ export class Tag {
             });
         } else {
             const tagsToCreate: Inputs.Tag.TagDto[] = [];
-            resolved.tags.forEach((tag, _index) => {
+            tags.forEach((tag) => {
                 const textNode = document.createElement("span");
                 const id = "_tag" + new Date().getTime() + this.context.tagBag.length;
                 tag.id = id;

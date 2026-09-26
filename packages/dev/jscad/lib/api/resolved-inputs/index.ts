@@ -37,6 +37,7 @@ export namespace JSCAD {
     export type EllipsoidCentersDto = WithDefaults<Inputs.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
     export type EllipsoidDto = WithDefaults<Inputs.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
     export type EllipsoidSharedDto = WithDefaults<Inputs.JSCAD.EllipsoidSharedDto, "radius" | "segments">;
+    export type ExpandDto = WithDefaults<Inputs.JSCAD.ExpandDto, "delta" | "corners" | "segments">;
     export type ExpansionDto = WithDefaults<Inputs.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
     export type ExtrudeLinearDto = WithDefaults<Inputs.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
     export type ExtrudeRectangularDto = WithDefaults<Inputs.JSCAD.ExtrudeRectangularDto, "height" | "size">;

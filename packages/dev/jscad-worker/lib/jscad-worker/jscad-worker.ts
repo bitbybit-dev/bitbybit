@@ -1,6 +1,6 @@
 import { CacheHelper } from "./cache-helper";
 import { Jscad, jscadDtoRegistry, jscadDtoRules } from "@bitbybit-dev/jscad";
-import { callByPath, describeKernelFailure, rehydrateReferences, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
+import { callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
 
 /**
  * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
@@ -50,18 +50,20 @@ const cachedGeometry = (hash: string | number): unknown => {
 
 const isGeometry = (value: object): boolean => "polygons" in value || "sides" in value || "isClosed" in value;
 
+/** What the worker answers when a call failed and even its failure could not be sent back. */
+const UNREPORTABLE_FAILURE = "JSCAD computation failed, and the failure could not be reported.";
+
 /**
- * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes, references
- * in them become the geometry they stand for, the dotted path is called on the kernel, and the
- * result is cached under the inputs as resolved, before any reference was replaced. A call that is not
- * in the cache first reports what its inputs would be rejected for.
+ * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes and the result
+ * is cached under them, before any reference is replaced. Only a call that is not in the cache
+ * reports what its inputs would be rejected for, has the references in them replaced by the geometry
+ * they stand for, and calls the dotted path on the kernel.
  */
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
-    const inputs = resolveInputs(jscadDtoRegistry, action.functionName, action.inputs);
-    const rehydrated = rehydrateReferences(inputs, geometryHash, cachedGeometry, isGeometry);
-    return cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
-        reportInputIssues("JSCAD", action.functionName, validateInputs(jscadDtoRegistry, action.functionName, inputs, jscadDtoRules), unknownProperties(jscadDtoRegistry, action.functionName, action.inputs));
-        return callByPath(jscad, action.functionName, rehydrated);
+    const call = prepareKernelCall("JSCAD", jscadDtoRegistry, action.functionName, action.inputs, jscadDtoRules);
+    return cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+        call.reportIssues();
+        return callByPath(jscad, action.functionName, rehydrateReferences(call.inputs, geometryHash, cachedGeometry, isGeometry));
     });
 };
 
@@ -87,13 +89,17 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result
         });
     } catch (e) {
-        const failure = describeKernelFailure("JSCAD", d?.action?.functionName ?? "", d?.action?.inputs, e);
-        postMessage({
-            uid: d.uid,
-            result: undefined,
-            error: failure.message,
-            errorKind: failure.kind,
-            stack: failure.stack,
-        });
+        try {
+            const failure = describeKernelFailure("JSCAD", d?.action?.functionName ?? "", d?.action?.inputs, e);
+            postMessage({
+                uid: d.uid,
+                result: undefined,
+                error: failure.message,
+                errorKind: failure.kind,
+                stack: failure.stack,
+            });
+        } catch {
+            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+        }
     }
 };

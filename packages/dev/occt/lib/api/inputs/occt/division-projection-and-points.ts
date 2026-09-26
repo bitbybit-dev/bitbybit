@@ -380,7 +380,7 @@ export class PointsOnWireAtPatternOfLengthsDto<T> {
     shape!: T;
     /**
      * The gaps between points in model units, applied in turn from the start and repeated until the
-     * wire runs out.
+     * wire runs out; they must add up to more than 0.
      * @default undefined
      */
     lengths!: number[];

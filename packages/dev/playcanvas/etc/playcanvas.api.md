@@ -657,7 +657,6 @@ export class Draw extends DrawCore {
     // (undocumented)
     readonly drawHelper: DrawHelper;
     protected drawResolved(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Inputs_2.Draw.DrawnEntity;
-    // (undocumented)
     protected drawResolvedAsync(inputs: Inputs_2.Draw.DrawAny<pc_2.Entity>): Promise<Inputs_2.Draw.DrawnEntity>;
     optionsOcctShape(inputs: Inputs_2.Draw.DrawOcctShapeOptions): Inputs_2.Draw.DrawOcctShapeOptions;
     optionsSimple(inputs: Inputs_2.Draw.DrawBasicGeometryOptions): Inputs_2.Draw.DrawBasicGeometryOptions;
@@ -1243,6 +1242,13 @@ namespace JSCAD {
         radius?: Base.Point3 | undefined;
         segments?: number | undefined;
     }
+    class ExpandDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
+        corners?: solidCornerTypeEnum | undefined;
+        delta?: number | undefined;
+        geometry: JSCADEntity;
+        segments?: number | undefined;
+    }
     class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
         corners?: solidCornerTypeEnum | undefined;
@@ -1600,6 +1606,8 @@ namespace JSCAD_2 {
     type EllipsoidDto = WithDefaults<Inputs_4.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
     // (undocumented)
     type EllipsoidSharedDto = WithDefaults<Inputs_4.JSCAD.EllipsoidSharedDto, "radius" | "segments">;
+    // (undocumented)
+    type ExpandDto = WithDefaults<Inputs_4.JSCAD.ExpandDto, "delta" | "corners" | "segments">;
     // (undocumented)
     type ExpansionDto = WithDefaults<Inputs_4.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
     // (undocumented)

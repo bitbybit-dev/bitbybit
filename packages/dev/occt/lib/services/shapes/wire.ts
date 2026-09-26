@@ -979,9 +979,9 @@ export class OCCTWire {
      * Places points along a wire at a repeating pattern of gaps, such as 1, 3, 1, 3, until the wire
      * runs out.
      *
-     * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
-     * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
-     * point at the next gap past the last.
+     * `lengths` holds the gaps in model units, repeated from the start, and must add up to more
+     * than 0 or it throws. `includeFirst` adds the start point, `includeLast` the end, and
+     * `tryNext` one point past the last gap.
      * @param inputs - The wire, the pattern of gaps and which end points to include
      * @returns The points along the wire, in order
      * @group extract

@@ -11,7 +11,15 @@ type WorkerAnswer = "manifold-initialised" | "busy" | { uid: string; result?: un
 class RecordingWorker extends ManifoldWorkerMock {
     readonly posted: PostedCall[] = [];
 
+    refusals = 0;
+
+    refusal: unknown = new Error("() => 1 could not be cloned.");
+
     override postMessage(message: PostedCall | "busy"): void {
+        if (this.refusals > 0) {
+            this.refusals -= 1;
+            throw this.refusal;
+        }
         if (message !== "busy") {
             this.posted.push(message);
         }
@@ -247,6 +255,74 @@ describe("ManifoldWorkerManager unit tests", () => {
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("worker died");
+        });
+    });
+
+    describe("inputs that cannot cross to the worker", () => {
+        it("should reject the call at once as a failure of its inputs, naming the path", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("manifold.shapes.sphere", { material: (): number => 1 });
+
+            // Assert
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+            await expect(pending).rejects.toMatchObject({ functionName: "manifold.shapes.sphere", kind: "input", message: "manifold.shapes.sphere: the inputs could not be sent to the worker: () => 1 could not be cloned." });
+        });
+
+        it("should report the worker loaded when nothing else is outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("manifold.shapes.sphere", {});
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states).toEqual([{ state: ManifoldStateEnum.loaded }]);
+        });
+
+        it("should say only that the inputs could not be sent when what was thrown is not an error", async () => {
+            // Arrange
+            worker.refusals = 1;
+            worker.refusal = "not an error";
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("manifold.shapes.sphere", {});
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ functionName: "manifold.shapes.sphere", kind: "input", message: "manifold.shapes.sphere: the inputs could not be sent to the worker" });
+        });
+
+        it("should not report the worker loaded while another call is still outstanding", async () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("manifold.shapes.cube", {});
+            worker.refusals = 1;
+            states.length = 0;
+
+            // Act
+            const refused = manager.genericCallToWorkerPromise("manifold.shapes.sphere", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states.filter((s) => s.state === ManifoldStateEnum.loaded)).toEqual([]);
+        });
+
+        it("should not count a call it could not send as outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+            const refused = manager.genericCallToWorkerPromise("manifold.shapes.sphere", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+            const sent = manager.genericCallToWorkerPromise("manifold.shapes.cube", {});
+            states.length = 0;
+
+            // Act
+            answer({ uid: uidOf(0), result: "a-shape" });
+            await sent;
+
+            // Assert
+            expect(states).toEqual([{ state: ManifoldStateEnum.loaded }]);
         });
     });
 

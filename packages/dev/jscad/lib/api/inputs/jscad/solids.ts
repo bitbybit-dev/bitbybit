@@ -154,7 +154,7 @@ export abstract class RoundedCuboidSharedDto {
     /**
      * Number of straight pieces a full circle of rounding is made of; more makes the edges smoother
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -221,6 +221,7 @@ export class CylidnerEllipticDto {
      * Full length along Z, in model units
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -238,7 +239,7 @@ export class CylidnerEllipticDto {
     /**
      * Number of flat sides around the cylinder; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -265,6 +266,7 @@ export class CylidnerCentersEllipticDto {
      * Full length of every cylinder along Z, in model units
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -283,7 +285,7 @@ export class CylidnerCentersEllipticDto {
     /**
      * Number of flat sides around each cylinder; more makes them rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -312,7 +314,7 @@ export abstract class CylinderSharedDto {
     /**
      * Number of flat sides around the cylinder; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -369,7 +371,7 @@ export abstract class RoundedCylinderSharedDto {
     /**
      * Number of flat sides around the cylinder and pieces in the rounding; more makes it smoother
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -407,7 +409,7 @@ export abstract class EllipsoidSharedDto {
     /**
      * Number of facets around the ellipsoid; more makes it smoother
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -464,7 +466,7 @@ export abstract class GeodesicSphereSharedDto {
      * How finely each of the twenty starting faces is subdivided; used in whole multiples of 6, at
      * least 6, and higher is rounder
      * @default 12
-     * @minimum 0
+     * @minimum 6
      * @maximum Infinity
      * @step 1
      */
@@ -556,7 +558,7 @@ export abstract class SphereSharedDto {
     /**
      * Number of facets around the sphere; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -621,6 +623,7 @@ export class TorusDto {
      * Radius of the tube itself, in model units; it must be less than `outerRadius`
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -630,6 +633,7 @@ export class TorusDto {
      * twice the sum of both radii
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -637,7 +641,7 @@ export class TorusDto {
     /**
      * Number of flat pieces around the tube's cross-section; more makes the tube rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
@@ -645,7 +649,7 @@ export class TorusDto {
     /**
      * Number of flat pieces around the ring; more makes the ring rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
@@ -663,7 +667,8 @@ export class TorusDto {
      * How far the tube is swept around the ring, in degrees; 360 closes the ring and less leaves it
      * open
      * @default 360
-     * @minimum -Infinity
+     * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -671,7 +676,7 @@ export class TorusDto {
     /**
      * Where the sweep around the ring starts, in degrees from the X axis
      * @default 0
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 1
      */

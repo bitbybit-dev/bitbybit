@@ -615,7 +615,7 @@ export class ConvertStepToGltfDto {
      * smoother curves and more triangles.
      * @default 0.5
      * @minimum 0.01
-     * @maximum 3.14159
+     * @maximum 3.141592653589793
      * @step 0.05
      */
     meshAngle?: number | undefined = 0.5;
@@ -809,7 +809,7 @@ export class ConvertStepToGltfAdvancedDto {
      * smoother curves and more triangles.
      * @default 0.5
      * @minimum 0.01
-     * @maximum 3.14159
+     * @maximum 3.141592653589793
      * @step 0.1
      */
     meshAngle?: number | undefined = 0.5;

@@ -17,6 +17,7 @@ export class SquareDto {
      * The length of each side, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -48,6 +49,7 @@ export class RectangleDto {
      * `direction`.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -57,6 +59,7 @@ export class RectangleDto {
      * `direction`.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -91,6 +94,7 @@ export class LPolygonDto {
      * The thickness of the first leg, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -99,6 +103,7 @@ export class LPolygonDto {
      * The length of the first leg, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -107,6 +112,7 @@ export class LPolygonDto {
      * The thickness of the second leg, in model units.
      * @default 0.5
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -115,6 +121,7 @@ export class LPolygonDto {
      * The length of the second leg, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -163,6 +170,7 @@ export class IBeamProfileDto {
      * The width of the flanges, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -187,6 +195,7 @@ export class IBeamProfileDto {
      * The thickness of each horizontal flange, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -243,6 +252,7 @@ export class HBeamProfileDto {
      * The height of the flanges, in model units.
      * @default 3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -259,6 +269,7 @@ export class HBeamProfileDto {
      * The thickness of each vertical flange, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -307,6 +318,7 @@ export class TBeamProfileDto {
      * The width of the flange, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -323,6 +335,7 @@ export class TBeamProfileDto {
      * The thickness of the vertical web, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -331,6 +344,7 @@ export class TBeamProfileDto {
      * The thickness of the flange, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -380,6 +394,7 @@ export class UBeamProfileDto {
      * The total width of the profile, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -388,6 +403,7 @@ export class UBeamProfileDto {
      * The total height of the profile, in model units.
      * @default 3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -396,6 +412,7 @@ export class UBeamProfileDto {
      * The thickness of the web at the back of the channel, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -404,6 +421,7 @@ export class UBeamProfileDto {
      * The thickness of each flange, in model units.
      * @default 0.3
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -814,7 +832,8 @@ export class TorusDto {
      */
     majorRadius?: number | undefined = 2;
     /**
-     * The radius of the tube itself, in model units.
+     * The radius of the tube itself, in model units; at most `majorRadius`, where the hole in the
+     * middle closes to a point.
      * @default 0.5
      * @minimum 0
      * @exclusiveMinimum true

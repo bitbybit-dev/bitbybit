@@ -564,24 +564,17 @@ export class DrawHelper extends DrawHelperCore {
 
     drawPolylinesWithColours(inputs: Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined }) {
         const resolved = resolveDto(Inputs.Polyline.DrawPolylinesDto, inputs) as Resolved.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh> & { colorMapStrategy?: Inputs.Base.colorMapStrategyEnum | undefined, arrowSize?: number | undefined, arrowAngle?: number | undefined };
-        let colours = resolved.colours;
         const strategy = resolved.colorMapStrategy || Inputs.Base.colorMapStrategyEnum.lastColorRemainder;
-        
-        const points = resolved.polylines.map((s, index) => {
-            const pts = s.isClosed ? [...s.points, s.points[0]!] : s.points;
-            if (s.color) {
-                if (!Array.isArray(colours)) {
-                    const shared = colours;
-                    colours = resolved.polylines.map(() => shared);
-                }
-                if (Array.isArray(s.color)) {
-                    colours[index] = BABYLON.Color3.FromArray(s.color).toHexString();
-                } else {
-                    colours[index] = s.color;
-                }
+        const points = resolved.polylines.map(s => s.isClosed ? [...s.points, s.points[0]!] : s.points);
+        const own = resolved.polylines.map(s => {
+            if (!s.color) {
+                return undefined;
             }
-            return pts;
+            return Array.isArray(s.color) ? BABYLON.Color3.FromArray(s.color).toHexString() : s.color;
         });
+        const colours = own.some(c => c !== undefined)
+            ? this.resolveAllColors(resolved.colours, resolved.polylines.length, strategy).map((shared, index) => own[index] ?? shared)
+            : resolved.colours;
 
         return this.drawPolylines(
             resolved.polylinesMesh,
@@ -957,7 +950,7 @@ export class DrawHelper extends DrawHelperCore {
         return s;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawFaces?: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided: boolean, backFaceColour: string, backFaceOpacity: number }, meshToUpdate: BABYLON.Mesh, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }) {
         this.createMesh(res.positions, res.indices, res.normals, meshToUpdate, res.transforms, inputs.updatable);
         
         const zOffset = 0;
@@ -980,11 +973,7 @@ export class DrawHelper extends DrawHelperCore {
             meshToUpdate.isVisible = false;
         }
         
-        const drawTwoSided = (inputs.drawTwoSided === undefined || inputs.drawTwoSided === true) ? true : false;
-        if (drawTwoSided) {
-            const backFaceColour = inputs.backFaceColour ?? inputs.colour;
-            const backFaceOpacity = inputs.backFaceOpacity ?? inputs.opacity;
-            
+        if (inputs.drawTwoSided) {
             const isRightHanded = this.context.scene.useRightHandedSystem === true;
             
             const meshDataArray: MeshData[] = [{
@@ -996,8 +985,8 @@ export class DrawHelper extends DrawHelperCore {
             const skipWindingReversal = isRightHanded;
             const backFaceMesh = this.createBackFaceMesh(
                 meshDataArray,
-                backFaceColour,
-                backFaceOpacity,
+                inputs.backFaceColour,
+                inputs.backFaceOpacity,
                 zOffset,
                 usesClockWiseSideOrientation,
                 skipWindingReversal
@@ -1121,6 +1110,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
@@ -1129,8 +1119,8 @@ export class DrawHelper extends DrawHelperCore {
 
             let pbr: BABYLON.PBRMetallicRoughnessMaterial;
 
-            if (options.faceMaterial) {
-                pbr = options.faceMaterial;
+            if (resolvedOptions.faceMaterial) {
+                pbr = resolvedOptions.faceMaterial;
             } else {
                 const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
                 const alpha = resolved.faceOpacity;
@@ -1192,8 +1182,8 @@ export class DrawHelper extends DrawHelperCore {
                 1e-7,
                 false,
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                options.edgeArrowSize,
-                options.edgeArrowAngle
+                resolvedOptions.edgeArrowSize,
+                resolvedOptions.edgeArrowAngle
             )!;
             mesh.parent = shapeMesh;
         }
@@ -1276,6 +1266,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
@@ -1285,7 +1276,7 @@ export class DrawHelper extends DrawHelperCore {
             const alpha = resolved.faceOpacity;
             const zOffset = resolved.drawEdges ? 2 : 0;
 
-            const pbr = options.faceMaterial ?? this.getOrCreateMaterial(hex, alpha, zOffset, () => {
+            const pbr = resolvedOptions.faceMaterial ?? this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                 const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                 pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
                 pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
@@ -1339,8 +1330,8 @@ export class DrawHelper extends DrawHelperCore {
                     1e-7,
                     false,
                     Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                    options.edgeArrowSize,
-                    options.edgeArrowAngle
+                    resolvedOptions.edgeArrowSize,
+                    resolvedOptions.edgeArrowAngle
                 );
                 if (mesh) {
                     (mesh as unknown as { name: string }).name = `edge ${edge.edgeIndex}`;

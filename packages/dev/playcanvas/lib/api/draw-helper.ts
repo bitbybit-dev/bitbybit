@@ -218,16 +218,16 @@ export class DrawHelper extends DrawHelperCore {
         
         const processedPoints = this.processPolylinePoints(resolved.polylines as Inputs.Base.Polyline3[]);
 
-        let colours: string | string[] = resolved.colours;
-        resolved.polylines.forEach((polyline, index) => {
-            const own = (polyline as Inputs.Base.Polyline3 & { color?: string | [number, number, number] }).color;
-            if (!own) { return; }
-            if (!Array.isArray(colours)) {
-                const shared = colours;
-                colours = resolved.polylines.map(() => shared);
+        const own = resolved.polylines.map(polyline => {
+            const color = (polyline as Inputs.Base.Polyline3 & { color?: string | [number, number, number] }).color;
+            if (!color) {
+                return undefined;
             }
-            colours[index] = Array.isArray(own) ? this.normalizedColorToHex(own[0], own[1], own[2]) : own;
+            return Array.isArray(color) ? this.normalizedColorToHex(color[0], color[1], color[2]) : color;
         });
+        const colours = own.some(c => c !== undefined)
+            ? this.resolveAllColors(resolved.colours, resolved.polylines.length, strategy).map((shared, index) => own[index] ?? shared)
+            : resolved.colours;
 
         const existingMesh = (resolved.updatable && resolved.polylinesMesh) 
             ? resolved.polylinesMesh.children[0] as pc.Entity
@@ -595,7 +595,7 @@ export class DrawHelper extends DrawHelperCore {
         return countIndices;
     }
 
-    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number }, meshToUpdate: pc.Entity, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }): pc.Entity {
+    private makeMesh(inputs: { updatable: boolean, opacity: number, colour: string, hidden: boolean, drawTwoSided: boolean, backFaceColour: string, backFaceOpacity: number }, meshToUpdate: pc.Entity, res: { positions: number[]; normals: number[]; indices: number[]; transforms: []; }): pc.Entity {
         const pbr = this.getOrCreateMaterial(inputs.colour, inputs.opacity, 0, () => {
             const material = new pc.StandardMaterial();
             material.name = this.generateEntityId("jscadMaterial");
@@ -616,7 +616,7 @@ export class DrawHelper extends DrawHelperCore {
             const backFaceMesh = this.createBackFaceMesh(
                 [{ positions: res.positions, indices: res.indices, normals: res.normals }],
                 inputs.backFaceColour || DEFAULT_COLORS.BACK_FACE,
-                inputs.backFaceOpacity ?? inputs.opacity,
+                inputs.backFaceOpacity,
                 0
             );
             meshToUpdate.addChild(backFaceMesh);
@@ -670,6 +670,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMesh(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -677,8 +678,8 @@ export class DrawHelper extends DrawHelperCore {
 
             let pbr: pc.StandardMaterial;
 
-            if (options.faceMaterial) {
-                pbr = options.faceMaterial;
+            if (resolvedOptions.faceMaterial) {
+                pbr = resolvedOptions.faceMaterial;
             } else {
                 const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
                 const alpha = resolved.faceOpacity;
@@ -735,8 +736,8 @@ export class DrawHelper extends DrawHelperCore {
                 resolved.edgeOpacity, 
                 resolved.edgeColour,
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                options.edgeArrowSize,
-                options.edgeArrowAngle
+                resolvedOptions.edgeArrowSize,
+                resolvedOptions.edgeArrowAngle
             );
             shapeGroup.addChild(line!);
         }
@@ -815,6 +816,7 @@ export class DrawHelper extends DrawHelperCore {
 
     async handleDecomposedMeshIndividually(inputs: Omit<Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs.OCCT.DecomposedMeshDto, options: Partial<Inputs.Draw.DrawOcctShapeOptions>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
 
@@ -825,8 +827,8 @@ export class DrawHelper extends DrawHelperCore {
             const slopeOffset = resolved.drawEdges ? 2 : 0;
 
             let pbr: pc.StandardMaterial;
-            if (options.faceMaterial) {
-                pbr = options.faceMaterial;
+            if (resolvedOptions.faceMaterial) {
+                pbr = resolvedOptions.faceMaterial;
             } else {
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new pc.StandardMaterial();
@@ -877,8 +879,8 @@ export class DrawHelper extends DrawHelperCore {
                     resolved.edgeOpacity,
                     resolved.edgeColour,
                     Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
-                    options.edgeArrowSize,
-                    options.edgeArrowAngle
+                    resolvedOptions.edgeArrowSize,
+                    resolvedOptions.edgeArrowAngle
                 );
                 if (line) {
                     line.name = `edge ${edge.edgeIndex}`;

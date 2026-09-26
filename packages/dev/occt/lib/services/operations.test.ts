@@ -397,12 +397,42 @@ describe("OCCT operations unit tests", () => {
 
     it("should not slice in pattern when the steps list is empty", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
     });
 
     it("should not slice in pattern if steps property is an empty array", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
+    });
+
+    it.each<[string, number[]]>([
+        ["that move back as far as they move forward", [1, -1]],
+        ["that move back further than they move forward", [1, -2]],
+        ["of which none moves", [0, 0]],
+        ["that make the first gap too long to move back from", [100, -100]],
+    ])("should refuse steps %s instead of slicing forever", (_what, steps) => {
+        // Arrange
+        const box = solid.createBox({ width: 1, length: 1, height: 5, center: [0, 0, 0] });
+
+        // Act
+        const cut = (): unknown => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 0], steps });
+
+        // Assert
+        expect(cut).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
+        box.delete();
+    });
+
+    it("should slice with steps that move back less than they move forward", () => {
+        // Arrange
+        const box = solid.createBox({ width: 1, length: 1, height: 5, center: [0, 0, 0] });
+
+        // Act
+        const res = operations.sliceInStepPattern({ shape: box, direction: [0, 1, 0], steps: [2, -1] });
+
+        // Assert
+        expect(face.getFaces({ shape: res }).length).toBeGreaterThan(0);
+        box.delete();
+        res.delete();
     });
 
     it("should not slice in pattern shapes that are not solids", () => {
@@ -797,6 +827,47 @@ describe("OCCT operations unit tests", () => {
         const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 360, copy: true });
         const vol = solid.getSolidVolume({ shape: res });
         expect(vol).toEqual(98.69604401089357);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it("should revolve by a negative angle the other way round", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: -90, copy: true });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(24.674021577404435, 10);
+        expect(operations.boundingBoxCenterOfShape({ shape: res })[1]).toBeLessThan(0);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it.each([0, -360, -400])("should make a full turn for an angle of %s", (angle) => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle, copy: true });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(98.69604401089357, 8);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it("should revolve about the Y axis when the direction is left out", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 0, 1] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, angle: 90 });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(24.674021577404435, 10);
+        expect(operations.boundingBoxSizeOfShape({ shape: res })[1]).toBeCloseTo(2, 6);
         circleFace.delete();
         res.delete();
     });

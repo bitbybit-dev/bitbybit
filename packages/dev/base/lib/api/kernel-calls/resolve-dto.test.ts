@@ -117,12 +117,36 @@ describe("resolveDto", () => {
         expect(resolved).toEqual({ width: 1, center: [0, 0, 0] });
     });
 
-    it("should carry an explicit null over the default, since only undefined asks for the default", () => {
+    it("should give a property the caller set to null its default when the DTO has one", () => {
         // Act
-        const resolved = resolveDto(BoxDto, { width: null });
+        const resolved = resolveDto(BoxDto, { width: null, center: null });
 
         // Assert
-        expect(resolved.width).toBeNull();
+        expect(resolved).toEqual({ width: 1, center: [0, 0, 0] });
+    });
+
+    it("should carry null over a property the DTO has no default for", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { shape: null, tag: null, extra: null });
+
+        // Assert
+        expect(resolved).toEqual({ shape: null, width: 1, center: [0, 0, 0], tag: null, extra: null });
+    });
+
+    it("should give a property of a nested DTO the caller set to null its default", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { label: { text: null } }, { label: LabelDto });
+
+        // Assert
+        expect(resolved.label).toEqual({ text: "label", size: 12 });
+    });
+
+    it("should carry null over a property named like a member every object inherits, which is no default", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { constructor: null });
+
+        // Assert
+        expect(Object.getOwnPropertyDescriptor(resolved, "constructor")?.value).toBeNull();
     });
 
     it("should carry over a property the DTO does not declare", () => {

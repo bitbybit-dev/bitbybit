@@ -202,7 +202,7 @@ export class PathAppendArcDto {
     /**
      * Number of straight pieces for a full ellipse; the arc gets its proportional share
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */

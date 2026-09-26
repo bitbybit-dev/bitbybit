@@ -136,7 +136,7 @@ export class CylinderTextDto {
      * Number of flat sides around each cylinder and pieces in curved strokes; more makes the
      * letters rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
@@ -233,7 +233,7 @@ export class SphereTextDto {
      * Number of facets around each sphere and pieces in curved strokes; more makes the letters
      * rounder
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */

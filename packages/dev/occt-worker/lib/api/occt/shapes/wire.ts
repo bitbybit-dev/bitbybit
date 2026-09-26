@@ -3,6 +3,8 @@
 // Regenerate with `npm run gen:worker-api` at the repository root.
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
+import { Resolved } from "@bitbybit-dev/occt";
+import { resolveDto } from "@bitbybit-dev/base";
 import { ShapeParser } from "../../../shape-parser";
 
 /**
@@ -902,9 +904,9 @@ export class OCCTWire {
      * Places points along a wire at a repeating pattern of gaps, such as 1, 3, 1, 3, until the wire
      * runs out.
      *
-     * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
-     * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
-     * point at the next gap past the last.
+     * `lengths` holds the gaps in model units, repeated from the start, and must add up to more
+     * than 0 or it throws. `includeFirst` adds the start point, `includeLast` the end, and
+     * `tryNext` one point past the last gap.
      * @param inputs - The wire, the pattern of gaps and which end points to include
      * @returns The points along the wire, in order
      * @group extract
@@ -1546,7 +1548,8 @@ export class OCCTWire {
      * ```
      */
     async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
-        const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
+        const resolved = resolveDto(Inputs.OCCT.TextWiresDto, inputs) as Resolved.OCCT.TextWiresDto;
+        const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", resolved);
         if (!res.data || !res.shapes) {
             throw new Error("Text wires could not be created");
         }

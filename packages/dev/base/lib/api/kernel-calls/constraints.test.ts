@@ -48,6 +48,20 @@ describe("constraintKinds", () => {
         expect(requiredList).toStrictEqual({ kind: "list", items: { kind: "number" }, required: true });
     });
 
+    it("should mark a constraint optional and keep the rest of it", () => {
+        // Arrange
+        const bounded: PropertyConstraint = { kind: "number", bounds: { min: 0 } };
+
+        // Act
+        const optional = k.optional(bounded);
+        const optionalOfRequired = k.optional(k.required(k.vector3));
+
+        // Assert
+        expect(optional).toStrictEqual({ kind: "number", bounds: { min: 0 }, required: false });
+        expect(optionalOfRequired).toStrictEqual({ kind: "vector3", required: false });
+        expect(bounded).toStrictEqual({ kind: "number", bounds: { min: 0 } });
+    });
+
     it("should bound a constraint and keep the rest of it", () => {
         // Act
         const bounded = k.between(k.required(k.number), { min: 0, exclusiveMin: true });

@@ -25,7 +25,7 @@ import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { targets } from "./inputs.config.mjs";
-import { ROOT, sourceFiles, parse, isPublic, nameOf, classesUnder } from "./lib/surface.mjs";
+import { ROOT, HAND_DIRS, HAND_FILES, INPUTS_CHAINS, sourceFiles, parse, isPublic, nameOf, classesUnder } from "./lib/surface.mjs";
 
 const BASELINE = path.join(ROOT, "scripts/api-docs-baseline.json");
 const DEV = "packages/dev";
@@ -53,9 +53,8 @@ const ROOTS = [
 ];
 // Facade fields that are infrastructure or deprecated, not API to document.
 const SKIP_FIELDS = { context: "the engine context, not API", occtWorkerManager: "infrastructure", jscadWorkerManager: "infrastructure", manifoldWorkerManager: "infrastructure", verb: "deprecated, leaves with the next major" };
-// Hand-written worker members: audited file by file; a `// replaces` member without a doc inherits the kernel's.
-const HAND_DIRS = ["occt-worker/lib/api-hand", "jscad-worker/lib/api-hand", "manifold-worker/lib/api-hand"];
-const HAND_FILES = ["occt-worker/lib/api/bitbybit-occt.ts", "jscad-worker/lib/api/bitbybit-jscad.ts", "manifold-worker/lib/api/bitbybit-manifold.ts"];
+// Hand-written worker members (HAND_DIRS, HAND_FILES): audited file by file; a `// replaces` member
+// without a doc inherits the kernel's.
 // DTO sources: the fragments and the hand-written inputs files; never the assembled namespaces.
 const INPUTS_PACKAGES = ["base", "occt", "jscad", "manifold", "core", "babylonjs", "threejs", "playcanvas"];
 const ASSEMBLED = new Set(targets.map((t) => path.join(ROOT, t.out)));
@@ -126,7 +125,7 @@ const SEVERITY = {
     "missing-returns": "warn", "missing-param": "warn", "unknown-tag": "warn", "code-in-description": "warn",
     "example-unfenced": "warn", "example-syntax": "warn", "wrapped-list-marker": "warn",
     "stray-tag": "error", "unsafe-description": "error", "multiple-doc-blocks": "error", "forbidden-words": "error", "version-string": "error",
-    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error",
+    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error", "ctor-param-property": "error",
     "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
     "defaulted-spelling": "error",
     "exclusive-without-bound": "error",
@@ -247,18 +246,54 @@ export function parseDefaultTag(text) {
     return text.replace(/^"(.*)"$/, "$1");
 }
 
-/** The enum members of every inputs file, by enum name, so an initializer `Enum.member` can be read as its value. */
+const FRAGMENT_NAMESPACES = new Map(targets.map((t) => [path.join(ROOT, t.dir), t.namespace]));
+
+/**
+ * The namespace a declaration sits in: the nearest enclosing `namespace`, or for a declaration at the
+ * top of an inputs fragment the namespace the fragment is assembled into.
+ */
+export function namespaceOf(node, sf) {
+    for (let parent = node.parent; parent; parent = parent.parent) if (ts.isModuleDeclaration(parent)) return parent.name.text;
+    return FRAGMENT_NAMESPACES.get(path.dirname(sf.fileName));
+}
+
+/** The package a file of packages/dev belongs to. */
+const packageOf = (file) => path.relative(path.join(ROOT, DEV), file).split(path.sep)[0];
+
+/**
+ * The enum members of every inputs file, by enum name and by `Namespace.enum`, so an initializer
+ * `Enum.member` or `Namespace.Enum.member` can be read as its value.
+ */
 const enumMembers = new Map();
 export function collectEnums(sf) {
     const visit = (node) => {
         if (ts.isEnumDeclaration(node)) {
-            const members = new Map();
-            for (const m of node.members) members.set(nameOf(m) ?? m.name.getText(sf), m.initializer && (ts.isStringLiteral(m.initializer) || ts.isNumericLiteral(m.initializer)) ? evaluateInitializer(m.initializer, sf) : nameOf(m));
+            const members = enumValues(node, sf);
             enumMembers.set(node.name.text, members);
+            const namespace = namespaceOf(node, sf);
+            if (namespace) enumMembers.set(`${namespace}.${node.name.text}`, members);
         }
         ts.forEachChild(node, visit);
     };
     visit(sf);
+}
+
+/**
+ * Each member of an enum with its value as TypeScript numbers it: a literal initializer is its value,
+ * and a member without one is the previous member's number plus one, 0 for the first. A value that
+ * cannot be read - a computed initializer, or a member after one - is UNREADABLE.
+ */
+export function enumValues(node, sf) {
+    const members = new Map();
+    let next = 0;
+    for (const m of node.members) {
+        const name = nameOf(m) ?? (ts.isStringLiteral(m.name) ? m.name.text : m.name.getText(sf));
+        const read = m.initializer ? evaluateInitializer(m.initializer, sf) : next;
+        const value = typeof read === "string" || typeof read === "number" ? read : UNREADABLE;
+        members.set(name, value);
+        next = typeof value === "number" ? value + 1 : UNREADABLE;
+    }
+    return members;
 }
 
 export const UNREADABLE = Symbol("unreadable");
@@ -293,12 +328,30 @@ export function evaluateInitializer(node, sf) {
         }
         return out;
     }
-    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
-        const members = enumMembers.get(node.expression.text);
-        if (members && members.has(node.name.text)) return { enumName: node.expression.text, member: node.name.text, value: members.get(node.name.text) };
+    if (ts.isPropertyAccessExpression(node)) {
+        const members = enumOf(node.expression, sf);
+        if (members && members.has(node.name.text)) return { enumName: node.expression.getText(sf), member: node.name.text, value: members.get(node.name.text) };
         return UNREADABLE;
     }
     return UNREADABLE;
+}
+
+/**
+ * The members of the enum an expression names: `Enum` by its name, in the namespace the expression
+ * sits in first; `Namespace.Enum` (however deeply qualified) by the enum's own name in that
+ * namespace first.
+ */
+function enumOf(expression, sf) {
+    if (ts.isIdentifier(expression)) {
+        const namespace = namespaceOf(expression, sf);
+        return (namespace && enumMembers.get(`${namespace}.${expression.text}`)) || enumMembers.get(expression.text);
+    }
+    if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
+        const qualifier = expression.expression;
+        const namespace = ts.isIdentifier(qualifier) ? qualifier.text : ts.isPropertyAccessExpression(qualifier) ? qualifier.name.text : undefined;
+        return (namespace && enumMembers.get(`${namespace}.${expression.name.text}`)) || enumMembers.get(expression.name.text);
+    }
+    return undefined;
 }
 
 const canonical = (value) => JSON.stringify(value, (_, v) => (typeof v === "number" && !Number.isFinite(v) ? String(v) : v));
@@ -357,6 +410,13 @@ export function checkOptionalAgreement(item) {
  * initializers as placeholders, and a result's fields are always there. A constant tag
  * (`type = "arc" as const`) is not a default either.
  */
+/** Whether a type is a union with `undefined` as one of its own members, parentheses aside; not one nested in a type argument. */
+export function unionHoldsUndefined(type) {
+    let t = type;
+    while (t && ts.isParenthesizedTypeNode(t)) t = t.type;
+    return !!t && ts.isUnionTypeNode(t) && t.types.some((member) => member.kind === ts.SyntaxKind.UndefinedKeyword);
+}
+
 export function checkSpelling(item) {
     if (!item.declaration) return;
     const optionalTag = item.doc?.tags.some((t) => t.name === "optional" && t.text === "true") ?? false;
@@ -364,10 +424,10 @@ export function checkSpelling(item) {
     if (defaultTag !== undefined && defaultTag.text !== "undefined" && !item.initializer) add("default-needs-initializer", item, `@default ${defaultTag.text} but no initializer, so \`new ${item.className}()\` leaves it unset`);
     if (item.initializer && defaultTag === undefined) add("default-tag-missing", item, `initialized to ${item.initializer.getText(item.sf)} but no @default says so`);
     if (!item.initializer && !item.optional && !item.definite) add("required-spelling", item, "neither initialized nor optional, so it is required: spell it `name!: T;`");
-    if (item.optional && !/\|\s*undefined\b/.test(item.type)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
+    if (item.optional && !unionHoldsUndefined(item.typeNode)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
     if (item.initializer && optionalTag) add("optional-with-default", item, "@optional true on a property with a default; a default already makes it optional");
     for (const [flag, bound] of [["exclusiveMinimum", "minimum"], ["exclusiveMaximum", "maximum"]]) {
-        const tag = item.doc?.tags.find((t) => t.name === flag);
+        const tag = item.doc?.tags.find((t) => t.name === flag && t.text === "true");
         const limit = item.doc?.tags.find((t) => t.name === bound);
         if (tag && (!limit || !Number.isFinite(Number(limit.text)))) add("exclusive-without-bound", item, `@${flag} needs a finite @${bound} beside it to make exclusive`);
     }
@@ -378,31 +438,46 @@ export function checkSpelling(item) {
 /**
  * A singular DTO and its plural - `XDto` beside `XsDto`, `XShapesDto` or `XCentersDto` in the same
  * file - that keep separate classes still describe the same setting under the same name, so a
- * property both declare agrees on its type, its default and its bounds. Where the two share their
- * common properties through an abstract parent there is nothing to compare: each property is
- * declared once.
+ * property both have - declared or inherited - agrees on its type, its default and its bounds. Where
+ * the two share their common properties through an abstract parent there is nothing to compare:
+ * each property is declared once. A difference is reported on the plural's declaration of it.
  */
 export function checkPairParity() {
     const facts = (p) => {
         const tag = (name) => p.doc?.tags.find((t) => t.name === name)?.text ?? "";
         return { type: p.type.replace(/\s+/g, ""), default: tag("default"), minimum: tag("minimum"), maximum: tag("maximum"), step: tag("step"), optional: tag("optional") };
     };
+    const propsOf = (d) => {
+        const all = new Map();
+        for (const owner of [d, ...ancestorsOf(d)]) {
+            for (const p of props.filter((x) => x.dto === owner)) if (!all.has(p.name)) all.set(p.name, p);
+        }
+        return all;
+    };
     for (const single of dtos) {
         const match = /^(.+)Dto$/.exec(single.name);
         if (!match) continue;
         const plurals = [`${match[1]}sDto`, `${match[1]}esDto`, `${match[1]}ShapesDto`, `${match[1]}CentersDto`];
         for (const plural of dtos.filter((d) => d.file === single.file && plurals.includes(d.name))) {
-            const singleProps = new Map(props.filter((p) => p.className === single.name && p.file === single.file).map((p) => [p.name, p]));
-            for (const p of props.filter((x) => x.className === plural.name && x.file === plural.file && singleProps.has(x.name))) {
-                const a = facts(singleProps.get(p.name)), b = facts(p);
+            const singleProps = propsOf(single);
+            for (const [name, p] of propsOf(plural)) {
+                const other = singleProps.get(name);
+                if (!other || other === p) continue;
+                const a = facts(other), b = facts(p);
                 const differing = Object.keys(a).filter((k) => a[k] !== b[k]);
-                if (differing.length) add("pair-parity", p, `differs from ${single.name}.${p.name} in ${differing.join(", ")}`);
+                const as = p.className === plural.name ? "" : `as ${plural.name}.${name}, `;
+                if (differing.length) add("pair-parity", p, `${as}differs from ${single.name}.${name} in ${differing.join(", ")}`);
             }
         }
     }
 }
 
-/** Every constructor parameter names the property it fills, spelled the same; a typo or a stray parameter is a public signature nobody can call by name. */
+/**
+ * Every constructor parameter names the property it fills, spelled the same; a typo or a stray
+ * parameter is a public signature nobody can call by name. A parameter property (`constructor(public
+ * x?: number)`) is refused: it declares a property the spelling, default and constructor rules never
+ * see, so a DTO declares each property in its body and assigns it.
+ */
 export function checkConstructor(item) {
     const ctor = item.node.members.find(ts.isConstructorDeclaration);
     if (!ctor) return;
@@ -420,8 +495,11 @@ export function checkConstructor(item) {
     };
     if (ctor.body) visit(ctor.body);
     for (const param of ctor.parameters) {
-        if (ts.getCombinedModifierFlags(param) & ts.ModifierFlags.ParameterPropertyModifier) continue;
         const name = param.name.getText(item.sf);
+        if (ts.getCombinedModifierFlags(param) & ts.ModifierFlags.ParameterPropertyModifier) {
+            add("ctor-param-property", item, `constructor parameter "${name}" declares a property, which the spelling, default and constructor rules do not see; declare it in the class body and assign it`);
+            continue;
+        }
         if (!param.questionToken && !param.initializer && !param.dotDotDotToken) add("ctor-param-required", item, `constructor parameter "${name}" is required, so \`new ${item.name}()\` - the DTO with its defaults - does not type-check`);
         if (passedToParent.has(name)) continue;
         const target = assigned.get(name);
@@ -473,8 +551,10 @@ function collectClass(entry, className, pathPrefix, resolveClass) {
             const mkey = `${rel(file)}#${className}.${name}`;
             if (audit && !seen.has(mkey)) {
                 seen.add(mkey);
-                const dtoName = member.parameters[0]?.type?.getText(sf).replace(/<.*$/, "").split(".").pop();
-                methods.push({ kind: "M", file, line: lineOf(member, sf), path: full, name, className, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", dtoName, blocks: leadingBlocks(member, sf) });
+                const dtoPath = member.parameters[0]?.type?.getText(sf).replace(/<.*$/, "").split(".");
+                const dtoName = dtoPath?.pop();
+                const dtoNamespace = dtoPath?.filter((segment) => segment !== "Inputs").pop();
+                methods.push({ kind: "M", file, line: lineOf(member, sf), path: full, name, className, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", dtoName, dtoNamespace, blocks: leadingBlocks(member, sf) });
             }
         } else if (ts.isPropertyDeclaration(member)) {
             if (SKIP_FIELDS[name]) continue;
@@ -489,6 +569,9 @@ function collectClass(entry, className, pathPrefix, resolveClass) {
     stack.delete(className);
 }
 
+/** The key a DTO's property count is held under: its file and its name, since a name repeats across packages. */
+export const dtoKey = (d) => `${d.file}#${d.name}`;
+
 /** Every exported DTO class of an inputs file and its properties, and how many properties a method taking it passes. */
 export function collectDtos(sf) {
     const file = sf.fileName;
@@ -497,7 +580,8 @@ export function collectDtos(sf) {
             const className = node.name.text;
             const doc = docOf(node);
             if (!doc?.tags.some((t) => t.name === "deprecated")) {
-                dtos.push({ kind: "D", file, line: lineOf(node, sf), path: className, name: className, doc, blocks: leadingBlocks(node, sf), node, sf });
+                const dto = { kind: "D", file, line: lineOf(node, sf), path: className, name: className, namespace: namespaceOf(node, sf), doc, blocks: leadingBlocks(node, sf), node, sf };
+                dtos.push(dto);
                 const ctor = node.members.find(ts.isConstructorDeclaration);
                 const parameterProperties = ctor ? ctor.parameters.filter((p) => ts.getCombinedModifierFlags(p) & ts.ModifierFlags.ParameterPropertyModifier) : [];
                 const own = [];
@@ -506,10 +590,11 @@ export function collectDtos(sf) {
                     if (!name || !isPublic(member) || !(ts.isPropertyDeclaration(member) || ts.isParameter(member))) continue;
                     const pdoc = docOf(member);
                     if (pdoc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
-                    own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, definite: ts.isPropertyDeclaration(member) && !!member.exclamationToken, declaration: ts.isPropertyDeclaration(member), sf });
+                    own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", typeNode: member.type, blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, definite: ts.isPropertyDeclaration(member) && !!member.exclamationToken, declaration: ts.isPropertyDeclaration(member), sf });
                 }
+                for (const p of own) p.dto = dto;
                 props.push(...own);
-                dtoPropCount.set(className, own.filter((p) => !/shape|Pointer|manifold|entity/i.test(p.type)).length);
+                dtoPropCount.set(dtoKey(dto), own.filter((p) => !/shape|Pointer|manifold|entity/i.test(p.type)).length);
             }
         }
         ts.forEachChild(node, visit);
@@ -518,12 +603,12 @@ export function collectDtos(sf) {
 }
 
 /**
- * The class each DTO extends, found in the same file first, as TypeScript scopes an unqualified
- * `extends`, and the property names a DTO inherits through it. A singular and a plural DTO share
- * their common properties through an abstract parent; the subclass constructors fill those too.
+ * The class each DTO extends, and the property names a DTO inherits through it. A singular and a
+ * plural DTO share their common properties through an abstract parent; the subclass constructors
+ * fill those too.
  */
 export const parentOf = new Map();
-const ownPropNames = (d) => props.filter((p) => p.className === d.name && p.file === d.file).map((p) => p.name);
+const ownPropNames = (d) => props.filter((p) => p.dto === d).map((p) => p.name);
 export function inheritedPropNames(d, seenDtos = new Set()) {
     const parent = parentOf.get(d);
     if (!parent || seenDtos.has(parent)) return [];
@@ -536,6 +621,42 @@ const ancestorsOf = (d, seenDtos = new Set()) => {
     seenDtos.add(parent);
     return [parent, ...ancestorsOf(parent, seenDtos)];
 };
+
+/**
+ * The DTO a subclass's `extends` names. The name is matched in the namespace the qualifier names, or
+ * for an unqualified name in the subclass's own namespace; among those, the nearest wins: the same
+ * file, as TypeScript scopes an unqualified `extends`, then the same directory, then the same
+ * package, then anywhere. Two candidates at the nearest distance are an error, since which one the
+ * subclass extends cannot be told from here; none is no parent.
+ */
+export function findParent(d, written) {
+    const segments = written.split(".");
+    const name = segments.pop();
+    const qualifier = segments.pop();
+    const namespace = qualifier ?? d.namespace;
+    const candidates = dtos.filter((x) => x !== d && x.name === name && x.namespace === namespace);
+    const tiers = [(x) => x.file === d.file, (x) => path.dirname(x.file) === path.dirname(d.file), (x) => packageOf(x.file) === packageOf(d.file), () => true];
+    for (const tier of tiers) {
+        const found = candidates.filter(tier);
+        if (found.length > 1) throw new Error(`${rel(d.file)}: ${d.name} extends ${written}, which names ${found.length} classes as near as each other (${found.map((x) => rel(x.file)).join(", ")})`);
+        if (found.length === 1) return found[0];
+    }
+    return undefined;
+}
+
+/**
+ * How many properties a method's DTO passes: the DTO its first parameter names, by namespace where
+ * the type says one, the nearest along the method's package's inputs chain.
+ */
+export function dtoPropsOf(method) {
+    if (!method.dtoName) return 0;
+    const candidates = dtos.filter((d) => d.name === method.dtoName && (!method.dtoNamespace || d.namespace === method.dtoNamespace));
+    for (const pkg of INPUTS_CHAINS[packageOf(method.file)] ?? []) {
+        const found = candidates.find((d) => packageOf(d.file) === pkg);
+        if (found) return dtoPropCount.get(dtoKey(found)) ?? 0;
+    }
+    return candidates.length === 1 ? dtoPropCount.get(dtoKey(candidates[0])) ?? 0 : 0;
+}
 
 /** The class names some method or function takes: named in a parameter type, or held by a property of one that is. */
 export const takenClasses = new Set();
@@ -550,19 +671,37 @@ export function collectInputs(inputsSourceFiles, libSourceFiles) {
     for (const d of dtos) {
         const heritage = (d.node.heritageClauses || []).find((c) => c.token === ts.SyntaxKind.ExtendsKeyword);
         if (!heritage) continue;
-        const name = heritage.types[0].expression.getText(d.sf).split(".").pop();
-        const parent = dtos.find((x) => x.name === name && x.file === d.file) ?? dtos.find((x) => x.name === name);
+        const parent = findParent(d, heritage.types[0].expression.getText(d.sf));
         if (parent) parentOf.set(d, parent);
     }
     for (const d of dtos) {
         const ancestors = ancestorsOf(d);
-        if (ancestors.length) dtoPropCount.set(d.name, (dtoPropCount.get(d.name) ?? 0) + props.filter((p) => ancestors.some((a) => p.className === a.name && p.file === a.file) && !/shape|Pointer|manifold|entity/i.test(p.type)).length);
+        if (ancestors.length) dtoPropCount.set(dtoKey(d), (dtoPropCount.get(dtoKey(d)) ?? 0) + props.filter((p) => ancestors.includes(p.dto) && !/shape|Pointer|manifold|entity/i.test(p.type)).length);
     }
     const propTypes = new Map(dtos.map((d) => [d.name, []]));
     for (const p of props) propTypes.get(p.className).push(p.type);
+    const aliasTypes = new Map();
+    for (const sf of inputsSourceFiles) {
+        const visit = (node) => {
+            if (ts.isTypeAliasDeclaration(node)) aliasTypes.set(node.name.text, [...(aliasTypes.get(node.name.text) ?? []), node.type.getText(sf)]);
+            ts.forEachChild(node, visit);
+        };
+        visit(sf);
+    }
+    const classesIn = (text, seenAliases = new Set()) => {
+        const found = [];
+        for (const m of text.matchAll(/\b([A-Z]\w*)\b/g)) {
+            if (propTypes.has(m[1])) found.push(m[1]);
+            else if (aliasTypes.has(m[1]) && !seenAliases.has(m[1])) {
+                seenAliases.add(m[1]);
+                for (const aliased of aliasTypes.get(m[1])) found.push(...classesIn(aliased, seenAliases));
+            }
+        }
+        return found;
+    };
     for (const sf of libSourceFiles) {
         const visit = (node) => {
-            if (ts.isParameter(node) && node.type) for (const m of node.type.getText(sf).matchAll(/\b([A-Z]\w*)\b/g)) if (propTypes.has(m[1])) takenClasses.add(m[1]);
+            if (ts.isParameter(node) && node.type) for (const name of classesIn(node.type.getText(sf))) takenClasses.add(name);
             ts.forEachChild(node, visit);
         };
         visit(sf);
@@ -571,7 +710,7 @@ export function collectInputs(inputsSourceFiles, libSourceFiles) {
     while (queue.length) {
         const name = queue.pop();
         for (const text of propTypes.get(name) ?? []) {
-            for (const m of text.matchAll(/\b([A-Z]\w*)\b/g)) if (propTypes.has(m[1]) && !takenClasses.has(m[1])) { takenClasses.add(m[1]); queue.push(m[1]); }
+            for (const held of classesIn(text)) if (!takenClasses.has(held)) { takenClasses.add(held); queue.push(held); }
         }
         for (const d of dtos.filter((x) => x.name === name)) {
             const parent = parentOf.get(d);
@@ -622,7 +761,7 @@ function main() {
     const libFiles = [...INPUTS_PACKAGES, "occt-worker", "jscad-worker", "manifold-worker"].flatMap((pkg) => sourceFiles(path.join(ROOT, DEV, pkg, "lib"))).filter((f) => !f.includes("/api/inputs") && !f.includes("/resolved-inputs") && !isVerb(f));
     collectInputs(inputsFiles.map(parse), libFiles.map(parse));
 
-    for (const m of methods) m.dtoProps = m.dtoName ? dtoPropCount.get(m.dtoName) ?? 0 : 0;
+    for (const m of methods) m.dtoProps = dtoPropsOf(m);
     for (const m of methods) checkMethod(m);
     for (const c of classes) checkClass(c);
     checkDtos();

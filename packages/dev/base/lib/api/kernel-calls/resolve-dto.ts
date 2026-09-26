@@ -33,10 +33,12 @@ const isRecord = (value: unknown): value is Record<string, unknown> => value !==
 /**
  * Builds the DTO a service reads from what a caller passed: the defaults a new `Dto` holds, with the
  * caller's properties laid over them. A property the caller set to undefined keeps its default, and
- * a caller that passed nothing gets the defaults alone. The result is a new plain object - a DTO
- * carries data and no behaviour, and a plain object is what crosses a worker boundary and what a
- * walk over the inputs treats as data - and the caller's object is never changed. Properties named
- * in `nested` hold a DTO of their own and get its defaults the same way.
+ * so does one the caller set to null when the DTO has a default for it - a visual editor or a JSON
+ * payload spells "not set" as null - while null on a property with no default stays null. A caller
+ * that passed nothing gets the defaults alone. The result is a new plain object - a DTO carries data
+ * and no behaviour, and a plain object is what crosses a worker boundary and what a walk over the
+ * inputs treats as data - and the caller's object is never changed. Properties named in `nested`
+ * hold a DTO of their own and get its defaults the same way.
  * @param Dto - The DTO class whose initializers are the defaults
  * @param inputs - What the caller passed, usually an object literal
  * @param nested - The properties that hold a DTO, and its class
@@ -45,9 +47,10 @@ const isRecord = (value: unknown): value is Record<string, unknown> => value !==
 export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unknown, nested?: Readonly<Record<string, DtoConstructor>>): T {
     const resolved: Record<string, unknown> = {};
     Object.assign(resolved, new Dto());
+    const hasDefault = (key: string): boolean => Object.prototype.hasOwnProperty.call(resolved, key) && resolved[key] !== undefined;
     if (isRecord(inputs)) {
         for (const [key, value] of Object.entries(inputs)) {
-            if (value !== undefined) {
+            if (value !== undefined && !(value === null && hasDefault(key))) {
                 resolved[key] = value;
             }
         }

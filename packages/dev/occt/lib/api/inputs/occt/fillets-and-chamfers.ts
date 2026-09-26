@@ -23,6 +23,7 @@ export class FilletDto<T> {
      * given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -62,6 +63,7 @@ export class FilletShapesDto<T> {
      * given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -128,6 +130,7 @@ export class FilletEdgesListOneRadiusDto<T, U> {
      * The rounding radius for every edge, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -243,6 +246,7 @@ export abstract class Fillet3DWireSharedDto {
      * given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -325,6 +329,7 @@ export class ChamferDto<T> {
      * `distanceList` is given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -401,6 +406,7 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      * How far from the edge the bevel starts on the face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -448,6 +454,7 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from the edge on `face`, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -456,6 +463,7 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from the edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -530,6 +538,7 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from each edge on its paired face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -538,6 +547,7 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from each edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -613,6 +623,7 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      * How far from each edge the bevel starts on its paired face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */

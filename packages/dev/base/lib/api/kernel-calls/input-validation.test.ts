@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
 import { constraintKinds as k, DtoConstraints, NumberBounds } from "./constraints";
-import { checkStructure, InputIssue, InputIssueReport, reportInputIssues, ruleBook, setInputIssueSink, unknownProperties, validateInputs } from "./input-validation";
-import { custom, defineRules } from "./input-rules";
+import { checkStructure, InputIssue, InputIssueReport, prepareKernelCall, reportInputIssues, ruleBook, setInputIssueSink, unknownProperties, validateInputs } from "./input-validation";
+import { custom, defineRules, lessThan } from "./input-rules";
 import { DtoRegistry } from "./resolve-dto";
 
 class BoxDto {
@@ -169,6 +169,16 @@ describe("checkStructure", () => {
 
         // Assert
         expect(issues).toEqual([{ property: "sizes", code: "required", message: "item 1 is required", params: { index: 1 } }]);
+    });
+
+    it("should let a list whose items are optional hold items that are left out, and still check the others", () => {
+        // Act
+        const free = checkStructure({ tangents: k.list(k.optional(k.vector3)) }, { tangents: [[1, 0, 0], undefined, null, [0, 1, 0]] });
+        const wrong = checkStructure({ tangents: k.list(k.optional(k.vector3)) }, { tangents: [undefined, [1, 0]] });
+
+        // Assert
+        expect(free).toEqual([]);
+        expect(wrong).toEqual([{ property: "tangents", code: "arity", message: "item 1 must have 3 numbers, not 2", params: { index: 1, expected: 3, actual: 2 } }]);
     });
 
     it("should take a typed array as a list and not look into it", () => {
@@ -526,5 +536,111 @@ describe("reportInputIssues", () => {
         // Assert
         expect(reports).toEqual([]);
         expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it("should report two rules on one property that give the same code each once, whatever values they fire on", () => {
+        // Arrange
+        const offset = (inputs: BoxDto): number => inputs.center?.[0] ?? 0;
+        const book = ruleBook(defineRules<BoxDto>(BoxDto, [lessThan("width", (inputs) => offset(inputs) + 5, undefined, ["center"]), lessThan("width", (inputs) => offset(inputs) + 3, undefined, ["center"])]));
+        const registry: DtoRegistry = { "shapes.box": { dto: BoxDto, constraints: BOX } };
+
+        // Act
+        reportInputIssues("OCCT", "shapes.box", validateInputs(registry, "shapes.box", { width: 10, center: [0, 0, 0] }, book));
+        reportInputIssues("OCCT", "shapes.box", validateInputs(registry, "shapes.box", { width: 12, center: [1, 0, 0] }, book));
+
+        // Assert
+        expect(reports.map((report) => report.issue.message)).toEqual(["must be less than 5", "must be less than 3"]);
+    });
+
+    it("should remember the last thousand issues, and report one again once it has fallen out", () => {
+        // Arrange
+        const issueOn = (index: number): InputIssue => ({ property: `p${index}`, code: "type", message: "must be a number" });
+        reportInputIssues("OCCT", "shapes.box", Array.from({ length: 1001 }, (_, index) => issueOn(index)));
+
+        // Act
+        reportInputIssues("OCCT", "shapes.box", [issueOn(1000), issueOn(1), issueOn(0)]);
+
+        // Assert
+        expect(reports).toHaveLength(1002);
+        expect(reports[1001]?.issue.property).toBe("p0");
+    });
+});
+
+describe("prepareKernelCall", () => {
+    const registry: DtoRegistry = { "shapes.box": { dto: BoxDto, constraints: BOX } };
+    const rules = ruleBook(defineRules<BoxDto>(BoxDto, [custom("width", (inputs) => (inputs.width ?? 0) < 10, "must be less than 10")]));
+    let reports: InputIssueReport[];
+
+    beforeEach(() => {
+        reports = [];
+        setInputIssueSink((report) => reports.push(report));
+    });
+
+    afterEach(() => {
+        setInputIssueSink();
+    });
+
+    it("should lay the inputs over the defaults of the operation's DTO and leave the caller's as they were", () => {
+        // Arrange
+        const given = { width: 2 };
+
+        // Act
+        const call = prepareKernelCall("OCCT", registry, "shapes.box", given, rules);
+
+        // Assert
+        expect(call.inputs).toEqual({ width: 2, center: [0, 0, 0] });
+        expect(given).toStrictEqual({ width: 2 });
+    });
+
+    it("should report nothing until it is asked to", () => {
+        // Act
+        prepareKernelCall("OCCT", registry, "shapes.box", { width: 12 }, rules);
+
+        // Assert
+        expect(reports).toEqual([]);
+    });
+
+    it("should report the issues of the resolved inputs, the rules' included, and every name the operation does not know", () => {
+        // Arrange
+        const call = prepareKernelCall("OCCT", registry, "shapes.box", { width: 12, center: [0, 0], widht: undefined }, rules);
+
+        // Act
+        call.reportIssues();
+
+        // Assert
+        expect(reports.map((report) => `${report.kernel} ${report.path} ${report.issue.property} ${report.issue.code}`)).toEqual([
+            "OCCT shapes.box center arity",
+            "OCCT shapes.box width custom",
+            "OCCT shapes.box widht unknown-property",
+        ]);
+    });
+
+    it("should not throw when the sink throws", () => {
+        // Arrange
+        const refusing = vi.fn(() => {
+            throw new Error("the sink refused");
+        });
+        setInputIssueSink(refusing);
+        const call = prepareKernelCall("OCCT", registry, "shapes.box", { width: 12 }, rules);
+
+        // Act
+        const report = (): void => call.reportIssues();
+
+        // Assert
+        expect(report).not.toThrow();
+        expect(refusing).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not throw when a rule throws", () => {
+        // Arrange
+        const throwing = ruleBook(defineRules<BoxDto>(BoxDto, [{ reads: ["width"], check: () => { throw new Error("the rule broke"); } }]));
+        const call = prepareKernelCall("OCCT", registry, "shapes.box", { width: 2 }, throwing);
+
+        // Act
+        const report = (): void => call.reportIssues();
+
+        // Assert
+        expect(report).not.toThrow();
+        expect(reports).toEqual([]);
     });
 });

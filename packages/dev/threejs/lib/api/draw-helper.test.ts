@@ -3073,5 +3073,104 @@ describe("DrawHelper unit tests", () => {
             expect(sphereOf(leftOut).material).toBe(sphereOf(spelled).material);
             expect((sphereOf(leftOut).geometry as THREEJS.SphereGeometry).parameters.radius).toBe((sphereOf(spelled).geometry as THREEJS.SphereGeometry).parameters.radius);
         });
+
+        it("should draw a JSCAD mesh's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const group = await drawHelper.drawSolidOrPolygonMesh({ mesh: jscadSolid(), opacity: 0.4 });
+
+            // Assert
+            expect(backFaceMaterialOf(group).opacity).toBe(1);
+        });
+
+        it("should draw a list of JSCAD meshes with back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue([{ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }]);
+            mockJscadWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            const group = await drawHelper.drawSolidOrPolygonMeshes({ meshes: [jscadSolid()], opacity: 0.4 });
+
+            // Assert
+            expect(backFaceMaterialOf(group.children[0] as THREEJS.Group).opacity).toBe(1);
+        });
+    });
+
+    describe("the colours a list of polylines is drawn in", () => {
+        const coloursOf = (group: THREEJS.Group): number[] => flatOf((group.children[0] as LineSegments2).geometry.getAttribute("instanceColorStart"));
+        const segment = (x: number, color?: string): Inputs.Polyline.PolylinePropertiesDto => (color === undefined ? { points: [[x, 0, 0], [x + 1, 0, 0]] } : { points: [[x, 0, 0], [x + 1, 0, 0]], color });
+
+        it("should leave the caller's colour list as it was when a polyline brings its own colour", () => {
+            // Arrange
+            const colours = ["#ff0000", "#00ff00"];
+
+            // Act
+            drawHelper.drawPolylinesWithColours({ polylines: [segment(0, "#0000ff"), segment(2)], colours });
+
+            // Assert
+            expect(colours).toEqual(["#ff0000", "#00ff00"]);
+        });
+
+        it("should redraw with the caller's colours after a draw in which a polyline brought its own", () => {
+            // Arrange
+            const options = { colours: ["#ff0000", "#00ff00"] };
+            drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0, "#0000ff"), segment(2)] });
+
+            // Act
+            const redrawn = drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0), segment(2)] });
+
+            // Assert
+            expect(coloursOf(redrawn)).toEqual([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0]);
+        });
+
+        it("should give every polyline without its own colour the one the strategy assigns when the list is shorter than the polylines", () => {
+            // Act
+            const drawn = drawHelper.drawPolylinesWithColours({ polylines: [segment(0), segment(2), segment(4), segment(6, "#0000ff")], colours: ["#ff0000", "#00ff00"] });
+
+            // Assert
+            expect(coloursOf(drawn)).toEqual([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1]);
+        });
+    });
+
+    describe("the arrows on an OCCT shape's edges", () => {
+        class ArrowAngleWatchingDrawHelper extends DrawHelper {
+            readonly arrowAngles: number[] = [];
+
+            protected override computeArrowHeadLines(polylinePoints: Inputs.Base.Point3[], arrowSize: number, arrowAngleDeg: number): Inputs.Base.Point3[][] {
+                this.arrowAngles.push(arrowAngleDeg);
+                return super.computeArrowHeadLines(polylinePoints, arrowSize, arrowAngleDeg);
+            }
+        }
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const watchingHelper = (): ArrowAngleWatchingDrawHelper => new ArrowAngleWatchingDrawHelper(mockContext, mockSolidText, mockVector, mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager);
+
+        it("should draw arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMesh({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
+        });
+
+        it("should draw each edge's arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMeshIndividually({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
+        });
     });
 });

@@ -186,6 +186,33 @@ describe("the worker message loop", () => {
             expect(answer()).toEqual({ uid: "uid-1", result: 30 });
         });
 
+        it("should answer a call the cache holds without looking up the geometry it refers to", () => {
+            // Arrange
+            const first = answerTo({ functionName: "shapes.cube", inputs: { geometry: REFERENCE } }, "uid-1");
+            cacheOf().entries.delete(CACHED_HASH);
+
+            // Act
+            const second = answerTo({ functionName: "shapes.cube", inputs: { geometry: REFERENCE } }, "uid-2");
+
+            // Assert
+            expect(second).toEqual({ uid: "uid-2", result: first.result });
+        });
+
+        it("should run a call whose issues reach a sink that throws", () => {
+            // Arrange
+            const refusing = vi.fn((): void => {
+                throw new Error("the sink refused");
+            });
+            setInputIssueSink(refusing);
+
+            // Act
+            const answered = answerTo({ functionName: "shapes.sphere", inputs: { radius: "big" } });
+
+            // Assert
+            expect(refusing).toHaveBeenCalledTimes(1);
+            expect(answered).toEqual({ uid: "uid-1", result: { made: "sphere", from: { radius: "big", segments: 32 } } });
+        });
+
         it("should answer a call the cache already holds with what it holds, without running the kernel again", () => {
             // Arrange
             const first = answerTo({ functionName: "shapes.sphere", inputs: { radius: 2 } }, "uid-1");
@@ -688,7 +715,37 @@ describe("the worker message loop", () => {
             run({ functionName: "boom", inputs: { data: new Uint8Array([7, 8, 9]), buffer: new ArrayBuffer(4) } });
 
             // Assert
-            expect(answer().error).toBe("JSCAD computation failed while executing function 'boom': the kernel refused. Input values were: {data: [Uint8Array byteLength=3], buffer: [ArrayBuffer byteLength=4]}.");
+            expect(answer().error).toBe("JSCAD computation failed while executing function 'boom': the kernel refused. Input values were: {data: [Uint8Array length=3], buffer: [ArrayBuffer byteLength=4]}.");
+        });
+
+        it("should describe a thrown value that has no text form and that JSON cannot write", () => {
+            // Arrange
+            const bare: Record<string, unknown> = Object.create(null);
+            bare["self"] = bare;
+            failure.value = bare;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("JSCAD computation failed while executing function 'boom': [object Object].");
+        });
+
+        it("should still answer, with a fixed message, when the failure cannot be sent back", () => {
+            // Arrange
+            const sent: unknown[] = [];
+            const post = (message: unknown): void => {
+                if (typeof message === "object" && message !== null && "stack" in message) {
+                    throw new Error("the channel refused");
+                }
+                sent.push(message);
+            };
+
+            // Act
+            onMessageInput({ action: { functionName: "boom", inputs: {} }, uid: "uid-9" }, post);
+
+            // Assert
+            expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "JSCAD computation failed, and the failure could not be reported.", errorKind: "kernel" }]);
         });
 
         it("should answer a failure that threw no Error by what it threw", () => {

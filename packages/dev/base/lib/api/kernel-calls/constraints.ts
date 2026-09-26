@@ -8,7 +8,8 @@ export type ValueKind = "number" | "boolean" | "string" | "color" | "point" | "p
 
 /**
  * The constraint on one DTO property: its kind, whether it has to be there, the kind of the items
- * of a list, and the values a `oneOf` accepts.
+ * of a list, and the values a `oneOf` accepts. A list's items have to be there unless their
+ * constraint says `required: false` (`optional`), as for a list whose items may be undefined.
  */
 export type PropertyConstraint = {
     readonly kind: ValueKind;
@@ -53,5 +54,6 @@ export const constraintKinds = {
     list: (items: PropertyConstraint): PropertyConstraint => ({ kind: "list", items }),
     oneOf: (values: readonly string[]): PropertyConstraint => ({ kind: "oneOf", values }),
     required: (constraint: PropertyConstraint): PropertyConstraint => ({ ...constraint, required: true }),
+    optional: (constraint: PropertyConstraint): PropertyConstraint => ({ ...constraint, required: false }),
     between: (constraint: PropertyConstraint, bounds: NumberBounds): PropertyConstraint => ({ ...constraint, bounds }),
 };

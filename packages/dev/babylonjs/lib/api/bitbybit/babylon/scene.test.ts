@@ -316,6 +316,24 @@ describe("BabylonScene", () => {
             // Assert
             expect(camera.lowerRadiusLimit).toBe(3);
         });
+
+        it("should set a beta limit, a sensitivity or the far plane left out to its default rather than keep the camera's own", () => {
+            // Arrange
+            const camera = scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
+            camera.upperBetaLimit = 0.5;
+            camera.panningSensibility = 5;
+            camera.wheelPrecision = 8;
+            camera.maxZ = 5000;
+
+            // Act
+            sceneService.adjustActiveArcRotateCamera({ position: [0, 10, 20], lookAt: [0, 0, 0] });
+
+            // Assert
+            expect(camera.upperBetaLimit).toBeCloseTo(179 * Math.PI / 180, 9);
+            expect(camera.panningSensibility).toBe(1000);
+            expect(camera.wheelPrecision).toBe(3);
+            expect(camera.maxZ).toBe(1000);
+        });
     });
 
     describe("the pointer callbacks", () => {

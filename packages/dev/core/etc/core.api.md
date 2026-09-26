@@ -1103,6 +1103,13 @@ namespace JSCAD {
         radius?: Base_2.Point3 | undefined;
         segments?: number | undefined;
     }
+    class ExpandDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
+        corners?: solidCornerTypeEnum | undefined;
+        delta?: number | undefined;
+        geometry: JSCADEntity;
+        segments?: number | undefined;
+    }
     class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
         corners?: solidCornerTypeEnum | undefined;
@@ -1460,6 +1467,8 @@ namespace JSCAD_2 {
     type EllipsoidDto = WithDefaults<Inputs_2.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
     // (undocumented)
     type EllipsoidSharedDto = WithDefaults<Inputs_2.JSCAD.EllipsoidSharedDto, "radius" | "segments">;
+    // (undocumented)
+    type ExpandDto = WithDefaults<Inputs_2.JSCAD.ExpandDto, "delta" | "corners" | "segments">;
     // (undocumented)
     type ExpansionDto = WithDefaults<Inputs_2.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
     // (undocumented)

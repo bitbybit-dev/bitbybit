@@ -1,6 +1,6 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules } from "@bitbybit-dev/occt";
-import { describeKernelFailure, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
+import { describeKernelFailure, prepareKernelCall } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -89,26 +89,28 @@ function createCommandContext(): CommandContext {
     };
 }
 
+/** What the worker answers when a call failed and even its failure could not be sent back. */
+const UNREPORTABLE_FAILURE = "OCCT computation failed, and the failure could not be reported.";
+
 /**
  * Executes a standard (cacheable) OCCT function.
  * 
  * This handles the common flow:
- * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out or
- *    passed as undefined gets its default, and cache the call under those inputs; a call that is not
- *    in the cache reports what its inputs would be rejected for, and runs
- * 2. Recursively resolve shape references in inputs
- * 3. Execute the function with caching
- * 4. Serialize the result for transmission
+ * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out, or
+ *    passed as undefined or as null where it has a default, gets its default, and cache the call
+ *    under those inputs
+ * 2. Only on a cache miss: report what the inputs would be rejected for, resolve the shape
+ *    references in them recursively, and run the function - a hit touches no referenced shape
+ * 3. Serialize the result for transmission
  */
 function executeStandardFunction(
     action: DataInput["action"]
 ): unknown {
-    const inputs = resolveInputs(occtDtoRegistry, action.functionName, action.inputs);
-    const resolvedInputs = shapeResolver.resolveShapeReferences(inputs);
+    const call = prepareKernelCall("OCCT", occtDtoRegistry, action.functionName, action.inputs, occtDtoRules);
 
-    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
-        reportInputIssues("OCCT", action.functionName, validateInputs(occtDtoRegistry, action.functionName, inputs, occtDtoRules), unknownProperties(occtDtoRegistry, action.functionName, action.inputs));
-        return functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
+    const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+        call.reportIssues();
+        return functionPathResolver.callFunction(openCascade, action.functionName, shapeResolver.resolveShapeReferences(call.inputs));
     });
 
     return resultSerializer.serializeResult(res);
@@ -157,12 +159,8 @@ export const onMessageInput = (
                 errorKind: failure.kind,
                 stack: failure.stack,
             });
-        } catch (fmtErr) {
-            postMessage({
-                uid: d.uid,
-                result: undefined,
-                error: `OCCT computation failed: ${e instanceof Error ? e.message : String(e)} (additionally, error formatting failed: ${fmtErr instanceof Error ? fmtErr.message : String(fmtErr)})`,
-            });
+        } catch {
+            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
         }
     }
 };

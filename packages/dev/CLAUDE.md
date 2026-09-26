@@ -160,11 +160,11 @@ almost every rule here follows from that.
   `postMessage` in a second try/catch. The managers settle a call on every reply, a falsy or absent
   result included, and reject with a `KernelCallError` (base) that carries the dotted path, whether
   the inputs or the kernel failed, and the worker's stack apart from the message.
-- **One call shape in every worker:** the inputs are laid over the DTO's defaults, the call is cached
-  under those resolved inputs, references in them are replaced by the cached objects - a new
-  structure, the posted inputs untouched - a call not in the cache reports what `validateInputs`
-  finds (reported, not thrown, for now), and the dotted path is called with `callByPath`. A failure
-  is described by `describeKernelFailure`, so the three kernels report it the same way.
+- **One call shape in every worker** (`prepareKernelCall`, base): the inputs are laid over the DTO's
+  defaults and the call is cached under them. Only a miss reports what `validateInputs` finds (not
+  thrown, for now), replaces the references in the inputs by the cached objects - a new structure, the
+  posted inputs untouched - and calls the dotted path with `callByPath`. `describeKernelFailure` words a
+  failure the same way for all three kernels; when even that cannot be posted, a fixed message is.
 - **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
   `instanceof`. That is why worker-side types are plain records.
 - **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so

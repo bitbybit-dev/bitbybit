@@ -82,12 +82,21 @@ describe("OCCTIO downloads", () => {
             expect(anchor().download).toBe("part.step");
         });
 
-        it("should name the file itself when the caller gave no name", async () => {
+        it("should name the file by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await io.saveShapeSTEP({ shape: A_SHAPE, fileName: "", adjustYtoZ: false, tryDownload: true });
+            await io.saveShapeSTEP({ shape: A_SHAPE, tryDownload: true });
 
             // Assert
-            expect(anchor().download).toBe("bitbybit-dev.step");
+            expect(anchor().download).toBe("shape.step");
+        });
+
+        it("should download by the default of its DTO when the caller leaves the download option out", async () => {
+            // Act
+            await io.saveShapeSTEP({ shape: A_SHAPE });
+
+            // Assert
+            expect(anchors).toHaveLength(1);
+            expect(anchor()).toMatchObject({ download: "shape.step", clicked: 1, removed: 1 });
         });
 
         it("should download the text the worker answered with", async () => {
@@ -107,6 +116,15 @@ describe("OCCTIO downloads", () => {
             // Assert
             expect(result).toBe(STEP_TEXT);
         });
+
+        it("should download as well as hand back the text when the caller leaves the download option out", async () => {
+            // Act
+            const result = await io.saveShapeSTEPAndReturn({ shape: A_SHAPE });
+
+            // Assert
+            expect(result).toBe(STEP_TEXT);
+            expect(anchor().download).toBe("shape.step");
+        });
     });
 
     describe("saveShapeStl", () => {
@@ -118,12 +136,21 @@ describe("OCCTIO downloads", () => {
             expect(anchor().download).toBe("part.stl");
         });
 
-        it("should name the file itself when the caller gave no name", async () => {
+        it("should name the file by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await io.saveShapeStl({ shape: A_SHAPE, fileName: "", precision: 0.01, adjustYtoZ: false, tryDownload: true, binary: false });
+            await io.saveShapeStl({ shape: A_SHAPE, tryDownload: true });
 
             // Assert
-            expect(anchor().download).toBe("bitbybit-dev.stl");
+            expect(anchor().download).toBe("shape.stl");
+        });
+
+        it("should download by the default of its DTO when the caller leaves the download option out", async () => {
+            // Act
+            await io.saveShapeStl({ shape: A_SHAPE });
+
+            // Assert
+            expect(anchors).toHaveLength(1);
+            expect(anchor()).toMatchObject({ download: "shape.stl", clicked: 1, removed: 1 });
         });
 
         it("should download nothing when the caller did not ask for it", async () => {
@@ -142,6 +169,15 @@ describe("OCCTIO downloads", () => {
 
             // Assert
             expect(result).toBe(STL_TEXT);
+        });
+
+        it("should download as well as hand back the text when the caller leaves the download option out", async () => {
+            // Act
+            const result = await io.saveShapeStlAndReturn({ shape: A_SHAPE });
+
+            // Assert
+            expect(result).toBe(STL_TEXT);
+            expect(anchor().download).toBe("shape.stl");
         });
     });
 
@@ -162,12 +198,21 @@ describe("OCCTIO downloads", () => {
             expect(anchor().download).toBe("drawing.dxf");
         });
 
-        it("should name the file itself when the caller gave no name", async () => {
+        it("should name the file by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await io.dxfCreate(dxfInputs({ pathsParts: [], fileName: "", tryDownload: true }));
+            await io.dxfCreate({ pathsParts: [], tryDownload: true });
 
             // Assert
             expect(anchor().download).toBe("bitbybit-dev.dxf");
+        });
+
+        it("should download by the default of its DTO when the caller leaves the download option out", async () => {
+            // Act
+            await io.dxfCreate({ pathsParts: [] });
+
+            // Assert
+            expect(anchors).toHaveLength(1);
+            expect(anchor()).toMatchObject({ download: "bitbybit-dev.dxf", clicked: 1, removed: 1 });
         });
 
         it("should download nothing when the caller did not ask for it", async () => {
@@ -228,6 +273,25 @@ describe("OCCTIO step conversions", () => {
             // Assert
             expect(worker.posted[0]?.action.inputs).toMatchObject({ meshPrecision: 0.25 });
         });
+
+        it("should send the defaults of its DTO for what the caller leaves out", async () => {
+            // Act
+            await io.convertStepToGltf({ stepData: STEP_TEXT });
+
+            // Assert
+            expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.ConvertStepToGltfDto(), stepData: STEP_TEXT });
+        });
+
+        it("should send a File left with the defaults as the bytes it holds", async () => {
+            // Arrange
+            const file = new File([new Uint8Array([1, 2, 3])], "part.step");
+
+            // Act
+            await io.convertStepToGltf({ stepData: file });
+
+            // Assert
+            expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.ConvertStepToGltfDto(), stepData: new Uint8Array([1, 2, 3]) });
+        });
     });
 
     describe("convertStepToGltfAdvanced", () => {
@@ -238,6 +302,14 @@ describe("OCCTIO step conversions", () => {
             // Assert
             expect(worker.paths()).toEqual(["io.convertStepToGltfAdvanced"]);
             expect(sentInputs().stepData).toBe(STEP_TEXT);
+        });
+
+        it("should send the defaults of its DTO for what the caller leaves out", async () => {
+            // Act
+            await io.convertStepToGltfAdvanced({ stepData: STEP_TEXT });
+
+            // Assert
+            expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.ConvertStepToGltfAdvancedDto(), stepData: STEP_TEXT });
         });
     });
 
@@ -250,6 +322,14 @@ describe("OCCTIO step conversions", () => {
             expect(worker.paths()).toEqual(["io.convertStepToGltfWithDraco"]);
             expect(sentInputs().stepData).toBe(STEP_TEXT);
         });
+
+        it("should send the defaults of its DTO for what the caller leaves out", async () => {
+            // Act
+            await io.convertStepToGltfWithDraco({ stepData: STEP_TEXT });
+
+            // Assert
+            expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.ConvertStepToGltfWithDracoDto(), stepData: STEP_TEXT });
+        });
     });
 
     describe("convertStepToGltfAdvancedWithDraco", () => {
@@ -260,6 +340,14 @@ describe("OCCTIO step conversions", () => {
             // Assert
             expect(worker.paths()).toEqual(["io.convertStepToGltfAdvancedWithDraco"]);
             expect(sentInputs().stepData).toBe(STEP_TEXT);
+        });
+
+        it("should send the defaults of its DTO for what the caller leaves out", async () => {
+            // Act
+            await io.convertStepToGltfAdvancedWithDraco({ stepData: STEP_TEXT });
+
+            // Assert
+            expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto(), stepData: STEP_TEXT });
         });
     });
 

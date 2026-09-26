@@ -17,25 +17,33 @@ const unpaired = (property: string, other: string, expected: number, actual: num
 
 type Row = [path: string, what: string, inputs: object, issues: InputIssue[]];
 
-const gatedFillets: [path: string, owner: object, list: string][] = [
+type GatedFillet = [path: string, owner: object, list: string];
+
+const pairedWhenBothGiven: GatedFillet[] = [
     ["fillets.filletEdges", { shape: S }, "radiusList"],
     ["fillets.fillet2d", { shape: S }, "radiusList"],
     ["fillets.fillet2dShapes", { shapes: [S] }, "radiusList"],
+];
+
+const pairedWhenIndexesSelect: GatedFillet[] = [
     ["fillets.fillet3DWire", { shape: S }, "radiusList"],
     ["fillets.fillet3DWires", { shapes: [S] }, "radiusList"],
     ["fillets.chamferEdges", { shape: S }, "distanceList"],
 ];
 
-const gatedFilletRows: Row[] = gatedFillets.flatMap(([path, owner, list]): Row[] => [
+const gatedFilletRows: Row[] = [...pairedWhenBothGiven, ...pairedWhenIndexesSelect].flatMap(([path, owner, list]): Row[] => [
     [path, `pass a ${list} as long as its indexes`, { ...owner, [list]: [1, 2], indexes: [1, 2] }, []],
     [path, `pass a ${list} of one item for one index`, { ...owner, [list]: [1], indexes: [1] }, []],
     [path, `report a ${list} shorter than its indexes`, { ...owner, [list]: [1], indexes: [1, 2] }, [unpaired(list, "indexes", 2, 1)]],
     [path, `report a ${list} longer than its indexes`, { ...owner, [list]: [1, 2, 3], indexes: [1, 2] }, [unpaired(list, "indexes", 2, 3)]],
-    [path, `not compare an empty ${list} with its indexes`, { ...owner, [list]: [], indexes: [1, 2] }, []],
-    [path, `not compare a ${list} with empty indexes`, { ...owner, [list]: [1, 2], indexes: [] }, []],
+    [path, `report an empty ${list} for indexes that select something`, { ...owner, [list]: [], indexes: [1, 2] }, [unpaired(list, "indexes", 2, 0)]],
+    [path, `pass an empty ${list} with empty indexes`, { ...owner, [list]: [], indexes: [] }, []],
     [path, `not compare a ${list} when the indexes are left out`, { ...owner, [list]: [1, 2] }, []],
     [path, `not compare the indexes when the ${list} is left out`, { ...owner, indexes: [1, 2] }, []],
-]);
+]).concat(
+    pairedWhenBothGiven.map(([path, owner, list]): Row => [path, `report a ${list} given with empty indexes`, { ...owner, [list]: [1, 2], indexes: [] }, [unpaired(list, "indexes", 0, 2)]]),
+    pairedWhenIndexesSelect.map(([path, owner, list]): Row => [path, `not compare a ${list} with empty indexes, which select everything`, { ...owner, [list]: [1, 2], indexes: [] }, []]),
+);
 
 const filletRows: Row[] = [
     ["fillets.filletEdgesList", "pass one radius per edge", { shape: S, edges: [S, S], radiusList: [1, 2] }, []],
@@ -77,12 +85,34 @@ const pairedTransforms: [path: string, lists: Record<string, unknown[]>][] = [
     ["transforms.mirrorAlongNormalShapes", { normals: [P(1), P(1)], origins: [P(0), P(0)] }],
 ];
 
+const flattens = (property: string, message = "must not be 0, which flattens the shape"): InputIssue[] => [{ property, code: "custom", message }];
+
 const transformRows: Row[] = pairedTransforms.flatMap(([path, lists]): Row[] => [
     [path, "pass one item of every list per shape", { shapes: [S, S], ...lists }, []],
     ...Object.entries(lists).map(([list, items]): Row => [path, `report ${list} that do not pair with the shapes`, { shapes: [S, S], ...lists, [list]: items.slice(0, 1) }, [unpaired(list, "shapes", 2, 1)]]),
 ]);
 
+const scaleRows: Row[] = [
+    ["transforms.scale", "pass a negative factor, which also mirrors", { shape: S, factor: -1 }, []],
+    ["transforms.scale", "report a factor of 0", { shape: S, factor: 0 }, flattens("factor")],
+    ["transforms.scaleFromCenter", "pass a negative factor, which also mirrors", { shape: S, factor: -2 }, []],
+    ["transforms.scaleFromCenter", "report a factor of 0", { shape: S, factor: 0 }, flattens("factor")],
+    ["transforms.transform", "pass a negative scale factor, which also mirrors", { shape: S, scaleFactor: -1 }, []],
+    ["transforms.transform", "report a scale factor of 0", { shape: S, scaleFactor: 0 }, flattens("scaleFactor")],
+    ["transforms.scale3d", "pass a negative factor on one axis, which mirrors along it", { shape: S, scale: [-1, 1, 1] }, []],
+    ["transforms.scale3d", "report a factor of 0 on one axis", { shape: S, scale: [1, 0, 1] }, flattens("scale", "must not hold a 0, which flattens the shape")],
+    ["transforms.scaleShapes", "pass negative factors", { shapes: [S, S], factors: [1, -1] }, []],
+    ["transforms.scaleShapes", "report a factor of 0 for one shape", { shapes: [S, S], factors: [1, 0] }, flattens("factors", "must not hold a 0, which flattens its shape")],
+    ["transforms.scale3dShapes", "report a factor of 0 in one set of factors", { shapes: [S, S], scales: [[1, 1, 1], [1, 1, 0]], centers: [P(0), P(0)] }, flattens("scales", "must not hold a 0 in any set of factors, which flattens its shape")],
+    ["transforms.transformShapes", "report a scale factor of 0 for one shape", { shapes: [S, S], translations: [P(0), P(1)], rotationAxes: [P(1), P(1)], rotationAngles: [0, 90], scaleFactors: [1, 0] }, flattens("scaleFactors", "must not hold a 0, which flattens its shape")],
+];
+
 const bezierIssue: InputIssue = { property: "weights", code: "custom", message: "must have one weight per point, and one more when the curve is closed but not periodic" };
+const torusIssue: InputIssue = { property: "minorRadius", code: "custom", message: "must not exceed majorRadius" };
+const ellipseIssue: InputIssue = { property: "radiusMinor", code: "custom", message: "must not exceed radiusMajor" };
+const stepsIssue: InputIssue = { property: "steps", code: "custom", message: "must add up to more than 0, or the slices never move along the shape" };
+const lengthsIssue: InputIssue = { property: "lengths", code: "custom", message: "must add up to more than 0, or the points never move along the wire" };
+const ellipses = ["shapes.wire.createEllipseWire", "shapes.edge.createEllipseEdge", "shapes.face.createEllipseFace", "geom.curves.geomEllipseCurve", "geom.curves.geom2dEllipse"];
 const threePoints = [P(0), P(1), P(2)];
 
 const shapeRows: Row[] = [
@@ -106,8 +136,8 @@ const shapeRows: Row[] = [
     ["shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges", "pass exactly two wires", { shapes: [S, S] }, []],
     ["shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges", "report a single wire", { shapes: [S] }, [{ property: "shapes", code: "custom", message: "must hold at least two wires or edges" }]],
     ["shapes.solid.createTorus", "pass a tube thinner than its ring", { majorRadius: 2, minorRadius: 1.999 }, []],
-    ["shapes.solid.createTorus", "report a tube exactly as thick as its ring", { majorRadius: 2, minorRadius: 2 }, [{ property: "minorRadius", code: "less-than", params: { limit: 2 }, message: "must be less than majorRadius" }]],
-    ["shapes.solid.createTorus", "report a tube thicker than its ring", { majorRadius: 2, minorRadius: 3 }, [{ property: "minorRadius", code: "less-than", params: { limit: 2 }, message: "must be less than majorRadius" }]],
+    ["shapes.solid.createTorus", "pass a tube exactly as thick as its ring, which closes the hole", { majorRadius: 2, minorRadius: 2 }, []],
+    ["shapes.solid.createTorus", "report a tube thicker than its ring", { majorRadius: 2, minorRadius: 2.001 }, [torusIssue]],
     ["shapes.solid.createTorus", "not compare the tube with a ring that is not a number", { majorRadius: Number.NaN, minorRadius: 3 }, [{ property: "majorRadius", code: "not-a-number", message: "is not a number (NaN)" }]],
     ["operations.slice", "pass the default step", { shape: S }, []],
     ["operations.slice", "pass the smallest step that moves", { shape: S, step: 1e-9 }, []],
@@ -115,8 +145,25 @@ const shapeRows: Row[] = [
     ["operations.slice", "report a negative step by its bound alone", { shape: S, step: -1 }, [{ property: "step", code: "minimum", params: { limit: 0, exclusive: false, actual: -1 }, message: "must be at least 0" }]],
     ["operations.sliceInStepPattern", "pass the default steps", { shape: S }, []],
     ["operations.sliceInStepPattern", "pass steps of which one moves", { shape: S, steps: [0, 1e-9] }, []],
-    ["operations.sliceInStepPattern", "report steps of which none moves", { shape: S, steps: [0, -1] }, [{ property: "steps", code: "at-least-one", message: "must hold at least one step above 0" }]],
-    ["operations.sliceInStepPattern", "report no steps at all", { shape: S, steps: [] }, [{ property: "steps", code: "at-least-one", message: "must hold at least one step above 0" }]],
+    ["operations.sliceInStepPattern", "pass steps that move back less than they move forward", { shape: S, steps: [2, -1] }, []],
+    ["operations.sliceInStepPattern", "report steps of which none moves", { shape: S, steps: [0, -1] }, [stepsIssue]],
+    ["operations.sliceInStepPattern", "report steps that move back as far as they move forward", { shape: S, steps: [1, -1] }, [stepsIssue]],
+    ["operations.sliceInStepPattern", "report steps that move back further than they move forward", { shape: S, steps: [1, -2] }, [stepsIssue]],
+    ["operations.sliceInStepPattern", "report no steps at all", { shape: S, steps: [] }, [stepsIssue]],
+    ["shapes.wire.pointsOnWireAtPatternOfLengths", "pass one length that moves", { shape: S, lengths: [1] }, []],
+    ["shapes.wire.pointsOnWireAtPatternOfLengths", "pass lengths that move back less than they move forward", { shape: S, lengths: [2, -1] }, []],
+    ["shapes.wire.pointsOnWireAtPatternOfLengths", "report no lengths at all", { shape: S, lengths: [] }, [lengthsIssue]],
+    ["shapes.wire.pointsOnWireAtPatternOfLengths", "report a single length of 0", { shape: S, lengths: [0] }, [lengthsIssue]],
+    ["shapes.wire.pointsOnWireAtPatternOfLengths", "report lengths that move back as far as they move forward", { shape: S, lengths: [1, -1] }, [lengthsIssue]],
+    ["operations.revolve", "pass the default angle", { shape: S }, []],
+    ["operations.revolve", "pass a negative angle, which spins the other way", { shape: S, angle: -90 }, []],
+    ["operations.revolve", "pass a full turn the other way", { shape: S, angle: -360 }, []],
+    ["operations.revolve", "pass an angle of 0, which gives a full turn", { shape: S, angle: 0 }, []],
+    ...ellipses.flatMap((path): Row[] => [
+        [path, "pass a minor radius below the major one", { radiusMinor: 1, radiusMajor: 2 }, []],
+        [path, "pass a minor radius equal to the major one, which is a circle", { radiusMinor: 2, radiusMajor: 2 }, []],
+        [path, "report a minor radius above the major one", { radiusMinor: 3, radiusMajor: 1 }, [ellipseIssue]],
+    ]),
 ];
 
 const circlesIssue: InputIssue = { property: "listsOfCircles", code: "custom", message: "must hold lists of one length when circles are joined in order" };
@@ -155,7 +202,7 @@ const profileRows: Row[] = profileSolids.flatMap((path): Row[] => [
 ]);
 
 describe("the OCCT input rules", () => {
-    describe("fillets and chamfers whose lists pair with the indexes only when both are given", () => {
+    describe("fillets and chamfers whose lists pair with the indexes whenever the service reads them", () => {
         it.each(gatedFilletRows)("%s should %s", (path, _what, inputs, issues) => {
             // Act
             const found = issuesOf(path, inputs);
@@ -177,6 +224,16 @@ describe("the OCCT input rules", () => {
 
     describe("transforms of several shapes at once", () => {
         it.each(transformRows)("%s should %s", (path, _what, inputs, issues) => {
+            // Act
+            const found = issuesOf(path, inputs);
+
+            // Assert
+            expect(found).toEqual(issues);
+        });
+    });
+
+    describe("scales, which may mirror but never flatten", () => {
+        it.each(scaleRows)("%s should %s", (path, _what, inputs, issues) => {
             // Act
             const found = issuesOf(path, inputs);
 

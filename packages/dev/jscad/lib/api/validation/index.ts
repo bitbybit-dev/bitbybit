@@ -1,4 +1,4 @@
-import { RuleBook, defineRules, lessThan, ruleBook } from "@bitbybit-dev/base";
+import { RuleBook, custom, defineRules, lessThan, ruleBook } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
 import * as Resolved from "../resolved-inputs";
 
@@ -7,8 +7,9 @@ import * as Resolved from "../resolved-inputs";
  * on its own, by the DTO the operation takes; rules written for a shared parent apply to both
  * DTOs that extend it. `validateInputs` from the base package runs them.
  *
- * A rounding has to fit: less than half of a box's smallest side, and less than a cylinder's radius
- * and half of its height, or JSCAD refuses the shape.
+ * A rounding has to fit: less than half of a box's smallest side, and less than half of a
+ * cylinder's height and at most its radius, or JSCAD refuses the shape. A cylinder rounded by
+ * exactly its radius is a capsule.
  */
 export const jscadDtoRules: RuleBook = ruleBook(
     defineRules<Resolved.JSCAD.RoundedCuboidSharedDto>(Inputs.JSCAD.RoundedCuboidSharedDto, [
@@ -16,6 +17,6 @@ export const jscadDtoRules: RuleBook = ruleBook(
     ]),
     defineRules<Resolved.JSCAD.RoundedCylinderSharedDto>(Inputs.JSCAD.RoundedCylinderSharedDto, [
         lessThan("roundRadius", (inputs) => inputs.height / 2, "must be less than half of the height", ["height"]),
-        lessThan("roundRadius", "radius"),
+        custom("roundRadius", (inputs) => inputs.roundRadius <= inputs.radius, "must not be greater than radius", ["roundRadius", "radius"]),
     ]),
 );

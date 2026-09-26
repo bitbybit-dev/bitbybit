@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
 import { Tag } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -26,6 +26,7 @@ const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
         ? { polygons: [], transforms: IDENTITY_TRANSFORM }
         : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
 const manifoldShape = (hash: number): Inputs.Manifold.ManifoldPointer => ({ hash, type: "manifold-shape" });
+const verbCurve = (points: Inputs.Base.Point3[]) => ({ _data: { controlPoints: [], knots: [], degree: 1 }, tessellate: () => points });
 
 
 describe("Draw unit tests", () => {
@@ -1870,6 +1871,154 @@ describe("Draw unit tests", () => {
             expect(handed.colours).toBe("#ff0000");
             expect(handed.size).toBeUndefined();
             spy.mockRestore();
+        });
+
+        it("should leave a verb curve's width to the curve DTO rather than the point diameter when its options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawCurve");
+
+            // Act
+            await draw.drawAnyAsync({ entity: verbCurve([[0, 0, 0], [1, 0, 0], [1, 1, 0]]), options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+
+        it("should leave verb curves' width to the curves DTO rather than the point diameter when their options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawCurves");
+
+            // Act
+            await draw.drawAnyAsync({ entity: [verbCurve([[0, 0, 0], [1, 0, 0]]), verbCurve([[0, 1, 0], [1, 1, 0]])], options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+    });
+
+    describe("the entity a draw call is handed wins over what its options carry", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should draw a point at the entity, not at a point its options carry", () => {
+            // Arrange
+            const drawPoint = vi.spyOn(draw.drawHelper, "drawPoint");
+            const options = { colours: "#ff0000", point: [9, 9, 9] };
+
+            // Act
+            draw.drawAny({ entity: [1, 2, 3], options });
+
+            // Assert
+            expect(drawPoint).toHaveBeenCalledWith(expect.objectContaining({ point: [1, 2, 3], colours: "#ff0000" }));
+        });
+
+        it("should redraw a point into the group it is handed, not the one its stored options name", () => {
+            // Arrange
+            const drawPoint = vi.spyOn(draw.drawHelper, "drawPoint").mockReturnValue(new Group());
+            const current = new Group();
+            current.userData = { type: Inputs.Draw.drawingTypes.point, options: { colours: "#00ff00", point: [9, 9, 9], pointMesh: new Group() } };
+
+            // Act
+            draw.drawAny({ entity: [1, 2, 3], group: current });
+
+            // Assert
+            expect(drawPoint).toHaveBeenCalledWith(expect.objectContaining({ point: [1, 2, 3], pointMesh: current, colours: "#00ff00" }));
+        });
+
+        it("should draw points at the entity, not at points their options carry", () => {
+            // Arrange
+            const drawPoints = vi.spyOn(draw.drawHelper, "drawPoints");
+            const options = { colours: "#ff0000", points: [[9, 9, 9]] };
+
+            // Act
+            draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], options });
+
+            // Assert
+            expect(drawPoints).toHaveBeenCalledWith(expect.objectContaining({ points: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] }));
+        });
+
+        it("should draw a line through the entity, not through polylines its options carry", () => {
+            // Arrange
+            const drawPolylinesWithColours = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            const options = { colours: "#ff0000", polylines: [{ points: [[9, 9, 9], [8, 8, 8]] }] };
+
+            // Act
+            draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 0, 0] }, options });
+
+            // Assert
+            expect(drawPolylinesWithColours).toHaveBeenCalledWith(expect.objectContaining({ polylines: [{ points: [[0, 0, 0], [1, 0, 0]] }] }));
+        });
+
+        it("should draw a polyline through the entity, not through a polyline its options carry", () => {
+            // Arrange
+            const drawPolylineClose = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            const entity: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] };
+            const options = { colours: "#ff0000", polyline: { points: [[9, 9, 9], [8, 8, 8]] } };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawPolylineClose).toHaveBeenCalledWith(expect.objectContaining({ polyline: entity }));
+        });
+
+        it("should draw the JSCAD mesh it is handed, not a mesh its options carry", async () => {
+            // Arrange
+            const drawSolidOrPolygonMesh = vi.spyOn(draw.drawHelper, "drawSolidOrPolygonMesh").mockResolvedValue(new Group());
+            const entity = jscadSolid();
+            const options = { colours: "#ff0000", mesh: jscadSolid([1, 0, 0]) };
+
+            // Act
+            await draw.drawAnyAsync({ entity, options });
+
+            // Assert
+            expect(drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({ mesh: entity }));
+        });
+
+        it("should draw the verb curve it is handed, not a curve its options carry", () => {
+            // Arrange
+            const drawCurve = vi.spyOn(draw.drawHelper, "drawCurve");
+            const entity = verbCurve([[0, 0, 0], [1, 0, 0]]);
+            const options = { colours: "#ff0000", curve: verbCurve([[9, 9, 9], [8, 8, 8]]) };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawCurve).toHaveBeenCalledWith(expect.objectContaining({ curve: entity }));
+        });
+
+        it("should draw the verb surface it is handed, not a surface its options carry", () => {
+            // Arrange
+            const drawSurface = vi.spyOn(draw.drawHelper, "drawSurface");
+            const entity = createSurfaceMock();
+            const options = { colours: "#ff0000", surface: createSurfaceMock2() };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawSurface).toHaveBeenCalledWith(expect.objectContaining({ surface: entity }));
+        });
+
+        it("should draw the tag it is handed, not a tag its options carry", () => {
+            // Arrange
+            const drawTag = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
+            const entity: Inputs.Tag.TagDto = { text: "current", position: [0, 0, 0], colour: "#ffffff", size: 1, adaptDepth: false };
+            const options = { colours: "#ff0000", tag: { text: "stale", position: [9, 9, 9] } };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({ tag: entity }));
         });
     });
 });

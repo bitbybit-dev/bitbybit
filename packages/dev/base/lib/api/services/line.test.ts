@@ -569,6 +569,54 @@ describe("Line unit tests", () => {
         });
     });
 
+    describe("lineLineIntersection with a tolerance of 0", () => {
+        const alongX: Inputs.Base.Line3 = { start: [0, 0, 0], end: [10, 0, 0] };
+
+        it("should compare exactly, so a line far shorter than a millionth of a unit still meets another", () => {
+            // Arrange
+            const tiny: Inputs.Base.Line3 = { start: [5, -2.5e-7, 0], end: [5, 2.5e-7, 0] };
+
+            // Act
+            const result = line.lineLineIntersection({ line1: tiny, line2: alongX, checkSegmentsOnly: true, tolerance: 0 });
+
+            // Assert
+            uh.expectPointCloseTo(result, [5, 0, 0]);
+        });
+
+        it("should find no crossing between parallel lines rather than a point of NaN", () => {
+            // Arrange
+            const parallel: Inputs.Base.Line3 = { start: [0, 1, 0], end: [10, 1, 0] };
+
+            // Act
+            const result = line.lineLineIntersection({ line1: alongX, line2: parallel, checkSegmentsOnly: false, tolerance: 0 });
+
+            // Assert
+            expect(result).toBeUndefined();
+        });
+
+        it("should find no crossing with a line of no length rather than a point of NaN", () => {
+            // Arrange
+            const point: Inputs.Base.Line3 = { start: [5, 0, 0], end: [5, 0, 0] };
+
+            // Act
+            const result = line.lineLineIntersection({ line1: point, line2: alongX, checkSegmentsOnly: false, tolerance: 0 });
+
+            // Assert
+            expect(result).toBeUndefined();
+        });
+
+        it("should give the first line's start for collinear lines left unbounded", () => {
+            // Arrange
+            const inside: Inputs.Base.Line3 = { start: [2, 0, 0], end: [8, 0, 0] };
+
+            // Act
+            const result = line.lineLineIntersection({ line1: alongX, line2: inside, checkSegmentsOnly: false, tolerance: 0 });
+
+            // Assert
+            expect(result).toEqual([0, 0, 0]);
+        });
+    });
+
     describe("getPointOnLine without a parameter of its own", () => {
         it("should give the middle of the line", () => {
             expect(line.getPointOnLine({ line: { start: [0, 0, 0], end: [10, 0, 0] } })).toEqual([5, 0, 0]);

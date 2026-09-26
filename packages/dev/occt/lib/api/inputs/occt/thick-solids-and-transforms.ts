@@ -106,9 +106,10 @@ export class TransformDto<T> {
      */
     rotationAngle?: number | undefined = 0;
     /**
-     * The uniform scale about the origin, applied first; 1 keeps the size.
+     * The uniform scale about the origin, applied first; 1 keeps the size, and a negative factor
+     * also mirrors the shape through the origin. It must not be 0.
      * @default 1
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */
@@ -148,7 +149,7 @@ export class TransformShapesDto<T> {
      */
     rotationAngles?: number[] | undefined = [0];
     /**
-     * One uniform scale factor per shape, about the origin.
+     * One uniform scale factor per shape, about the origin; none may be 0.
      * @default [1]
      */
     scaleFactors?: number[] | undefined = [1];
@@ -841,9 +842,10 @@ export class ScaleDto<T> {
      */
     shape!: T;
     /**
-     * The uniform scale factor; 2 doubles every size, 0.5 halves it.
+     * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+     * mirrors the shape through the origin. It must not be 0.
      * @default 1
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */
@@ -863,7 +865,7 @@ export class ScaleShapesDto<T> {
      */
     shapes!: T[];
     /**
-     * One uniform scale factor per shape, about the origin.
+     * One uniform scale factor per shape, about the origin; none may be 0.
      * @default [1]
      */
     factors?: number[] | undefined = [1];
@@ -884,7 +886,7 @@ export class Scale3DDto<T> {
      */
     shape!: T;
     /**
-     * The factors along X, Y and Z; unequal factors stretch the shape.
+     * The factors along X, Y and Z; unequal factors stretch the shape, and none may be 0.
      * @default [1, 1, 1]
      */
     scale?: Base.Vector3 | undefined = [1, 1, 1];
@@ -910,7 +912,7 @@ export class Scale3DShapesDto<T> {
      */
     shapes!: T[];
     /**
-     * One set of X, Y and Z factors per shape.
+     * One set of X, Y and Z factors per shape, none of them 0.
      * @default [[1, 1, 1]]
      */
     scales?: Base.Vector3[] | undefined = [[1, 1, 1]];
@@ -994,7 +996,8 @@ export class ScaleFromCenterDto<T> {
      */
     shape!: T;
     /**
-     * The uniform scale factor; 2 doubles every size, 0.5 halves it.
+     * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+     * mirrors the shape through the center. It must not be 0.
      * @default 1
      * @step 0.1
      */

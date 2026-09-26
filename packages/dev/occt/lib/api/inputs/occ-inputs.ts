@@ -2383,6 +2383,7 @@ export namespace OCCT {
          * The length of each side, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -2414,6 +2415,7 @@ export namespace OCCT {
          * `direction`.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -2423,6 +2425,7 @@ export namespace OCCT {
          * `direction`.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -2457,6 +2460,7 @@ export namespace OCCT {
          * The thickness of the first leg, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2465,6 +2469,7 @@ export namespace OCCT {
          * The length of the first leg, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2473,6 +2478,7 @@ export namespace OCCT {
          * The thickness of the second leg, in model units.
          * @default 0.5
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2481,6 +2487,7 @@ export namespace OCCT {
          * The length of the second leg, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2529,6 +2536,7 @@ export namespace OCCT {
          * The width of the flanges, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2553,6 +2561,7 @@ export namespace OCCT {
          * The thickness of each horizontal flange, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2609,6 +2618,7 @@ export namespace OCCT {
          * The height of the flanges, in model units.
          * @default 3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2625,6 +2635,7 @@ export namespace OCCT {
          * The thickness of each vertical flange, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2673,6 +2684,7 @@ export namespace OCCT {
          * The width of the flange, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2689,6 +2701,7 @@ export namespace OCCT {
          * The thickness of the vertical web, in model units.
          * @default 0.2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2697,6 +2710,7 @@ export namespace OCCT {
          * The thickness of the flange, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2746,6 +2760,7 @@ export namespace OCCT {
          * The total width of the profile, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2754,6 +2769,7 @@ export namespace OCCT {
          * The total height of the profile, in model units.
          * @default 3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -2762,6 +2778,7 @@ export namespace OCCT {
          * The thickness of the web at the back of the channel, in model units.
          * @default 0.2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -2770,6 +2787,7 @@ export namespace OCCT {
          * The thickness of each flange, in model units.
          * @default 0.3
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -3180,7 +3198,8 @@ export namespace OCCT {
          */
         majorRadius?: number | undefined = 2;
         /**
-         * The radius of the tube itself, in model units.
+         * The radius of the tube itself, in model units; at most `majorRadius`, where the hole in the
+         * middle closes to a point.
          * @default 0.5
          * @minimum 0
          * @exclusiveMinimum true
@@ -3547,6 +3566,7 @@ export namespace OCCT {
          * given.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3586,6 +3606,7 @@ export namespace OCCT {
          * given.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3652,6 +3673,7 @@ export namespace OCCT {
          * The rounding radius for every edge, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3767,6 +3789,7 @@ export namespace OCCT {
          * given.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3849,6 +3872,7 @@ export namespace OCCT {
          * `distanceList` is given.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -3925,6 +3949,7 @@ export namespace OCCT {
          * How far from the edge the bevel starts on the face, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -3972,6 +3997,7 @@ export namespace OCCT {
          * How far the bevel reaches from the edge on `face`, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -3980,6 +4006,7 @@ export namespace OCCT {
          * How far the bevel reaches from the edge on the other face, in model units.
          * @default 0.2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -4054,6 +4081,7 @@ export namespace OCCT {
          * How far the bevel reaches from each edge on its paired face, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -4062,6 +4090,7 @@ export namespace OCCT {
          * How far the bevel reaches from each edge on the other face, in model units.
          * @default 0.2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -4137,6 +4166,7 @@ export namespace OCCT {
          * How far from each edge the bevel starts on its paired face, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -5245,7 +5275,7 @@ export namespace OCCT {
         shape!: T;
         /**
          * The gaps between points in model units, applied in turn from the start and repeated until the
-         * wire runs out.
+         * wire runs out; they must add up to more than 0.
          * @default undefined
          */
         lengths!: number[];
@@ -5697,9 +5727,10 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * How far to spin, in degrees; 360 or more gives a full turn.
+         * How far to spin, in degrees; a negative angle spins the other way, and 360 or more either way,
+         * or 0, gives a full turn.
          * @default 360
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 1
          */
@@ -5776,6 +5807,7 @@ export namespace OCCT {
          * The radius of the tubes, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -5818,6 +5850,7 @@ export namespace OCCT {
          * The radius of the tube, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -5861,6 +5894,7 @@ export namespace OCCT {
          * The distance from the path to each corner of the polygon, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
@@ -6068,6 +6102,7 @@ export namespace OCCT {
          * and costs more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -6082,6 +6117,7 @@ export namespace OCCT {
          * and costs more triangles.
          * @default 0.01
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.01
          */
@@ -6427,9 +6463,10 @@ export namespace OCCT {
          */
         rotationAngle?: number | undefined = 0;
         /**
-         * The uniform scale about the origin, applied first; 1 keeps the size.
+         * The uniform scale about the origin, applied first; 1 keeps the size, and a negative factor
+         * also mirrors the shape through the origin. It must not be 0.
          * @default 1
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
@@ -6469,7 +6506,7 @@ export namespace OCCT {
          */
         rotationAngles?: number[] | undefined = [0];
         /**
-         * One uniform scale factor per shape, about the origin.
+         * One uniform scale factor per shape, about the origin; none may be 0.
          * @default [1]
          */
         scaleFactors?: number[] | undefined = [1];
@@ -7162,9 +7199,10 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * The uniform scale factor; 2 doubles every size, 0.5 halves it.
+         * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+         * mirrors the shape through the origin. It must not be 0.
          * @default 1
-         * @minimum 0
+         * @minimum -Infinity
          * @maximum Infinity
          * @step 0.1
          */
@@ -7184,7 +7222,7 @@ export namespace OCCT {
          */
         shapes!: T[];
         /**
-         * One uniform scale factor per shape, about the origin.
+         * One uniform scale factor per shape, about the origin; none may be 0.
          * @default [1]
          */
         factors?: number[] | undefined = [1];
@@ -7205,7 +7243,7 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * The factors along X, Y and Z; unequal factors stretch the shape.
+         * The factors along X, Y and Z; unequal factors stretch the shape, and none may be 0.
          * @default [1, 1, 1]
          */
         scale?: Base.Vector3 | undefined = [1, 1, 1];
@@ -7231,7 +7269,7 @@ export namespace OCCT {
          */
         shapes!: T[];
         /**
-         * One set of X, Y and Z factors per shape.
+         * One set of X, Y and Z factors per shape, none of them 0.
          * @default [[1, 1, 1]]
          */
         scales?: Base.Vector3[] | undefined = [[1, 1, 1]];
@@ -7315,7 +7353,8 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * The uniform scale factor; 2 doubles every size, 0.5 halves it.
+         * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+         * mirrors the shape through the center. It must not be 0.
          * @default 1
          * @step 0.1
          */
@@ -7769,6 +7808,9 @@ export namespace OCCT {
         /**
          * How far the bevel cuts back from each corner along one edge, in model units.
          * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
          * @step 0.1
          */
         distance?: number | undefined = 1;
@@ -8534,7 +8576,7 @@ export namespace OCCT {
          * smoother curves and more triangles.
          * @default 0.5
          * @minimum 0.01
-         * @maximum 3.14159
+         * @maximum 3.141592653589793
          * @step 0.05
          */
         meshAngle?: number | undefined = 0.5;
@@ -8728,7 +8770,7 @@ export namespace OCCT {
          * smoother curves and more triangles.
          * @default 0.5
          * @minimum 0.01
-         * @maximum 3.14159
+         * @maximum 3.141592653589793
          * @step 0.1
          */
         meshAngle?: number | undefined = 0.5;
@@ -10113,6 +10155,7 @@ export namespace OCCT {
          * The width of the shape's bounding rectangle, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10121,6 +10164,7 @@ export namespace OCCT {
          * The height of the shape's bounding rectangle, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10167,6 +10211,7 @@ export namespace OCCT {
          * The side of the square the heart roughly fits into, in model units.
          * @default 2
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10205,6 +10250,7 @@ export namespace OCCT {
          * The distance from the center to each corner, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10547,6 +10593,7 @@ export namespace OCCT {
          * The height of a capital letter, in model units.
          * @default 1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10724,7 +10771,7 @@ export namespace OCCT {
         shape!: T;
         /**
          * The gaps between slices in model units, applied in turn from the bottom and repeated until
-         * the top is reached.
+         * the top is reached; they must add up to more than 0.
          * @default [0.1, 0.2]
          */
         steps?: number[] | undefined = [0.1, 0.2];
@@ -10809,6 +10856,7 @@ export namespace OCCT {
          * The height of the label's capital letters, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -10960,6 +11008,7 @@ export namespace OCCT {
          * The height of the label's capital letters, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */
@@ -11094,6 +11143,7 @@ export namespace OCCT {
          * The height of the label's capital letters, in model units.
          * @default 0.1
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 0.1
          */

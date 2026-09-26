@@ -13,7 +13,15 @@ class RecordingWorker extends EventTarget implements Worker {
     onmessageerror: Worker["onmessageerror"] = null;
     onerror: Worker["onerror"] = null;
 
+    refusals = 0;
+
+    refusal: unknown = new Error("() => 1 could not be cloned.");
+
     postMessage(message: PostedCall): void {
+        if (this.refusals > 0) {
+            this.refusals -= 1;
+            throw this.refusal;
+        }
         this.posted.push(message);
     }
 
@@ -301,6 +309,74 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("worker died");
+        });
+    });
+
+    describe("inputs that cannot cross to the worker", () => {
+        it("should reject the call at once as a failure of its inputs, naming the path", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", { material: (): number => 1 });
+
+            // Assert
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createBox", kind: "input", message: "shapes.solid.createBox: the inputs could not be sent to the worker: () => 1 could not be cloned." });
+        });
+
+        it("should report the worker loaded when nothing else is outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
+        });
+
+        it("should say only that the inputs could not be sent when what was thrown is not an error", async () => {
+            // Arrange
+            worker.refusals = 1;
+            worker.refusal = "not an error";
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createBox", kind: "input", message: "shapes.solid.createBox: the inputs could not be sent to the worker" });
+        });
+
+        it("should not report the worker loaded while another call is still outstanding", async () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("shapes.solid.createCube", {});
+            worker.refusals = 1;
+            states.length = 0;
+
+            // Act
+            const refused = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states.filter((s) => s.state === OccStateEnum.loaded)).toEqual([]);
+        });
+
+        it("should not count a call it could not send as outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+            const refused = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+            const sent = manager.genericCallToWorkerPromise("shapes.solid.createCube", {});
+            states.length = 0;
+
+            // Act
+            answer({ uid: uidOf(0), result: "a-shape" });
+            await sent;
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
         });
     });
 

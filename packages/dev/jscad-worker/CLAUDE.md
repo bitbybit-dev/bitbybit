@@ -13,9 +13,11 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
 - **Non-geometry results are stored wrapped** as `{ value: result }`, so a plain cached value cannot be
   mistaken for a geometry handle.
 - **Retention is bounded by a count, not by memory.** `startedTheRun` clears everything once more than
-  `CACHE_THRESHOLD` hashes have been used; otherwise `cleanUpCache` keeps only the hashes touched in the
-  run that finished and rolls that set forward. Together they are the only bound on WASM memory growth
-  across a long session.
+  `CACHE_THRESHOLD` hashes have been used, and that is the only bound on WASM memory growth across a
+  long session: until then an entry stays until a delete command or `cleanAllCache` frees it.
+  `cleanUpCache`, which would keep only the hashes the finished run touched, has not been called
+  since 2021, when the per-run sweep was switched off over problems never pinned down; it is kept and
+  tested, but nothing relies on it.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be

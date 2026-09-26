@@ -228,9 +228,10 @@ export class RevolveDto<T> {
      */
     shape!: T;
     /**
-     * How far to spin, in degrees; 360 or more gives a full turn.
+     * How far to spin, in degrees; a negative angle spins the other way, and 360 or more either way,
+     * or 0, gives a full turn.
      * @default 360
-     * @minimum 0
+     * @minimum -Infinity
      * @maximum Infinity
      * @step 1
      */
@@ -307,6 +308,7 @@ export class PipeWiresCylindricalDto<T> {
      * The radius of the tubes, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -349,6 +351,7 @@ export class PipeWireCylindricalDto<T> {
      * The radius of the tube, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -392,6 +395,7 @@ export class PipePolygonWireNGonDto<T> {
      * The distance from the path to each corner of the polygon, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 1
      */
@@ -599,6 +603,7 @@ export class MeshMeshIntersectionTwoShapesDto<T> {
      * and costs more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
@@ -613,6 +618,7 @@ export class MeshMeshIntersectionTwoShapesDto<T> {
      * and costs more triangles.
      * @default 0.01
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */

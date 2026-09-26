@@ -299,10 +299,10 @@ export class BabylonScene {
      * Repositions the default orbiting camera, the one named `Camera`, and sets its limits and
      * sensitivities.
      *
-     * The camera is placed at `position` looking at `lookAt`; the radius, alpha and beta limits
-     * fence how far it can zoom and orbit, angles in degrees, and the sensibilities set how fast it
-     * reacts, lower being faster.
-     * @param inputs - The position, the target and the optional limits and sensitivities
+     * The camera is placed at `position` looking at `lookAt`; angle limits are in degrees and lower
+     * sensibilities react faster. A radius or alpha limit left out stays as it is; any other setting
+     * left out, `maxZ` included, is set to its default.
+     * @param inputs - The position, the target, and the limits and sensitivities to set
      * @group camera
      * @shortname adjust active camera
      * @example

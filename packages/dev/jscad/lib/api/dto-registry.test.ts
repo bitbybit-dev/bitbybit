@@ -3,7 +3,7 @@ import { Jscad } from "./jscad-service";
 import { jscadDtoRegistry } from "./dto-registry";
 import { jscadDtoRules } from "./validation";
 import { getJscad } from "./__test__/kernel";
-import { InputIssue, resolveInputs, validateInputs } from "@bitbybit-dev/base";
+import { InputIssue, callByPath, resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import * as Inputs from "./inputs";
 
 const methodAt = (root: object, path: string): unknown => path.split(".").reduce<unknown>((owner, segment) => (owner === null || owner === undefined ? undefined : Reflect.get(owner, segment)), root);
@@ -81,5 +81,107 @@ describe("what the generated JSCAD constraints refuse", () => {
 
         // Assert
         expect(found).toEqual(issues);
+    });
+});
+
+type Fixtures = { square: Inputs.JSCAD.JSCADEntity; offAxisCircle: Inputs.JSCAD.JSCADEntity; startOfPath: Inputs.JSCAD.JSCADEntity };
+
+type BoundRow = [path: string, property: string, accepted: number, refused: number, placement: (fixtures: Fixtures) => object];
+
+const nothing = (): object => ({});
+const oneCenter = (): object => ({ centers: [[0, 0, 0]] });
+const aSquare = (fixtures: Fixtures): object => ({ geometry: fixtures.square });
+
+const boundRows: BoundRow[] = [
+    ["polygon.circle", "segments", 3, 2, nothing],
+    ["polygon.ellipse", "segments", 3, 2, nothing],
+    ["polygon.roundedRectangle", "segments", 4, 3, nothing],
+    ["polygon.star", "vertices", 2, 1, nothing],
+    ["polygon.star", "outerRadius", 0.01, 0, nothing],
+    ["polygon.star", "startAngle", 0, -1, nothing],
+    ["shapes.cylinder", "segments", 4, 3, nothing],
+    ["shapes.cylindersOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.cylinderElliptic", "segments", 4, 3, nothing],
+    ["shapes.cylinderElliptic", "height", 0.01, 0, nothing],
+    ["shapes.cylinderEllipticOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.cylinderEllipticOnCenterPoints", "height", 0.01, 0, oneCenter],
+    ["shapes.roundedCylinder", "segments", 4, 3, nothing],
+    ["shapes.roundedCylindersOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.roundedCuboid", "segments", 4, 3, nothing],
+    ["shapes.roundedCuboidsOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.sphere", "segments", 4, 3, nothing],
+    ["shapes.spheresOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.ellipsoid", "segments", 4, 3, nothing],
+    ["shapes.ellipsoidsOnCenterPoints", "segments", 4, 3, oneCenter],
+    ["shapes.geodesicSphere", "frequency", 6, 5, nothing],
+    ["shapes.geodesicSpheresOnCenterPoints", "frequency", 6, 5, oneCenter],
+    ["shapes.torus", "innerSegments", 3, 2, nothing],
+    ["shapes.torus", "outerSegments", 3, 2, nothing],
+    ["shapes.torus", "innerRadius", 0.01, 0, nothing],
+    ["shapes.torus", "outerRadius", 1.5, 0, nothing],
+    ["shapes.torus", "outerRotation", 1, 0, nothing],
+    ["shapes.torus", "startAngle", 0, -1, nothing],
+    ["extrusions.extrudeLinear", "twistSteps", 1, 0.5, aSquare],
+    ["extrusions.extrudeRectangular", "height", 0.01, 0, aSquare],
+    ["extrusions.extrudeRectangular", "size", 0.01, 0, aSquare],
+    ["extrusions.extrudeRectangularPoints", "height", 0.01, 0, () => ({ points: [[0, 0, 0], [1, 0, 0]] })],
+    ["extrusions.extrudeRectangularPoints", "size", 0.01, 0, () => ({ points: [[0, 0, 0], [1, 0, 0]] })],
+    ["extrusions.extrudeRotate", "segments", 3, 2, (fixtures) => ({ polygon: fixtures.offAxisCircle })],
+    ["path.appendArc", "segments", 4, 3, (fixtures) => ({ path: fixtures.startOfPath })],
+    ["text.cylindricalText", "segments", 4, 3, () => ({ text: "A" })],
+    ["text.sphericalText", "segments", 4, 3, () => ({ text: "A" })],
+];
+
+describe("the JSCAD bounds, measured against what the kernel builds", () => {
+    let jscad: Jscad;
+    let fixtures: Fixtures;
+
+    beforeAll(async () => {
+        ({ jscad } = await getJscad());
+        fixtures = {
+            square: jscad.polygon.square({ size: 4 }),
+            offAxisCircle: jscad.polygon.circle({ center: [3, 0], radius: 1 }),
+            startOfPath: jscad.path.createFromPoints({ points: [[0, 0]], closed: false }),
+        };
+    });
+
+    it.each(boundRows)("%s should pass %s at %s, which the kernel builds", (path, property, accepted, _refused, placement) => {
+        // Arrange
+        const inputs = { ...placement(fixtures), [property]: accepted };
+
+        // Act
+        const found = issuesOf(path, inputs);
+        const build = (): unknown => callByPath(jscad, path, resolveInputs(jscadDtoRegistry, path, inputs));
+
+        // Assert
+        expect(found).toEqual([]);
+        expect(build).not.toThrow();
+    });
+
+    it.each(boundRows)("%s should report %s past its bound, which the kernel refuses", (path, property, _accepted, refused, placement) => {
+        // Arrange
+        const inputs = { ...placement(fixtures), [property]: refused };
+
+        // Act
+        const found = issuesOf(path, inputs);
+        const build = (): unknown => callByPath(jscad, path, resolveInputs(jscadDtoRegistry, path, inputs));
+
+        // Assert
+        expect(found.map((issue) => `${issue.property} ${issue.code}`)).toEqual([`${property} minimum`]);
+        expect(build).toThrow();
+    });
+
+    it("should let an expansion of a 2D shape take as few round-corner segments as the kernel does", () => {
+        // Arrange
+        const inputs = { geometry: fixtures.square, delta: 1, corners: Inputs.JSCAD.solidCornerTypeEnum.round, segments: 0 };
+
+        // Act
+        const found = [...issuesOf("expansions.expand", inputs), ...issuesOf("expansions.offset", inputs)];
+        const expanded = jscad.expansions.expand(inputs);
+        const offset = jscad.expansions.offset(inputs);
+
+        // Assert
+        expect(found).toEqual([]);
+        expect([expanded, offset].every((entity) => "sides" in entity)).toBe(true);
     });
 });

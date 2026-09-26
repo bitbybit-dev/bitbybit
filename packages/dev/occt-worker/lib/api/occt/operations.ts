@@ -385,8 +385,8 @@ export class OCCTOperations {
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
-     * `angle` is in degrees; 360 or more gives a full turn. The axis runs along `direction`: a
-     * profile beside the Y axis revolved about it gives a vase. The profile must not cross it.
+     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way, or 0,
+     * makes a full turn. The profile must not cross the axis along `direction`.
      * @param inputs - The profile shape, the angle in degrees, the axis direction and whether to copy the geometry
      * @returns The revolved shape
      * @group revolutions
@@ -640,7 +640,8 @@ export class OCCTOperations {
      * Cuts a solid into parallel slices like `slice`, but with a repeating pattern of gaps between
      * them, such as 0.1, 0.5, 0.1, 0.5.
      *
-     * The pattern is applied from the bottom of the shape up and repeats until the top is reached.
+     * The pattern repeats from the bottom of the shape up to its top; steps that do not add up to
+     * more than 0 throw an error.
      * @param inputs - The shape, the pattern of gaps and the slicing direction
      * @returns A compound of the section faces
      * @group divisions

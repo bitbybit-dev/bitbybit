@@ -6,37 +6,38 @@ import * as Inputs from "./inputs";
 const JSCAD_BooleanObjectsDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)) };
 const JSCAD_BooleanObjectsFromDto: DtoConstraints = { from: k.required(k.opaque), meshes: k.required(k.list(k.opaque)) };
 const JSCAD_BooleanTwoObjectsDto: DtoConstraints = { first: k.required(k.opaque), second: k.required(k.opaque) };
-const JSCAD_CircleDto: DtoConstraints = { center: k.point2, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
+const JSCAD_CircleDto: DtoConstraints = { center: k.point2, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 3 }) };
 const JSCAD_ColorizeDto: DtoConstraints = { geometry: k.required(k.opaque), color: k.string };
 const JSCAD_CubeCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), size: k.between(k.number, { min: 0 }) };
 const JSCAD_CubeDto: DtoConstraints = { center: k.point3, size: k.between(k.number, { min: 0 }) };
 const JSCAD_CuboidCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }) };
 const JSCAD_CuboidDto: DtoConstraints = { center: k.point3, width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }) };
 const JSCAD_CurveDto: DtoConstraints = { curve: k.required(k.opaque) };
-const JSCAD_CylidnerCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_CylidnerCentersEllipticDto: DtoConstraints = { centers: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0 }), startRadius: k.point2, endRadius: k.point2, segments: k.between(k.number, { min: 0 }) };
-const JSCAD_CylidnerDto: DtoConstraints = { center: k.point3, height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_CylidnerEllipticDto: DtoConstraints = { center: k.point3, height: k.between(k.number, { min: 0 }), startRadius: k.vector2, endRadius: k.vector2, segments: k.between(k.number, { min: 0 }) };
-const JSCAD_CylinderTextDto: DtoConstraints = { text: k.string, extrusionHeight: k.between(k.number, { min: 0 }), extrusionSize: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }), xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0 }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number };
+const JSCAD_CylidnerCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_CylidnerCentersEllipticDto: DtoConstraints = { centers: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0, exclusiveMin: true }), startRadius: k.point2, endRadius: k.point2, segments: k.between(k.number, { min: 4 }) };
+const JSCAD_CylidnerDto: DtoConstraints = { center: k.point3, height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_CylidnerEllipticDto: DtoConstraints = { center: k.point3, height: k.between(k.number, { min: 0, exclusiveMin: true }), startRadius: k.vector2, endRadius: k.vector2, segments: k.between(k.number, { min: 4 }) };
+const JSCAD_CylinderTextDto: DtoConstraints = { text: k.string, extrusionHeight: k.between(k.number, { min: 0 }), extrusionSize: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }), xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0 }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number };
 const JSCAD_DownloadGeometryDto: DtoConstraints = { geometry: k.required(k.opaque), fileName: k.string, options: k.opaque };
 const JSCAD_DownloadSolidDto: DtoConstraints = { mesh: k.required(k.opaque), fileName: k.required(k.string) };
 const JSCAD_DownloadSolidsDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)), fileName: k.required(k.string) };
-const JSCAD_EllipseDto: DtoConstraints = { center: k.point2, radius: k.point2, segments: k.between(k.number, { min: 0 }) };
-const JSCAD_EllipsoidCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.point3, segments: k.between(k.number, { min: 0 }) };
-const JSCAD_EllipsoidDto: DtoConstraints = { center: k.point3, radius: k.point3, segments: k.between(k.number, { min: 0 }) };
+const JSCAD_EllipseDto: DtoConstraints = { center: k.point2, radius: k.point2, segments: k.between(k.number, { min: 3 }) };
+const JSCAD_EllipsoidCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.point3, segments: k.between(k.number, { min: 4 }) };
+const JSCAD_EllipsoidDto: DtoConstraints = { center: k.point3, radius: k.point3, segments: k.between(k.number, { min: 4 }) };
+const JSCAD_ExpandDto: DtoConstraints = { geometry: k.required(k.opaque), delta: k.number, corners: k.oneOf(["edge", "round", "chamfer"]), segments: k.between(k.number, { min: 0 }) };
 const JSCAD_ExpansionDto: DtoConstraints = { geometry: k.required(k.opaque), delta: k.number, corners: k.oneOf(["edge", "round", "chamfer"]), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_ExtrudeLinearDto: DtoConstraints = { geometry: k.required(k.opaque), height: k.number, twistAngle: k.number, twistSteps: k.between(k.number, { min: 0 }) };
-const JSCAD_ExtrudeRectangularDto: DtoConstraints = { geometry: k.required(k.opaque), height: k.between(k.number, { min: 0 }), size: k.between(k.number, { min: 0 }) };
-const JSCAD_ExtrudeRectangularPointsDto: DtoConstraints = { points: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0 }), size: k.between(k.number, { min: 0 }) };
-const JSCAD_ExtrudeRotateDto: DtoConstraints = { polygon: k.required(k.opaque), angle: k.number, startAngle: k.number, segments: k.between(k.number, { min: 0 }) };
+const JSCAD_ExtrudeLinearDto: DtoConstraints = { geometry: k.required(k.opaque), height: k.number, twistAngle: k.number, twistSteps: k.between(k.number, { min: 1 }) };
+const JSCAD_ExtrudeRectangularDto: DtoConstraints = { geometry: k.required(k.opaque), height: k.between(k.number, { min: 0, exclusiveMin: true }), size: k.between(k.number, { min: 0, exclusiveMin: true }) };
+const JSCAD_ExtrudeRectangularPointsDto: DtoConstraints = { points: k.required(k.list(k.point3)), height: k.between(k.number, { min: 0, exclusiveMin: true }), size: k.between(k.number, { min: 0, exclusiveMin: true }) };
+const JSCAD_ExtrudeRotateDto: DtoConstraints = { polygon: k.required(k.opaque), angle: k.number, startAngle: k.number, segments: k.between(k.number, { min: 3 }) };
 const JSCAD_FromPolygonPoints: DtoConstraints = { polygonPoints: k.required(k.list(k.list(k.point3))) };
-const JSCAD_GeodesicSphereCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.between(k.number, { min: 0 }), frequency: k.between(k.number, { min: 0 }) };
-const JSCAD_GeodesicSphereDto: DtoConstraints = { center: k.point3, radius: k.between(k.number, { min: 0 }), frequency: k.between(k.number, { min: 0 }) };
+const JSCAD_GeodesicSphereCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.between(k.number, { min: 0 }), frequency: k.between(k.number, { min: 6 }) };
+const JSCAD_GeodesicSphereDto: DtoConstraints = { center: k.point3, radius: k.between(k.number, { min: 0 }), frequency: k.between(k.number, { min: 6 }) };
 const JSCAD_HullDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)) };
 const JSCAD_MeshDto: DtoConstraints = { mesh: k.required(k.opaque) };
 const JSCAD_MeshesDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)) };
 const JSCAD_MinkowskiSumDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)) };
-const JSCAD_PathAppendArcDto: DtoConstraints = { path: k.required(k.opaque), endPoint: k.point2, xAxisRotation: k.number, clockwise: k.boolean, large: k.boolean, segments: k.between(k.number, { min: 0 }), radiusX: k.between(k.number, { min: 0 }), radiusY: k.between(k.number, { min: 0 }) };
+const JSCAD_PathAppendArcDto: DtoConstraints = { path: k.required(k.opaque), endPoint: k.point2, xAxisRotation: k.number, clockwise: k.boolean, large: k.boolean, segments: k.between(k.number, { min: 4 }), radiusX: k.between(k.number, { min: 0 }), radiusY: k.between(k.number, { min: 0 }) };
 const JSCAD_PathAppendPointsDto: DtoConstraints = { points: k.required(k.list(k.point2)), path: k.required(k.opaque) };
 const JSCAD_PathAppendPolylineDto: DtoConstraints = { polyline: k.required(k.opaque), path: k.required(k.opaque) };
 const JSCAD_PathDto: DtoConstraints = { path: k.required(k.opaque) };
@@ -46,19 +47,19 @@ const JSCAD_PathsFromPointsDto: DtoConstraints = { pointsLists: k.required(k.opa
 const JSCAD_PointsDto: DtoConstraints = { points: k.required(k.list(k.point)) };
 const JSCAD_PolylineDto: DtoConstraints = { polyline: k.required(k.opaque) };
 const JSCAD_RectangleDto: DtoConstraints = { center: k.point2, width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }) };
-const JSCAD_RoundedCuboidCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), roundRadius: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_RoundedCuboidDto: DtoConstraints = { center: k.point3, roundRadius: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_RoundedCylidnerCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), roundRadius: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_RoundedCylidnerDto: DtoConstraints = { center: k.point3, roundRadius: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_RoundedRectangleDto: DtoConstraints = { center: k.point2, roundRadius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }) };
+const JSCAD_RoundedCuboidCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), roundRadius: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_RoundedCuboidDto: DtoConstraints = { center: k.point3, roundRadius: k.between(k.number, { min: 0 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_RoundedCylidnerCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), roundRadius: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_RoundedCylidnerDto: DtoConstraints = { center: k.point3, roundRadius: k.between(k.number, { min: 0 }), height: k.between(k.number, { min: 0 }), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_RoundedRectangleDto: DtoConstraints = { center: k.point2, roundRadius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }), width: k.between(k.number, { min: 0 }), length: k.between(k.number, { min: 0 }) };
 const JSCAD_SolidDto: DtoConstraints = { mesh: k.required(k.opaque) };
-const JSCAD_SphereCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_SphereDto: DtoConstraints = { center: k.point3, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }) };
-const JSCAD_SphereTextDto: DtoConstraints = { text: k.string, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 0 }), xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0 }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number };
+const JSCAD_SphereCentersDto: DtoConstraints = { centers: k.required(k.list(k.point3)), radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_SphereDto: DtoConstraints = { center: k.point3, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }) };
+const JSCAD_SphereTextDto: DtoConstraints = { text: k.string, radius: k.between(k.number, { min: 0 }), segments: k.between(k.number, { min: 4 }), xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0 }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number };
 const JSCAD_SquareDto: DtoConstraints = { center: k.point2, size: k.between(k.number, { min: 0 }) };
-const JSCAD_StarDto: DtoConstraints = { center: k.point2, vertices: k.between(k.number, { min: 0 }), density: k.between(k.number, { min: 0 }), outerRadius: k.between(k.number, { min: 0 }), innerRadius: k.between(k.number, { min: 0 }), startAngle: k.number };
+const JSCAD_StarDto: DtoConstraints = { center: k.point2, vertices: k.between(k.number, { min: 2 }), density: k.between(k.number, { min: 0 }), outerRadius: k.between(k.number, { min: 0, exclusiveMin: true }), innerRadius: k.between(k.number, { min: 0 }), startAngle: k.between(k.number, { min: 0 }) };
 const JSCAD_TextDto: DtoConstraints = { text: k.string, segments: k.between(k.number, { min: 0 }), xOffset: k.number, yOffset: k.number, height: k.between(k.number, { min: 0 }), lineSpacing: k.number, letterSpacing: k.number, align: k.oneOf(["left", "center", "right"]), extrudeOffset: k.number };
-const JSCAD_TorusDto: DtoConstraints = { center: k.point3, innerRadius: k.between(k.number, { min: 0 }), outerRadius: k.between(k.number, { min: 0 }), innerSegments: k.between(k.number, { min: 0 }), outerSegments: k.between(k.number, { min: 0 }), innerRotation: k.number, outerRotation: k.number, startAngle: k.number };
+const JSCAD_TorusDto: DtoConstraints = { center: k.point3, innerRadius: k.between(k.number, { min: 0, exclusiveMin: true }), outerRadius: k.between(k.number, { min: 0, exclusiveMin: true }), innerSegments: k.between(k.number, { min: 3 }), outerSegments: k.between(k.number, { min: 3 }), innerRotation: k.number, outerRotation: k.between(k.number, { min: 0, exclusiveMin: true }), startAngle: k.between(k.number, { min: 0 }) };
 const JSCAD_TransformSolidDto: DtoConstraints = { mesh: k.required(k.opaque), transformation: k.required(k.opaque) };
 const JSCAD_TransformSolidsDto: DtoConstraints = { meshes: k.required(k.list(k.opaque)), transformation: k.required(k.opaque) };
 
@@ -82,7 +83,7 @@ export const jscadDtoRegistry: DtoRegistry = {
     "downloadGeometryDxf": { dto: Inputs.JSCAD.DownloadGeometryDto, constraints: JSCAD_DownloadGeometryDto },
     "downloadSolidsSTL": { dto: Inputs.JSCAD.DownloadSolidsDto, constraints: JSCAD_DownloadSolidsDto },
     "downloadSolidSTL": { dto: Inputs.JSCAD.DownloadSolidDto, constraints: JSCAD_DownloadSolidDto },
-    "expansions.expand": { dto: Inputs.JSCAD.ExpansionDto, constraints: JSCAD_ExpansionDto },
+    "expansions.expand": { dto: Inputs.JSCAD.ExpandDto, constraints: JSCAD_ExpandDto },
     "expansions.offset": { dto: Inputs.JSCAD.ExpansionDto, constraints: JSCAD_ExpansionDto },
     "extrusions.extrudeLinear": { dto: Inputs.JSCAD.ExtrudeLinearDto, constraints: JSCAD_ExtrudeLinearDto },
     "extrusions.extrudeRectangular": { dto: Inputs.JSCAD.ExtrudeRectangularDto, constraints: JSCAD_ExtrudeRectangularDto },

@@ -362,13 +362,13 @@ export class OperationsService {
     }
 
     revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
-        const angle = inputs.angle || 360.0;
-        const direction = inputs.direction || [0, 0, 1];
+        const angle = inputs.angle;
+        const direction = inputs.direction;
         let result;
         const pt1 = new this.occ.gp_Pnt(0, 0, 0);
         const dir = new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
-        if (angle >= 360.0) {
+        if (angle === 0 || Math.abs(angle) >= 360.0) {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
             result = makeRevol.Shape();
             makeRevol.delete();
@@ -621,8 +621,8 @@ export class OperationsService {
     }
 
     sliceInStepPattern(inputs: Resolved.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
-        if (!inputs.steps || inputs.steps.length === 0) {
-            throw new Error("Steps must be provided with at elast one positive value");
+        if (inputs.steps.reduce((sum, step) => sum + step, 0) <= 0) {
+            throw new Error("Steps must add up to more than 0, or the slices never move along the shape.");
         }
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
         const intersections: TopoDS_Shape[] = [];

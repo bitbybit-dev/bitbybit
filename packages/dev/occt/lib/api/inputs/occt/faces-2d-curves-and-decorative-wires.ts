@@ -500,6 +500,7 @@ export class ParallelogramDto {
      * The width of the shape's bounding rectangle, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -508,6 +509,7 @@ export class ParallelogramDto {
      * The height of the shape's bounding rectangle, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -554,6 +556,7 @@ export class Heart2DDto {
      * The side of the square the heart roughly fits into, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -592,6 +595,7 @@ export class NGonWireDto {
      * The distance from the center to each corner, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -934,6 +938,7 @@ export class TextWiresDto {
      * The height of a capital letter, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -1111,7 +1116,7 @@ export class SliceInStepPatternDto<T> {
     shape!: T;
     /**
      * The gaps between slices in model units, applied in turn from the bottom and repeated until
-     * the top is reached.
+     * the top is reached; they must add up to more than 0.
      * @default [0.1, 0.2]
      */
     steps?: number[] | undefined = [0.1, 0.2];

@@ -1,6 +1,6 @@
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
 import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
-import { callByPath, describeKernelFailure, rehydrateReferences, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
+import { callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
 
 /**
  * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
@@ -39,7 +39,7 @@ const MANIFOLD_REFERENCE = "manifold-shape";
 
 /** Commands the worker answers itself rather than by calling a kernel method. */
 const WORKER_COMMANDS = new Set([
-    "manifoldToMesh", "manifoldsToMeshes", "deleteManifoldOrCrossSection", "deleteManifoldsOrCrossSections",
+    "deleteManifoldOrCrossSection", "deleteManifoldsOrCrossSections",
     "manifoldToMeshPointer", "startedTheRun", "cleanAllCache", "addManifoldPluginDependency",
 ]);
 
@@ -80,19 +80,21 @@ const serializeResult = (res: unknown): unknown => {
     return { hash: (res as Hashed).hash, type: MANIFOLD_REFERENCE };
 };
 
+/** What the worker answers when a call failed and even its failure could not be sent back. */
+const UNREPORTABLE_FAILURE = "Manifold computation failed, and the failure could not be reported.";
+
 /**
- * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes, references
- * in them become the manifolds they stand for, the dotted path is called on the kernel, the result is
- * cached under the inputs as resolved, before any reference was replaced, and every manifold in it
- * goes back as a reference. A call that is not in the cache first reports what its inputs would be
- * rejected for.
+ * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes and the result
+ * is cached under them, before any reference is replaced. Only a call that is not in the cache
+ * reports what its inputs would be rejected for, has the references in them replaced by the
+ * manifolds they stand for, and calls the dotted path on the kernel. Every manifold in the result goes
+ * back as a reference.
  */
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
-    const inputs = resolveInputs(manifoldDtoRegistry, action.functionName, action.inputs);
-    const rehydrated = rehydrateReferences(inputs, manifoldHash, lookupManifold);
-    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
-        reportInputIssues("Manifold", action.functionName, validateInputs(manifoldDtoRegistry, action.functionName, inputs), unknownProperties(manifoldDtoRegistry, action.functionName, action.inputs));
-        return callByPath(manifold, action.functionName, rehydrated);
+    const call = prepareKernelCall("Manifold", manifoldDtoRegistry, action.functionName, action.inputs);
+    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
+        call.reportIssues();
+        return callByPath(manifold, action.functionName, rehydrateReferences(call.inputs, manifoldHash, lookupManifold));
     }));
 };
 
@@ -111,38 +113,11 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 });
             }
         }
-        if (d.action.functionName === "manifoldToMesh") {
-            const cachedManifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
-            if (!cachedManifold) {
-                throw new Error(`Manifold with hash ${d.action.inputs.manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-            }
-            d.action.inputs.manifold = cachedManifold;
-            result = manifold.decomposeManifoldOrCrossSection(d.action.inputs);
-        }
         if (d.action.functionName === "manifoldToMeshPointer") {
-            const cachedManifold = cacheHelper.checkCache(d.action.inputs.manifold.hash);
-            if (!cachedManifold) {
-                throw new Error(`Manifold with hash ${d.action.inputs.manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-            }
-            d.action.inputs.manifold = cachedManifold;
-            const r = manifold.manifold.manifoldToMesh(d.action.inputs);
+            const mesh = manifold.manifold.manifoldToMesh({ ...d.action.inputs, manifold: lookupManifold(d.action.inputs.manifold.hash) });
             const hash = cacheHelper.computeHash(d.action);
-            cacheHelper.addToCache(hash, r);
-            result = { hash, type: "manifold-shape" };
-        }
-        if (d.action.functionName === "manifoldsToMeshes") {
-            if (d.action.inputs.manifolds && d.action.inputs.manifolds.length > 0) {
-                d.action.inputs.manifolds = d.action.inputs.manifolds.map((manifold: HashedManifold) => {
-                    const cachedManifold = cacheHelper.checkCache(manifold.hash);
-                    if (!cachedManifold) {
-                        throw new Error(`Manifold with hash ${manifold.hash} not found in cache. The cache may have been cleaned. Please regenerate the manifold.`);
-                    }
-                    return cachedManifold;
-                });
-            } else {
-                throw new Error("No manifolds detected");
-            }
-            result = manifold.decomposeManifoldsOrCrossSections(d.action.inputs);
+            cacheHelper.addToCache(hash, mesh);
+            result = { hash, type: MANIFOLD_REFERENCE };
         }
         if (d.action.functionName === "deleteManifoldOrCrossSection") {
             cacheHelper.cleanCacheForHash(d.action.inputs.manifoldOrCrossSection.hash);
@@ -169,13 +144,17 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
             result
         });
     } catch (e) {
-        const failure = describeKernelFailure("Manifold", d?.action?.functionName ?? "", d?.action?.inputs, e);
-        postMessage({
-            uid: d.uid,
-            result: undefined,
-            error: failure.message,
-            errorKind: failure.kind,
-            stack: failure.stack,
-        });
+        try {
+            const failure = describeKernelFailure("Manifold", d?.action?.functionName ?? "", d?.action?.inputs, e);
+            postMessage({
+                uid: d.uid,
+                result: undefined,
+                error: failure.message,
+                errorKind: failure.kind,
+                stack: failure.stack,
+            });
+        } catch {
+            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+        }
     }
 };

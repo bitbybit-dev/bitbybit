@@ -34,7 +34,7 @@ export class JSCADExpansions {
      * const grown = await bitbybit.jscad.expansions.expand({ geometry: square, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.round, segments: 16 });
      * ```
      */
-    expand(inputs: Inputs.JSCAD.ExpansionDto): Promise<Inputs.JSCAD.JSCADEntity> {
+    expand(inputs: Inputs.JSCAD.ExpandDto): Promise<Inputs.JSCAD.JSCADEntity> {
         return this.jscadWorkerManager.genericCallToWorkerPromise("expansions.expand", inputs);
     }
 

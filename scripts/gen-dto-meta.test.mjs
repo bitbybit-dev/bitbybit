@@ -1,10 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import ts from "typescript";
 import { ROOT } from "./lib/surface.mjs";
 import { kernelSurface } from "./lib/kernel-surface.mjs";
-import { allProps, bare, boundsOf, constraintOf, constraintsOf, dtoClasses, generateResolved, mirrorReexports, nestedOf, registryText } from "./gen-dto-meta.mjs";
+import { allProps, bare, boundsOf, byName, constraintOf, constraintsOf, dtoClasses, generateResolved, mirrorReexports, nestedOf, registryText, unionMembers } from "./gen-dto-meta.mjs";
 
 const INPUTS_DIR = path.join(ROOT, "packages/dev/fixture/lib/api/inputs");
 const KERNEL_FILE = path.join(ROOT, "packages/dev/fixture/lib/kernel.ts");
@@ -73,6 +75,14 @@ describe("constraintOf", () => {
         );
     });
 
+    it("should let a list item that may be undefined or null be left out", () => {
+        // Act
+        const constraints = [constraintOf("(Base.Vector3 | undefined)[]", "Fixture", ENUMS), constraintOf("(Base.Point2 | Base.Point3 | null)[] | undefined", "Fixture", ENUMS), constraintOf("(undefined | number)[]", "Fixture", ENUMS)];
+
+        // Assert
+        assert.deepEqual(constraints, ["k.list(k.optional(k.vector3))", "k.list(k.optional(k.point))", "k.list(k.optional(k.number))"]);
+    });
+
     it("should fall back to opaque for what it cannot check", () => {
         // Act & Assert
         assert.deepEqual(
@@ -93,6 +103,31 @@ describe("constraintOf", () => {
     it("should not find an enum of another namespace by its bare name", () => {
         // Act & Assert
         assert.equal(constraintOf("colorModeEnum", "Fixture", ENUMS), "k.opaque");
+    });
+});
+
+describe("unionMembers", () => {
+    it("should split a union at its top level only", () => {
+        // Act
+        const members = unionMembers("Base.Point3 | Map<string, number | undefined> | (a | b)[] | { x: 1 | 2 } | undefined");
+
+        // Assert
+        assert.deepEqual(members, ["Base.Point3", "Map<string, number | undefined>", "(a | b)[]", "{ x: 1 | 2 }", "undefined"]);
+    });
+});
+
+describe("byName", () => {
+    it("should order names the same under a collation that sorts y with i", () => {
+        // Arrange
+        const names = ["zeta", "yaw", "iris", "jaw", "Ypsilon", "item"];
+        const script = `import { byName } from ${JSON.stringify(pathToFileURL(path.join(ROOT, "scripts/gen-dto-meta.mjs")).href)};\nconst names = ${JSON.stringify(names)};\nconsole.log(JSON.stringify({ ordered: [...names].sort(byName), bare: [...names].sort((a, b) => a.localeCompare(b)) }));`;
+
+        // Act
+        const child = spawnSync(process.execPath, ["--input-type=module", "-e", script], { env: { ...process.env, LC_ALL: "lt_LT.UTF-8", LANG: "lt_LT.UTF-8" }, encoding: "utf8" });
+        const { ordered, bare: collated } = JSON.parse(child.stdout);
+
+        // Assert
+        assert.deepEqual({ ordered, localeApplies: collated.join() !== ordered.join() }, { ordered: [...names].sort(byName), localeApplies: true });
     });
 });
 
@@ -188,15 +223,15 @@ describe("dtoClasses", () => {
         assert.deepEqual([...classes.keys()], ["Fixture.PointDto", "Fixture.GenericDto", "Fixture.ChildDto", "Fixture.QualifiedChildDto"]);
     });
 
-    it("should record each named property's type, initializer, definite assignment and bounds", () => {
+    it("should record each named property's namespace, type, initializer, definite assignment and bounds", () => {
         // Act
         const point = dtoClasses([sourceOf(namespaceFixture)]).get("Fixture.PointDto");
 
         // Assert
         assert.deepEqual(point.props, [
-            { name: "radius", type: "number | undefined", defaulted: true, required: false, bounds: "{ min: 0, exclusiveMin: true }" },
-            { name: "center", type: "Base.Point3", defaulted: false, required: true, bounds: undefined },
-            { name: "label", type: "string | undefined", defaulted: false, required: false, bounds: undefined },
+            { name: "radius", namespace: "Fixture", type: "number | undefined", defaulted: true, required: false, bounds: "{ min: 0, exclusiveMin: true }" },
+            { name: "center", namespace: "Fixture", type: "Base.Point3", defaulted: false, required: true, bounds: undefined },
+            { name: "label", namespace: "Fixture", type: "string | undefined", defaulted: false, required: false, bounds: undefined },
         ]);
     });
 
@@ -296,12 +331,23 @@ describe("allProps", () => {
         assert.deepEqual(names, ["origin", "size"]);
     });
 
-    it("should list only a class's own properties when its parent is not among the classes", () => {
+    it("should refuse a class whose parent is not among the classes", () => {
         // Act
-        const names = allProps(dtoClasses([sourceOf(inheritanceFixture)]), "Fixture.ForeignParentDto").map((p) => p.name);
+        const listing = () => allProps(dtoClasses([sourceOf(inheritanceFixture)]), "Fixture.ForeignParentDto");
 
         // Assert
-        assert.deepEqual(names, ["own"]);
+        assert.throws(listing, { message: "Fixture.ForeignParentDto extends Missing.ParentDto, which is not a class of the inputs read (looked for Missing.ParentDto)" });
+    });
+
+    it("should keep the namespace of the class that declares each property", () => {
+        // Arrange
+        const crossNamespace = sourceOf("export namespace Base {\n    export class OriginDto {\n        origin?: number | undefined = 0;\n    }\n}\nexport namespace Fixture {\n    export class PlacedDto extends Base.OriginDto {\n        size?: number | undefined = 1;\n    }\n}\n");
+
+        // Act
+        const props = allProps(dtoClasses([crossNamespace]), "Fixture.PlacedDto").map((p) => `${p.namespace}.${p.name}`);
+
+        // Assert
+        assert.deepEqual(props, ["Base.origin", "Fixture.size"]);
     });
 
     it("should stop at a class it has already listed", () => {
@@ -362,6 +408,17 @@ describe("nestedOf", () => {
 
         // Assert
         assert.deepEqual(nested, [["inner", "Fixture.InnerDto"], ["maybeInner", "Fixture.InnerDto"], ["genericInner", "Fixture.GenericInnerDto"], ["foreign", "Other.OuterDto"]]);
+    });
+
+    it("should place an inherited property's DTO in the namespace of the class that declares it", () => {
+        // Arrange
+        const crossNamespace = sourceOf("export namespace Other {\n    export class InnerDto {\n        flag?: boolean | undefined = true;\n    }\n    export class HolderDto {\n        inner!: InnerDto;\n    }\n}\nexport namespace Fixture {\n    export class InnerDto {\n        decoy?: number | undefined = 1;\n    }\n    export class SubHolderDto extends Other.HolderDto {\n        own!: InnerDto;\n    }\n}\n");
+
+        // Act
+        const nested = nestedOf(dtoClasses([crossNamespace]), "Fixture.SubHolderDto");
+
+        // Assert
+        assert.deepEqual(nested, [["inner", "Other.InnerDto"], ["own", "Fixture.InnerDto"]]);
     });
 
     it("should include the nested properties a class inherits, and one holding its parent", () => {
@@ -427,6 +484,29 @@ describe("constraintsOf", () => {
     it("should constrain an enum of the namespace to its values", () => {
         // Act & Assert
         assert.equal(constraintsFor("        direction?: directionEnum | undefined = directionEnum.up;"), "{ direction: k.oneOf([\"up\", \"down\"]) }");
+    });
+
+    it("should bound each present number of a list whose items may be undefined", () => {
+        // Arrange
+        const members = "        /**\n         * @minimum 0\n         */\n        weights?: (number | undefined)[] | undefined;";
+
+        // Act
+        const text = constraintsFor(members);
+
+        // Assert
+        assert.equal(text, "{ weights: k.list(k.optional(k.between(k.number, { min: 0 }))) }");
+    });
+
+    it("should constrain an inherited enum property by the namespace of the class that declares it", () => {
+        // Arrange
+        const enums = new Map();
+        const crossNamespace = sourceOf("export namespace Other {\n    export enum directionEnum { inward = \"in\", outward = \"out\" }\n    export class FlowDto {\n        direction?: directionEnum | undefined = directionEnum.inward;\n    }\n}\nexport namespace Fixture {\n    export enum directionEnum { up = \"up\", down = \"down\" }\n    export class PipeDto extends Other.FlowDto {\n        heading?: directionEnum | undefined = directionEnum.up;\n    }\n}\n");
+
+        // Act
+        const text = constraintsOf(dtoClasses([crossNamespace], new Map(), enums), "Fixture.PipeDto", enums);
+
+        // Assert
+        assert.equal(text, "{ direction: k.oneOf([\"in\", \"out\"]), heading: k.oneOf([\"up\", \"down\"]) }");
     });
 
     it("should list a concrete parent's properties before the class's own", () => {
@@ -623,6 +703,29 @@ describe("generateResolved", () => {
             "}",
             "",
         ].join("\n"));
+    });
+
+    it("should find a parent in a lower package's inputs, count its defaults and emit only the package's own classes", () => {
+        // Arrange
+        const lower = sourceOf("export namespace Base {\n    export class OriginDto {\n        origin?: number | undefined = 0;\n        label?: string | undefined;\n    }\n}\n", path.join(ROOT, "packages/dev/base/lib/api/inputs/base-inputs.ts"));
+        const own = sourceOf("export namespace Fixture {\n    export class PlacedDto extends Base.OriginDto {\n        size?: number | undefined = 1;\n    }\n}\n");
+
+        // Act
+        const text = generateResolved(MIRROR_TARGET(), { files: [own], lowerFiles: [lower], index: indexOf(""), namespaces: new Map() });
+
+        // Assert
+        assert.deepEqual(text.split("\n").filter((line) => line.startsWith("    export type ")), ["    export type PlacedDto = WithDefaults<Inputs.Fixture.PlacedDto, \"origin\" | \"size\">;"]);
+    });
+
+    it("should refuse a parent neither its own nor a lower package's inputs declare", () => {
+        // Arrange
+        const own = sourceOf("export namespace Fixture {\n    export class PlacedDto extends Base.OriginDto {\n        size?: number | undefined = 1;\n    }\n}\n");
+
+        // Act
+        const generating = () => generateResolved(MIRROR_TARGET(), { files: [own], lowerFiles: [], index: indexOf(""), namespaces: new Map() });
+
+        // Assert
+        assert.throws(generating, { message: "Fixture.PlacedDto extends Base.OriginDto, which is not a class of the inputs read (looked for Base.OriginDto)" });
     });
 
     it("should import WithDefaults from where the target says", () => {

@@ -237,6 +237,17 @@ describe("JSCADShapes", () => {
             expect(kernel.measurements.measureVolume(rounded)).toBeLessThan(kernel.measurements.measureVolume(square));
         });
 
+        it("should build a capsule when the rounding is exactly the radius", () => {
+            // Act
+            const capsule = expectSolid(jscad.shapes.roundedCylinder(
+                new Inputs.JSCAD.RoundedCylidnerDto([0, 0, 0], CYLINDER_RADIUS, CYLINDER_HEIGHT * 2, CYLINDER_RADIUS, 32)));
+            const [min, max] = kernel.measurements.measureBoundingBox(capsule);
+
+            // Assert
+            expect(max[0] - min[0]).toBeCloseTo(2 * CYLINDER_RADIUS, 5);
+            expect(max[2] - min[2]).toBeCloseTo(CYLINDER_HEIGHT * 2, 5);
+        });
+
         it("should build a solid from the polygon points it was given", () => {
             const points: Inputs.Base.Point3[][] = [
                 [[0, 0, 0], [1, 0, 0], [0, 1, 0]],

@@ -928,4 +928,19 @@ describe("CacheHelper unit tests", () => {
             expect(cacheHelper.argCache["primitive"]).toBe(42);
         });
     });
+
+    describe("an answer that is a list of kernel objects", () => {
+        it("should key every object of the answer from the call's own key, without writing the arguments out again", () => {
+            // Arrange
+            const computeHash = vi.spyOn(cacheHelper, "computeHash");
+            const args = { functionName: "booleans.splitAll", inputs: { points: [[1, 2, 3], [4, 5, 6]] } };
+
+            // Act
+            const parts = cacheHelper.cacheOp(args, () => [{ delete: vi.fn() }, { delete: vi.fn() }, { delete: vi.fn() }]);
+
+            // Assert
+            expect(computeHash).toHaveBeenCalledTimes(1);
+            expect(new Set(parts.map((part: { hash: number }) => part.hash)).size).toBe(3);
+        });
+    });
 });

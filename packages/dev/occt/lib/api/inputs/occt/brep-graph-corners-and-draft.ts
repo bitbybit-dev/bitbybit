@@ -214,6 +214,9 @@ export class Chamfer2dVertexDto<T> {
     /**
      * How far the bevel cuts back from each corner along one edge, in model units.
      * @default 1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
      * @step 0.1
      */
     distance?: number | undefined = 1;

@@ -34,8 +34,8 @@ export class JSCADExpansions {
      * const grown = await bitbybit.jscad.expansions.expand({ geometry: square, delta: 1, corners: Bit.Inputs.JSCAD.solidCornerTypeEnum.round, segments: 16 });
      * ```
      */
-    expand(inputs: Inputs.JSCAD.ExpansionDto): Inputs.JSCAD.JSCADEntity {
-        const resolved = resolveDto(Inputs.JSCAD.ExpansionDto, inputs) as Resolved.JSCAD.ExpansionDto;
+    expand(inputs: Inputs.JSCAD.ExpandDto): Inputs.JSCAD.JSCADEntity {
+        const resolved = resolveDto(Inputs.JSCAD.ExpandDto, inputs) as Resolved.JSCAD.ExpandDto;
         const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(resolved.geometry));
         const corners = resolved.corners;
         const result = this.jscad.expansions.expand({

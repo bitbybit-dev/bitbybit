@@ -161,8 +161,9 @@ export class JSCAD {
      * ```
      */
     async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", inputs);
-        this.downloadFile(res.blob, (resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto).fileName, "dxf");
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", resolved);
+        this.downloadFile(res.blob, resolved.fileName, "dxf");
     }
 
     /**
@@ -180,8 +181,9 @@ export class JSCAD {
      * ```
      */
     async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", inputs);
-        this.downloadFile(res.blob, (resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto).fileName, "3mf");
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", resolved);
+        this.downloadFile(res.blob, resolved.fileName, "3mf");
     }
 
     private downloadFile(blob: Blob, fileName: string, extension: string): void {

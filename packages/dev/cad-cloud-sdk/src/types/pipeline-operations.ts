@@ -1599,24 +1599,21 @@ export interface OperationParams {
      * rounded when `corners` is left out.
      */
     "jscad.expansions.expand": {
-        /**
-         * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
-         * is and a new entity comes back
-         */
+        /** The 2D shape, path or solid to grow; it stays as it is and a new entity comes back */
         geometry: unknown | PipelineRef;
         /**
-         * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
-         * (a solid accepts positive only)
+         * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it;
+         * a solid or a path accepts a positive value only
          */
         delta?: number | PipelineRef;
         /**
-         * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-         * it; a solid accepts `round` only
+         * How a convex corner is shaped: `round` curves it with `segments` pieces, `chamfer` cuts it
+         * flat, `edge` keeps it sharp; a solid accepts `round` only
          */
         corners?: "edge" | "round" | "chamfer" | PipelineRef;
         /**
          * Number of straight pieces a `round` corner is made of over a full circle; more makes it
-         * smoother
+         * smoother, and a solid needs at least 4
          */
         segments?: number | PipelineRef;
     };
@@ -1628,19 +1625,13 @@ export interface OperationParams {
      * `corners` is left out, corners are kept sharp.
      */
     "jscad.expansions.offset": {
-        /**
-         * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
-         * is and a new entity comes back
-         */
+        /** The 2D shape or path to outline; it stays as it is and a new entity comes back */
         geometry: unknown | PipelineRef;
-        /**
-         * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
-         * (a solid accepts positive only)
-         */
+        /** How far the boundary moves, in model units: positive grows the geometry, negative shrinks it */
         delta?: number | PipelineRef;
         /**
          * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-         * it; a solid accepts `round` only
+         * it with `segments` pieces
          */
         corners?: "edge" | "round" | "chamfer" | PipelineRef;
         /**
@@ -7978,13 +7969,16 @@ export interface OperationParams {
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
-     * `angle` is in degrees; 360 or more gives a full turn. The axis runs along `direction`: a
-     * profile beside the Y axis revolved about it gives a vase. The profile must not cross it.
+     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way, or 0,
+     * makes a full turn. The profile must not cross the axis along `direction`.
      */
     "occt.operations.revolve": {
         /** The profile to spin: a wire gives a shell, a face a solid; it must not cross the axis. */
         shape: unknown | PipelineRef;
-        /** How far to spin, in degrees; 360 or more gives a full turn. */
+        /**
+         * How far to spin, in degrees; a negative angle spins the other way, and 360 or more either way,
+         * or 0, gives a full turn.
+         */
         angle?: number | PipelineRef;
         /** The direction of the axis, which passes through the origin. */
         direction?: [number, number, number] | PipelineRef;
@@ -8027,14 +8021,15 @@ export interface OperationParams {
      * Cuts a solid into parallel slices like `slice`, but with a repeating pattern of gaps between
      * them, such as 0.1, 0.5, 0.1, 0.5.
      *
-     * The pattern is applied from the bottom of the shape up and repeats until the top is reached.
+     * The pattern repeats from the bottom of the shape up to its top; steps that do not add up to
+     * more than 0 throw an error.
      */
     "occt.operations.sliceInStepPattern": {
         /** The solid, or shape holding solids, to slice. */
         shape: unknown | PipelineRef;
         /**
          * The gaps between slices in model units, applied in turn from the bottom and repeated until
-         * the top is reached.
+         * the top is reached; they must add up to more than 0.
          */
         steps?: number[] | PipelineRef;
         /** The direction the slices are stacked along; each cutting plane is perpendicular to it. */
@@ -10698,7 +10693,10 @@ export interface OperationParams {
     "occt.shapes.solid.createTorus": {
         /** The distance from the center of the ring to the middle of its tube, in model units. */
         majorRadius?: number | PipelineRef;
-        /** The radius of the tube itself, in model units. */
+        /**
+         * The radius of the tube itself, in model units; at most `majorRadius`, where the hole in the
+         * middle closes to a point.
+         */
         minorRadius?: number | PipelineRef;
         /** The point the ring is centered on. */
         center?: [number, number, number] | PipelineRef;
@@ -12099,16 +12097,16 @@ export interface OperationParams {
      * Places points along a wire at a repeating pattern of gaps, such as 1, 3, 1, 3, until the wire
      * runs out.
      *
-     * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
-     * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
-     * point at the next gap past the last.
+     * `lengths` holds the gaps in model units, repeated from the start, and must add up to more
+     * than 0 or it throws. `includeFirst` adds the start point, `includeLast` the end, and
+     * `tryNext` one point past the last gap.
      */
     "occt.shapes.wire.pointsOnWireAtPatternOfLengths": {
         /** The wire to place points along. */
         shape: unknown | PipelineRef;
         /**
          * The gaps between points in model units, applied in turn from the start and repeated until the
-         * wire runs out.
+         * wire runs out; they must add up to more than 0.
          */
         lengths: number[] | PipelineRef;
         /** When true, one more point is asked for at the next gap beyond the last one that fit. */
@@ -12821,7 +12819,10 @@ export interface OperationParams {
     "occt.transforms.scale": {
         /** The shape to scale; it stays as it is and a scaled copy comes back. */
         shape: unknown | PipelineRef;
-        /** The uniform scale factor; 2 doubles every size, 0.5 halves it. */
+        /**
+         * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+         * mirrors the shape through the origin. It must not be 0.
+         */
         factor?: number | PipelineRef;
     };
     /**
@@ -12834,7 +12835,7 @@ export interface OperationParams {
     "occt.transforms.scale3d": {
         /** The shape to scale. */
         shape: unknown | PipelineRef;
-        /** The factors along X, Y and Z; unequal factors stretch the shape. */
+        /** The factors along X, Y and Z; unequal factors stretch the shape, and none may be 0. */
         scale?: [number, number, number] | PipelineRef;
         /** The point that stays in place while everything else scales away from or toward it. */
         center?: [number, number, number] | PipelineRef;
@@ -12847,7 +12848,7 @@ export interface OperationParams {
     "occt.transforms.scale3dShapes": {
         /** The shapes to scale. */
         shapes: unknown[] | PipelineRef;
-        /** One set of X, Y and Z factors per shape. */
+        /** One set of X, Y and Z factors per shape, none of them 0. */
         scales?: [number, number, number][] | PipelineRef;
         /** One point per shape that stays in place while it scales. */
         centers?: [number, number, number][] | PipelineRef;
@@ -12860,7 +12861,10 @@ export interface OperationParams {
     "occt.transforms.scaleFromCenter": {
         /** The shape to scale; it stays as it is and a scaled copy comes back. */
         shape: unknown | PipelineRef;
-        /** The uniform scale factor; 2 doubles every size, 0.5 halves it. */
+        /**
+         * The uniform scale factor; 2 doubles every size, 0.5 halves it, and a negative factor also
+         * mirrors the shape through the center. It must not be 0.
+         */
         factor?: number | PipelineRef;
         /** The point that stays in place while everything else scales away from or toward it. */
         center?: [number, number, number] | PipelineRef;
@@ -12873,7 +12877,7 @@ export interface OperationParams {
     "occt.transforms.scaleShapes": {
         /** The shapes to scale; they stay as they are and scaled copies come back in the same order. */
         shapes: unknown[] | PipelineRef;
-        /** One uniform scale factor per shape, about the origin. */
+        /** One uniform scale factor per shape, about the origin; none may be 0. */
         factors?: number[] | PipelineRef;
     };
     /**
@@ -12906,7 +12910,10 @@ export interface OperationParams {
         rotationAxis?: [number, number, number] | PipelineRef;
         /** The rotation about the axis, in degrees, applied after the scale. */
         rotationAngle?: number | PipelineRef;
-        /** The uniform scale about the origin, applied first; 1 keeps the size. */
+        /**
+         * The uniform scale about the origin, applied first; 1 keeps the size, and a negative factor
+         * also mirrors the shape through the origin. It must not be 0.
+         */
         scaleFactor?: number | PipelineRef;
     };
     /**
@@ -12943,7 +12950,7 @@ export interface OperationParams {
         rotationAxes?: [number, number, number][] | PipelineRef;
         /** One rotation angle per shape, in degrees. */
         rotationAngles?: number[] | PipelineRef;
-        /** One uniform scale factor per shape, about the origin. */
+        /** One uniform scale factor per shape, about the origin; none may be 0. */
         scaleFactors?: number[] | PipelineRef;
     };
     /**

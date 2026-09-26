@@ -8,8 +8,6 @@ const { thrown } = vi.hoisted(() => {
     return { thrown };
 });
 
-const TRANSPORT_FAILURE = { toString: () => "the channel is closed" } as Error;
-
 vi.mock("@bitbybit-dev/occt", () => {
     class VectorHelperService { }
     class ShapesHelperService { }
@@ -159,7 +157,7 @@ describe("what the worker says when a call fails", () => {
             run({ functionName: "boom", inputs: { stepData: new Uint8Array([1, 2, 3]) } });
 
             // Assert
-            expect(answer().error).toContain("stepData: [Uint8Array byteLength=3]");
+            expect(answer().error).toContain("stepData: [Uint8Array length=3]");
         });
 
         it("should describe a buffer by its length rather than its content", () => {
@@ -200,48 +198,53 @@ describe("what the worker says when a call fails", () => {
     });
 
     describe("when the failure cannot be sent back either", () => {
-        it("should fall back to the shortest report it can make", () => {
-            // Arrange
-            const sent: unknown[] = [];
+        const refusingOnce = (sent: unknown[]): ((message: unknown) => void) => {
             let refusedOnce = false;
-            const post = (message: unknown): void => {
+            return (message: unknown): void => {
                 if (!refusedOnce && typeof message === "object" && message !== null && "error" in message) {
                     refusedOnce = true;
                     throw new Error("the channel is closed");
                 }
                 sent.push(message);
             };
+        };
+
+        it("should still answer, with a fixed message", () => {
+            // Arrange
+            const sent: unknown[] = [];
 
             // Act
-            run({ functionName: "boom", inputs: {} }, post);
+            run({ functionName: "boom", inputs: {} }, refusingOnce(sent));
 
             // Assert
-            expect(sent[1]).toMatchObject({
-                uid: "uid-1",
-                error: expect.stringContaining("additionally, error formatting failed: the channel is closed"),
-            });
+            expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT computation failed, and the failure could not be reported.", errorKind: "kernel" });
         });
 
-        it("should describe both failures even when neither was an Error", () => {
+        it("should still answer when what the kernel threw has no text form either", () => {
             // Arrange
-            thrown.value = "Standard_ConstructionError";
+            const bare: Record<string, unknown> = Object.create(null);
+            bare["self"] = bare;
+            thrown.value = bare;
             const sent: unknown[] = [];
-            let refusedOnce = false;
-            const post = (message: unknown): void => {
-                if (!refusedOnce && typeof message === "object" && message !== null && "error" in message) {
-                    refusedOnce = true;
-                    throw TRANSPORT_FAILURE;
-                }
-                sent.push(message);
-            };
 
             // Act
-            run({ functionName: "boom", inputs: {} }, post);
+            run({ functionName: "boom", inputs: {} }, refusingOnce(sent));
 
             // Assert
-            expect(sent[1]).toMatchObject({
-                error: "OCCT computation failed: Standard_ConstructionError (additionally, error formatting failed: the channel is closed)",
-            });
+            expect(sent[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT computation failed, and the failure could not be reported.", errorKind: "kernel" });
+        });
+
+        it("should describe what the kernel threw when it has no text form and JSON cannot write it", () => {
+            // Arrange
+            const bare: Record<string, unknown> = Object.create(null);
+            bare["self"] = bare;
+            thrown.value = bare;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("OCCT computation failed while executing function 'boom': [object Object].");
         });
     });
 

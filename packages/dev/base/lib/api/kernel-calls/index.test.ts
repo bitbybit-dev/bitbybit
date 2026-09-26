@@ -23,6 +23,7 @@ describe("kernel-calls barrel", () => {
             "isRegisteredOperation",
             "lessThan",
             "notZeroVector",
+            "prepareKernelCall",
             "rehydrateReferences",
             "reportInputIssues",
             "resolveDto",

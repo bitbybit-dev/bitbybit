@@ -409,7 +409,7 @@ export namespace Math {
          * How many digits to show after the decimal point, padding with zeros.
          * @default 2
          * @minimum 0
-         * @maximum Infinity
+         * @maximum 100
          * @step 1
          */
         decimalPlaces?: number | undefined = 2;

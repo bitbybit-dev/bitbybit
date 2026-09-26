@@ -11,6 +11,60 @@ export type KernelFailure = {
 };
 
 const MAX_INPUT_TEXT = 200;
+const MAX_ERROR_TEXT = 1000;
+const TRUNCATED = "…(truncated)";
+
+function cut(text: string, limit: number): string {
+    return text.length > limit ? `${text.slice(0, limit)}${TRUNCATED}` : text;
+}
+
+function binaryText(value: unknown): string | undefined {
+    if (value === null || typeof value !== "object") {
+        return undefined;
+    }
+    const kind = Object.prototype.toString.call(value).slice(8, -1);
+    if (ArrayBuffer.isView(value)) {
+        return "length" in value && typeof value.length === "number" ? `[${kind} length=${value.length}]` : `[${kind} byteLength=${value.byteLength}]`;
+    }
+    if ((kind === "ArrayBuffer" || kind === "SharedArrayBuffer") && "byteLength" in value && typeof value.byteLength === "number") {
+        return `[${kind} byteLength=${value.byteLength}]`;
+    }
+    return undefined;
+}
+
+function boundedJson(value: unknown, limit: number): string | undefined {
+    let written = 0;
+    return JSON.stringify(value, (_key: string, item: unknown): unknown => {
+        if (written > limit) {
+            return undefined;
+        }
+        const binary = binaryText(item);
+        if (binary !== undefined) {
+            written += binary.length;
+            return binary;
+        }
+        if (typeof item === "string") {
+            written += item.length;
+            return item.length > limit ? item.slice(0, limit + 1) : item;
+        }
+        if (Array.isArray(item)) {
+            written += 1;
+            return item.length > limit ? item.slice(0, limit + 1) : item;
+        }
+        if (item !== undefined && typeof item !== "function" && typeof item !== "symbol") {
+            written += 1;
+        }
+        return item;
+    });
+}
+
+function plainText(value: unknown): string {
+    try {
+        return String(value);
+    } catch {
+        return Object.prototype.toString.call(value);
+    }
+}
 
 function errorText(error: unknown): string {
     if (error instanceof Error) {
@@ -20,25 +74,24 @@ function errorText(error: unknown): string {
         return error;
     }
     try {
-        return JSON.stringify(error) ?? String(error);
+        const text = boundedJson(error, MAX_ERROR_TEXT);
+        if (text !== undefined) {
+            return cut(text, MAX_ERROR_TEXT);
+        }
     } catch {
-        return String(error);
+        return plainText(error);
     }
+    return plainText(error);
 }
 
 function inputText(key: string, value: unknown): string {
-    if (ArrayBuffer.isView(value)) {
-        return `${key}: [${value.constructor.name} byteLength=${value.byteLength}]`;
-    }
-    if (value instanceof ArrayBuffer) {
-        return `${key}: [ArrayBuffer byteLength=${value.byteLength}]`;
+    const binary = binaryText(value);
+    if (binary !== undefined) {
+        return `${key}: ${binary}`;
     }
     try {
-        const text = JSON.stringify(value);
-        if (text === undefined) {
-            return `${key}: undefined`;
-        }
-        return text.length > MAX_INPUT_TEXT ? `${key}: ${text.slice(0, MAX_INPUT_TEXT)}…(truncated)` : `${key}: ${text}`;
+        const text = boundedJson(value, MAX_INPUT_TEXT);
+        return text === undefined ? `${key}: undefined` : `${key}: ${cut(text, MAX_INPUT_TEXT)}`;
     } catch {
         return `${key}: [unserializable]`;
     }
@@ -48,8 +101,10 @@ function inputText(key: string, value: unknown): string {
  * Describes a failed kernel call in one shape for every kernel. An `InputError` reads
  * `<path>: <message>`, because the message already names the input at fault. Any other failure
  * reads `<kernel> computation failed while executing function '<path>': <message>.` followed by the
- * inputs, each cut at 200 characters and binary data given only by its size. A call that named no
- * function leaves the path out of either form.
+ * inputs, each cut at 200 characters, with binary data at any depth given only by its kind and size -
+ * `[Float32Array length=6000000]` - and a long list or text read only as far as the cut, so a huge
+ * input costs no more to describe than a small one. A call that named no function leaves the path
+ * out of either form. It never throws: a failure that cannot be described is still reported, as one.
  * @param kernel - The kernel's name as a reader knows it, such as `OCCT`
  * @param functionName - The dotted path that was called
  * @param inputs - The inputs as the call received them
@@ -57,12 +112,17 @@ function inputText(key: string, value: unknown): string {
  * @returns The message, the kind of failure and the stack
  */
 export function describeKernelFailure(kernel: string, functionName: string, inputs: unknown, error: unknown): KernelFailure {
-    const stack = error instanceof Error ? error.stack : undefined;
-    if (error instanceof Error && error.name === "InputError") {
-        return { message: functionName ? `${functionName}: ${error.message}` : error.message, kind: "input", stack };
+    try {
+        const stack = error instanceof Error ? error.stack : undefined;
+        if (error instanceof Error && error.name === "InputError") {
+            return { message: functionName ? `${functionName}: ${error.message}` : error.message, kind: "input", stack };
+        }
+        const where = functionName ? ` while executing function '${functionName}'` : "";
+        const entries = inputs !== null && typeof inputs === "object" && binaryText(inputs) === undefined ? Object.entries(inputs) : [];
+        const props = entries.length > 0 ? ` Input values were: {${entries.map(([key, value]) => inputText(key, value)).join(", ")}}.` : "";
+        return { message: `${kernel} computation failed${where}: ${errorText(error)}.${props}`, kind: "kernel", stack };
+    } catch {
+        const where = typeof functionName === "string" && functionName !== "" ? ` while executing function '${functionName}'` : "";
+        return { message: `${kernel} computation failed${where}, and the failure could not be described.`, kind: "kernel", stack: undefined };
     }
-    const entries = inputs !== null && typeof inputs === "object" && !ArrayBuffer.isView(inputs) && !(inputs instanceof ArrayBuffer) ? Object.entries(inputs) : [];
-    const props = entries.length > 0 ? ` Input values were: {${entries.map(([key, value]) => inputText(key, value)).join(", ")}}.` : "";
-    const where = functionName ? ` while executing function '${functionName}'` : "";
-    return { message: `${kernel} computation failed${where}: ${errorText(error)}.${props}`, kind: "kernel", stack };
 }

@@ -349,7 +349,8 @@ export namespace BabylonScene {
     }
     /**
      * Feeds `babylon.scene.adjustActiveArcRotateCamera`: where the default orbiting camera goes,
-     * what it looks at, and its optional limits and sensitivities.
+     * what it looks at, and its limits and sensitivities, each set to its default when left out
+     * except the radius and alpha limits, which then stay as they are.
      */
     export class CameraConfigurationDto {
         constructor(position?: Base.Point3, lookAt?: Base.Point3, lowerRadiusLimit?: number, upperRadiusLimit?: number, lowerAlphaLimit?: number, upperAlphaLimit?: number, lowerBetaLimit?: number, upperBetaLimit?: number, angularSensibilityX?: number, angularSensibilityY?: number, maxZ?: number, panningSensibility?: number, wheelPrecision?: number) {
