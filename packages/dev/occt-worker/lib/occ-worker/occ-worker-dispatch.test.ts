@@ -63,6 +63,7 @@ vi.mock("@bitbybit-dev/occt", () => {
         OCCTService,
         occtDtoRegistry: { "shapes.solid.createBox": { dto: BoxDto, constraints }, "shapes.solid.fail": { dto: BoxDto, constraints } },
         occtDtoRules: rules,
+        readKernelException: (_kernel: unknown, thrown: unknown): unknown => thrown,
     };
 });
 

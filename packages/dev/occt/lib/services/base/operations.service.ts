@@ -49,9 +49,8 @@ export class OperationsService {
             pipe.AddVertex(v);
             vertices.push(v);
         }
-        if (inputs.closed && !inputs.periodic) {
-            inputs.shapes.push(inputs.shapes[0]!);
-        } else if (inputs.closed && inputs.periodic) {
+        const shapes = inputs.closed && !inputs.periodic ? [...inputs.shapes, inputs.shapes[0]!] : inputs.shapes;
+        if (inputs.closed && inputs.periodic) {
             const pointsOnCrvs: Inputs.Base.Point3[][] = [];
             inputs.shapes.forEach((s: TopoDS_Wire | TopoDS_Edge) => {
                 if (this.enumService.getShapeTypeEnum(s) === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -69,7 +68,7 @@ export class OperationsService {
             }
         }
         if (!inputs.periodic) {
-            inputs.shapes.forEach((wire) => {
+            shapes.forEach((wire) => {
                 pipe.AddWire(wire);
             });
         }
@@ -378,7 +377,7 @@ export class OperationsService {
         } else {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
                 ax1,
-                angle * 0.0174533, inputs.copy);
+                angle * Math.PI / 180, inputs.copy);
             result = makeRevol.Shape();
             makeRevol.delete();
         }
@@ -419,9 +418,9 @@ export class OperationsService {
         for (let i = 0; i <= steps; i++) {
             const alpha = i / steps;
             aspinePoints.push([
-                20 * Math.sin(alpha * inputs.angle * 0.0174533),
+                20 * Math.sin(alpha * inputs.angle * Math.PI / 180),
                 shapeStartY + (inputs.height * alpha),
-                20 * Math.cos(alpha * inputs.angle * 0.0174533),
+                20 * Math.cos(alpha * inputs.angle * Math.PI / 180),
             ]);
         }
 
@@ -609,11 +608,11 @@ export class OperationsService {
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
         const intersections: TopoDS_Shape[] = [];
         if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist } = this.computeBounds(bbox);
+            const { minY, maxY, maxDist, centerX, centerZ } = this.computeBounds(bbox);
 
             const planes: TopoDS_Face[] = [];
             for (let i = minY; i < maxY; i += inputs.step) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [0, i, 0], direction: [0, 1, 0] });
+                const pq = this.facesService.createSquareFace({ size: maxDist, center: [centerX, i, centerZ], direction: [0, 1, 0] });
                 planes.push(pq);
             }
 
@@ -630,13 +629,13 @@ export class OperationsService {
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
         const intersections: TopoDS_Shape[] = [];
         if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist } = this.computeBounds(bbox);
+            const { minY, maxY, maxDist, centerX, centerZ } = this.computeBounds(bbox);
 
             const planes: TopoDS_Face[] = [];
 
             let index = 0;
             for (let i = minY; i < maxY; i += inputs.steps[index]!) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [0, i, 0], direction: [0, 1, 0] });
+                const pq = this.facesService.createSquareFace({ size: maxDist, center: [centerX, i, centerZ], direction: [0, 1, 0] });
                 planes.push(pq);
                 if (inputs.steps[index + 1] === undefined) {
                     index = 0;
@@ -683,7 +682,7 @@ export class OperationsService {
         const percentage = 1.2;
         let maxDist = distX >= distZ ? distX : distZ;
         maxDist *= percentage;
-        return { minY, maxY, maxDist };
+        return { minY, maxY, maxDist, centerX: (minX + maxX) / 2, centerZ: (minZ + maxZ) / 2 };
     }
 
 

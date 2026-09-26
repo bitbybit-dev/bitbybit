@@ -116,21 +116,9 @@ describe("OCCT solid unit tests", () => {
         expect(volumes[0]).toBeCloseTo(12.56637061435917);
         expect(volumes[1]).toBeCloseTo(28.099258924162907);
         expect(volumes[2]).toBeCloseTo(35.54306350526693);
-        expect(centersOfMass[0]).toEqual([
-            -7.016405868980245e-17,
-            0.49999999999999994,
-            -7.06789929214115e-17
-        ]);
-        expect(centersOfMass[1]).toEqual([
-            -5.167467325983023e-17,
-            9.482581965210151e-17,
-            0.5000000000000001
-        ]);
-        expect(centersOfMass[2]).toEqual([
-            8.746079156879059e-17,
-            -7.496639277324908e-17,
-            -9.515812715170455e-18
-        ]);
+        [[0, 0.5, 0], [0, 0, 0.5], [0, 0, 0]].forEach((expected, i) => {
+            expected.forEach((coordinate, j) => expect(centersOfMass[i]![j]).toBeCloseTo(coordinate, 12));
+        });
 
         cylinders.forEach(c => c.delete());
     });
@@ -309,7 +297,7 @@ describe("OCCT solid unit tests", () => {
         opt.extrusionLengthBack = 0;
         const star = solid.createStarSolid(opt);
         const volume = solid.getSolidVolume({ shape: star });
-        expect(volume).toBe(6);
+        expect(volume).toBeCloseTo(6, 12);
         star.delete();
     });
 

@@ -1,11 +1,12 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules } from "@bitbybit-dev/occt";
+import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
 import { describeKernelFailure, prepareKernelCall } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import { getCommandHandler, CommandContext } from "./command-handlers";
 
+let kernel: BitbybitOcctModule;
 let openCascade: OCCTService;
 let cacheHelper: CacheHelper;
 let shapeResolver: ShapeResolver;
@@ -50,6 +51,7 @@ export const initializationComplete = (
     plugins: any,
     doNotPost?: boolean
 ): CacheHelper => {
+    kernel = occ;
     cacheHelper = new CacheHelper(occ);
 
     const vecService = new VectorHelperService();
@@ -151,7 +153,7 @@ export const onMessageInput = (
         });
     } catch (e) {
         try {
-            const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, e);
+            const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, readKernelException(kernel, e));
             postMessage({
                 uid: d.uid,
                 result: undefined,

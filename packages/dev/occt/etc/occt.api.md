@@ -4392,6 +4392,12 @@ namespace IO_2 {
 }
 
 // @public
+export type KernelExceptionReader = {
+    getExceptionMessage?: (exception: unknown) => [string, string | undefined];
+    decrementExceptionRefcount?: (exception: unknown) => void;
+};
+
+// @public
 interface LabelColorInfo {
     a: number;
     b: number;
@@ -9402,6 +9408,9 @@ export interface Quantity_TypeOfColorValue<T extends number> {
     value: T;
 }
 
+// @public
+export function readKernelException(kernel: KernelExceptionReader, thrown: unknown): unknown;
+
 declare namespace Resolved {
     export {
         OCCT_3 as OCCT,
@@ -9425,6 +9434,8 @@ declare namespace Resolved {
 export namespace RuntimeExports {
     // (undocumented)
     export function addRunDependency(id: any): void;
+    // (undocumented)
+    export function decrementExceptionRefcount(ptr: any): any;
     // (undocumented)
     export namespace FS {
         const // (undocumented)
@@ -9914,6 +9925,8 @@ export namespace RuntimeExports {
     export function FS_preloadFile(parent: any, name: any, url: any, canRead: any, canWrite: any, dontCreateFile: any, canOwn: any, preFinish: any): Promise<void>;
     // (undocumented)
     export function FS_unlink(...args: any[]): any;
+    // (undocumented)
+    export function getExceptionMessage(ptr: any): any;
     // (undocumented)
     export function removeRunDependency(id: any): void;
 }

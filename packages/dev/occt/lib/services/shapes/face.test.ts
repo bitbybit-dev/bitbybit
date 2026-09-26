@@ -79,7 +79,6 @@ describe("OCCT face unit tests", () => {
         const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
         const area = face.getFaceArea({ shape: f });
         expect(area).toBeCloseTo(2e+100);
-        srf.delete();
         f.delete();
     });
 
@@ -91,7 +90,6 @@ describe("OCCT face unit tests", () => {
         const area = face.getFaceArea({ shape: f });
         expect(area).toBeCloseTo(12.566370614359167);
         f1.delete();
-        srf.delete();
         w.delete();
         f.delete();
     });
@@ -850,10 +848,10 @@ describe("OCCT face unit tests", () => {
         const f1 = face.createRectangleFace({ center: [0, 1, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const f2 = face.createCircleFace({ radius: 3, center: [0, 3, 3], direction: [0, 0, 1] });
         const centers = face.getFacesCentersOfMass({ shapes: [f1, f2] });
-        expect(centers).toEqual([
-            [2.0816681711721685e-17, 1, 8.023096076392733e-18],
-            [4.440892098500626e-16, 2.9999999999999996, 3]
-        ]);
+        expect(centers).toHaveLength(2);
+        [[0, 1, 0], [0, 3, 3]].forEach((expected, index) => {
+            expected.forEach((coordinate, axis) => expect(centers[index]![axis]).toBeCloseTo(coordinate, 12));
+        });
         f1.delete();
         f2.delete();
     });

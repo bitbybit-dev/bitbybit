@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -25,6 +25,38 @@ describe("OCCT iterator service unit tests", () => {
         solid = new OCCTSolid(occt, occHelper);
         faceService = new OCCTFace(occt, occHelper);
         compoundService = new OCCTCompound(occt, occHelper);
+    });
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    describe("edges whose hashes collide", () => {
+        it("should visit every edge of a box once", () => {
+            // Arrange
+            vi.spyOn(occt, "TopoDS_Shape_HashCode").mockReturnValue(1);
+            const box = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+            const edges: TopoDS_Edge[] = [];
+
+            // Act
+            iteratorService.forEachEdge(box, (_index, edge) => edges.push(edge));
+
+            // Assert
+            expect(edges).toHaveLength(12);
+        });
+
+        it("should visit every edge along a wire once", () => {
+            // Arrange
+            vi.spyOn(occt, "TopoDS_Shape_HashCode").mockReturnValue(1);
+            const square = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]] });
+            const edges: TopoDS_Edge[] = [];
+
+            // Act
+            iteratorService.forEachEdgeAlongWire(square, (_index, edge) => edges.push(edge));
+
+            // Assert
+            expect(edges).toHaveLength(4);
+        });
     });
 
     describe("forEachWire", () => {

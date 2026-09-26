@@ -278,6 +278,8 @@ declare namespace RuntimeExports {
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
     }
+    function getExceptionMessage(ptr: any): any;
+    function decrementExceptionRefcount(ptr: any): any;
     function FS_createPath(...args: any[]): any;
     function FS_createDataFile(...args: any[]): any;
     function FS_preloadFile(parent: any, name: any, url: any, canRead: any, canWrite: any, dontCreateFile: any, canOwn: any, preFinish: any): Promise<void>;

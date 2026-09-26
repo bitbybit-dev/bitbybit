@@ -28,6 +28,7 @@ export class IteratorService {
 
     forEachEdge(shape: TopoDS_Shape, callback: (index: number, edge: TopoDS_Edge) => void) {
         const edgeHashes: Record<number, number> = {};
+        const seen = new Map<number, TopoDS_Edge[]>();
         let edgeIndex = 0;
         const anExplorer = new this.occ.TopExp_Explorer(
             shape,
@@ -40,8 +41,10 @@ export class IteratorService {
         ) {
             const edge = this.occ.CastToEdge(anExplorer.Current());
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
-            if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
-                edgeHashes[edgeHash] = edgeIndex;
+            if (this.isFirstVisit(seen, edgeHash, edge)) {
+                if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
+                    edgeHashes[edgeHash] = edgeIndex;
+                }
                 callback(edgeIndex++, edge);
             }
         }
@@ -51,18 +54,38 @@ export class IteratorService {
 
     forEachEdgeAlongWire(shape: TopoDS_Wire, callback: (index: number, edge: TopoDS_Edge) => void) {
         const edgeHashes: Record<number, number> = {};
+        const seen = new Map<number, TopoDS_Edge[]>();
         let edgeIndex = 0;
         const anExplorer = new this.occ.BRepTools_WireExplorer(shape);
         for (; anExplorer.More(); anExplorer.Next()) {
             const edge = this.occ.CastToEdge(anExplorer.Current());
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
-            if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
-                edgeHashes[edgeHash] = edgeIndex;
+            if (this.isFirstVisit(seen, edgeHash, edge)) {
+                if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
+                    edgeHashes[edgeHash] = edgeIndex;
+                }
                 callback(edgeIndex++, edge);
             }
         }
         anExplorer.delete();
         return edgeHashes;
+    }
+
+    /**
+     * Whether an edge the explorer reached is one it has not reached before. Edges are bucketed by
+     * hash and told apart by IsSame, so two different edges whose hashes collide are both visited.
+     */
+    private isFirstVisit(seen: Map<number, TopoDS_Edge[]>, hash: number, edge: TopoDS_Edge): boolean {
+        const bucket = seen.get(hash);
+        if (!bucket) {
+            seen.set(hash, [edge]);
+            return true;
+        }
+        if (bucket.some(known => known.IsSame(edge))) {
+            return false;
+        }
+        bucket.push(edge);
+        return true;
     }
 
     forEachFace(shape: TopoDS_Shape, callback: (index: number, face: TopoDS_Face) => void): void {

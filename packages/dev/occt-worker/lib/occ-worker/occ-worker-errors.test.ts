@@ -8,7 +8,8 @@ const { thrown } = vi.hoisted(() => {
     return { thrown };
 });
 
-vi.mock("@bitbybit-dev/occt", () => {
+vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("@bitbybit-dev/occt")>();
     class VectorHelperService { }
     class ShapesHelperService { }
     class OccHelper { }
@@ -22,7 +23,7 @@ vi.mock("@bitbybit-dev/occt", () => {
         size = 1;
     }
     const occtDtoRegistry = { measure: { dto: MeasureDto, constraints: { size: { kind: "number" } } } };
-    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map() };
+    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map(), readKernelException: actual.readKernelException };
 });
 
 const A_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
@@ -70,6 +71,46 @@ describe("what the worker says when a call fails", () => {
 
             // Assert
             expect(answer().error).toContain("RangeError: radius out of range");
+        });
+
+        it("should report a C++ exception by the type and message the kernel reads from it, and free it", () => {
+            // Arrange
+            const release = vi.fn();
+            const kernel = { getExceptionMessage: vi.fn(() => ["StdFail_NotDone", "BRep_API: command not done"]), decrementExceptionRefcount: release };
+            initializationComplete(kernel as Partial<BitbybitOcctModule> as BitbybitOcctModule, undefined, true);
+            thrown.value = 70632;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("OCCT computation failed while executing function 'boom': StdFail_NotDone: BRep_API: command not done.");
+            expect(kernel.getExceptionMessage).toHaveBeenCalledWith(70632);
+            expect(release).toHaveBeenCalledWith(70632);
+        });
+
+        it("should report a C++ exception without a message by its type", () => {
+            // Arrange
+            const kernel = { getExceptionMessage: (): [string, undefined] => ["Standard_NullObject", undefined], decrementExceptionRefcount: (): void => undefined };
+            initializationComplete(kernel as Partial<BitbybitOcctModule> as BitbybitOcctModule, undefined, true);
+            thrown.value = 70632;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("OCCT computation failed while executing function 'boom': Standard_NullObject.");
+        });
+
+        it("should report a C++ exception from a kernel that cannot read it as the number it is", () => {
+            // Arrange
+            thrown.value = 70632;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("OCCT computation failed while executing function 'boom': 70632.");
         });
 
         it("should report a string the kernel threw as it stands", () => {
