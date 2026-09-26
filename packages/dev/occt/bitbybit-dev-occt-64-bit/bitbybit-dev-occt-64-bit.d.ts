@@ -1266,6 +1266,21 @@ export interface BRepMesh_IncrementalMesh extends ClassHandle {
   IsDone(): boolean;
 }
 
+export interface MeshBuffers extends ClassHandle {
+  readonly IsValid: boolean;
+  readonly Error: string;
+  Positions(): any;
+  Normals(): any;
+  Uvs(): any;
+  Triangles(): any;
+  Faces(): any;
+  FaceCentres(): any;
+  EdgePoints(): any;
+  Edges(): any;
+  EdgeMiddles(): any;
+  Vertices(): any;
+}
+
 export interface STEPControl_Reader extends ClassHandle {
   NbRootsForTransfer(): number;
   TransferRoot(_0: number): boolean;
@@ -2260,9 +2275,11 @@ interface EmbindModule {
     new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number): BRepMesh_IncrementalMesh;
     new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number, _4: boolean): BRepMesh_IncrementalMesh;
   };
+  MeshBuffers: {};
   GetFaceTriangulation(_0: TopoDS_Face): Poly_Triangulation;
   GetFaceLocation(_0: TopoDS_Face): TopLoc_Location;
   ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean): MeshBuffers;
   STEPControl_Reader: {
     new(): STEPControl_Reader;
   };

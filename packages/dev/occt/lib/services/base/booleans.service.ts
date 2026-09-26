@@ -18,15 +18,17 @@ export class BooleansService {
         let intersectionResults: TopoDS_Shape[] = [];
 
         for (let i = 1; i < inputs.shapes.length; i++) {
-            let intersectionResult: TopoDS_Shape;
             const intersectedCommon = new this.occ.BRepAlgoAPI_Common(
                 intersectShape,
                 inputs.shapes[i]!
             );
-            if (intersectedCommon.HasGenerated()) {
-                intersectedCommon.Build();
-                intersectionResult = intersectedCommon.Shape();
-                intersectionResults.push(intersectionResult);
+            if (intersectedCommon.IsDone() && !intersectedCommon.HasErrors()) {
+                const intersectionResult = intersectedCommon.Shape();
+                if (this.hasContent(intersectionResult)) {
+                    intersectionResults.push(intersectionResult);
+                } else {
+                    intersectionResult.delete();
+                }
             }
             intersectedCommon.delete();
         }
@@ -46,7 +48,6 @@ export class BooleansService {
         for (let i = 0; i < objectsToSubtract.length; i++) {
             if (!objectsToSubtract[i] || objectsToSubtract[i]!.IsNull()) { console.error("Tool in Difference is null!"); }
             const differenceCut = new this.occ.BRepAlgoAPI_Cut(difference, objectsToSubtract[i]!);
-            differenceCut.Build();
             difference = differenceCut.Shape();
             differenceCut.delete();
         }
@@ -67,9 +68,9 @@ export class BooleansService {
 
     union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
         let combined = inputs.shapes[0]!;
-        for (let i = 0; i < inputs.shapes.length; i++) {
+        const first = inputs.shapes.length > 1 ? 1 : 0;
+        for (let i = first; i < inputs.shapes.length; i++) {
             const combinedFuse = new this.occ.BRepAlgoAPI_Fuse(combined, inputs.shapes[i]!);
-            combinedFuse.Build();
             combined = combinedFuse.Shape();
             combinedFuse.delete();
         }
@@ -79,6 +80,13 @@ export class BooleansService {
         }
 
         return combined;
+    }
+
+    private hasContent(shape: TopoDS_Shape): boolean {
+        const children = new this.occ.TopoDS_Iterator(shape);
+        const found = children.More();
+        children.delete();
+        return found;
     }
 
 }

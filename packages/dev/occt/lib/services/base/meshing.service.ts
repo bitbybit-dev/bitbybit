@@ -4,6 +4,14 @@ import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
+import { decodeMeshArrays, type MeshArrays } from "./mesh-arrays";
+
+function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new (length: number): T; name: string }): T {
+    if (!(view instanceof kind)) {
+        throw new Error(`the kernel returned mesh data that is not a ${kind.name}`);
+    }
+    return view.slice() as T;
+}
 
 export class MeshingService {
 
@@ -61,6 +69,12 @@ export class MeshingService {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
       
+        if (!resolved.computeMetadata && this.kernelHasMeshBuffers()) {
+            const arrays = this.shapeToMeshArrays(resolved);
+            if (arrays) {
+                return decodeMeshArrays(arrays);
+            }
+        }
         const json = this.occ.ShapeToMeshJson(
             resolved.shape,
             resolved.precision,
@@ -71,6 +85,48 @@ export class MeshingService {
             resolved.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
+    }
+
+    /**
+     * Whether the loaded kernel can hand its mesh over as buffers. A kernel built before
+     * `ShapeToMeshBuffers` existed, such as a pinned or custom build, is meshed through its JSON instead.
+     */
+    private kernelHasMeshBuffers(): boolean {
+        return typeof (this.occ as Partial<BitbybitOcctModule>).ShapeToMeshBuffers === "function";
+    }
+
+    /**
+     * Meshes a shape into flat arrays copied out of the kernel's memory, or returns undefined when
+     * meshing failed, so the caller can report the failure the way the JSON path does.
+     */
+    private shapeToMeshArrays(inputs: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>): MeshArrays | undefined {
+        const buffers = this.occ.ShapeToMeshBuffers(
+            inputs.shape,
+            inputs.precision,
+            inputs.adjustYtoZ,
+            inputs.keepMeshData,
+            inputs.allowQualityDecrease,
+            inputs.forceFaceDeflection,
+        );
+        try {
+            if (!buffers.IsValid) {
+                return undefined;
+            }
+            return {
+                positions: copied(buffers.Positions(), Float64Array),
+                normals: copied(buffers.Normals(), Float64Array),
+                uvs: copied(buffers.Uvs(), Float64Array),
+                triangles: copied(buffers.Triangles(), Int32Array),
+                faces: copied(buffers.Faces(), Int32Array),
+                faceCentres: copied(buffers.FaceCentres(), Float64Array),
+                edgePoints: copied(buffers.EdgePoints(), Float64Array),
+                edges: copied(buffers.Edges(), Int32Array),
+                edgeMiddles: copied(buffers.EdgeMiddles(), Float64Array),
+                vertices: copied(buffers.Vertices(), Float64Array),
+            };
+        } finally {
+            buffers.delete();
+        }
     }
 
     docToMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {

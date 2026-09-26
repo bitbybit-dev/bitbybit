@@ -2732,6 +2732,8 @@ export interface EmbindModule {
     // (undocumented)
     MakeWeightedBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: VectorDouble, _2: number): TopoDS_Edge;
     // (undocumented)
+    MeshBuffers: {};
+    // (undocumented)
     MoveSeamByLength(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
     // (undocumented)
     MoveSeamByParameter(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
@@ -2812,6 +2814,8 @@ export interface EmbindModule {
         new(): ShapeFix_Wire;
         new(_0: TopoDS_Wire, _1: TopoDS_Face, _2: number): ShapeFix_Wire;
     };
+    // (undocumented)
+    ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean): MeshBuffers;
     // (undocumented)
     ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
@@ -5153,6 +5157,34 @@ namespace Mesh_2 {
     type TriangleToleranceDto = WithDefaults<Inputs_3.Mesh.TriangleToleranceDto, "tolerance">;
     // (undocumented)
     type TriangleTriangleToleranceDto = WithDefaults<Inputs_3.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+}
+
+// @public (undocumented)
+export interface MeshBuffers extends ClassHandle {
+    // (undocumented)
+    EdgeMiddles(): any;
+    // (undocumented)
+    EdgePoints(): any;
+    // (undocumented)
+    Edges(): any;
+    // (undocumented)
+    readonly Error: string;
+    // (undocumented)
+    FaceCentres(): any;
+    // (undocumented)
+    Faces(): any;
+    // (undocumented)
+    readonly IsValid: boolean;
+    // (undocumented)
+    Normals(): any;
+    // (undocumented)
+    Positions(): any;
+    // (undocumented)
+    Triangles(): any;
+    // (undocumented)
+    Uvs(): any;
+    // (undocumented)
+    Vertices(): any;
 }
 
 declare namespace Models {
