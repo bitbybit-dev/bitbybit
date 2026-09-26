@@ -4,6 +4,11 @@
 
 ```ts
 
+// Warning: (ae-forgotten-export) The symbol "Key" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function atLeastOne<T>(property: Key<T>, holds: (item: unknown) => boolean, message: string): InputRule<T>;
+
 // @public
 export namespace Base {
     export type Axis2 = {
@@ -120,6 +125,9 @@ export namespace Base {
 
 // @public
 export function callByPath(root: object, path: string, inputs: unknown): unknown;
+
+// @public
+export function checkStructure(constraints: DtoConstraints, inputs: unknown): InputIssue[];
 
 // @public
 export class Color {
@@ -255,6 +263,25 @@ namespace Color_3 {
     // (undocumented)
     type RGBObjectMaxDto = WithDefaults<Inputs_2.Color.RGBObjectMaxDto, "min" | "max">;
 }
+
+// @public
+export const constraintKinds: {
+    number: PropertyConstraint;
+    boolean: PropertyConstraint;
+    string: PropertyConstraint;
+    color: PropertyConstraint;
+    point2: PropertyConstraint;
+    point3: PropertyConstraint;
+    vector2: PropertyConstraint;
+    vector3: PropertyConstraint;
+    opaque: PropertyConstraint;
+    list: (items: PropertyConstraint) => PropertyConstraint;
+    oneOf: (values: readonly string[]) => PropertyConstraint;
+    required: (constraint: PropertyConstraint) => PropertyConstraint;
+};
+
+// @public
+export function custom<T>(property: Key<T>, holds: (inputs: T) => boolean, message: string, reads?: readonly Key<T>[]): InputRule<T>;
 
 // @public
 export class Dates {
@@ -397,7 +424,16 @@ namespace Dates_3 {
 }
 
 // @public
+export function defineRules<T>(dto: RuleTarget, rules: readonly InputRule<T>[]): DtoRules;
+
+// @public
 export function describeKernelFailure(kernel: string, functionName: string, inputs: unknown, error: unknown): KernelFailure;
+
+// @public
+export function distinct<T>(property: Key<T>, other: Key<T>): InputRule<T>;
+
+// @public
+export type DtoConstraints = Readonly<Record<string, PropertyConstraint>>;
 
 // @public
 export type DtoConstructor<T extends object = object> = new () => T;
@@ -406,10 +442,17 @@ export type DtoConstructor<T extends object = object> = new () => T;
 export type DtoEntry = {
     readonly dto?: DtoConstructor;
     readonly nested?: Readonly<Record<string, DtoConstructor>>;
+    readonly constraints?: DtoConstraints;
 };
 
 // @public
 export type DtoRegistry = Readonly<Record<string, DtoEntry>>;
+
+// @public
+export type DtoRules = {
+    readonly dto: RuleTarget;
+    readonly rules: readonly InputRule<unknown>[];
+};
 
 // @public (undocumented)
 export class GeometryHelper {
@@ -437,6 +480,27 @@ export class InputError extends Error {
     constructor(message: string, property?: string);
     readonly property: string | undefined;
 }
+
+// @public
+export type InputIssue = {
+    readonly property: string;
+    readonly code: string;
+    readonly params?: Readonly<Record<string, unknown>>;
+    readonly message: string;
+};
+
+// @public
+export type InputIssueReport = {
+    readonly kernel: string;
+    readonly path: string;
+    readonly issue: InputIssue;
+};
+
+// @public
+export type InputRule<T> = {
+    readonly reads: readonly string[];
+    readonly check: (inputs: T) => InputIssue | undefined;
+};
 
 declare namespace Inputs {
     export {
@@ -555,6 +619,9 @@ export type KernelFailure = {
 
 // @public
 export type KernelFailureKind = "input" | "kernel";
+
+// @public
+export function lessThan<T>(property: Key<T>, limit: Key<T> | ((inputs: T) => number), message?: string, reads?: readonly Key<T>[]): InputRule<T>;
 
 // @public
 export class Line {
@@ -1429,6 +1496,9 @@ export class MeshBitByBit {
 }
 
 // @public
+export function notZeroVector<T>(property: Key<T>): InputRule<T>;
+
+// @public
 export class Point {
     constructor(geometryHelper: GeometryHelper, transforms: Transforms, vector: Vector, lists: Lists);
     averagePoint(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.Point3;
@@ -1812,10 +1882,21 @@ namespace Polyline_3 {
 }
 
 // @public
+export type PropertyConstraint = {
+    readonly kind: ValueKind;
+    readonly required?: boolean;
+    readonly items?: PropertyConstraint;
+    readonly values?: readonly string[];
+};
+
+// @public
 export type ReferenceHash = (value: object) => string | number | undefined;
 
 // @public
 export function rehydrateReferences(value: unknown, hashOf: ReferenceHash, lookup: (hash: string | number) => unknown, opaque?: (value: object) => boolean): unknown;
+
+// @public
+export function reportInputIssues(kernel: string, path: string, issues: readonly InputIssue[], unknown?: readonly string[]): void;
 
 declare namespace Resolved {
     export {
@@ -1840,6 +1921,21 @@ export function resolveDto<T extends object>(Dto: DtoConstructor<T>, inputs: unk
 
 // @public
 export function resolveInputs(registry: DtoRegistry, path: string, inputs: unknown): unknown;
+
+// @public
+export type RuleBook = ReadonlyMap<RuleTarget, readonly InputRule<unknown>[]>;
+
+// @public
+export function ruleBook(...entries: readonly DtoRules[]): RuleBook;
+
+// @public
+export type RuleTarget = abstract new () => object;
+
+// @public
+export function sameLength<T>(property: Key<T>, other: Key<T>): InputRule<T>;
+
+// @public
+export function setInputIssueSink(next?: (report: InputIssueReport) => void): void;
 
 // @public
 namespace Text_2 {
@@ -2118,6 +2214,15 @@ namespace Transforms_3 {
 }
 
 // @public
+export function unknownProperties(registry: DtoRegistry, path: string, inputs: unknown): string[];
+
+// @public
+export function validateInputs(registry: DtoRegistry, path: string, inputs: unknown, rules?: RuleBook): InputIssue[];
+
+// @public
+export type ValueKind = "number" | "boolean" | "string" | "color" | "point2" | "point3" | "vector2" | "vector3" | "list" | "oneOf" | "opaque";
+
+// @public
 export class Vector {
     constructor(math: MathBitByBit, geometryHelper: GeometryHelper);
     add(inputs: Inputs_2.Vector.TwoVectorsDto): number[];
@@ -2305,6 +2410,9 @@ namespace Vector_3 {
     // (undocumented)
     type VectorXYZDto = WithDefaults<Inputs_2.Vector.VectorXYZDto, "x" | "y" | "z">;
 }
+
+// @public
+export function when<T>(condition: (inputs: T) => boolean, rule: InputRule<T>): InputRule<T>;
 
 // @public
 export type WithDefaults<T, K extends keyof T> = Omit<T, K> & {

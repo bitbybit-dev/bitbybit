@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
@@ -17,8 +18,13 @@ vi.mock("@bitbybit-dev/occt", () => {
         plugins: { dependencies: Record<string, unknown> } | undefined;
         boom = (): unknown => { throw thrown.value; };
         echo = (inputs: unknown): unknown => inputs;
+        measure = (inputs: unknown): unknown => inputs;
     }
-    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry: {} };
+    class MeasureDto {
+        size = 1;
+    }
+    const occtDtoRegistry = { measure: { dto: MeasureDto, constraints: { size: { kind: "number" } } } };
+    return { VectorHelperService, ShapesHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules: new Map() };
 });
 
 const A_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
@@ -266,5 +272,18 @@ describe("what the worker says when a call fails", () => {
             expect(posted).toEqual(["occ-initialised"]);
             vi.unstubAllGlobals();
         });
+    });
+    it("should report what a call is given that the operation would reject, and still run it", () => {
+        // Arrange
+        const reports: InputIssueReport[] = [];
+        setInputIssueSink((report) => reports.push(report));
+
+        // Act
+        run({ functionName: "measure", inputs: { size: "big" } });
+
+        // Assert
+        expect(reports.map((report) => `${report.kernel} ${report.path} ${report.issue.property} ${report.issue.code}`)).toEqual(["OCCT measure size type"]);
+        expect(answer().result).toEqual({ size: "big" });
+        setInputIssueSink();
     });
 });

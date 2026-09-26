@@ -52,10 +52,10 @@ npm run lint
   internal method takes `Resolved.X.Dto`, so its callers hand it a complete object (the generated
   `Resolved` mirror types a DTO with every default present). Index reads inside a bounds-checked
   loop, after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
-- **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** It lists every public
-  operation with the DTO it takes, walked from the kernel root like the worker API; run
-  `npm run gen:dto-meta` after changing a kernel method, and `check:dto-meta` in `npm test` fails on
-  a stale registry.
+- **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** Every public operation,
+  its DTO and what each property accepts; run `npm run gen:dto-meta` after changing a kernel method
+  or a DTO's types (`check:dto-meta` in `npm test` fails on a stale one). Rules across properties are
+  hand-written in `lib/api/validation` (`defineRules`, base/CLAUDE.md).
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
   `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
   files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
@@ -162,7 +162,8 @@ almost every rule here follows from that.
   the inputs or the kernel failed, and the worker's stack apart from the message.
 - **One call shape in every worker:** the inputs are laid over the DTO's defaults, the call is cached
   under those resolved inputs, references in them are replaced by the cached objects - a new
-  structure, the posted inputs untouched - and the dotted path is called with `callByPath`. A failure
+  structure, the posted inputs untouched - a call not in the cache reports what `validateInputs`
+  finds (reported, not thrown, for now), and the dotted path is called with `callByPath`. A failure
   is described by `describeKernelFailure`, so the three kernels report it the same way.
 - **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
   `instanceof`. That is why worker-side types are plain records.

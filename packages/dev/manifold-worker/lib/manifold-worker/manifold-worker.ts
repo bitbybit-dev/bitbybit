@@ -1,6 +1,6 @@
 import { CacheHelper, ObjectDefinition } from "./cache-helper";
 import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
-import { callByPath, describeKernelFailure, rehydrateReferences, resolveInputs } from "@bitbybit-dev/base";
+import { callByPath, describeKernelFailure, rehydrateReferences, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
 
 /**
  * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
@@ -84,12 +84,16 @@ const serializeResult = (res: unknown): unknown => {
  * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes, references
  * in them become the manifolds they stand for, the dotted path is called on the kernel, the result is
  * cached under the inputs as resolved, before any reference was replaced, and every manifold in it
- * goes back as a reference.
+ * goes back as a reference. A call that is not in the cache first reports what its inputs would be
+ * rejected for.
  */
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const inputs = resolveInputs(manifoldDtoRegistry, action.functionName, action.inputs);
     const rehydrated = rehydrateReferences(inputs, manifoldHash, lookupManifold);
-    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => callByPath(manifold, action.functionName, rehydrated)));
+    return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
+        reportInputIssues("Manifold", action.functionName, validateInputs(manifoldDtoRegistry, action.functionName, inputs), unknownProperties(manifoldDtoRegistry, action.functionName, action.inputs));
+        return callByPath(manifold, action.functionName, rehydrated);
+    }));
 };
 
 export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {

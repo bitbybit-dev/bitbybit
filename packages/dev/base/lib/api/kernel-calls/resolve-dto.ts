@@ -1,3 +1,5 @@
+import { DtoConstraints } from "./constraints";
+
 /**
  * A DTO class that can be constructed with no arguments, which gives every defaulted property its
  * default.
@@ -5,12 +7,14 @@
 export type DtoConstructor<T extends object = object> = new () => T;
 
 /**
- * What an operation takes: its inputs DTO, and the properties of that DTO that hold another DTO
- * whose defaults apply too. An operation that takes no DTO has neither.
+ * What an operation takes: its inputs DTO, the properties of that DTO that hold another DTO
+ * whose defaults apply too, and what each property accepts. An operation that takes no DTO has none
+ * of them.
  */
 export type DtoEntry = {
     readonly dto?: DtoConstructor;
     readonly nested?: Readonly<Record<string, DtoConstructor>>;
+    readonly constraints?: DtoConstraints;
 };
 
 /**

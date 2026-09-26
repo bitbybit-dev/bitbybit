@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
 const { FakeCacheHelper, latest, kernelCalls } = vi.hoisted(() => {
@@ -81,7 +82,8 @@ vi.mock("@bitbybit-dev/manifold", () => {
         radius = 1;
         circularSegments = 32;
     }
-    return { ManifoldService, manifoldDtoRegistry: { "manifold.shapes.sphere": { dto: SphereDto } } };
+    const constraints = { radius: { kind: "number" }, circularSegments: { kind: "number" } };
+    return { ManifoldService, manifoldDtoRegistry: { "manifold.shapes.sphere": { dto: SphereDto, constraints } } };
 });
 
 const cacheOf = () => latest.cache;
@@ -238,6 +240,31 @@ describe("the worker message loop", () => {
                 data: { name: "assembly" },
                 manifolds: [{ id: "part-1", manifold: { hash: "part-hash", type: "manifold-shape" } }],
             });
+        });
+    });
+
+    describe("what a call is given that the operation would reject", () => {
+        let reports: InputIssueReport[];
+
+        beforeEach(() => {
+            reports = [];
+            setInputIssueSink((report) => reports.push(report));
+        });
+
+        afterEach(() => {
+            setInputIssueSink();
+        });
+
+        it("should report a property of the wrong kind and a name the operation does not know, and still run", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big", radious: 2 } });
+
+            // Assert
+            expect(reports.map((report) => `${report.kernel} ${report.path} ${report.issue.property} ${report.issue.code}`)).toEqual([
+                "Manifold manifold.shapes.sphere radius type",
+                "Manifold manifold.shapes.sphere radious unknown-property",
+            ]);
+            expect(kernelCalls).toHaveLength(1);
         });
     });
 

@@ -1,0 +1,21 @@
+import { RuleBook, defineRules, lessThan, ruleBook } from "@bitbybit-dev/base";
+import * as Inputs from "../inputs";
+import * as Resolved from "../resolved-inputs";
+
+/**
+ * What the inputs of a JSCAD operation have to satisfy together, beyond what each property accepts
+ * on its own, by the DTO the operation takes; rules written for a shared parent apply to both
+ * DTOs that extend it. `validateInputs` from the base package runs them.
+ *
+ * A rounding has to fit: less than half of a box's smallest side, and less than a cylinder's radius
+ * and half of its height, or JSCAD refuses the shape.
+ */
+export const jscadDtoRules: RuleBook = ruleBook(
+    defineRules<Resolved.JSCAD.RoundedCuboidBaseDto>(Inputs.JSCAD.RoundedCuboidBaseDto, [
+        lessThan("roundRadius", (inputs) => Math.min(inputs.width, inputs.length, inputs.height) / 2, "must be less than half of the smallest side", ["width", "length", "height"]),
+    ]),
+    defineRules<Resolved.JSCAD.RoundedCylinderBaseDto>(Inputs.JSCAD.RoundedCylinderBaseDto, [
+        lessThan("roundRadius", (inputs) => inputs.height / 2, "must be less than half of the height", ["height"]),
+        lessThan("roundRadius", "radius"),
+    ]),
+);

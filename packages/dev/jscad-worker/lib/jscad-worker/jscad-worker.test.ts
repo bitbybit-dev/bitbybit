@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
 type Deletable = { delete: () => void };
@@ -47,7 +48,9 @@ vi.mock("@bitbybit-dev/jscad", () => {
         radius = 1;
         segments = 32;
     }
-    return { Jscad, jscadDtoRegistry: { "shapes.sphere": { dto: SphereDto } } };
+    const constraints = { radius: { kind: "number" }, segments: { kind: "number" } };
+    const rules = new Map([[SphereDto, [{ reads: ["radius"], check: (inputs: { radius: number }) => (inputs.radius > 100 ? { property: "radius", code: "custom", message: "must be at most 100" } : undefined) }]]]);
+    return { Jscad, jscadDtoRegistry: { "shapes.sphere": { dto: SphereDto, constraints } }, jscadDtoRules: rules };
 });
 
 const cacheOf = () => latest.cache;
@@ -139,6 +142,40 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(answer().result).toEqual({ made: "points", from: { mesh: "a" } });
+        });
+    });
+
+    describe("what a call is given that the operation would reject", () => {
+        let reports: InputIssueReport[];
+
+        beforeEach(() => {
+            reports = [];
+            setInputIssueSink((report) => reports.push(report));
+        });
+
+        afterEach(() => {
+            setInputIssueSink();
+        });
+
+        it("should report a property of the wrong kind, a rule that fails and a name the operation does not know, and still run", () => {
+            // Act
+            run({ functionName: "shapes.sphere", inputs: { radius: 200, segments: "many", segmnets: 4 } });
+
+            // Assert
+            expect(reports.map((report) => `${report.kernel} ${report.path} ${report.issue.property} ${report.issue.code}`)).toEqual([
+                "JSCAD shapes.sphere segments type",
+                "JSCAD shapes.sphere radius custom",
+                "JSCAD shapes.sphere segmnets unknown-property",
+            ]);
+            expect(answer().result).toEqual({ made: "sphere", from: { radius: 200, segments: "many", segmnets: 4 } });
+        });
+
+        it("should report nothing for inputs the operation accepts", () => {
+            // Act
+            run({ functionName: "shapes.sphere", inputs: { radius: 2 } });
+
+            // Assert
+            expect(reports).toEqual([]);
         });
     });
 

@@ -44,7 +44,7 @@ const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
  * of the files, and on the side every name each namespace declares, for qualifying a type parameter's
  * constraint outside the namespace.
  */
-function dtoClasses(files, declared = new Map()) {
+function dtoClasses(files, declared = new Map(), enums = new Map()) {
     const classes = new Map();
     for (const file of files) {
         const sf = parse(file);
@@ -57,12 +57,16 @@ function dtoClasses(files, declared = new Map()) {
                 if (!declared.has(namespace)) declared.set(namespace, new Set());
                 declared.get(namespace).add(node.name.text);
             }
+            if (namespace && ts.isEnumDeclaration(node)) {
+                const values = node.members.map((m) => (m.initializer && ts.isStringLiteral(m.initializer) ? m.initializer.text : undefined));
+                if (values.every((v) => v !== undefined)) enums.set(`${namespace}.${node.name.text}`, values);
+            }
             if (namespace && ts.isClassDeclaration(node) && node.name) {
                 const heritage = (node.heritageClauses || []).find((c) => c.token === ts.SyntaxKind.ExtendsKeyword);
                 const parent = heritage && heritage.types[0] ? heritage.types[0].expression.getText(sf) : undefined;
                 const props = node.members
                     .filter((m) => ts.isPropertyDeclaration(m) && m.name && ts.isIdentifier(m.name))
-                    .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer }));
+                    .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken }));
                 const typeParams = (node.typeParameters || []).map((tp) => ({ name: tp.name.text, text: tp.getText(sf) }));
                 classes.set(`${namespace}.${node.name.text}`, { namespace, name: node.name.text, props, parent, typeParams });
             }
@@ -96,9 +100,43 @@ function nestedOf(classes, key) {
     return nested;
 }
 
+/**
+ * What a property accepts, from its declared type: the kinds `validateInputs` checks - a number,
+ * a flag, text, a hex color, a point or vector of two or three numbers, a list of any of them, a
+ * value of a string enum - and `opaque` for everything else, which is checked only for presence.
+ */
+function constraintOf(type, namespace, enums) {
+    const t = type.replace(/\s+/g, " ").trim().replace(/ \| undefined$/, "");
+    if (t === "number" || t === "boolean" || t === "string") return `k.${t}`;
+    if (/^(Base\.)?Color$/.test(t)) return "k.color";
+    const tuple = /^(?:Base\.)?(Point|Vector)([23])$/.exec(t);
+    if (tuple) return `k.${tuple[1].toLowerCase()}${tuple[2]}`;
+    if (/^"[^"]*"( \| "[^"]*")+$/.test(t)) return `k.oneOf([${[...t.matchAll(/"([^"]*)"/g)].map((m) => JSON.stringify(m[1])).join(", ")}])`;
+    if (t.endsWith("[]") && !t.includes("|") && !t.includes("(")) return `k.list(${constraintOf(t.slice(0, -2), namespace, enums)})`;
+    const values = enums.get(t.includes(".") ? t : `${namespace}.${t}`);
+    if (values) return `k.oneOf([${values.map((v) => JSON.stringify(v)).join(", ")}])`;
+    return "k.opaque";
+}
+
+/** The constraint table of one DTO, as the source of a `DtoConstraints` object. */
+function constraintsOf(classes, key, enums) {
+    const { namespace } = classes.get(key);
+    const seen = new Set();
+    const entries = [];
+    for (const prop of allProps(classes, key)) {
+        if (seen.has(prop.name)) continue;
+        seen.add(prop.name);
+        const constraint = constraintOf(prop.type, namespace, enums);
+        entries.push(`${prop.name}: ${prop.required ? `k.required(${constraint})` : constraint}`);
+    }
+    return `{ ${entries.join(", ")} }`;
+}
+
 function generate(kernel) {
     const kernelFiles = sourceFiles(path.join(ROOT, kernel.kernelDir, "api/inputs"));
-    const classes = dtoClasses([...kernelFiles, ...sourceFiles(path.join(ROOT, BASE_INPUTS))]);
+    const enums = new Map();
+    const classes = dtoClasses([...kernelFiles, ...sourceFiles(path.join(ROOT, BASE_INPUTS))], new Map(), enums);
+    const constraintNames = new Map();
     const surface = kernelSurface(classesUnder(path.join(ROOT, kernel.kernelDir)), kernel.kernelRoot);
     const rows = [];
     for (const cls of surface.values()) {
@@ -113,20 +151,25 @@ function generate(kernel) {
             if (!classes.has(key)) throw new Error(`${kernel.name}: ${method.path} takes Inputs.${key}, which is not a class in the inputs namespaces`);
             const nested = nestedOf(classes, key);
             const nestedText = nested.length ? `, nested: { ${nested.map(([name, target]) => `${name}: Inputs.${target}`).join(", ")} }` : "";
-            rows.push([method.path, `{ dto: Inputs.${key}${nestedText} }`]);
+            const constant = `${match[1]}_${match[2]}`;
+            constraintNames.set(constant, key);
+            rows.push([method.path, `{ dto: Inputs.${key}${nestedText}, constraints: ${constant} }`]);
         }
     }
     rows.sort((a, b) => a[0].localeCompare(b[0]));
     return [
         `// GENERATED by scripts/gen-dto-meta.mjs from the ${kernel.kernelRoot} surface - do not edit.`,
         "// Regenerate with `npm run gen:dto-meta` at the repository root.",
-        "import { DtoRegistry } from \"@bitbybit-dev/base\";",
+        "import { constraintKinds as k, DtoConstraints, DtoRegistry } from \"@bitbybit-dev/base\";",
         "import * as Inputs from \"./inputs\";",
         "",
+        ...[...constraintNames].sort((a, b) => a[0].localeCompare(b[0])).map(([constant, key]) => `const ${constant}: DtoConstraints = ${constraintsOf(classes, key, enums)};`),
+        "",
         "/**",
-        ` * Every public operation of the ${kernel.label} kernel by its dotted path, and the inputs DTO it`,
-        " * takes. `resolveInputs` from the base package reads it to lay a caller's properties over that",
-        " * DTO's defaults before the kernel runs.",
+        ` * Every public operation of the ${kernel.label} kernel by its dotted path, the inputs DTO it`,
+        " * takes, and what each property of that DTO accepts. `resolveInputs` from the base package reads",
+        " * it to lay a caller's properties over that DTO's defaults before the kernel runs, and",
+        " * `validateInputs` to check what the call was given.",
         " */",
         `export const ${kernel.constant}: DtoRegistry = {`,
         ...rows.map(([p, entry]) => `    "${p}": ${entry},`),

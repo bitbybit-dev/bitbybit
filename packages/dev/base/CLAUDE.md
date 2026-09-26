@@ -30,3 +30,16 @@ as opaque. `withDefaults` does the same for a kernel used in the same thread, wr
 on the way to a registered operation. `callByPath`, `rehydrateReferences` and `describeKernelFailure`
 are the three pieces every worker used to keep its own copy of, and `InputError` / `KernelCallError`
 are the two errors a caller can tell apart.
+
+**`validateInputs` checks a call before a kernel runs it**, in two layers. The constraints a
+generated registry carries per property - required, a number that is not NaN, a point of the right
+arity, a hex color, a value of the enum - come from the DTO's declared types, so a property whose
+type they cannot read (a shape, a `T`, a union) is only checked for presence. The rules across
+properties are written by hand beside each kernel with `defineRules` and the combinators
+(`sameLength`, `lessThan`, `distinct`, `notZeroVector`, `atLeastOne`, `when`, `custom`), against
+the `Resolved` type, since they run after the defaults; a rule for an abstract parent applies to
+every DTO that extends it, and a rule runs only when every property it reads passed its own check.
+A rule belongs to a DTO, so it has to hold for every operation that takes that DTO - "at least two
+points" is not a `PointsDto` rule. The workers report what they find through `reportInputIssues`,
+each distinct issue once, and do not throw yet: a service keeps its own throw until validation
+throws, and the default instance of every DTO has to pass its own checks (`dto-registry.test.ts`).

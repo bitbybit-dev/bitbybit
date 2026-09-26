@@ -4,3 +4,4 @@ export * as Inputs from "./inputs";
 export * as Resolved from "./resolved-inputs";
 export * as Models from "./models";
 export * from "./dto-registry";
+export * from "./validation";

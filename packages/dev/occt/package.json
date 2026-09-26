@@ -95,6 +95,11 @@
             "types": "./dist/lib/api/resolved-inputs/index.d.ts",
             "default": "./dist/lib/api/resolved-inputs/index.js"
         },
+        "./lib/api/validation": {
+            "@bitbybit-dev/source": "./lib/api/validation/index.ts",
+            "types": "./dist/lib/api/validation/index.d.ts",
+            "default": "./dist/lib/api/validation/index.js"
+        },
         "./lib/services": {
             "@bitbybit-dev/source": "./lib/services/index.ts",
             "types": "./dist/lib/services/index.d.ts",

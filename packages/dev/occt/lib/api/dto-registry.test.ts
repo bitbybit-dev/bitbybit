@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { resolveInputs, withDefaults } from "@bitbybit-dev/base";
+import { resolveInputs, validateInputs, withDefaults } from "@bitbybit-dev/base";
 import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { OCCTService } from "../occ-service";
 import { VectorHelperService } from "./vector-helper.service";
 import { ShapesHelperService } from "./shapes-helper.service";
 import { occtDtoRegistry } from "./dto-registry";
+import { occtDtoRules } from "./validation";
 import * as Inputs from "./inputs";
 
 const methodAt = (root: object, path: string): unknown => path.split(".").reduce<unknown>((owner, segment) => (owner === null || owner === undefined ? undefined : Reflect.get(owner, segment)), root);
@@ -52,5 +53,14 @@ describe("the OCCT operation registry", () => {
 
         // Assert
         expect(volume).toBeCloseTo(4 * 2 * 3);
+    });
+    it("should find nothing wrong with the defaults of the DTO each operation takes", () => {
+        // Act
+        const issues = Object.entries(occtDtoRegistry).flatMap(([path, entry]) => (entry.dto ? validateInputs(occtDtoRegistry, path, new entry.dto(), occtDtoRules) : [])
+            .filter((found) => found.code !== "required")
+            .map((found) => `${path} ${found.property} ${found.code}`));
+
+        // Assert
+        expect(issues).toEqual([]);
     });
 });

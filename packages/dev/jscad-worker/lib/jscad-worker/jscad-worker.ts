@@ -1,6 +1,6 @@
 import { CacheHelper } from "./cache-helper";
-import { Jscad, jscadDtoRegistry } from "@bitbybit-dev/jscad";
-import { callByPath, describeKernelFailure, rehydrateReferences, resolveInputs } from "@bitbybit-dev/base";
+import { Jscad, jscadDtoRegistry, jscadDtoRules } from "@bitbybit-dev/jscad";
+import { callByPath, describeKernelFailure, rehydrateReferences, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
 
 /**
  * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
@@ -53,12 +53,16 @@ const isGeometry = (value: object): boolean => "polygons" in value || "sides" in
 /**
  * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes, references
  * in them become the geometry they stand for, the dotted path is called on the kernel, and the
- * result is cached under the inputs as resolved, before any reference was replaced.
+ * result is cached under the inputs as resolved, before any reference was replaced. A call that is not
+ * in the cache first reports what its inputs would be rejected for.
  */
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const inputs = resolveInputs(jscadDtoRegistry, action.functionName, action.inputs);
     const rehydrated = rehydrateReferences(inputs, geometryHash, cachedGeometry, isGeometry);
-    return cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => callByPath(jscad, action.functionName, rehydrated));
+    return cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
+        reportInputIssues("JSCAD", action.functionName, validateInputs(jscadDtoRegistry, action.functionName, inputs, jscadDtoRules), unknownProperties(jscadDtoRegistry, action.functionName, action.inputs));
+        return callByPath(jscad, action.functionName, rehydrated);
+    });
 };
 
 export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {

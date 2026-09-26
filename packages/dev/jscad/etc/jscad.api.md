@@ -1070,6 +1070,11 @@ namespace JSCAD_2 {
 // @public
 export const jscadDtoRegistry: DtoRegistry;
 
+// Warning: (ae-forgotten-export) The symbol "RuleBook" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const jscadDtoRules: RuleBook;
+
 // @public
 export namespace Line {
     export class DrawLineDto<T> {

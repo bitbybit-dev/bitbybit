@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { Jscad } from "./jscad-service";
 import { jscadDtoRegistry } from "./dto-registry";
+import { jscadDtoRules } from "./validation";
 import { getJscad } from "./__test__/kernel";
-import { resolveInputs } from "@bitbybit-dev/base";
+import { resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import * as Inputs from "./inputs";
 
 const methodAt = (root: object, path: string): unknown => path.split(".").reduce<unknown>((owner, segment) => (owner === null || owner === undefined ? undefined : Reflect.get(owner, segment)), root);
@@ -45,5 +46,14 @@ describe("the JSCAD operation registry", () => {
 
         // Assert
         expect(inputs).toEqual({ centers: [[0, 0, 0]], width: 2, length: 1, height: 1 });
+    });
+    it("should find nothing wrong with the defaults of the DTO each operation takes", () => {
+        // Act
+        const issues = Object.entries(jscadDtoRegistry).flatMap(([path, entry]) => (entry.dto ? validateInputs(jscadDtoRegistry, path, new entry.dto(), jscadDtoRules) : [])
+            .filter((found) => found.code !== "required")
+            .map((found) => `${path} ${found.property} ${found.code}`));
+
+        // Assert
+        expect(issues).toEqual([]);
     });
 });

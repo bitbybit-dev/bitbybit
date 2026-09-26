@@ -8428,6 +8428,11 @@ export class OCCTCurves {
 // @public
 export const occtDtoRegistry: DtoRegistry;
 
+// Warning: (ae-forgotten-export) The symbol "RuleBook" needs to be exported by the entry point index.d.ts
+//
+// @public
+export const occtDtoRules: RuleBook;
+
 // @public
 export class OCCTEdge {
     constructor(occ: BitbybitOcctModule, och: OccHelper);

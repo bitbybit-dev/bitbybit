@@ -1,6 +1,6 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry } from "@bitbybit-dev/occt";
-import { describeKernelFailure, resolveInputs } from "@bitbybit-dev/base";
+import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules } from "@bitbybit-dev/occt";
+import { describeKernelFailure, reportInputIssues, resolveInputs, unknownProperties, validateInputs } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -94,7 +94,8 @@ function createCommandContext(): CommandContext {
  * 
  * This handles the common flow:
  * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out or
- *    passed as undefined gets its default, and cache the call under those inputs
+ *    passed as undefined gets its default, and cache the call under those inputs; a call that is not
+ *    in the cache reports what its inputs would be rejected for, and runs
  * 2. Recursively resolve shape references in inputs
  * 3. Execute the function with caching
  * 4. Serialize the result for transmission
@@ -106,6 +107,7 @@ function executeStandardFunction(
     const resolvedInputs = shapeResolver.resolveShapeReferences(inputs);
 
     const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs }, () => {
+        reportInputIssues("OCCT", action.functionName, validateInputs(occtDtoRegistry, action.functionName, inputs, occtDtoRules), unknownProperties(occtDtoRegistry, action.functionName, action.inputs));
         return functionPathResolver.callFunction(openCascade, action.functionName, resolvedInputs);
     });
 
