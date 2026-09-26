@@ -1939,7 +1939,7 @@ export interface OperationParams {
      * clockwise gives a negative one.
      */
     "jscad.polygon.createFromPoints": {
-        /** The outline points in order, at least three; only X and Y are used */
+        /** The outline points in order, at least three, each 2D or 3D; only X and Y are used */
         points: [number, number, number][] | PipelineRef;
     };
     /**
