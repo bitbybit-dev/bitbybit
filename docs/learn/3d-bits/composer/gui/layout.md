@@ -52,6 +52,49 @@ Choosing the second gives you the same **Show how many of each**, **Show each pa
 
 Where a configuration is charged by options *and* by parts, the breakdown separates the two into an **Options** and a **Parts** section, each with its own subtotal, then the total underneath. Where only one of the two carries any charge there are no headings and no subtotals - a product priced entirely from its parts reads as one list of parts, not as a list under a heading of one.
 
+**The store's discounts** are on for every Price element while pricing is on and the product is sold through one of the [charging methods](/learn/3d-bits/pricing/charging-methods); [Pricing test mode](/learn/3d-bits/pricing/test-mode) shows none. When your store runs a discount this configuration qualifies for - an automatic discount, or a code the shopper has already put on their cart - the element shows it the way **Discount style** says:
+
+- *Concise* is the default, and reads the way Shopify's own checkout shows a discounted item: the total struck through, the price after discounts beside it, and one line underneath naming each discount in a small tag, with the amount saved. When the tags do not fit on one line they wrap onto a second rather than squeezing the price, and a very long name is shortened with its full text on hover.
+- *Price only* keeps it to the one line: the total struck through, the price after discounts and the percent saved. Pick it when the panel has no room to spare.
+- *Itemized* lists each discount on its own row with its value, then the **Total after discounts**.
+
+```text
+Concise       Total                  €120.00  €108.00
+              Spring sale             You save €12.00
+
+Price only    Total           €120.00  €108.00   -10%
+
+Itemized      Total                           €120.00
+              Spring sale (10% off)           -€12.00
+              Total after discounts           €108.00
+```
+
+In the first two, €120.00 is struck through. Concise names each discount in a small tag; hovering a tag shows its value and amount.
+
+When the shopper changes something that moves the total, the discounts keep their place and a small spinner with "Checking discounts…" stands in for them until Shopify has priced the new configuration, usually about a second, so the buy button does not jump. Nothing spins on a product with no discount showing.
+
+The numbers come from Shopify. While the shopper configures, the storefront asks Shopify to price exactly the product, options and quantity on screen, the same way checkout will, and shows the discounts Shopify gives it. The rows appear only when Shopify's price for the configuration is the total the shopper sees, to the cent; when it is not, they stay hidden rather than discount a different price. Shopify prices the configuration on its own, for a shopper it does not know, so "Final price is confirmed at checkout" shows under the rows, and a few discounts only settle there:
+
+- discounts that depend on the rest of the cart, such as a minimum spend across the whole order or buy X get Y, show at checkout rather than on the product page;
+- discounts limited to logged-in customers or B2B buyers show at checkout;
+- discounts limited to once per order or once per customer can show here and still be refused at checkout, for example when another item in the cart already used them;
+- a subscription (selling plan) price is usually not the total shown, so the rows stay hidden for it;
+- in a currency other than your store's, conversion rounding usually leaves Shopify's price a few cents away from the total, so the rows stay hidden there - see [Other currencies](/learn/3d-bits/pricing/other-currencies).
+
+Untick **Show the store's discounts** to never show them on that element.
+
+**Promo code** advertises one of your discount codes on the Price element, as a chip with the code picked out. Type the code exactly as you created it under Discounts in your Shopify admin; Shopify matches codes regardless of case.
+
+- **Apply** puts the code on the shopper's cart. From then on Shopify applies it to everything in the cart it covers, at checkout as well as in the discounts above. Once applied, the chip says so. Apply is not offered in [Pricing test mode](/learn/3d-bits/pricing/test-mode), where the chip only copies.
+- **Copy**, the small copy icon beside Apply, copies the code for shoppers who would rather type it at checkout; it turns into a tick for a moment once the code is copied.
+- Before the code is applied, the chip reads "Use code WELCOME5". As soon as Shopify confirms the code lowers this configuration's price, it reads "Save €6.00 with WELCOME5" instead, and it goes back to the plain wording whenever the configuration does not qualify - so a code with a minimum spend starts plain and states its saving once the shopper builds something big enough. If the shopper later removes the code from their cart, the chip offers it again.
+- Once the code is on the cart but gives nothing on this configuration, the chip says it is on the cart and that any saving applies at checkout. That is also what a code limited to logged-in customers or B2B buyers shows, because the product page asks Shopify without knowing who the shopper is.
+- The chip needs pricing switched on, like the rest of the Price element. The saving is checked for the first two different codes across your Price elements; a third still offers Apply and Copy, without stating a saving.
+- **Promo wording** replaces "Use code {code}" with your own words; `{code}` is replaced with the code, and if your wording leaves `{code}` out, the code is added at the end. The saving and applied wording are built in and translate like the rest of the panel's wording.
+- **Promo placement** puts the chip on its own line **below** the total, or **beside** it on the same line, wrapping underneath when there is no room.
+
+Composer cannot check a code against your store, so a mistyped code shows as "Use code …" and never saves anything. Open the product page and press Apply once to be sure. To see the rows and the chip before you publish, open the **discount simulator** in Play - see [Edit mode and Play](/learn/3d-bits/composer/preview-vs-play).
+
 :::tip You may not need a Parts list as well
 A price breakdown drawn as parts already shows the labels, quantities and pictures. Adding a Parts list beside it prints the same rows twice. Use both only when you want the build sheet somewhere the price is not.
 :::

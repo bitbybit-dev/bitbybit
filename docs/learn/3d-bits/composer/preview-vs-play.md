@@ -41,11 +41,16 @@ If your project predates the option panel and still drives the scene from bare v
 | **The option panel - controls, layout, style, translations** | Not drawn over the 3D view | Drawn exactly as on the product page | The live preview in the GUI section, which renders the panel on its own while the 3D view stays paused |
 | **Logic rules** | Do not reach the 3D scene | Applied to the panel and to the scene | The GUI section's preview runs the rules against the panel; Play runs them against the 3D scene as well |
 | **Prices** | Not drawn over the 3D view | Shown as on the product page | The GUI section's preview |
+| **Discounts under the total, and the promo code chip** | The chip is drawn in the GUI section's preview, without Apply; no discount rows | Only what the discount simulator makes up - Composer has no store cart to ask | Open the **discount simulator** from the Play toolbar (the tag button) |
 | **Scripts** | Only when you press **Run** on that script | Follow the triggers you gave them | **Run**, in the Scripting section |
 | **The opening camera view** | The editor camera is yours to move and stays where you left it | The camera starts from the view you set | **Focus run camera** flies the editor camera to the opening view |
 | **Scene rotation animation** | The editor keeps the scene still while you work | Spins | Press Play |
 | **Skybox, background, lights, shadows** | Applied | Applied | Nothing special needed |
 | **PDF documents** | Not produced on their own | Produced when asked for | **Preview PDF**, in the PDF Reports section |
+
+### The discount simulator
+
+On the storefront, the rows under the total come from Shopify - there is no store cart behind Composer to ask. The simulator stands in for it so you can see the layout. It starts with nothing switched on, so Play shows no discount until you ask for one: switch on a store discount, name it, make it a percentage or an amount off, and say whether your promo code gives a saving and whether the shopper has applied each code. Pressing Apply on a chip in Play marks that code applied in the simulator, and unticking it offers the code again. While any of it is on, the tag button is outlined. The discount rows carry a "Simulated" note; the chip does not, so a Price element with its discount rows switched off shows a simulated saving on the chip alone. Nothing reaches your store, and the settings last until you reset them or close the project.
 
 ## The three that catch everyone
 
