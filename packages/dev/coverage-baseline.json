@@ -97,6 +97,14 @@
             "branches": 92.83,
             "functions": 98.91,
             "statements": 97.7
+        },
+        {
+            "measured": "2026-09-26",
+            "tests": 9184,
+            "lines": 97.77,
+            "branches": 92.81,
+            "functions": 98.9,
+            "statements": 97.69
         }
     ],
     "packages": {
@@ -111,10 +119,10 @@
         },
         "base": {
             "runner": "vitest",
-            "tests": 1465,
+            "tests": 1466,
             "suites": 27,
             "lines": 99.51,
-            "branches": 95.73,
+            "branches": 95.79,
             "functions": 100,
             "statements": 99.51
         },
@@ -152,7 +160,7 @@
         },
         "jscad-worker": {
             "runner": "vitest",
-            "tests": 336,
+            "tests": 326,
             "suites": 8,
             "lines": 100,
             "branches": 100,
@@ -170,7 +178,7 @@
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 476,
+            "tests": 467,
             "suites": 7,
             "lines": 100,
             "branches": 100,
@@ -197,7 +205,7 @@
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 848,
+            "tests": 840,
             "suites": 15,
             "lines": 100,
             "branches": 100,

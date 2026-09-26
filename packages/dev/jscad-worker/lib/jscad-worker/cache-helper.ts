@@ -11,7 +11,6 @@ function foldHashLanes(lane1: number, lane2: number): number {
 
 export class CacheHelper {
 
-    hashesFromPreviousRun: Record<string, string | number> = {};
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
@@ -50,7 +49,6 @@ export class CacheHelper {
 
         this.argCache = {};
         this.usedHashes = {};
-        this.hashesFromPreviousRun = {};
         this.jscadObjectHashes.clear();
     }
 
@@ -82,52 +80,7 @@ export class CacheHelper {
         }
         delete this.argCache[hash];
         delete this.usedHashes[hash];
-        delete this.hashesFromPreviousRun[hash];
         this.jscadObjectHashes.delete(hash);
-    }
-
-    cleanUpCache(): void {
-        const usedHashKeys = Object.keys(this.usedHashes);
-        const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-        
-        let hashesToDelete: string[] = [];
-        if (hashesFromPreviousRunKeys.length > 0) {
-            hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
-        }
-        
-        if (hashesToDelete.length > 0) {
-            hashesToDelete.forEach(hash => {
-                if (this.argCache[hash]) {
-                    try {
-                        const obj = this.argCache[hash];
-                        if (this.isJSCADObject(obj)) {
-                            if (Array.isArray(obj)) {
-                                obj.forEach(o => {
-                                    try {
-                                        if (o.delete) {
-                                            o.delete();
-                                        }
-                                    // eslint-disable-next-line no-empty
-                                    } catch {
-                                    }
-                                });
-                            } else {
-                                if (obj.delete) {
-                                    obj.delete();
-                                }
-                            }
-                        }
-                    // eslint-disable-next-line no-empty
-                    } catch {
-                    }
-                    delete this.argCache[hash];
-                }
-                delete this.usedHashes[hash];
-                this.jscadObjectHashes.delete(hash);
-            });
-        }
-        
-        this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,7 +101,6 @@ export class CacheHelper {
         let toReturn;
         const curHash = this.computeHash(args);
         this.usedHashes[curHash] = curHash;
-        this.hashesFromPreviousRun[curHash] = curHash;
         const check = this.checkCache(curHash);
         if (check) {
             if (this.isJSCADObject(check)) {
@@ -165,7 +117,6 @@ export class CacheHelper {
                     r.hash = itemHash;
                     this.addToCache(itemHash, r);
                     this.usedHashes[itemHash] = itemHash;
-                    this.hashesFromPreviousRun[itemHash] = itemHash;
                 });
             } else {
                 if (this.isJSCADObject(toReturn)) {

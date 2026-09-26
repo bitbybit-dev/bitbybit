@@ -7969,15 +7969,15 @@ export interface OperationParams {
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
-     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way, or 0,
-     * makes a full turn. The profile must not cross the axis along `direction`.
+     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way makes
+     * a full turn, and 0 throws. The profile must not cross the axis along `direction`.
      */
     "occt.operations.revolve": {
         /** The profile to spin: a wire gives a shell, a face a solid; it must not cross the axis. */
         shape: unknown | PipelineRef;
         /**
-         * How far to spin, in degrees; a negative angle spins the other way, and 360 or more either way,
-         * or 0, gives a full turn.
+         * How far to spin, in degrees; a negative angle spins the other way, 360 or more either way
+         * gives a full turn, and 0 is not allowed.
          */
         angle?: number | PipelineRef;
         /** The direction of the axis, which passes through the origin. */

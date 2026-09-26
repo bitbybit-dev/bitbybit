@@ -167,7 +167,7 @@ export namespace IO {
          */
         layer?: string | undefined = "Default";
         /**
-         * Color for all paths in this part
+         * Color for all paths in this part, as a hex string such as `#000000`
          * @default #000000
          */
         color?: Base.Color | undefined = "#000000";

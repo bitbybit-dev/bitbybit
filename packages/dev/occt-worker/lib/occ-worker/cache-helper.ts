@@ -17,7 +17,6 @@ const isItemList = (entry: unknown): entry is ItemList => typeof entry === "obje
 
 export class CacheHelper {
 
-    hashesFromPreviousRun: Record<string, string | number> = {};
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
@@ -61,7 +60,6 @@ export class CacheHelper {
 
         this.argCache = {};
         this.usedHashes = {};
-        this.hashesFromPreviousRun = {};
     }
 
     cleanCacheForHash(hash: string): void {
@@ -96,54 +94,6 @@ export class CacheHelper {
         }
         delete this.argCache[hash];
         delete this.usedHashes[hash];
-        delete this.hashesFromPreviousRun[hash];
-    }
-
-    cleanUpCache(): void {
-        const usedHashKeys = Object.keys(this.usedHashes);
-        const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-
-        let hashesToDelete: string[] = [];
-        if (hashesFromPreviousRunKeys.length > 0) {
-            hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
-        }
-
-        if (hashesToDelete.length > 0) {
-            hashesToDelete.forEach(hash => {
-                if (this.argCache[hash]) {
-                    try {
-                        const cachedItem = this.argCache[hash];
-                        if (this.isOCCTObject(cachedItem)) {
-                            if (Array.isArray(cachedItem)) {
-                                cachedItem.forEach(item => {
-                                    try {
-                                        if (this.isShape(item)) {
-                                            this.occ.BRepTools_Clean_Force(item, true);
-                                            this.occ.BRepTools_CleanGeometry(item);
-                                        }
-                                        item.delete();
-                                    } catch {
-                                        // Ignore errors for already deleted objects
-                                    }
-                                });
-                            } else {
-                                if (this.isShape(cachedItem)) {
-                                    this.occ.BRepTools_Clean_Force(cachedItem, true);
-                                    this.occ.BRepTools_CleanGeometry(cachedItem);
-                                }
-                                cachedItem.delete();
-                            }
-                        }
-                    } catch {
-                        // Ignore errors for already deleted or invalid objects
-                    }
-                    delete this.argCache[hash];
-                }
-                delete this.usedHashes[hash];
-            });
-        }
-
-        this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -202,7 +152,6 @@ export class CacheHelper {
         const hashableArgs = this.toHashableArgs(args);
         const curHash = this.computeHash(hashableArgs);
         this.usedHashes[curHash] = curHash;
-        this.hashesFromPreviousRun[curHash] = curHash;
         const check = this.checkCache(curHash);
         if (check) {
             if (this.isOCCTObject(check)) {

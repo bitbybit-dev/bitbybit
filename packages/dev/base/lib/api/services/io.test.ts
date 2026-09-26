@@ -129,7 +129,7 @@ describe("IO unit tests", () => {
         it("should generate DXF with circle", () => {
             const circleSegment = new Inputs.IO.DxfCircleSegmentDto([50, 50], 25);
             const path = new Inputs.IO.DxfPathDto([circleSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Circles", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Circles", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -143,7 +143,7 @@ describe("IO unit tests", () => {
         it("should generate DXF with arc", () => {
             const arcSegment = new Inputs.IO.DxfArcSegmentDto([100, 100], 50, 0, 90);
             const path = new Inputs.IO.DxfPathDto([arcSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Arcs", "2", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Arcs", "#ffff00", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -160,7 +160,7 @@ describe("IO unit tests", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
             const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, true);
             const path = new Inputs.IO.DxfPathDto([polylineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Polylines", "3", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -188,7 +188,7 @@ describe("IO unit tests", () => {
             const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
             const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
             const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Splines", "4", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Splines", "#00ffff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -208,7 +208,7 @@ describe("IO unit tests", () => {
             const circle = new Inputs.IO.DxfCircleSegmentDto([20, 5], 3);
             
             const path = new Inputs.IO.DxfPathDto([line, arc, circle]);
-            const part = new Inputs.IO.DxfPathsPartDto("MixedPath", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("MixedPath", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -232,7 +232,7 @@ describe("IO unit tests", () => {
                 bottomLine, bottomRightArc, rightLine, topRightArc,
                 topLine, topLeftArc, leftLine, bottomLeftArc
             ]);
-            const part = new Inputs.IO.DxfPathsPartDto("RoundedRect", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("RoundedRect", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -251,7 +251,7 @@ describe("IO unit tests", () => {
             const spline = new Inputs.IO.DxfSplineSegmentDto([[45, 0], [50, 10], [55, 0]], 3, false);
             
             const path = new Inputs.IO.DxfPathDto([line, arc, circle, polyline, spline]);
-            const part = new Inputs.IO.DxfPathsPartDto("ComplexPath", "7", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("ComplexPath", "#ffffff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -319,8 +319,8 @@ describe("IO unit tests", () => {
                 new Inputs.IO.DxfCircleSegmentDto([20, 20], 5)
             ]);
             
-            const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "1", [path1]);
-            const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "2", [path2]);
+            const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "#ff0000", [path1]);
+            const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "#ffff00", [path2]);
             const model = new Inputs.IO.DxfModelDto([part1, part2]);
 
             const result = io.dxf.dxfCreate(model);
@@ -378,7 +378,7 @@ describe("IO unit tests", () => {
         it("should handle color values correctly", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "5", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "#0000ff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);
@@ -530,7 +530,7 @@ describe("IO unit tests", () => {
         it("should produce valid DXF structure with all sections", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [100, 100]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("WALLS", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("WALLS", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = io.dxf.dxfCreate(model);

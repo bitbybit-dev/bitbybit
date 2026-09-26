@@ -498,188 +498,48 @@ describe("CacheHelper unit tests", () => {
         });
     });
 
-    describe("cleanUpCache", () => {
-        it("should pass over a hash of the previous run that is no longer cached", () => {
+    describe("integration tests", () => {
+        it("should delete only the manifolds whose hashes are cleaned and keep serving the rest from the cache", () => {
             // Arrange
-            const args = { test: 1 };
-            cacheHelper.cacheOp(args, () => ({ data: "test" }));
-            cacheHelper.cleanUpCache();
-            cacheHelper.cleanAllCache();
-            cacheHelper.usedHashes = {};
-            cacheHelper.hashesFromPreviousRun = { [cacheHelper.computeHash(args)]: cacheHelper.computeHash(args) };
+            const deleteKept = vi.fn();
+            const deleteSecond = vi.fn();
+            const deleteThird = vi.fn();
+            const kept = { $$: { ptr: 123 }, delete: deleteKept };
+            cacheHelper.cacheOp({ op: "create", id: 1 }, () => kept);
+            const second = cacheHelper.cacheOp({ op: "create", id: 2 }, () => ({ $$: { ptr: 456 }, delete: deleteSecond }));
+            const third = cacheHelper.cacheOp({ op: "create", id: 3 }, () => ({ $$: { ptr: 789 }, delete: deleteThird }));
+            const recompute = vi.fn(() => ({ $$: { ptr: 999 }, delete: vi.fn() }));
 
             // Act
-            const clean = (): void => cacheHelper.cleanUpCache();
+            cacheHelper.cleanCacheForHash(second.hash);
+            cacheHelper.cleanCacheForHash(third.hash);
+            const served = cacheHelper.cacheOp({ op: "create", id: 1 }, recompute);
 
             // Assert
-            expect(clean).not.toThrow();
-            expect(Object.keys(cacheHelper.argCache)).toEqual([]);
+            expect(deleteSecond).toHaveBeenCalledTimes(1);
+            expect(deleteThird).toHaveBeenCalledTimes(1);
+            expect(deleteKept).not.toHaveBeenCalled();
+            expect(served).toBe(kept);
+            expect(recompute).not.toHaveBeenCalled();
         });
 
-        it("should remove unused cache entries from previous run", () => {
-            const args1 = { test: 1 };
-            const args2 = { test: 2 };
-            const value = { data: "test" };
-            
-            cacheHelper.cacheOp(args1, () => value);
-            cacheHelper.cacheOp(args2, () => value);
-            
-            const hash1 = cacheHelper.computeHash(args1);
-            const hash2 = cacheHelper.computeHash(args2);
-            
-            cacheHelper.cleanUpCache();
-            
-            cacheHelper.usedHashes = {};
-            cacheHelper.cacheOp(args1, () => value);
-            
-            cacheHelper.cleanUpCache();
-            
-            expect(cacheHelper.checkCache(hash1)).toBeDefined();
-            expect(cacheHelper.checkCache(hash2)).toBeNull();
-        });
+        it("should record the key of every call and of every manifold of a list answer in usedHashes, and drop a key when its hash is cleaned", () => {
+            // Arrange
+            const singleArgs = { op: "single" };
+            const splitArgs = { op: "split" };
+            const single = cacheHelper.cacheOp(singleArgs, () => ({ $$: { ptr: 1 }, delete: vi.fn() }));
+            const halves = cacheHelper.cacheOp(splitArgs, () => [{ $$: { ptr: 2 }, delete: vi.fn() }, { $$: { ptr: 3 }, delete: vi.fn() }]);
+            const splitHash = cacheHelper.computeHash(splitArgs);
 
-        it("should clean up Manifold objects that are no longer used", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
-            
-            const args1 = { test: 1 };
-            const args2 = { test: 2 };
-            
-            cacheHelper.cacheOp(args1, () => manifold1);
-            cacheHelper.cacheOp(args2, () => manifold2);
-            
-            cacheHelper.cleanUpCache();
-            
-            cacheHelper.usedHashes = {};
-            cacheHelper.cacheOp(args1, () => manifold1);
-            
-            cacheHelper.cleanUpCache();
-            
-            expect(manifold1.delete).not.toHaveBeenCalled();
-            expect(manifold2.delete).toHaveBeenCalled();
-        });
+            // Act
+            cacheHelper.cleanCacheForHash(halves[0].hash);
 
-        it("should handle arrays of Manifold objects during cleanup", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
-            const manifolds = [manifold1, manifold2];
-            
-            const args = { test: 1 };
-            
-            cacheHelper.cacheOp(args, () => manifolds);
-            
-            cacheHelper.cleanUpCache();
-            
-            cacheHelper.usedHashes = {};
-            
-            cacheHelper.cleanUpCache();
-            
-            expect(manifold1.delete).toHaveBeenCalled();
-            expect(manifold2.delete).toHaveBeenCalled();
-        });
-
-        it("should not remove cache entries that are still in use", () => {
-            const args = { test: 1 };
-            const value = { data: "test" };
-            
-            cacheHelper.cacheOp(args, () => value);
-            cacheHelper.cleanUpCache();
-            
-            cacheHelper.cacheOp(args, () => value);
-            cacheHelper.cleanUpCache();
-            
-            const hash = cacheHelper.computeHash(args);
-            expect(cacheHelper.checkCache(hash)).toBeDefined();
-        });
-
-        it("should handle empty previous run gracefully", () => {
-            const args = { test: 1 };
-            const value = { data: "test" };
-            
-            expect(() => {
-                cacheHelper.cleanUpCache();
-            }).not.toThrow();
-            
-            cacheHelper.cacheOp(args, () => value);
-            expect(() => {
-                cacheHelper.cleanUpCache();
-            }).not.toThrow();
-        });
-
-        it("should update hashesFromPreviousRun correctly", () => {
-            const args1 = { test: 1 };
-            const args2 = { test: 2 };
-            const value = { data: "test" };
-            
-            cacheHelper.cacheOp(args1, () => value);
-            cacheHelper.cacheOp(args2, () => value);
-            
-            const hash1 = cacheHelper.computeHash(args1);
-            const hash2 = cacheHelper.computeHash(args2);
-            
-            cacheHelper.cleanUpCache();
-            
-            expect(cacheHelper.hashesFromPreviousRun[hash1]).toBeDefined();
-            expect(cacheHelper.hashesFromPreviousRun[hash2]).toBeDefined();
-        });
-
-        it("should handle already deleted manifolds gracefully", () => {
-            const manifold = { 
-                $$: { ptr: 123 }, 
-                delete: vi.fn(() => { throw new Error("Already deleted"); }) 
-            };
-            const args = { test: 1 };
-            
-            cacheHelper.cacheOp(args, () => manifold);
-            
-            cacheHelper.cleanUpCache();
-            
-            cacheHelper.usedHashes = {};
-            
-            expect(() => {
-                cacheHelper.cleanUpCache();
-            }).not.toThrow();
-        });
-    });
-
-    describe("integration tests", () => {
-        it("should handle complex caching scenario with multiple manifolds", () => {
-            const manifold1 = { $$: { ptr: 123 }, delete: vi.fn() };
-            const manifold2 = { $$: { ptr: 456 }, delete: vi.fn() };
-            const manifold3 = { $$: { ptr: 789 }, delete: vi.fn() };
-            
-            const result1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
-            const result2 = cacheHelper.cacheOp({ op: "create", id: 2 }, () => manifold2);
-            const result3 = cacheHelper.cacheOp({ op: "create", id: 3 }, () => manifold3);
-            
-            expect(result1.hash).toBeDefined();
-            expect(result2.hash).toBeDefined();
-            expect(result3.hash).toBeDefined();
-            expect(result1.hash).not.toBe(result2.hash);
-            
-            const cached1 = cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
-            expect(cached1.hash).toBe(result1.hash);
-            
-            cacheHelper.cleanUpCache();
-            cacheHelper.usedHashes = {};
-            cacheHelper.cacheOp({ op: "create", id: 1 }, () => manifold1);
-            cacheHelper.cleanUpCache();
-            
-            const hash2 = cacheHelper.computeHash({ op: "create", id: 2 });
-            const hash3 = cacheHelper.computeHash({ op: "create", id: 3 });
-            expect(cacheHelper.checkCache(hash2)).toBeNull();
-            expect(cacheHelper.checkCache(hash3)).toBeNull();
-        });
-
-        it("should properly track used hashes across operations", () => {
-            const manifold = { $$: { ptr: 123 }, delete: vi.fn() };
-            const args = { op: "test" };
-            
-            cacheHelper.cacheOp(args, () => manifold);
-            
-            const hash = cacheHelper.computeHash(args);
-            expect(cacheHelper.usedHashes[hash]).toBeDefined();
-            expect(cacheHelper.hashesFromPreviousRun[hash]).toBeDefined();
+            // Assert
+            expect(cacheHelper.usedHashes).toEqual({
+                [single.hash]: single.hash,
+                [splitHash]: splitHash,
+                [halves[1].hash]: halves[1].hash,
+            });
         });
     });
 
@@ -728,37 +588,6 @@ describe("CacheHelper unit tests", () => {
             expect(cacheHelper.checkCache("array-hash")).toBeNull();
         });
 
-        it("should delete every kernel object the entry holds when the run no longer uses it", () => {
-            // Arrange
-            const deleted: string[] = [];
-            cacheHelper.addToCache("array-hash", [deletable("first", deleted), deletable("second", deleted)]);
-            cacheHelper.usedHashes = { "array-hash": "array-hash" };
-            cacheHelper.cleanUpCache();
-            cacheHelper.usedHashes = {};
-
-            // Act
-            cacheHelper.cleanUpCache();
-
-            // Assert
-            expect(deleted).toEqual(["first", "second"]);
-        });
-
-        it("should keep deleting the rest of an unused entry when one object has already gone", () => {
-            // Arrange
-            const deleted: string[] = [];
-            const gone = { $$: {}, delete: () => { throw new Error("already deleted"); } };
-            cacheHelper.addToCache("array-hash", [gone, deletable("second", deleted)]);
-            cacheHelper.usedHashes = { "array-hash": "array-hash" };
-            cacheHelper.cleanUpCache();
-            cacheHelper.usedHashes = {};
-
-            // Act
-            cacheHelper.cleanUpCache();
-
-            // Assert
-            expect(deleted).toEqual(["second"]);
-        });
-
         it("should delete every kernel object the entry holds when the whole cache is dropped", () => {
             // Arrange
             const deleted: string[] = [];
@@ -769,6 +598,19 @@ describe("CacheHelper unit tests", () => {
 
             // Assert
             expect(deleted).toEqual(["first", "second"]);
+        });
+
+        it("should keep deleting the rest when one object has already gone as the whole cache is dropped", () => {
+            // Arrange
+            const deleted: string[] = [];
+            const gone = { $$: {}, delete: () => { throw new Error("already deleted"); } };
+            cacheHelper.addToCache("array-hash", [gone, deletable("second", deleted)]);
+
+            // Act
+            cacheHelper.cleanAllCache();
+
+            // Assert
+            expect(deleted).toEqual(["second"]);
         });
     });
 

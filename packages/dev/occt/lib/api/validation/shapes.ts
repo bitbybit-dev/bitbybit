@@ -27,6 +27,7 @@ export const shapeRules: readonly DtoRules[] = [
     defineRules<Resolved.OCCT.EllipseDto>(Inputs.OCCT.EllipseDto, [custom("radiusMinor", (inputs) => inputs.radiusMinor <= inputs.radiusMajor, "must not exceed radiusMajor", ["radiusMinor", "radiusMajor"])]),
     defineRules<Resolved.OCCT.Geom2dEllipseDto>(Inputs.OCCT.Geom2dEllipseDto, [custom("radiusMinor", (inputs) => inputs.radiusMinor <= inputs.radiusMajor, "must not exceed radiusMajor", ["radiusMinor", "radiusMajor"])]),
     defineRules<Resolved.OCCT.TorusDto>(Inputs.OCCT.TorusDto, [custom("minorRadius", (inputs) => inputs.minorRadius <= inputs.majorRadius, "must not exceed majorRadius", ["minorRadius", "majorRadius"])]),
+    defineRules<Resolved.OCCT.RevolveDto<unknown>>(Inputs.OCCT.RevolveDto, [custom("angle", (inputs) => inputs.angle !== 0, "must not be 0, or nothing is swept")]),
     defineRules<Resolved.OCCT.SliceDto<unknown>>(Inputs.OCCT.SliceDto, [custom("step", (inputs) => inputs.step > 0, "must be above 0")]),
     defineRules<Resolved.OCCT.SliceInStepPatternDto<unknown>>(Inputs.OCCT.SliceInStepPatternDto, [custom("steps", (inputs) => addsUpAboveZero(inputs.steps), "must add up to more than 0, or the slices never move along the shape")]),
     defineRules<Resolved.OCCT.PointsOnWireAtPatternOfLengthsDto<unknown>>(Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto, [custom("lengths", (inputs) => addsUpAboveZero(inputs.lengths), "must add up to more than 0, or the points never move along the wire")]),

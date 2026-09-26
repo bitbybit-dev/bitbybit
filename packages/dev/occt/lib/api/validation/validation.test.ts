@@ -158,7 +158,7 @@ const shapeRows: Row[] = [
     ["operations.revolve", "pass the default angle", { shape: S }, []],
     ["operations.revolve", "pass a negative angle, which spins the other way", { shape: S, angle: -90 }, []],
     ["operations.revolve", "pass a full turn the other way", { shape: S, angle: -360 }, []],
-    ["operations.revolve", "pass an angle of 0, which gives a full turn", { shape: S, angle: 0 }, []],
+    ["operations.revolve", "report an angle of 0", { shape: S, angle: 0 }, [{ property: "angle", code: "custom", message: "must not be 0, or nothing is swept" }]],
     ...ellipses.flatMap((path): Row[] => [
         [path, "pass a minor radius below the major one", { radiusMinor: 1, radiusMajor: 2 }, []],
         [path, "pass a minor radius equal to the major one, which is a circle", { radiusMinor: 2, radiusMajor: 2 }, []],

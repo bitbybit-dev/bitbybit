@@ -363,12 +363,15 @@ export class OperationsService {
 
     revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
         const angle = inputs.angle;
+        if (angle === 0) {
+            throw new Error("The revolve angle must not be 0, or nothing is swept.");
+        }
         const direction = inputs.direction;
         let result;
         const pt1 = new this.occ.gp_Pnt(0, 0, 0);
         const dir = new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
-        if (angle === 0 || Math.abs(angle) >= 360.0) {
+        if (Math.abs(angle) >= 360.0) {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
             result = makeRevol.Shape();
             makeRevol.delete();

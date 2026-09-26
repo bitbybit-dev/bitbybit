@@ -75,7 +75,6 @@ function hashableRecord(record: Record<string, unknown>, digest: (bytes: Uint8Ar
 
 export class CacheHelper {
 
-    hashesFromPreviousRun: Record<string, string | number> = {};
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
@@ -110,7 +109,6 @@ export class CacheHelper {
 
         this.argCache = {};
         this.usedHashes = {};
-        this.hashesFromPreviousRun = {};
         this.manifoldObjectHashes.clear();
     }
 
@@ -138,48 +136,7 @@ export class CacheHelper {
         }
         delete this.argCache[hash];
         delete this.usedHashes[hash];
-        delete this.hashesFromPreviousRun[hash];
         this.manifoldObjectHashes.delete(hash);
-    }
-
-    cleanUpCache(): void {
-        const usedHashKeys = Object.keys(this.usedHashes);
-        const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-        
-        let hashesToDelete: string[] = [];
-        if (hashesFromPreviousRunKeys.length > 0) {
-            hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
-        }
-        
-        if (hashesToDelete.length > 0) {
-            hashesToDelete.forEach(hash => {
-                if (this.argCache[hash]) {
-                    try {
-                        const manifold = this.argCache[hash];
-                        if (this.isManifoldObject(manifold)) {
-                            if (Array.isArray(manifold)) {
-                                manifold.forEach(m => {
-                                    try {
-                                        m.delete();
-                                    } catch {
-                                        // Ignore errors for already deleted manifolds
-                                    }
-                                });
-                            } else {
-                                manifold.delete();
-                            }
-                        }
-                    } catch {
-                        // Ignore errors for already deleted or invalid manifolds
-                    }
-                    delete this.argCache[hash];
-                }
-                delete this.usedHashes[hash];
-                this.manifoldObjectHashes.delete(hash);
-            });
-        }
-        
-        this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -201,7 +158,6 @@ export class CacheHelper {
     cacheOp(args: any, cacheMiss: () => any): any {
         const curHash = this.computeHash(args);
         this.usedHashes[curHash] = curHash;
-        this.hashesFromPreviousRun[curHash] = curHash;
         const check = this.checkCache(curHash);
         if (check) {
             if (this.isManifoldObject(check)) {
@@ -255,7 +211,6 @@ export class CacheHelper {
             }
             this.addToCache(hash, object);
             this.usedHashes[hash] = hash;
-            this.hashesFromPreviousRun[hash] = hash;
         }
     }
 

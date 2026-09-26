@@ -763,18 +763,10 @@ export class DxfGenerator {
     }
 
     /**
-     * Convert color to DXF format
-     * Accepts hex color (#RRGGBB) or ACI color index (1-255)
-     * Returns appropriate DXF color codes based on colorFormat setting
+     * Convert a hex color (#RRGGBB) to DXF color codes, as the nearest ACI index or as true color
+     * depending on the colorFormat setting; anything else is written as ACI 7
      */
-    private convertColorToDxf(color: string): { code: string, value: string }[] {
-        if (/^\d+$/.test(color)) {
-            const colorIndex = parseInt(color, 10);
-            if (colorIndex >= 1 && colorIndex <= 255) {
-                return [{ code: "62", value: color }];
-            }
-        }
-
+    private convertColorToDxf(color: Inputs.Base.Color): { code: string, value: string }[] {
         if (color.startsWith("#")) {
             const hex = color.substring(1);
             if (hex.length === 6) {

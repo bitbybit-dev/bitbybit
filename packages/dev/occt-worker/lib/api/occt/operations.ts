@@ -385,8 +385,8 @@ export class OCCTOperations {
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
-     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way, or 0,
-     * makes a full turn. The profile must not cross the axis along `direction`.
+     * `angle` is in degrees and may be negative to spin the other way; 360 or more either way makes
+     * a full turn, and 0 throws. The profile must not cross the axis along `direction`.
      * @param inputs - The profile shape, the angle in degrees, the axis direction and whether to copy the geometry
      * @returns The revolved shape
      * @group revolutions

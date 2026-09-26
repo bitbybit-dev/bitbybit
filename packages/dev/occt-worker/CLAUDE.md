@@ -23,12 +23,11 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
   the call's key holds the list of those keys, so an identical call is a hit. A list with an item
   deleted since is computed again, and the old items still alive are freed as the new ones take their
   keys - an object the new list hands back again is kept.
-- **Retention is bounded by a count, not by memory.** `startedTheRun` clears everything once more than
-  `CACHE_THRESHOLD` hashes have been used, and that is the only bound on WASM memory growth across a
-  long session: until then an entry stays until a delete command or `cleanAllCache` frees it.
-  `cleanUpCache`, which would keep only the hashes the finished run touched, has not been called
-  since 2021, when the per-run sweep was switched off over problems never pinned down; it is kept and
-  tested, but nothing relies on it.
+- **Retention is bounded by a count, not by memory.** Only two things bound it: the count threshold in
+  `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes have been used, and
+  the delete commands (`deleteShape`, `deleteShapes`, `deleteDocument`, `cleanAllCache`). An entry a
+  later run no longer uses stays until one of them frees it, so the threshold is the only automatic
+  bound on WASM memory growth across a long session.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be

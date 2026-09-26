@@ -5727,8 +5727,8 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * How far to spin, in degrees; a negative angle spins the other way, and 360 or more either way,
-         * or 0, gives a full turn.
+         * How far to spin, in degrees; a negative angle spins the other way, 360 or more either way
+         * gives a full turn, and 0 is not allowed.
          * @default 360
          * @minimum -Infinity
          * @maximum Infinity

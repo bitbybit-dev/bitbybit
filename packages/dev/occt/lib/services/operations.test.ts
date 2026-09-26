@@ -845,7 +845,19 @@ describe("OCCT operations unit tests", () => {
         res.delete();
     });
 
-    it.each([0, -360, -400])("should make a full turn for an angle of %s", (angle) => {
+    it("should refuse an angle of 0 rather than make a full turn", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const spin = (): unknown => operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 0, copy: true });
+
+        // Assert
+        expect(spin).toThrow("The revolve angle must not be 0, or nothing is swept.");
+        circleFace.delete();
+    });
+
+    it.each([-360, -400])("should make a full turn for an angle of %s", (angle) => {
         // Arrange
         const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
 

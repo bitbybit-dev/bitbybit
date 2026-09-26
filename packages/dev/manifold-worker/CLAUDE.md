@@ -20,12 +20,11 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
 - **Binary data in the arguments is keyed by a digest of its bytes**, at any depth - a mesh's
   vertex and triangle arrays sit inside `mesh` - because JSON writes a typed array out one element
   at a time as an object, which took seconds per call on a large mesh, hits included.
-- **Retention is bounded by a count, not by memory.** `startedTheRun` clears everything once more than
-  `CACHE_THRESHOLD` hashes have been used, and that is the only bound on WASM memory growth across a
-  long session: until then an entry stays until a delete command or `cleanAllCache` frees it.
-  `cleanUpCache`, which would keep only the hashes the finished run touched, has not been called
-  since 2021, when the per-run sweep was switched off over problems never pinned down; it is kept and
-  tested, but nothing relies on it.
+- **Retention is bounded by a count, not by memory.** Only two things bound it: the count threshold in
+  `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes have been used, and
+  the delete commands (`deleteManifoldOrCrossSection`, `deleteManifoldsOrCrossSections`,
+  `cleanAllCache`). An entry a later run no longer uses stays until one of them frees it, so the
+  threshold is the only automatic bound on WASM memory growth across a long session.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be
