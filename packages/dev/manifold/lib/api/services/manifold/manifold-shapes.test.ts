@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { getManifold } from "../../__test__/kernel";
 import type { ManifoldService } from "../../manifold-service";
+import type * as Manifold3D from "manifold-3d";
 import * as Inputs from "../../inputs";
 
 const CUBE_SIZE = 2;
@@ -255,6 +256,54 @@ describe("ManifoldShapes", () => {
 
             // Assert
             expect(manifold.mesh.evaluate.numProp(new Inputs.Manifold.MeshDto(meshes[0]))).toBeGreaterThan(3);
+        });
+    });
+
+    describe("defaults left to the DTO", () => {
+        const summaryOf = (shape: Manifold3D.Manifold): { volume: number; vertices: number; box: Inputs.Base.Vector3[] } => {
+            const measure = new Inputs.Manifold.ManifoldDto(shape);
+            return {
+                volume: manifold.manifold.evaluate.volume(measure),
+                vertices: manifold.manifold.evaluate.numVert(measure),
+                box: manifold.manifold.evaluate.boundingBox(measure),
+            };
+        };
+
+        it("should build the unit cube centred on the origin when the call leaves every default out", () => {
+            // Act
+            const leftOut = summaryOf(manifold.manifold.shapes.cube({}));
+            const spelled = summaryOf(manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto()));
+
+            // Assert
+            expect(leftOut.box).toEqual([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]]);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should build the unit cube centred on the origin when the call hands every default as undefined", () => {
+            // Act
+            const handedUndefined = summaryOf(manifold.manifold.shapes.cube({ center: undefined, size: undefined }));
+
+            // Assert
+            expect(handedUndefined.box).toEqual([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]]);
+        });
+
+        it("should build the cylinder the spelled out DTO builds when the call leaves every default out", () => {
+            // Act
+            const leftOut = summaryOf(manifold.manifold.shapes.cylinder({}));
+            const spelled = summaryOf(manifold.manifold.shapes.cylinder(new Inputs.Manifold.CylinderDto()));
+
+            // Assert
+            expect(leftOut.vertices).toBe(64);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should build the cylinder the spelled out DTO builds when the call hands every default as undefined", () => {
+            // Act
+            const handedUndefined = summaryOf(manifold.manifold.shapes.cylinder({ height: undefined, radiusLow: undefined, radiusHigh: undefined, circularSegments: undefined, center: undefined }));
+            const spelled = summaryOf(manifold.manifold.shapes.cylinder(new Inputs.Manifold.CylinderDto()));
+
+            // Assert
+            expect(handedUndefined).toEqual(spelled);
         });
     });
 });

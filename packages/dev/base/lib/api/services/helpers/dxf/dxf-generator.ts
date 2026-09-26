@@ -378,7 +378,8 @@ export class DxfGenerator {
         const layers = new Set<string>();
 
         if (dxfInputs.dxfPathsParts) {
-            dxfInputs.dxfPathsParts.forEach(part => {
+            dxfInputs.dxfPathsParts.forEach(pathsPart => {
+                const part = resolveDto(Inputs.IO.DxfPathsPartDto, pathsPart) as Resolved.IO.DxfPathsPartDto;
                 if (part.layer) {
                     layers.add(part.layer);
                 }

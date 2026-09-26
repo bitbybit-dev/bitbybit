@@ -451,4 +451,25 @@ describe("ManifoldCrossSection", () => {
             expect(min[0]).toBeCloseTo(SHIFT - SQUARE_SIZE / 2, 5);
         });
     });
+
+    describe("defaults left to the DTO", () => {
+        it("should build the circle the spelled out DTO builds when the call leaves every default out", () => {
+            // Act
+            const leftOut = manifold.crossSection.shapes.circle({});
+            const spelled = manifold.crossSection.shapes.circle(new Inputs.Manifold.CircleDto());
+
+            // Assert
+            expect(areaOf(leftOut)).toBeCloseTo(areaOf(spelled), 9);
+            expect(boundsOf(leftOut)).toEqual(boundsOf(spelled));
+            expect(manifold.crossSection.evaluate.numVert(new Inputs.Manifold.CrossSectionDto(leftOut))).toBe(32);
+        });
+
+        it("should build the square the spelled out DTO builds when the call hands every default as undefined", () => {
+            // Act
+            const handedUndefined = manifold.crossSection.shapes.square({ center: undefined, size: undefined });
+
+            // Assert
+            expect(boundsOf(handedUndefined)).toEqual([[0, 0], [1, 1]]);
+        });
+    });
 });

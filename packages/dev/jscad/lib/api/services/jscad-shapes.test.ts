@@ -361,4 +361,50 @@ describe("JSCADShapes", () => {
             expect(centres.map((x) => Math.round(x))).toEqual(CENTRES.map((centre) => centre[0]));
         });
     });
+
+    describe("defaults left to the DTO", () => {
+        it("should build a unit cuboid from the sizes the shared parent gives when the call names only the centre", () => {
+            // Act
+            const leftOut = jscad.shapes.cuboid({ center: ORIGIN });
+            const spelled = jscad.shapes.cuboid(new Inputs.JSCAD.CuboidDto(ORIGIN));
+
+            // Assert
+            expect(kernel.measurements.measureVolume(leftOut)).toBeCloseTo(1, 9);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should build a unit cuboid when the call hands the inherited sizes as undefined", () => {
+            // Act
+            const handedUndefined = jscad.shapes.cuboid({ center: undefined, width: undefined, length: undefined, height: undefined });
+
+            // Assert
+            expect(kernel.measurements.measureVolume(handedUndefined)).toBeCloseTo(1, 9);
+        });
+
+        it("should build unit cuboids on every centre when the call names only the centres", () => {
+            // Act
+            const leftOut = jscad.shapes.cuboidsOnCenterPoints({ centers: CENTRES });
+
+            // Assert
+            expect(leftOut.map((cuboid) => kernel.measurements.measureVolume(cuboid))).toEqual([expect.closeTo(1, 9), expect.closeTo(1, 9), expect.closeTo(1, 9)]);
+        });
+
+        it("should build the cylinder the spelled out DTO builds when every default is left out", () => {
+            // Act
+            const leftOut = jscad.shapes.cylinder({});
+            const spelled = jscad.shapes.cylinder(new Inputs.JSCAD.CylidnerDto());
+
+            // Assert
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should build the cylinder the spelled out DTO builds when every default is handed as undefined", () => {
+            // Act
+            const handedUndefined = jscad.shapes.cylinder({ center: undefined, height: undefined, radius: undefined, segments: undefined });
+            const spelled = jscad.shapes.cylinder(new Inputs.JSCAD.CylidnerDto());
+
+            // Assert
+            expect(handedUndefined).toEqual(spelled);
+        });
+    });
 });

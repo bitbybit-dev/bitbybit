@@ -356,8 +356,8 @@ export namespace BabylonScene {
     export type SceneMultiColorRadialGradientDto = WithDefaults<Inputs.BabylonScene.SceneMultiColorRadialGradientDto, "colors" | "stops" | "position" | "shape">;
     export type SceneTwoColorLinearGradientDto = WithDefaults<Inputs.BabylonScene.SceneTwoColorLinearGradientDto, "colorFrom" | "colorTo" | "direction" | "stopFrom" | "stopTo">;
     export type SceneTwoColorRadialGradientDto = WithDefaults<Inputs.BabylonScene.SceneTwoColorRadialGradientDto, "colorFrom" | "colorTo" | "position" | "stopFrom" | "stopTo" | "shape">;
-    export type SkyboxCustomTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxCustomTextureDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight" | "textureSize">;
-    export type SkyboxDto = WithDefaults<Inputs.BabylonScene.SkyboxDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight" | "skybox">;
+    export type SkyboxCustomTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxCustomTextureDto, "textureSize" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
+    export type SkyboxDto = WithDefaults<Inputs.BabylonScene.SkyboxDto, "skybox" | "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
     export type SkyboxFromTextureDto = WithDefaults<Inputs.BabylonScene.SkyboxFromTextureDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
     export type SkyboxSharedDto = WithDefaults<Inputs.BabylonScene.SkyboxSharedDto, "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
     export type UseRightHandedSystemDto = WithDefaults<Inputs.BabylonScene.UseRightHandedSystemDto, "use">;

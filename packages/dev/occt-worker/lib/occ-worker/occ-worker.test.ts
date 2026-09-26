@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
 import { CacheHelper } from "./cache-helper";
@@ -17,8 +18,18 @@ describe("OCCT wire unit tests", () => {
         cacheHelper.cleanAllCache();
     });
 
-    it("should", () => {
-        expect(true).toBe(true);
+    it("should report a property the real registry does not list for the operation, and still build the wire", async () => {
+        // Arrange
+        const reports: InputIssueReport[] = [];
+        setInputIssueSink((report) => reports.push(report));
+
+        // Act
+        const wire = await callAction("shapes.wire.createCircleWire", { radius: 1, radious: 2 });
+
+        // Assert
+        expect(reports).toEqual([{ kernel: "OCCT", path: "shapes.wire.createCircleWire", issue: { property: "radious", code: "unknown-property", message: "is not an input of this operation and is ignored" } }]);
+        expect(wire.type).toBe("occ-shape");
+        setInputIssueSink();
     });
 
     it("should create a wire", async () => {

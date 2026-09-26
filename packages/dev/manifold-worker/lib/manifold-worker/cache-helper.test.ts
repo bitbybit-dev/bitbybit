@@ -767,6 +767,31 @@ describe("CacheHelper unit tests", () => {
             expect(cacheHelper.argCache).toEqual({});
         });
 
+        it.each([0, ""])("should hand back a cached %j on the second call as itself, without running it again", (falsy) => {
+            // Arrange
+            const args = { functionName: "measure.something", inputs: { hash: 7 } };
+            let calls = 0;
+            cacheHelper.cacheOp(args, () => { calls += 1; return falsy; });
+
+            // Act
+            const second = cacheHelper.cacheOp(args, () => { calls += 1; return falsy; });
+
+            // Assert
+            expect(second).toBe(falsy);
+            expect(calls).toBe(1);
+        });
+
+        it("should keep a cached falsy result wrapped, so it cannot be mistaken for a missing entry", () => {
+            // Arrange
+            const args = { functionName: "evaluate.isEmpty", inputs: { hash: 8 } };
+
+            // Act
+            cacheHelper.cacheOp(args, () => 0);
+
+            // Assert
+            expect(cacheHelper.checkCache(cacheHelper.computeHash(args))).toEqual({ value: 0, hash: cacheHelper.computeHash(args) });
+        });
+
         it("should hand back a cached false result on the second call instead of null", () => {
             // Arrange
             const args = { functionName: "evaluate.isEmpty", inputs: { hash: 7 } };

@@ -114,4 +114,26 @@ describe("JSCADExtrusions", () => {
             expect(kernel.measurements.measureVolume(quarter)).toBeLessThan(kernel.measurements.measureVolume(whole));
         });
     });
+
+    describe("extrudeLinear with its defaults left to the DTO", () => {
+        it("should extrude by the default height and twist when the call names only the profile", () => {
+            // Act
+            const leftOut = jscad.extrusions.extrudeLinear({ geometry: square });
+            const spelled = jscad.extrusions.extrudeLinear(new Inputs.JSCAD.ExtrudeLinearDto(square));
+
+            // Assert
+            const [min, max] = kernel.measurements.measureBoundingBox(leftOut);
+            expect(max[2] - min[2]).toBeCloseTo(1, 6);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should extrude by the default height and twist when the call hands them as undefined", () => {
+            // Act
+            const handedUndefined = jscad.extrusions.extrudeLinear({ geometry: square, height: undefined, twistAngle: undefined, twistSteps: undefined });
+            const spelled = jscad.extrusions.extrudeLinear(new Inputs.JSCAD.ExtrudeLinearDto(square));
+
+            // Assert
+            expect(handedUndefined).toEqual(spelled);
+        });
+    });
 });

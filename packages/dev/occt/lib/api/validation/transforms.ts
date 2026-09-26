@@ -9,7 +9,7 @@ import * as Resolved from "../resolved-inputs";
 export const transformRules: readonly DtoRules[] = [
     defineRules<Resolved.OCCT.TransformShapesDto<unknown>>(Inputs.OCCT.TransformShapesDto, [sameLength("translations", "shapes"), sameLength("rotationAxes", "shapes"), sameLength("rotationAngles", "shapes"), sameLength("scaleFactors", "shapes")]),
     defineRules<Resolved.OCCT.RotateShapesDto<unknown>>(Inputs.OCCT.RotateShapesDto, [sameLength("axes", "shapes"), sameLength("angles", "shapes")]),
-    defineRules<Resolved.OCCT.RotateAroundCenterShapesDto<unknown>>(Inputs.OCCT.RotateAroundCenterShapesDto, [sameLength("axes", "shapes"), sameLength("angles", "shapes")]),
+    defineRules<Resolved.OCCT.RotateAroundCenterShapesDto<unknown>>(Inputs.OCCT.RotateAroundCenterShapesDto, [sameLength("axes", "shapes"), sameLength("angles", "shapes"), sameLength("centers", "shapes")]),
     defineRules<Resolved.OCCT.AlignShapesDto<unknown>>(Inputs.OCCT.AlignShapesDto, [sameLength("fromOrigins", "shapes"), sameLength("fromDirections", "shapes"), sameLength("toOrigins", "shapes"), sameLength("toDirections", "shapes")]),
     defineRules<Resolved.OCCT.AlignAndTranslateShapesDto<unknown>>(Inputs.OCCT.AlignAndTranslateShapesDto, [sameLength("centers", "shapes"), sameLength("directions", "shapes")]),
     defineRules<Resolved.OCCT.TranslateShapesDto<unknown>>(Inputs.OCCT.TranslateShapesDto, [sameLength("translations", "shapes")]),

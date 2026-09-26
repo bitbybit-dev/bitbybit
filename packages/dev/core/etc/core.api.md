@@ -1423,7 +1423,7 @@ namespace JSCAD_2 {
     // (undocumented)
     type CuboidCentersDto = WithDefaults<Inputs_2.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
     // (undocumented)
-    type CuboidDto = WithDefaults<Inputs_2.JSCAD.CuboidDto, "width" | "length" | "height" | "center">;
+    type CuboidDto = WithDefaults<Inputs_2.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
     // (undocumented)
     type CuboidSharedDto = WithDefaults<Inputs_2.JSCAD.CuboidSharedDto, "width" | "length" | "height">;
     // (undocumented)
@@ -1433,7 +1433,7 @@ namespace JSCAD_2 {
     // (undocumented)
     type CylidnerCentersEllipticDto = WithDefaults<Inputs_2.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
     // (undocumented)
-    type CylidnerDto = WithDefaults<Inputs_2.JSCAD.CylidnerDto, "height" | "radius" | "segments" | "center">;
+    type CylidnerDto = WithDefaults<Inputs_2.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
     // (undocumented)
     type CylidnerEllipticDto = WithDefaults<Inputs_2.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
     // (undocumented)
@@ -1457,7 +1457,7 @@ namespace JSCAD_2 {
     // (undocumented)
     type EllipsoidCentersDto = WithDefaults<Inputs_2.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
     // (undocumented)
-    type EllipsoidDto = WithDefaults<Inputs_2.JSCAD.EllipsoidDto, "radius" | "segments" | "center">;
+    type EllipsoidDto = WithDefaults<Inputs_2.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
     // (undocumented)
     type EllipsoidSharedDto = WithDefaults<Inputs_2.JSCAD.EllipsoidSharedDto, "radius" | "segments">;
     // (undocumented)
@@ -1477,7 +1477,7 @@ namespace JSCAD_2 {
     // (undocumented)
     type GeodesicSphereCentersDto = WithDefaults<Inputs_2.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
     // (undocumented)
-    type GeodesicSphereDto = WithDefaults<Inputs_2.JSCAD.GeodesicSphereDto, "radius" | "frequency" | "center">;
+    type GeodesicSphereDto = WithDefaults<Inputs_2.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
     // (undocumented)
     type GeodesicSphereSharedDto = WithDefaults<Inputs_2.JSCAD.GeodesicSphereSharedDto, "radius" | "frequency">;
     // (undocumented)
@@ -1513,13 +1513,13 @@ namespace JSCAD_2 {
     // (undocumented)
     type RoundedCuboidCentersDto = WithDefaults<Inputs_2.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
     // (undocumented)
-    type RoundedCuboidDto = WithDefaults<Inputs_2.JSCAD.RoundedCuboidDto, "roundRadius" | "width" | "length" | "height" | "segments" | "center">;
+    type RoundedCuboidDto = WithDefaults<Inputs_2.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
     // (undocumented)
     type RoundedCuboidSharedDto = WithDefaults<Inputs_2.JSCAD.RoundedCuboidSharedDto, "roundRadius" | "width" | "length" | "height" | "segments">;
     // (undocumented)
     type RoundedCylidnerCentersDto = WithDefaults<Inputs_2.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
-    type RoundedCylidnerDto = WithDefaults<Inputs_2.JSCAD.RoundedCylidnerDto, "roundRadius" | "height" | "radius" | "segments" | "center">;
+    type RoundedCylidnerDto = WithDefaults<Inputs_2.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
     type RoundedCylinderSharedDto = WithDefaults<Inputs_2.JSCAD.RoundedCylinderSharedDto, "roundRadius" | "height" | "radius" | "segments">;
     // (undocumented)
@@ -1529,7 +1529,7 @@ namespace JSCAD_2 {
     // (undocumented)
     type SphereCentersDto = WithDefaults<Inputs_2.JSCAD.SphereCentersDto, "radius" | "segments">;
     // (undocumented)
-    type SphereDto = WithDefaults<Inputs_2.JSCAD.SphereDto, "radius" | "segments" | "center">;
+    type SphereDto = WithDefaults<Inputs_2.JSCAD.SphereDto, "center" | "radius" | "segments">;
     // (undocumented)
     type SphereSharedDto = WithDefaults<Inputs_2.JSCAD.SphereSharedDto, "radius" | "segments">;
     // (undocumented)

@@ -12,6 +12,7 @@ class Solid {
 const kernel = {
     shapes: { solid: new Solid() },
     identity: (inputs: unknown): unknown => inputs,
+    nothing: null,
     count: 3,
 };
 
@@ -36,20 +37,33 @@ describe("callByPath", () => {
     });
 
     it("should refuse a path through a member that is not an object", () => {
-        expect(() => callByPath(kernel, "count.anything.createBox", {})).toThrow("\"count\" is not an object");
+        expect(() => callByPath(kernel, "count.anything.createBox", {})).toThrow(new Error("Cannot resolve \"count.anything.createBox\": \"count\" is not an object"));
     });
 
     it("should refuse a path whose parent is missing, naming the path walked", () => {
-        expect(() => callByPath(kernel, "shapes.missing.createBox", {})).toThrow("\"shapes.missing\" is not an object");
+        expect(() => callByPath(kernel, "shapes.missing.createBox", {})).toThrow(new Error("Cannot resolve \"shapes.missing.createBox\": \"shapes.missing\" is not an object"));
+    });
+
+    it("should refuse a path through a member that is null, on the way and as the owner", () => {
+        expect(() => callByPath(kernel, "nothing.deeper.createBox", {})).toThrow(new Error("Cannot resolve \"nothing.deeper.createBox\": \"nothing\" is not an object"));
+        expect(() => callByPath(kernel, "nothing.createBox", {})).toThrow(new Error("Cannot resolve \"nothing.createBox\": \"nothing\" is not an object"));
+    });
+
+    it("should refuse a path into the members of a function, on the way and as the owner", () => {
+        expect(() => callByPath(kernel, "identity.bind.call", {})).toThrow(new Error("Cannot resolve \"identity.bind.call\": \"identity\" is not an object"));
+        expect(() => callByPath(kernel, "identity.call", {})).toThrow(new Error("Cannot resolve \"identity.call\": \"identity\" is not an object"));
     });
 
     it("should refuse a path whose last segment is not a method", () => {
-        expect(() => callByPath(kernel, "count", {})).toThrow("\"count\" is not a function");
+        expect(() => callByPath(kernel, "count", {})).toThrow(new Error("\"count\" is not a function"));
     });
 
-    it.each(["constructor", "shapes.__proto__.createBox", "shapes..createBox", "shapes.solid.prototype"])(
-        "should refuse %s, which reaches past the operations",
-        (path) => {
-            expect(() => callByPath(kernel, path, {})).toThrow("is not a segment an operation path may contain");
-        });
+    it.each([
+        ["constructor", "constructor"],
+        ["shapes.__proto__.createBox", "__proto__"],
+        ["shapes..createBox", ""],
+        ["shapes.solid.prototype", "prototype"],
+    ])("should refuse %s, which reaches past the operations, naming the segment", (path, segment) => {
+        expect(() => callByPath(kernel, path, {})).toThrow(new Error(`Cannot resolve "${path}": "${segment}" is not a segment an operation path may contain`));
+    });
 });

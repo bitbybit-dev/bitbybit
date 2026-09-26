@@ -227,6 +227,70 @@ describe("OCCTWorkerManager unit tests", () => {
             vi.restoreAllMocks();
         });
 
+        it("should reject with exactly the message the worker reported, and no stack when it sent none", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "radius must be positive", functionName: "shapes.solid.createSphere", kind: "kernel", workerStack: undefined });
+        });
+
+        it("should reject a call whose worker reported an empty message", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "", functionName: "shapes.solid.createSphere" });
+        });
+
+        it.each([0, "", null, false])("should resolve a call the worker answered with %j as that value", async (falsy) => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), result: falsy });
+
+            // Assert
+            await expect(pending).resolves.toBe(falsy);
+        });
+
+        it("should settle each call by its own uid when two are outstanding", async () => {
+            // Arrange
+            const first = manager.genericCallToWorkerPromise("shapes.solid.createSphere", { radius: 1 });
+            const second = manager.genericCallToWorkerPromise("shapes.solid.createSphere", { radius: 2 });
+
+            // Act
+            answer({ uid: uidOf(1), result: "the second" });
+            answer({ uid: uidOf(0), error: "the first failed" });
+
+            // Assert
+            await expect(second).resolves.toBe("the second");
+            await expect(first).rejects.toMatchObject({ message: "the first failed" });
+        });
+
+        it("should log what an error callback threw and still reject with the worker's message", async () => {
+            // Arrange
+            const logged: unknown[][] = [];
+            vi.spyOn(console, "error").mockImplementation((...args: unknown[]) => { logged.push(args); });
+            const broke = new Error("the handler broke");
+            manager.errorCallback = () => { throw broke; };
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "radius must be positive" });
+            expect(logged).toEqual([["OCCT errorCallback threw:", broke]]);
+            vi.restoreAllMocks();
+        });
+
         it("should report an error carrying no known uid without throwing", () => {
             // Arrange
             const errorCallback = vi.fn();
@@ -264,6 +328,18 @@ describe("OCCTWorkerManager unit tests", () => {
             // Act
             answer({ uid: uidOf(0), result: "a-sphere" });
             await pending;
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
+        });
+
+        it("should report loaded once the last outstanding call has been refused", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+            await expect(pending).rejects.toThrow("radius must be positive");
 
             // Assert
             expect(states).toEqual([{ state: OccStateEnum.loaded }]);

@@ -48,9 +48,9 @@ npm run lint
   (`defaulted-spelling`) asks the `?` of a class some method takes. A singular/plural pair shares its
   common properties through an `abstract` `<Singular>SharedDto` (API_DOCS_GUIDE.md). Only `new Dto()`
   runs an initializer, so a public method whose DTO has defaults starts with
-  `const resolved = resolveDto(Inputs.X.Dto, inputs) as Resolved.X.Dto;` and reads `resolved`; an
-  internal method takes `Resolved.X.Dto`, so its callers hand it a complete object (the generated
-  `Resolved` mirror types a DTO with every default present). Index reads inside a bounds-checked
+  `const resolved = resolveDto(Inputs.X.Dto, inputs) as Resolved.X.Dto;` and reads only `resolved`
+  (`check:resolved-entry` holds it); an internal method takes `Resolved.X.Dto`, so its callers hand
+  it a complete object (the `Resolved` mirror has every default present). Index reads inside a bounds-checked
   loop, after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
 - **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** Every public operation,
   its DTO and what each property accepts; run `npm run gen:dto-meta` after changing a kernel method

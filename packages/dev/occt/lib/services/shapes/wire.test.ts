@@ -3199,4 +3199,84 @@ describe("OCCT wire unit tests", () => {
             expect(act).toThrow(/when bezier is periodic/);
         });
     });
+
+    describe("defaults left to the DTO", () => {
+        it("should draw each line of a list from the default ends it leaves out", () => {
+            // Act
+            const lines = wire.createLines({ lines: [{}, { end: [0, 0, 5] }] }) as TopoDS_Wire[];
+
+            // Assert
+            expect(lines.map((w) => wire.getWireLength({ shape: w }))).toEqual([1, 5]);
+            lines.forEach((w) => w.delete());
+        });
+
+        it("should draw each line of a list from the default ends it hands as undefined", () => {
+            // Act
+            const lines = wire.createLines({ lines: [{ start: undefined, end: undefined }, { start: undefined, end: [0, 0, 5] }], returnCompound: undefined }) as TopoDS_Wire[];
+
+            // Assert
+            expect(lines.map((w) => wire.getWireLength({ shape: w }))).toEqual([1, 5]);
+            lines.forEach((w) => w.delete());
+        });
+
+        it("should draw the circle the spelled out DTO draws when every default is left out", () => {
+            // Act
+            const leftOut = wire.createCircleWire({});
+            const spelled = wire.createCircleWire(new Inputs.OCCT.CircleDto());
+
+            // Assert
+            expect(wire.getWireLength({ shape: leftOut })).toBeCloseTo(2 * Math.PI, 9);
+            expect(wire.getWireLength({ shape: leftOut })).toBe(wire.getWireLength({ shape: spelled }));
+            leftOut.delete();
+            spelled.delete();
+        });
+
+        it("should draw the circle the spelled out DTO draws when every default is handed as undefined", () => {
+            // Act
+            const handedUndefined = wire.createCircleWire({ radius: undefined, center: undefined, direction: undefined });
+
+            // Assert
+            expect(wire.getWireLength({ shape: handedUndefined })).toBeCloseTo(2 * Math.PI, 9);
+            handedUndefined.delete();
+        });
+    });
+
+    describe("internal builders handed partial objects", () => {
+        const zigzag: Inputs.Base.Point3[] = [[0, 0, 0], [1, 1, 0], [2, 0, 0], [3, 1, 0]];
+
+        it("should make a line wire from the default ends a partial object leaves out", () => {
+            // Act
+            const leftOut = occHelper.wiresService.createLineWire({});
+            const oneEndGiven = occHelper.wiresService.createLineWire({ start: undefined, end: [0, 0, 2] });
+
+            // Assert
+            expect(wire.getWireLength({ shape: leftOut })).toBe(1);
+            expect(wire.getWireLength({ shape: oneEndGiven })).toBe(2);
+            leftOut.delete();
+            oneEndGiven.delete();
+        });
+
+        it("should interpolate points with the default periodicity, tolerance and parametrization a partial object leaves out", () => {
+            // Act
+            const leftOut = occHelper.wiresService.interpolatePoints({ points: zigzag });
+            const spelled = occHelper.wiresService.interpolatePoints(Object.assign(new Inputs.OCCT.InterpolationDto(), { points: zigzag }));
+
+            // Assert
+            expect(wire.isWireClosed({ shape: leftOut })).toBe(false);
+            expect(wire.getWireLength({ shape: leftOut })).toBe(wire.getWireLength({ shape: spelled }));
+            leftOut.delete();
+            spelled.delete();
+        });
+
+        it("should lay text out with the text DTO's own line spacing when a partial object leaves it out", () => {
+            // Act
+            const leftOut = occHelper.wiresService.textWiresWithData({ text: "A\nB" });
+            const spelled = occHelper.wiresService.textWiresWithData(Object.assign(new Inputs.OCCT.TextWiresDto(), { text: "A\nB" }));
+
+            // Assert
+            expect(leftOut.data).toEqual(spelled.data);
+            leftOut.compound?.delete();
+            spelled.compound?.delete();
+        });
+    });
 });

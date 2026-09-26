@@ -2209,6 +2209,37 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("what the draw layer leaves to the helpers' own defaults", () => {
+        it("should draw the OCCT shape it is given even when the options it is redrawn with name another", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = callWorker;
+            const previous: Inputs.OCCT.TopoDSShapePointer = { hash: 1, type: "occ-shape" };
+            const current: Inputs.OCCT.TopoDSShapePointer = { hash: 2, type: "occ-shape" };
+            const group = Object.assign(new pc.Entity(), { bitbybitMeta: { type: Inputs.Draw.drawingTypes.occt, options: { shape: previous, faceColour: "#00ff00" } } });
+
+            // Act
+            await draw.drawAnyAsync({ entity: current, group });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+        });
+
+        it("should leave a polyline's width to the line DTO rather than the point diameter when its options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+
+            // Act
+            await draw.drawAnyAsync({ entity: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] }, options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+    });
+
 });
 
 

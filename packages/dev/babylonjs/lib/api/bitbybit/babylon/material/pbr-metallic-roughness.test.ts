@@ -89,6 +89,21 @@ describe("BabylonMaterialPbrMetallicRoughness", () => {
             expect(service.getAlpha(propsOf(material))).toBe(1);
             expect(service.getBackFaceCulling(propsOf(material))).toBe(false);
         });
+
+        it("should build the material the spelled out DTO builds when a script leaves every default out", () => {
+            // Act
+            const leftOut = service.create({});
+            const spelled = service.create(new Inputs.BabylonMaterial.PBRMetallicRoughnessDto());
+
+            // Assert
+            expect(leftOut.name).toBe("Custom Material");
+            expect(service.getBaseColor(propsOf(leftOut))).toBe(service.getBaseColor(propsOf(spelled)));
+            expect(service.getMetallic(propsOf(leftOut))).toBe(0.6);
+            expect(service.getRoughness(propsOf(leftOut))).toBe(0.5);
+            expect(service.getAlpha(propsOf(leftOut))).toBe(1);
+            expect(service.getBackFaceCulling(propsOf(leftOut))).toBe(false);
+            expect(leftOut.zOffset).toBe(spelled.zOffset);
+        });
     });
 
     describe("the writers and the readers", () => {

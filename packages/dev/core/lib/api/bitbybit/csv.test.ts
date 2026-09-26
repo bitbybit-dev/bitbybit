@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { CSVBitByBit } from "./csv";
+import * as Inputs from "../inputs";
 
 describe("CSV unit tests", () => {
     let csv: CSVBitByBit;
@@ -866,4 +867,51 @@ describe("CSV unit tests", () => {
         });
     });
 
+    describe("defaults left to the DTO", () => {
+        const people = "name,age\nJohn,30\nJane,25";
+
+        it("should read the headers from the default first row when the call leaves the row out", () => {
+            // Act
+            const leftOut = csv.getHeaders({ csv: people });
+            const spelled = csv.getHeaders(Object.assign(new Inputs.CSV.GetHeadersDto(), { csv: people }));
+
+            // Assert
+            expect(leftOut).toEqual(["name", "age"]);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should read the headers from the default first row when the call hands the row as undefined", () => {
+            // Act
+            const handedUndefined = csv.getHeaders({ csv: people, headerRow: undefined, rowSeparator: undefined, columnSeparator: undefined });
+
+            // Assert
+            expect(handedUndefined).toEqual(["name", "age"]);
+        });
+
+        it("should write the header row by default when the call leaves includeHeaders out", () => {
+            // Act
+            const leftOut = csv.jsonToCsv({ json: [{ name: "John", age: "30" }], headers: ["name", "age"] });
+            const spelled = csv.jsonToCsv(Object.assign(new Inputs.CSV.JsonToCsvDto(), { json: [{ name: "John", age: "30" }], headers: ["name", "age"] }));
+
+            // Assert
+            expect(leftOut).toBe("name,age\nJohn,30");
+            expect(leftOut).toBe(spelled);
+        });
+
+        it("should write the header row by default when the call hands includeHeaders as undefined", () => {
+            // Act
+            const handedUndefined = csv.jsonToCsv({ json: [{ name: "John", age: "30" }], headers: ["name", "age"], includeHeaders: undefined, rowSeparator: undefined, columnSeparator: undefined });
+
+            // Assert
+            expect(handedUndefined).toBe("name,age\nJohn,30");
+        });
+
+        it("should query a column by the default header row, data row and separators when the call leaves them out", () => {
+            // Act
+            const leftOut = csv.queryColumn({ csv: people, column: "age" });
+
+            // Assert
+            expect(leftOut).toEqual(["30", "25"]);
+        });
+    });
 });

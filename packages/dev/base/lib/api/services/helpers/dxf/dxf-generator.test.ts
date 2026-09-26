@@ -970,4 +970,61 @@ describe("DxfGenerator unit tests", () => {
             expect(result).not.toContain("8\nUnknown");
         });
     });
+
+    describe("a model whose parts and segments leave their defaults out", () => {
+        const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
+        const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 0], [15, 5]];
+        const spelledModel = (): Inputs.IO.DxfModelDto => new Inputs.IO.DxfModelDto([
+            new Inputs.IO.DxfPathsPartDto("Default", "#000000", [
+                new Inputs.IO.DxfPathDto([
+                    new Inputs.IO.DxfPolylineSegmentDto(points, false),
+                    new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false),
+                ]),
+            ]),
+        ], "aci", "AC1009");
+        const entitiesOf = (dxf: string): string => dxf.slice(dxf.indexOf("ENTITIES"));
+
+        it("should write the entities the spelled out model writes when every default is left out", () => {
+            // Act
+            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }, { controlPoints }] }] }] });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(entitiesOf(leftOut)).toBe(entitiesOf(spelled));
+        });
+
+        it("should write the entities the spelled out model writes when every default is handed as undefined", () => {
+            // Act
+            const handedUndefined = new DxfGenerator().generateDxf({
+                dxfPathsParts: [{
+                    layer: undefined,
+                    color: undefined,
+                    paths: [{ segments: [{ points, closed: undefined }, { controlPoints, degree: undefined, closed: undefined }] }],
+                }],
+                colorFormat: undefined,
+                acadVersion: undefined,
+            });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(entitiesOf(handedUndefined)).toBe(entitiesOf(spelled));
+        });
+
+        it("should draw a part that names no layer on the default layer", () => {
+            // Act
+            const result = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
+
+            // Assert
+            expect(result).toContain("0\nLWPOLYLINE\n8\nDefault");
+        });
+
+        it("should declare in the layer table the default layer a part that names no layer is drawn on", () => {
+            // Act
+            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(leftOut.slice(0, leftOut.indexOf("ENTITIES"))).toBe(spelled.slice(0, spelled.indexOf("ENTITIES")));
+        });
+    });
 });

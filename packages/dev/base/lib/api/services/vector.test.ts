@@ -427,4 +427,24 @@ describe("Vector unit tests", () => {
             expect(vector.normalized({ vector: [0, 0, 0] })).toBeUndefined();
         });
     });
+
+    describe("span with its defaults left to the DTO", () => {
+        it("should span the default range at the default step when the call leaves all of it out", () => {
+            // Act
+            const leftOut = vector.span({});
+            const spelled = vector.span(new Inputs.Vector.SpanDto());
+
+            // Assert
+            expect(leftOut).toHaveLength(11);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should span the default range when the call hands its ends as undefined", () => {
+            // Act
+            const handedUndefined = vector.span({ step: 0.5, min: undefined, max: undefined });
+
+            // Assert
+            expect(handedUndefined).toEqual([0, 0.5, 1]);
+        });
+    });
 });

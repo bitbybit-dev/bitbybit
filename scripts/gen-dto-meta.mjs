@@ -24,8 +24,9 @@
  *   node scripts/gen-dto-meta.mjs --check   write nothing; fail if any of them would change
  */
 import ts from "typescript";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ROOT, sourceFiles, parse, classesUnder } from "./lib/surface.mjs";
 import { kernelSurface } from "./lib/kernel-surface.mjs";
 
@@ -43,7 +44,7 @@ const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
  * The finite range a number property's JSDoc gives it: `@minimum` and `@maximum`, each made
  * exclusive by `@exclusiveMinimum true` or `@exclusiveMaximum true`. An infinite bound is no bound.
  */
-function boundsOf(member) {
+export function boundsOf(member) {
     const docs = ts.getJSDocCommentsAndTags(member).filter(ts.isJSDoc);
     const tags = new Map((docs[docs.length - 1]?.tags ?? []).map((t) => [t.tagName.text, (ts.getTextOfJSDocComment(t.comment) ?? "").trim()]));
     const finite = (name) => (tags.has(name) && Number.isFinite(Number(tags.get(name))) ? Number(tags.get(name)) : undefined);
@@ -57,12 +58,12 @@ function boundsOf(member) {
 /**
  * `Namespace.Class` -> { props: [{ name, type }], extends } for every class inside an exported namespace
  * of the files, and on the side every name each namespace declares, for qualifying a type parameter's
- * constraint outside the namespace.
+ * constraint outside the namespace. A file is a path, or a source file already parsed.
  */
-function dtoClasses(files, declared = new Map(), enums = new Map()) {
+export function dtoClasses(files, declared = new Map(), enums = new Map()) {
     const classes = new Map();
     for (const file of files) {
-        const sf = parse(file);
+        const sf = typeof file === "string" ? parse(file) : file;
         const visit = (node, namespace) => {
             if (ts.isModuleDeclaration(node) && node.body && ts.isModuleBlock(node.body)) {
                 for (const statement of node.body.statements) visit(statement, node.name.text);
@@ -83,7 +84,8 @@ function dtoClasses(files, declared = new Map(), enums = new Map()) {
                     .filter((m) => ts.isPropertyDeclaration(m) && m.name && ts.isIdentifier(m.name))
                     .map((m) => ({ name: m.name.text, type: m.type ? m.type.getText(sf) : "", defaulted: !!m.initializer, required: !!m.exclamationToken, bounds: boundsOf(m) }));
                 const typeParams = (node.typeParameters || []).map((tp) => ({ name: tp.name.text, text: tp.getText(sf) }));
-                classes.set(`${namespace}.${node.name.text}`, { namespace, name: node.name.text, props, parent, typeParams });
+                const abstract = (node.modifiers || []).some((m) => m.kind === ts.SyntaxKind.AbstractKeyword);
+                classes.set(`${namespace}.${node.name.text}`, { namespace, name: node.name.text, props, parent, typeParams, abstract });
             }
             if (ts.isSourceFile(node)) node.statements.forEach((s) => visit(s, namespace));
         };
@@ -92,19 +94,27 @@ function dtoClasses(files, declared = new Map(), enums = new Map()) {
     return classes;
 }
 
-const bare = (type) => type.replace(/\s+/g, "").split("|").filter((t) => t !== "undefined").join("|").replace(/<.*>$/, "");
+export const bare = (type) => type.replace(/\s+/g, "").split("|").filter((t) => t !== "undefined").join("|").replace(/<.*>$/, "");
 
-/** Every property of a DTO class, its ancestors' first. */
-function allProps(classes, key, seen = new Set()) {
+/**
+ * Every property of a DTO class, each once, in the order the API index lists them: a concrete
+ * parent's first, an abstract parent's after the class's own. A property the class redeclares is
+ * the class's declaration, in the place its parent gives it.
+ */
+export function allProps(classes, key, seen = new Set()) {
     const entry = classes.get(key);
     if (!entry || seen.has(key)) return [];
     seen.add(key);
     const parentKey = entry.parent ? (entry.parent.includes(".") ? entry.parent : `${entry.namespace}.${entry.parent}`) : undefined;
-    return [...(parentKey ? allProps(classes, parentKey, seen) : []), ...entry.props];
+    const inherited = parentKey ? allProps(classes, parentKey, seen) : [];
+    const own = new Map(entry.props.map((p) => [p.name, p]));
+    if (classes.get(parentKey)?.abstract) return [...entry.props, ...inherited.filter((p) => !own.has(p.name))];
+    const inheritedNames = new Set(inherited.map((p) => p.name));
+    return [...inherited.map((p) => own.get(p.name) ?? p), ...entry.props.filter((p) => !inheritedNames.has(p.name))];
 }
 
 /** The properties of a DTO that hold a single DTO of their own, by the class they hold. */
-function nestedOf(classes, key) {
+export function nestedOf(classes, key) {
     const { namespace } = classes.get(key);
     const nested = [];
     for (const prop of allProps(classes, key)) {
@@ -120,7 +130,7 @@ function nestedOf(classes, key) {
  * a flag, text, a hex color, a point or vector of two or three numbers, a list of any of them, a
  * value of a string enum - and `opaque` for everything else, which is checked only for presence.
  */
-function constraintOf(type, namespace, enums) {
+export function constraintOf(type, namespace, enums) {
     const t = type.replace(/\s+/g, " ").trim().replace(/ \| undefined$/, "");
     if (t === "number" || t === "boolean" || t === "string") return `k.${t}`;
     if (/^(Base\.)?Color$/.test(t)) return "k.color";
@@ -137,7 +147,7 @@ function constraintOf(type, namespace, enums) {
 }
 
 /** The constraint table of one DTO, as the source of a `DtoConstraints` object. */
-function constraintsOf(classes, key, enums) {
+export function constraintsOf(classes, key, enums) {
     const { namespace } = classes.get(key);
     const seen = new Set();
     const entries = [];
@@ -156,8 +166,12 @@ function generate(kernel) {
     const kernelFiles = sourceFiles(path.join(ROOT, kernel.kernelDir, "api/inputs"));
     const enums = new Map();
     const classes = dtoClasses([...kernelFiles, ...sourceFiles(path.join(ROOT, BASE_INPUTS))], new Map(), enums);
+    return registryText(kernel, classes, enums, kernelSurface(classesUnder(path.join(ROOT, kernel.kernelDir)), kernel.kernelRoot));
+}
+
+/** The registry source of one kernel, from its DTO classes, its string enums and its surface. */
+export function registryText(kernel, classes, enums, surface) {
     const constraintNames = new Map();
-    const surface = kernelSurface(classesUnder(path.join(ROOT, kernel.kernelDir)), kernel.kernelRoot);
     const rows = [];
     for (const cls of surface.values()) {
         for (const method of cls.methods) {
@@ -219,16 +233,18 @@ const RESOLVED = [
 /** The namespaces each package's mirror exports, filled in as the mirrors are generated in order. */
 const mirrorNamespaces = new Map();
 
-/** What a package's inputs index re-exports from other packages, as lines of its mirror. */
-function mirrorReexports(target) {
-    const sf = parse(path.join(ROOT, target.inputsDir, "index.ts"));
+/**
+ * What a package's inputs index re-exports from other packages, as lines of its mirror, given the
+ * namespaces the mirrors generated before it export.
+ */
+export function mirrorReexports(target, sf = parse(path.join(ROOT, target.inputsDir, "index.ts")), namespaces = mirrorNamespaces) {
     const lines = [];
     for (const statement of sf.statements) {
         if (!ts.isExportDeclaration(statement) || !statement.moduleSpecifier) continue;
         const specifier = statement.moduleSpecifier.text;
         const match = /^(@bitbybit-dev\/[\w-]+)\/lib\/api\/inputs$/.exec(specifier);
         if (!match) continue;
-        const available = mirrorNamespaces.get(match[1]);
+        const available = namespaces.get(match[1]);
         if (!available) throw new Error(`${target.name}: its inputs re-export ${specifier}, which has no mirror generated before it`);
         const from = `${match[1]}/lib/api/resolved-inputs`;
         if (!statement.exportClause) {
@@ -245,9 +261,13 @@ function mirrorReexports(target) {
     return lines;
 }
 
-function generateResolved(target) {
+/**
+ * The `Resolved` mirror of one package's inputs. The inputs files, the parsed inputs index and the
+ * namespaces of the mirrors before it default to the package's own and to this run's.
+ */
+export function generateResolved(target, { files = sourceFiles(path.join(ROOT, target.inputsDir)), index, namespaces = mirrorNamespaces } = {}) {
     const declared = new Map();
-    const classes = dtoClasses(sourceFiles(path.join(ROOT, target.inputsDir)), declared);
+    const classes = dtoClasses(files, declared);
     const qualify = (text, namespace) => text.replace(/(^|[^.\w])([A-Za-z_]\w*)\b/g, (whole, lead, name) => (declared.get(namespace)?.has(name) ? `${lead}Inputs.${namespace}.${name}` : whole));
     const byNamespace = new Map();
     for (const [key, entry] of classes) {
@@ -266,7 +286,7 @@ function generateResolved(target) {
         "/* eslint-disable @typescript-eslint/no-namespace */",
         `import { WithDefaults } from "${target.withDefaults}";`,
         "import * as Inputs from \"../inputs\";",
-        ...mirrorReexports(target),
+        ...mirrorReexports(target, index, namespaces),
     ];
     for (const namespace of [...byNamespace.keys()].sort()) {
         lines.push(
@@ -280,33 +300,35 @@ function generateResolved(target) {
             "}",
         );
     }
-    mirrorNamespaces.set(`@bitbybit-dev/${target.name}`, target.namespaces);
+    namespaces.set(`@bitbybit-dev/${target.name}`, target.namespaces);
     return lines.join("\n") + "\n";
 }
 
-const outputs = [
-    ...KERNELS.map((kernel) => ({ out: kernel.out, text: generate(kernel), what: `the ${kernel.kernelRoot} surface`, count: (t) => `${t.split("\n").filter((l) => /^ {4}"/.test(l)).length} operations` })),
-    ...RESOLVED.map((target) => ({ out: target.out, text: generateResolved(target), what: `the ${target.name} inputs`, count: (t) => `${t.split("\n").filter((l) => /^ {4}export type /.test(l)).length} DTOs` })),
-];
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) {
+    const outputs = [
+        ...KERNELS.map((kernel) => ({ out: kernel.out, text: generate(kernel), what: `the ${kernel.kernelRoot} surface`, count: (t) => `${t.split("\n").filter((l) => /^ {4}"/.test(l)).length} operations` })),
+        ...RESOLVED.map((target) => ({ out: target.out, text: generateResolved(target), what: `the ${target.name} inputs`, count: (t) => `${t.split("\n").filter((l) => /^ {4}export type /.test(l)).length} DTOs` })),
+    ];
 
-let changed = 0;
-for (const { out, text, what, count } of outputs) {
-    const kernel = { out, kernelRoot: what };
-    const abs = path.join(ROOT, kernel.out);
-    const current = existsSync(abs) ? readFileSync(abs, "utf8") : null;
-    if (current === text) {
-        console.log(`${kernel.out} is what ${kernel.kernelRoot} generate (${count(text)})`);
-        continue;
+    let changed = 0;
+    for (const { out, text, what, count } of outputs) {
+        const kernel = { out, kernelRoot: what };
+        const abs = path.join(ROOT, kernel.out);
+        const current = existsSync(abs) ? readFileSync(abs, "utf8") : null;
+        if (current === text) {
+            console.log(`${kernel.out} is what ${kernel.kernelRoot} generate (${count(text)})`);
+            continue;
+        }
+        changed++;
+        if (check) console.log(`  would change: ${kernel.out}${current === null ? " (new)" : ""}`);
+        else {
+            mkdirSync(path.dirname(abs), { recursive: true });
+            writeFileSync(abs, text);
+            console.log(`${kernel.out} written (${count(text)})`);
+        }
     }
-    changed++;
-    if (check) console.log(`  would change: ${kernel.out}${current === null ? " (new)" : ""}`);
-    else {
-        mkdirSync(path.dirname(abs), { recursive: true });
-        writeFileSync(abs, text);
-        console.log(`${kernel.out} written (${count(text)})`);
+    if (check && changed) {
+        console.error(`\nDTO meta check FAILED - ${changed} generated file(s) differ from what the kernel surfaces and inputs generate; run \`npm run gen:dto-meta\` and commit the result`);
+        process.exit(1);
     }
-}
-if (check && changed) {
-    console.error(`\nDTO meta check FAILED - ${changed} generated file(s) differ from what the kernel surfaces and inputs generate; run \`npm run gen:dto-meta\` and commit the result`);
-    process.exit(1);
 }

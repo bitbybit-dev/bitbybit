@@ -108,6 +108,69 @@ describe("resolveDto", () => {
         // Assert
         expect(resolved).toEqual({ width: 1, center: [0, 0, 0] });
     });
+
+    it("should give the defaults alone to a caller that passed null", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, null);
+
+        // Assert
+        expect(resolved).toEqual({ width: 1, center: [0, 0, 0] });
+    });
+
+    it("should carry an explicit null over the default, since only undefined asks for the default", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { width: null });
+
+        // Assert
+        expect(resolved.width).toBeNull();
+    });
+
+    it("should carry over a property the DTO does not declare", () => {
+        // Act
+        const resolved = resolveDto(BoxDto, { widht: 5 });
+
+        // Assert
+        expect(resolved).toEqual({ width: 1, center: [0, 0, 0], widht: 5 });
+    });
+
+    it("should return a plain copy when the caller passes an instance of the DTO", () => {
+        // Arrange
+        const instance = new BoxDto();
+        instance.width = 3;
+
+        // Act
+        const resolved = resolveDto(BoxDto, instance);
+
+        // Assert
+        expect(resolved).not.toBe(instance);
+        expect(Object.getPrototypeOf(resolved)).toBe(Object.prototype);
+        expect(resolved.width).toBe(3);
+    });
+
+    it.each([
+        ["text", "top"],
+        ["null", null],
+        ["a list", ["top"]],
+    ])("should keep a nested property holding %s as the caller gave it", (_what, label) => {
+        // Act
+        const resolved = resolveDto(BoxDto, { label }, { label: LabelDto });
+
+        // Assert
+        expect(resolved.label).toBe(label);
+    });
+
+    it("should resolve a nested DTO into a new object and leave the caller's nested object untouched", () => {
+        // Arrange
+        const label = { text: "top" };
+
+        // Act
+        const resolved = resolveDto(BoxDto, { label }, { label: LabelDto });
+
+        // Assert
+        expect(resolved.label).not.toBe(label);
+        expect(Object.getPrototypeOf(resolved.label)).toBe(Object.prototype);
+        expect(label).toStrictEqual({ text: "top" });
+    });
 });
 
 describe("resolveInputs", () => {
@@ -117,6 +180,19 @@ describe("resolveInputs", () => {
 
         // Assert
         expect(resolved).toEqual({ width: 1, center: [0, 0, 0], label: { text: "label", size: 12 } });
+    });
+
+    it("should hand a listed operation a new object and leave the caller's inputs untouched", () => {
+        // Arrange
+        const inputs = { width: 5 };
+
+        // Act
+        const resolved = resolveInputs(registry, "shapes.solid.createBox", inputs);
+
+        // Assert
+        expect(resolved).not.toBe(inputs);
+        expect(resolved).toEqual({ width: 5, center: [0, 0, 0] });
+        expect(inputs).toStrictEqual({ width: 5 });
     });
 
     it("should pass the inputs of an operation that takes no DTO through as they are", () => {

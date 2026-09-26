@@ -1,6 +1,6 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-09-14",
+    "measured": "2026-09-26",
     "history": [
         {
             "measured": "2026-09-07",
@@ -81,39 +81,47 @@
             "branches": 90.18,
             "functions": 98.83,
             "statements": 97.55
+        },
+        {
+            "measured": "2026-09-26",
+            "tests": 8822,
+            "lines": 97.74,
+            "branches": 92.6,
+            "functions": 98.9,
+            "statements": 97.66
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 1950,
+            "tests": 1985,
             "suites": 55,
-            "lines": 98.52,
-            "branches": 93.77,
+            "lines": 98.57,
+            "branches": 95.98,
             "functions": 98.57,
-            "statements": 98.71
+            "statements": 98.75
         },
         "base": {
             "runner": "vitest",
-            "tests": 1172,
-            "suites": 16,
-            "lines": 99.4,
-            "branches": 94.58,
+            "tests": 1441,
+            "suites": 26,
+            "lines": 99.5,
+            "branches": 95.65,
             "functions": 100,
-            "statements": 99.4
+            "statements": 99.5
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
-            "tests": 105,
+            "tests": 107,
             "suites": 11,
             "lines": 100,
-            "branches": 98.7,
+            "branches": 98.73,
             "functions": 100,
             "statements": 100
         },
         "core": {
             "runner": "vitest",
-            "tests": 297,
+            "tests": 307,
             "suites": 13,
             "lines": 100,
             "branches": 100,
@@ -122,21 +130,21 @@
         },
         "create-app": {
             "runner": "vitest",
-            "tests": 25,
-            "suites": 1
+            "tests": 65,
+            "suites": 2
         },
         "jscad": {
             "runner": "vitest",
-            "tests": 304,
-            "suites": 13,
-            "lines": 99.84,
-            "branches": 99.59,
+            "tests": 361,
+            "suites": 15,
+            "lines": 100,
+            "branches": 99.79,
             "functions": 100,
-            "statements": 99.88
+            "statements": 100
         },
         "jscad-worker": {
             "runner": "vitest",
-            "tests": 268,
+            "tests": 326,
             "suites": 8,
             "lines": 100,
             "branches": 100,
@@ -145,16 +153,16 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 352,
-            "suites": 9,
-            "lines": 99.32,
+            "tests": 371,
+            "suites": 10,
+            "lines": 99.43,
             "branches": 99.25,
             "functions": 100,
-            "statements": 99.48
+            "statements": 99.54
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 401,
+            "tests": 457,
             "suites": 7,
             "lines": 100,
             "branches": 100,
@@ -163,48 +171,48 @@
         },
         "mcp": {
             "runner": "vitest",
-            "tests": 79,
-            "suites": 9,
-            "lines": 96.65,
-            "branches": 79.54,
-            "functions": 95.23,
-            "statements": 94.03
+            "tests": 102,
+            "suites": 11,
+            "lines": 97.94,
+            "branches": 84.39,
+            "functions": 99.15,
+            "statements": 96.31
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1263,
-            "suites": 33,
-            "lines": 95.58,
-            "branches": 78.81,
+            "tests": 1493,
+            "suites": 35,
+            "lines": 95.6,
+            "branches": 84.43,
             "functions": 97.49,
-            "statements": 95.49
+            "statements": 95.52
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 757,
-            "suites": 14,
+            "tests": 814,
+            "suites": 15,
             "lines": 100,
-            "branches": 99.46,
+            "branches": 99.71,
             "functions": 100,
             "statements": 100
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 517,
+            "tests": 531,
             "suites": 10,
-            "lines": 94.98,
-            "branches": 82.4,
-            "functions": 97.35,
-            "statements": 94.01
+            "lines": 95.47,
+            "branches": 84.67,
+            "functions": 97.71,
+            "statements": 94.53
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 444,
+            "tests": 462,
             "suites": 9,
-            "lines": 97.27,
-            "branches": 87.68,
-            "functions": 98.19,
-            "statements": 96.84
+            "lines": 97.61,
+            "branches": 90.17,
+            "functions": 98.57,
+            "statements": 97.16
         }
     }
 }

@@ -2212,4 +2212,20 @@ describe("OCCT face unit tests", () => {
             rectangle.delete();
         });
     });
+
+    describe("subdivideToHexagonWires handed a partial object", () => {
+        it("should subdivide by the default counts and offsets the partial object leaves out", () => {
+            // Arrange
+            const square = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const leftOut = occHelper.facesService.subdivideToHexagonWires({ shape: square });
+            const spelled = occHelper.facesService.subdivideToHexagonWires(Object.assign(new OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>(), { shape: square }));
+
+            // Assert
+            expect(leftOut).toHaveLength(spelled.length);
+            expect(leftOut.map((w) => wire.getWireLength({ shape: w }))).toEqual(spelled.map((w) => wire.getWireLength({ shape: w })));
+            [...leftOut, ...spelled, square].forEach((s) => s.delete());
+        });
+    });
 });

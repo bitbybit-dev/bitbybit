@@ -1,11 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { atLeastOne, custom, defineRules, distinct, lessThan, notZeroVector, sameLength, when } from "./input-rules";
 
 type Box = { width: number; length: number; height: number; roundRadius: number };
-type Lists = { indexes?: number[]; radiusList?: number[] };
+type Lists = { indexes?: number[] | string; radiusList?: number[] };
 type Line = { start: number[]; end: number[] };
 type Direction = { direction: number[] };
 type Steps = { steps: number[] };
+type Loose = { value?: number | string; limit?: number | string };
+type Fillet = { useRadiusList: boolean; radiusList: number[]; indexes: number[] };
 
 const BOX: Box = { width: 2, length: 4, height: 6, roundRadius: 0.5 };
 
@@ -30,6 +32,18 @@ describe("custom", () => {
 
         // Assert
         expect(rule.reads).toEqual(["width"]);
+    });
+
+    it("should hand its test the inputs it checks", () => {
+        // Arrange
+        const holds = vi.fn(() => true);
+        const rule = custom<Box>("width", holds, "never");
+
+        // Act
+        rule.check(BOX);
+
+        // Assert
+        expect(holds).toHaveBeenCalledWith(BOX);
     });
 });
 
@@ -56,7 +70,7 @@ describe("lessThan", () => {
         const wrong = rule.check({ ...BOX, roundRadius: 3 });
 
         // Assert
-        expect(wrong?.message).toBe("must be less than 3");
+        expect(wrong).toEqual({ property: "roundRadius", code: "less-than", params: { limit: 3 }, message: "must be less than 3" });
         expect(rule.reads).toEqual(["roundRadius", "height"]);
     });
 
@@ -79,6 +93,30 @@ describe("lessThan", () => {
         // Assert
         expect(result).toBeUndefined();
     });
+
+    it("should pass when only the value is not a number", () => {
+        // Arrange
+        const rule = lessThan<Loose>("value", "limit");
+
+        // Act
+        const text = rule.check({ value: "9", limit: 1 });
+        const missing = rule.check({ limit: 1 });
+
+        // Assert
+        expect([text, missing]).toEqual([undefined, undefined]);
+    });
+
+    it("should pass when only the limit is not a number", () => {
+        // Arrange
+        const rule = lessThan<Loose>("value", "limit");
+
+        // Act
+        const text = rule.check({ value: 9, limit: "1" });
+        const missing = rule.check({ value: 9 });
+
+        // Assert
+        expect([text, missing]).toEqual([undefined, undefined]);
+    });
 });
 
 describe("sameLength", () => {
@@ -92,6 +130,14 @@ describe("sameLength", () => {
         expect(wrong).toEqual({ property: "radiusList", code: "same-length", params: { expected: 3, actual: 2 }, message: "must have as many items as indexes (3), not 2" });
     });
 
+    it("should report a first list longer than the second", () => {
+        // Act
+        const wrong = rule.check({ radiusList: [1, 2, 3], indexes: [1] });
+
+        // Assert
+        expect(wrong).toEqual({ property: "radiusList", code: "same-length", params: { expected: 1, actual: 3 }, message: "must have as many items as indexes (1), not 3" });
+    });
+
     it("should pass lists of one length and a list left out", () => {
         // Act
         const equal = rule.check({ radiusList: [1, 2], indexes: [3, 4] });
@@ -99,6 +145,14 @@ describe("sameLength", () => {
 
         // Assert
         expect([equal, leftOut]).toEqual([undefined, undefined]);
+    });
+
+    it("should pass when the list it pairs with is left out", () => {
+        expect(rule.check({ radiusList: [1, 2] })).toBeUndefined();
+    });
+
+    it("should not compare with a value that is not a list", () => {
+        expect(rule.check({ radiusList: [1, 2, 3], indexes: "ab" })).toBeUndefined();
     });
 });
 
@@ -122,6 +176,14 @@ describe("distinct", () => {
         // Assert
         expect([coordinate, count, missing]).toEqual([undefined, undefined, undefined]);
     });
+
+    it("should pass a point whose coordinates begin the other's", () => {
+        expect(rule.check({ start: [1, 2, 3], end: [1, 2] })).toBeUndefined();
+    });
+
+    it("should pass when the point it must differ from is left out", () => {
+        expect(rule.check({ end: [1, 2, 3] } as Line)).toBeUndefined();
+    });
 });
 
 describe("notZeroVector", () => {
@@ -134,8 +196,12 @@ describe("notZeroVector", () => {
         const missing = rule.check({} as Direction);
 
         // Assert
-        expect(zero?.code).toBe("zero-vector");
+        expect(zero).toEqual({ property: "direction", code: "zero-vector", message: "must not be a zero vector" });
         expect([up, missing]).toEqual([undefined, undefined]);
+    });
+
+    it("should pass a vector whose only length is negative", () => {
+        expect(rule.check({ direction: [0, -1, 0] })).toBeUndefined();
     });
 });
 
@@ -152,6 +218,10 @@ describe("atLeastOne", () => {
         expect(none).toEqual({ property: "steps", code: "at-least-one", message: "needs at least one positive step" });
         expect([some, missing]).toEqual([undefined, undefined]);
     });
+
+    it("should report an empty list, which has no item that passes", () => {
+        expect(rule.check({ steps: [] })).toEqual({ property: "steps", code: "at-least-one", message: "needs at least one positive step" });
+    });
 });
 
 describe("when", () => {
@@ -167,6 +237,20 @@ describe("when", () => {
         expect(skipped).toBeUndefined();
         expect(rule.reads).toEqual(["radiusList", "indexes"]);
     });
+
+    it("should pass inputs its rule would report when the condition does not hold", () => {
+        // Arrange
+        const fillet = when<Fillet>((inputs) => inputs.useRadiusList, sameLength("radiusList", "indexes"));
+        const mismatched = { radiusList: [1], indexes: [1, 2] };
+
+        // Act
+        const skipped = fillet.check({ ...mismatched, useRadiusList: false });
+        const applied = fillet.check({ ...mismatched, useRadiusList: true });
+
+        // Assert
+        expect(skipped).toBeUndefined();
+        expect(applied).toEqual({ property: "radiusList", code: "same-length", params: { expected: 2, actual: 1 }, message: "must have as many items as indexes (2), not 1" });
+    });
 });
 
 describe("defineRules", () => {
@@ -181,5 +265,17 @@ describe("defineRules", () => {
         expect(entry.dto).toBe(BoxDto);
         expect(entry.rules[0]?.reads).toEqual(["width", "length"]);
         expect(entry.rules[0]?.check({ ...BOX, width: 9 })?.code).toBe("less-than");
+    });
+
+    it("should keep every rule, in order", () => {
+        // Arrange
+        class BoxDto { width = 1; }
+
+        // Act
+        const entry = defineRules<Box>(BoxDto, [lessThan("width", "length"), custom("height", () => false, "never fits")]);
+
+        // Assert
+        expect(entry.rules.map((rule) => rule.reads)).toEqual([["width", "length"], ["height"]]);
+        expect(entry.rules.map((rule) => rule.check(BOX))).toEqual([undefined, { property: "height", code: "custom", message: "never fits" }]);
     });
 });

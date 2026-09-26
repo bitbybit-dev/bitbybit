@@ -41,7 +41,7 @@ export type DtoRules = {
  */
 export type RuleBook = ReadonlyMap<RuleTarget, readonly InputRule<unknown>[]>;
 
-const HEX_COLOR = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 const TUPLE_LENGTH: Partial<Record<ValueKind, number>> = { point2: 2, vector2: 2, point3: 3, vector3: 3 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);

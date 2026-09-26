@@ -3013,4 +3013,65 @@ describe("DrawHelper unit tests", () => {
             expect(group.visible).toBe(false);
         });
     });
+
+    describe("defaults left to the draw DTOs", () => {
+        const backFaceMaterialOf = (group: THREEJS.Group): THREEJS.MeshPhysicalMaterial => {
+            const backFaces = group.children.find((child) => child.name.includes("-backFaceSurface-"))!;
+            return (backFaces.children[0] as THREEJS.Mesh).material as THREEJS.MeshPhysicalMaterial;
+        };
+        const triangleSurface = (): Inputs.Base.VerbSurface => ({
+            tessellate: () => ({ faces: [[0, 1, 2]], points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]] }),
+        });
+
+        it("should draw a point that names no size as a sphere of the documented 0.1 diameter", () => {
+            // Act
+            const result = drawHelper.drawPoint({ point: [0, 0, 0] });
+
+            // Assert
+            const sphere = result.children[0] as THREEJS.InstancedMesh;
+            expect((sphere.geometry as THREEJS.SphereGeometry).parameters.radius).toBe(0.05);
+        });
+
+        it("should draw a point handed an undefined size as a sphere of the documented 0.1 diameter", () => {
+            // Act
+            const result = drawHelper.drawPoint({ point: [0, 0, 0], size: undefined, colours: undefined, opacity: undefined });
+
+            // Assert
+            const sphere = result.children[0] as THREEJS.InstancedMesh;
+            expect((sphere.geometry as THREEJS.SphereGeometry).parameters.radius).toBe(0.05);
+        });
+
+        it("should draw an OCCT shape's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const group = await drawHelper.handleDecomposedMesh({ faceOpacity: 0.5 }, mockOCCTBoxDecomposedMesh(), {});
+
+            // Assert
+            expect(backFaceMaterialOf(group).opacity).toBe(1);
+        });
+
+        it("should draw a surface's back faces at the documented opacity of 1 when the options leave it out", () => {
+            // Arrange
+            const halfSeeThrough: Partial<Inputs.Verb.DrawSurfaceDto<THREEJS.Group>> = { surface: triangleSurface(), opacity: 0.5 };
+
+            // Act
+            const group = drawHelper.drawSurface(halfSeeThrough as Inputs.Verb.DrawSurfaceDto<THREEJS.Group>);
+
+            // Assert
+            expect(backFaceMaterialOf(group).opacity).toBe(1);
+        });
+
+        it("should draw points with every default left out as the spelled out DTO draws them", () => {
+            // Arrange
+            const corners: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0]];
+
+            // Act
+            const leftOut = drawHelper.drawPoints({ points: corners });
+            const spelled = drawHelper.drawPoints(new Inputs.Point.DrawPointsDto<THREEJS.Group>(corners));
+
+            // Assert
+            const sphereOf = (group: THREEJS.Group): THREEJS.InstancedMesh => group.children[0] as THREEJS.InstancedMesh;
+            expect(sphereOf(leftOut).material).toBe(sphereOf(spelled).material);
+            expect((sphereOf(leftOut).geometry as THREEJS.SphereGeometry).parameters.radius).toBe((sphereOf(spelled).geometry as THREEJS.SphereGeometry).parameters.radius);
+        });
+    });
 });

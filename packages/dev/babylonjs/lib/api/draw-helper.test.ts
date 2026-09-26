@@ -5,7 +5,7 @@ vi.mock("@babylonjs/core", async () => {
 });
 
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
-import type { MockGreasedLineMesh, MockLinesMesh, MockScene } from "./__mocks__/babylonjs.mock";
+import { MockGreasedLineMesh, type MockLinesMesh, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -4128,6 +4128,54 @@ describe("DrawHelper unit tests", () => {
 
             // Assert
             expect(drawHelper.isDisposed()).toBe(true);
+        });
+    });
+
+    describe("defaults left to the draw DTOs", () => {
+        const widthOf = (mesh: unknown): number | undefined => (mesh instanceof MockGreasedLineMesh ? mesh._materialOptions.width : undefined);
+        const openCorner = (): Inputs.Polyline.PolylinePropertiesDto => ({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] });
+        const LINE_DTO_WIDTH = 0.03;
+
+        it("should build a point that names no size as a sphere of the documented 0.1 diameter", () => {
+            // Arrange
+            const createSphere = vi.spyOn(BABYLON.MeshBuilder, "CreateSphere");
+
+            // Act
+            drawHelper.drawPoint({ point: [0, 0, 0] });
+
+            // Assert
+            expect(createSphere).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ diameter: 0.1 }), expect.anything());
+            createSphere.mockRestore();
+        });
+
+        it("should build a point handed an undefined size as a sphere of the documented 0.1 diameter", () => {
+            // Arrange
+            const createSphere = vi.spyOn(BABYLON.MeshBuilder, "CreateSphere");
+
+            // Act
+            drawHelper.drawPoint({ point: [0, 0, 0], size: undefined });
+
+            // Assert
+            expect(createSphere).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ diameter: 0.1 }), expect.anything());
+            createSphere.mockRestore();
+        });
+
+        it("should draw a polyline that names no size at the line DTO's width", () => {
+            // Act
+            const leftOut = drawHelper.drawPolylineClose({ polyline: openCorner() });
+            const spelled = drawHelper.drawPolylineClose(new Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh>(openCorner()));
+
+            // Assert
+            expect(widthOf(leftOut)).toBeCloseTo(LINE_DTO_WIDTH, 9);
+            expect(widthOf(leftOut)).toBe(widthOf(spelled));
+        });
+
+        it("should draw polylines handed an undefined size at the line DTO's width", () => {
+            // Act
+            const drawn = drawHelper.drawPolylinesWithColours({ polylines: [openCorner()], size: undefined, colours: undefined, opacity: undefined });
+
+            // Assert
+            expect(widthOf(drawn)).toBeCloseTo(LINE_DTO_WIDTH, 9);
         });
     });
 });

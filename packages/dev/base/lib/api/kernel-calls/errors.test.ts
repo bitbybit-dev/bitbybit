@@ -8,7 +8,9 @@ describe("InputError", () => {
 
         // Assert
         expect(error).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(InputError);
         expect(error.name).toBe("InputError");
+        expect(error.message).toBe("`width` must be at least 0");
         expect(error.property).toBe("width");
     });
 
@@ -24,6 +26,7 @@ describe("KernelCallError", () => {
 
         // Assert
         expect(error).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(KernelCallError);
         expect(error.name).toBe("KernelCallError");
         expect(error.message).toBe("failed");
         expect(error.functionName).toBe("shapes.solid.createBox");
@@ -33,5 +36,18 @@ describe("KernelCallError", () => {
 
     it("should blame the kernel when no kind is given", () => {
         expect(new KernelCallError("failed", "shapes.solid.createBox").kind).toBe("kernel");
+    });
+
+    it("should leave the worker's stack unset when the worker reported none", () => {
+        expect(new KernelCallError("failed", "shapes.solid.createBox", "kernel").workerStack).toBeUndefined();
+    });
+
+    it("should keep its own stack apart from the worker's", () => {
+        // Act
+        const error = new KernelCallError("failed", "shapes.solid.createBox", "kernel", "at worker");
+
+        // Assert
+        expect(error.stack).toContain("KernelCallError: failed");
+        expect(error.stack).not.toContain("at worker");
     });
 });

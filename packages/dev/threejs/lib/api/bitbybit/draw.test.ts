@@ -1832,4 +1832,44 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("what the draw layer leaves to the helpers' own defaults", () => {
+        it("should draw the OCCT shape it is given even when the options it is redrawn with name another", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = callWorker;
+            const previous: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 1 };
+            const current: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 2 };
+            const group = new Group();
+            group.userData["options"] = { shape: previous, faceColour: "#00ff00" };
+
+            // Act
+            await draw.drawAnyAsync({ entity: current, group });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+        });
+
+        it("should draw a point whose options leave out the size as a sphere of the point default 0.1", async () => {
+            // Act
+            const res = await draw.drawAnyAsync({ entity: [1, 2, 3], options: { colours: "#ff0000" } });
+
+            // Assert
+            const sphere = res.children[0] as InstancedMesh;
+            expect((sphere.geometry as THREE.SphereGeometry).parameters.radius).toBe(0.05);
+        });
+
+        it("should leave a polyline's width to the line DTO rather than the point diameter when its options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+
+            // Act
+            await draw.drawAnyAsync({ entity: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] }, options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+    });
 });

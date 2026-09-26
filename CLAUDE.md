@@ -163,9 +163,9 @@ fragments beside it, each a slice of the namespace body written as an ordinary m
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
 `check:inputs` fails on a stale assembled file, which being generated is not linted.
 
-`npm test` at the root runs every package suite, after `check:inputs`, `check:worker-api`,
-`check:worker-parity` and `check:api-docs` (the JSDoc ratchet, see `API_DOCS_GUIDE.md`): each worker package mirrors its kernel by dotted path, and
-`scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
+`npm test` at the root runs every package suite, after the `check:*` gates and `test:scripts` (the
+generators' and checkers' own `node --test` suites, `scripts/**/*.test.mjs`). Each worker package
+mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
 has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
 or class reads differently on the two sides, or when the worker's path set differs from the committed
 snapshot (those paths are persisted in users' saved scripts). A deliberate surface change is accepted

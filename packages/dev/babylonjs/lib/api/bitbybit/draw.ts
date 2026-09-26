@@ -935,8 +935,8 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShape({
+            ...this.occtOptions(options),
             shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-            ...this.occtOptions(options)
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;
@@ -949,8 +949,8 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShapes({
+            ...this.occtOptions(options),
             shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-            ...this.occtOptions(options)
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;

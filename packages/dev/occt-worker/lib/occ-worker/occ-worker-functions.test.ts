@@ -751,13 +751,6 @@ describe("OCC Worker Functions Unit Tests", () => {
         }));
     });
 
-    describe("onMessageInput - ObjectDefinition results", () => {
-        it("should handle results with compound, data, and shapes", () => new Promise<void>((done) => {
-            expect(true).toBe(true);
-            done();
-        }));
-    });
-
     describe("onMessageInput - non-OCCT results", () => {
         it("should return non-OCCT results directly", () => new Promise<void>((done) => {
             const circleDto = new Inputs.OCCT.CircleDto(1, [0, 0, 0], [0, 1, 0]);

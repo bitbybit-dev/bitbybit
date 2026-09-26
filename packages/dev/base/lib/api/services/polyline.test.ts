@@ -855,4 +855,42 @@ describe("Polyline unit tests", () => {
             expect(segments).toHaveLength(3);
         });
     });
+
+    describe("intersection tolerance left to the DTO", () => {
+        const across = { points: [[0, 0, 0], [1, 0, 0]] as Inputs.Base.Point3[] };
+        const twoCrossingsFiveMillionthsApart = { points: [[0.5, 1, 0], [0.5, -1, 0], [0.500005, -1, 0], [0.500005, 1, 0]] as Inputs.Base.Point3[] };
+        const threeSelfCrossingsFiveMillionthsApart = { points: [[0.5, 1, 0], [0.5, -1, 0], [-0.499995, -1, 0], [1.500005, 1, 0], [2, 0, 0], [-1, 0, 0]] as Inputs.Base.Point3[] };
+
+        it("should merge two polylines' crossings closer than the documented 1e-5 when the call leaves the tolerance out", () => {
+            // Act
+            const leftOut = polyline.twoPolylineIntersection({ polyline1: across, polyline2: twoCrossingsFiveMillionthsApart });
+            const documented = polyline.twoPolylineIntersection({ polyline1: across, polyline2: twoCrossingsFiveMillionthsApart, tolerance: 1e-5 });
+            const finer = polyline.twoPolylineIntersection({ polyline1: across, polyline2: twoCrossingsFiveMillionthsApart, tolerance: 1e-6 });
+
+            // Assert
+            expect(leftOut).toEqual(documented);
+            expect(leftOut).toHaveLength(1);
+            expect(finer).toHaveLength(2);
+        });
+
+        it("should merge two polylines' crossings at the documented tolerance when the call hands it as undefined", () => {
+            // Act
+            const handedUndefined = polyline.twoPolylineIntersection({ polyline1: across, polyline2: twoCrossingsFiveMillionthsApart, tolerance: undefined });
+
+            // Assert
+            expect(handedUndefined).toHaveLength(1);
+        });
+
+        it("should merge a polyline's own crossings closer than the documented 1e-5 when the call leaves the tolerance out", () => {
+            // Act
+            const leftOut = polyline.polylineSelfIntersection({ polyline: threeSelfCrossingsFiveMillionthsApart });
+            const documented = polyline.polylineSelfIntersection({ polyline: threeSelfCrossingsFiveMillionthsApart, tolerance: 1e-5 });
+            const finer = polyline.polylineSelfIntersection({ polyline: threeSelfCrossingsFiveMillionthsApart, tolerance: 1e-6 });
+
+            // Assert
+            expect(leftOut).toEqual(documented);
+            expect(leftOut).toEqual([[0.5, 0, 0]]);
+            expect(finer).toHaveLength(3);
+        });
+    });
 });

@@ -3029,4 +3029,71 @@ describe("DrawHelper unit tests", () => {
             await expect(drawHelper.drawSolidOrPolygonMeshes(inputs)).rejects.toThrow("Failed to draw JSCAD meshes");
         });
     });
+
+    describe("defaults left to the draw DTOs", () => {
+        const oneTriangle = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2], uvs: [], vertexCoordVec: [], numberOfTriangles: 1, centerPoint: [0, 0, 0], centerNormal: [0, 0, 1], faceIndex: 0 }],
+            edgeList: [],
+            pointsList: [],
+        });
+        const backFaceMaterialOf = (drawn: pc.Entity): pc.StandardMaterial | null => {
+            const backFaces = drawn.children.find((child) => child.name.includes("-backFaceSurface-"))!;
+            return getMaterialFromEntity(backFaces.children[0]!);
+        };
+        const triangleSurface = (): Inputs.Base.VerbSurface => ({
+            tessellate: () => ({ faces: [[0, 1, 2]], points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]] }),
+        });
+
+        it("should draw an OCCT shape's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const drawn = await drawHelper.handleDecomposedMesh({ faceOpacity: 0.5, drawEdges: false }, oneTriangle(), {});
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw a shape the worker meshed with its back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(oneTriangle());
+            mockOccWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            const drawn = await drawHelper.drawShape({ shape: { hash: 1, type: "occ-shape" }, faceOpacity: 0.5, drawEdges: false });
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw a surface's back faces at the documented opacity of 1 when the options leave it out", () => {
+            // Arrange
+            const halfSeeThrough: Partial<Inputs.Verb.DrawSurfaceDto<pc.Entity>> = { surface: triangleSurface(), opacity: 0.5 };
+
+            // Act
+            const drawn = drawHelper.drawSurface(halfSeeThrough as Inputs.Verb.DrawSurfaceDto<pc.Entity>);
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw an OCCT shape's back faces at the documented opacity of 1 when the options hand it as undefined", async () => {
+            // Act
+            const drawn = await drawHelper.handleDecomposedMesh({ faceOpacity: 0.5, drawEdges: false, backFaceOpacity: undefined, backFaceColour: undefined, drawTwoSided: undefined }, oneTriangle(), {});
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw points with every default left out as the spelled out DTO draws them", () => {
+            // Arrange
+            const corners: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0]];
+
+            // Act
+            const leftOut = drawHelper.drawPoints({ points: corners });
+            const spelled = drawHelper.drawPoints(new Inputs.Point.DrawPointsDto<pc.Entity>(corners));
+
+            // Assert
+            expect(getMaterialFromEntity(leftOut.children[0]!)).toBe(getMaterialFromEntity(spelled.children[0]!));
+            expect(leftOut.children).toHaveLength(spelled.children.length);
+        });
+    });
 });

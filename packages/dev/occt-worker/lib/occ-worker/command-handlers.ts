@@ -174,12 +174,13 @@ export const CommandHandlers: Record<string, CommandHandler> = {
  * Returns undefined if no special handler exists for the function.
  */
 export function getCommandHandler(functionName: string): CommandHandler | undefined {
-    return CommandHandlers[functionName];
+    return hasCommandHandler(functionName) ? CommandHandlers[functionName] : undefined;
 }
 
 /**
- * Checks if a function name has a special command handler.
+ * Checks if a function name has a special command handler. Only the handlers listed here count, so
+ * a name such as `constructor` or `toString` is not answered by the object's prototype.
  */
 export function hasCommandHandler(functionName: string): boolean {
-    return functionName in CommandHandlers;
+    return Object.prototype.hasOwnProperty.call(CommandHandlers, functionName);
 }

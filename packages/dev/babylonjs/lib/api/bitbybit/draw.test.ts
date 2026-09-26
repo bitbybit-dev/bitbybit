@@ -15,7 +15,8 @@ import { BabylonNode } from "./babylon/node";
 import { Tag } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs";
-import { MockScene, MockMesh } from "../__mocks__/babylonjs.mock";
+import { MockScene, MockMesh, MockGreasedLineMesh } from "../__mocks__/babylonjs.mock";
+import { createDrawHelperMocks } from "../__mocks__/test-helpers";
 
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     1, 0, 0, 0,
@@ -3125,4 +3126,57 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("what the draw layer leaves to the helpers' own defaults", () => {
+        const LINE_DTO_WIDTH = 0.03;
+        const widthOf = (mesh: unknown): number | undefined => (mesh instanceof MockGreasedLineMesh ? mesh._materialOptions.width : undefined);
+        const drawWithRealHelper = (): Draw => {
+            const mocks = createDrawHelperMocks();
+            const helper = new DrawHelper(mocks.mockContext, mocks.mockSolidText, mocks.mockVector, mocks.mockJscadWorkerManager, mocks.mockManifoldWorkerManager, mocks.mockOccWorkerManager);
+            return new Draw(helper, mockNode, mockTag, mockContext);
+        };
+
+        it("handleOcctShape should draw the entity it is given when the options it redraws with name another", async () => {
+            // Arrange
+            const previous: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 1 };
+            const current: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 2 };
+            const mockMesh = createMockMesh("occt");
+            mockMesh.metadata = { options: { shape: previous, faceColour: "#00ff00" } };
+            const drawShape = vi.fn().mockResolvedValue(mockMesh);
+            mockDrawHelper.drawShape = drawShape;
+
+            // Act
+            await drawPrivate.handleOcctShape({ entity: current, babylonMesh: mockMesh });
+
+            // Assert
+            expect(drawShape).toHaveBeenCalledWith(expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+        });
+
+        it("should draw a line whose options leave out the size at the line DTO's width, not the point diameter", async () => {
+            // Act
+            const drawn = await drawWithRealHelper().drawAnyAsync({ entity: { start: [0, 0, 0], end: [1, 0, 0] }, options: { colours: "#ff0000" } });
+
+            // Assert
+            expect(widthOf(drawn)).toBeCloseTo(LINE_DTO_WIDTH, 9);
+        });
+
+        it("should draw a polyline whose options leave out the size at the line DTO's width, not the point diameter", async () => {
+            // Act
+            const drawn = await drawWithRealHelper().drawAnyAsync({ entity: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] }, options: { colours: "#ff0000" } });
+
+            // Assert
+            expect(widthOf(drawn)).toBeCloseTo(LINE_DTO_WIDTH, 9);
+        });
+
+        it("should draw a point whose options leave out the size as a sphere of the point default 0.1", async () => {
+            // Arrange
+            const createSphere = vi.spyOn(BABYLON.MeshBuilder, "CreateSphere");
+
+            // Act
+            await drawWithRealHelper().drawAnyAsync({ entity: [1, 2, 3], options: { colours: "#ff0000" } });
+
+            // Assert
+            expect(createSphere).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ diameter: 0.1 }), expect.anything());
+            createSphere.mockRestore();
+        });
+    });
 });

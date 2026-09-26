@@ -986,4 +986,24 @@ describe("Math unit tests", () => {
             });
         });
     });
+
+    describe("remap with its defaults left to the DTO", () => {
+        it("should map onto the default target range when the call leaves it out", () => {
+            // Act
+            const leftOut = math.remap({ number: 0.25 });
+            const spelled = math.remap(new Inputs.Math.RemapNumberDto(0.25));
+
+            // Assert
+            expect(leftOut).toBe(1.25);
+            expect(leftOut).toBe(spelled);
+        });
+
+        it("should map onto the default ranges when the call hands them as undefined", () => {
+            // Act
+            const handedUndefined = math.remap({ number: 0.25, fromLow: undefined, fromHigh: undefined, toLow: undefined, toHigh: undefined });
+
+            // Assert
+            expect(handedUndefined).toBe(1.25);
+        });
+    });
 });

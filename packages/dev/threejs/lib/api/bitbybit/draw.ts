@@ -398,8 +398,8 @@ export class Draw extends DrawCore {
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
+                ...this.occtOptions(options),
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -407,8 +407,8 @@ export class Draw extends DrawCore {
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShapes({
+                ...this.occtOptions(options),
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-                ...this.occtOptions(options)
             });
         }, Inputs.Draw.drawingTypes.occtShapes);
     }

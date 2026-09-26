@@ -134,6 +134,14 @@ describe("BabylonGuiControl", () => {
             // Assert
             expect(clone.name).toBe("clonedControl");
         });
+
+        it("should give the copy the documented default name where a script leaves the name out of its object", () => {
+            // Act
+            const clone = service.cloneControl({ control, host });
+
+            // Assert
+            expect(clone.name).toBe("clonedControl");
+        });
     });
 
     describe("getControlByName", () => {
