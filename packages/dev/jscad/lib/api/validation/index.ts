@@ -11,10 +11,10 @@ import * as Resolved from "../resolved-inputs";
  * and half of its height, or JSCAD refuses the shape.
  */
 export const jscadDtoRules: RuleBook = ruleBook(
-    defineRules<Resolved.JSCAD.RoundedCuboidBaseDto>(Inputs.JSCAD.RoundedCuboidBaseDto, [
+    defineRules<Resolved.JSCAD.RoundedCuboidSharedDto>(Inputs.JSCAD.RoundedCuboidSharedDto, [
         lessThan("roundRadius", (inputs) => Math.min(inputs.width, inputs.length, inputs.height) / 2, "must be less than half of the smallest side", ["width", "length", "height"]),
     ]),
-    defineRules<Resolved.JSCAD.RoundedCylinderBaseDto>(Inputs.JSCAD.RoundedCylinderBaseDto, [
+    defineRules<Resolved.JSCAD.RoundedCylinderSharedDto>(Inputs.JSCAD.RoundedCylinderSharedDto, [
         lessThan("roundRadius", (inputs) => inputs.height / 2, "must be less than half of the height", ["height"]),
         lessThan("roundRadius", "radius"),
     ]),

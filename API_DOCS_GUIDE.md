@@ -122,7 +122,7 @@ export class FilletDto<T> {
   being there, and `defaulted-spelling` asks the `?` only of a class some method takes.
 - A singular DTO and its plural (`DrawShapeDto` and `DrawShapesDto`, `SphereDto` and
   `SphereCentersDto`) declare the properties they share once, in an `abstract` parent named
-  `<Singular>BaseDto` just above them in the same file. Each subclass declares only the property
+  `<Singular>SharedDto` just above them in the same file. Each subclass declares only the property
   that differs, first, and its constructor calls `super()` and fills the inherited properties in
   its usual order; whatever lists a DTO's properties puts an abstract parent's after the class's own,
   so the property that differs stays first. The parent's text has to read true for both, so it says

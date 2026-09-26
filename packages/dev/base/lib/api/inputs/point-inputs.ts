@@ -144,12 +144,12 @@ export namespace Point {
         opacity?: number | undefined = 1;
         /**
          * Size of the drawn point, in model units.
-         * @default 3
+         * @default 0.1
          * @minimum 0
          * @maximum Infinity
          * @step 0.1
          */
-        size?: number | undefined = 3;
+        size?: number | undefined = 0.1;
         /**
          * Color of the point as a hex string such as `#ff0000`; a list of strings is also
          * accepted.

@@ -122,7 +122,7 @@ export class SolidDto {
  * The wall a rectangular extrusion builds, shared by `ExtrudeRectangularDto` and
  * `ExtrudeRectangularPointsDto`: how thick and how tall.
  */
-export abstract class ExtrudeRectangularBaseDto {
+export abstract class ExtrudeRectangularSharedDto {
     /**
      * How tall the wall is along Z, in model units, standing on the XY plane
      * @default 1
@@ -145,7 +145,7 @@ export abstract class ExtrudeRectangularBaseDto {
  * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
  * Z and its half thickness.
  */
-export class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
+export class ExtrudeRectangularDto extends ExtrudeRectangularSharedDto {
     constructor(geometry?: JSCADEntity, height?: number, size?: number) {
         super();
         if (geometry !== undefined) { this.geometry = geometry; }
@@ -162,7 +162,7 @@ export class ExtrudeRectangularDto extends ExtrudeRectangularBaseDto {
  * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
  * wall's height along Z and its half thickness.
  */
-export class ExtrudeRectangularPointsDto extends ExtrudeRectangularBaseDto {
+export class ExtrudeRectangularPointsDto extends ExtrudeRectangularSharedDto {
     constructor(points?: Base.Point3[], height?: number, size?: number) {
         super();
         if (points !== undefined) { this.points = points; }

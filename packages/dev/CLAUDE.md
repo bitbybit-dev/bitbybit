@@ -46,7 +46,7 @@ npm run lint
   that spelling lets a caller pass an optional straight through (`{ tolerance: inputs.tolerance }`).
   A class only ever returned keeps `size = 0;`, since its readers count on every property; the rule
   (`defaulted-spelling`) asks the `?` of a class some method takes. A singular/plural pair shares its
-  common properties through an `abstract` `<Singular>BaseDto` (API_DOCS_GUIDE.md). Only `new Dto()`
+  common properties through an `abstract` `<Singular>SharedDto` (API_DOCS_GUIDE.md). Only `new Dto()`
   runs an initializer, so a public method whose DTO has defaults starts with
   `const resolved = resolveDto(Inputs.X.Dto, inputs) as Resolved.X.Dto;` and reads `resolved`; an
   internal method takes `Resolved.X.Dto`, so its callers hand it a complete object (the generated

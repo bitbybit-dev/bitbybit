@@ -712,7 +712,7 @@ export class WireOnFaceDto<T, U> {
  * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
  * edges and vertices, what to show, and how finely to mesh the shape.
  */
-export abstract class DrawShapeBaseDto {
+export abstract class DrawShapeSharedDto {
     /**
      * How opaque the faces are, from 0 for invisible to 1 for solid.
      * @default 1
@@ -869,7 +869,7 @@ export abstract class DrawShapeBaseDto {
  * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
  * faces, edges and vertices, what to show, and how finely to mesh the shape.
  */
-export class DrawShapeDto<T> extends DrawShapeBaseDto {
+export class DrawShapeDto<T> extends DrawShapeSharedDto {
     /**
      * Provide options without default values
      */
@@ -912,7 +912,7 @@ export class DrawShapeDto<T> extends DrawShapeBaseDto {
  * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
  * `DrawShapeDto`, applied to every shape in the list.
  */
-export class DrawShapesDto<T> extends DrawShapeBaseDto {
+export class DrawShapesDto<T> extends DrawShapeSharedDto {
 
     /**
      * Provide options without default values

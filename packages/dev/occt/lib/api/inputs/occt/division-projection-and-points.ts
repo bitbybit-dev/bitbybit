@@ -7,7 +7,7 @@ import { pointProjectionTypeEnum } from "./enums";
  * How a curve is divided into points, shared by `DivideDto` and `DivideShapesDto`: the number of
  * steps and whether the end points are kept.
  */
-export abstract class DivideBaseDto {
+export abstract class DivideSharedDto {
     /**
      * How many steps to divide each curve into; one more point than that is placed, the ends
      * included.
@@ -32,7 +32,7 @@ export abstract class DivideBaseDto {
  * A wire or edge and a division count for `divideWireByParamsToPoints`,
  * `divideEdgeByEqualDistanceToPoints` and their siblings in `shapes.wire` and `shapes.edge`.
  */
-export class DivideDto<T> extends DivideBaseDto {
+export class DivideDto<T> extends DivideSharedDto {
     constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
         super();
         if (shape !== undefined) { this.shape = shape; }
@@ -51,7 +51,7 @@ export class DivideDto<T> extends DivideBaseDto {
  * Where a wire is projected, shared by `ProjectWireDto` and `ProjectWiresDto`: the shape it lands
  * on and the direction it is cast along.
  */
-export abstract class ProjectWireBaseDto<U> {
+export abstract class ProjectWireSharedDto<U> {
     /**
      * The shape each wire lands on.
      * @default undefined
@@ -67,7 +67,7 @@ export abstract class ProjectWireBaseDto<U> {
  * A wire, a shape and a direction for `shapes.wire.project`, which casts the wire onto the shape
  * along the direction.
  */
-export class ProjectWireDto<T, U> extends ProjectWireBaseDto<U> {
+export class ProjectWireDto<T, U> extends ProjectWireSharedDto<U> {
     constructor(wire?: T, shape?: U, direction?: Base.Vector3) {
         super();
         if (wire !== undefined) { this.wire = wire; }
@@ -240,7 +240,7 @@ export class EdgesToPointsDto<T> {
  * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
  * shape along the direction.
  */
-export class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
+export class ProjectWiresDto<T, U> extends ProjectWireSharedDto<U> {
     constructor(wires?: T[], shape?: U, direction?: Base.Vector3) {
         super();
         if (wires !== undefined) { this.wires = wires; }
@@ -257,7 +257,7 @@ export class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
  * Wires or edges and a division count for `divideWiresByParamsToPoints`,
  * `divideEdgesByEqualDistanceToPoints` and their siblings.
  */
-export class DivideShapesDto<T> extends DivideBaseDto {
+export class DivideShapesDto<T> extends DivideSharedDto {
     constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
         super();
         if (shapes !== undefined) { this.shapes = shapes; }

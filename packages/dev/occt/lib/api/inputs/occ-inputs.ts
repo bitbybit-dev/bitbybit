@@ -1088,7 +1088,7 @@ export namespace OCCT {
      * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
      * edges and vertices, what to show, and how finely to mesh the shape.
      */
-    export abstract class DrawShapeBaseDto {
+    export abstract class DrawShapeSharedDto {
         /**
          * How opaque the faces are, from 0 for invisible to 1 for solid.
          * @default 1
@@ -1245,7 +1245,7 @@ export namespace OCCT {
      * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
      * faces, edges and vertices, what to show, and how finely to mesh the shape.
      */
-    export class DrawShapeDto<T> extends DrawShapeBaseDto {
+    export class DrawShapeDto<T> extends DrawShapeSharedDto {
         /**
          * Provide options without default values
          */
@@ -1288,7 +1288,7 @@ export namespace OCCT {
      * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
      * `DrawShapeDto`, applied to every shape in the list.
      */
-    export class DrawShapesDto<T> extends DrawShapeBaseDto {
+    export class DrawShapesDto<T> extends DrawShapeSharedDto {
 
         /**
          * Provide options without default values
@@ -3761,7 +3761,7 @@ export namespace OCCT {
      * How the corners of a 3D wire are rounded, shared by `Fillet3DWireDto` and `Fillet3DWiresDto`: the
      * radius or radii, which corners, and the direction the fillets are built along.
      */
-    export abstract class Fillet3DWireBaseDto {
+    export abstract class Fillet3DWireSharedDto {
         /**
          * The rounding radius in model units, used for every selected corner unless `radiusList` is
          * given.
@@ -3794,7 +3794,7 @@ export namespace OCCT {
      * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
      * which rounds the corners of wires that do not lie in a plane.
      */
-    export class Fillet3DWiresDto<T> extends Fillet3DWireBaseDto {
+    export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
         constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
             super();
             if (shapes !== undefined) { this.shapes = shapes; }
@@ -3813,7 +3813,7 @@ export namespace OCCT {
      * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
      * which rounds the corners of a wire that does not lie in a plane.
      */
-    export class Fillet3DWireDto<T> extends Fillet3DWireBaseDto {
+    export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
         constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
             super();
             if (shape !== undefined) { this.shape = shape; }
@@ -4872,7 +4872,7 @@ export namespace OCCT {
      * How a curve is divided into points, shared by `DivideDto` and `DivideShapesDto`: the number of
      * steps and whether the end points are kept.
      */
-    export abstract class DivideBaseDto {
+    export abstract class DivideSharedDto {
         /**
          * How many steps to divide each curve into; one more point than that is placed, the ends
          * included.
@@ -4897,7 +4897,7 @@ export namespace OCCT {
      * A wire or edge and a division count for `divideWireByParamsToPoints`,
      * `divideEdgeByEqualDistanceToPoints` and their siblings in `shapes.wire` and `shapes.edge`.
      */
-    export class DivideDto<T> extends DivideBaseDto {
+    export class DivideDto<T> extends DivideSharedDto {
         constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
             super();
             if (shape !== undefined) { this.shape = shape; }
@@ -4916,7 +4916,7 @@ export namespace OCCT {
      * Where a wire is projected, shared by `ProjectWireDto` and `ProjectWiresDto`: the shape it lands
      * on and the direction it is cast along.
      */
-    export abstract class ProjectWireBaseDto<U> {
+    export abstract class ProjectWireSharedDto<U> {
         /**
          * The shape each wire lands on.
          * @default undefined
@@ -4932,7 +4932,7 @@ export namespace OCCT {
      * A wire, a shape and a direction for `shapes.wire.project`, which casts the wire onto the shape
      * along the direction.
      */
-    export class ProjectWireDto<T, U> extends ProjectWireBaseDto<U> {
+    export class ProjectWireDto<T, U> extends ProjectWireSharedDto<U> {
         constructor(wire?: T, shape?: U, direction?: Base.Vector3) {
             super();
             if (wire !== undefined) { this.wire = wire; }
@@ -5105,7 +5105,7 @@ export namespace OCCT {
      * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
      * shape along the direction.
      */
-    export class ProjectWiresDto<T, U> extends ProjectWireBaseDto<U> {
+    export class ProjectWiresDto<T, U> extends ProjectWireSharedDto<U> {
         constructor(wires?: T[], shape?: U, direction?: Base.Vector3) {
             super();
             if (wires !== undefined) { this.wires = wires; }
@@ -5122,7 +5122,7 @@ export namespace OCCT {
      * Wires or edges and a division count for `divideWiresByParamsToPoints`,
      * `divideEdgesByEqualDistanceToPoints` and their siblings.
      */
-    export class DivideShapesDto<T> extends DivideBaseDto {
+    export class DivideShapesDto<T> extends DivideSharedDto {
         constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
             super();
             if (shapes !== undefined) { this.shapes = shapes; }

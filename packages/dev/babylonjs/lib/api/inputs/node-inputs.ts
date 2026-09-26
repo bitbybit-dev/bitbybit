@@ -186,7 +186,7 @@ export namespace BabylonNode {
      * How a node's axes are drawn, shared by `DrawNodeDto` and `DrawNodesDto`: the color of each
      * axis line and its length.
      */
-    export abstract class DrawNodeBaseDto {
+    export abstract class DrawNodeSharedDto {
         /**
          * Hex color of the line drawn along each node's X axis
          * @default #ff0000
@@ -212,7 +212,7 @@ export namespace BabylonNode {
      * Feeds `babylon.node.drawNode` with the node to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodeDto extends DrawNodeBaseDto {
+    export class DrawNodeDto extends DrawNodeSharedDto {
         constructor(node?: BABYLON.TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number) {
             super();
             if (node !== undefined) { this.node = node; }
@@ -231,7 +231,7 @@ export namespace BabylonNode {
      * Feeds `babylon.node.drawNodes` with the nodes to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodesDto extends DrawNodeBaseDto {
+    export class DrawNodesDto extends DrawNodeSharedDto {
         constructor(nodes?: BABYLON.TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number) {
             super();
             if (nodes !== undefined) { this.nodes = nodes; }

@@ -237,7 +237,7 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
  * How the corners of a 3D wire are rounded, shared by `Fillet3DWireDto` and `Fillet3DWiresDto`: the
  * radius or radii, which corners, and the direction the fillets are built along.
  */
-export abstract class Fillet3DWireBaseDto {
+export abstract class Fillet3DWireSharedDto {
     /**
      * The rounding radius in model units, used for every selected corner unless `radiusList` is
      * given.
@@ -270,7 +270,7 @@ export abstract class Fillet3DWireBaseDto {
  * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
  * which rounds the corners of wires that do not lie in a plane.
  */
-export class Fillet3DWiresDto<T> extends Fillet3DWireBaseDto {
+export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
     constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
         super();
         if (shapes !== undefined) { this.shapes = shapes; }
@@ -289,7 +289,7 @@ export class Fillet3DWiresDto<T> extends Fillet3DWireBaseDto {
  * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
  * which rounds the corners of a wire that does not lie in a plane.
  */
-export class Fillet3DWireDto<T> extends Fillet3DWireBaseDto {
+export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
     constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
         super();
         if (shape !== undefined) { this.shape = shape; }

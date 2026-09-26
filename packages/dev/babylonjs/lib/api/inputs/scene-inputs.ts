@@ -481,7 +481,7 @@ export namespace BabylonScene {
      * How a skybox is shown, shared by `SkyboxDto`, `SkyboxCustomTextureDto` and
      * `SkyboxFromTextureDto`: its size, blur, lighting and the projected ground.
      */
-    export abstract class SkyboxBaseDto {
+    export abstract class SkyboxSharedDto {
         /**
          * Edge length of the sky cube, in scene units; make it larger than the scene so nothing
          * pokes through
@@ -543,7 +543,7 @@ export namespace BabylonScene {
      * Feeds `babylon.scene.enableSkybox`: which built-in sky to use, how big and blurred it is, how
      * much it lights the scene and whether it is shown.
      */
-    export class SkyboxDto extends SkyboxBaseDto {
+    export class SkyboxDto extends SkyboxSharedDto {
         constructor(skybox?: Base.skyboxEnum, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
             super();
             if (skybox !== undefined) { this.skybox = skybox; }
@@ -566,7 +566,7 @@ export namespace BabylonScene {
      * Feeds `babylon.scene.enableSkyboxCustomTexture`: your own sky texture by URL, its size, and
      * the same size, blur, intensity and visibility options as the built-in skies.
      */
-    export class SkyboxCustomTextureDto extends SkyboxBaseDto {
+    export class SkyboxCustomTextureDto extends SkyboxSharedDto {
         constructor(textureUrl?: string, textureSize?: number, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
             super();
             if (textureUrl !== undefined) { this.textureUrl = textureUrl; }
@@ -597,7 +597,7 @@ export namespace BabylonScene {
      * Feeds `babylon.scene.enableSkyboxFromTexture`: a cube texture you already loaded, and the same
      * size, blur, intensity, visibility and ground projection options as the built-in skies.
      */
-    export class SkyboxFromTextureDto extends SkyboxBaseDto {
+    export class SkyboxFromTextureDto extends SkyboxSharedDto {
         constructor(texture?: BABYLON.BaseTexture, size?: number, blur?: number, environmentIntensity?: number, hideSkybox?: boolean, enableGroundProjection?: boolean, projectedGroundRadius?: number, projectedGroundHeight?: number) {
             super();
             if (texture !== undefined) { this.texture = texture; }

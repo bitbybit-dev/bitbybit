@@ -51,7 +51,7 @@ export class CubeCentersDto {
 /**
  * The size of a box, shared by `CuboidDto` and `CuboidCentersDto`.
  */
-export abstract class CuboidBaseDto {
+export abstract class CuboidSharedDto {
     /**
      * Full size along X, in model units
      * @default 1
@@ -81,7 +81,7 @@ export abstract class CuboidBaseDto {
  * Feeds `shapes.cuboid`: a box with faces parallel to the axes, given by its center point and its
  * sizes along X, Y and Z.
  */
-export class CuboidDto extends CuboidBaseDto {
+export class CuboidDto extends CuboidSharedDto {
     constructor(center?: Base.Point3, width?: number, length?: number, height?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -99,7 +99,7 @@ export class CuboidDto extends CuboidBaseDto {
  * Feeds `shapes.cuboidsOnCenterPoints`: one box of the same sizes on every center point, coming
  * back in the same order.
  */
-export class CuboidCentersDto extends CuboidBaseDto {
+export class CuboidCentersDto extends CuboidSharedDto {
     constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -117,7 +117,7 @@ export class CuboidCentersDto extends CuboidBaseDto {
  * The size and rounding of a rounded box, shared by `RoundedCuboidDto` and
  * `RoundedCuboidCentersDto`.
  */
-export abstract class RoundedCuboidBaseDto {
+export abstract class RoundedCuboidSharedDto {
     /**
      * Radius of the rounding on every edge, in model units; it must be less than half of the
      * smallest side or an error is thrown
@@ -164,7 +164,7 @@ export abstract class RoundedCuboidBaseDto {
  * Feeds `shapes.roundedCuboid`: a box with every edge and corner rounded, given by its center, its
  * sizes along X, Y and Z, the rounding radius and how finely the rounding is faceted.
  */
-export class RoundedCuboidDto extends RoundedCuboidBaseDto {
+export class RoundedCuboidDto extends RoundedCuboidSharedDto {
     constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -184,7 +184,7 @@ export class RoundedCuboidDto extends RoundedCuboidBaseDto {
  * Feeds `shapes.roundedCuboidsOnCenterPoints`: one rounded box of the same sizes and rounding on
  * every center point, coming back in the same order.
  */
-export class RoundedCuboidCentersDto extends RoundedCuboidBaseDto {
+export class RoundedCuboidCentersDto extends RoundedCuboidSharedDto {
     constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -292,7 +292,7 @@ export class CylidnerCentersEllipticDto {
 /**
  * The size and smoothness of a cylinder, shared by `CylidnerDto` and `CylidnerCentersDto`.
  */
-export abstract class CylinderBaseDto {
+export abstract class CylinderSharedDto {
     /**
      * Full length along Z, in model units
      * @default 1
@@ -322,7 +322,7 @@ export abstract class CylinderBaseDto {
  * Feeds `shapes.cylinder`: a round cylinder standing along Z, given by the point halfway up its
  * axis, its height, its radius and how many flat sides approximate it.
  */
-export class CylidnerDto extends CylinderBaseDto {
+export class CylidnerDto extends CylinderSharedDto {
     constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -340,7 +340,7 @@ export class CylidnerDto extends CylinderBaseDto {
  * The size, rounding and smoothness of a rounded cylinder, shared by `RoundedCylidnerDto` and
  * `RoundedCylidnerCentersDto`.
  */
-export abstract class RoundedCylinderBaseDto {
+export abstract class RoundedCylinderSharedDto {
     /**
      * Radius of the rounding on both rims, in model units; the height must be more than twice it or
      * an error is thrown
@@ -380,7 +380,7 @@ export abstract class RoundedCylinderBaseDto {
  * the point halfway up its axis, the rounding radius, its height and radius and how finely it is
  * faceted.
  */
-export class RoundedCylidnerDto extends RoundedCylinderBaseDto {
+export class RoundedCylidnerDto extends RoundedCylinderSharedDto {
     constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -398,7 +398,7 @@ export class RoundedCylidnerDto extends RoundedCylinderBaseDto {
 /**
  * The size and smoothness of an ellipsoid, shared by `EllipsoidDto` and `EllipsoidCentersDto`.
  */
-export abstract class EllipsoidBaseDto {
+export abstract class EllipsoidSharedDto {
     /**
      * The half sizes along X, Y and Z, in model units, as `[x, y, z]`; equal values make a sphere
      * @default [1, 2, 3]
@@ -417,7 +417,7 @@ export abstract class EllipsoidBaseDto {
  * Feeds `shapes.ellipsoid`: a sphere stretched separately along X, Y and Z, given by its center,
  * its three radii and how finely it is faceted.
  */
-export class EllipsoidDto extends EllipsoidBaseDto {
+export class EllipsoidDto extends EllipsoidSharedDto {
     constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -434,7 +434,7 @@ export class EllipsoidDto extends EllipsoidBaseDto {
  * Feeds `shapes.ellipsoidsOnCenterPoints`: one ellipsoid of the same radii on every center point,
  * coming back in the same order.
  */
-export class EllipsoidCentersDto extends EllipsoidBaseDto {
+export class EllipsoidCentersDto extends EllipsoidSharedDto {
     constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -451,7 +451,7 @@ export class EllipsoidCentersDto extends EllipsoidBaseDto {
  * The size and subdivision of a geodesic sphere, shared by `GeodesicSphereDto` and
  * `GeodesicSphereCentersDto`.
  */
-export abstract class GeodesicSphereBaseDto {
+export abstract class GeodesicSphereSharedDto {
     /**
      * Distance from the center to the surface, in model units
      * @default 1
@@ -474,7 +474,7 @@ export abstract class GeodesicSphereBaseDto {
  * Feeds `shapes.geodesicSphere`: a sphere made of evenly sized triangles, given by its center, its
  * radius and how finely the twenty starting faces are subdivided.
  */
-export class GeodesicSphereDto extends GeodesicSphereBaseDto {
+export class GeodesicSphereDto extends GeodesicSphereSharedDto {
     constructor(center?: Base.Point3, radius?: number, frequency?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -491,7 +491,7 @@ export class GeodesicSphereDto extends GeodesicSphereBaseDto {
  * Feeds `shapes.geodesicSpheresOnCenterPoints`: one geodesic sphere of the same radius on every
  * center point, coming back in the same order.
  */
-export class GeodesicSphereCentersDto extends GeodesicSphereBaseDto {
+export class GeodesicSphereCentersDto extends GeodesicSphereSharedDto {
     constructor(centers?: Base.Point3[], radius?: number, frequency?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -508,7 +508,7 @@ export class GeodesicSphereCentersDto extends GeodesicSphereBaseDto {
  * Feeds `shapes.cylindersOnCenterPoints`: one round cylinder of the same size standing along Z on
  * every center point, coming back in the same order.
  */
-export class CylidnerCentersDto extends CylinderBaseDto {
+export class CylidnerCentersDto extends CylinderSharedDto {
     constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -526,7 +526,7 @@ export class CylidnerCentersDto extends CylinderBaseDto {
  * Feeds `shapes.roundedCylindersOnCenterPoints`: one rounded cylinder of the same size on every
  * center point, coming back in the same order.
  */
-export class RoundedCylidnerCentersDto extends RoundedCylinderBaseDto {
+export class RoundedCylidnerCentersDto extends RoundedCylinderSharedDto {
     constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
@@ -544,7 +544,7 @@ export class RoundedCylidnerCentersDto extends RoundedCylinderBaseDto {
 /**
  * The size and smoothness of a sphere, shared by `SphereDto` and `SphereCentersDto`.
  */
-export abstract class SphereBaseDto {
+export abstract class SphereSharedDto {
     /**
      * Distance from the center to the surface, in model units
      * @default 1
@@ -566,7 +566,7 @@ export abstract class SphereBaseDto {
  * Feeds `shapes.sphere`: a sphere given by its center point, its radius and how many facets
  * approximate it.
  */
-export class SphereDto extends SphereBaseDto {
+export class SphereDto extends SphereSharedDto {
     constructor(center?: Base.Point3, radius?: number, segments?: number) {
         super();
         if (center !== undefined) { this.center = center; }
@@ -583,7 +583,7 @@ export class SphereDto extends SphereBaseDto {
  * Feeds `shapes.spheresOnCenterPoints`: one sphere of the same radius on every center point, coming
  * back in the same order.
  */
-export class SphereCentersDto extends SphereBaseDto {
+export class SphereCentersDto extends SphereSharedDto {
     constructor(centers?: Base.Point3[], radius?: number, segments?: number) {
         super();
         if (centers !== undefined) { this.centers = centers; }
