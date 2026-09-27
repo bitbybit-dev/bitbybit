@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
@@ -588,6 +588,21 @@ describe("OCCT fillets unit tests", () => {
         cube.delete();
         chamferRes.delete();
         faces.forEach(f => f.delete());
+    });
+
+    it("should return the shape unchanged, and leave the caller's shape intact, when no index names an edge", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        // Act
+        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [999] });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: chamferRes })).toBeCloseTo(8);
+        expect(solid.getSolidVolume({ shape: cube })).toBeCloseTo(8);
+        expect(errors).toHaveBeenCalledTimes(1);
+        errors.mockRestore();
     });
 
     it("should chamfer specific edges selected by indexes with specific distances", () => {

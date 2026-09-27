@@ -242,7 +242,7 @@ describe("the call shape every OCCT operation goes through", () => {
             const answer = answerTo({ functionName: "echo", inputs: { shapes: [SHAPE_REFERENCE, { type: "occ-shape", hash: 1 }] } });
 
             // Assert
-            expect(answer.error).toBe("OCCT computation failed while executing function 'echo': Shape with hash 1 not found in cache. The cache may have been cleaned. Please regenerate the object.. Input values were: {shapes: [{\"type\":\"occ-shape\",\"hash\":4242},{\"type\":\"occ-shape\",\"hash\":1}]}.");
+            expect(answer.error).toBe("OCCT computation failed while executing function 'echo': Shape with hash 1 not found in cache. The cache may have been cleaned. Please regenerate the object. Input values were: {shapes: [{\"type\":\"occ-shape\",\"hash\":4242},{\"type\":\"occ-shape\",\"hash\":1}]}.");
             expect(kernelCalls).toEqual([]);
         });
     });

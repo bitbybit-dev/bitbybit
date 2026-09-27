@@ -19,16 +19,17 @@ describe("OCCTWorkerMock unit tests", () => {
     });
 
     describe("initializationComplete", () => {
-        it("should hand the kernel and its plugins to the worker's own initialiser", () => {
+        it("should hand the kernel, its plugins and its restart to the worker's own initialiser", () => {
             // Arrange
             const kernel = {} as BitbybitOcctModule;
             const plugins = { dependencies: {} };
+            const restart = (): void => undefined;
 
             // Act
-            mock.initializationComplete(kernel, plugins, true);
+            mock.initializationComplete(kernel, plugins, true, restart);
 
             // Assert
-            expect(initializationComplete).toHaveBeenCalledWith(kernel, plugins, true);
+            expect(initializationComplete).toHaveBeenCalledWith(kernel, plugins, true, restart);
         });
     });
 

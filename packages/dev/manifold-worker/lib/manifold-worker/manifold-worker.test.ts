@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
+import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
 const { FakeCacheHelper, latest, kernelCalls, failure } = vi.hoisted(() => {
@@ -108,7 +108,7 @@ const MISSING_HASH = "missing";
 const REFERENCE = { type: "manifold-shape", hash: CACHED_HASH };
 const CACHED_SHAPE = { hash: CACHED_HASH, kernel: "shape" };
 
-type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; stack?: string };
+type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; stack?: string };
 
 describe("the worker message loop", () => {
     let messages: unknown[];
@@ -869,6 +869,25 @@ describe("the worker message loop", () => {
             });
         });
 
+        it("should send the code of a failure the kernel named beside its message", () => {
+            // Arrange
+            const refused = new KernelOperationError("manifold.boolean.failed", "The union could not be computed.");
+            failure.value = refused;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "Manifold computation failed while executing function 'boom': The union could not be computed.",
+                errorKind: "kernel",
+                code: "manifold.boolean.failed",
+                stack: refused.stack,
+            });
+        });
+
         it("should describe an input error by the path and its own message, as a failure of the inputs", () => {
             // Arrange
             const refused = new InputError("radius must be positive", "radius");
@@ -933,7 +952,7 @@ describe("the worker message loop", () => {
             expect(answer()).toEqual({
                 uid: "uid-1",
                 result: undefined,
-                error: `Manifold computation failed while executing function 'manifoldToMeshPointer': Manifold with hash ${MISSING_HASH} not found in cache. The cache may have been cleaned. Please regenerate the manifold.. Input values were: {manifold: {"hash":"${MISSING_HASH}"}}.`,
+                error: `Manifold computation failed while executing function 'manifoldToMeshPointer': Manifold with hash ${MISSING_HASH} not found in cache. The cache may have been cleaned. Please regenerate the manifold. Input values were: {manifold: {"hash":"${MISSING_HASH}"}}.`,
                 errorKind: "kernel",
                 stack: expect.stringContaining("not found in cache"),
             });

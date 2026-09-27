@@ -4,7 +4,7 @@ import { OccInfo } from "./occ-info";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, stack?: string };
+type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, stack?: string };
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -64,7 +64,7 @@ export class OCCTWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack));
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack, data.code));
                     }
                 } else if (promise) {
                     promise.resolve!(data.result);

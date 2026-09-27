@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
+import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
 type Deletable = { delete: () => void };
-type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; stack?: string };
+type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; stack?: string };
 
 const { FakeCacheHelper, latest, failure } = vi.hoisted(() => {
     class FakeCacheHelper {
@@ -688,6 +688,25 @@ describe("the worker message loop", () => {
                 result: undefined,
                 error: "JSCAD computation failed while executing function 'boom': the kernel refused.",
                 errorKind: "kernel",
+                stack: refused.stack,
+            });
+        });
+
+        it("should send the code of a failure the kernel named beside its message", () => {
+            // Arrange
+            const refused = new KernelOperationError("jscad.boolean.failed", "The union could not be computed.");
+            failure.value = refused;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "JSCAD computation failed while executing function 'boom': The union could not be computed.",
+                errorKind: "kernel",
+                code: "jscad.boolean.failed",
                 stack: refused.stack,
             });
         });

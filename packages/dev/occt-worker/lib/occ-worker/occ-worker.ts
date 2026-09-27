@@ -13,6 +13,15 @@ let shapeResolver: ShapeResolver;
 let resultSerializer: ResultSerializer;
 let functionPathResolver: FunctionPathResolver;
 
+/** Starts the worker again after the kernel crashed, by calling initializationComplete anew. */
+let restartKernel: (() => unknown) | undefined;
+/** Counts the kernels the worker has been given, so a restart can tell whether one arrived. */
+let kernelGeneration = 0;
+/** Set while a crashed kernel is being replaced; calls wait for it. */
+let restarting: Promise<void> | undefined;
+/** What crashed the kernel, when it was not replaced; every later call is refused. */
+let lostKernel: string | undefined;
+
 /**
  * Pending dependencies that need to be added to plugins once OpenCascade is initialized.
  * This handles the case where addOc is called before full initialization.
@@ -39,19 +48,30 @@ export type DataInput = {
 
 /**
  * Initializes the OpenCascade worker with the given module and plugins.
- * 
+ *
+ * A WebAssembly trap in the kernel (an out-of-bounds access, a stack overflow) leaves its memory in
+ * an unknown state, so the worker answers that call as a `crash` and never runs the crashed kernel
+ * again. Pass `restart` to have the worker start over: it is called once per crash and must end by
+ * calling `initializationComplete` again with a new module and new plugins, and calls wait until it
+ * has. Without it, every later call is refused.
+ *
  * @param occ - The BitbybitOcctModule instance
  * @param plugins - Optional plugins to add to the OpenCascade service (e.g., AdvancedOCCT)
  * @param doNotPost - If true, skip posting the initialization message (used for testing)
+ * @param restart - Optional: starts a new kernel after a crash, as the worker's own start-up does
  * @returns The CacheHelper instance for testing purposes
  */
 
 export const initializationComplete = (
     occ: BitbybitOcctModule,
     plugins: any,
-    doNotPost?: boolean
+    doNotPost?: boolean,
+    restart?: () => unknown
 ): CacheHelper => {
     kernel = occ;
+    kernelGeneration++;
+    lostKernel = undefined;
+    restartKernel = restart;
     cacheHelper = new CacheHelper(occ);
 
     const vecService = new VectorHelperService();
@@ -70,7 +90,7 @@ export const initializationComplete = (
         });
     }
 
-    if (!doNotPost) {
+    if (!doNotPost && restarting === undefined) {
         postMessage(WorkerMessages.INITIALIZED);
     }
 
@@ -93,6 +113,35 @@ function createCommandContext(): CommandContext {
 
 /** What the worker answers when a call failed and even its failure could not be sent back. */
 const UNREPORTABLE_FAILURE = "OCCT computation failed, and the failure could not be reported.";
+
+/**
+ * Stops running the crashed kernel: starts it over when the worker can, or remembers the crash so
+ * every later call is refused. Returns what the caller of the crashed call is told happens next.
+ */
+function afterCrash(crash: string): string {
+    const restart = restartKernel;
+    if (restart === undefined) {
+        lostKernel = crash;
+        return " Every shape made before it is gone; create a new worker to continue, or give initializationComplete a restart function.";
+    }
+    const generation = kernelGeneration;
+    restarting = Promise.resolve()
+        .then(restart)
+        .then(
+            () => {
+                if (kernelGeneration === generation) {
+                    lostKernel = crash;
+                }
+            },
+            () => {
+                lostKernel = crash;
+            }
+        )
+        .finally(() => {
+            restarting = undefined;
+        });
+    return " The kernel is restarting, and every shape made before it is gone.";
+}
 
 /**
  * Executes a standard (cacheable) OCCT function.
@@ -131,6 +180,14 @@ export const onMessageInput = (
     d: DataInput,
     postMessage: (message: unknown) => void
 ): void => {
+    if (restarting !== undefined) {
+        void restarting.then(() => onMessageInput(d, postMessage));
+        return;
+    }
+    if (lostKernel !== undefined) {
+        postMessage({ uid: d?.uid, result: undefined, error: `OCCT cannot run '${d?.action?.functionName ?? ""}': the kernel crashed earlier and was not restarted (${lostKernel}).`, errorKind: "crash" });
+        return;
+    }
     postMessage(WorkerMessages.BUSY);
 
     let result: unknown;
@@ -153,12 +210,15 @@ export const onMessageInput = (
         });
     } catch (e) {
         try {
-            const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, readKernelException(kernel, e));
+            const read = readKernelException(kernel, e);
+            const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, read);
+            const next = read instanceof Error && failure.kind === "crash" ? afterCrash(read.message) : "";
             postMessage({
                 uid: d.uid,
                 result: undefined,
-                error: failure.message,
+                error: `${failure.message}${next}`,
                 errorKind: failure.kind,
+                code: failure.code,
                 stack: failure.stack,
             });
         } catch {

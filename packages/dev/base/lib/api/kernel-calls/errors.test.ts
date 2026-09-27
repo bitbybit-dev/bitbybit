@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { InputError, KernelCallError } from "./errors";
+import { InputError, KernelCallError, KernelOperationError } from "./errors";
 
 describe("InputError", () => {
     it("should be an Error that names the property at fault", () => {
@@ -19,6 +19,20 @@ describe("InputError", () => {
     });
 });
 
+describe("KernelOperationError", () => {
+    it("should be an Error that carries a stable code beside its message", () => {
+        // Act
+        const error = new KernelOperationError("occt.fillet.failed", "The fillet could not be built.");
+
+        // Assert
+        expect(error).toBeInstanceOf(Error);
+        expect(error).toBeInstanceOf(KernelOperationError);
+        expect(error.name).toBe("KernelOperationError");
+        expect(error.code).toBe("occt.fillet.failed");
+        expect(error.message).toBe("The fillet could not be built.");
+    });
+});
+
 describe("KernelCallError", () => {
     it("should carry the path, the kind and the worker's stack beside the message", () => {
         // Act
@@ -32,6 +46,19 @@ describe("KernelCallError", () => {
         expect(error.functionName).toBe("shapes.solid.createBox");
         expect(error.kind).toBe("input");
         expect(error.workerStack).toBe("at kernel");
+    });
+
+    it("should carry the code of a failure the kernel named", () => {
+        // Act
+        const error = new KernelCallError("failed", "fillets.filletEdges", "kernel", "at kernel", "occt.fillet.failed");
+
+        // Assert
+        expect(error.code).toBe("occt.fillet.failed");
+        expect(error.workerStack).toBe("at kernel");
+    });
+
+    it("should leave the code unset when the kernel named none", () => {
+        expect(new KernelCallError("failed", "shapes.solid.createBox", "kernel", "at kernel").code).toBeUndefined();
     });
 
     it("should blame the kernel when no kind is given", () => {

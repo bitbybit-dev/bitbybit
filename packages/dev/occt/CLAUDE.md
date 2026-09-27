@@ -68,6 +68,16 @@ not visible in the return type.
 no model from, and the transfer then yields a null shape. Success has two parts, the status and a
 non-null shape, and both loaders check both.
 
+**An operation the kernel cannot complete throws a named failure.** The services check the builder
+(`IsDone()`, and `HasErrors()` on a boolean) and a null result before reading it, and throw
+`occtFailure(code)`: a `KernelOperationError` whose code and English message come from
+`lib/kernel-failures.ts`. The codes are listed in the API report, because hosts translate by them;
+a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs that
+would crash the kernel rather than fail it (a loft through fewer than two sections traps inside
+OCCT) are refused as an `InputError` before the kernel runs. OCCT also reports success for some
+results that are not valid solids - a fillet radius larger than the faces allow, a pipe whose
+profile does not fit its bends - and those still come back without an error.
+
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 
 - **A shape's transform always reads back as the identity.** Reading a transform reads the shape's

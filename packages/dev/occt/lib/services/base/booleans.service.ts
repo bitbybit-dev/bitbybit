@@ -1,6 +1,9 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapeGettersService } from "./shape-getters";
 import * as Resolved from "../../api/resolved-inputs";
+import { occtFailure } from "../../kernel-failures";
+
+type BooleanOperation = { IsDone(): boolean; HasErrors(): boolean; Shape(): TopoDS_Shape; delete(): void };
 
 export class BooleansService {
 
@@ -18,19 +21,18 @@ export class BooleansService {
         let intersectionResults: TopoDS_Shape[] = [];
 
         for (let i = 1; i < inputs.shapes.length; i++) {
-            const intersectedCommon = new this.occ.BRepAlgoAPI_Common(
-                intersectShape,
-                inputs.shapes[i]!
-            );
-            if (intersectedCommon.IsDone() && !intersectedCommon.HasErrors()) {
-                const intersectionResult = intersectedCommon.Shape();
-                if (this.hasContent(intersectionResult)) {
-                    intersectionResults.push(intersectionResult);
-                } else {
-                    intersectionResult.delete();
-                }
+            let intersectionResult: TopoDS_Shape;
+            try {
+                intersectionResult = this.resultOf(new this.occ.BRepAlgoAPI_Common(intersectShape, inputs.shapes[i]!));
+            } catch (failure) {
+                intersectionResults.forEach(r => r.delete());
+                throw failure;
             }
-            intersectedCommon.delete();
+            if (this.hasContent(intersectionResult)) {
+                intersectionResults.push(intersectionResult);
+            } else {
+                intersectionResult.delete();
+            }
         }
 
         if (!inputs.keepEdges && intersectionResults.length > 0) {
@@ -47,9 +49,14 @@ export class BooleansService {
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
             if (!objectsToSubtract[i] || objectsToSubtract[i]!.IsNull()) { console.error("Tool in Difference is null!"); }
-            const differenceCut = new this.occ.BRepAlgoAPI_Cut(difference, objectsToSubtract[i]!);
-            difference = differenceCut.Shape();
-            differenceCut.delete();
+            const cutFrom = difference;
+            try {
+                difference = this.resultOf(new this.occ.BRepAlgoAPI_Cut(cutFrom, objectsToSubtract[i]!));
+            } finally {
+                if (cutFrom !== inputs.shape) {
+                    cutFrom.delete();
+                }
+            }
         }
 
         if (!inputs.keepEdges) {
@@ -70,9 +77,14 @@ export class BooleansService {
         let combined = inputs.shapes[0]!;
         const first = inputs.shapes.length > 1 ? 1 : 0;
         for (let i = first; i < inputs.shapes.length; i++) {
-            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse(combined, inputs.shapes[i]!);
-            combined = combinedFuse.Shape();
-            combinedFuse.delete();
+            const fusedFrom = combined;
+            try {
+                combined = this.resultOf(new this.occ.BRepAlgoAPI_Fuse(fusedFrom, inputs.shapes[i]!));
+            } finally {
+                if (fusedFrom !== inputs.shapes[0]) {
+                    fusedFrom.delete();
+                }
+            }
         }
 
         if (!inputs.keepEdges) {
@@ -80,6 +92,20 @@ export class BooleansService {
         }
 
         return combined;
+    }
+
+    private resultOf(operation: BooleanOperation): TopoDS_Shape {
+        if (!operation.IsDone() || operation.HasErrors()) {
+            operation.delete();
+            throw occtFailure("occt.boolean.failed");
+        }
+        const shape = operation.Shape();
+        operation.delete();
+        if (shape.IsNull()) {
+            shape.delete();
+            throw occtFailure("occt.boolean.failed");
+        }
+        return shape;
     }
 
     private hasContent(shape: TopoDS_Shape): boolean {

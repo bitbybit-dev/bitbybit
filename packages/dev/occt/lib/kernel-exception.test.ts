@@ -26,15 +26,16 @@ describe("readKernelException", () => {
         }
     }
 
-    it("names the C++ exception a kernel call threw by its type and message", () => {
+    it("names the native C++ exception a kernel call threw by its type and message", () => {
         // Arrange
         const thrown = failEdge();
+        const nativeException = Reflect.get(WebAssembly, "Exception") as new (...args: never[]) => object;
 
         // Act
         const read = readKernelException(occt, thrown);
 
         // Assert
-        expect(typeof thrown).toBe("number");
+        expect(thrown).toBeInstanceOf(nativeException);
         expect(read).toBeInstanceOf(Error);
         expect((read as Error).message).toBe("StdFail_NotDone: BRep_API: command not done");
     });

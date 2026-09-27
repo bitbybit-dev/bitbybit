@@ -607,7 +607,8 @@ export function isRegisteredOperation(registry: DtoRegistry, path: string): bool
 
 // @public
 export class KernelCallError extends Error {
-    constructor(message: string, functionName: string, kind?: KernelFailureKind, workerStack?: string);
+    constructor(message: string, functionName: string, kind?: KernelFailureKind, workerStack?: string, code?: string);
+    readonly code: string | undefined;
     readonly functionName: string;
     readonly kind: KernelFailureKind;
     readonly workerStack: string | undefined;
@@ -617,11 +618,18 @@ export class KernelCallError extends Error {
 export type KernelFailure = {
     message: string;
     kind: KernelFailureKind;
+    code: string | undefined;
     stack: string | undefined;
 };
 
 // @public
-export type KernelFailureKind = "input" | "kernel";
+export type KernelFailureKind = "input" | "kernel" | "crash";
+
+// @public
+export class KernelOperationError extends Error {
+    constructor(code: string, message: string);
+    readonly code: string;
+}
 
 // @public
 export function lessThan<T>(property: Key<T>, limit: Key<T> | ((inputs: T) => number), message?: string, reads?: readonly Key<T>[]): InputRule<T>;

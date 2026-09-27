@@ -44,13 +44,40 @@ describe("BooleansService", () => {
         return tally;
     }
 
-    function reportErrors(): void {
-        const original = occt.BRepAlgoAPI_Common.prototype.HasErrors;
-        occt.BRepAlgoAPI_Common.prototype.HasErrors = (): boolean => true;
+    function reportErrors(name: BooleanClass = "BRepAlgoAPI_Common"): void {
+        const original = occt[name].prototype.HasErrors;
+        occt[name].prototype.HasErrors = (): boolean => true;
         restores.push(() => {
-            occt.BRepAlgoAPI_Common.prototype.HasErrors = original;
+            occt[name].prototype.HasErrors = original;
         });
     }
+
+    function reportNotDone(name: BooleanClass): void {
+        const original = occt[name].prototype.IsDone;
+        occt[name].prototype.IsDone = (): boolean => false;
+        restores.push(() => {
+            occt[name].prototype.IsDone = original;
+        });
+    }
+
+    function returnNullShape(name: BooleanClass): void {
+        const original = occt[name].prototype.Shape;
+        occt[name].prototype.Shape = (): TopoDS_Shape => new occt.TopoDS_Shape();
+        restores.push(() => {
+            occt[name].prototype.Shape = original;
+        });
+    }
+
+    function failureOf(run: () => unknown): unknown {
+        try {
+            run();
+        } catch (thrown) {
+            return thrown;
+        }
+        return undefined;
+    }
+
+    const BOOLEAN_FAILED = { name: "KernelOperationError", code: "occt.boolean.failed" };
 
     function box(x: number, size: number): TopoDS_Shape {
         return service.shapes.solid.createBox({ width: size, length: size, height: size, center: [x, 0, 0] });
@@ -129,6 +156,117 @@ describe("BooleansService", () => {
             // Assert
             expect(cut).toEqual({ made: 3, built: 0 });
             expect(volume(result)).toBeCloseTo(1000 - 3 * Math.PI * 10);
+        });
+    });
+
+    describe("when the kernel cannot combine the shapes", () => {
+        it("throws the named boolean failure for a union of a solid and an edge, and leaves both intact", () => {
+            // Arrange
+            const solid = box(0, 10);
+            const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
+
+            // Act
+            const failure = failureOf(() => service.booleans.union({ shapes: [solid, edge], keepEdges: false }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(volume(solid)).toBeCloseTo(1000);
+            expect(edge.IsNull()).toBe(false);
+        });
+
+        it("throws the named boolean failure for a solid cut by an edge, and leaves both intact", () => {
+            // Arrange
+            const solid = box(0, 10);
+            const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
+
+            // Act
+            const failure = failureOf(() => service.booleans.difference({ shape: solid, shapes: [edge], keepEdges: false }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(volume(solid)).toBeCloseTo(1000);
+            expect(edge.IsNull()).toBe(false);
+        });
+
+        it.each([
+            ["union", "BRepAlgoAPI_Fuse"],
+            ["difference", "BRepAlgoAPI_Cut"],
+        ] as const)("throws the named boolean failure from %s when the kernel reports errors", (operation, name) => {
+            // Arrange
+            reportErrors(name);
+
+            // Act
+            const failure = failureOf(() => operation === "union"
+                ? helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true })
+                : helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it.each([
+            ["union", "BRepAlgoAPI_Fuse"],
+            ["difference", "BRepAlgoAPI_Cut"],
+        ] as const)("throws the named boolean failure from %s when the kernel says it is not done", (operation, name) => {
+            // Arrange
+            reportNotDone(name);
+
+            // Act
+            const failure = failureOf(() => operation === "union"
+                ? helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true })
+                : helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it.each([
+            ["union", "BRepAlgoAPI_Fuse"],
+            ["difference", "BRepAlgoAPI_Cut"],
+            ["intersection", "BRepAlgoAPI_Common"],
+        ] as const)("throws the named boolean failure from %s when the kernel returns no shape", (operation, name) => {
+            // Arrange
+            returnNullShape(name);
+
+            // Act
+            const failure = failureOf(() => {
+                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
+                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true });
+                return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
+            });
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it("leaves every shape it was given intact when a later cut fails", () => {
+            // Arrange
+            const solid = box(0, 10);
+            const tool = box(5, 10);
+            const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.difference({ shape: solid, shapes: [tool, edge], keepEdges: true }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(volume(solid)).toBeCloseTo(1000);
+            expect(volume(tool)).toBeCloseTo(1000);
+        });
+
+        it("leaves every shape it was given intact when a later fuse fails", () => {
+            // Arrange
+            const first = box(0, 10);
+            const second = box(5, 10);
+            const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.union({ shapes: [first, second, edge], keepEdges: true }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(volume(first)).toBeCloseTo(1000);
+            expect(volume(second)).toBeCloseTo(1000);
         });
     });
 
@@ -219,26 +357,48 @@ describe("BooleansService", () => {
             expect(service.shapes.face.getFaces({ shape: results[2]! }).map(f => service.shapes.face.getFaceArea({ shape: f }))).toEqual([expect.closeTo(16)]);
         });
 
-        it("drops a result the kernel reports errors for, even when it has content", () => {
+        it("throws the named boolean failure when the kernel reports errors, even for a result with content", () => {
             // Arrange
             reportErrors();
 
             // Act
-            const results = helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false });
+            const failure = failureOf(() => helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false }));
 
             // Assert
-            expect(results).toEqual([]);
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
         });
 
-        it("returns no intersection instead of throwing when an operand is a null shape", () => {
+        it("throws the named boolean failure when an operand is a null shape", () => {
             // Arrange
             const shapes = [box(0, 10), new occt.TopoDS_Shape()];
 
             // Act
-            const results = helper.booleansService.intersection({ shapes, keepEdges: false });
+            const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
 
             // Assert
-            expect(results).toEqual([]);
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it("throws the named boolean failure when a later pair fails, after an earlier pair succeeded", () => {
+            // Arrange
+            const shapes = [box(0, 10), box(0, 4), new occt.TopoDS_Shape()];
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it("throws the named boolean failure when the kernel says it is not done", () => {
+            // Arrange
+            reportNotDone("BRepAlgoAPI_Common");
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
         });
 
         it("wraps the intersections in one compound through the public API", () => {

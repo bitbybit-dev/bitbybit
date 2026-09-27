@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { describeKernelFailure } from "./describe-failure";
-import { InputError } from "./errors";
+import { InputError, KernelOperationError } from "./errors";
 
 const PATH = "shapes.solid.createBox";
 const FAILED = "OCCT computation failed while executing function 'shapes.solid.createBox'";
@@ -22,6 +22,68 @@ describe("describeKernelFailure", () => {
         expect(failure.kind).toBe("kernel");
     });
 
+    it("should give a named kernel failure's message without its type, and its code", () => {
+        // Act
+        const failure = describeKernelFailure("OCCT", "fillets.filletEdges", { radius: 6 }, new KernelOperationError("occt.fillet.failed", "The fillet could not be built."));
+
+        // Assert
+        expect(failure).toEqual({
+            message: "OCCT computation failed while executing function 'fillets.filletEdges': The fillet could not be built. Input values were: {radius: 6}.",
+            kind: "kernel",
+            code: "occt.fillet.failed",
+            stack: expect.any(String),
+        });
+    });
+
+    it("should read a named kernel failure by its name, whichever copy of the class threw it", () => {
+        // Arrange
+        const error = Object.assign(new Error("The loft could not be built"), { name: "KernelOperationError", code: "occt.loft.failed" });
+
+        // Act
+        const failure = describeKernelFailure("OCCT", "", {}, error);
+
+        // Assert
+        expect(failure.message).toBe("OCCT computation failed: The loft could not be built.");
+        expect(failure.code).toBe("occt.loft.failed");
+    });
+
+    it("should give no code for an error that only looks named", () => {
+        // Arrange
+        const numbered = Object.assign(new Error("not found"), { name: "KernelOperationError", code: 404 });
+        const system = Object.assign(new Error("no such file"), { code: "ENOENT" });
+
+        // Act
+        const fromNumbered = describeKernelFailure("OCCT", PATH, {}, numbered);
+        const fromSystem = describeKernelFailure("OCCT", PATH, {}, system);
+
+        // Assert
+        expect(fromNumbered.code).toBeUndefined();
+        expect(fromNumbered.message).toBe(`${FAILED}: KernelOperationError: not found.`);
+        expect(fromSystem.code).toBeUndefined();
+    });
+
+    it("should not end a message that already ends a sentence with a second full stop", () => {
+        // Act
+        const stated = describeKernelFailure("OCCT", PATH, {}, new Error("Could not build the draft."));
+        const asked = describeKernelFailure("OCCT", PATH, {}, new Error("Is the wire closed?"));
+
+        // Assert
+        expect(stated.message).toBe(`${FAILED}: Could not build the draft.`);
+        expect(asked.message).toBe(`${FAILED}: Is the wire closed?`);
+    });
+
+    it("should not end a crash whose message already ends a sentence with a second full stop", () => {
+        // Arrange
+        const trap = new Error("The stack overflowed.");
+        trap.name = "RuntimeError";
+
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, {}, trap);
+
+        // Assert
+        expect(failure.message).toBe("OCCT crashed while executing function 'shapes.solid.createBox': RuntimeError: The stack overflowed.");
+    });
+
     it("should keep the stack out of the message and report it apart", () => {
         // Arrange
         const error = new Error("kernel failed");
@@ -40,6 +102,30 @@ describe("describeKernelFailure", () => {
 
         // Assert
         expect(failure.message).toBe("JSCAD computation failed while executing function 'shapes.solid.createBox': TypeError: x is undefined.");
+    });
+
+    it("should read a WebAssembly trap as a crash of the kernel, with the inputs", () => {
+        // Arrange
+        const RuntimeError = Reflect.get(WebAssembly, "RuntimeError") as new (message: string) => Error;
+
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, { width: 2 }, new RuntimeError("memory access out of bounds"));
+
+        // Assert
+        expect(failure.message).toBe("OCCT crashed while executing function 'shapes.solid.createBox': RuntimeError: memory access out of bounds. Input values were: {width: 2}.");
+        expect(failure.kind).toBe("crash");
+    });
+
+    it("should read a trap from another realm by its name, and leave out a path it was not given", () => {
+        // Arrange
+        const trap = new Error("unreachable");
+        trap.name = "RuntimeError";
+
+        // Act
+        const failure = describeKernelFailure("Manifold", "", {}, trap);
+
+        // Assert
+        expect(failure).toEqual({ message: "Manifold crashed: RuntimeError: unreachable.", kind: "crash", stack: trap.stack });
     });
 
     it("should read an input error as the path and its own message, with no input dump", () => {

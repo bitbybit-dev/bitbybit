@@ -1,10 +1,10 @@
-import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import { decodeMeshArrays, type MeshArrays } from "./mesh-arrays";
+import { decodeMeshArrays, type MeshArrays, type MeshContents } from "./mesh-arrays";
 
 function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new (length: number): T; name: string }): T {
     if (!(view instanceof kind)) {
@@ -69,10 +69,19 @@ export class MeshingService {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
       
-        if (!resolved.computeMetadata && this.kernelHasMeshBuffers()) {
-            const arrays = this.shapeToMeshArrays(resolved);
+        if (this.kernelHasMeshBuffers()) {
+            const contents = { colors: false, metadata: resolved.computeMetadata };
+            const arrays = this.meshArrays(this.occ.ShapeToMeshBuffers(
+                resolved.shape,
+                resolved.precision,
+                resolved.adjustYtoZ,
+                resolved.computeMetadata,
+                resolved.keepMeshData,
+                resolved.allowQualityDecrease,
+                resolved.forceFaceDeflection,
+            ), contents);
             if (arrays) {
-                return decodeMeshArrays(arrays);
+                return decodeMeshArrays(arrays, contents);
             }
         }
         const json = this.occ.ShapeToMeshJson(
@@ -88,31 +97,24 @@ export class MeshingService {
     }
 
     /**
-     * Whether the loaded kernel can hand its mesh over as buffers. A kernel built before
-     * `ShapeToMeshBuffers` existed, such as a pinned or custom build, is meshed through its JSON instead.
+     * Whether the loaded kernel can hand its mesh over as buffers, with metadata and for documents. A
+     * kernel built before `DocumentToMeshBuffers` existed, such as a pinned or custom build, is meshed
+     * through its JSON instead.
      */
     private kernelHasMeshBuffers(): boolean {
-        return typeof (this.occ as Partial<BitbybitOcctModule>).ShapeToMeshBuffers === "function";
+        return typeof (this.occ as Partial<BitbybitOcctModule>).DocumentToMeshBuffers === "function";
     }
 
     /**
-     * Meshes a shape into flat arrays copied out of the kernel's memory, or returns undefined when
+     * Copies a mesh out of the kernel's memory and frees the kernel's copy, or returns undefined when
      * meshing failed, so the caller can report the failure the way the JSON path does.
      */
-    private shapeToMeshArrays(inputs: Resolved.OCCT.ShapeToMeshDto<TopoDS_Shape>): MeshArrays | undefined {
-        const buffers = this.occ.ShapeToMeshBuffers(
-            inputs.shape,
-            inputs.precision,
-            inputs.adjustYtoZ,
-            inputs.keepMeshData,
-            inputs.allowQualityDecrease,
-            inputs.forceFaceDeflection,
-        );
+    private meshArrays(buffers: MeshBuffers, contents: MeshContents): MeshArrays | undefined {
         try {
             if (!buffers.IsValid) {
                 return undefined;
             }
-            return {
+            const arrays: MeshArrays = {
                 positions: copied(buffers.Positions(), Float64Array),
                 normals: copied(buffers.Normals(), Float64Array),
                 uvs: copied(buffers.Uvs(), Float64Array),
@@ -124,9 +126,40 @@ export class MeshingService {
                 edgeMiddles: copied(buffers.EdgeMiddles(), Float64Array),
                 vertices: copied(buffers.Vertices(), Float64Array),
             };
+            if (contents.colors) {
+                arrays.faceColors = copied(buffers.FaceColors(), Int32Array);
+            }
+            if (contents.metadata) {
+                arrays.faceMetadata = copied(buffers.FaceMetadata(), Float64Array);
+                arrays.faceTypes = copied(buffers.FaceTypes(), Int32Array);
+                arrays.faceAdjacency = copied(buffers.FaceAdjacency(), Int32Array);
+                arrays.edgeMetadata = copied(buffers.EdgeMetadata(), Float64Array);
+                arrays.edgeTypes = copied(buffers.EdgeTypes(), Int32Array);
+                arrays.edgeIncidence = copied(buffers.EdgeIncidence(), Int32Array);
+            }
+            return arrays;
         } finally {
             buffers.delete();
         }
+    }
+
+    /**
+     * Meshes one free shape of a document, or all of them as one mesh when `index` is -1, with the
+     * colour groups the document gives its faces; undefined when meshing failed.
+     */
+    private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number): Inputs.OCCT.DecomposedMeshDto | undefined {
+        const contents = { colors: true, metadata: inputs.computeMetadata };
+        const arrays = this.meshArrays(this.occ.DocumentToMeshBuffers(
+            inputs.document.get(),
+            index,
+            inputs.precision,
+            inputs.adjustYtoZ,
+            inputs.computeMetadata,
+            inputs.keepMeshData,
+            inputs.allowQualityDecrease,
+            inputs.forceFaceDeflection,
+        ), contents);
+        return arrays ? decodeMeshArrays(arrays, contents) : undefined;
     }
 
     docToMeshes(inputs: Resolved.OCCT.DocToMeshesDto<Handle_TDocStd_Document>): Inputs.OCCT.DecomposedMeshDto[] {
@@ -135,6 +168,20 @@ export class MeshingService {
             return [];
         }
     
+        if (this.kernelHasMeshBuffers()) {
+            const count = this.occ.DocumentFreeShapeCount(doc.get());
+            const meshes: Inputs.OCCT.DecomposedMeshDto[] = [];
+            for (let index = 0; index < count; index++) {
+                const mesh = this.documentMesh(inputs, index);
+                if (!mesh) {
+                    break;
+                }
+                meshes.push(mesh);
+            }
+            if (meshes.length === count) {
+                return meshes;
+            }
+        }
         const json = this.occ.DocumentToMeshesJson(
             doc.get(),
             inputs.precision,
@@ -153,6 +200,12 @@ export class MeshingService {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
        
+        if (this.kernelHasMeshBuffers()) {
+            const mesh = this.documentMesh(inputs, -1);
+            if (mesh) {
+                return mesh;
+            }
+        }
         const json = this.occ.DocumentToMeshJson(
             doc.get(),
             inputs.precision,

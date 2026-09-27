@@ -30,8 +30,12 @@ as opaque. A property left out, set to undefined, or set to null where the DTO h
 default; null on a property with no default stays null. `withDefaults` does the same for a kernel
 used in the same thread, wrapping only the objects on the way to a registered operation.
 `callByPath`, `rehydrateReferences` and `describeKernelFailure`
-are the three pieces every worker used to keep its own copy of, and `InputError` / `KernelCallError`
-are the two errors a caller can tell apart. `describeKernelFailure` never throws, and gives binary data
+are the three pieces every worker used to keep its own copy of. A caller can tell three errors apart:
+`InputError` (the inputs were refused before the kernel ran), `KernelOperationError` (the kernel ran
+and could not complete the operation, named by a `code` such as `occt.fillet.failed` that keeps its
+meaning across releases and languages, so a host translates by it) and `KernelCallError`, the
+rejection a worker's caller receives, which carries the kind and that code across the thread
+boundary. `describeKernelFailure` never throws, and gives binary data
 at any depth by its kind and size and a long input only up to its cut, so describing a failure never
 costs more than the failure.
 

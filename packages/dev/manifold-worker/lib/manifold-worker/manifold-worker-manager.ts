@@ -4,7 +4,7 @@ import { ManifoldInfo } from "./manifold-info";
 import { ManifoldStateEnum } from "./manifold-state.enum";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
 
-type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, stack?: string };
+type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, stack?: string };
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -45,7 +45,7 @@ export class ManifoldWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack));
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack, data.code));
                     }
                 } else if (promise) {
                     promise.resolve!(data.result);

@@ -12,6 +12,7 @@ describe("kernel-calls barrel", () => {
         expect(exported).toEqual([
             "InputError",
             "KernelCallError",
+            "KernelOperationError",
             "atLeastOne",
             "callByPath",
             "checkStructure",

@@ -8393,6 +8393,9 @@ namespace OCCT_3 {
 }
 
 // @public
+export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>>;
+
+// @public
 export class OCCTAssembly {
     constructor(occ: BitbybitOcctModule, och: OccHelper);
     // (undocumented)
@@ -8605,6 +8608,14 @@ export class OCCTFace {
     wireAlongParam(inputs: Inputs_2.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire;
     wiresAlongParams(inputs: Inputs_2.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[];
 }
+
+// Warning: (ae-forgotten-export) The symbol "KernelOperationError" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function occtFailure(code: OcctFailureCode): KernelOperationError;
+
+// @public
+export type OcctFailureCode = "occt.boolean.failed" | "occt.fillet.failed" | "occt.chamfer.failed" | "occt.offset.failed" | "occt.thickSolid.failed" | "occt.loft.failed" | "occt.revolve.failed" | "occt.pipe.failed";
 
 // @public
 export class OCCTFillets {

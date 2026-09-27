@@ -1,7 +1,9 @@
 /**
- * Whether a kernel call failed on what it was given or inside the kernel itself.
+ * Whether a kernel call failed on what it was given, inside the kernel itself, or by crashing the
+ * kernel: a WebAssembly trap such as an out-of-bounds access, after which the kernel's memory can no
+ * longer be trusted and every object it held is gone.
  */
-export type KernelFailureKind = "input" | "kernel";
+export type KernelFailureKind = "input" | "kernel" | "crash";
 
 /**
  * An input the operation cannot accept, thrown before the kernel runs. `property` names the input
@@ -19,23 +21,43 @@ export class InputError extends Error {
 }
 
 /**
+ * An operation the kernel ran but could not complete, such as a fillet whose radius does not fit
+ * the faces around an edge. `code` names the failure the same way in every release and every
+ * language, such as `occt.fillet.failed`, so a host can translate it; the message says it in English.
+ */
+export class KernelOperationError extends Error {
+    /** The stable name of the failure, such as `occt.fillet.failed`. */
+    readonly code: string;
+
+    constructor(code: string, message: string) {
+        super(message);
+        this.name = "KernelOperationError";
+        this.code = code;
+    }
+}
+
+/**
  * The rejection of a call a kernel worker could not complete: the dotted path that was called,
- * whether the inputs or the kernel failed, and the stack the worker reported, kept apart from the
+ * whether the inputs or the kernel failed or the kernel crashed, the stable code of a failure the
+ * kernel named (see `KernelOperationError`), and the stack the worker reported, kept apart from the
  * message.
  */
 export class KernelCallError extends Error {
     /** The dotted path of the operation that was called. */
     readonly functionName: string;
-    /** Whether the inputs or the kernel were at fault. */
+    /** Whether the inputs or the kernel were at fault, or the kernel crashed. */
     readonly kind: KernelFailureKind;
     /** The stack of the failure inside the worker, when it reported one. */
     readonly workerStack: string | undefined;
+    /** The stable code of the failure, when the kernel named it, such as `occt.fillet.failed`. */
+    readonly code: string | undefined;
 
-    constructor(message: string, functionName: string, kind: KernelFailureKind = "kernel", workerStack?: string) {
+    constructor(message: string, functionName: string, kind: KernelFailureKind = "kernel", workerStack?: string, code?: string) {
         super(message);
         this.name = "KernelCallError";
         this.functionName = functionName;
         this.kind = kind;
         this.workerStack = workerStack;
+        this.code = code;
     }
 }

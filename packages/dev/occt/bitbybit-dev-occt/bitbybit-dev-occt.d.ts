@@ -278,8 +278,8 @@ declare namespace RuntimeExports {
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
     }
-    function getExceptionMessage(ptr: any): any;
-    function decrementExceptionRefcount(ptr: any): any;
+    function getExceptionMessage(ex: any): any;
+    function decrementExceptionRefcount(ex: any): void;
     function FS_createPath(...args: any[]): any;
     function FS_createDataFile(...args: any[]): any;
     function FS_preloadFile(parent: any, name: any, url: any, canRead: any, canWrite: any, dontCreateFile: any, canOwn: any, preFinish: any): Promise<void>;
@@ -1281,6 +1281,13 @@ export interface MeshBuffers extends ClassHandle {
   Edges(): any;
   EdgeMiddles(): any;
   Vertices(): any;
+  FaceColors(): any;
+  FaceMetadata(): any;
+  FaceTypes(): any;
+  FaceAdjacency(): any;
+  EdgeMetadata(): any;
+  EdgeTypes(): any;
+  EdgeIncidence(): any;
 }
 
 export interface STEPControl_Reader extends ClassHandle {
@@ -2281,7 +2288,7 @@ interface EmbindModule {
   GetFaceTriangulation(_0: TopoDS_Face): Poly_Triangulation;
   GetFaceLocation(_0: TopoDS_Face): TopLoc_Location;
   ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
-  ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean): MeshBuffers;
+  ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): MeshBuffers;
   STEPControl_Reader: {
     new(): STEPControl_Reader;
   };
@@ -2582,6 +2589,8 @@ interface EmbindModule {
   TDocStd_Document: {};
   DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
   DocumentToMeshesJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): MeshBuffers;
+  DocumentFreeShapeCount(_0: TDocStd_Document | null): number;
   TDataStd_Name: {
     GetID(): Standard_GUID;
   };

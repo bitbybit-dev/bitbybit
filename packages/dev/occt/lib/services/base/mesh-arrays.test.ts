@@ -177,3 +177,136 @@ describe("decodeMeshArrays", () => {
         expect(decode).toThrow(`the kernel's mesh buffers disagree with their records: ${array} holds`);
     });
 });
+
+describe("decodeMeshArrays with colours and metadata", () => {
+    function withMetadata(overrides: Partial<MeshArrays> = {}): MeshArrays {
+        return consistent({
+            faceMetadata: new Float64Array([12, 1, 2, 3, 1e-7, 40, 7.5, 4, 5, 6, 2e-7, 41]),
+            faceTypes: new Int32Array([0, 2, 6, 1]),
+            faceAdjacency: new Int32Array([1, 5, 0]),
+            edgeMetadata: new Float64Array([3.5, 0, 0, 1, 50, 2, 1, 1, 1, -1]),
+            edgeTypes: new Int32Array([1, 1, 2, 0, 0, 1]),
+            edgeIncidence: new Int32Array([0, 1, 1]),
+            ...overrides,
+        });
+    }
+
+    it("adds each face's metadata after its geometry, in the order the kernel's JSON writes it", () => {
+        // Arrange
+        const input = withMetadata();
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: false, metadata: true });
+
+        // Assert
+        expect(Object.keys(mesh.faceList[0]!)).toEqual(["faceIndex", "vertexCoord", "vertexCoordVec", "uvs", "normalCoord", "triIndexes", "numberOfTriangles", "centerPoint", "centerNormal", "area", "centerOfMass", "surfaceType", "tolerance", "adjacentFaces", "faceUid"]);
+        expect(mesh.faceList.map(face => [face.area, face.centerOfMass, face.surfaceType, face.tolerance, face.adjacentFaces, face.faceUid])).toEqual([
+            [12, [1, 2, 3], "Plane", 1e-7, [1, 5], 40],
+            [7.5, [4, 5, 6], "BSplineSurface", 2e-7, [0], 41],
+        ]);
+    });
+
+    it("adds each edge's metadata after its samples, in the order the kernel's JSON writes it", () => {
+        // Arrange
+        const input = withMetadata();
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: false, metadata: true });
+
+        // Assert
+        expect(Object.keys(mesh.edgeList[0]!)).toEqual(["edgeIndex", "middlePoint", "vertexCoord", "length", "centerOfMass", "curveType", "degenerated", "incidentFaces", "edgeUid"]);
+        expect(mesh.edgeList.map(edge => [edge.length, edge.centerOfMass, edge.curveType, edge.degenerated, edge.incidentFaces, edge.edgeUid])).toEqual([
+            [3.5, [0, 0, 1], "Circle", true, [0, 1], 50],
+            [2, [1, 1, 1], "Line", false, [1], -1],
+        ]);
+    });
+
+    it("leaves the metadata out unless it was asked for", () => {
+        // Arrange
+        const input = withMetadata();
+
+        // Act
+        const mesh = decodeMeshArrays(input);
+
+        // Assert
+        expect(mesh.faceList[0]!.area).toBeUndefined();
+        expect(mesh.edgeList[0]!.length).toBeUndefined();
+        expect("colorGroups" in mesh).toBe(false);
+    });
+
+    it("groups coloured faces by their #rrggbbaa colour, colours sorted and faces in face order", () => {
+        // Arrange
+        const input = consistent({
+            faces: new Int32Array([0, 1, 0, 0, 3, 1, 0, 0, 7, 1, 0, 0, 9, 1, 0, 0]),
+            positions: new Float64Array(12),
+            normals: new Float64Array(12),
+            uvs: new Float64Array(0),
+            triangles: new Int32Array(0),
+            faceCentres: new Float64Array(28),
+            faceColors: new Int32Array([1, 255, 0, 0, 255, 0, 9, 9, 9, 9, 1, 0, 16, 32, 128, 1, 255, 0, 0, 255]),
+        });
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: true, metadata: false });
+
+        // Assert
+        expect(Object.keys(mesh)).toEqual(["faceList", "edgeList", "pointsList", "colorGroups"]);
+        expect(Object.keys(mesh.colorGroups!)).toEqual(["#00102080", "#ff0000ff"]);
+        expect(mesh.colorGroups).toEqual({ "#00102080": [7], "#ff0000ff": [0, 9] });
+    });
+
+    it("gives a document without colours an empty list of colour groups", () => {
+        // Arrange
+        const input = consistent({ faceColors: new Int32Array(10) });
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: true, metadata: false });
+
+        // Assert
+        expect(mesh.colorGroups).toEqual({});
+    });
+
+    it.each([
+        ["face metadata missing", { without: "faceMetadata" }, "faceMetadata is missing"],
+        ["face types missing", { without: "faceTypes" }, "faceTypes is missing"],
+        ["face neighbours missing", { without: "faceAdjacency" }, "faceAdjacency is missing"],
+        ["edge metadata missing", { without: "edgeMetadata" }, "edgeMetadata is missing"],
+        ["edge types missing", { without: "edgeTypes" }, "edgeTypes is missing"],
+        ["edge faces missing", { without: "edgeIncidence" }, "edgeIncidence is missing"],
+        ["a face metadata record cut short", { faceMetadata: new Float64Array(11) }, "faceMetadata holds 11 numbers where 12 were described"],
+        ["a face type record cut short", { faceTypes: new Int32Array([0, 2, 6]) }, "faceTypes holds 3 numbers where 4 were described"],
+        ["a neighbour too many", { faceAdjacency: new Int32Array([1, 5, 0, 3]) }, "faceAdjacency holds 4 numbers where 3 were described"],
+        ["an edge metadata record cut short", { edgeMetadata: new Float64Array(9) }, "edgeMetadata holds 9 numbers where 10 were described"],
+        ["an edge type record cut short", { edgeTypes: new Int32Array([1, 1, 2, 0, 0]) }, "edgeTypes holds 5 numbers where 6 were described"],
+        ["an edge face missing", { edgeIncidence: new Int32Array([0, 1]) }, "edgeIncidence holds 2 numbers where 3 were described"],
+        ["a surface type the JSON has no name for", { faceTypes: new Int32Array([11, 2, 6, 1]) }, "11 is not a surface type"],
+        ["a curve type the JSON has no name for", { edgeTypes: new Int32Array([9, 1, 2, 0, 0, 1]) }, "9 is not a curve type"],
+    ] as [string, Partial<MeshArrays> & { without?: keyof MeshArrays }, string][])("refuses metadata that disagrees with its records: %s", (_name, broken, message) => {
+        // Arrange
+        const { without, ...changes } = broken;
+        const input = withMetadata(changes);
+        if (without) {
+            Reflect.deleteProperty(input, without);
+        }
+
+        // Act
+        const decode = (): unknown => decodeMeshArrays(input, { colors: false, metadata: true });
+
+        // Assert
+        expect(decode).toThrow(`the kernel's mesh buffers disagree with their records: ${message}`);
+    });
+
+    it.each([
+        ["missing", {}, "faceColors is missing"],
+        ["cut short", { faceColors: new Int32Array(9) }, "faceColors holds 9 numbers where 10 were described"],
+    ] as [string, Partial<MeshArrays>, string][])("refuses face colours that are %s", (_name, colours, message) => {
+        // Arrange
+        const input = consistent(colours);
+
+        // Act
+        const decode = (): unknown => decodeMeshArrays(input, { colors: true, metadata: false });
+
+        // Assert
+        expect(decode).toThrow(`the kernel's mesh buffers disagree with their records: ${message}`);
+    });
+});

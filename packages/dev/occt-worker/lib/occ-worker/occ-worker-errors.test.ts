@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
+import { InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
@@ -36,7 +36,7 @@ describe("what the worker says when a call fails", () => {
         onMessageInput(call, post ?? ((message: unknown) => messages.push(message)));
     };
 
-    const answer = (): { error?: string; result?: unknown; errorKind?: string; stack?: string } => messages[1] as { error?: string; result?: unknown; errorKind?: string; stack?: string };
+    const answer = (): { error?: string; result?: unknown; errorKind?: string; code?: string; stack?: string } => messages[1] as { error?: string; result?: unknown; errorKind?: string; code?: string; stack?: string };
 
     beforeEach(() => {
         messages = [];
@@ -58,6 +58,27 @@ describe("what the worker says when a call fails", () => {
             expect(answer().error).not.toContain("\n");
             expect(answer().stack).toContain("the kernel refused");
             expect(answer().errorKind).toBe("kernel");
+        });
+
+        it("should report a failure the kernel named by its message alone, with its code", () => {
+            // Arrange
+            thrown.value = new KernelOperationError("occt.fillet.failed", "The fillet could not be built.");
+
+            // Act
+            run({ functionName: "boom", inputs: { radius: 6 } });
+
+            // Assert
+            expect(answer().error).toBe("OCCT computation failed while executing function 'boom': The fillet could not be built. Input values were: {radius: 6}.");
+            expect(answer().errorKind).toBe("kernel");
+            expect(answer().code).toBe("occt.fillet.failed");
+        });
+
+        it("should report no code for a failure the kernel did not name", () => {
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().code).toBeUndefined();
         });
 
         it("should report an Error with no stack by its name and message", () => {
@@ -286,6 +307,102 @@ describe("what the worker says when a call fails", () => {
 
             // Assert
             expect(answer().error).toBe("OCCT computation failed while executing function 'boom': [object Object].");
+        });
+    });
+
+    describe("a kernel that crashes", () => {
+        const RuntimeError = Reflect.get(WebAssembly, "RuntimeError") as new (message: string) => Error;
+        const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+        const answers = (): { uid?: string; result?: unknown; error?: string; errorKind?: string }[] => messages.filter((message) => typeof message === "object") as { uid?: string; result?: unknown; error?: string; errorKind?: string }[];
+
+        beforeEach(() => {
+            thrown.value = new RuntimeError("memory access out of bounds");
+        });
+
+        it("should answer the call as a crash and refuse every later call when it has no way to restart", () => {
+            // Act
+            run({ functionName: "boom", inputs: {} });
+            run({ functionName: "echo", inputs: { size: 1 } });
+
+            // Assert
+            expect(answers()[0]!.errorKind).toBe("crash");
+            expect(answers()[0]!.error).toBe("OCCT crashed while executing function 'boom': RuntimeError: memory access out of bounds. Every shape made before it is gone; create a new worker to continue, or give initializationComplete a restart function.");
+            expect(answers()[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT cannot run 'echo': the kernel crashed earlier and was not restarted (memory access out of bounds).", errorKind: "crash" });
+            expect(messages.filter((message) => message === "busy")).toHaveLength(1);
+        });
+
+        it("should still refuse, and answer, a later message that carries no call", () => {
+            // Arrange
+            const sent: unknown[] = [];
+            run({ functionName: "boom", inputs: {} });
+
+            // Act
+            Reflect.apply(onMessageInput, undefined, [undefined, (message: unknown): number => sent.push(message)]);
+
+            // Assert
+            expect(sent).toEqual([{ uid: undefined, result: undefined, error: "OCCT cannot run '': the kernel crashed earlier and was not restarted (memory access out of bounds).", errorKind: "crash" }]);
+        });
+
+        it("should start a new kernel with the restart it was given, and run the calls made meanwhile on it", async () => {
+            // Arrange
+            const posted: unknown[] = [];
+            vi.stubGlobal("postMessage", (message: unknown) => posted.push(message));
+            const restart = vi.fn((): void => {
+                initializationComplete(A_MODULE, undefined, false, restart);
+            });
+            initializationComplete(A_MODULE, undefined, true, restart);
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+            run({ functionName: "echo", inputs: { size: 2 } });
+            const answeredBeforeRestart = answers().length;
+            await settle();
+
+            // Assert
+            expect(answers()[0]!.error).toBe("OCCT crashed while executing function 'boom': RuntimeError: memory access out of bounds. The kernel is restarting, and every shape made before it is gone.");
+            expect(answeredBeforeRestart).toBe(1);
+            expect(restart).toHaveBeenCalledTimes(1);
+            expect(answers()[1]).toEqual({ uid: "uid-1", result: { size: 2 } });
+            expect(posted).toEqual([]);
+            vi.unstubAllGlobals();
+        });
+
+        it("should refuse later calls when the restart brought no new kernel", async () => {
+            // Arrange
+            initializationComplete(A_MODULE, undefined, true, () => undefined);
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+            await settle();
+            run({ functionName: "echo", inputs: {} });
+
+            // Assert
+            expect(answers()[1]!.error).toBe("OCCT cannot run 'echo': the kernel crashed earlier and was not restarted (memory access out of bounds).");
+        });
+
+        it("should refuse later calls when the restart failed", async () => {
+            // Arrange
+            initializationComplete(A_MODULE, undefined, true, () => Promise.reject(new Error("no memory for a new kernel")));
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+            await settle();
+            run({ functionName: "echo", inputs: {} });
+
+            // Assert
+            expect(answers()[1]!.errorKind).toBe("crash");
+        });
+
+        it("should run normally again once it is given a new kernel", () => {
+            // Arrange
+            run({ functionName: "boom", inputs: {} });
+
+            // Act
+            initializationComplete(A_MODULE, undefined, true);
+            run({ functionName: "echo", inputs: { size: 3 } });
+
+            // Assert
+            expect(answers()[1]).toEqual({ uid: "uid-1", result: { size: 3 } });
         });
     });
 

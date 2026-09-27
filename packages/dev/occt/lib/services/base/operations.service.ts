@@ -17,6 +17,8 @@ import { FacesService } from "./faces.service";
 import { ShellsService } from "./shells.service";
 import { SolidsService } from "./solids.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
+import { occtFailure } from "../../kernel-failures";
 
 export class OperationsService {
 
@@ -40,6 +42,13 @@ export class OperationsService {
     loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
         if (inputs.periodic && !inputs.closed) {
             throw new Error("Cant construct periodic non closed loft.");
+        }
+        const sections = inputs.shapes.length + (inputs.startVertex ? 1 : 0) + (inputs.endVertex ? 1 : 0);
+        if (sections < 2) {
+            throw new InputError(`A loft needs at least two sections, counting a start or end point, and got ${sections}.`, "shapes");
+        }
+        if (inputs.periodic && inputs.shapes.length < 3) {
+            throw new InputError(`A periodic loft runs a closed curve through its sections, which needs at least three, and got ${inputs.shapes.length}.`, "shapes");
         }
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, inputs.straight, inputs.tolerance);
         const wires: TopoDS_Wire[] = [];
@@ -96,13 +105,18 @@ export class OperationsService {
             pipe.SetParType(parType);
         }
         pipe.CheckCompatibility(false);
-        const pipeShape = pipe.Shape();
-        const res = this.converterService.getActualTypeOfShape(pipeShape);
-        pipeShape.delete();
+        pipe.Build();
+        const built = pipe.IsDone();
+        const pipeShape = built ? pipe.Shape() : undefined;
         pipe.delete();
         wires.forEach(w => w.delete());
         vertices.forEach(v => v.delete());
         endVertices.forEach(v => v.delete());
+        if (!pipeShape) {
+            throw occtFailure("occt.loft.failed");
+        }
+        const res = this.converterService.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
         return res;
     }
 
@@ -197,6 +211,9 @@ export class OperationsService {
     }
 
     loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        if (inputs.shapes.length < 2) {
+            throw new InputError(`A loft needs at least two sections, and got ${inputs.shapes.length}.`, "shapes");
+        }
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
         inputs.shapes.forEach((wire) => {
             if (this.enumService.getShapeTypeEnum(wire) === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -205,10 +222,15 @@ export class OperationsService {
             pipe.AddWire(wire);
         });
         pipe.CheckCompatibility(false);
-        const pipeShape = pipe.Shape();
+        pipe.Build();
+        const built = pipe.IsDone();
+        const pipeShape = built ? pipe.Shape() : undefined;
+        pipe.delete();
+        if (!pipeShape) {
+            throw occtFailure("occt.loft.failed");
+        }
         const res = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
-        pipe.delete();
         return res;
     }
 
@@ -271,13 +293,15 @@ export class OperationsService {
                 inputs.removeIntEdges
             );
         }
-        const offsetShape = offset.Shape();
+        const offsetShape = offset.IsDone() ? offset.Shape() : undefined;
+        offset.delete();
+        wires.forEach(w => w.delete());
+        if (!offsetShape || offsetShape.IsNull()) {
+            offsetShape?.delete();
+            throw occtFailure("occt.offset.failed");
+        }
         const result = this.converterService.getActualTypeOfShape(offsetShape);
         offsetShape.delete();
-        if (offset) {
-            offset.delete();
-        }
-        wires.forEach(w => w.delete());
         return result;
     }
 
@@ -372,18 +396,21 @@ export class OperationsService {
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
         if (Math.abs(angle) >= 360.0) {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
-            result = makeRevol.Shape();
+            result = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
             makeRevol.delete();
         } else {
             const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
                 ax1,
                 angle * Math.PI / 180, inputs.copy);
-            result = makeRevol.Shape();
+            result = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
             makeRevol.delete();
         }
         pt1.delete();
         dir.delete();
         ax1.delete();
+        if (!result) {
+            throw occtFailure("occt.revolve.failed");
+        }
         const actual = this.converterService.getActualTypeOfShape(result);
         result.delete();
         return actual;
@@ -453,6 +480,10 @@ export class OperationsService {
             pipe.Add(sh, false, false);
         });
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         pipe.MakeSolid();
         const pipeShape = pipe.Shape();
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -491,6 +522,12 @@ export class OperationsService {
 
         const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, shape, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            ngon.delete();
+            reversedNgon.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         const pipeShape = pipe.Shape();
 
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -521,6 +558,11 @@ export class OperationsService {
         const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
         const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            circle.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         const pipeShape = pipe.Shape();
 
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -541,6 +583,10 @@ export class OperationsService {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
         maker.Build();
+        if (!maker.IsDone()) {
+            maker.delete();
+            throw occtFailure("occt.thickSolid.failed");
+        }
         const makerShape = maker.Shape();
 
         const result = this.converterService.getActualTypeOfShape(makerShape);
@@ -574,6 +620,11 @@ export class OperationsService {
             inputs.selfIntersection,
             jointType,
             inputs.removeIntEdges);
+        if (!myBody.IsDone()) {
+            myBody.delete();
+            facesToRemove.delete();
+            throw occtFailure("occt.thickSolid.failed");
+        }
         const makeThick = myBody.Shape();
         const result = this.converterService.getActualTypeOfShape(makeThick);
         makeThick.delete();
