@@ -5,7 +5,7 @@ import { OccStateEnum } from "./occ-state.enum";
 import { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; stack?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -212,10 +212,10 @@ describe("OCCTWorkerManager unit tests", () => {
             const pending = manager.genericCallToWorkerPromise("fillets.filletEdges", {});
 
             // Act
-            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "occt.fillet.failed" });
+            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "occt.fillet.failed", details: { edges: [3] } });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "occt.fillet.failed" });
+            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "occt.fillet.failed", details: { edges: [3] } });
         });
 
         it("should leave the code unset when the worker reported none", async () => {
@@ -226,7 +226,7 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "failed" });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ code: undefined });
+            await expect(pending).rejects.toMatchObject({ code: undefined, details: undefined });
         });
 
         it("should pass the error to the error callback when one is registered", async () => {

@@ -108,7 +108,7 @@ const MISSING_HASH = "missing";
 const REFERENCE = { type: "manifold-shape", hash: CACHED_HASH };
 const CACHED_SHAPE = { hash: CACHED_HASH, kernel: "shape" };
 
-type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; stack?: string };
+type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; details?: unknown; stack?: string };
 
 describe("the worker message loop", () => {
     let messages: unknown[];
@@ -871,7 +871,7 @@ describe("the worker message loop", () => {
 
         it("should send the code of a failure the kernel named beside its message", () => {
             // Arrange
-            const refused = new KernelOperationError("manifold.boolean.failed", "The union could not be computed.");
+            const refused = new KernelOperationError("manifold.boolean.failed", "The union could not be computed.", { shapes: [1] });
             failure.value = refused;
 
             // Act
@@ -884,6 +884,7 @@ describe("the worker message loop", () => {
                 error: "Manifold computation failed while executing function 'boom': The union could not be computed.",
                 errorKind: "kernel",
                 code: "manifold.boolean.failed",
+                details: { shapes: [1] },
                 stack: refused.stack,
             });
         });

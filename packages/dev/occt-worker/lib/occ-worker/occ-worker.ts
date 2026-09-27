@@ -219,6 +219,7 @@ export const onMessageInput = (
                 error: `${failure.message}${next}`,
                 errorKind: failure.kind,
                 code: failure.code,
+                details: failure.details,
                 stack: failure.stack,
             });
         } catch {

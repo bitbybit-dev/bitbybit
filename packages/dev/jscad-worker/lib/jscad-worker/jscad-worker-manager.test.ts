@@ -6,7 +6,7 @@ import { JscadInfo } from "./jscad-info";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "jscad-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; stack?: string };
+type WorkerAnswer = "jscad-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends JSCADWorkerMock {
     readonly posted: PostedCall[] = [];
@@ -158,10 +158,10 @@ describe("JSCADWorkerManager unit tests", () => {
             const pending = manager.genericCallToWorkerPromise("booleans.union", {});
 
             // Act
-            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "jscad.boolean.failed" });
+            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "jscad.boolean.failed", details: { edges: [3] } });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "jscad.boolean.failed" });
+            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "jscad.boolean.failed", details: { edges: [3] } });
         });
 
         it("should leave the code unset when the worker reported none", async () => {
@@ -172,7 +172,7 @@ describe("JSCADWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "failed" });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ code: undefined });
+            await expect(pending).rejects.toMatchObject({ code: undefined, details: undefined });
         });
 
         it("should pass the error to the error callback when one is registered", async () => {

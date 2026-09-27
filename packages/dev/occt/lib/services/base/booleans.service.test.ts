@@ -78,6 +78,18 @@ describe("BooleansService", () => {
     }
 
     const BOOLEAN_FAILED = { name: "KernelOperationError", code: "occt.boolean.failed" };
+    const MIXED_DIMENSIONS = { name: "KernelOperationError", code: "occt.boolean.mixedDimensions" };
+
+    function reportAlerts(name: BooleanClass, alerts: string): void {
+        const errors = occt[name].prototype.HasErrors;
+        const read = occt[name].prototype.ErrorAlerts;
+        occt[name].prototype.HasErrors = (): boolean => true;
+        occt[name].prototype.ErrorAlerts = (): string => alerts;
+        restores.push(() => {
+            occt[name].prototype.HasErrors = errors;
+            occt[name].prototype.ErrorAlerts = read;
+        });
+    }
 
     function box(x: number, size: number): TopoDS_Shape {
         return service.shapes.solid.createBox({ width: size, length: size, height: size, center: [x, 0, 0] });
@@ -160,7 +172,50 @@ describe("BooleansService", () => {
     });
 
     describe("when the kernel cannot combine the shapes", () => {
-        it("throws the named boolean failure for a union of a solid and an edge, and leaves both intact", () => {
+        it.each([
+            ["union", "BRepAlgoAPI_Fuse"],
+            ["difference", "BRepAlgoAPI_Cut"],
+            ["intersection", "BRepAlgoAPI_Common"],
+        ] as const)("names shapes of different dimensions when %s's kernel reports the operation not allowed", (operation, name) => {
+            // Arrange
+            reportAlerts(name, "BOPAlgo_AlertNoFiller BOPAlgo_AlertBOPNotAllowed");
+
+            // Act
+            const failure = failureOf(() => {
+                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
+                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true });
+                return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
+            });
+
+            // Assert
+            expect(failure).toMatchObject(MIXED_DIMENSIONS);
+        });
+
+        it("names no reason for alerts it does not know", () => {
+            // Arrange
+            reportAlerts("BRepAlgoAPI_Fuse", "BOPAlgo_AlertIntersectionFailed");
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true }));
+
+            // Assert
+            expect(failure).toMatchObject(BOOLEAN_FAILED);
+        });
+
+        it.each([
+            ["the shape to cut from", (): unknown => helper.booleansService.difference({ shape: new occt.TopoDS_Shape(), shapes: [box(0, 10)], keepEdges: true }), "shape", "The shape is empty"],
+            ["a tool", (): unknown => helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 1), new occt.TopoDS_Shape()], keepEdges: true }), "shapes", "The shape at position 1 of `shapes` is empty"],
+            ["a shape of a union", (): unknown => helper.booleansService.union({ shapes: [new occt.TopoDS_Shape(), box(0, 10)], keepEdges: true }), "shapes", "The shape at position 0 of `shapes` is empty"],
+        ])("refuses an empty %s as an input error", (_what, run, property, start) => {
+            // Act
+            const failure = failureOf(run);
+
+            // Assert
+            expect(failure).toMatchObject({ name: "InputError", property });
+            expect((failure as Error).message.startsWith(start)).toBe(true);
+        });
+
+        it("names shapes of different dimensions for a union of a solid and an edge, and leaves both intact", () => {
             // Arrange
             const solid = box(0, 10);
             const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
@@ -169,12 +224,12 @@ describe("BooleansService", () => {
             const failure = failureOf(() => service.booleans.union({ shapes: [solid, edge], keepEdges: false }));
 
             // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(failure).toMatchObject(MIXED_DIMENSIONS);
             expect(volume(solid)).toBeCloseTo(1000);
             expect(edge.IsNull()).toBe(false);
         });
 
-        it("throws the named boolean failure for a solid cut by an edge, and leaves both intact", () => {
+        it("names shapes of different dimensions for a solid cut by an edge, and leaves both intact", () => {
             // Arrange
             const solid = box(0, 10);
             const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
@@ -183,7 +238,7 @@ describe("BooleansService", () => {
             const failure = failureOf(() => service.booleans.difference({ shape: solid, shapes: [edge], keepEdges: false }));
 
             // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(failure).toMatchObject(MIXED_DIMENSIONS);
             expect(volume(solid)).toBeCloseTo(1000);
             expect(edge.IsNull()).toBe(false);
         });
@@ -249,7 +304,7 @@ describe("BooleansService", () => {
             const failure = failureOf(() => helper.booleansService.difference({ shape: solid, shapes: [tool, edge], keepEdges: true }));
 
             // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(failure).toMatchObject(MIXED_DIMENSIONS);
             expect(volume(solid)).toBeCloseTo(1000);
             expect(volume(tool)).toBeCloseTo(1000);
         });
@@ -264,7 +319,7 @@ describe("BooleansService", () => {
             const failure = failureOf(() => helper.booleansService.union({ shapes: [first, second, edge], keepEdges: true }));
 
             // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(failure).toMatchObject(MIXED_DIMENSIONS);
             expect(volume(first)).toBeCloseTo(1000);
             expect(volume(second)).toBeCloseTo(1000);
         });
@@ -368,18 +423,7 @@ describe("BooleansService", () => {
             expect(failure).toMatchObject(BOOLEAN_FAILED);
         });
 
-        it("throws the named boolean failure when an operand is a null shape", () => {
-            // Arrange
-            const shapes = [box(0, 10), new occt.TopoDS_Shape()];
-
-            // Act
-            const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
-
-            // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
-        });
-
-        it("throws the named boolean failure when a later pair fails, after an earlier pair succeeded", () => {
+        it("refuses an empty operand as an input error that says which", () => {
             // Arrange
             const shapes = [box(0, 10), box(0, 4), new occt.TopoDS_Shape()];
 
@@ -387,7 +431,28 @@ describe("BooleansService", () => {
             const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
 
             // Assert
+            expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: "The shape at position 2 of `shapes` is empty, as an operation that failed can leave it; nothing can be combined with it." });
+        });
+
+        it("throws the named boolean failure when a later pair fails, after an earlier pair succeeded", () => {
+            // Arrange
+            const shapes = [box(0, 10), box(0, 4), box(20, 1)];
+            let pairs = 0;
+            const errors = occt.BRepAlgoAPI_Common.prototype.HasErrors;
+            occt.BRepAlgoAPI_Common.prototype.HasErrors = function (this: never): boolean {
+                pairs++;
+                return pairs > 1 || errors.call(this);
+            };
+            restores.push(() => {
+                occt.BRepAlgoAPI_Common.prototype.HasErrors = errors;
+            });
+
+            // Act
+            const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
+
+            // Assert
             expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(pairs).toBe(2);
         });
 
         it("throws the named boolean failure when the kernel says it is not done", () => {

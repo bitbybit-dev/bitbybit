@@ -21,6 +21,8 @@ describe("kernel-calls barrel", () => {
             "defineRules",
             "describeKernelFailure",
             "distinct",
+            "englishList",
+            "fillFailureMessage",
             "isRegisteredOperation",
             "lessThan",
             "notZeroVector",

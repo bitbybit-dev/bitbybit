@@ -32,10 +32,15 @@ used in the same thread, wrapping only the objects on the way to a registered op
 `callByPath`, `rehydrateReferences` and `describeKernelFailure`
 are the three pieces every worker used to keep its own copy of. A caller can tell three errors apart:
 `InputError` (the inputs were refused before the kernel ran), `KernelOperationError` (the kernel ran
-and could not complete the operation, named by a `code` such as `occt.fillet.failed` that keeps its
-meaning across releases and languages, so a host translates by it) and `KernelCallError`, the
-rejection a worker's caller receives, which carries the kind and that code across the thread
-boundary. `describeKernelFailure` never throws, and gives binary data
+and could not complete the operation, named by a `code` such as `occt.fillet.failedOnEdges` that
+keeps its meaning across releases and languages, with the `details` its message names, such as
+`{ edges: [3, 7] }`) and `KernelCallError`, the rejection a worker's caller receives, which carries
+the kind, the code and the details across the thread boundary. A host translates a failure by its
+code and fills its template with `fillFailureMessage(template, details, formatList)`: `{name}`
+placeholders, a list written by the formatter it passes (English by default, since the packages
+compile against ES2020 and `Intl.ListFormat` is the host's to bring). Details are plain strings,
+numbers, booleans and lists of one of them; `describeKernelFailure` drops anything else, since it
+must cross to another thread. `describeKernelFailure` never throws, and gives binary data
 at any depth by its kind and size and a long input only up to its cut, so describing a failure never
 costs more than the failure.
 

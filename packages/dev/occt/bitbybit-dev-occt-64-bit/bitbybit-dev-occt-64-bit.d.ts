@@ -962,6 +962,7 @@ export interface BRepAlgoAPI_Fuse extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -971,6 +972,7 @@ export interface BRepAlgoAPI_Cut extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -980,6 +982,7 @@ export interface BRepAlgoAPI_Common extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -1096,6 +1099,7 @@ export interface BRepFilletAPI_MakeFillet extends ClassHandle {
   IsDone(): boolean;
   Build(): void;
   AddWithLaw(_0: TColgp_Array1OfPnt2d, _1: TopoDS_Edge): void;
+  FaultyEdges(_0: TopoDS_Shape): VectorInt;
 }
 
 export interface BRepFilletAPI_MakeChamfer extends ClassHandle {
@@ -1118,6 +1122,7 @@ export interface BRepFilletAPI_MakeFillet2d extends ClassHandle {
   Shape(): TopoDS_Shape;
   NbFillet(): number;
   NbChamfer(): number;
+  CornerDone(): boolean;
 }
 
 export interface ChFi2d_FilletAlgo extends ClassHandle {

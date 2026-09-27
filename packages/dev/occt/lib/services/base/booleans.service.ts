@@ -1,9 +1,10 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapeGettersService } from "./shape-getters";
 import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 
-type BooleanOperation = { IsDone(): boolean; HasErrors(): boolean; Shape(): TopoDS_Shape; delete(): void };
+type BooleanOperation = { IsDone(): boolean; HasErrors(): boolean; ErrorAlerts(): string; Shape(): TopoDS_Shape; delete(): void };
 
 export class BooleansService {
 
@@ -17,6 +18,7 @@ export class BooleansService {
             throw (new Error("Intersection requires 2 or more shapes to be given"));
         }
 
+        this.refuseEmpty(inputs.shapes, "shapes");
         const intersectShape = inputs.shapes[0]!;
         let intersectionResults: TopoDS_Shape[] = [];
 
@@ -45,10 +47,11 @@ export class BooleansService {
     }
 
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
+        this.refuseEmpty([inputs.shape], "shape");
+        this.refuseEmpty(inputs.shapes, "shapes");
         let difference = inputs.shape;
         const objectsToSubtract = inputs.shapes;
         for (let i = 0; i < objectsToSubtract.length; i++) {
-            if (!objectsToSubtract[i] || objectsToSubtract[i]!.IsNull()) { console.error("Tool in Difference is null!"); }
             const cutFrom = difference;
             try {
                 difference = this.resultOf(new this.occ.BRepAlgoAPI_Cut(cutFrom, objectsToSubtract[i]!));
@@ -74,6 +77,7 @@ export class BooleansService {
     }
 
     union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
+        this.refuseEmpty(inputs.shapes, "shapes");
         let combined = inputs.shapes[0]!;
         const first = inputs.shapes.length > 1 ? 1 : 0;
         for (let i = first; i < inputs.shapes.length; i++) {
@@ -96,8 +100,9 @@ export class BooleansService {
 
     private resultOf(operation: BooleanOperation): TopoDS_Shape {
         if (!operation.IsDone() || operation.HasErrors()) {
+            const alerts = operation.ErrorAlerts().split(" ");
             operation.delete();
-            throw occtFailure("occt.boolean.failed");
+            throw alerts.includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
         }
         const shape = operation.Shape();
         operation.delete();
@@ -106,6 +111,15 @@ export class BooleansService {
             throw occtFailure("occt.boolean.failed");
         }
         return shape;
+    }
+
+    private refuseEmpty(shapes: readonly (TopoDS_Shape | undefined)[], property: string): void {
+        shapes.forEach((shape, index) => {
+            if (!shape || shape.IsNull()) {
+                const which = property === "shape" ? "The shape" : `The shape at position ${index} of \`shapes\``;
+                throw new InputError(`${which} is empty, as an operation that failed can leave it; nothing can be combined with it.`, property);
+            }
+        });
     }
 
     private hasContent(shape: TopoDS_Shape): boolean {

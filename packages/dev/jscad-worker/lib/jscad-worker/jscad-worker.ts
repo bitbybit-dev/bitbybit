@@ -97,6 +97,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 error: failure.message,
                 errorKind: failure.kind,
                 code: failure.code,
+                details: failure.details,
                 stack: failure.stack,
             });
         } catch {

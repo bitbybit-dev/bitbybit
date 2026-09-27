@@ -1,10 +1,10 @@
-import { KernelCallError, KernelFailureKind } from "@bitbybit-dev/base";
+import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import { JscadInfo } from "./jscad-info";
 import { JscadStateEnum } from "./jscad-state.enum";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
 
-type WorkerResponse = "jscad-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, stack?: string };
+type WorkerResponse = "jscad-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -46,7 +46,7 @@ export class JSCADWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack, data.code));
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack, data.code, data.details));
                     }
                 } else if (promise) {
                     promise.resolve!(data.result);

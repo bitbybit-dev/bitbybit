@@ -159,7 +159,7 @@ almost every rule here follows from that.
   produces no reply leaves its caller waiting forever, which is why the error path wraps its own
   `postMessage` in a second try/catch. The managers settle a call on every reply, a falsy or absent
   result included, and reject with a `KernelCallError` (base) carrying the dotted path, the kind of
-  failure, the code of a failure the kernel named, and the worker's stack apart from the message.
+  failure, the code and details of a failure the kernel named, and the stack apart from the message.
 - **One call shape in every worker** (`prepareKernelCall`, base): the inputs are laid over the DTO's
   defaults and the call is cached under them. Only a miss reports what `validateInputs` finds (not
   thrown, for now), replaces the references in the inputs by the cached objects - a new structure, the

@@ -70,13 +70,20 @@ non-null shape, and both loaders check both.
 
 **An operation the kernel cannot complete throws a named failure.** The services check the builder
 (`IsDone()`, and `HasErrors()` on a boolean) and a null result before reading it, and throw
-`occtFailure(code)`: a `KernelOperationError` whose code and English message come from
-`lib/kernel-failures.ts`. The codes are listed in the API report, because hosts translate by them;
-a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs that
-would crash the kernel rather than fail it (a loft through fewer than two sections traps inside
-OCCT) are refused as an `InputError` before the kernel runs. OCCT also reports success for some
-results that are not valid solids - a fillet radius larger than the faces allow, a pipe whose
-profile does not fit its bends - and those still come back without an error.
+`occtFailure(code, details?)`: a `KernelOperationError` whose code, English template and detail
+types come from `lib/kernel-failures.ts` (`OcctFailureDetails` makes a code's details required
+exactly when its template names any). Where OCCT keeps the reason, the code names it: the edges a
+fillet failed on (`FaultyEdges`, numbered as `getEdge` numbers them), the corners a 2D fillet could
+not round (numbered from 1, as `fillet2d` takes them), shapes of different dimensions in a boolean
+(its `BOPAlgo_AlertBOPNotAllowed`). Offsets report nothing useful (`NoError` or `UnknownError` on real
+failures) and 2D chamfers report every corner done even when the result is not valid, so neither
+has a reason code. The codes and detail types are in the API report, because hosts translate by
+them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
+that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
+points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
+reports success for some results that are not valid solids - a fillet radius larger than the faces
+allow, a pipe whose profile does not fit its bends - and those still come back without an error;
+`shapes.shape.isValid` finds the first kind.
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

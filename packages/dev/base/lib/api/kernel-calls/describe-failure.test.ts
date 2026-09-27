@@ -47,6 +47,47 @@ describe("describeKernelFailure", () => {
         expect(failure.code).toBe("occt.loft.failed");
     });
 
+    it("should pass on the details of a named kernel failure", () => {
+        // Arrange
+        const error = new KernelOperationError("occt.fillet.failedOnEdges", "The fillet failed at edges 3 and 7.", { edges: [3, 7], radius: 20, shape: "solid", partial: false, names: ["a", "b"] });
+
+        // Act
+        const failure = describeKernelFailure("OCCT", "fillets.filletEdges", {}, error);
+
+        // Assert
+        expect(failure.code).toBe("occt.fillet.failedOnEdges");
+        expect(failure.details).toEqual({ edges: [3, 7], radius: 20, shape: "solid", partial: false, names: ["a", "b"] });
+    });
+
+    it.each([
+        ["a nested record", { edges: { first: 3 } }],
+        ["a list of mixed kinds", { edges: [3, "seven"] }],
+        ["a function", { edges: (): number => 3 }],
+        ["a list", [3, 7]],
+        ["null", null],
+    ])("should drop details that are %s, which cannot cross to another thread or fill a template", (_what, details) => {
+        // Arrange
+        const error = Object.assign(new Error("The fillet failed."), { name: "KernelOperationError", code: "occt.fillet.failed", details });
+
+        // Act
+        const failure = describeKernelFailure("OCCT", "fillets.filletEdges", {}, error);
+
+        // Assert
+        expect(failure.code).toBe("occt.fillet.failed");
+        expect(failure.details).toBeUndefined();
+    });
+
+    it("should give no details for an error that carries details but no code", () => {
+        // Arrange
+        const error = Object.assign(new Error("failed"), { name: "KernelOperationError", details: { edges: [3] } });
+
+        // Act
+        const failure = describeKernelFailure("OCCT", PATH, {}, error);
+
+        // Assert
+        expect(failure.details).toBeUndefined();
+    });
+
     it("should give no code for an error that only looks named", () => {
         // Arrange
         const numbered = Object.assign(new Error("not found"), { name: "KernelOperationError", code: 404 });

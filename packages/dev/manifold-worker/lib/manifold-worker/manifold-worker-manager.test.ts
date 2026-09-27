@@ -6,7 +6,7 @@ import { ManifoldInfo } from "./manifold-info";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "manifold-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; stack?: string };
+type WorkerAnswer = "manifold-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends ManifoldWorkerMock {
     readonly posted: PostedCall[] = [];
@@ -158,10 +158,10 @@ describe("ManifoldWorkerManager unit tests", () => {
             const pending = manager.genericCallToWorkerPromise("manifold.booleans.union", {});
 
             // Act
-            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "manifold.boolean.failed" });
+            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "manifold.boolean.failed", details: { edges: [3] } });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "manifold.boolean.failed" });
+            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "manifold.boolean.failed", details: { edges: [3] } });
         });
 
         it("should leave the code unset when the worker reported none", async () => {
@@ -172,7 +172,7 @@ describe("ManifoldWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "failed" });
 
             // Assert
-            await expect(pending).rejects.toMatchObject({ code: undefined });
+            await expect(pending).rejects.toMatchObject({ code: undefined, details: undefined });
         });
 
         it("should pass the error to the error callback when one is registered", async () => {

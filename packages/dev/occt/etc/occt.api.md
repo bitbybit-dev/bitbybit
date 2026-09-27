@@ -8634,10 +8634,29 @@ export class OCCTFace {
 // Warning: (ae-forgotten-export) The symbol "KernelOperationError" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function occtFailure(code: OcctFailureCode): KernelOperationError;
+export function occtFailure<C extends OcctFailureCode>(code: C, ...details: OcctFailureDetails[C] extends undefined ? [] : [OcctFailureDetails[C]]): KernelOperationError;
 
 // @public
-export type OcctFailureCode = "occt.boolean.failed" | "occt.fillet.failed" | "occt.chamfer.failed" | "occt.offset.failed" | "occt.thickSolid.failed" | "occt.loft.failed" | "occt.revolve.failed" | "occt.pipe.failed";
+export type OcctFailureCode = keyof OcctFailureDetails;
+
+// @public
+export type OcctFailureDetails = {
+    "occt.boolean.failed": undefined;
+    "occt.boolean.mixedDimensions": undefined;
+    "occt.fillet.failed": undefined;
+    "occt.fillet.failedOnEdges": {
+        readonly edges: readonly number[];
+    };
+    "occt.fillet.failedAtCorners": {
+        readonly corners: readonly number[];
+    };
+    "occt.chamfer.failed": undefined;
+    "occt.offset.failed": undefined;
+    "occt.thickSolid.failed": undefined;
+    "occt.loft.failed": undefined;
+    "occt.revolve.failed": undefined;
+    "occt.pipe.failed": undefined;
+};
 
 // @public
 export class OCCTFillets {

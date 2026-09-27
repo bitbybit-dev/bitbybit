@@ -457,6 +457,12 @@ export type DtoRules = {
     readonly rules: readonly InputRule<unknown>[];
 };
 
+// @public
+export function englishList(items: readonly string[]): string;
+
+// @public
+export function fillFailureMessage(template: string, details: KernelFailureDetails | undefined, formatList?: (items: readonly string[]) => string): string;
+
 // @public (undocumented)
 export class GeometryHelper {
     approxEq(num1: number, num2: number, tolerance: number): boolean;
@@ -607,8 +613,9 @@ export function isRegisteredOperation(registry: DtoRegistry, path: string): bool
 
 // @public
 export class KernelCallError extends Error {
-    constructor(message: string, functionName: string, kind?: KernelFailureKind, workerStack?: string, code?: string);
+    constructor(message: string, functionName: string, kind?: KernelFailureKind, workerStack?: string, code?: string, details?: KernelFailureDetails);
     readonly code: string | undefined;
+    readonly details: KernelFailureDetails | undefined;
     readonly functionName: string;
     readonly kind: KernelFailureKind;
     readonly workerStack: string | undefined;
@@ -619,16 +626,24 @@ export type KernelFailure = {
     message: string;
     kind: KernelFailureKind;
     code: string | undefined;
+    details: KernelFailureDetails | undefined;
     stack: string | undefined;
 };
+
+// @public
+export type KernelFailureDetail = string | number | boolean | readonly string[] | readonly number[];
+
+// @public
+export type KernelFailureDetails = Readonly<Record<string, KernelFailureDetail>>;
 
 // @public
 export type KernelFailureKind = "input" | "kernel" | "crash";
 
 // @public
 export class KernelOperationError extends Error {
-    constructor(code: string, message: string);
+    constructor(code: string, message: string, details?: KernelFailureDetails);
     readonly code: string;
+    readonly details: KernelFailureDetails | undefined;
 }
 
 // @public

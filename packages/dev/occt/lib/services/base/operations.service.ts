@@ -47,6 +47,9 @@ export class OperationsService {
         if (sections < 2) {
             throw new InputError(`A loft needs at least two sections, counting a start or end point, and got ${sections}.`, "shapes");
         }
+        if (inputs.shapes.length === 0) {
+            throw new InputError("A loft needs at least one wire or edge among its sections; a start or end point can only begin or end it.", "shapes");
+        }
         if (inputs.periodic && inputs.shapes.length < 3) {
             throw new InputError(`A periodic loft runs a closed curve through its sections, which needs at least three, and got ${inputs.shapes.length}.`, "shapes");
         }

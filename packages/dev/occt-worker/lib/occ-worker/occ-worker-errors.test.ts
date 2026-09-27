@@ -36,7 +36,7 @@ describe("what the worker says when a call fails", () => {
         onMessageInput(call, post ?? ((message: unknown) => messages.push(message)));
     };
 
-    const answer = (): { error?: string; result?: unknown; errorKind?: string; code?: string; stack?: string } => messages[1] as { error?: string; result?: unknown; errorKind?: string; code?: string; stack?: string };
+    const answer = (): { error?: string; result?: unknown; errorKind?: string; code?: string; details?: unknown; stack?: string } => messages[1] as { error?: string; result?: unknown; errorKind?: string; code?: string; details?: unknown; stack?: string };
 
     beforeEach(() => {
         messages = [];
@@ -71,6 +71,18 @@ describe("what the worker says when a call fails", () => {
             expect(answer().error).toBe("OCCT computation failed while executing function 'boom': The fillet could not be built. Input values were: {radius: 6}.");
             expect(answer().errorKind).toBe("kernel");
             expect(answer().code).toBe("occt.fillet.failed");
+        });
+
+        it("should report the details of a failure the kernel named", () => {
+            // Arrange
+            thrown.value = new KernelOperationError("occt.fillet.failedOnEdges", "The fillet failed at edges 3 and 7.", { edges: [3, 7] });
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().code).toBe("occt.fillet.failedOnEdges");
+            expect(answer().details).toEqual({ edges: [3, 7] });
         });
 
         it("should report no code for a failure the kernel did not name", () => {

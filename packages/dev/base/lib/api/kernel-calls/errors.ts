@@ -20,27 +20,40 @@ export class InputError extends Error {
     }
 }
 
+/** A value a failure's message names, such as the numbers of the edges a fillet could not follow. */
+export type KernelFailureDetail = string | number | boolean | readonly string[] | readonly number[];
+
+/**
+ * The values a failure's message names, each under the placeholder it fills in the message's
+ * template: `{ edges: [3, 7] }` fills `{edges}`.
+ */
+export type KernelFailureDetails = Readonly<Record<string, KernelFailureDetail>>;
+
 /**
  * An operation the kernel ran but could not complete, such as a fillet whose radius does not fit
  * the faces around an edge. `code` names the failure the same way in every release and every
- * language, such as `occt.fillet.failed`, so a host can translate it; the message says it in English.
+ * language, such as `occt.fillet.failedOnEdges`, so a host can translate it; the message says it in
+ * English, and `details` carries the values it names, so a translated template can name them too.
  */
 export class KernelOperationError extends Error {
-    /** The stable name of the failure, such as `occt.fillet.failed`. */
+    /** The stable name of the failure, such as `occt.fillet.failedOnEdges`. */
     readonly code: string;
+    /** The values the message names, by placeholder, such as `{ edges: [3, 7] }`; unset when it names none. */
+    readonly details: KernelFailureDetails | undefined;
 
-    constructor(code: string, message: string) {
+    constructor(code: string, message: string, details?: KernelFailureDetails) {
         super(message);
         this.name = "KernelOperationError";
         this.code = code;
+        this.details = details;
     }
 }
 
 /**
  * The rejection of a call a kernel worker could not complete: the dotted path that was called,
- * whether the inputs or the kernel failed or the kernel crashed, the stable code of a failure the
- * kernel named (see `KernelOperationError`), and the stack the worker reported, kept apart from the
- * message.
+ * whether the inputs or the kernel failed or the kernel crashed, the stable code and the details of a
+ * failure the kernel named (see `KernelOperationError`), and the stack the worker reported, kept apart
+ * from the message.
  */
 export class KernelCallError extends Error {
     /** The dotted path of the operation that was called. */
@@ -51,13 +64,16 @@ export class KernelCallError extends Error {
     readonly workerStack: string | undefined;
     /** The stable code of the failure, when the kernel named it, such as `occt.fillet.failed`. */
     readonly code: string | undefined;
+    /** The values the named failure's message names, by placeholder, when it names any. */
+    readonly details: KernelFailureDetails | undefined;
 
-    constructor(message: string, functionName: string, kind: KernelFailureKind = "kernel", workerStack?: string, code?: string) {
+    constructor(message: string, functionName: string, kind: KernelFailureKind = "kernel", workerStack?: string, code?: string, details?: KernelFailureDetails) {
         super(message);
         this.name = "KernelCallError";
         this.functionName = functionName;
         this.kind = kind;
         this.workerStack = workerStack;
         this.code = code;
+        this.details = details;
     }
 }

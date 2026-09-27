@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { KernelOperationError } from "@bitbybit-dev/base";
 import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
@@ -61,21 +61,49 @@ describe("OCCT_FAILURES", () => {
         // Assert
         expect(error).toBeInstanceOf(KernelOperationError);
         expect(error).toMatchObject(named("occt.loft.failed"));
+        expect(error.details).toBeUndefined();
+    });
+
+    it.each([
+        ["occt.fillet.failedOnEdges", (): KernelOperationError => occtFailure("occt.fillet.failedOnEdges", { edges: [3, 7, 9] }), "3, 7 and 9", { edges: [3, 7, 9] }],
+        ["occt.fillet.failedAtCorners", (): KernelOperationError => occtFailure("occt.fillet.failedAtCorners", { corners: [2] }), ": 2.", { corners: [2] }],
+    ])("fills the template of %s with its details and carries them", (_code, make, written, details) => {
+        // Act
+        const error = make();
+
+        // Assert
+        expect(error.message).toContain(written);
+        expect(error.message).not.toMatch(/[{}]/);
+        expect(error.details).toEqual(details);
+    });
+
+    it("names in a template only placeholders a code's details fill", () => {
+        // Act
+        const placeholders = Object.entries(OCCT_FAILURES).map(([code, template]) => [code, [...template.matchAll(/\{([A-Za-z]+)\}/g)].map(match => match[1])]);
+
+        // Assert
+        expect(Object.fromEntries(placeholders.filter(([, names]) => names!.length > 0))).toEqual({
+            "occt.fillet.failedOnEdges": ["edges"],
+            "occt.fillet.failedAtCorners": ["corners"],
+        });
     });
 });
 
 describe("OCCT operations the kernel cannot complete", () => {
     let occt: BitbybitOcctModule;
+    let helper: OccHelper;
     let s: OCCTService;
     const restores: (() => void)[] = [];
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
-        s = new OCCTService(occt, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt));
+        helper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
+        s = new OCCTService(occt, helper);
     });
 
     afterEach(() => {
         while (restores.length) restores.pop()!();
+        vi.restoreAllMocks();
     });
 
     function reportNotDone(name: Builder): void {
@@ -114,14 +142,66 @@ describe("OCCT operations the kernel cannot complete", () => {
 
     describe("fillets and chamfers", () => {
         it.each([
-            ["every edge of a 10 box at radius 5", (): unknown => s.fillets.filletEdges({ shape: box(), radius: 5 })],
-            ["one edge of a 10 box at radius 20", (): unknown => s.fillets.filletEdges({ shape: box(), radius: 20, indexes: [1] })],
-            ["the corners of a 10 square face at radius 20", (): unknown => s.fillets.fillet2d({ shape: squareFace(), radius: 20 })],
-            ["the corners of a 10 square wire at radius 20", (): unknown => s.fillets.fillet2d({ shape: square(), radius: 20 })],
-            ["the corners of a 10 square wire at radius 6", (): unknown => s.fillets.fillet2d({ shape: square(), radius: 6 })],
-        ])("names the failure to fillet %s", (_what, run) => {
+            ["every edge of a 10 box at radius 5, where the first edge fails first", (): unknown => s.fillets.filletEdges({ shape: box(), radius: 5 }), [0]],
+            ["one edge of a 10 box at radius 20", (): unknown => s.fillets.filletEdges({ shape: box(), radius: 20, indexes: [1] }), [1]],
+            ["two edges of a 10 box of which the second is too large", (): unknown => s.fillets.filletEdges({ shape: box(), indexes: [1, 4], radiusList: [1, 20] }), [4]],
+        ])("names the edges it could not fillet: %s", (_what, run, edges) => {
             // Act
             const failure = failureOf(run);
+
+            // Assert
+            expect(failure).toMatchObject({ name: "KernelOperationError", code: "occt.fillet.failedOnEdges", details: { edges } });
+        });
+
+        it.each([
+            ["every corner of a 10 square face at radius 20", (): unknown => s.fillets.fillet2d({ shape: squareFace(), radius: 20 }), [1, 2, 3, 4]],
+            ["the one corner of a 10 square face given radius 20", (): unknown => s.fillets.fillet2d({ shape: squareFace(), radiusList: [1, 20, 1, 1] }), [2]],
+            ["every corner of a 10 square wire at radius 20", (): unknown => s.fillets.fillet2d({ shape: square(), radius: 20 }), [1, 2, 3, 4]],
+            ["the one corner of a 10 square wire given radius 20, which the kernel otherwise calls done", (): unknown => s.fillets.fillet2d({ shape: square(), radiusList: [1, 20, 1, 1] }), [2]],
+            ["every other corner of a 10 square wire at radius 6, each edge too short for two", (): unknown => s.fillets.fillet2d({ shape: square(), radius: 6 }), [2, 4]],
+        ])("names the corners it could not round: %s", (_what, run, corners) => {
+            // Act
+            const failure = failureOf(run);
+
+            // Assert
+            expect(failure).toMatchObject({ name: "KernelOperationError", code: "occt.fillet.failedAtCorners", details: { corners } });
+        });
+
+        it("passes on an error the 3D fallback throws that is not a kernel failure, instead of naming corners", () => {
+            // Arrange
+            vi.spyOn(helper.filletsService, "fillet3DWire").mockImplementation(() => {
+                throw new Error("not a kernel failure");
+            });
+
+            // Act
+            const failure = failureOf(() => s.fillets.fillet2d({ shape: square(), radius: 20 }));
+
+            // Assert
+            expect(failure).toMatchObject({ name: "Error", message: "not a kernel failure" });
+        });
+
+        it("names no corner it was not asked to round, when it rounds none", () => {
+            // Act
+            const failure = failureOf(() => s.fillets.fillet2d({ shape: squareFace(), radius: 0 }));
+
+            // Assert
+            expect(failure).toMatchObject(named("occt.fillet.failed"));
+        });
+
+        it("says which edges in the message, counted as the shape counts them", () => {
+            // Act
+            const failure = failureOf(() => s.fillets.filletEdges({ shape: box(), indexes: [1, 4], radiusList: [1, 20] }));
+
+            // Assert
+            expect(failure).toMatchObject({ message: "The fillet could not be built at these edges of the shape, counted from 0: 4. A radius may be too large for the faces beside them, or the edges may meet at a corner the fillet cannot round." });
+        });
+
+        it("names no edges of the extrusion a 3D wire fillet is built through, which are not the wire's", () => {
+            // Arrange
+            const star = s.shapes.wire.createStarWire({ numRays: 5, outerRadius: 10, innerRadius: 6, center: [0, 0, 0], direction: [0, 1, 0], half: false });
+
+            // Act
+            const failure = failureOf(() => s.fillets.fillet3DWire({ shape: star, radius: 20, direction: [0, 1, 0] }));
 
             // Assert
             expect(failure).toMatchObject(named("occt.fillet.failed"));
@@ -340,6 +420,14 @@ describe("OCCT operations the kernel cannot complete", () => {
 
             // Assert
             expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: `A loft needs at least two sections, and got ${count}.` });
+        });
+
+        it("refuses an advanced loft between two points and no wire as an input error", () => {
+            // Act
+            const failure = failureOf(() => s.operations.loftAdvanced({ shapes: [], makeSolid: true, startVertex: [0, 0, 0], endVertex: [0, 10, 0] }));
+
+            // Assert
+            expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: "A loft needs at least one wire or edge among its sections; a start or end point can only begin or end it." });
         });
 
         it("refuses an advanced loft through one section and no point as an input error", () => {

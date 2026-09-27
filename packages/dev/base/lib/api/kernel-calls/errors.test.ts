@@ -30,6 +30,15 @@ describe("KernelOperationError", () => {
         expect(error.name).toBe("KernelOperationError");
         expect(error.code).toBe("occt.fillet.failed");
         expect(error.message).toBe("The fillet could not be built.");
+        expect(error.details).toBeUndefined();
+    });
+
+    it("should carry the values its message names", () => {
+        // Act
+        const error = new KernelOperationError("occt.fillet.failedOnEdges", "The fillet failed at edges 3 and 7.", { edges: [3, 7] });
+
+        // Assert
+        expect(error.details).toEqual({ edges: [3, 7] });
     });
 });
 
@@ -55,6 +64,18 @@ describe("KernelCallError", () => {
         // Assert
         expect(error.code).toBe("occt.fillet.failed");
         expect(error.workerStack).toBe("at kernel");
+    });
+
+    it("should carry the details of a failure the kernel named", () => {
+        // Act
+        const error = new KernelCallError("failed", "fillets.filletEdges", "kernel", "at kernel", "occt.fillet.failedOnEdges", { edges: [3] });
+
+        // Assert
+        expect(error.details).toEqual({ edges: [3] });
+    });
+
+    it("should leave the details unset when the kernel gave none", () => {
+        expect(new KernelCallError("failed", "fillets.filletEdges", "kernel", "at kernel", "occt.fillet.failed").details).toBeUndefined();
     });
 
     it("should leave the code unset when the kernel named none", () => {

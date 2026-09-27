@@ -1,14 +1,15 @@
-import { KernelFailureKind } from "./errors";
+import { KernelFailureDetail, KernelFailureDetails, KernelFailureKind } from "./errors";
 
 /**
  * What a kernel worker reports when a call fails: the message a caller reads, whether the inputs
- * or the kernel were at fault, the stable code of a failure the kernel named, and the stack, kept
- * out of the message.
+ * or the kernel were at fault, the stable code and the details of a failure the kernel named, and
+ * the stack, kept out of the message.
  */
 export type KernelFailure = {
     message: string;
     kind: KernelFailureKind;
     code: string | undefined;
+    details: KernelFailureDetails | undefined;
     stack: string | undefined;
 };
 
@@ -104,13 +105,41 @@ function isTrap(error: unknown): boolean {
     return error instanceof Error && error.name === "RuntimeError";
 }
 
-/** The code of a `KernelOperationError`, whichever copy of the class threw it. */
-function operationCode(error: unknown): string | undefined {
-    if (error instanceof Error && error.name === "KernelOperationError") {
-        const code: unknown = Reflect.get(error, "code");
-        return typeof code === "string" ? code : undefined;
+/**
+ * The code and details of a `KernelOperationError`, whichever copy of the class threw it; undefined
+ * for any other error, and for one whose code is not a string.
+ */
+function namedFailure(error: unknown): { code: string; details: KernelFailureDetails | undefined } | undefined {
+    if (!(error instanceof Error) || error.name !== "KernelOperationError") {
+        return undefined;
     }
-    return undefined;
+    const code: unknown = Reflect.get(error, "code");
+    return typeof code === "string" ? { code, details: checkedDetails(Reflect.get(error, "details")) } : undefined;
+}
+
+function isDetail(value: unknown): value is KernelFailureDetail {
+    if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+        return true;
+    }
+    return Array.isArray(value) && (value.every((item: unknown) => typeof item === "number") || value.every((item: unknown) => typeof item === "string"));
+}
+
+/**
+ * A failure's details, when they are a plain record of strings, numbers, booleans and lists of
+ * either, which is all that crosses to another thread and fills a template.
+ */
+function checkedDetails(details: unknown): KernelFailureDetails | undefined {
+    if (details === null || typeof details !== "object" || Array.isArray(details)) {
+        return undefined;
+    }
+    const checked: Record<string, KernelFailureDetail> = {};
+    for (const [name, value] of Object.entries(details)) {
+        if (!isDetail(value)) {
+            return undefined;
+        }
+        checked[name] = value;
+    }
+    return checked;
 }
 
 /** Ends a sentence with a full stop unless it already ends with one. */
@@ -124,7 +153,8 @@ function sentence(text: string): string {
  * (`RuntimeError`, such as an out-of-bounds access) is a `crash`: it reads `<kernel> crashed while
  * executing function '<path>': <message>.`, then the inputs. Any other failure
  * reads `<kernel> computation failed while executing function '<path>': <message>.` followed by the
- * inputs; a `KernelOperationError` gives its message without its type's name, and its code. A message
+ * inputs; a `KernelOperationError` gives its message without its type's name, its code and its
+ * details, when they are a plain record of strings, numbers, booleans and lists of them. A message
  * that already ends a sentence gets no second full stop. The inputs are each cut at 200 characters, with binary data at any depth given only by its kind and size -
  * `[Float32Array length=6000000]` - and a long list or text read only as far as the cut, so a huge
  * input costs no more to describe than a small one. A call that named no function leaves the path
@@ -139,19 +169,19 @@ export function describeKernelFailure(kernel: string, functionName: string, inpu
     try {
         const stack = error instanceof Error ? error.stack : undefined;
         if (error instanceof Error && error.name === "InputError") {
-            return { message: functionName ? `${functionName}: ${error.message}` : error.message, kind: "input", code: undefined, stack };
+            return { message: functionName ? `${functionName}: ${error.message}` : error.message, kind: "input", code: undefined, details: undefined, stack };
         }
         const where = functionName ? ` while executing function '${functionName}'` : "";
         const entries = inputs !== null && typeof inputs === "object" && binaryText(inputs) === undefined ? Object.entries(inputs) : [];
         const props = entries.length > 0 ? ` Input values were: {${entries.map(([key, value]) => inputText(key, value)).join(", ")}}.` : "";
         if (isTrap(error)) {
-            return { message: `${kernel} crashed${where}: ${sentence(errorText(error))}${props}`, kind: "crash", code: undefined, stack };
+            return { message: `${kernel} crashed${where}: ${sentence(errorText(error))}${props}`, kind: "crash", code: undefined, details: undefined, stack };
         }
-        const code = operationCode(error);
-        const text = code !== undefined && error instanceof Error ? error.message : errorText(error);
-        return { message: `${kernel} computation failed${where}: ${sentence(text)}${props}`, kind: "kernel", code, stack };
+        const named = namedFailure(error);
+        const text = named !== undefined && error instanceof Error ? error.message : errorText(error);
+        return { message: `${kernel} computation failed${where}: ${sentence(text)}${props}`, kind: "kernel", code: named?.code, details: named?.details, stack };
     } catch {
         const where = typeof functionName === "string" && functionName !== "" ? ` while executing function '${functionName}'` : "";
-        return { message: `${kernel} computation failed${where}, and the failure could not be described.`, kind: "kernel", code: undefined, stack: undefined };
+        return { message: `${kernel} computation failed${where}, and the failure could not be described.`, kind: "kernel", code: undefined, details: undefined, stack: undefined };
     }
 }

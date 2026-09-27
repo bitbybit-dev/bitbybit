@@ -1,6 +1,7 @@
 export * from "./errors";
 export * from "./call-by-path";
 export * from "./describe-failure";
+export * from "./failure-message";
 export * from "./resolve-dto";
 export * from "./constraints";
 export * from "./input-validation";

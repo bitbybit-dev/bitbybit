@@ -3,7 +3,7 @@ import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink }
 import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
 
 type Deletable = { delete: () => void };
-type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; stack?: string };
+type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; details?: unknown; stack?: string };
 
 const { FakeCacheHelper, latest, failure } = vi.hoisted(() => {
     class FakeCacheHelper {
@@ -694,7 +694,7 @@ describe("the worker message loop", () => {
 
         it("should send the code of a failure the kernel named beside its message", () => {
             // Arrange
-            const refused = new KernelOperationError("jscad.boolean.failed", "The union could not be computed.");
+            const refused = new KernelOperationError("jscad.boolean.failed", "The union could not be computed.", { shapes: [1] });
             failure.value = refused;
 
             // Act
@@ -707,6 +707,7 @@ describe("the worker message loop", () => {
                 error: "JSCAD computation failed while executing function 'boom': The union could not be computed.",
                 errorKind: "kernel",
                 code: "jscad.boolean.failed",
+                details: { shapes: [1] },
                 stack: refused.stack,
             });
         });
