@@ -187,9 +187,9 @@ export class OCCTFillets {
      * Bevels the edges of a shape by a distance, in model units, cutting each sharp edge back to a
      * flat strip.
      *
-     * Without `indexes` every edge is beveled with `distance`. With `indexes`, counted from 0 in
-     * the order `shapes.edge.getEdges` lists them, only those edges are beveled, each with
-     * `distance` or the matching entry of `distanceList`, in edge order.
+     * Without `indexes` every edge is beveled. With `indexes`, counted from 0 as
+     * `shapes.edge.getEdges` lists them, only those are, each with `distance` or, in edge order,
+     * its entry of `distanceList`. Indexes naming no edge change nothing.
      * @param inputs - The shape, the distance or the distance list, and the optional 0-based edge indexes
      * @returns The shape with beveled edges
      * @group 3d chamfers

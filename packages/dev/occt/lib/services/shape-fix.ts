@@ -72,6 +72,7 @@ export class OCCTShapeFix {
         wireFix.FixSmall(resolved.lockvtx, resolved.precsmall);
         wireFix.Perform();
         const result = wireFix.Wire();
+        wireFix.delete();
         return result;
     }
 

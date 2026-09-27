@@ -2332,6 +2332,7 @@ interface EmbindModule {
   MakeBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: number): TopoDS_Edge;
   MakeWeightedBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: VectorDouble, _2: number): TopoDS_Edge;
   MakeSymmetricInterpolatedBSplineEdge(_0: VectorDouble, _1: number): TopoDS_Edge;
+  ShapeCrossingsAlong(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number): VectorDouble;
   VectorInt: {
     new(): VectorInt;
   };

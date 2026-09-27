@@ -42,13 +42,6 @@ describe("OccHelper", () => {
         });
     });
 
-    describe("a service that only looked cyclic", () => {
-        it("should have been handed real collaborators at construction", () => {
-            expect(occHelper.verticesService.wiresService).toBe(occHelper.wiresService);
-            expect(occHelper.verticesService.booleansService).toBe(occHelper.booleansService);
-        });
-    });
-
     describe("surfaceFromFace", () => {
         it("should refuse a shape that carries no surface", () => {
             // Arrange

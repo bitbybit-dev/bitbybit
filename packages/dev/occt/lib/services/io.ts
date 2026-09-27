@@ -111,26 +111,19 @@ export class OCCTIO {
      */
     saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
-        const shapeToUse = resolved.shape;
 
-        this.occ.BRepTools.Clean(shapeToUse);
-
-        let adjustedShape;
+        let transferShape: TopoDS_Shape;
         if (resolved.adjustYtoZ) {
             const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
-            adjustedShape = this.och.transformsService.mirrorAlongNormal(
+            transferShape = this.och.transformsService.mirrorAlongNormal(
                 { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
             );
             rotatedShape.delete();
+        } else {
+            transferShape = this.occ.BRepBuilderAPI_Copy_Shape(resolved.shape, false);
         }
         const fileName = "x";
         const writer = new this.occ.StlAPI_Writer();
-        let transferShape;
-        if (adjustedShape) {
-            transferShape = adjustedShape;
-        } else {
-            transferShape = shapeToUse;
-        }
         let result: string;
         const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, false);
 
@@ -143,9 +136,7 @@ export class OCCTIO {
             throw (new Error("Failed when writing stl file."));
         }
 
-        if (adjustedShape) {
-            adjustedShape.delete();
-        }
+        transferShape.delete();
 
         if (incrementalMeshBuilder) {
             incrementalMeshBuilder.delete();

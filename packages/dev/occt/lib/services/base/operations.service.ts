@@ -14,7 +14,6 @@ import { ShapeGettersService } from "./shape-getters";
 import { EdgesService } from "./edges.service";
 import { WiresService } from "./wires.service";
 import { FacesService } from "./faces.service";
-import { ShellsService } from "./shells.service";
 import { SolidsService } from "./solids.service";
 import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
@@ -35,8 +34,6 @@ export class OperationsService {
         private readonly wiresService: WiresService,
         private readonly facesService: FacesService,
         private readonly solidsService: SolidsService,
-        private readonly shellsService: ShellsService,
-
     ) { }
 
     loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
@@ -242,7 +239,6 @@ export class OperationsService {
     }
 
     offsetAdv(inputs: Resolved.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        const tolerance = inputs.tolerance || 0.1;
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
         const joinType = this.getJoinType(inputs.joinType);
@@ -259,8 +255,8 @@ export class OperationsService {
             } else {
                 wire = inputs.shape;
             }
+            offset = new this.occ.BRepOffsetAPI_MakeOffset();
             try {
-                offset = new this.occ.BRepOffsetAPI_MakeOffset();
                 if (inputs.face) {
                     offset.Init(inputs.face, joinType, false);
                 } else {
@@ -269,18 +265,10 @@ export class OperationsService {
                 offset.AddWire(wire);
                 offset.Build();
                 offset.Perform(inputs.distance, 0.0);
-            } catch {
-                offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
-                (offset).PerformByJoin(
-                    wire,
-                    inputs.distance,
-                    tolerance,
-                    brepOffsetMode,
-                    false,
-                    false,
-                    joinType,
-                    inputs.removeIntEdges
-                );
+            } catch (thrown) {
+                offset.delete();
+                wires.forEach(w => w.delete());
+                throw thrown;
             }
         } else {
             const shapeToOffset = inputs.shape;
@@ -591,18 +579,14 @@ export class OperationsService {
             throw occtFailure("occt.thickSolid.failed");
         }
         const makerShape = maker.Shape();
-
-        const result = this.converterService.getActualTypeOfShape(makerShape);
-        let res2 = result;
-        if (inputs.offset > 0) {
-            const faces = this.shapeGettersService.getFaces({ shape: result });
-            const revFaces = faces.map(face => face.Reversed());
-            res2 = this.shellsService.sewFaces({ shapes: revFaces, tolerance: 1e-7 });
-            result.delete();
+        const outward = inputs.offset > 0 ? makerShape.Reversed() : makerShape;
+        const result = this.converterService.getActualTypeOfShape(outward);
+        if (outward !== makerShape) {
+            outward.delete();
         }
         maker.delete();
         makerShape.delete();
-        return res2;
+        return result;
     }
 
     makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {

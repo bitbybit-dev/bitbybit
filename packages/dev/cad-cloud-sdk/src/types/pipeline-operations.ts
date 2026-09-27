@@ -220,7 +220,6 @@ export type OperationPath =
     | "manifold.crossSection.transforms.transform"
     | "manifold.crossSection.transforms.translate"
     | "manifold.crossSection.transforms.translateXY"
-    | "manifold.crossSection.transforms.warp"
     | "manifold.decomposeManifoldOrCrossSection"
     | "manifold.decomposeManifoldsOrCrossSections"
     | "manifold.deleteManifoldOrCrossSection"
@@ -269,7 +268,6 @@ export type OperationPath =
     | "manifold.manifold.operations.refineToLength"
     | "manifold.manifold.operations.refineToTolerance"
     | "manifold.manifold.operations.reserveIds"
-    | "manifold.manifold.operations.setProperties"
     | "manifold.manifold.operations.setTolerance"
     | "manifold.manifold.operations.simplify"
     | "manifold.manifold.operations.slice"
@@ -291,7 +289,6 @@ export type OperationPath =
     | "manifold.manifold.transforms.translate"
     | "manifold.manifold.transforms.translateByVectors"
     | "manifold.manifold.transforms.translateXYZ"
-    | "manifold.manifold.transforms.warp"
     | "manifold.manifoldToMeshPointer"
     | "manifold.mesh.evaluate.backside"
     | "manifold.mesh.evaluate.extras"
@@ -4023,16 +4020,6 @@ export interface OperationParams {
         y?: number | PipelineRef;
     };
     /**
-     * Moves every point of a cross-section with a function of your own that changes the point in
-     * place, then fuses the result so any crossings the move introduced are cleaned up.
-     */
-    "manifold.crossSection.transforms.warp": {
-        /** The outline to warp. */
-        crossSection: unknown | PipelineRef;
-        /** A function that receives each 2D point and changes it in place. */
-        warpFunc: [number, number] | PipelineRef;
-    };
-    /**
      * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
      * or export.
      *
@@ -4511,24 +4498,6 @@ export interface OperationParams {
         count: number | PipelineRef;
     };
     /**
-     * Rewrites the vertex properties of a solid with a function that receives each vertex's
-     * position and old properties and fills in the new ones.
-     *
-     * `numProp` sets how many properties each vertex has afterwards, so channels can be added or
-     * dropped; reading past the old count or writing past the new one is undefined.
-     */
-    "manifold.manifold.operations.setProperties": {
-        /** The solid whose vertex properties are rewritten. */
-        manifold: unknown | PipelineRef;
-        /**
-         * A function that receives the new property array, the vertex position and the old properties,
-         * and fills the new array in place.
-         */
-        propFunc: [number, number, number][] | PipelineRef;
-        /** How many properties each vertex has afterwards. */
-        numProp?: number | PipelineRef;
-    };
-    /**
      * Gives a solid a new tolerance, the rounding error it is allowed to carry, and simplifies its
      * mesh when the tolerance grows.
      *
@@ -4790,19 +4759,6 @@ export interface OperationParams {
         y?: number | PipelineRef;
         /** How far to move along Z, in model units. */
         z?: number | PipelineRef;
-    };
-    /**
-     * Moves every vertex of a solid with a function of your own that changes the vertex position in
-     * place, for bends, tapers and other free deformations.
-     *
-     * The mesh connectivity stays the same and nothing checks that the result still makes sense, so
-     * a function that folds the surface through itself gives a broken solid.
-     */
-    "manifold.manifold.transforms.warp": {
-        /** The solid to warp. */
-        manifold: unknown | PipelineRef;
-        /** A function that receives each vertex position and changes it in place. */
-        warpFunc: [number, number, number] | PipelineRef;
     };
     /** Turns manifold shape into a mesh pointer that lives in worker's memory. This pointer can be used with bitbybit.manifold.mesh functions */
     "manifold.manifoldToMeshPointer": {
@@ -6618,9 +6574,9 @@ export interface OperationParams {
      * Bevels the edges of a shape by a distance, in model units, cutting each sharp edge back to a
      * flat strip.
      *
-     * Without `indexes` every edge is beveled with `distance`. With `indexes`, counted from 0 in
-     * the order `shapes.edge.getEdges` lists them, only those edges are beveled, each with
-     * `distance` or the matching entry of `distanceList`, in edge order.
+     * Without `indexes` every edge is beveled. With `indexes`, counted from 0 as
+     * `shapes.edge.getEdges` lists them, only those are, each with `distance` or, in edge order,
+     * its entry of `distanceList`. Indexes naming no edge change nothing.
      */
     "occt.fillets.chamferEdges": {
         /** The shape whose edges are beveled. */
@@ -7806,8 +7762,9 @@ export interface OperationParams {
      * Gives a face or shell a thickness, turning it into a solid slab or wall of the given
      * `offset`.
      *
-     * A positive offset thickens toward the surface normal, a negative one the other way. Use it to
-     * turn a lofted or swept skin into something printable.
+     * A positive offset thickens along the surface normal, a negative one against it. Faces are
+     * offset one by one, so walls meeting at a sharp edge leave a gap of up to 1.4 times `offset`,
+     * bridged by tolerance.
      */
     "occt.operations.makeThickSolidSimple": {
         /** The face or shell to give a thickness to. */
@@ -12931,9 +12888,9 @@ export interface OperationParams {
     /**
      * Applies a 4x4 matrix, or a list of matrices applied first to last, to a shape.
      *
-     * The matrix is column-major, so the translation sits at indices 12 to 14. A matrix that
-     * stretches or shears is allowed; build matrices with the `...ToMatrix` methods and combine
-     * them with `multiplyTransforms`. A matrix the kernel cannot apply throws an error.
+     * The matrix is column-major, with the translation at indices 12 to 14. A move, turn, mirror or
+     * even scale keeps circles and planes exact; a stretch or shear turns every surface into a
+     * B-spline, which fillets and booleans handle more slowly.
      */
     "occt.transforms.transformByMatrix": {
         /** The shape to transform; it stays as it is and a transformed copy comes back. */

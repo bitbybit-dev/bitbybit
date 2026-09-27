@@ -5,6 +5,7 @@ import { OCCTWire } from "./wire";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
+import { OCCTSolid } from "./solid";
 import { OCCTGeom } from "../geom/geom";
 import { Base, OCCT } from "../../api/inputs";
 
@@ -13,6 +14,7 @@ describe("OCCT face unit tests", () => {
     let wire: OCCTWire;
     let face: OCCTFace;
     let geom: OCCTGeom;
+    let solid: OCCTSolid;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
@@ -23,6 +25,7 @@ describe("OCCT face unit tests", () => {
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
         geom = new OCCTGeom(occt, occHelper);
+        solid = new OCCTSolid(occt, occHelper);
     });
 
     it("should create a face from closed planar wire", async () => {
@@ -92,6 +95,56 @@ describe("OCCT face unit tests", () => {
         f1.delete();
         w.delete();
         f.delete();
+    });
+
+    describe("normals of faces placed in a mirror", () => {
+        const outwardFrom = (normal: Base.Vector3, point: Base.Point3): boolean => normal[0] * point[0] + normal[1] * point[1] + normal[2] * point[2] > 0;
+
+        it("should point out of the shape, as the faces of the shape it places do", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 4, height: 6, center: [0, 0, 0] });
+            const mirror = new occt.gp_Trsf();
+            const plane = occHelper.entitiesService.gpAx2([0, 0, 0], [1, 0, 0]);
+            mirror.SetMirrorOnPlane(plane);
+            const placement = new occt.TopLoc_Location(mirror);
+            const faces = occHelper.shapeGettersService.getFaces({ shape: box.Moved(placement) });
+            const grid = { nrDivisionsU: 3, nrDivisionsV: 3, shiftHalfStepU: false, removeStartEdgeU: false, removeEndEdgeU: false, shiftHalfStepV: false, removeStartEdgeV: false, removeEndEdgeV: false };
+
+            // Act
+            const middles = faces.map(f => outwardFrom(face.normalOnUV({ shape: f, paramU: 0.5, paramV: 0.5 }), face.pointOnUV({ shape: f, paramU: 0.5, paramV: 0.5 })));
+            const grids = faces.map(f => {
+                const points = face.subdivideToPoints({ shape: f, ...grid });
+                return face.subdivideToNormals({ shape: f, ...grid }).every((normal, index) => outwardFrom(normal, points[index]!));
+            });
+
+            // Assert
+            expect(middles).toEqual(Array(6).fill(true));
+            expect(grids).toEqual(Array(6).fill(true));
+        });
+
+        it("should delete the parameter point it asks the surface about", () => {
+            // Arrange
+            const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const points: { isDeleted(): boolean }[] = [];
+            const original = occt.gp_Pnt2d;
+            Reflect.set(occt, "gp_Pnt2d", new Proxy(original, {
+                construct(target, args): object {
+                    const made = Reflect.construct(target, args);
+                    points.push(made);
+                    return made;
+                },
+            }));
+
+            // Act
+            try {
+                face.normalOnUV({ shape: square, paramU: 0.5, paramV: 0.5 });
+            } finally {
+                Reflect.set(occt, "gp_Pnt2d", original);
+            }
+
+            // Assert
+            expect(points.map(point => point.isDeleted())).toEqual([true]);
+        });
     });
 
     describe("the surface handles a face method takes from the kernel", () => {

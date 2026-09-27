@@ -65,11 +65,7 @@ export class ConverterService {
     makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<TopoDS_Shape>): TopoDS_Compound {
         const builder = new this.occ.BRep_Builder();
         const resCompound = this.occ.BRep_Builder_MakeCompound(builder);
-        inputs.shapes.forEach(shape => {
-            const s = this.occ.BRepBuilderAPI_Copy_Shape(shape, true);
-            builder.Add(resCompound, s);
-            s.delete();
-        });
+        inputs.shapes.forEach(shape => builder.Add(resCompound, shape));
         builder.delete();
         return resCompound;
     }

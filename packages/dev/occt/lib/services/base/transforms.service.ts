@@ -4,6 +4,13 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
+
+/**
+ * The smallest scale, in size, handed to the exact transform: nearer 0 a curved shape shrinks to a
+ * point, and the kernel never returns from building it.
+ */
+const smallestScale = 1e-100;
 
 export class TransformsService {
 
@@ -35,6 +42,10 @@ export class TransformsService {
     }
 
     scale3d(inputs: Resolved.OCCT.Scale3DDto<TopoDS_Shape>): TopoDS_Shape {
+        const [sx, sy, sz] = inputs.scale;
+        if (this.isUsableScale(sx) && sx === sy && sx === sz) {
+            return this.scaleFromCenter({ shape: inputs.shape, factor: sx, center: inputs.center });
+        }
         const shapeTranslated = this.translate({ shape: inputs.shape, translation: inputs.center.map(c => -c) as Inputs.Base.Vector3 });
         const transformation = new this.occ.gp_GTrsf();
         const scale = inputs.scale;
@@ -175,6 +186,14 @@ export class TransformsService {
 
     transformByMatrix(inputs: Inputs.OCCT.TransformByMatrixDto<TopoDS_Shape>): TopoDS_Shape {
         const matrix = this.foldTransformations(inputs.transformation);
+        if (this.isSimilarity(matrix)) {
+            const trsf = this.matrixToTrsf(matrix);
+            try {
+                return this.applyTrsf(inputs.shape, trsf);
+            } finally {
+                trsf.delete();
+            }
+        }
         const gtrsf = this.matrixToGTrsf(matrix);
         let shp: TopoDS_Shape;
         try {
@@ -208,6 +227,7 @@ export class TransformsService {
     }
 
     scaleFromCenter(inputs: Resolved.OCCT.ScaleFromCenterDto<TopoDS_Shape>): TopoDS_Shape {
+        this.refuseCollapsingScale(inputs.factor, "factor");
         const transformation = new this.occ.gp_Trsf();
         const center = this.entitiesService.gpPnt(inputs.center);
         transformation.SetScale(center, inputs.factor);
@@ -413,6 +433,31 @@ export class TransformsService {
             m[2], m[6], m[10], m[14],
         );
         return t;
+    }
+
+    refuseCollapsingScale(factor: number, property: string): void {
+        if (!this.isUsableScale(factor)) {
+            throw new InputError(`\`${property}\` is ${factor}, and a scale factor has to be a finite number at least 1e-100 away from 0; nearer 0 the shape shrinks to a point.`, property);
+        }
+    }
+
+    private isUsableScale(factor: number): boolean {
+        return Number.isFinite(factor) && Math.abs(factor) >= smallestScale;
+    }
+
+    private isSimilarity(m: Inputs.Base.TransformMatrix): boolean {
+        const columns = [[m[0], m[1], m[2]], [m[4], m[5], m[6]], [m[8], m[9], m[10]]];
+        const dot = (a: number[], b: number[]): number => a[0]! * b[0]! + a[1]! * b[1]! + a[2]! * b[2]!;
+        const length = dot(columns[0]!, columns[0]!);
+        if (!(length >= smallestScale * smallestScale) || !Number.isFinite(length)) {
+            return false;
+        }
+        const tolerance = 1e-12 * length;
+        return Math.abs(dot(columns[1]!, columns[1]!) - length) <= tolerance
+            && Math.abs(dot(columns[2]!, columns[2]!) - length) <= tolerance
+            && Math.abs(dot(columns[0]!, columns[1]!)) <= tolerance
+            && Math.abs(dot(columns[0]!, columns[2]!)) <= tolerance
+            && Math.abs(dot(columns[1]!, columns[2]!)) <= tolerance;
     }
 
     private matrixToGTrsf(m: Inputs.Base.TransformMatrix) {

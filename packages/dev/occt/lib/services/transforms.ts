@@ -16,7 +16,7 @@ import * as Resolved from "../api/resolved-inputs";
 export class OCCTTransforms {
 
     constructor(
-        private readonly occ: BitbybitOcctModule,
+        _occ: BitbybitOcctModule,
         private readonly och: OccHelper
     ) {
     }
@@ -46,6 +46,7 @@ export class OCCTTransforms {
      */
     transform(inputs: Inputs.OCCT.TransformDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.TransformDto, inputs) as Resolved.OCCT.TransformDto<TopoDS_Shape>;
+        this.och.transformsService.refuseCollapsingScale(resolved.scaleFactor, "scaleFactor");
         const scaledShape = this.scale({ shape: resolved.shape, factor: resolved.scaleFactor });
         const rotatedShape = this.rotate({ shape: scaledShape, axis: resolved.rotationAxis, angle: resolved.rotationAngle });
         const translatedShape = this.translate({ shape: rotatedShape, translation: resolved.translation });
@@ -212,17 +213,7 @@ export class OCCTTransforms {
      */
     scale(inputs: Inputs.OCCT.ScaleDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.ScaleDto, inputs) as Resolved.OCCT.ScaleDto<TopoDS_Shape>;
-        const transformation = new this.occ.gp_Trsf();
-        const gpPnt = this.och.entitiesService.gpPnt([0.0, 0.0, 0.0]);
-        transformation.SetScale(gpPnt, resolved.factor);
-        const transf = new this.occ.BRepBuilderAPI_Transform(resolved.shape, transformation, true);
-        const s = transf.Shape();
-        const result = this.och.converterService.getActualTypeOfShape(s);
-        gpPnt.delete();
-        transformation.delete();
-        transf.delete();
-        s.delete();
-        return result;
+        return this.och.transformsService.scaleFromCenter({ shape: resolved.shape, factor: resolved.factor, center: [0, 0, 0] });
     }
 
     /**
@@ -311,6 +302,7 @@ export class OCCTTransforms {
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.TransformShapesDto, inputs) as Resolved.OCCT.TransformShapesDto<TopoDS_Shape>;
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.translations, resolved.rotationAxes, resolved.rotationAngles, resolved.scaleFactors]);
+        resolved.scaleFactors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `scaleFactors[${index}]`));
         return resolved.shapes.map((s, index) => this.transform({
             shape: s,
             translation: resolved.translations[index]!,
@@ -476,6 +468,7 @@ export class OCCTTransforms {
     scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.ScaleShapesDto, inputs) as Resolved.OCCT.ScaleShapesDto<TopoDS_Shape>;
         this.checkIfListsEqualLength<TopoDS_Shape | number>([resolved.shapes, resolved.factors]);
+        resolved.factors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `factors[${index}]`));
         return resolved.shapes.map((s, index) => this.scale({
             shape: s,
             factor: resolved.factors[index]!,
@@ -630,9 +623,9 @@ export class OCCTTransforms {
     /**
      * Applies a 4x4 matrix, or a list of matrices applied first to last, to a shape.
      *
-     * The matrix is column-major, so the translation sits at indices 12 to 14. A matrix that
-     * stretches or shears is allowed; build matrices with the `...ToMatrix` methods and combine
-     * them with `multiplyTransforms`. A matrix the kernel cannot apply throws an error.
+     * The matrix is column-major, with the translation at indices 12 to 14. A move, turn, mirror or
+     * even scale keeps circles and planes exact; a stretch or shear turns every surface into a
+     * B-spline, which fillets and booleans handle more slowly.
      * @param inputs - The shape and the matrix or list of matrices
      * @returns The transformed shape
      * @group by matrix

@@ -72,7 +72,7 @@ export class OccHelper {
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
             () => this.filletsService, () => this.operationsService);
 
-        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService, this.wiresService, this.booleansService);
+        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService);
 
         this.dimensionsService = new DimensionsService(this.base, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
@@ -90,7 +90,7 @@ export class OccHelper {
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
             this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,
-            this.vecHelper, this.wiresService, this.facesService, this.solidsService, this.shellsService);
+            this.vecHelper, this.wiresService, this.facesService, this.solidsService);
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
             this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
@@ -681,6 +681,156 @@ describe("OCCT transforms unit tests", () => {
             transformed.forEach(t => t.delete());
         });
 
+    });
+
+    describe("which transforms keep the geometry exact", () => {
+        const cylinder = (): TopoDS_Shape => solid.createCylinder({ radius: 2, height: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const surfaceTypes = (shape: TopoDS_Shape): string[] => occHelper.shapeGettersService.getFaces({ shape }).map(face => occt.GetFaceSurfaceType(face));
+        const cos = Math.cos(Math.PI / 6);
+        const sin = Math.sin(Math.PI / 6);
+        const turnAndMove: Inputs.Base.TransformMatrix = [cos, 0, -sin, 0, 0, 1, 0, 0, sin, 0, cos, 0, 1, 2, 3, 1];
+        const doubled: Inputs.Base.TransformMatrix = [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1];
+        const mirroredInX: Inputs.Base.TransformMatrix = [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 0, 0, 1];
+        const stretchedInY: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        const volume = 16 * Math.PI;
+        const turnCos = Math.cos(Math.PI / 60) * 1e4;
+        const turnSin = Math.sin(Math.PI / 60) * 1e4;
+        const scaledTurn: Inputs.Base.TransformMatrix = [turnCos, turnSin, 0, 0, -turnSin, turnCos, 0, 0, 0, 0, 1e4, 0, 0, 0, 0, 1];
+
+        it.each([
+            ["a turn and a move", turnAndMove, volume],
+            ["a uniform scale", doubled, 8 * volume],
+            ["a mirror", mirroredInX, volume],
+            ["a turn, then a uniform scale, folded from a list", [turnAndMove, doubled] as Inputs.Base.TransformMatrixes, 8 * volume],
+            ["a 3 degree turn scaled by 10,000, whose axes differ in length only by rounding", scaledTurn, 1e12 * volume],
+        ])("keeps a cylinder a cylinder under %s", (_what, transformation, expectedVolume) => {
+            // Act
+            const transformed = transforms.transformByMatrix({ shape: cylinder(), transformation });
+
+            // Assert
+            expect(surfaceTypes(transformed)).toEqual(["cylinder", "plane", "plane"]);
+            expect(solid.getSolidVolume({ shape: transformed }) / expectedVolume).toBeCloseTo(1, 9);
+            expect(occt.ShapeIsValid(transformed)).toBe(true);
+        });
+
+        it.each([
+            ["a stretch along one axis", stretchedInY],
+            ["a shear so small it is still not a turn", [1, 0, 0, 0, 1e-3, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew that keeps every axis its length", [1, 0, 0, 0, 0.6, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew between the first and last axes", [0.8, 0, 0.6, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew between the last two axes", [1, 0, 0, 0, 0, 1, 0, 0, 0, 0.6, 0.8, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch along the last axis", [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch of one part in ten billion, far above rounding", [1, 0, 0, 0, 0, 1 + 1e-10, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch whose squared length overflows", [1e200, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+        ])("approximates the surfaces under %s, which no exact transform can do", (_what, transformation) => {
+            // Act
+            const transformed = transforms.transformByMatrix({ shape: cylinder(), transformation });
+
+            // Assert
+            expect(surfaceTypes(transformed)).toEqual(["bspline", "bspline", "bspline"]);
+        });
+
+        it("keeps a cylinder a cylinder when scale3d scales every axis alike", () => {
+            // Act
+            const uniform = transforms.scale3d({ shape: cylinder(), scale: [2, 2, 2], center: [1, 1, 1] });
+
+            // Assert
+            expect(surfaceTypes(uniform)).toEqual(["cylinder", "plane", "plane"]);
+            expect(solid.getSolidVolume({ shape: uniform })).toBeCloseTo(8 * volume, 6);
+            expect(occHelper.operationsService.boundingBoxOfShape({ shape: uniform }).center).toEqual([-1, 3, -1].map(v => expect.closeTo(v, 6)));
+        });
+
+        it.each([
+            [[2, 1, 1]],
+            [[1, 2, 1]],
+            [[1, 1, 2]],
+        ] as Inputs.Base.Vector3[][])("approximates the surfaces when scale3d scales by %j, as only an approximation can", (scale) => {
+            // Act
+            const stretched = transforms.scale3d({ shape: cylinder(), scale, center: [0, 0, 0] });
+
+            // Assert
+            expect(surfaceTypes(stretched)).toEqual(["bspline", "bspline", "bspline"]);
+        });
+    });
+
+    describe("scale factors that would shrink a shape to a point", () => {
+        const cylinder = (): TopoDS_Shape => solid.createCylinder({ radius: 2, height: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([0, Number.NaN, Number.POSITIVE_INFINITY, -1e-101])("refuses a factor of %s in every method that scales by one factor, naming the input", (factor) => {
+            // Arrange
+            const box = (): TopoDS_Shape => solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+            const calls: [string, () => unknown][] = [
+                ["factor", () => transforms.scale({ shape: box(), factor })],
+                ["factor", () => transforms.scaleFromCenter({ shape: box(), factor, center: [1, 0, 0] })],
+                ["scaleFactor", () => transforms.transform({ shape: box(), translation: [0, 0, 0], rotationAxis: [0, 1, 0], rotationAngle: 0, scaleFactor: factor })],
+                ["factors[1]", () => transforms.scaleShapes({ shapes: [box(), box()], factors: [2, factor] })],
+                ["scaleFactors[1]", () => transforms.transformShapes({ shapes: [box(), box()], translations: [[0, 0, 0], [0, 0, 0]], rotationAxes: [[0, 1, 0], [0, 1, 0]], rotationAngles: [0, 0], scaleFactors: [2, factor] })],
+            ];
+
+            // Act
+            const refusals = calls.map(([, act]) => refusalOf(act));
+
+            // Assert
+            expect(refusals).toEqual(calls.map(([property]) => expect.objectContaining({
+                name: "InputError",
+                property,
+                message: `\`${property}\` is ${factor}, and a scale factor has to be a finite number at least 1e-100 away from 0; nearer 0 the shape shrinks to a point.`,
+            })));
+        });
+
+        it("scales by a negative factor, which turns the shape through the center as it scales", () => {
+            // Act
+            const scaled = transforms.scaleFromCenter({ shape: cylinder(), factor: -2, center: [0, 0, 0] });
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: scaled })).toBeCloseTo(8 * 16 * Math.PI, 6);
+            expect(occHelper.operationsService.boundingBoxOfShape({ shape: scaled }).min[1]).toBeCloseTo(-8, 6);
+        });
+
+        it("scales by a factor exactly 1e-100 away from 0", () => {
+            // Act
+            const scale = (): unknown => transforms.scaleFromCenter({ shape: cylinder(), factor: 1e-100, center: [0, 0, 0] });
+
+            // Assert
+            expect(scale).not.toThrow();
+        });
+
+        it("gives a matrix that shrinks a shape nearer 0 than 1e-100 to the general transform, since the exact one never returns on curved faces", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+
+            // Act
+            const shrunk = transforms.transformByMatrix({ shape: box, transformation: [1e-150, 0, 0, 0, 0, 1e-150, 0, 0, 0, 0, 1e-150, 0, 0, 0, 0, 1] });
+
+            // Assert
+            expect(occHelper.shapeGettersService.getFaces({ shape: shrunk }).map(face => occt.GetFaceSurfaceType(face))).toEqual(Array(6).fill("bspline"));
+        });
+
+        it("leaves factors of 0 in scale3d to the general transform, which flattens a curve onto a plane", () => {
+            // Arrange
+            const tilted = edge.createCircleEdge({ radius: 2, center: [0, 0, 3], direction: [0, 1, 1] });
+
+            // Act
+            const flattened = transforms.scale3d({ shape: tilted, scale: [1, 1, 0], center: [0, 0, 0] });
+            const collapse = (): unknown => transforms.scale3d({ shape: cylinder(), scale: [0, 0, 0], center: [0, 0, 0] });
+
+            // Assert
+            const depth = (shape: TopoDS_Shape): number => {
+                const box = occHelper.operationsService.boundingBoxOfShape({ shape });
+                return box.max[2] - box.min[2];
+            };
+            expect(depth(tilted)).toBeGreaterThan(2);
+            expect(depth(flattened)).toBeLessThan(1e-6);
+            expect(collapse).not.toThrow();
+        });
     });
 
     describe("matrix transforms", () => {

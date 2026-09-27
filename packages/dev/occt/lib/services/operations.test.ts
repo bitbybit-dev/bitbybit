@@ -747,6 +747,48 @@ describe("OCCT operations unit tests", () => {
     });
 
     describe("offsetAdv", () => {
+        it("should pass a failure of the wire offset on, releasing it, rather than offsetting the wire as a 3D shape", () => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const failure = new Error("the kernel could not offset the wire");
+            const makers: { isDeleted(): boolean }[] = [];
+            let offsetsAsShape = 0;
+            const wireOffset = occt.BRepOffsetAPI_MakeOffset;
+            const shapeOffset = occt.BRepOffsetAPI_MakeOffsetShape;
+            Reflect.set(occt, "BRepOffsetAPI_MakeOffset", new Proxy(wireOffset, {
+                construct(target, args): object {
+                    const maker = Reflect.construct(target, args);
+                    maker.Perform = (): never => {
+                        throw failure;
+                    };
+                    makers.push(maker);
+                    return maker;
+                },
+            }));
+            Reflect.set(occt, "BRepOffsetAPI_MakeOffsetShape", new Proxy(shapeOffset, {
+                construct(target, args): object {
+                    offsetsAsShape++;
+                    return Reflect.construct(target, args);
+                },
+            }));
+
+            // Act
+            let thrown: unknown;
+            try {
+                operations.offsetAdv({ shape: circle, distance: 0.2, tolerance: 1e-7, joinType: Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false });
+            } catch (caught) {
+                thrown = caught;
+            } finally {
+                Reflect.set(occt, "BRepOffsetAPI_MakeOffset", wireOffset);
+                Reflect.set(occt, "BRepOffsetAPI_MakeOffsetShape", shapeOffset);
+            }
+
+            // Assert
+            expect(thrown).toBe(failure);
+            expect(makers.map(maker => maker.isDeleted())).toEqual([true]);
+            expect(offsetsAsShape).toBe(0);
+        });
+
         it("should offset a square wire with arc join type", () => {
             const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
             const offsetRes = operations.offsetAdv({
@@ -1153,13 +1195,28 @@ describe("OCCT operations unit tests", () => {
         fRem.delete();
         const sew = shell.sewFaces({ shapes: boxFaces, tolerance: 1e-7 });
         const res = operations.makeThickSolidSimple({ shape: sew, offset: 0.3 });
-        expect(res.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SHELL);
+        expect(res.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
         expect(face.getFaces({ shape: res })).toHaveLength(14);
-        expect(shell.isClosed({ shape: res })).toBe(true);
+        expect(occt.ShapeIsValid(res)).toBe(true);
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(2.593333, 6);
         box.delete();
         sew.delete();
         boxFaces.forEach(f => f.delete());
         res.delete();
+    });
+
+    it.each([0.3, -0.3])("should thicken a face by %s into a solid with its matter inside", (offset) => {
+        // Arrange
+        const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        // Act
+        const slab = operations.makeThickSolidSimple({ shape: square, offset });
+
+        // Assert
+        const box = operations.boundingBoxOfShape({ shape: slab });
+        expect(slab.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
+        expect(solid.getSolidVolume({ shape: slab })).toBeCloseTo(1.2, 9);
+        expect([box.min[1], box.max[1]]).toEqual((offset > 0 ? [0, 0.3] : [-0.3, 0]).map(v => expect.closeTo(v, 6)));
     });
 
     describe("splitShapeWithShapes", () => {

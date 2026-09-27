@@ -527,9 +527,9 @@ export class OCCTTransforms {
     /**
      * Applies a 4x4 matrix, or a list of matrices applied first to last, to a shape.
      *
-     * The matrix is column-major, so the translation sits at indices 12 to 14. A matrix that
-     * stretches or shears is allowed; build matrices with the `...ToMatrix` methods and combine
-     * them with `multiplyTransforms`. A matrix the kernel cannot apply throws an error.
+     * The matrix is column-major, with the translation at indices 12 to 14. A move, turn, mirror or
+     * even scale keeps circles and planes exact; a stretch or shear turns every surface into a
+     * B-spline, which fillets and booleans handle more slowly.
      * @param inputs - The shape and the matrix or list of matrices
      * @returns The transformed shape
      * @group by matrix

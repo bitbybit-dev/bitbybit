@@ -333,12 +333,14 @@ export class FacesService {
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const u = uMin + (uMax - uMin) * inputs.paramU;
         const v = vMin + (vMax - vMin) * inputs.paramV;
-        const gpDir = this.occ.GeomLib_NormEstim(surface, this.entitiesService.gpPnt2d([u, v]), 1e-7);
-        if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
+        const gpUv = this.entitiesService.gpPnt2d([u, v]);
+        const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
+        if (this.turnsOver(face)) {
             gpDir.Reverse();
         }
         const dir: Base.Vector3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
         gpDir.delete();
+        gpUv.delete();
         handle.delete();
         return dir;
     }
@@ -945,6 +947,7 @@ export class FacesService {
         const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
         const points: Base.Point3[] = [];
+        const turnsOver = this.turnsOver(face);
 
         const uStartRemoval = inputs.removeStartEdgeU ? 1 : 0;
         const uEndRemoval = inputs.removeEndEdgeU ? 1 : 0;
@@ -964,7 +967,7 @@ export class FacesService {
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
                 const gpUv = this.entitiesService.gpPnt2d([u, v]);
                 const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
-                if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
+                if (turnsOver) {
                     gpDir.Reverse();
                 }
                 const pt: Base.Point3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
@@ -1228,6 +1231,15 @@ export class FacesService {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(wire, false);
         wire.delete();
         return result;
+    }
+
+    private turnsOver(face: TopoDS_Face): boolean {
+        const location = face.Location();
+        const transformation = location.Transformation();
+        const mirrored = transformation.IsNegative();
+        transformation.delete();
+        location.delete();
+        return (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) !== mirrored;
     }
 
     private surfaceOf(handle: Handle_Geom_Surface): Geom_Surface {

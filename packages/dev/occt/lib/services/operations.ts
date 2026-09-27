@@ -590,8 +590,9 @@ export class OCCTOperations {
      * Gives a face or shell a thickness, turning it into a solid slab or wall of the given
      * `offset`.
      *
-     * A positive offset thickens toward the surface normal, a negative one the other way. Use it to
-     * turn a lofted or swept skin into something printable.
+     * A positive offset thickens along the surface normal, a negative one against it. Faces are
+     * offset one by one, so walls meeting at a sharp edge leave a gap of up to 1.4 times `offset`,
+     * bridged by tolerance.
      * @param inputs - The face or shell and the thickness
      * @returns The thick solid
      * @group offsets

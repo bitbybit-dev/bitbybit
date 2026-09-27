@@ -400,6 +400,8 @@ export interface BRepAlgoAPI_Common extends ClassHandle {
     // (undocumented)
     Build(): void;
     // (undocumented)
+    ErrorAlerts(): string;
+    // (undocumented)
     HasErrors(): boolean;
     // (undocumented)
     HasGenerated(): boolean;
@@ -416,6 +418,8 @@ export interface BRepAlgoAPI_Cut extends ClassHandle {
     // (undocumented)
     Build(): void;
     // (undocumented)
+    ErrorAlerts(): string;
+    // (undocumented)
     HasErrors(): boolean;
     // (undocumented)
     HasGenerated(): boolean;
@@ -431,6 +435,8 @@ export interface BRepAlgoAPI_Cut extends ClassHandle {
 export interface BRepAlgoAPI_Fuse extends ClassHandle {
     // (undocumented)
     Build(): void;
+    // (undocumented)
+    ErrorAlerts(): string;
     // (undocumented)
     HasErrors(): boolean;
     // (undocumented)
@@ -680,6 +686,8 @@ export interface BRepFilletAPI_MakeFillet extends ClassHandle {
     // (undocumented)
     Build(): void;
     // (undocumented)
+    FaultyEdges(_0: TopoDS_Shape): VectorInt;
+    // (undocumented)
     IsDone(): boolean;
     // (undocumented)
     NbEdges(_0: number): number;
@@ -699,6 +707,8 @@ export interface BRepFilletAPI_MakeFillet2d extends ClassHandle {
     AddFillet(_0: TopoDS_Vertex, _1: number): TopoDS_Edge;
     // (undocumented)
     Build(): void;
+    // (undocumented)
+    CornerDone(): boolean;
     // (undocumented)
     Init(_0: TopoDS_Face): void;
     // (undocumented)
@@ -8879,7 +8889,7 @@ export class OCCTSurfaces {
 
 // @public
 export class OCCTTransforms {
-    constructor(occ: BitbybitOcctModule, och: OccHelper);
+    constructor(_occ: BitbybitOcctModule, och: OccHelper);
     align(inputs: Inputs_2.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape;
     alignAndTranslate(inputs: Inputs_2.OCCT.AlignAndTranslateDto<TopoDS_Shape>): TopoDS_Shape;
     alignAndTranslateShapes(inputs: Inputs_2.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[];

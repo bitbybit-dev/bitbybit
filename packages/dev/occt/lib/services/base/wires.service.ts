@@ -745,11 +745,6 @@ export class WiresService {
         return newWires;
     }
 
-    createLines(inputs: Resolved.OCCT.LinesDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.lines.map(p => this.createLineWire(p)).filter(s => s !== undefined);
-        return this.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
-    }
-
     createWireFromTwoCirclesTan(inputs: Resolved.OCCT.WireFromTwoCirclesTanDto<TopoDS_Wire>) {
         const circleEdge1 = this.shapeGettersService.getEdges({ shape: inputs.circle1 });
         const circleEdge2 = this.shapeGettersService.getEdges({ shape: inputs.circle2 });

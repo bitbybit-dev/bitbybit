@@ -665,6 +665,26 @@ describe("OCCT io unit tests", () => {
         sphere.delete();
     });
 
+    it("should mesh the STL at its own precision and leave the mesh the shape already had", () => {
+        // Arrange
+        const facets = (stl: string): number => (stl.match(/facet normal/g) ?? []).length;
+        const drawn = solid.createSphere({ radius: 5, center: [0, 0, 0] });
+        const fine = new occt.BRepMesh_IncrementalMesh(drawn, 0.001, false, 0.5, false);
+        const face = occHelper.shapeGettersService.getFaces({ shape: drawn })[0]!;
+        const trianglesDrawn = occt.GetFaceTriangulation(face).NbTriangles();
+        const coarseFromScratch = facets(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(solid.createSphere({ radius: 5, center: [0, 0, 0] }), "sphere.stl", 1, false)));
+
+        // Act
+        const coarse = facets(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(drawn, "sphere.stl", 1, false)));
+        const coarseTurned = facets(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(drawn, "sphere.stl", 1, true)));
+
+        // Assert
+        expect([coarse, coarseTurned]).toEqual([coarseFromScratch, coarseFromScratch]);
+        expect(coarse).toBeLessThan(trianglesDrawn);
+        expect(occt.GetFaceTriangulation(face).NbTriangles()).toBe(trianglesDrawn);
+        fine.delete();
+    });
+
     it("should save box shape as STL file and contain valid vertex coordinates", () => {
         const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
         const dto = new Inputs.OCCT.SaveStlDto(box, "box.stl", 0.01, false);

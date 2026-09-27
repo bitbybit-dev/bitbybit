@@ -145,6 +145,14 @@
             "branches": 93.04,
             "functions": 99.01,
             "statements": 97.81
+        },
+        {
+            "measured": "2026-09-27",
+            "tests": 9492,
+            "lines": 97.91,
+            "branches": 93.09,
+            "functions": 99.01,
+            "statements": 97.82
         }
     ],
     "packages": {
@@ -236,12 +244,12 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1863,
+            "tests": 1906,
             "suites": 41,
-            "lines": 96.21,
-            "branches": 86.61,
+            "lines": 96.27,
+            "branches": 86.89,
             "functions": 97.98,
-            "statements": 96.12
+            "statements": 96.18
         },
         "occt-worker": {
             "runner": "vitest",

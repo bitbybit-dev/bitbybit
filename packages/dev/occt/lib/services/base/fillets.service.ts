@@ -199,9 +199,12 @@ export class FilletsService {
     private assignVariableFilletToEdge(inputs: Inputs.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>, mkFillet: BRepFilletAPI_MakeFillet) {
         const array = new this.occ.TColgp_Array1OfPnt2d(1, inputs.paramsU.length);
         inputs.paramsU.forEach((param, index) => {
-            array.SetValue(index + 1, this.entitiesService.gpPnt2d([param, inputs.radiusList[index]!]));
+            const point = this.entitiesService.gpPnt2d([param, inputs.radiusList[index]!]);
+            array.SetValue(index + 1, point);
+            point.delete();
         });
         mkFillet.AddWithLaw(array, inputs.edge);
+        array.delete();
     }
 
     chamferEdges(inputs: Resolved.OCCT.ChamferDto<TopoDS_Shape>): TopoDS_Shape {

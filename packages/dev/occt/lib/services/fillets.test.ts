@@ -1,11 +1,29 @@
 import { describe, it, expect, beforeAll, vi } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, ClassHandle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTFace, OCCTSolid, OCCTWire } from "./shapes";
+
+function tracked(occt: BitbybitOcctModule, names: string[], act: () => unknown): ClassHandle[] {
+    const created: ClassHandle[] = [];
+    const originals = names.map(name => [name, Reflect.get(occt, name)] as const);
+    originals.forEach(([name, original]) => Reflect.set(occt, name, new Proxy(original, {
+        construct(target, args): object {
+            const made: ClassHandle = Reflect.construct(target, args);
+            created.push(made);
+            return made;
+        },
+    })));
+    try {
+        act();
+    } finally {
+        originals.forEach(([name, original]) => Reflect.set(occt, name, original));
+    }
+    return created;
+}
 
 describe("OCCT fillets unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -433,6 +451,19 @@ describe("OCCT fillets unit tests", () => {
         filRes.delete();
         faces.forEach(f => f.delete());
         edge.delete();
+    });
+
+    it("should delete the points and the list it builds a variable radius from", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const edge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
+
+        // Act
+        const created = tracked(occt, ["gp_Pnt2d", "TColgp_Array1OfPnt2d"], () => fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8, 1] }));
+
+        // Assert
+        expect(created).toHaveLength(5);
+        expect(created.filter(made => !made.isDeleted())).toEqual([]);
     });
 
     it("should not fillet edge with variable radius if params u does not have the same nr of eleemnts as radius list", () => {
