@@ -694,6 +694,7 @@ export class FacesService {
         }
 
         shapesToDelete.forEach(s => s.delete());
+        handle.delete();
 
         return wires;
     }
@@ -755,6 +756,7 @@ export class FacesService {
 
         if (scaleU <= 0 || scaleV <= 0) {
             console.warn("Face has zero or negative parametric range. Skipping.");
+            handle.delete();
             return [];
         }
 
@@ -768,6 +770,7 @@ export class FacesService {
 
         if (gridHeightU <= 0 || gridWidthV <= 0) {
             console.warn("Grid dimensions are zero or negative after applying offset. Skipping.");
+            handle.delete();
             return [];
         }
 
@@ -819,6 +822,7 @@ export class FacesService {
         const totalHexagons = nrHexagonsU * nrHexagonsV;
         if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
             console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
+            handle.delete();
             return [];
         }
 
@@ -887,7 +891,8 @@ export class FacesService {
         shapesToDelete.forEach(s => {
             s.delete();
         });
-       
+        handle.delete();
+
         return finalPlacedWires;
     }
 
@@ -1171,6 +1176,7 @@ export class FacesService {
             gpPnt.delete();
             return pt;
         });
+        handle.delete();
         return pts;
     }
 

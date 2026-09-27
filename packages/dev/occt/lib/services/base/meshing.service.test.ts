@@ -308,6 +308,19 @@ describe("MeshingService documents", () => {
         expect(meshes).toHaveLength(occt.DocumentFreeShapeCount(document.get()));
     });
 
+    it("colours every face of a part given a colour, in one mesh and in each free shape's own", () => {
+        // Arrange
+        const document = twoPartDocument();
+
+        // Act
+        const mesh = service.docToMesh({ document, precision: 0.1, adjustYtoZ: false });
+        const meshes = service.docToMeshes({ document, precision: 0.1, adjustYtoZ: false });
+
+        // Assert
+        expect(mesh.colorGroups).toEqual({ "#ff0000ff": [0, 1, 2, 3, 4, 5] });
+        expect(meshes.map(each => each.colorGroups)).toEqual([{ "#ff0000ff": [0, 1, 2, 3, 4, 5] }]);
+    });
+
     it("reads a document from the kernel's buffers instead of its JSON, and deletes every result", () => {
         // Arrange
         const document = twoPartDocument();

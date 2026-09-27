@@ -2221,6 +2221,10 @@ export interface EmbindModule {
         new(): CurvePointResult;
     };
     // (undocumented)
+    DocumentFreeShapeCount(_0: TDocStd_Document | null): number;
+    // (undocumented)
+    DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): MeshBuffers;
+    // (undocumented)
     DocumentToMeshesJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
     DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
@@ -2815,7 +2819,9 @@ export interface EmbindModule {
         new(_0: TopoDS_Wire, _1: TopoDS_Face, _2: number): ShapeFix_Wire;
     };
     // (undocumented)
-    ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean): MeshBuffers;
+    ShapeIsValid(_0: TopoDS_Shape): boolean;
+    // (undocumented)
+    ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): MeshBuffers;
     // (undocumented)
     ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
@@ -4197,6 +4203,8 @@ export interface Handle_Geom_Surface extends ClassHandle {
     get(): Geom_Surface | null;
     // (undocumented)
     IsNull(): boolean;
+    // (undocumented)
+    surface(): Geom_Surface | null;
 }
 
 // @public (undocumented)
@@ -5168,17 +5176,31 @@ namespace Mesh_2 {
 // @public (undocumented)
 export interface MeshBuffers extends ClassHandle {
     // (undocumented)
+    EdgeIncidence(): any;
+    // (undocumented)
+    EdgeMetadata(): any;
+    // (undocumented)
     EdgeMiddles(): any;
     // (undocumented)
     EdgePoints(): any;
     // (undocumented)
     Edges(): any;
     // (undocumented)
+    EdgeTypes(): any;
+    // (undocumented)
     readonly Error: string;
+    // (undocumented)
+    FaceAdjacency(): any;
     // (undocumented)
     FaceCentres(): any;
     // (undocumented)
+    FaceColors(): any;
+    // (undocumented)
+    FaceMetadata(): any;
+    // (undocumented)
     Faces(): any;
+    // (undocumented)
+    FaceTypes(): any;
     // (undocumented)
     readonly IsValid: boolean;
     // (undocumented)
@@ -9446,7 +9468,7 @@ export namespace RuntimeExports {
     // (undocumented)
     export function addRunDependency(id: any): void;
     // (undocumented)
-    export function decrementExceptionRefcount(ptr: any): any;
+    export function decrementExceptionRefcount(ex: any): void;
     // (undocumented)
     export namespace FS {
         const // (undocumented)
@@ -9937,7 +9959,7 @@ export namespace RuntimeExports {
     // (undocumented)
     export function FS_unlink(...args: any[]): any;
     // (undocumented)
-    export function getExceptionMessage(ptr: any): any;
+    export function getExceptionMessage(ex: any): any;
     // (undocumented)
     export function removeRunDependency(id: any): void;
 }

@@ -99,13 +99,13 @@ export class OccHelper {
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {
-        const face = inputs.shape;
-        const surface = this.occ.BRep_Tool_Surface(face);
-        const srf = surface.get();
-        if (!srf) {
+        const handle = this.occ.BRep_Tool_Surface(inputs.shape);
+        const surface = handle.surface();
+        handle.delete();
+        if (!surface) {
             throw new Error("Face has no surface");
         }
-        return srf;
+        return surface;
     }
 
 }

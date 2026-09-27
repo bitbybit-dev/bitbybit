@@ -547,6 +547,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "shapes.shape.isNull": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "shapes.shape.isPartner": { dto: Inputs.OCCT.CompareShapesDto, constraints: OCCT_CompareShapesDto },
     "shapes.shape.isSame": { dto: Inputs.OCCT.CompareShapesDto, constraints: OCCT_CompareShapesDto },
+    "shapes.shape.isValid": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "shapes.shape.purgeInternalEdges": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "shapes.shape.unifySameDomain": { dto: Inputs.OCCT.UnifySameDomainDto, constraints: OCCT_UnifySameDomainDto },
     "shapes.shell.debugInfo": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },

@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import createBitbybitOcct, { BitbybitOcctModule, Handle_Geom_Surface, TopoDS_Face, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -92,6 +92,131 @@ describe("OCCT face unit tests", () => {
         f1.delete();
         w.delete();
         f.delete();
+    });
+
+    describe("the surface handles a face method takes from the kernel", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        function capturedHandles(): Handle_Geom_Surface[] {
+            const handles: Handle_Geom_Surface[] = [];
+            const original = occt.BRep_Tool_Surface.bind(occt);
+            vi.spyOn(occt, "BRep_Tool_Surface").mockImplementation((shape) => {
+                const handle = original(shape);
+                handles.push(handle);
+                return handle;
+            });
+            return handles;
+        }
+
+        const square = (): TopoDS_Face => face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it.each([
+            ["normalOnUV", (): unknown => face.normalOnUV({ shape: square(), paramU: 0.5, paramV: 0.5 })],
+            ["subdivideToPointsControlled", (): unknown => face.subdivideToPointsControlled({ shape: square() })],
+            ["subdivideToPoints", (): unknown => face.subdivideToPoints({ shape: square() })],
+            ["subdivideToWires", (): unknown => face.subdivideToWires({ shape: square() })],
+            ["subdivideToRectangleWires", (): unknown => face.subdivideToRectangleWires({ shape: square() })],
+            ["subdivideToHexagonWires", (): unknown => face.subdivideToHexagonWires({ shape: square() })],
+            ["subdivideToNormals", (): unknown => face.subdivideToNormals({ shape: square() })],
+            ["wireAlongParam", (): unknown => face.wireAlongParam({ shape: square(), param: 0.5, isU: true })],
+            ["wiresAlongParams", (): unknown => face.wiresAlongParams({ shape: square(), params: [0.25, 0.75], isU: true })],
+            ["subdivideToPointsOnParam", (): unknown => face.subdivideToPointsOnParam({ shape: square(), nrPoints: 4, param: 0.5, isU: true })],
+            ["pointsOnUVs", (): unknown => face.pointsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["normalsOnUVs", (): unknown => face.normalsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["pointOnUV", (): unknown => face.pointOnUV({ shape: square(), paramU: 0.2, paramV: 0.3 })],
+            ["surfaceFromFace", (): unknown => geom.surfaces.surfaceFromFace({ shape: square() })],
+        ])("releases every surface handle %s takes", (_method, run) => {
+            // Arrange
+            const handles = capturedHandles();
+
+            // Act
+            run();
+
+            // Assert
+            expect(handles.length).toBeGreaterThan(0);
+            expect(handles.every(handle => handle.IsNull())).toBe(true);
+        });
+
+        it("releases the surface handle when the face has no parametric range for a hexagon grid", () => {
+            // Arrange
+            const handles = capturedHandles();
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            vi.spyOn(occHelper.facesService, "getUVBounds").mockReturnValue({ uMin: 0, uMax: 0, vMin: 0, vMax: 1 });
+
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square() });
+
+            // Assert
+            expect(wires).toEqual([]);
+            expect(handles.every(handle => handle.IsNull())).toBe(true);
+        });
+
+        it("releases the surface handle when a hexagon grid leaves no room on the face", () => {
+            // Arrange
+            const handles = capturedHandles();
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square(), offsetFromBorderU: 0.5, offsetFromBorderV: 0.5 });
+
+            // Assert
+            expect(wires).toEqual([]);
+            expect(handles.every(handle => handle.IsNull())).toBe(true);
+        });
+    });
+
+    describe("a surface and the faces built on it", () => {
+        it("keeps a face whole when the surface it was built on is deleted first", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
+
+                // Act
+                srf.delete();
+
+                // Assert
+                expect(face.getFaceArea({ shape: f })).toBeCloseTo(2e+100);
+                f.delete();
+            }
+        });
+
+        it("keeps a surface whole when the face built on it is deleted first", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
+
+                // Act
+                f.delete();
+
+                // Assert
+                expect(srf.Radius()).toBe(3);
+                srf.delete();
+            }
+        });
+
+        it("keeps a face whole when the surface taken from it is deleted", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const disc = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const srf = geom.surfaces.surfaceFromFace({ shape: disc });
+                const w = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
+                const trimmed = face.faceFromSurfaceAndWire({ surface: srf, wire: w, inside: true });
+
+                // Act
+                srf.delete();
+
+                // Assert
+                expect(face.getFaceArea({ shape: disc })).toBeCloseTo(Math.PI * 9);
+                expect(face.getFaceArea({ shape: trimmed })).toBeCloseTo(Math.PI * 4);
+                disc.delete();
+                w.delete();
+                trimmed.delete();
+            }
+        });
     });
 
     it("should get u min bound", () => {

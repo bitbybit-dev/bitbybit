@@ -804,6 +804,7 @@
     "Bit.OCCTShape.isModified": "bitbybit.occt.shapes.shape.isModified",
     "Bit.OCCTShape.isLocked": "bitbybit.occt.shapes.shape.isLocked",
     "Bit.OCCTShape.isNull": "bitbybit.occt.shapes.shape.isNull",
+    "Bit.OCCTShape.isValid": "bitbybit.occt.shapes.shape.isValid",
     "Bit.OCCTShape.isEqual": "bitbybit.occt.shapes.shape.isEqual",
     "Bit.OCCTShape.isNotEqual": "bitbybit.occt.shapes.shape.isNotEqual",
     "Bit.OCCTShape.isPartner": "bitbybit.occt.shapes.shape.isPartner",

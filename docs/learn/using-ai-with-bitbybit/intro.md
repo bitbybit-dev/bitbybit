@@ -8,7 +8,7 @@ tags: [ai]
 
 # Bitbybit for AI coding agents
 
-Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 1725 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
+Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 1726 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
 
 This section explains the ways to give an agent that knowledge, in the order we recommend them.
 

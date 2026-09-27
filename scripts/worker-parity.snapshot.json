@@ -269,6 +269,7 @@
     "shapes.shape.isNull",
     "shapes.shape.isPartner",
     "shapes.shape.isSame",
+    "shapes.shape.isValid",
     "shapes.shape.purgeInternalEdges",
     "shapes.shape.unifySameDomain",
     "shapes.shell.debugInfo",

@@ -159,6 +159,28 @@ export class OCCTShape {
     }
 
     /**
+     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
+     *
+     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
+     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
+     * bends, passes. Large parts take a few hundred milliseconds.
+     * @param inputs - The shape
+     * @returns True when the shape is well formed
+     * @group analysis
+     * @shortname is valid
+     * @drawable false
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
+     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 6 });
+     * const wellFormed = await bitbybit.occt.shapes.shape.isValid({ shape: rounded });
+     * ```
+     */
+    isValid(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<boolean> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.shape.isValid", inputs);
+    }
+
+    /**
      * Tells whether two handles point at the same geometry with the same placement and orientation.
      * @param inputs - The two shapes
      * @returns True when they are equal

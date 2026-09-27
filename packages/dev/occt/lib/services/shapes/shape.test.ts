@@ -10,6 +10,7 @@ import { OCCTWire } from "./wire";
 import { OCCTEdge } from "./edge";
 import { OCCTShell } from "./shell";
 import { OCCTOperations } from "../operations";
+import { OCCTFillets } from "../fillets";
 import { OCCTSurfaces } from "../geom/surfaces";
 import * as Inputs from "../../api/inputs";
 
@@ -82,6 +83,57 @@ describe("OCCT shape unit tests", () => {
         const isNull = shape.isNull({ shape: cube });
         expect(isNull).toBe(true);
         cube.delete();
+    });
+
+    describe("isValid", () => {
+        it("should tell a box and a fillet that fits it are well formed", () => {
+            // Arrange
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+
+            // Act
+            const boxIsValid = shape.isValid({ shape: box });
+            const filletIsValid = shape.isValid({ shape: new OCCTFillets(occt, occHelper).filletEdges({ shape: box, radius: 1 }) });
+
+            // Assert
+            expect(boxIsValid).toBe(true);
+            expect(filletIsValid).toBe(true);
+        });
+
+        it("should tell a fillet too large for the faces beside its edges is not, though the kernel built it", () => {
+            // Arrange
+            const box = solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });
+            const rounded = new OCCTFillets(occt, occHelper).filletEdges({ shape: box, radius: 6 });
+
+            // Act
+            const valid = shape.isValid({ shape: rounded });
+
+            // Assert
+            expect(rounded.IsNull()).toBe(false);
+            expect(valid).toBe(false);
+        });
+
+        it("should tell a face whose outline crosses itself is not", () => {
+            // Arrange
+            const bowTie = wire.createPolygonWire({ points: [[0, 0, 0], [10, 0, 10], [10, 0, 0], [0, 0, 10]] });
+
+            // Act
+            const valid = shape.isValid({ shape: face.createFaceFromWire({ shape: bowTie, planar: true }) });
+
+            // Assert
+            expect(valid).toBe(false);
+        });
+
+        it("should tell a null shape is not", () => {
+            // Arrange
+            const cube = solid.createCube({ size: 1, center: [0, 0, 0] });
+            cube.Nullify();
+
+            // Act
+            const valid = shape.isValid({ shape: cube });
+
+            // Assert
+            expect(valid).toBe(false);
+        });
     });
 
     it("should check whether shell shape is closed", async () => {

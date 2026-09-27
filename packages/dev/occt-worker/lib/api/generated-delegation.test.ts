@@ -282,6 +282,7 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["shapes.shape.isModified", (o) => o.shapes.shape.isModified(asInputs())],
     ["shapes.shape.isNotEqual", (o) => o.shapes.shape.isNotEqual(asInputs())],
     ["shapes.shape.isNull", (o) => o.shapes.shape.isNull(asInputs())],
+    ["shapes.shape.isValid", (o) => o.shapes.shape.isValid(asInputs())],
     ["shapes.shape.isPartner", (o) => o.shapes.shape.isPartner(asInputs())],
     ["shapes.shape.isSame", (o) => o.shapes.shape.isSame(asInputs())],
     ["shapes.shape.purgeInternalEdges", (o) => o.shapes.shape.purgeInternalEdges(asInputs())],

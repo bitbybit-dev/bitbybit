@@ -770,6 +770,7 @@ export interface Geom2d_TrimmedCurve extends Geom2d_Curve {
 export interface Handle_Geom_Surface extends ClassHandle {
   IsNull(): boolean;
   get(): Geom_Surface | null;
+  surface(): Geom_Surface | null;
   delete(): void;
 }
 
@@ -2055,6 +2056,7 @@ interface EmbindModule {
     new(): TopLoc_Location;
     new(_0: gp_Trsf): TopLoc_Location;
   };
+  ShapeIsValid(_0: TopoDS_Shape): boolean;
   TopoDS_Iterator: {
     new(): TopoDS_Iterator;
     new(_0: TopoDS_Shape): TopoDS_Iterator;

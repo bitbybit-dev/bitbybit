@@ -623,6 +623,7 @@ export type OperationPath =
     | "occt.shapes.shape.isNull"
     | "occt.shapes.shape.isPartner"
     | "occt.shapes.shape.isSame"
+    | "occt.shapes.shape.isValid"
     | "occt.shapes.shape.purgeInternalEdges"
     | "occt.shapes.shape.unifySameDomain"
     | "occt.shapes.shell.debugInfo"
@@ -10245,6 +10246,17 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The second shape of the comparison. */
         otherShape: unknown | PipelineRef;
+    };
+    /**
+     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
+     *
+     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
+     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
+     * bends, passes. Large parts take a few hundred milliseconds.
+     */
+    "occt.shapes.shape.isValid": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
     };
     /**
      * Returns the shape as it is; the internal-edge purge is not applied in this version, so the
