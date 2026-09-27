@@ -1,5 +1,4 @@
 import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { ShapeGettersService } from "./shape-getters";
 import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
@@ -10,7 +9,6 @@ export class BooleansService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly shapeGettersService: ShapeGettersService
     ) { }
 
     intersection(inputs: Resolved.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
@@ -48,6 +46,9 @@ export class BooleansService {
 
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         this.refuseEmpty([inputs.shape], "shape");
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
+        }
         this.refuseEmpty(inputs.shapes, "shapes");
         let difference = inputs.shape;
         const objectsToSubtract = inputs.shapes;
@@ -68,15 +69,23 @@ export class BooleansService {
             difference = fusedShape;
         }
 
-        if (this.shapeGettersService.getNumSolidsInCompound(difference) === 1) {
-            const solid = this.shapeGettersService.getSolidFromCompound(difference, 0);
-            difference = solid;
+        if (difference.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
+            const solids = this.occ.SolidsOf(difference, false);
+            if (solids.length === 1) {
+                difference.delete();
+                difference = solids[0]!;
+            } else {
+                solids.forEach(solid => solid.delete());
+            }
         }
 
         return difference;
     }
 
     union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
+        }
         this.refuseEmpty(inputs.shapes, "shapes");
         let combined = inputs.shapes[0]!;
         const first = inputs.shapes.length > 1 ? 1 : 0;

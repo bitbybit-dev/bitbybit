@@ -31,98 +31,51 @@ describe("OCCT iterator service unit tests", () => {
         vi.restoreAllMocks();
     });
 
-    describe("what a walk leaves behind", () => {
-        const recordingWalk = (walk: () => void): { handedOut: { isDeleted(): boolean }[]; casts: { isDeleted(): boolean }[] } => {
-            const handedOut: { isDeleted(): boolean }[] = [];
-            const casts: { isDeleted(): boolean }[] = [];
-            const explorer = occt.TopExp_Explorer;
-            const originalCast: unknown = Reflect.get(occt, "CastToEdge");
-            const castToEdge = occt.CastToEdge.bind(occt);
-            Reflect.set(occt, "TopExp_Explorer", new Proxy(explorer, {
-                construct(target, args): object {
-                    const made = Reflect.construct(target, args);
-                    const current = made.Current.bind(made);
-                    made.Current = (): TopoDS_Shape => {
-                        const shape = current();
-                        handedOut.push(shape);
-                        return shape;
-                    };
-                    return made;
-                },
-            }));
-            Reflect.set(occt, "CastToEdge", (shape: TopoDS_Shape): TopoDS_Edge => {
-                const edge = castToEdge(shape);
-                casts.push(edge);
-                return edge;
-            });
-            try {
-                walk();
-            } finally {
-                Reflect.set(occt, "TopExp_Explorer", explorer);
-                Reflect.set(occt, "CastToEdge", originalCast);
+    describe("one kernel call per walk", () => {
+        const explorerWalk = (shape: TopoDS_Shape, type: typeof occt.TopAbs_ShapeEnum.EDGE): TopoDS_Shape[] => {
+            const shapes: TopoDS_Shape[] = [];
+            const explorer = new occt.TopExp_Explorer(shape, type, occt.TopAbs_ShapeEnum.SHAPE);
+            for (; explorer.More(); explorer.Next()) {
+                shapes.push(explorer.Current());
             }
-            return { handedOut, casts };
+            explorer.delete();
+            return shapes;
         };
 
-        it("should release every shape the explorer hands out and each edge it reaches again, keeping the edges it passes on", () => {
+        it("should pass each edge of a box once, at its first visit in explorer order, though two faces share it", () => {
             // Arrange
             const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
-            const passed: TopoDS_Edge[] = [];
+            const firstVisits = explorerWalk(box, occt.TopAbs_ShapeEnum.EDGE).filter((edge, index, all) => all.findIndex(other => other.IsSame(edge)) === index);
+            const passed: [number, TopoDS_Edge][] = [];
+            const calls = vi.spyOn(occt, "EdgesOf");
 
             // Act
-            const { handedOut, casts } = recordingWalk(() => iteratorService.forEachEdge(box, (_index, edge) => passed.push(edge)));
+            iteratorService.forEachEdge(box, (index, edge) => passed.push([index, edge]));
 
             // Assert
-            expect([handedOut.length, casts.length, passed.length]).toEqual([24, 24, 12]);
-            expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
-            expect(casts.filter(edge => !passed.includes(edge as TopoDS_Edge) && !edge.isDeleted())).toEqual([]);
-            expect(passed.filter(edge => edge.isDeleted())).toEqual([]);
+            expect(calls).toHaveBeenCalledTimes(1);
+            expect(passed.map(([index]) => index)).toEqual([...Array(12).keys()]);
+            expect(passed.map(([, edge], index) => edge.IsEqual(firstVisits[index]!) && edge.ShapeType() === occt.TopAbs_ShapeEnum.EDGE)).toEqual(Array(12).fill(true));
         });
 
         it.each([
-            ["faces", (shape: TopoDS_Shape): void => iteratorService.forEachFace(shape, () => undefined), 6],
-            ["wires", (shape: TopoDS_Shape): void => iteratorService.forEachWire(shape, () => undefined), 6],
-            ["vertices", (shape: TopoDS_Shape): void => iteratorService.forEachVertex(shape, () => undefined), 48],
-            ["shells", (shape: TopoDS_Shape): void => iteratorService.forEachShell(shape, () => undefined), 1],
-            ["solids", (shape: TopoDS_Shape): void => iteratorService.forEachSolid(shape, () => undefined), 1],
-        ] as [string, (shape: TopoDS_Shape) => void, number][])("should release every shape the explorer hands out while walking %s", (_what, walk, count) => {
+            ["faces", (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void): void => iteratorService.forEachFace(shape, (_index, face) => pass(face)), "FACE", 6],
+            ["wires", (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void): void => iteratorService.forEachWire(shape, (_index, wire) => pass(wire)), "WIRE", 6],
+            ["vertices", (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void): void => iteratorService.forEachVertex(shape, (_index, vertex) => pass(vertex)), "VERTEX", 48],
+            ["shells", (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void): void => iteratorService.forEachShell(shape, (_index, shell) => pass(shell)), "SHELL", 1],
+            ["solids", (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void): void => iteratorService.forEachSolid(shape, (_index, found) => pass(found)), "SOLID", 1],
+        ] as [string, (shape: TopoDS_Shape, pass: (shape: TopoDS_Shape) => void) => void, "FACE" | "WIRE" | "VERTEX" | "SHELL" | "SOLID", number][])("should pass the %s of a box at every visit, in explorer order", (_what, walk, type, count) => {
             // Arrange
             const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+            const expected = explorerWalk(box, occt.TopAbs_ShapeEnum[type]);
+            const passed: TopoDS_Shape[] = [];
 
             // Act
-            const { handedOut } = recordingWalk(() => walk(box));
+            walk(box, shape => passed.push(shape));
 
             // Assert
-            expect(handedOut).toHaveLength(count);
-            expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
-        });
-    });
-
-    describe("edges whose hashes collide", () => {
-        it("should visit every edge of a box once", () => {
-            // Arrange
-            vi.spyOn(occt, "TopoDS_Shape_HashCode").mockReturnValue(1);
-            const box = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
-            const edges: TopoDS_Edge[] = [];
-
-            // Act
-            iteratorService.forEachEdge(box, (_index, edge) => edges.push(edge));
-
-            // Assert
-            expect(edges).toHaveLength(12);
-        });
-
-        it("should visit every edge along a wire once", () => {
-            // Arrange
-            vi.spyOn(occt, "TopoDS_Shape_HashCode").mockReturnValue(1);
-            const square = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]] });
-            const edges: TopoDS_Edge[] = [];
-
-            // Act
-            iteratorService.forEachEdgeAlongWire(square, (_index, edge) => edges.push(edge));
-
-            // Assert
-            expect(edges).toHaveLength(4);
+            expect(passed).toHaveLength(count);
+            expect(passed.map((shape, index) => shape.IsEqual(expected[index]!) && shape.ShapeType() === occt.TopAbs_ShapeEnum[type])).toEqual(Array(count).fill(true));
         });
     });
 
@@ -186,30 +139,142 @@ describe("OCCT iterator service unit tests", () => {
         });
     });
 
-    describe("forEachEdgeAlongWire", () => {
-        it("should iterate over edges in order along the wire", () => {
+    describe("a compound that holds the same shape twice", () => {
+        it.each([
+            ["faces", (shape: TopoDS_Shape, pass: () => void): void => iteratorService.forEachFace(shape, pass), 12],
+            ["wires", (shape: TopoDS_Shape, pass: () => void): void => iteratorService.forEachWire(shape, pass), 12],
+            ["shells", (shape: TopoDS_Shape, pass: () => void): void => iteratorService.forEachShell(shape, pass), 2],
+            ["solids", (shape: TopoDS_Shape, pass: () => void): void => iteratorService.forEachSolid(shape, pass), 2],
+        ] as [string, (shape: TopoDS_Shape, pass: () => void) => void, number][])("should pass the %s of both placements", (_what, walk, count) => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+            const twice = compoundService.makeCompound({ shapes: [box, box] });
+            let passed = 0;
+
+            // Act
+            walk(twice, () => passed++);
+
+            // Assert
+            expect(passed).toBe(count);
+        });
+
+        it("should pass the compound itself and not look inside it for more", () => {
+            // Arrange
+            const inner = compoundService.makeCompound({ shapes: [solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] })] });
+            const outer = compoundService.makeCompound({ shapes: [inner, inner] });
+            const passed: number[] = [];
+
+            // Act
+            iteratorService.forEachCompound(outer, index => passed.push(index));
+
+            // Assert
+            expect(passed).toEqual([0]);
+        });
+
+        it("should pass a compsolid it holds twice at both visits", () => {
+            // Arrange
+            const builder = new occt.BRep_Builder();
+            const compSolid = builder.MakeCompSolid();
+            builder.Add(compSolid, solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] }));
+            const outer = compoundService.makeCompound({ shapes: [compSolid, compSolid] });
+            let passed = 0;
+
+            // Act
+            iteratorService.forEachCompSolid(outer, () => passed++);
+
+            // Assert
+            expect(passed).toBe(2);
+        });
+
+        it("should number a compound's children from 0 in the order they were added", () => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+            const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
+            const compound = compoundService.makeCompound({ shapes: [box, sphere, box] });
+            const passed: [number, TopoDS_Shape][] = [];
+
+            // Act
+            iteratorService.forEachShapeInCompound(compound, (index, child) => passed.push([index, child]));
+
+            // Assert
+            expect(passed.map(([index]) => index)).toEqual([0, 1, 2]);
+            expect(passed.map(([, child]) => child.IsSame(sphere))).toEqual([false, true, false]);
+        });
+    });
+
+    describe("edges along a wire", () => {
+        it("should give the edges head to tail, each once", () => {
+            // Arrange
             const edge1 = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 0, 0] });
             const edge2 = occHelper.edgesService.lineEdge({ start: [1, 0, 0], end: [1, 1, 0] });
             const wire = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge1, edge2] });
-            
-            const edges: TopoDS_Edge[] = [];
-            iteratorService.forEachEdgeAlongWire(wire, (_index, edge) => {
-                edges.push(edge);
+
+            // Act
+            const edges = occHelper.edgesService.getEdgesAlongWire({ shape: wire });
+
+            // Assert
+            expect(edges.map(edge => [occHelper.edgesService.startPointOnEdge({ shape: edge }), occHelper.edgesService.endPointOnEdge({ shape: edge })]))
+                .toEqual([[[0, 0, 0], [1, 0, 0]], [[1, 0, 0], [1, 1, 0]]].map(ends => ends.map(point => point.map(value => expect.closeTo(value, 12)))));
+        });
+
+        const recordingEdges = (name: "EdgesAlongWire" | "EdgesOf", act: () => void): TopoDS_Edge[] => {
+            const handedOut: TopoDS_Edge[] = [];
+            const original: unknown = Reflect.get(occt, name);
+            const walk = (original as (...args: unknown[]) => TopoDS_Edge[]).bind(occt);
+            Reflect.set(occt, name, (...args: unknown[]): TopoDS_Edge[] => {
+                const edges = walk(...args);
+                handedOut.push(...edges);
+                return edges;
             });
-            expect(edges.length).toBe(2);
+            try {
+                act();
+            } finally {
+                Reflect.set(occt, name, original);
+            }
+            return handedOut;
+        };
 
-            const edge1Start = occHelper.edgesService.startPointOnEdge({ shape: edges[0]! });
-            const edge1End = occHelper.edgesService.endPointOnEdge({ shape: edges[0]! });
-            const edge2Start = occHelper.edgesService.startPointOnEdge({ shape: edges[1]! });
+        it("should release the edges it walked once it has rebuilt the wire from them", () => {
+            // Arrange
+            const square = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]] });
+            let rebuilt: TopoDS_Wire | undefined;
 
-            expect(edge1Start[0]).toBeCloseTo(0, 5);
-            expect(edge1End[0]).toBeCloseTo(1, 5);
-            expect(edge2Start[0]).toBeCloseTo(1, 5);
+            // Act
+            const walked = recordingEdges("EdgesAlongWire", () => {
+                rebuilt = occHelper.edgesService.fixEdgeOrientationsAlongWire({ shape: square });
+            });
 
-            edge1.delete();
-            edge2.delete();
-            wire.delete();
-            edges.forEach(e => e.delete());
+            // Assert
+            expect(walked).toHaveLength(4);
+            expect(walked.filter(edge => !edge.isDeleted())).toEqual([]);
+            expect(occHelper.edgesService.getEdgesAlongWire({ shape: rebuilt! })).toHaveLength(4);
+        });
+
+        it("should release the edges it measured, and never the edge it was given", () => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+            const line = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [3, 0, 0] });
+
+            // Act
+            const found = recordingEdges("EdgesOf", () => occHelper.edgesService.getEdgeLengthsOfShape({ shape: box }));
+            const lengths = occHelper.edgesService.getEdgeLengthsOfShape({ shape: line });
+
+            // Assert
+            expect(found).toHaveLength(12);
+            expect(found.filter(edge => !edge.isDeleted())).toEqual([]);
+            expect([lengths, line.isDeleted()]).toEqual([[3], false]);
+        });
+
+        it("should refuse a wire with no edges, which makes no wire", () => {
+            // Arrange
+            const builder = new occt.BRep_Builder();
+            const empty = builder.MakeWire();
+
+            // Act
+            const act = () => occHelper.edgesService.getEdgesAlongWire({ shape: empty });
+
+            // Assert
+            expect(act).toThrow("Wire could not be constructed");
         });
     });
 

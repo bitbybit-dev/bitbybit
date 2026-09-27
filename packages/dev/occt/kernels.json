@@ -2,23 +2,23 @@
     "kernels": [
         {
             "dir": "bitbybit-dev-occt",
-            "file": "bitbybit-dev-occt.7db97c2b.wasm",
-            "bytes": 23993525,
-            "sha256": "79d75773d24330418e3f78cbbd1a3980c1f923d853c10da299ff06ffdf713e82",
+            "file": "bitbybit-dev-occt.f8efe965.wasm",
+            "bytes": 27523069,
+            "sha256": "f6b088d1db3f0e099a6947b84d5ee96fbbee5b0400d16498322ea97143cf334b",
             "url": ""
         },
         {
             "dir": "bitbybit-dev-occt-64-bit",
-            "file": "bitbybit-dev-occt-64-bit.22286d5c.wasm",
-            "bytes": 24920625,
-            "sha256": "99a11f0aa13761186e13e3c478951d1ee11ba785437a0a15e7adeae63c493af0",
+            "file": "bitbybit-dev-occt-64-bit.1bed35ce.wasm",
+            "bytes": 28784302,
+            "sha256": "86a22aab3a7095b26340aefa87307ab9bf3917c443851a625f0c40efb2d078cb",
             "url": ""
         },
         {
             "dir": "bitbybit-dev-occt-64-bit-mt",
-            "file": "bitbybit-dev-occt-64-bit-mt.fe405eb8.wasm",
-            "bytes": 24202762,
-            "sha256": "1a84092128e23a62d3872477a0101ea6f37e654d39cd2c8ff02bacf474e15145",
+            "file": "bitbybit-dev-occt-64-bit-mt.41a16cd6.wasm",
+            "bytes": 27732873,
+            "sha256": "430d890be594d4780d60dac86195daf430246e635ca8f8439dff872bf798691f",
             "url": ""
         }
     ]

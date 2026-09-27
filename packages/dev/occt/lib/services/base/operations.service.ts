@@ -18,6 +18,7 @@ import { SolidsService } from "./solids.service";
 import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
+import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
 
 export class OperationsService {
 
@@ -131,54 +132,40 @@ export class OperationsService {
     }
 
     closestPointsOnShapeFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): Inputs.Base.Point3[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, inputs.shape));
-        return pointsOnShape.map(p => p[1]);
+        return this.closestPointsOn(inputs.shape, inputs.points);
     }
 
     closestPointsOnShapesFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapesFromPointsDto<TopoDS_Shape>): Inputs.Base.Point3[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const result: Inputs.Base.Point3[] = [];
-        inputs.shapes.forEach((s) => {
-            const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, s));
-            result.push(...pointsOnShape.map(p => p[1]));
-        });
-        return result;
+        return inputs.shapes.flatMap(shape => this.closestPointsOn(shape, inputs.points));
     }
 
     distancesToShapeFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): number[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, inputs.shape));
-        return pointsOnShape.map(p => {
-            return this.vecHelper.distanceBetweenPoints(p[0], p[1]);
-        });
+        const closest = this.closestPointsOn(inputs.shape, inputs.points);
+        return inputs.points.map((point, index) => this.vecHelper.distanceBetweenPoints(point, closest[index]!));
+    }
+
+    /** The point of `shape` nearest to each of `points`, found in one kernel call that prepares `shape` once. */
+    private closestPointsOn(shape: TopoDS_Shape, points: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
+        const closest = pointsFromCoordinates(this.occ.ClosestPointsOnShape(shape, coordinatesOf(points)));
+        if (closest.length !== points.length) {
+            throw new Error("Closest points could not be found.");
+        }
+        return closest;
     }
 
     boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingBoxPropsDto {
-        const bbox = new this.occ.Bnd_Box();
-        this.occ.BRepBndLib.Add(inputs.shape, bbox, false);
-        const cornerMin = bbox.CornerMin();
-        const cornerMax = bbox.CornerMax();
-        const min = [cornerMin.X(), cornerMin.Y(), cornerMin.Z()] as Inputs.Base.Point3;
-        const max = [cornerMax.X(), cornerMax.Y(), cornerMax.Z()] as Inputs.Base.Point3;
-        const center = [
-            (cornerMin.X() + cornerMax.X()) / 2,
-            (cornerMin.Y() + cornerMax.Y()) / 2,
-            (cornerMin.Z() + cornerMax.Z()) / 2
-        ] as Inputs.Base.Point3;
-        const size = [
-            cornerMax.X() - cornerMin.X(),
-            cornerMax.Y() - cornerMin.Y(),
-            cornerMax.Z() - cornerMin.Z()
-        ] as Inputs.Base.Vector3;
-        bbox.delete();
-        const result = {
+        const box = this.occ.BoundingBoxOf(inputs.shape);
+        if (box.length < 6) {
+            throw new InputError("`shape` has no geometry to bound, so it has no bounding box.", "shape");
+        }
+        const min: Inputs.Base.Point3 = [box[0]!, box[1]!, box[2]!];
+        const max: Inputs.Base.Point3 = [box[3]!, box[4]!, box[5]!];
+        return {
             min,
             max,
-            center,
-            size
+            center: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2],
+            size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
         };
-        return result;
     }
 
     boundingBoxShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {

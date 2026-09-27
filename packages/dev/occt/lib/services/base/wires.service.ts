@@ -49,17 +49,14 @@ export class WiresService {
     }
 
     getWireLength(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): number {
-        const curve = new this.occ.BRepAdaptor_CompCurve(inputs.shape, false);
-        const length = this.geomService.curveLengthCompCurve({ shape: curve });
-        curve.delete();
-        return length;
+        return this.geomService.lengthsAndCentres([inputs.shape])[0]!.mass;
     }
 
     getWiresLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire>): number[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(wire => this.getWireLength({ shape: wire }));
+        return this.geomService.lengthsAndCentres(inputs.shapes).map(properties => properties.mass);
     }
 
     createRectangleWire(inputs: Resolved.OCCT.RectangleDto): TopoDS_Wire {
@@ -163,26 +160,12 @@ export class WiresService {
 
     createStarWire(inputs: Resolved.OCCT.StarDto) {
         const lines = this.shapesHelperService.starLines(inputs.innerRadius, inputs.outerRadius, inputs.numRays, inputs.half, inputs.offsetOuterEdges);
-        const edges: TopoDS_Edge[] = [];
-        lines.forEach(line => {
-            edges.push(this.edgesService.lineEdge(line));
-        });
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
-        const alignedWire = this.transformsService.alignAndTranslate({ shape: wire, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        return alignedWire;
+        return this.wireAlongLines(lines, !inputs.half, inputs.direction, inputs.center, "star");
     }
 
     createParallelogramWire(inputs: Resolved.OCCT.ParallelogramDto) {
         const lines = this.shapesHelperService.parallelogram(inputs.width, inputs.height, inputs.angle, inputs.aroundCenter);
-        const edges: TopoDS_Edge[] = [];
-        lines.forEach(line => {
-            edges.push(this.edgesService.lineEdge(line));
-        });
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
-        const aligned = this.transformsService.alignAndTranslate({ shape: wire, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        return aligned;
+        return this.wireAlongLines(lines, true, inputs.direction, inputs.center, "parallelogram");
     }
 
     createHeartWire(inputs: Resolved.OCCT.Heart2DDto) {
@@ -222,14 +205,7 @@ export class WiresService {
 
     createNGonWire(inputs: Resolved.OCCT.NGonWireDto) {
         const lines = this.shapesHelperService.ngon(inputs.nrCorners, inputs.radius, [0, 0]);
-        const edges: TopoDS_Edge[] = [];
-        lines.forEach(line => {
-            edges.push(this.edgesService.lineEdge(line));
-        });
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
-        const aligned = this.transformsService.alignAndTranslate({ shape: wire, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        return aligned;
+        return this.wireAlongLines(lines, true, inputs.direction, inputs.center, "polygon");
     }
 
     createLPolygonWire(inputs: Resolved.OCCT.LPolygonDto) {
@@ -323,6 +299,20 @@ export class WiresService {
         return this.createLineWire({ start, end });
     }
 
+    /**
+     * A wire through a chain of lines, each starting where the one before it ends, laid in the plane
+     * normal to `direction` around `center`. A closed chain is a polygon through the line starts; an
+     * open one also passes through the last line's end.
+     */
+    private wireAlongLines(lines: Base.Line3[], closed: boolean, direction: Base.Vector3, center: Base.Point3, kind: string): TopoDS_Wire {
+        const points = lines.map(line => line.start);
+        const last = lines[lines.length - 1];
+        if (!closed && last) {
+            points.push(last.end);
+        }
+        return this.wireThrough(this.transformsService.placePoints(points, 0, direction, center), closed, kind);
+    }
+
     private samePoint(first: Inputs.Base.Point3, second: Inputs.Base.Point3): boolean {
         return Math.hypot(first[0] - second[0], first[1] - second[1], first[2] - second[2]) <= 1e-7;
     }
@@ -355,27 +345,16 @@ export class WiresService {
 
 
     divideWireByParamsToPoints(inputs: Resolved.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const points = this.geomService.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
-        curve.delete();
-        return points;
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, this.geomService.divisions(inputs, 1));
     }
 
     divideWireByEqualDistanceToPoints(inputs: Resolved.OCCT.DivideDto<TopoDS_Wire>): Base.Point3[] {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const points = this.geomService.divideCompCurveByEqualLengthDistance({ ...inputs, shape: curve });
-        curve.delete();
-        return points;
+        const lengths = this.geomService.divisions(inputs, this.getWireLength({ shape: inputs.shape }));
+        return this.geomService.pointsAtLengths(inputs.shape, lengths);
     }
 
     pointOnWireAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Point3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const pt = this.geomService.pointOnCurveAtParam({ ...inputs, shape: curve });
-        curve.delete();
-        return pt;
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, [inputs.param])[0]!;
     }
 
     tangentOnWireAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Base.Vector3 {
@@ -387,43 +366,33 @@ export class WiresService {
     }
 
     pointOnWireAtLength(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Base.Point3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.pointOnCompCurveAtLength({ ...inputs, shape: curve });
-        curve.delete();
-        return res;
+        return this.geomService.pointsAtLengths(inputs.shape, [inputs.length])[0]!;
     }
 
     pointsOnWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>): Base.Point3[] {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.pointsOnCompCurveAtLengths({ ...inputs, shape: curve });
-        curve.delete();
-        return res;
+        return this.geomService.pointsAtLengths(inputs.shape, inputs.lengths);
     }
 
     pointsOnWireAtEqualLength(inputs: Resolved.OCCT.PointsOnWireAtEqualLengthDto<TopoDS_Wire>): Base.Point3[] {
+        if (!(inputs.length > 0)) {
+            throw new InputError(`\`length\` must be more than 0, or the points never move along the wire, and is ${inputs.length}.`, "length");
+        }
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const wireLength = this.getWireLength({ shape: wire });
-        const nrOfLengths = wireLength / inputs.length;
-        const lengths = [];
-        let total = 0;
-        for (let i = 0; i < nrOfLengths; i++) {
+        const fitting = Math.ceil(this.getWireLength({ shape: wire }) / inputs.length);
+        const lengths: number[] = [];
+        for (let i = 0; i < fitting; i++) {
             lengths.push(inputs.length * i);
-            total += inputs.length;
         }
         if (!inputs.includeFirst) {
             lengths.shift();
         }
         if (inputs.tryNext) {
-            lengths.push(total + inputs.length);
+            lengths.push(inputs.length * fitting);
         }
-        const res = this.geomService.pointsOnCompCurveAtLengths({ lengths, shape: curve });
+        const res = this.geomService.pointsAtLengths(wire, lengths);
         if (inputs.includeLast) {
             res.push(this.endPointOnWire({ shape: wire }));
         }
-        curve.delete();
         return res;
     }
 
@@ -432,7 +401,6 @@ export class WiresService {
             throw new Error("Lengths must add up to more than 0, or the points never move along the wire.");
         }
         const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
         const wireLength = this.getWireLength({ shape: wire });
         const lengths = [];
         let total = 0;
@@ -461,11 +429,10 @@ export class WiresService {
                 lengths.push(total + inputs.lengths[0]!);
             }
         }
-        const res = this.geomService.pointsOnCompCurveAtLengths({ lengths, shape: curve });
+        const res = this.geomService.pointsAtLengths(wire, lengths);
         if (inputs.includeLast) {
             res.push(this.endPointOnWire({ shape: wire }));
         }
-        curve.delete();
         return res;
     }
 
@@ -616,7 +583,7 @@ export class WiresService {
             });
 
             if (bestEdgeIndex >= 0) {
-                splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: bestParam });
+                splitLocations.push({ edgeIndex: bestEdgeIndex, parameter: this.snappedToEdgeEnds(edges[bestEdgeIndex]!, bestParam, pt as Base.Point3) });
             }
         });
 
@@ -1059,24 +1026,15 @@ export class WiresService {
     }
 
     startPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.startPointOnCurve({ shape: curve });
-        return res;
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, [0])[0]!;
     }
 
     midPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.pointOnCurveAtParam({ shape: curve, param: 0.5 });
-        return res;
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, [0.5])[0]!;
     }
 
     endPointOnWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): Base.Point3 {
-        const wire = inputs.shape;
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.endPointOnCurve({ shape: curve });
-        return res;
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, [1])[0]!;
     }
 
     textWires(inputs: Resolved.OCCT.TextWiresDto): TopoDS_Wire[] {
@@ -1141,6 +1099,24 @@ export class WiresService {
      * @param edge edge to read
      * @returns first and last parameter
      */
+    /**
+     * `parameter`, or the edge's first or last parameter when `point` is within 1e-7 of the edge's
+     * end there. A split at a vertex then matches the split the wire's own ends make, where a
+     * projection a rounding error inside the edge would cut off a piece of length 0.
+     */
+    private snappedToEdgeEnds(edge: TopoDS_Edge, parameter: number, point: Base.Point3): number {
+        const { first, last } = this.edgeParameterRange(edge);
+        const end = [first, last].find(candidate => {
+            const evaluated = this.occ.EvaluateEdgeCurve(edge, candidate);
+            const onCurve = evaluated.Point;
+            const near = this.samePoint([onCurve.X(), onCurve.Y(), onCurve.Z()], point);
+            onCurve.delete();
+            evaluated.delete();
+            return near;
+        });
+        return end ?? parameter;
+    }
+
     private edgeParameterRange(edge: TopoDS_Edge): { first: number, last: number } {
         const result = this.occ.BRep_Tool_GetEdgeParameters(edge);
         return result.IsValid ? { first: result.First, last: result.Last } : { first: 0, last: 0 };

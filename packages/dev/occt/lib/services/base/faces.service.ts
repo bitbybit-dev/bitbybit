@@ -13,6 +13,7 @@ import { VectorHelperService } from "../../api";
 import { BaseBitByBit } from "../../base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
+import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
 
 export class FacesService {
 
@@ -80,35 +81,25 @@ export class FacesService {
 
 
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
-        const area = gprops.Mass();
-        gprops.delete();
-        return area;
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.mass;
     }
 
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): number[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(face => this.getFaceArea({ shape: face }));
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach(inputs.shapes)).map(properties => properties.mass);
     }
 
     getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
-        const gppnt = gprops.CentreOfMass();
-        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
-        gprops.delete();
-        gppnt.delete();
-        return pt;
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.centre;
     }
 
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(face => this.getFaceCenterOfMass({ shape: face }));
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach(inputs.shapes)).map(properties => properties.centre);
     }
 
     filterFacePoints(inputs: Resolved.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
@@ -121,47 +112,23 @@ export class FacesService {
         const keepUnknown = inputs.keepUnknown === true;
         const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance) : undefined;
 
-        const result: Base.Point3[] = [];
-
-        for (const pt of points) {
-            const gpPnt = new this.occ.gp_Pnt(pt[0], pt[1], pt[2]);
-            try {
-                if (bounds && this.isOutsideBounds(bounds, pt)) {
-                    if (keepOut) {
-                        result.push(pt);
-                    }
-                    continue;
-                }
-                const classifier = new this.occ.BRepClass_FaceClassifier(face, gpPnt, tolerance);
-                const stateValue = classifier.State().value;
-                if ((stateValue === 0 && keepIn) ||
-                    (stateValue === 1 && keepOut) ||
-                    (stateValue === 2 && keepOn) ||
-                    (stateValue === 3 && keepUnknown)) {
-                    result.push(pt);
-                }
-                classifier.delete();
-            } finally {
-                gpPnt.delete();
-            }
-        }
-
-        return result;
+        const outside = (pt: Base.Point3): boolean => bounds !== undefined && this.isOutsideBounds(bounds, pt);
+        const classified = points.filter(pt => !outside(pt));
+        const states = this.occ.ClassifyPointsOnFace(face, coordinatesOf(classified), tolerance);
+        const kept = (state: number): boolean => (state === 0 && keepIn) || (state === 1 && keepOut) || (state === 2 && keepOn) || (state === 3 && keepUnknown);
+        let next = 0;
+        return points.filter(pt => outside(pt) ? keepOut : kept(states[next++]!));
     }
 
-    private enlargedBoundingBox(shape: TopoDS_Shape, gap: number): { min: Base.Point3, max: Base.Point3 } {
-        const bbox = new this.occ.Bnd_Box();
-        this.occ.BRepBndLib.Add(shape, bbox, false);
-        const cornerMin = bbox.CornerMin();
-        const cornerMax = bbox.CornerMax();
-        const bounds = {
-            min: [cornerMin.X() - gap, cornerMin.Y() - gap, cornerMin.Z() - gap] as Base.Point3,
-            max: [cornerMax.X() + gap, cornerMax.Y() + gap, cornerMax.Z() + gap] as Base.Point3,
+    private enlargedBoundingBox(shape: TopoDS_Shape, gap: number): { min: Base.Point3, max: Base.Point3 } | undefined {
+        const box = this.occ.BoundingBoxOf(shape);
+        if (box.length < 6) {
+            return undefined;
+        }
+        return {
+            min: [box[0]! - gap, box[1]! - gap, box[2]! - gap],
+            max: [box[3]! + gap, box[4]! + gap, box[5]! + gap],
         };
-        cornerMin.delete();
-        cornerMax.delete();
-        bbox.delete();
-        return bounds;
     }
 
     private isOutsideBounds(bounds: { min: Base.Point3, max: Base.Point3 }, pt: Base.Point3): boolean {

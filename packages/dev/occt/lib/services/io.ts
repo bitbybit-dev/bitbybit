@@ -125,7 +125,7 @@ export class OCCTIO {
         const fileName = "x";
         const writer = new this.occ.StlAPI_Writer();
         let result: string;
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, false);
+        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, this.occ.RunsInParallel());
 
         const writeResult = writer.Write(transferShape, fileName);
         if (writeResult) {

@@ -1607,5 +1607,32 @@ describe("OCCT operations unit tests", () => {
         });
     });
 
+    describe("a shape with nothing in it", () => {
+        it("should refuse to find closest points on it", () => {
+            // Arrange
+            const empty = occHelper.converterService.makeCompound({ shapes: [] });
 
+            // Act
+            const act = () => operations.closestPointsOnShapeFromPoints({ shape: empty, points: [[0, 0, 0]] });
+
+            // Assert
+            expect(act).toThrow("Closest points could not be found.");
+        });
+
+        it("should refuse its bounding box, naming the input", () => {
+            // Arrange
+            const empty = occHelper.converterService.makeCompound({ shapes: [] });
+            let refusal: unknown;
+
+            // Act
+            try {
+                operations.boundingBoxOfShape({ shape: empty });
+            } catch (failure) {
+                refusal = failure;
+            }
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "shape", message: "`shape` has no geometry to bound, so it has no bounding box." });
+        });
+    });
 });

@@ -7642,7 +7642,7 @@ export interface OperationParams {
      * becomes a solid, a wire a shell, an edge a face.
      *
      * The shape itself stays at the start of the extrusion; the vector is in model units, so `[0,
-     * 10, 0]` extrudes 10 units up.
+     * 10, 0]` extrudes 10 units up. A solid, or a vector of length 0, is refused.
      */
     "occt.operations.extrude": {
         /** The shape to sweep: a face gives a solid, a wire a shell, an edge a face. */
@@ -10259,8 +10259,9 @@ export interface OperationParams {
     /**
      * Joins faces into a shell by sewing their edges together where they meet within the tolerance.
      *
-     * Faces whose edges are further apart than the tolerance stay unjoined, so a shell meant to be
-     * closed may come out open; a larger tolerance sews more, a smaller one is more precise.
+     * Faces further apart than the tolerance stay unjoined, so a closed shell may come out open; a
+     * larger tolerance sews more. A lone face comes back as that face, and faces that do not all
+     * join as a compound of what did.
      */
     "occt.shapes.shell.sewFaces": {
         /** The faces to stitch together; their shared edges must line up within the tolerance. */

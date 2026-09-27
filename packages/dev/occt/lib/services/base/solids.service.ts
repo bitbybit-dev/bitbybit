@@ -2,19 +2,19 @@ import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Sol
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import { ShapeGettersService } from "./shape-getters";
-import { FacesService } from "./faces.service";
 import { EntitiesService } from "./entities.service";
 import { EnumService } from "./enum.service";
 import { ConverterService } from "./converter.service";
 import { TransformsService } from "./transforms.service";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
+
 export class SolidsService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
-        private readonly facesService: FacesService,
         _enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
@@ -118,74 +118,36 @@ export class SolidsService {
     }
 
     filterSolidPoints(inputs: Resolved.OCCT.FilterSolidPointsDto<TopoDS_Face>): Base.Point3[] {
-        const points: Base.Point3[] = [];
-        if (inputs.points.length > 0) {
-            inputs.points.forEach(pt => {
-                const gpPnt = this.entitiesService.gpPnt(pt);
-                const state = this.occ.ClassifyPointInSolid(inputs.shape, gpPnt, inputs.tolerance);
-                let type: Inputs.OCCT.topAbsStateEnum;
-                switch (state) {
-                    case 0: type = Inputs.OCCT.topAbsStateEnum.in; break;
-                    case 1: type = Inputs.OCCT.topAbsStateEnum.out; break;
-                    case 2: type = Inputs.OCCT.topAbsStateEnum.on; break;
-                    default: type = Inputs.OCCT.topAbsStateEnum.unknown; break;
-                }
-                if (inputs.keepOn && type === Inputs.OCCT.topAbsStateEnum.on) {
-                    points.push(pt);
-                }
-                if (inputs.keepIn && type === Inputs.OCCT.topAbsStateEnum.in) {
-                    points.push(pt);
-                }
-                if (inputs.keepOut && type === Inputs.OCCT.topAbsStateEnum.out) {
-                    points.push(pt);
-                }
-                if (inputs.keepUnknown && type === Inputs.OCCT.topAbsStateEnum.unknown) {
-                    points.push(pt);
-                }
-                gpPnt.delete();
-            });
-            return points;
-        } else {
-            return [];
-        }
+        const states = this.occ.ClassifyPointsInSolid(inputs.shape, coordinatesOf(inputs.points), inputs.tolerance);
+        const kept = (state: number): boolean => (state === 0 && inputs.keepIn) || (state === 1 && inputs.keepOut)
+            || (state === 2 && inputs.keepOn) || (state === 3 && inputs.keepUnknown);
+        return inputs.points.filter((_point, index) => kept(states[index]!));
     }
 
     getSolidVolume(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
-        const vol = gprops.Mass();
-        gprops.delete();
-        return vol;
+        return massesAndCentres(this.occ.VolumePropertiesOfEach([inputs.shape]))[0]!.mass;
     }
 
     getSolidSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): number {
-        const faces = this.shapeGettersService.getFaces(inputs);
-        const faceAreas = this.facesService.getFacesAreas({ shapes: faces });
-        return faceAreas.reduce((p, c) => p + c, 0);
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.mass;
     }
 
     getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): number[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(s => this.getSolidVolume({ shape: s }));
+        return massesAndCentres(this.occ.VolumePropertiesOfEach(inputs.shapes)).map(properties => properties.mass);
     }
 
     getSolidCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Solid>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_VolumeProperties(inputs.shape, gprops);
-        const gppnt = gprops.CentreOfMass();
-        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
-        gprops.delete();
-        gppnt.delete();
-        return pt;
+        return massesAndCentres(this.occ.VolumePropertiesOfEach([inputs.shape]))[0]!.centre;
     }
 
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): Base.Point3[] {
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(s => this.getSolidCenterOfMass({ shape: s }));
+        return massesAndCentres(this.occ.VolumePropertiesOfEach(inputs.shapes)).map(properties => properties.centre);
     }
 
     getSolids(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Solid[] {

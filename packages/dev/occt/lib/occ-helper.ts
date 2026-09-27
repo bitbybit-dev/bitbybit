@@ -60,13 +60,13 @@ export class OccHelper {
         this.enumService = new EnumService(occ);
         this.converterService = new ConverterService(occ);
         this.entitiesService = new EntitiesService(occ);
-        this.shapeGettersService = new ShapeGettersService(occ, this.enumService, this.iteratorService);
+        this.shapeGettersService = new ShapeGettersService(occ, this.enumService);
         this.geomService = new GeomService(occ, this.vecHelper, this.entitiesService);
         this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
-        this.booleansService = new BooleansService(occ, this.shapeGettersService);
+        this.booleansService = new BooleansService(occ);
 
         this.edgesService = new EdgesService(occ, this.shapeGettersService, this.entitiesService,
-            this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
+            this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
         this.wiresService = new WiresService(occ, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
@@ -83,9 +83,9 @@ export class OccHelper {
             this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base,
             () => this.filletsService);
 
-        this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
+        this.shellsService = new ShellsService(occ, this.converterService);
 
-        this.solidsService = new SolidsService(occ, this.shapeGettersService, this.facesService, this.enumService,
+        this.solidsService = new SolidsService(occ, this.shapeGettersService, this.enumService,
             this.entitiesService, this.converterService, this.transformsService, this.vecHelper);
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,

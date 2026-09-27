@@ -2404,4 +2404,55 @@ describe("OCCT face unit tests", () => {
             [...leftOut, ...spelled, square].forEach((s) => s.delete());
         });
     });
+
+    describe("points classified against a face in one call", () => {
+        const points: Base.Point3[] = [[50, 0, 50], [0, 0, 0], [1, 0, 0], [0.9, 0, 0.9]];
+        const disc = (): TopoDS_Face => face.createCircleFace({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it.each([
+            ["inside", { keepIn: true, keepOn: false, keepOut: false }, [[0, 0, 0]]],
+            ["on the edge", { keepIn: false, keepOn: true, keepOut: false }, [[1, 0, 0]]],
+            ["outside, whether past the bounding box or only past the edge", { keepIn: false, keepOn: false, keepOut: true }, [[50, 0, 50], [0.9, 0, 0.9]]],
+        ] as [string, { keepIn: boolean, keepOn: boolean, keepOut: boolean }, Base.Point3[]][])("should keep the points %s, with the bounding box sorting the far ones first", (_what, keep, expected) => {
+            // Act
+            const kept = face.filterFacePoints({ shape: disc(), points, tolerance: 1e-4, useBndBox: true, gapTolerance: 0.1, keepUnknown: false, ...keep });
+
+            // Assert
+            expect(kept).toEqual(expected);
+        });
+
+        it("should keep every point as unknown against a shape that is not a face", () => {
+            // Arrange
+            const outline = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const kept = face.filterFacePoints({ shape: outline, points, tolerance: 1e-4, useBndBox: false, gapTolerance: 0.1, keepIn: false, keepOn: false, keepOut: false, keepUnknown: true });
+
+            // Assert
+            expect(kept).toEqual(points);
+        });
+
+        it("should skip the bounding box of a null face, and call every point unknown", () => {
+            // Arrange
+            const nothing = new occt.TopoDS_Face();
+
+            // Act
+            const kept = face.filterFacePoints({ shape: nothing, points, tolerance: 1e-4, useBndBox: true, gapTolerance: 0.1, keepIn: false, keepOn: false, keepOut: false, keepUnknown: true });
+
+            // Assert
+            expect(kept).toEqual(points);
+        });
+
+        it("should give each face's own centroid, which for a triangle is not the middle of its bounding box", () => {
+            // Arrange
+            const triangle = face.createFaceFromWire({ shape: wire.createPolygonWire({ points: [[0, 0, 0], [3, 0, 0], [0, 0, 3]] }), planar: true });
+            const round = face.createCircleFace({ radius: 1, center: [0, 0, 5], direction: [0, 1, 0] });
+
+            // Act
+            const centres = face.getFacesCentersOfMass({ shapes: [triangle, round] });
+
+            // Assert
+            expect(centres).toEqual([[1, 0, 1], [0, 0, 5]].map(point => point.map(value => expect.closeTo(value, 12))));
+        });
+    });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
@@ -49,9 +49,70 @@ describe("OCCT booleans unit tests", () => {
         expect(volume).toBeCloseTo(0.075);
     });
 
-    it("should not compute difference if shapes are empty", async () => {
-        const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
-        expect(() => booleans.difference({ shape: box1, shapes: [], keepEdges: false })).toThrow("Shape is not a compound or is null.");
+    it.each([
+        ["difference", () => booleans.difference({ shape: solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] }), shapes: [], keepEdges: false }), "`shapes` is empty, so there is nothing to subtract from `shape`."],
+        ["union", () => booleans.union({ shapes: [], keepEdges: false }), "`shapes` is empty, so there is nothing to join."],
+    ] as [string, () => unknown, string][])("should refuse a %s of an empty list, naming the input", (_what, act, message) => {
+        // Act
+        let refusal: unknown;
+        try {
+            act();
+        } catch (failure) {
+            refusal = failure;
+        }
+
+        // Assert
+        expect(refusal).toMatchObject({ name: "InputError", property: "shapes", message });
+    });
+
+    it("should give back the one solid a difference leaves, not a compound holding it", () => {
+        // Arrange
+        const box = solid.createBox({ width: 4, height: 4, length: 4, center: [0, 0, 0] });
+        const corner = solid.createBox({ width: 2, height: 2, length: 2, center: [2, 2, 2] });
+
+        // Act
+        const result = booleans.difference({ shape: box, shapes: [corner], keepEdges: false });
+
+        // Assert
+        expect(result.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
+    });
+
+    it("should release the compound it takes the one solid out of", () => {
+        // Arrange
+        const box = solid.createBox({ width: 4, height: 4, length: 4, center: [0, 0, 0] });
+        const corner = solid.createBox({ width: 2, height: 2, length: 2, center: [2, 2, 2] });
+        const unified: TopoDS_Shape[] = [];
+        const original: unknown = Reflect.get(occt, "ShapeUpgrade_UnifySameDomain_Perform");
+        const unify = occt.ShapeUpgrade_UnifySameDomain_Perform.bind(occt);
+        Reflect.set(occt, "ShapeUpgrade_UnifySameDomain_Perform", (shape: TopoDS_Shape, edges: boolean, faces: boolean, bsplines: boolean): TopoDS_Shape => {
+            const result = unify(shape, edges, faces, bsplines);
+            unified.push(result);
+            return result;
+        });
+
+        // Act
+        let result: TopoDS_Shape | undefined;
+        try {
+            result = booleans.difference({ shape: box, shapes: [corner], keepEdges: false });
+        } finally {
+            Reflect.set(occt, "ShapeUpgrade_UnifySameDomain_Perform", original);
+        }
+
+        // Assert
+        expect(result.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
+        expect(unified.map(shape => shape.isDeleted())).toEqual([true]);
+    });
+
+    it("should keep a compound when a difference leaves two solids", () => {
+        // Arrange
+        const bar = solid.createBox({ width: 6, height: 1, length: 1, center: [0, 0, 0] });
+        const middle = solid.createBox({ width: 1, height: 2, length: 2, center: [0, 0, 0] });
+
+        // Act
+        const result = booleans.difference({ shape: bar, shapes: [middle], keepEdges: false });
+
+        // Assert
+        expect([result.ShapeType(), occt.SolidsOf(result, false).length]).toEqual([occt.TopAbs_ShapeEnum.COMPOUND, 2]);
     });
 
     it("should compute mesh mesh intersection wires of two intersecting boxes", async () => {

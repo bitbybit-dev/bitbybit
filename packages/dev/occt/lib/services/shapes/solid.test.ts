@@ -577,4 +577,29 @@ describe("OCCT solid unit tests", () => {
             torus.delete();
         });
     });
+
+    describe("solid properties and point filters in one call", () => {
+        it("should put a cone's centre of mass a quarter of its height above its base, where its surface centroid is not", () => {
+            // Arrange
+            const cone = solid.createCone({ radius1: 1, radius2: 0, height: 4, center: [0, 0, 0], direction: [0, 1, 0], angle: 360 });
+
+            // Act
+            const centres = [solid.getSolidCenterOfMass({ shape: cone }), ...solid.getSolidsCentersOfMass({ shapes: [cone] })];
+
+            // Assert
+            expect(centres).toEqual([[0, 1, 0], [0, 1, 0]].map(point => point.map(value => expect.closeTo(value, 10))));
+        });
+
+        it("should keep every point as unknown against a shape that is not a solid", () => {
+            // Arrange
+            const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [5, 5, 5]];
+
+            // Act
+            const kept = solid.filterSolidPoints({ shape: square, points, tolerance: 1e-4, keepIn: false, keepOn: false, keepOut: false, keepUnknown: true });
+
+            // Assert
+            expect(kept).toEqual(points);
+        });
+    });
 });

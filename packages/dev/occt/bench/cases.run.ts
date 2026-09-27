@@ -36,6 +36,9 @@ const median = (values: number[]): number => {
 
 it("measures every case", async () => {
     const { label, occ } = await loadKernel();
+    if (process.env["BENCH_PARALLEL"] === "off") {
+        occ.SetRunsInParallel(false);
+    }
     const occt = new OCCTService(occ, new OccHelper(new VectorHelperService(), new ShapesHelperService(), occ));
     const rows = benchCases.map(benchCase => {
         const fingerprint = fingerprintOf(benchCase.run(occt));
@@ -50,7 +53,7 @@ it("measures every case", async () => {
         }
         return { case: benchCase.name, medianMs: Math.round(median(times) * 10) / 10, fingerprint };
     });
-    const report = { kernel: label, runs: RUNS, totalMs: Math.round(rows.reduce((sum, row) => sum + row.medianMs, 0)), rows };
+    const report = { kernel: label, parallel: occ.RunsInParallel(), runs: RUNS, totalMs: Math.round(rows.reduce((sum, row) => sum + row.medianMs, 0)), rows };
     console.log(JSON.stringify(report, null, 2));
     const out = process.env["BENCH_OUT"];
     if (out) {

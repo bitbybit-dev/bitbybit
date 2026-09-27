@@ -1786,6 +1786,8 @@ export interface EmbindModule {
         new(): BOPAlgo_Builder;
     };
     // (undocumented)
+    BoundingBoxOf(_0: TopoDS_Shape): Float64Array;
+    // (undocumented)
     BRep_Builder: {
         new(): BRep_Builder;
     };
@@ -2171,13 +2173,25 @@ export interface EmbindModule {
     // (undocumented)
     ChFi3d_FilletShape: {Rational: ChFi3d_FilletShapeValue<number>, QuasiAngular: ChFi3d_FilletShapeValue<number>, Polynomial: ChFi3d_FilletShapeValue<number>};
     // (undocumented)
+    ChildrenOf(_0: TopoDS_Shape): TopoDS_Shape[];
+    // (undocumented)
     ClassifyCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number): string;
     // (undocumented)
     ClassifyPointInSolid(_0: TopoDS_Shape, _1: gp_Pnt, _2: number): number;
     // (undocumented)
     ClassifyPointOnFace2d(_0: TopoDS_Face, _1: gp_Pnt2d, _2: number): TopAbs_State;
     // (undocumented)
+    ClassifyPointsInSolid(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+    // (undocumented)
+    ClassifyPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+    // (undocumented)
     ClosestPointsBetweenShapes(_0: TopoDS_Shape, _1: TopoDS_Shape): VectorDouble;
+    // (undocumented)
+    ClosestPointsOnShape(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array;
+    // (undocumented)
+    CompoundsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Compound[];
+    // (undocumented)
+    CompSolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_CompSolid[];
     // (undocumented)
     ComputeLinearProperties(_0: TopoDS_Shape): PropertiesResult;
     // (undocumented)
@@ -2213,6 +2227,8 @@ export interface EmbindModule {
     // (undocumented)
     CountSolids(_0: TopoDS_Shape): number;
     // (undocumented)
+    CountSubShapes(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum, _2: boolean): number;
+    // (undocumented)
     CountVertices(_0: TopoDS_Shape): number;
     // (undocumented)
     CreateFillet2d(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number): TopoDS_Edge;
@@ -2231,6 +2247,10 @@ export interface EmbindModule {
         new(): CurvePointResult;
     };
     // (undocumented)
+    CurvePointsAtLengths(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+    // (undocumented)
+    CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+    // (undocumented)
     DocumentFreeShapeCount(_0: TDocStd_Document | null): number;
     // (undocumented)
     DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): MeshBuffers;
@@ -2239,7 +2259,13 @@ export interface EmbindModule {
     // (undocumented)
     DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
+    EdgeAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Edge;
+    // (undocumented)
     EdgeDebugInfoJson(_0: TopoDS_Edge): string;
+    // (undocumented)
+    EdgesAlongWire(_0: TopoDS_Wire): TopoDS_Edge[];
+    // (undocumented)
+    EdgesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Edge[];
     // (undocumented)
     EvaluateEdgeCurve(_0: TopoDS_Edge, _1: number): CurvePointResult;
     // (undocumented)
@@ -2261,7 +2287,11 @@ export interface EmbindModule {
     // (undocumented)
     ExportDocumentToStepZ(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString, _3: EmbindString): any;
     // (undocumented)
+    FaceAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Face;
+    // (undocumented)
     FaceDebugInfoJson(_0: TopoDS_Face): string;
+    // (undocumented)
+    FacesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Face[];
     // (undocumented)
     FilletCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): TopoDS_Shape;
     // (undocumented)
@@ -2628,6 +2658,8 @@ export interface EmbindModule {
     // (undocumented)
     IsEdgeLinear(_0: TopoDS_Edge): boolean;
     // (undocumented)
+    LinearPropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+    // (undocumented)
     LoadStepToDoc(_0: any): Handle_TDocStd_Document;
     // (undocumented)
     MakeApproxBSplineEdge(_0: VectorDouble, _1: number, _2: number, _3: number): TopoDS_Edge;
@@ -2813,9 +2845,13 @@ export interface EmbindModule {
     // (undocumented)
     RotatePeriodicEdgeSeamToPoint(_0: TopoDS_Edge, _1: gp_Pnt): TopoDS_Edge;
     // (undocumented)
+    RunsInParallel(): boolean;
+    // (undocumented)
     SetDocLabelColor(_0: Handle_TDocStd_Document, _1: EmbindString, _2: number, _3: number, _4: number, _5: number): boolean;
     // (undocumented)
     SetDocLabelName(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString): boolean;
+    // (undocumented)
+    SetRunsInParallel(_0: boolean): void;
     // (undocumented)
     ShapeCrossingsAlong(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number): VectorDouble;
     // (undocumented)
@@ -2839,7 +2875,15 @@ export interface EmbindModule {
     // (undocumented)
     ShapeUpgrade_UnifySameDomain_Perform(_0: TopoDS_Shape, _1: boolean, _2: boolean, _3: boolean): TopoDS_Shape;
     // (undocumented)
+    ShellAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Shell;
+    // (undocumented)
+    ShellsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Shell[];
+    // (undocumented)
     ShiftPeriodicEdgeSeam(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
+    // (undocumented)
+    SolidAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Solid;
+    // (undocumented)
+    SolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Solid[];
     // (undocumented)
     Standard_GUID: {
         new(): Standard_GUID;
@@ -2884,6 +2928,8 @@ export interface EmbindModule {
     SubdivideFaceToPointsWithUV(_0: TopoDS_Face, _1: number, _2: number): any;
     // (undocumented)
     SubdivideWireToPoints(_0: TopoDS_Wire, _1: number): any;
+    // (undocumented)
+    SurfacePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
     // (undocumented)
     TColgp_Array1OfDir: {
         new(_0: number, _1: number): TColgp_Array1OfDir;
@@ -3013,6 +3059,16 @@ export interface EmbindModule {
     VectorSubShapeInfo: {
         new(): VectorSubShapeInfo;
     };
+    // (undocumented)
+    VertexAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Vertex;
+    // (undocumented)
+    VerticesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Vertex[];
+    // (undocumented)
+    VolumePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+    // (undocumented)
+    WireAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Wire;
+    // (undocumented)
+    WiresOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Wire[];
     // (undocumented)
     WriteBREPToString(_0: TopoDS_Shape): string;
     // (undocumented)
@@ -3157,9 +3213,19 @@ export type FaceTriangulationInfo = {
 export class FSNode {
     constructor(parent: any, name: any, mode: any, rdev: any);
     // (undocumented)
+    addListener(cb: any, exclusive?: boolean): {
+        listeners: any;
+        entry: {
+            cb: any;
+            exclusive: boolean;
+        };
+    };
+    // (undocumented)
     atime: number;
     // (undocumented)
     ctime: number;
+    // (undocumented)
+    exclTurn: any;
     // (undocumented)
     id: number;
     // (undocumented)
@@ -3178,6 +3244,8 @@ export class FSNode {
     name: any;
     // (undocumented)
     node_ops: {};
+    // (undocumented)
+    notifyListeners(flags: any): void;
     // (undocumented)
     parent: any;
     // (undocumented)
@@ -9524,8 +9592,6 @@ export namespace RuntimeExports {
         filesystems: any;
         const // (undocumented)
         syncFSRequests: number;
-        const // (undocumented)
-        readFiles: {};
         export { ErrnoError };
         export { FSStream };
         export { FSNode };
@@ -9777,6 +9843,10 @@ export namespace RuntimeExports {
         // (undocumented)
         export function lchown(path: any, uid: any, gid: any): void;
         // (undocumented)
+        export function link(oldpath: any, newpath: any, flags: any): any;
+        // (undocumented)
+        export function link(oldpath: any, newpath: any, flags: any): any;
+        // (undocumented)
         export function llseek(stream: any, offset: any, whence: any): any;
         // (undocumented)
         export function llseek(stream: any, offset: any, whence: any): any;
@@ -9965,9 +10035,9 @@ export namespace RuntimeExports {
         // (undocumented)
         export function unmount(mountpoint: any): void;
         // (undocumented)
-        export function utime(path: any, atime: any, mtime: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
         // (undocumented)
-        export function utime(path: any, atime: any, mtime: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
         // (undocumented)
         export function write(stream: any, buffer: any, offset: any, length: any, position: any, canOwn: any): any;
         // (undocumented)
@@ -10950,7 +11020,7 @@ class VectorCharData {
 }
 
 // @public (undocumented)
-export interface VectorDouble extends ClassHandle {
+export interface VectorDouble extends ClassHandle, Iterable<number> {
     // (undocumented)
     get(_0: number): number | undefined;
     // (undocumented)
@@ -10964,7 +11034,7 @@ export interface VectorDouble extends ClassHandle {
 }
 
 // @public (undocumented)
-export interface VectorFaceTriangulationInfo extends ClassHandle {
+export interface VectorFaceTriangulationInfo extends ClassHandle, Iterable<FaceTriangulationInfo> {
     // (undocumented)
     get(_0: number): FaceTriangulationInfo | undefined;
     // (undocumented)
@@ -11006,7 +11076,7 @@ export class VectorHelperService {
 }
 
 // @public (undocumented)
-export interface VectorInt extends ClassHandle {
+export interface VectorInt extends ClassHandle, Iterable<number> {
     // (undocumented)
     get(_0: number): number | undefined;
     // (undocumented)
@@ -11020,7 +11090,7 @@ export interface VectorInt extends ClassHandle {
 }
 
 // @public (undocumented)
-export interface VectorSubShapeInfo extends ClassHandle {
+export interface VectorSubShapeInfo extends ClassHandle, Iterable<SubShapeInfo> {
     // (undocumented)
     get(_0: number): SubShapeInfo | undefined;
     // (undocumented)

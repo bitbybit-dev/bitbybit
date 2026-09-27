@@ -22,7 +22,6 @@ declare namespace RuntimeExports {
         export const ignorePermissions: boolean;
         export const filesystems: any;
         export const syncFSRequests: number;
-        export const readFiles: {};
         export { ErrnoError };
         export { FSStream };
         export { FSNode };
@@ -162,6 +161,8 @@ declare namespace RuntimeExports {
         export function mkdev(path: any, mode: any, dev: any): any;
         export function symlink(oldpath: any, newpath: any): any;
         export function symlink(oldpath: any, newpath: any): any;
+        export function link(oldpath: any, newpath: any, flags: any): any;
+        export function link(oldpath: any, newpath: any, flags: any): any;
         export function rename(old_path: any, new_path: any): void;
         export function rename(old_path: any, new_path: any): void;
         export function rmdir(path: any): void;
@@ -200,8 +201,8 @@ declare namespace RuntimeExports {
         export function truncate(path: any, len: any): void;
         export function ftruncate(fd: any, len: any): void;
         export function ftruncate(fd: any, len: any): void;
-        export function utime(path: any, atime: any, mtime: any): void;
-        export function utime(path: any, atime: any, mtime: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
         export function open(path: any, flags: any, mode?: number): any;
         export function open(path: any, flags: any, mode?: number): any;
         export function close(stream: any): void;
@@ -329,6 +330,15 @@ declare class FSNode {
     get write(): boolean;
     get isFolder(): any;
     get isDevice(): any;
+    addListener(cb: any, exclusive?: boolean): {
+        listeners: any;
+        entry: {
+            cb: any;
+            exclusive: boolean;
+        };
+    };
+    notifyListeners(flags: any): void;
+    exclTurn: any;
 }
 interface WasmModule {
   _BitbybitOcct_Init(): number;
@@ -1363,7 +1373,7 @@ export interface TColgp_Array1OfDir extends ClassHandle {
   SetValue(_0: number, _1: gp_Dir): void;
 }
 
-export interface VectorDouble extends ClassHandle {
+export interface VectorDouble extends ClassHandle, Iterable<number> {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
@@ -1371,7 +1381,7 @@ export interface VectorDouble extends ClassHandle {
   set(_0: number, _1: number): boolean;
 }
 
-export interface VectorInt extends ClassHandle {
+export interface VectorInt extends ClassHandle, Iterable<number> {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
@@ -1825,7 +1835,7 @@ export type FaceTriangulationInfo = {
   nodeCount: number
 };
 
-export interface VectorFaceTriangulationInfo extends ClassHandle {
+export interface VectorFaceTriangulationInfo extends ClassHandle, Iterable<FaceTriangulationInfo> {
   push_back(_0: FaceTriangulationInfo): void;
   resize(_0: number, _1: FaceTriangulationInfo): void;
   size(): number;
@@ -1844,7 +1854,7 @@ export type SubShapeInfo = {
   colorA: number
 };
 
-export interface VectorSubShapeInfo extends ClassHandle {
+export interface VectorSubShapeInfo extends ClassHandle, Iterable<SubShapeInfo> {
   push_back(_0: SubShapeInfo): void;
   resize(_0: number, _1: SubShapeInfo): void;
   size(): number;
@@ -2062,6 +2072,12 @@ interface EmbindModule {
     new(_0: gp_Trsf): TopLoc_Location;
   };
   ShapeIsValid(_0: TopoDS_Shape): boolean;
+  VertexAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Vertex;
+  EdgeAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Edge;
+  WireAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Wire;
+  FaceAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Face;
+  ShellAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Shell;
+  SolidAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Solid;
   TopoDS_Iterator: {
     new(): TopoDS_Iterator;
     new(_0: TopoDS_Shape): TopoDS_Iterator;
@@ -2337,6 +2353,25 @@ interface EmbindModule {
     new(): VectorInt;
   };
   MakeInterpolatedBSplineEdge(_0: VectorDouble, _1: boolean, _2: number, _3: number, _4: VectorDouble, _5: VectorInt): TopoDS_Edge;
+  ClosestPointsOnShape(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array;
+  BoundingBoxOf(_0: TopoDS_Shape): Float64Array;
+  CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+  CurvePointsAtLengths(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+  ClassifyPointsInSolid(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  ClassifyPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  ChildrenOf(_0: TopoDS_Shape): TopoDS_Shape[];
+  SurfacePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  VolumePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  LinearPropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  VerticesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Vertex[];
+  EdgesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Edge[];
+  EdgesAlongWire(_0: TopoDS_Wire): TopoDS_Edge[];
+  WiresOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Wire[];
+  FacesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Face[];
+  ShellsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Shell[];
+  SolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Solid[];
+  CompSolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_CompSolid[];
+  CompoundsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Compound[];
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
   gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
   gp_Dir_GetCoord(_0: gp_Dir): CoordResult;
@@ -2537,6 +2572,8 @@ interface EmbindModule {
   ProjectPointOnCurve(_0: gp_Pnt, _1: TopoDS_Edge): CurvePointResult;
   CreateFillet2d(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number): TopoDS_Edge;
   BitListOfShapesToCompound(_0: TopTools_ListOfShape): TopoDS_Compound;
+  RunsInParallel(): boolean;
+  SetRunsInParallel(_0: boolean): void;
   IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
   BRepBuilderAPI_MakeWire_Error(_0: BRepBuilderAPI_MakeWire): BRepBuilderAPI_WireError;
   BRepBuilderAPI_WireError: {WireDone: BRepBuilderAPI_WireErrorValue<number>, EmptyWire: BRepBuilderAPI_WireErrorValue<number>, DisconnectedWire: BRepBuilderAPI_WireErrorValue<number>, NonManifoldWire: BRepBuilderAPI_WireErrorValue<number>};
@@ -2558,6 +2595,7 @@ interface EmbindModule {
   Approx_ParametrizationType: {ChordLength: Approx_ParametrizationTypeValue<number>, Centripetal: Approx_ParametrizationTypeValue<number>, IsoParametric: Approx_ParametrizationTypeValue<number>};
   Quantity_TypeOfColor: {Quantity_TOC_RGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_sRGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_HLS: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELab: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELch: Quantity_TypeOfColorValue<number>};
   XCAFDoc_ColorType: {XCAFDoc_ColorGen: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorSurf: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorCurv: XCAFDoc_ColorTypeValue<number>};
+  CountSubShapes(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum, _2: boolean): number;
   TopAbs_ShapeEnum: {COMPOUND: TopAbs_ShapeEnumValue<number>, COMPSOLID: TopAbs_ShapeEnumValue<number>, SOLID: TopAbs_ShapeEnumValue<number>, SHELL: TopAbs_ShapeEnumValue<number>, FACE: TopAbs_ShapeEnumValue<number>, WIRE: TopAbs_ShapeEnumValue<number>, EDGE: TopAbs_ShapeEnumValue<number>, VERTEX: TopAbs_ShapeEnumValue<number>, SHAPE: TopAbs_ShapeEnumValue<number>};
   TopAbs_Orientation: {FORWARD: TopAbs_OrientationValue<number>, REVERSED: TopAbs_OrientationValue<number>, INTERNAL: TopAbs_OrientationValue<number>, EXTERNAL: TopAbs_OrientationValue<number>};
   TDF_Label: {

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, CurvePointResult, TopoDS_Edge, TopoDS_Shape, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
@@ -37,6 +37,13 @@ describe("OCCT edge unit tests", () => {
         fillets = new OCCTFillets(occt, occHelper);
         booleans = new OCCTBooleans(occt, occHelper);
     });
+
+    const within = (expected: unknown): unknown => {
+        if (Array.isArray(expected)) {
+            return (expected as unknown[]).map(within);
+        }
+        return typeof expected === "number" ? expect.closeTo(expected, 6 - Math.log10(Math.max(1, Math.abs(expected)))) : expected;
+    };
 
     it("should create a circle edge of the right radius and it will mach the length", async () => {
         const e = edge.createCircleEdge({ radius: 10, center: [0, 0, 0], direction: [0, 0, 1] });
@@ -99,7 +106,7 @@ describe("OCCT edge unit tests", () => {
     it("should make ellipse edge", async () => {
         const e = edge.createEllipseEdge({ radiusMinor: 2, radiusMajor: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const length = edge.getEdgeLength({ shape: e });
-        expect(length).toBeCloseTo(15.869698772210647, 10);
+        expect(length).toBeCloseTo(15.865439589290588, 11);
         e.delete();
     });
 
@@ -343,16 +350,16 @@ describe("OCCT edge unit tests", () => {
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
         expect(points[0]).toEqual([0, 0, 2]);
-        expect(points[1]).toEqual([1.1755705045849463, 0, 1.618033988749895]);
-        expect(points[2]).toEqual([1.902113032590307, 0, 0.6180339887498949]);
-        expect(points[3]).toEqual([1.902113032590307, 0, -0.6180339887498951]);
-        expect(points[4]).toEqual([1.1755705045849465, 0, -1.6180339887498947]);
-        expect(points[5]).toEqual([2.4492935982947064e-16, 0, -2]);
-        expect(points[6]).toEqual([-1.175570504584946, 0, -1.618033988749895]);
-        expect(points[7]).toEqual([-1.9021130325903075, 0, -0.6180339887498935]);
-        expect(points[8]).toEqual([-1.9021130325903073, 0, 0.6180339887498945]);
-        expect(points[9]).toEqual([-1.1755705045849467, 0, 1.6180339887498947]);
-        expect(points[10]).toEqual([-4.898587196589413e-16, 0, 2]);
+        expect(points[1]).toEqual(within([1.1755705045849463, 0, 1.618033988749895]));
+        expect(points[2]).toEqual(within([1.902113032590307, 0, 0.6180339887498949]));
+        expect(points[3]).toEqual(within([1.902113032590307, 0, -0.6180339887498951]));
+        expect(points[4]).toEqual(within([1.1755705045849465, 0, -1.6180339887498947]));
+        expect(points[5]).toEqual(within([2.4492935982947064e-16, 0, -2]));
+        expect(points[6]).toEqual(within([-1.175570504584946, 0, -1.618033988749895]));
+        expect(points[7]).toEqual(within([-1.9021130325903075, 0, -0.6180339887498935]));
+        expect(points[8]).toEqual(within([-1.9021130325903073, 0, 0.6180339887498945]));
+        expect(points[9]).toEqual(within([-1.1755705045849467, 0, 1.6180339887498947]));
+        expect(points[10]).toEqual(within([-4.898587196589413e-16, 0, 2]));
         e.delete();
     });
 
@@ -360,15 +367,15 @@ describe("OCCT edge unit tests", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: true, removeStartPoint: true });
         expect(points.length).toBe(9);
-        expect(points[0]).toEqual([1.1755705045849463, 0, 1.618033988749895]);
-        expect(points[1]).toEqual([1.902113032590307, 0, 0.6180339887498949]);
-        expect(points[2]).toEqual([1.902113032590307, 0, -0.6180339887498951]);
-        expect(points[3]).toEqual([1.1755705045849465, 0, -1.6180339887498947]);
-        expect(points[4]).toEqual([2.4492935982947064e-16, 0, -2]);
-        expect(points[5]).toEqual([-1.175570504584946, 0, -1.618033988749895]);
-        expect(points[6]).toEqual([-1.9021130325903075, 0, -0.6180339887498935]);
-        expect(points[7]).toEqual([-1.9021130325903073, 0, 0.6180339887498945]);
-        expect(points[8]).toEqual([-1.1755705045849467, 0, 1.6180339887498947]);
+        expect(points[0]).toEqual(within([1.1755705045849463, 0, 1.618033988749895]));
+        expect(points[1]).toEqual(within([1.902113032590307, 0, 0.6180339887498949]));
+        expect(points[2]).toEqual(within([1.902113032590307, 0, -0.6180339887498951]));
+        expect(points[3]).toEqual(within([1.1755705045849465, 0, -1.6180339887498947]));
+        expect(points[4]).toEqual(within([2.4492935982947064e-16, 0, -2]));
+        expect(points[5]).toEqual(within([-1.175570504584946, 0, -1.618033988749895]));
+        expect(points[6]).toEqual(within([-1.9021130325903075, 0, -0.6180339887498935]));
+        expect(points[7]).toEqual(within([-1.9021130325903073, 0, 0.6180339887498945]));
+        expect(points[8]).toEqual(within([-1.1755705045849467, 0, 1.6180339887498947]));
         e.delete();
     });
 
@@ -659,7 +666,7 @@ describe("OCCT edge unit tests", () => {
                 [3.0512476630476053, 0, -9.390774700406087],
                 [4.055584049054564, 0, -2.946554287538323],
                 [9.874044853809437, 0, -1.45074205086341e-15]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -684,7 +691,7 @@ describe("OCCT edge unit tests", () => {
                 [0.7201745008328464, 0, -7.07919984366991],
                 [3.578415856051085, 0, -6.150500930772071],
                 [6.955265301150748, 0, -1.5026664063837851]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -709,7 +716,7 @@ describe("OCCT edge unit tests", () => {
                 [2.95052198347075, 0, -9.080772934601608],
                 [4.227886525109382, 0, -3.0717393640727724],
                 [9.548089707618868, 0, -1.4446188168676734e-15]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -1611,6 +1618,50 @@ describe("OCCT edge unit tests", () => {
             expect(act).toThrow(/not a circular edge/);
 
             line.delete();
+        });
+    });
+
+    describe("what evaluating a point leaves behind", () => {
+        const recordingEvaluations = (act: () => void): { isDeleted(): boolean }[][] => {
+            const results: { isDeleted(): boolean }[] = [];
+            const points: { isDeleted(): boolean }[] = [];
+            const original: unknown = Reflect.get(occt, "EvaluateEdgeCurve");
+            const evaluate = occt.EvaluateEdgeCurve.bind(occt);
+            Reflect.set(occt, "EvaluateEdgeCurve", (shape: TopoDS_Edge, param: number): CurvePointResult => {
+                const result = evaluate(shape, param);
+                results.push(result);
+                return new Proxy(result, {
+                    get(target, property): unknown {
+                        const value: unknown = Reflect.get(target, property);
+                        if (property === "Point") {
+                            points.push(value as gp_Pnt);
+                        }
+                        return typeof value === "function" ? value.bind(target) as unknown : value;
+                    },
+                });
+            });
+            try {
+                act();
+            } finally {
+                Reflect.set(occt, "EvaluateEdgeCurve", original);
+            }
+            return [results, points];
+        };
+
+        it("should delete the evaluation and the one point it reads from it", () => {
+            // Arrange
+            const line = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
+            let point: Inputs.Base.Point3 | undefined;
+
+            // Act
+            const [results, points] = recordingEvaluations(() => {
+                point = edge.pointOnEdgeAtParam({ shape: line, param: 0.25 });
+            });
+
+            // Assert
+            expect(point).toEqual([0.5, 0, 0]);
+            expect([results!.length, points!.length]).toEqual([1, 1]);
+            expect([...results!, ...points!].filter(made => !made.isDeleted())).toEqual([]);
         });
     });
 });

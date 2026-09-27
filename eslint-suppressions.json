@@ -483,7 +483,7 @@
   },
   "packages/dev/occt/lib/services/booleans.test.ts": {
     "@typescript-eslint/require-await": {
-      "count": 13
+      "count": 12
     }
   },
   "packages/dev/occt/lib/services/brep-graph/brep-graph.test.ts": {
