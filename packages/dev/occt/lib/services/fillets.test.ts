@@ -453,6 +453,51 @@ describe("OCCT fillets unit tests", () => {
         edge.delete();
     });
 
+    it("should release every shape its edge and vertex walks are handed", () => {
+        // Arrange
+        const handedOut: { isDeleted(): boolean }[] = [];
+        const vertices: { isDeleted(): boolean }[] = [];
+        const explorer = occt.TopExp_Explorer;
+        const originalCast: unknown = Reflect.get(occt, "CastToVertex");
+        const castToVertex = occt.CastToVertex.bind(occt);
+        Reflect.set(occt, "CastToVertex", (shape: TopoDS_Shape) => {
+            const vertex = castToVertex(shape);
+            vertices.push(vertex);
+            return vertex;
+        });
+        Reflect.set(occt, "TopExp_Explorer", new Proxy(explorer, {
+            construct(target, args): object {
+                const made = Reflect.construct(target, args);
+                const current = made.Current.bind(made);
+                made.Current = (): TopoDS_Shape => {
+                    const shape = current();
+                    handedOut.push(shape);
+                    return shape;
+                };
+                return made;
+            },
+        }));
+        const box = (): TopoDS_Shape => solid.createCube({ size: 2, center: [0, 0, 0] });
+
+        // Act
+        try {
+            fillets.filletEdges({ shape: box(), radius: 0.1 });
+            fillets.chamferEdges({ shape: box(), distance: 0.1 });
+            fillets.fillet2d({ shape: occHelper.facesService.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
+            fillets.fillet2d({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
+            fillets.chamfer2dVertices({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), distance: 0.1 });
+        } finally {
+            Reflect.set(occt, "TopExp_Explorer", explorer);
+            Reflect.set(occt, "CastToVertex", originalCast);
+        }
+
+        // Assert
+        expect(handedOut.length).toBeGreaterThan(40);
+        expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
+        expect(vertices.length).toBeGreaterThan(8);
+        expect(vertices.filter(vertex => !vertex.isDeleted())).toEqual([]);
+    });
+
     it("should delete the points and the list it builds a variable radius from", () => {
         // Arrange
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });

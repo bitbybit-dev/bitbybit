@@ -1,6 +1,6 @@
 import {
     Geom_Surface, BitbybitOcctModule,
-    TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt
+    TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
@@ -18,6 +18,7 @@ import { FilletsService } from "./fillets.service";
 import { BaseBitByBit } from "../../base";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
 import { resolveDto } from "@bitbybit-dev/base";
 export class WiresService {
 
@@ -69,10 +70,7 @@ export class WiresService {
         const pt3: Base.Point3 = [-cw, 0, -cl];
         const pt4: Base.Point3 = [cw, 0, -cl];
         const points = [pt1, pt2, pt3, pt4].reverse();
-        const wire = this.createPolygonWire({ points });
-        const alignedWire = this.transformsService.alignAndTranslate({ shape: wire, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        return alignedWire;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, 0, inputs.direction, inputs.center) });
     }
 
 
@@ -157,18 +155,10 @@ export class WiresService {
             halfShapeTreePts.push(...secondHalf.reverse());
         }
 
-        let result;
-        if (inputs.trunkHeight > 0 && inputs.trunkWidth > 0) {
-            const offsetToTrunkHeight = halfShapeTreePts.map(pt => [pt[0], pt[1] + inputs.trunkHeight, pt[2]] as Base.Point3);
-            result = this.createPolylineWire({ points: offsetToTrunkHeight });
-        } else {
-            result = this.createPolylineWire({ points: halfShapeTreePts });
-        }
-
-        const rotated = this.transformsService.rotate({ shape: result, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.origin });
-
-        return aligned;
+        const outline = inputs.trunkHeight > 0 && inputs.trunkWidth > 0
+            ? halfShapeTreePts.map(pt => [pt[0], pt[1] + inputs.trunkHeight, pt[2]] as Base.Point3)
+            : halfShapeTreePts;
+        return this.createPolylineWire({ points: this.transformsService.placePoints(outline, inputs.rotation, inputs.direction, inputs.origin) });
     }
 
     createStarWire(inputs: Resolved.OCCT.StarDto) {
@@ -257,15 +247,7 @@ export class WiresService {
         default:
             points = this.shapesHelperService.polygonL(inputs.widthFirst, inputs.lengthFirst, inputs.widthSecond, inputs.lengthSecond);
         }
-        const wire = this.createPolygonWire({
-            points
-        });
-
-        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        rotated.delete();
-        return aligned;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, inputs.rotation, inputs.direction, inputs.center) });
     }
 
     createIBeamProfileWire(inputs: Resolved.OCCT.IBeamProfileDto) {
@@ -276,12 +258,7 @@ export class WiresService {
             inputs.flangeThickness,
             inputs.alignment
         );
-        const wire = this.createPolygonWire({ points });
-        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        rotated.delete();
-        return aligned;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, inputs.rotation, inputs.direction, inputs.center) });
     }
 
     createHBeamProfileWire(inputs: Resolved.OCCT.HBeamProfileDto) {
@@ -292,12 +269,7 @@ export class WiresService {
             inputs.flangeThickness,
             inputs.alignment
         );
-        const wire = this.createPolygonWire({ points });
-        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        rotated.delete();
-        return aligned;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, inputs.rotation, inputs.direction, inputs.center) });
     }
 
     createTBeamProfileWire(inputs: Resolved.OCCT.TBeamProfileDto) {
@@ -308,12 +280,7 @@ export class WiresService {
             inputs.flangeThickness,
             inputs.alignment
         );
-        const wire = this.createPolygonWire({ points });
-        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        rotated.delete();
-        return aligned;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, inputs.rotation, inputs.direction, inputs.center) });
     }
 
     createUBeamProfileWire(inputs: Resolved.OCCT.UBeamProfileDto) {
@@ -325,73 +292,23 @@ export class WiresService {
             inputs.flangeWidth,
             inputs.alignment
         );
-        const wire = this.createPolygonWire({ points });
-        const rotated = this.transformsService.rotate({ shape: wire, angle: inputs.rotation, axis: [0, 1, 0] });
-        const aligned = this.transformsService.alignAndTranslate({ shape: rotated, direction: inputs.direction, center: inputs.center });
-        wire.delete();
-        rotated.delete();
-        return aligned;
+        return this.createPolygonWire({ points: this.transformsService.placePoints(points, inputs.rotation, inputs.direction, inputs.center) });
     }
 
-    createPolygonWire(inputs: Inputs.OCCT.PolygonDto) {
-        const gpPoints: gp_Pnt[] = [];
-        for (let ind = 0; ind < inputs.points.length; ind++) {
-            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]!));
-        }
-
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
-        for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const pt1 = gpPoints[ind]!;
-            const pt2 = gpPoints[ind + 1]!;
-            const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.AddWire(innerWire);
-        }
-
-        const pt1 = gpPoints[inputs.points.length - 1]!;
-        const pt2 = gpPoints[0]!;
-        const innerWire2 = this.makeWireBetweenTwoPoints(pt1, pt2);
-        wireMaker.AddWire(innerWire2);
-        const wire = wireMaker.Wire();
-        wireMaker.delete();
-        return wire;
+    createPolygonWire(inputs: Inputs.OCCT.PolygonDto): TopoDS_Wire {
+        return this.wireThrough(inputs.points, true, "polygon");
     }
 
-    createPolylineWire(inputs: Inputs.OCCT.PolylineDto) {
-        const gpPoints: gp_Pnt[] = [];
-        for (let ind = 0; ind < inputs.points.length; ind++) {
-            gpPoints.push(this.entitiesService.gpPnt(inputs.points[ind]!));
-        }
-
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
-        for (let ind = 0; ind < inputs.points.length - 1; ind++) {
-            const pt1 = gpPoints[ind]!;
-            const pt2 = gpPoints[ind + 1]!;
-            const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.AddWire(innerWire);
-        }
-
-        const wire = wireMaker.Wire();
-        wireMaker.delete();
-        return wire;
+    createPolylineWire(inputs: Inputs.OCCT.PolylineDto): TopoDS_Wire {
+        return this.wireThrough(inputs.points, false, "polyline");
     }
 
-    createLineWire(inputs: Inputs.OCCT.LineDto) {
+    createLineWire(inputs: Inputs.OCCT.LineDto): TopoDS_Wire {
         const resolved = resolveDto(Inputs.OCCT.LineDto, inputs) as Resolved.OCCT.LineDto;
-        const gpPoints: gp_Pnt[] = [];
-        gpPoints.push(this.entitiesService.gpPnt(resolved.start));
-        gpPoints.push(this.entitiesService.gpPnt(resolved.end));
-
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire();
-        for (let ind = 0; ind < gpPoints.length - 1; ind++) {
-            const pt1 = gpPoints[ind]!;
-            const pt2 = gpPoints[ind + 1]!;
-            const innerWire = this.makeWireBetweenTwoPoints(pt1, pt2);
-            wireMaker.AddWire(innerWire);
+        if (this.samePoint(resolved.start, resolved.end)) {
+            throw new InputError("`start` and `end` are the same point, so there is no line between them.", "end");
         }
-
-        const wire = wireMaker.Wire();
-        wireMaker.delete();
-        return wire;
+        return this.wireThrough([resolved.start, resolved.end], false, "line");
     }
 
     createLineWireWithExtensions(inputs: Resolved.OCCT.LineWithExtensionsDto): TopoDS_Wire {
@@ -406,14 +323,33 @@ export class WiresService {
         return this.createLineWire({ start, end });
     }
 
-    private makeWireBetweenTwoPoints(pt1: gp_Pnt, pt2: gp_Pnt) {
-        const edge = this.occ.MakeLineEdgeBetweenPoints(pt1, pt2);
-        const wireMaker = new this.occ.BRepBuilderAPI_MakeWire(edge);
-        const innerWire = wireMaker.Wire();
+    private samePoint(first: Inputs.Base.Point3, second: Inputs.Base.Point3): boolean {
+        return Math.hypot(first[0] - second[0], first[1] - second[1], first[2] - second[2]) <= 1e-7;
+    }
 
-        edge.delete();
-        wireMaker.delete();
-        return innerWire;
+    private wireThrough(points: Inputs.Base.Point3[], closed: boolean, kind: string): TopoDS_Wire {
+        if (points.length < 2) {
+            throw new InputError(`A ${kind} needs at least two points, and \`points\` has ${points.length}.`, "points");
+        }
+        const repeated = points.findIndex((point, index) => index > 0 && this.samePoint(points[index - 1]!, point));
+        if (repeated > 0) {
+            throw new InputError(`Points ${repeated - 1} and ${repeated} of \`points\` are the same point, which would make an edge of length 0.`, "points");
+        }
+        if (closed && this.samePoint(points[points.length - 1]!, points[0]!)) {
+            throw new InputError("The last point of `points` repeats the first, and a polygon closes itself, so the closing edge would have length 0.", "points");
+        }
+        const maker = new this.occ.BRepBuilderAPI_MakePolygon();
+        points.forEach(point => {
+            const gpPoint = this.entitiesService.gpPnt(point);
+            maker.Add(gpPoint);
+            gpPoint.delete();
+        });
+        if (closed) {
+            maker.Close();
+        }
+        const wire = maker.Wire();
+        maker.delete();
+        return wire;
     }
 
 

@@ -587,38 +587,20 @@ export class OCCTSolid {
             paramV 
         });
 
+        const front = Math.max(lengthFront, 0);
+        const back = Math.max(lengthBack, 0);
         let result: TopoDS_Shape | undefined;
-
-        if (lengthFront > 0) {
-            const frontVec = new this.occ.gp_Vec(
-                normalizedDir[0] * lengthFront,
-                normalizedDir[1] * lengthFront,
-                normalizedDir[2] * lengthFront
-            );
-            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec);
-            result = frontPrism.Shape();
-            frontPrism.delete();
-            frontVec.delete();
-        }
-
-        if (lengthBack > 0) {
-            const backVec = new this.occ.gp_Vec(
-                -normalizedDir[0] * lengthBack,
-                -normalizedDir[1] * lengthBack,
-                -normalizedDir[2] * lengthBack
-            );
-            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec);
-            const backShape = backPrism.Shape();
-            backPrism.delete();
-            backVec.delete();
-
-            if (result) {
-                const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
-                result.delete();
-                backShape.delete();
-                result = fused;
-            } else {
-                result = backShape;
+        if (front + back > 0) {
+            const start = back > 0
+                ? this.och.transformsService.translate({ shape: face, translation: [-normalizedDir[0] * back, -normalizedDir[1] * back, -normalizedDir[2] * back] })
+                : face;
+            const vector = new this.occ.gp_Vec(normalizedDir[0] * (front + back), normalizedDir[1] * (front + back), normalizedDir[2] * (front + back));
+            const prism = new this.occ.BRepPrimAPI_MakePrism(start, vector);
+            result = prism.Shape();
+            prism.delete();
+            vector.delete();
+            if (start !== face) {
+                start.delete();
             }
         }
 

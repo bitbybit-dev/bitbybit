@@ -46,13 +46,7 @@ export class OCCTTransforms {
      */
     transform(inputs: Inputs.OCCT.TransformDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.TransformDto, inputs) as Resolved.OCCT.TransformDto<TopoDS_Shape>;
-        this.och.transformsService.refuseCollapsingScale(resolved.scaleFactor, "scaleFactor");
-        const scaledShape = this.scale({ shape: resolved.shape, factor: resolved.scaleFactor });
-        const rotatedShape = this.rotate({ shape: scaledShape, axis: resolved.rotationAxis, angle: resolved.rotationAngle });
-        const translatedShape = this.translate({ shape: rotatedShape, translation: resolved.translation });
-        scaledShape.delete();
-        rotatedShape.delete();
-        return translatedShape;
+        return this.och.transformsService.transform(resolved);
     }
 
     /**
@@ -93,13 +87,7 @@ export class OCCTTransforms {
      */
     rotateAroundCenter(inputs: Inputs.OCCT.RotateAroundCenterDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.RotateAroundCenterDto, inputs) as Resolved.OCCT.RotateAroundCenterDto<TopoDS_Shape>;
-        const shapeTranslated = this.translate({ shape: resolved.shape, translation: resolved.center.map(c => -c) as Base.Vector3 });
-        const angle = resolved.angle;
-        const rotatedShape = this.rotate({ shape: shapeTranslated, axis: resolved.axis, angle });
-        const result = this.translate({ shape: rotatedShape, translation: resolved.center });
-        rotatedShape.delete();
-        shapeTranslated.delete();
-        return result;
+        return this.och.transformsService.rotateAroundCenter(resolved);
     }
 
     /**

@@ -2817,6 +2817,8 @@ export interface EmbindModule {
     // (undocumented)
     SetDocLabelName(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString): boolean;
     // (undocumented)
+    ShapeCrossingsAlong(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number): VectorDouble;
+    // (undocumented)
     ShapeFix_Shape: {
         new(): ShapeFix_Shape;
         new(_0: TopoDS_Shape): ShapeFix_Shape;

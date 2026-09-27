@@ -4,6 +4,7 @@ import { ShapeGettersService } from "./shape-getters";
 import { FacesService } from "./faces.service";
 import { ConverterService } from "./converter.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
 
 export class ShellsService {
 
@@ -21,6 +22,9 @@ export class ShellsService {
     }
 
     sewFaces(inputs: Resolved.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, and sewing needs at least one face.", "shapes");
+        }
         const sew = new this.occ.BRepBuilderAPI_Sewing(inputs.tolerance);
         inputs.shapes.forEach(face => {
             sew.Add(face);

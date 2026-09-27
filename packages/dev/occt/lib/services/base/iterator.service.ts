@@ -20,7 +20,9 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            callback(wireIndex++, this.occ.CastToWire(anExplorer.Current()));
+            const current = anExplorer.Current();
+            callback(wireIndex++, this.occ.CastToWire(current));
+            current.delete();
         }
         anExplorer.delete();
     }
@@ -39,13 +41,17 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            const edge = this.occ.CastToEdge(anExplorer.Current());
+            const current = anExplorer.Current();
+            const edge = this.occ.CastToEdge(current);
+            current.delete();
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (this.isFirstVisit(seen, edgeHash, edge)) {
                 if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                     edgeHashes[edgeHash] = edgeIndex;
                 }
                 callback(edgeIndex++, edge);
+            } else {
+                edge.delete();
             }
         }
         anExplorer.delete();
@@ -58,13 +64,17 @@ export class IteratorService {
         let edgeIndex = 0;
         const anExplorer = new this.occ.BRepTools_WireExplorer(shape);
         for (; anExplorer.More(); anExplorer.Next()) {
-            const edge = this.occ.CastToEdge(anExplorer.Current());
+            const current = anExplorer.Current();
+            const edge = this.occ.CastToEdge(current);
+            current.delete();
             const edgeHash = this.occ.TopoDS_Shape_HashCode(edge, 100000000);
             if (this.isFirstVisit(seen, edgeHash, edge)) {
                 if (!Object.prototype.hasOwnProperty.call(edgeHashes, edgeHash)) {
                     edgeHashes[edgeHash] = edgeIndex;
                 }
                 callback(edgeIndex++, edge);
+            } else {
+                edge.delete();
             }
         }
         anExplorer.delete();
@@ -99,7 +109,9 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            callback(faceIndex++, this.occ.CastToFace(anExplorer.Current()));
+            const current = anExplorer.Current();
+            callback(faceIndex++, this.occ.CastToFace(current));
+            current.delete();
         }
         anExplorer.delete();
     }
@@ -115,7 +127,9 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            callback(shellIndex++, this.occ.CastToShell(anExplorer.Current()));
+            const current = anExplorer.Current();
+            callback(shellIndex++, this.occ.CastToShell(current));
+            current.delete();
         }
         anExplorer.delete();
     }
@@ -131,7 +145,9 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            callback(vertexIndex++, this.occ.CastToVertex(anExplorer.Current()));
+            const current = anExplorer.Current();
+            callback(vertexIndex++, this.occ.CastToVertex(current));
+            current.delete();
         }
         anExplorer.delete();
     }
@@ -147,7 +163,9 @@ export class IteratorService {
             anExplorer.More();
             anExplorer.Next()
         ) {
-            callback(solidIndex++, this.occ.CastToSolid(anExplorer.Current()));
+            const current = anExplorer.Current();
+            callback(solidIndex++, this.occ.CastToSolid(current));
+            current.delete();
         }
         anExplorer.delete();
     }

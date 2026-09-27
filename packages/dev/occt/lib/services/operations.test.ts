@@ -902,6 +902,65 @@ describe("OCCT operations unit tests", () => {
         });
     });
 
+    describe("extrusions the kernel cannot build", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([
+            [[0, 0, 0], "`direction` is [0, 0, 0], and an extrusion needs a direction with some length: the shape travels along it for that length."],
+            [[0, Number.NaN, 0], "`direction` is [0, NaN, 0], and the direction of an extrusion has to be finite numbers."],
+            [[Number.POSITIVE_INFINITY, 0, 0], "`direction` is [Infinity, 0, 0], and the direction of an extrusion has to be finite numbers."],
+        ] as [Inputs.Base.Vector3, string][])("should refuse the direction %j, naming it", (direction, message) => {
+            // Arrange
+            const circle = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const refusals = [
+                refusalOf(() => operations.extrude({ shape: circle, direction })),
+                refusalOf(() => operations.extrudeShapes({ shapes: [circle], direction })),
+            ];
+
+            // Assert
+            expect(refusals).toEqual([
+                expect.objectContaining({ name: "InputError", property: "direction", message }),
+                expect.objectContaining({ name: "InputError", property: "direction", message }),
+            ]);
+        });
+
+        it("should refuse a shape that holds a solid, alone or in a compound", () => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+            const square = face.createSquareFace({ size: 2, center: [5, 0, 0], direction: [0, 1, 0] });
+            const mixed = occHelper.converterService.makeCompound({ shapes: [square, box] });
+
+            // Act
+            const refusals = [box, mixed].map(shape => refusalOf(() => operations.extrude({ shape, direction: [0, 1, 0] })));
+
+            // Assert
+            const refusal = expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` holds a solid, which cannot be extruded; extrude its faces, a shell or a wire instead." });
+            expect(refusals).toEqual([refusal, refusal]);
+        });
+
+        it("should extrude a shell and a direction far shorter than the shape", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+            const cup = shell.sewFaces({ shapes: face.getFaces({ shape: box }).slice(0, 5), tolerance: 1e-7 });
+
+            // Act
+            const walls = operations.extrude({ shape: cup, direction: [0, 1e-3, 0] });
+
+            // Assert
+            expect(walls.IsNull()).toBe(false);
+            expect(face.getFaces({ shape: walls }).length).toBeGreaterThan(5);
+        });
+    });
+
     it("should extrude multiple shapes", () => {
         const squareFace = face.createSquareFace({ center: [0, 0, 3], size: 1, direction: [0, 0, 1] });
         const circleFace = face.createCircleFace({ center: [0, 0, 0], radius: 1, direction: [0, 0, 1] });

@@ -53,6 +53,7 @@
         "test": "NODE_OPTIONS=--max-old-space-size=8192 vitest run",
         "test:coverage": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
         "test:watch": "NODE_OPTIONS=--max-old-space-size=8192 vitest",
+        "bench": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config bench/vitest.config.ts",
         "fetch-kernels": "node ../../../scripts/fetch-kernels.mjs",
         "api:check": "api-extractor run",
         "api:update": "api-extractor run --local"

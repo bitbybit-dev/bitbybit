@@ -33,6 +33,16 @@ consume.
 Suites here are kernel-heavy: keep the `NODE_OPTIONS` the scripts already set, or failures look
 like test bugs rather than an exhausted heap.
 
+## Measuring speed
+
+`npm run bench` times seven workloads through the public API - a hexagon facade, extruded text,
+spline sampling, a drilled plate, a lofted and meshed blade, a filleted block, a meshed part - and
+prints each median with a fingerprint of its output, so a faster run can be told from a different
+one. It runs outside `npm test` (`bench/vitest.config.ts`). `BENCH_KERNEL=<folder>` loads the glue
+and wasm from another folder, such as a kernel build that was never deployed, `BENCH_RUNS` sets the
+repeats (5) and `BENCH_OUT` writes the report as JSON. Compare two kernels on a quiet machine, one
+after the other: a compile in the background moves the numbers more than most changes do.
+
 ## Services are built in a ring
 
 Wires, operations, fillets and faces need each other in a cycle: wires needs operations and fillets,

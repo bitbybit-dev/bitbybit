@@ -31,6 +31,73 @@ describe("OCCT iterator service unit tests", () => {
         vi.restoreAllMocks();
     });
 
+    describe("what a walk leaves behind", () => {
+        const recordingWalk = (walk: () => void): { handedOut: { isDeleted(): boolean }[]; casts: { isDeleted(): boolean }[] } => {
+            const handedOut: { isDeleted(): boolean }[] = [];
+            const casts: { isDeleted(): boolean }[] = [];
+            const explorer = occt.TopExp_Explorer;
+            const originalCast: unknown = Reflect.get(occt, "CastToEdge");
+            const castToEdge = occt.CastToEdge.bind(occt);
+            Reflect.set(occt, "TopExp_Explorer", new Proxy(explorer, {
+                construct(target, args): object {
+                    const made = Reflect.construct(target, args);
+                    const current = made.Current.bind(made);
+                    made.Current = (): TopoDS_Shape => {
+                        const shape = current();
+                        handedOut.push(shape);
+                        return shape;
+                    };
+                    return made;
+                },
+            }));
+            Reflect.set(occt, "CastToEdge", (shape: TopoDS_Shape): TopoDS_Edge => {
+                const edge = castToEdge(shape);
+                casts.push(edge);
+                return edge;
+            });
+            try {
+                walk();
+            } finally {
+                Reflect.set(occt, "TopExp_Explorer", explorer);
+                Reflect.set(occt, "CastToEdge", originalCast);
+            }
+            return { handedOut, casts };
+        };
+
+        it("should release every shape the explorer hands out and each edge it reaches again, keeping the edges it passes on", () => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+            const passed: TopoDS_Edge[] = [];
+
+            // Act
+            const { handedOut, casts } = recordingWalk(() => iteratorService.forEachEdge(box, (_index, edge) => passed.push(edge)));
+
+            // Assert
+            expect([handedOut.length, casts.length, passed.length]).toEqual([24, 24, 12]);
+            expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
+            expect(casts.filter(edge => !passed.includes(edge as TopoDS_Edge) && !edge.isDeleted())).toEqual([]);
+            expect(passed.filter(edge => edge.isDeleted())).toEqual([]);
+        });
+
+        it.each([
+            ["faces", (shape: TopoDS_Shape): void => iteratorService.forEachFace(shape, () => undefined), 6],
+            ["wires", (shape: TopoDS_Shape): void => iteratorService.forEachWire(shape, () => undefined), 6],
+            ["vertices", (shape: TopoDS_Shape): void => iteratorService.forEachVertex(shape, () => undefined), 48],
+            ["shells", (shape: TopoDS_Shape): void => iteratorService.forEachShell(shape, () => undefined), 1],
+            ["solids", (shape: TopoDS_Shape): void => iteratorService.forEachSolid(shape, () => undefined), 1],
+        ] as [string, (shape: TopoDS_Shape) => void, number][])("should release every shape the explorer hands out while walking %s", (_what, walk, count) => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 2, height: 3, center: [0, 0, 0] });
+
+            // Act
+            const { handedOut } = recordingWalk(() => walk(box));
+
+            // Assert
+            expect(handedOut).toHaveLength(count);
+            expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
+        });
+    });
+
     describe("edges whose hashes collide", () => {
         it("should visit every edge of a box once", () => {
             // Arrange

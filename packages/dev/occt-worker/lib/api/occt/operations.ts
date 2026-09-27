@@ -328,7 +328,7 @@ export class OCCTOperations {
      * becomes a solid, a wire a shell, an edge a face.
      *
      * The shape itself stays at the start of the extrusion; the vector is in model units, so `[0,
-     * 10, 0]` extrudes 10 units up.
+     * 10, 0]` extrudes 10 units up. A solid, or a vector of length 0, is refused.
      * @param inputs - The shape and the direction vector, whose length is the distance
      * @returns The extruded shape
      * @group extrusions

@@ -345,6 +345,19 @@ export class OperationsService {
     }
 
     extrude(inputs: Resolved.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+        const direction = inputs.direction;
+        if (!direction.every(Number.isFinite)) {
+            throw new InputError(`\`direction\` is [${direction.join(", ")}], and the direction of an extrusion has to be finite numbers.`, "direction");
+        }
+        if (direction.every(component => component === 0)) {
+            throw new InputError("`direction` is [0, 0, 0], and an extrusion needs a direction with some length: the shape travels along it for that length.", "direction");
+        }
+        const solids = new this.occ.TopExp_Explorer(inputs.shape, this.occ.TopAbs_ShapeEnum.SOLID, this.occ.TopAbs_ShapeEnum.SHAPE);
+        const holdsSolid = solids.More();
+        solids.delete();
+        if (holdsSolid) {
+            throw new InputError("`shape` holds a solid, which cannot be extruded; extrude its faces, a shell or a wire instead.", "shape");
+        }
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();

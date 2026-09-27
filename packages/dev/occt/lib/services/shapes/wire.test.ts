@@ -438,7 +438,7 @@ describe("OCCT wire unit tests", () => {
                 [0, 3.82842712474619, 3.707106781186548],
                 [0, -5.0104076400856545, -5.131727983645296],
                 [0, -7.1317279836452965, -3.0104076400856536]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         res.delete();
     });
@@ -2237,6 +2237,126 @@ describe("OCCT wire unit tests", () => {
         expect(length).toEqual(lengthExp);
         w.delete();
     };
+
+    describe("polylines, polygons and lines built through one polygon maker", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it("should delete every point it hands the kernel", () => {
+            // Arrange
+            const made: { isDeleted(): boolean }[] = [];
+            const original = occt.gp_Pnt;
+            Reflect.set(occt, "gp_Pnt", new Proxy(original, {
+                construct(target, args): object {
+                    const point = Reflect.construct(target, args);
+                    made.push(point);
+                    return point;
+                },
+            }));
+
+            // Act
+            try {
+                wire.createPolylineWire({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [2, 1, 3]] });
+                wire.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] });
+                wire.createLineWire({ start: [0, 0, 0], end: [0, 0, 4] });
+            } finally {
+                Reflect.set(occt, "gp_Pnt", original);
+            }
+
+            // Assert
+            expect(made).toHaveLength(9);
+            expect(made.filter(point => !point.isDeleted())).toEqual([]);
+        });
+
+        it("should close a polygon with an edge back to its first point, and leave a polyline open", () => {
+            // Act
+            const polygon = wire.createPolygonWire({ points: [[0, 0, 0], [2, 0, 0], [2, 0, 2]] });
+            const polyline = wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 0], [2, 0, 2]] });
+
+            // Assert
+            expect([edge.getEdges({ shape: polygon }).length, occHelper.wiresService.isWireClosed({ shape: polygon })]).toEqual([3, true]);
+            expect([edge.getEdges({ shape: polyline }).length, occHelper.wiresService.isWireClosed({ shape: polyline })]).toEqual([2, false]);
+            expect(wire.getWireLength({ shape: polygon })).toBeCloseTo(4 + 2 * Math.SQRT2, 12);
+        });
+
+        it.each([
+            ["one point", () => wire.createPolylineWire({ points: [[0, 0, 0]] }), "points", "A polyline needs at least two points, and `points` has 1."],
+            ["no points", () => wire.createPolygonWire({ points: [] }), "points", "A polygon needs at least two points, and `points` has 0."],
+            ["a point repeated", () => wire.createPolylineWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 0], [1, 1, 0]] }), "points", "Points 1 and 2 of `points` are the same point, which would make an edge of length 0."],
+            ["points closer than 1e-7", () => wire.createPolylineWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 5e-8]] }), "points", "Points 1 and 2 of `points` are the same point, which would make an edge of length 0."],
+            ["a polygon that repeats its first point", () => wire.createPolygonWire({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 0, 0]] }), "points", "The last point of `points` repeats the first, and a polygon closes itself, so the closing edge would have length 0."],
+            ["a line of length 0", () => wire.createLineWire({ start: [1, 2, 3], end: [1, 2, 3] }), "end", "`start` and `end` are the same point, so there is no line between them."],
+        ] as [string, () => unknown, string, string][])("should refuse %s, naming the input", (_what, act, property, message) => {
+            // Act
+            const refusal = refusalOf(act);
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property, message });
+        });
+
+        it("should keep a polyline that ends on its first point closed, and one that passes 2e-7 from a point open to that point", () => {
+            // Act
+            const loop = wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 0], [2, 0, 2], [0, 0, 0]] });
+            const near = wire.createPolylineWire({ points: [[0, 0, 0], [1, 0, 0], [1, 0, 2e-7]] });
+
+            // Assert
+            expect(occHelper.wiresService.isWireClosed({ shape: loop })).toBe(true);
+            expect(edge.getEdges({ shape: near })).toHaveLength(2);
+        });
+    });
+
+    describe("profiles placed before they are built", () => {
+        it("should place a profile as a turn about Y, then Y turned onto the direction, then a move, with no copies and no location left on it", () => {
+            // Arrange
+            const points = occHelper.shapesHelperService.beamIProfile(2, 3, 0.2, 0.3, Inputs.Base.basicAlignmentEnum.midMid);
+            const atOrigin = occHelper.wiresService.createPolygonWire({ points });
+            const turned = occHelper.transformsService.rotate({ shape: atOrigin, angle: 30, axis: [0, 1, 0] });
+            const expected = occHelper.transformsService.alignAndTranslate({ shape: turned, direction: [1, 1, 0], center: [1, 2, 3] });
+            let copies = 0;
+            const original = occt.BRepBuilderAPI_Transform;
+            Reflect.set(occt, "BRepBuilderAPI_Transform", new Proxy(original, {
+                construct(target, args): object {
+                    copies++;
+                    return Reflect.construct(target, args);
+                },
+            }));
+
+            // Act
+            let placed;
+            try {
+                placed = wire.createIBeamProfileWire({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, rotation: 30, direction: [1, 1, 0], center: [1, 2, 3] });
+            } finally {
+                Reflect.set(occt, "BRepBuilderAPI_Transform", original);
+            }
+
+            // Assert
+            const corners = edge.getCornerPointsOfEdgesForShape({ shape: expected }).map(point => point.map(value => expect.closeTo(value, 12)));
+            expect(copies).toBe(0);
+            expect(placed.Location().IsIdentity()).toBe(true);
+            expect(edge.getCornerPointsOfEdgesForShape({ shape: placed })).toEqual(corners);
+        });
+
+        it.each([
+            ["rectangle", () => wire.createRectangleWire({ width: 2, length: 4, center: [1, 2, 3], direction: [1, 0, 0] })],
+            ["L polygon", () => wire.createLPolygonWire({ widthFirst: 1, lengthFirst: 4, widthSecond: 1, lengthSecond: 3, rotation: 20, center: [1, 2, 3], direction: [0, 0, 1] })],
+            ["H beam", () => wire.createHBeamProfileWire({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, rotation: 20, center: [1, 2, 3], direction: [0, 0, 1] })],
+            ["T beam", () => wire.createTBeamProfileWire({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, rotation: 20, center: [1, 2, 3], direction: [0, 0, 1] })],
+            ["U beam", () => wire.createUBeamProfileWire({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, flangeWidth: 0.5, rotation: 20, center: [1, 2, 3], direction: [0, 0, 1] })],
+            ["christmas tree", () => wire.createChristmasTreeWire({ rotation: 20, origin: [1, 2, 3], direction: [0, 0, 1] })],
+        ] as [string, () => TopoDS_Wire][])("should leave no location on a %s, its placement written into the geometry", (_what, make) => {
+            // Act
+            const placed = make();
+
+            // Assert
+            expect(placed.Location().IsIdentity()).toBe(true);
+        });
+    });
 
     describe("fromBaseLine", () => {
         it("should create wire fromBaseLine with basic line", () => {

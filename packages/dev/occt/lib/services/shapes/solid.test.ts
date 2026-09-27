@@ -239,6 +239,44 @@ describe("OCCT solid unit tests", () => {
         ibeam.delete();
     });
 
+    it("should grow a profile solid both ways as one prism, from the back length behind the profile to the front length before it", () => {
+        // Arrange
+        let fuses = 0;
+        const original = occt.BRepAlgoAPI_Fuse;
+        Reflect.set(occt, "BRepAlgoAPI_Fuse", new Proxy(original, {
+            construct(target, args): object {
+                fuses++;
+                return Reflect.construct(target, args);
+            },
+        }));
+
+        // Act
+        let beam;
+        try {
+            beam = solid.createUBeamProfileSolid({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, flangeWidth: 0.5, center: [0, 0, 0], direction: [0, 0, 1], extrusionLengthFront: 5, extrusionLengthBack: 3 });
+        } finally {
+            Reflect.set(occt, "BRepAlgoAPI_Fuse", original);
+        }
+
+        // Assert
+        const box = occHelper.operationsService.boundingBoxOfShape({ shape: beam });
+        expect(fuses).toBe(0);
+        expect(solid.getSolids({ shape: beam })).toHaveLength(1);
+        expect([box.min[2], box.max[2]]).toEqual([-3, 5].map(value => expect.closeTo(value, 6)));
+    });
+
+    it.each([
+        [2, -1, [0, 2]],
+        [-1, 2, [-2, 0]],
+    ])("should read a negative length as 0: front %s and back %s span %j", (extrusionLengthFront, extrusionLengthBack, span) => {
+        // Act
+        const beam = solid.createUBeamProfileSolid({ width: 2, height: 3, webThickness: 0.2, flangeThickness: 0.3, flangeWidth: 0.5, center: [0, 0, 0], direction: [0, 0, 1], extrusionLengthFront, extrusionLengthBack });
+
+        // Assert
+        const box = occHelper.operationsService.boundingBoxOfShape({ shape: beam });
+        expect([box.min[2], box.max[2]]).toEqual(span.map(value => expect.closeTo(value, 6)));
+    });
+
     it("should create an H-beam profile solid with default values", async () => {
         const opt = new Inputs.OCCT.HBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;

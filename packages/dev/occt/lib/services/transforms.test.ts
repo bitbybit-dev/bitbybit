@@ -7,6 +7,8 @@ import { OCCTEdge, OCCTSolid } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 import * as Inputs from "../api/inputs";
 
+const closeTo12 = (points: number[][]): unknown[] => points.map(point => point.map(value => expect.closeTo(value, 12)));
+
 describe("OCCT transforms unit tests", () => {
     let occt: BitbybitOcctModule;
     let solid: OCCTSolid;
@@ -145,7 +147,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.5, 5, 3],
                 [2.5, 5, -3]
             ]);
-            expect(cornerPointsTransformed).toEqual([
+            expect(cornerPointsTransformed).toEqual(closeTo12([
                 [-3.6547190333315784, -7.96562362415893, -11.529657342509488],
                 [6.089855678599293, -12.543212886549313, -2.8966427920499775],
                 [-1.5394597587180137, 1.8451446975498715, 13.344315061168142],
@@ -154,7 +156,7 @@ describe("OCCT transforms unit tests", () => {
                 [13.284034470648885, -4.422733959940254, -6.711300510708632],
                 [5.654719033331578, 9.96562362415893, 9.529657342509488],
                 [-4.089855678599293, 14.543212886549313, 0.8966427920499784]
-            ]);
+            ]));
             box.delete();
             transformed.delete();
         });
@@ -175,7 +177,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.5, 5, 3],
                 [2.5, 5, -3]
             ]);
-            expect(cornerPointsTransformed).toEqual([
+            expect(cornerPointsTransformed).toEqual(closeTo12([
                 [-3.2061286023138313, -4.668290633160117, -2.6255807645260507],
                 [1.0306430115691567, -6.658546834199415, 1.127903822630258],
                 [-2.286450656829672, -0.4027391889388996, 8.18918984576857],
@@ -184,7 +186,7 @@ describe("OCCT transforms unit tests", () => {
                 [4.158546834199415, -3.1279038226302576, -0.5306430115691567],
                 [0.8414531658005857, 3.1279038226302576, 6.530643011569157],
                 [-3.395318448082403, 5.118160023669555, 2.777158424412848]
-            ]);
+            ]));
             box.delete();
             transformed.delete();
         });
@@ -413,7 +415,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.4221921821840584, 2.2458935839654326, 0.6680857661494919],
                 [5.739285850582889, -4.815392439172882, 6.923893411410006]
             ]);
-            expect(cornerPointsTransformedBox).toEqual([
+            expect(cornerPointsTransformedBox).toEqual(closeTo12([
                 [-5.17221333773584, -3.021283208849262, -2.3573898777171816],
                 [-3.2551388192611195, -4.4863268142318695, 3.136103776137572],
                 [0.6153271730570782, 4.669495942192721, 4.227159528721259],
@@ -422,7 +424,7 @@ describe("OCCT transforms unit tests", () => {
                 [1.0695193858785517, -6.083888912960802, 1.200870779978474],
                 [4.939985378196749, 3.0719338434637864, 2.2919265325621607],
                 [3.0229108597220273, 4.536977448846393, -3.2015671212925927]
-            ]);
+            ]));
             sphere.delete();
             box.delete();
             transformed.forEach(t => t.delete());
@@ -477,11 +479,11 @@ describe("OCCT transforms unit tests", () => {
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
 
-            expect(cornerPointsTransformedSphere).toEqual([
+            expect(cornerPointsTransformedSphere).toEqual(closeTo12([
                 [5.109355812233703, 6.940603060551568, -0.15004112721472485],
                 [12.738671249551015, -9.300354792666553, 14.238316456884455]
-            ]);
-            expect(cornerPointsTransformedBox).toEqual([
+            ]));
+            expect(cornerPointsTransformedBox).toEqual(closeTo12([
                 [-6.584149036949443, -2.5699127892347864, -5.486987307709507],
                 [-3.708537259237361, -4.767478197308697, 2.7532531730726237],
                 [2.097161729239936, 8.966255937328187, 4.389836801948155],
@@ -490,7 +492,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.778450048472146, -7.163821345402098, -0.14959632116602428],
                 [8.584149036949443, 6.569912789234786, 1.4869873077095066],
                 [5.70853725923736, 8.767478197308696, -6.753253173072624]
-            ]);
+            ]));
             sphere.delete();
             box.delete();
             transformed.forEach(t => t.delete());
@@ -681,6 +683,72 @@ describe("OCCT transforms unit tests", () => {
             transformed.forEach(t => t.delete());
         });
 
+    });
+
+    describe("moves composed into one", () => {
+        const copiesMadeBy = (act: () => unknown): number => {
+            let copies = 0;
+            const original = occt.BRepBuilderAPI_Transform;
+            Reflect.set(occt, "BRepBuilderAPI_Transform", new Proxy(original, {
+                construct(target, args): object {
+                    copies++;
+                    return Reflect.construct(target, args);
+                },
+            }));
+            try {
+                act();
+            } finally {
+                Reflect.set(occt, "BRepBuilderAPI_Transform", original);
+            }
+            return copies;
+        };
+
+        it("should copy the shape once for a scale, turn and move, and once for a turn about a center", () => {
+            // Arrange
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+
+            // Act
+            const copies = [
+                copiesMadeBy(() => transforms.transform({ shape: box, translation: [1, 1, -1], scaleFactor: 2.3, rotationAxis: [1, 1, 1], rotationAngle: 64 })),
+                copiesMadeBy(() => transforms.rotateAroundCenter({ shape: box, angle: 30, center: [5, 0, 5], axis: [0, 1, 0] })),
+            ];
+
+            // Assert
+            expect(copies).toEqual([1, 1]);
+        });
+
+        it("should give back the shape itself when turning it about a center by 0 degrees", () => {
+            // Arrange
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+
+            // Act
+            const turned = transforms.rotateAroundCenter({ shape: box, angle: 0, center: [5, 0, 5], axis: [0, 1, 0] });
+
+            // Assert
+            expect(turned.IsSame(box)).toBe(true);
+        });
+
+        it("should not read the rotation axis when the angle is 0, so an axis of length 0 does no harm", () => {
+            // Arrange
+            const vertex = occHelper.entitiesService.makeVertex([1, 0, 0]);
+
+            // Act
+            const moved = transforms.transform({ shape: vertex, translation: [0, 0, 10], scaleFactor: 3, rotationAxis: [0, 0, 0], rotationAngle: 0 });
+
+            // Assert
+            expect(occHelper.converterService.vertexToPoint({ shape: moved })).toEqual([3, 0, 10].map(value => expect.closeTo(value, 12)));
+        });
+
+        it("should scale first, then turn, then move", () => {
+            // Arrange
+            const vertex = occHelper.entitiesService.makeVertex([1, 0, 0]);
+
+            // Act
+            const moved = transforms.transform({ shape: vertex, translation: [0, 0, 10], scaleFactor: 2, rotationAxis: [0, 0, 1], rotationAngle: 90 });
+
+            // Assert
+            expect(occHelper.converterService.vertexToPoint({ shape: moved })).toEqual([0, 2, 10].map(value => expect.closeTo(value, 12)));
+        });
     });
 
     describe("which transforms keep the geometry exact", () => {

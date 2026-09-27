@@ -141,6 +141,65 @@ export class TransformsService {
         return actualShape;
     }
 
+    rotateAroundCenter(inputs: Resolved.OCCT.RotateAroundCenterDto<TopoDS_Shape>): TopoDS_Shape {
+        if (inputs.angle === 0) {
+            return this.converterService.getActualTypeOfShape(inputs.shape);
+        }
+        const transformation = new this.occ.gp_Trsf();
+        const axis = this.entitiesService.gpAx1(inputs.center, inputs.axis);
+        transformation.SetRotation(axis, this.vecHelper.degToRad(inputs.angle));
+        const shp = this.applyTrsf(inputs.shape, transformation);
+        axis.delete();
+        transformation.delete();
+        return shp;
+    }
+
+    transform(inputs: Resolved.OCCT.TransformDto<TopoDS_Shape>): TopoDS_Shape {
+        this.refuseCollapsingScale(inputs.scaleFactor, "scaleFactor");
+        const origin = this.entitiesService.gpPnt([0, 0, 0]);
+        const scaling = new this.occ.gp_Trsf();
+        scaling.SetScale(origin, inputs.scaleFactor);
+        const rotation = new this.occ.gp_Trsf();
+        if (inputs.rotationAngle !== 0) {
+            const axis = this.entitiesService.gpAx1([0, 0, 0], inputs.rotationAxis);
+            rotation.SetRotation(axis, this.vecHelper.degToRad(inputs.rotationAngle));
+            axis.delete();
+        }
+        const translation = new this.occ.gp_Trsf();
+        const vector = new this.occ.gp_Vec(inputs.translation[0], inputs.translation[1], inputs.translation[2]);
+        translation.SetTranslation(vector);
+        const turned = rotation.Multiplied(scaling);
+        const composed = translation.Multiplied(turned);
+        const shp = this.applyTrsf(inputs.shape, composed);
+        [origin, scaling, rotation, translation, vector, turned, composed].forEach(temporary => temporary.delete());
+        return shp;
+    }
+
+    placePoints(points: Inputs.Base.Point3[], rotation: number, direction: Inputs.Base.Vector3, center: Inputs.Base.Point3): Inputs.Base.Point3[] {
+        const turn = new this.occ.gp_Trsf();
+        if (rotation !== 0) {
+            const axis = this.entitiesService.gpAx1([0, 0, 0], [0, 1, 0]);
+            turn.SetRotation(axis, this.vecHelper.degToRad(rotation));
+            axis.delete();
+        }
+        const from = this.entitiesService.gpAx3_4([0, 0, 0], [0, 1, 0]);
+        const to = this.entitiesService.gpAx3_4([0, 0, 0], direction);
+        const alignment = new this.occ.gp_Trsf();
+        alignment.SetDisplacement(from, to);
+        const move = new this.occ.gp_Trsf();
+        const vector = new this.occ.gp_Vec(center[0], center[1], center[2]);
+        move.SetTranslation(vector);
+        const aligned = alignment.Multiplied(turn);
+        const placement = move.Multiplied(aligned);
+        const m = this.trsfToMatrix(placement);
+        [turn, from, to, alignment, move, vector, aligned, placement].forEach(temporary => temporary.delete());
+        return points.map(([x, y, z]) => [
+            m[0] * x + m[4] * y + m[8] * z + m[12],
+            m[1] * x + m[5] * y + m[9] * z + m[13],
+            m[2] * x + m[6] * y + m[10] * z + m[14],
+        ]);
+    }
+
     align(inputs: Resolved.OCCT.AlignDto<TopoDS_Shape>): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
 

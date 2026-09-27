@@ -41,7 +41,9 @@ export class FilletsService {
             );
             const edges: TopoDS_Edge[] = [];
             while (anEdgeExplorer.More()) {
-                const anEdge = this.occ.CastToEdge(anEdgeExplorer.Current());
+                const current = anEdgeExplorer.Current();
+                const anEdge = this.occ.CastToEdge(current);
+                current.delete();
                 edges.push(anEdge);
                 mkFillet.Add(inputs.radius, anEdge);
                 anEdgeExplorer.Next();
@@ -218,7 +220,9 @@ export class FilletsService {
             );
             const edges: TopoDS_Edge[] = [];
             while (anEdgeExplorer.More()) {
-                const anEdge = this.occ.CastToEdge(anEdgeExplorer.Current());
+                const current = anEdgeExplorer.Current();
+                const anEdge = this.occ.CastToEdge(current);
+                current.delete();
                 edges.push(anEdge);
                 mkChamfer.Add(inputs.distance, anEdge);
                 anEdgeExplorer.Next();
@@ -414,9 +418,13 @@ export class FilletsService {
         let i = 1;
         const cornerVertices: TopoDS_Vertex[] = [];
         for (anVertexExplorer; anVertexExplorer.More(); anVertexExplorer.Next()) {
-            const vertex: TopoDS_Vertex = this.occ.CastToVertex(anVertexExplorer.Current());
+            const current = anVertexExplorer.Current();
+            const vertex: TopoDS_Vertex = this.occ.CastToVertex(current);
+            current.delete();
             if (i % 2 === 0) {
                 cornerVertices.push(vertex);
+            } else {
+                vertex.delete();
             }
             i++;
         }
@@ -658,7 +666,9 @@ export class FilletsService {
         const cornerVertices: TopoDS_Vertex[] = [];
         let i = 1;
         for (explorer; explorer.More(); explorer.Next()) {
-            const vertex = this.occ.CastToVertex(explorer.Current());
+            const current = explorer.Current();
+            const vertex = this.occ.CastToVertex(current);
+            current.delete();
             if (i % 2 === 0) {
                 cornerVertices.push(vertex);
             } else {
@@ -679,7 +689,9 @@ export class FilletsService {
             const explorer = new this.occ.TopExp_Explorer(edge, this.occ.TopAbs_ShapeEnum.VERTEX, this.occ.TopAbs_ShapeEnum.SHAPE);
             let found = false;
             for (explorer; explorer.More(); explorer.Next()) {
-                const v = this.occ.CastToVertex(explorer.Current());
+                const current = explorer.Current();
+                const v = this.occ.CastToVertex(current);
+                current.delete();
                 const same = v.IsSame(vertex);
                 v.delete();
                 if (same) { found = true; break; }
