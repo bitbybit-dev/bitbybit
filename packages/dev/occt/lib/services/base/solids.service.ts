@@ -9,6 +9,7 @@ import { TransformsService } from "./transforms.service";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Resolved from "../../api/resolved-inputs";
 import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
+import { checkedShapes } from "./input-checks";
 
 export class SolidsService {
 
@@ -133,6 +134,7 @@ export class SolidsService {
     }
 
     getSolidsVolumes(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -144,6 +146,7 @@ export class SolidsService {
     }
 
     getSolidsCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Solid>): Base.Point3[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }

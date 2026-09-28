@@ -1,6 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { readKernelException } from "./kernel-exception";
+import { InputError } from "@bitbybit-dev/base";
+import { OccHelper } from "./occ-helper";
+import { OCCTService } from "./occ-service";
+import { VectorHelperService } from "./api/vector-helper.service";
+import { ShapesHelperService } from "./api/shapes-helper.service";
 
 describe("kernel functions given a null shape", () => {
     let occt: BitbybitOcctModule;
@@ -145,5 +150,148 @@ describe("kernel functions given a null shape", () => {
 
         // Assert
         expect(read).toBe("Standard_NullObject: HistoryOfFillet: the input is null");
+    });
+});
+
+describe("operations given a list that holds an empty shape", () => {
+    let kernel: BitbybitOcctModule;
+    let service: OCCTService;
+
+    beforeAll(async () => {
+        kernel = await createBitbybitOcct();
+        service = new OCCTService(kernel, new OccHelper(new VectorHelperService(), new ShapesHelperService(), kernel));
+    });
+
+    const valid = (kind: string): unknown => {
+        switch (kind) {
+            case "edge": return service.shapes.edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
+            case "wire": return service.shapes.wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 0, 1] });
+            case "face": return service.shapes.face.createSquareFace({ size: 1, center: [0, 0, 0], direction: [0, 0, 1] });
+            case "vertex": return service.shapes.vertex.vertexFromXYZ({ x: 0, y: 0, z: 0 });
+            default: return service.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0], originOnCenter: true });
+        }
+    };
+
+    const call = (path: string, inputs: object): unknown => {
+        const segments = path.split(".");
+        const owner = segments.slice(0, -1).reduce<unknown>((target, segment) => (target as Record<string, unknown>)[segment], service);
+        return ((owner as Record<string, unknown>)[segments.at(-1)!] as (input: object) => unknown).call(owner, inputs);
+    };
+
+    it.each([
+            ["shapes.wire.combineEdgesAndWiresIntoAWire", "edge"],
+            ["shapes.compound.makeCompound", "solid"],
+            ["shapes.face.getFacesAreas", "face"],
+            ["shapes.face.getFacesCentersOfMass", "face"],
+            ["shapes.face.createFaceFromWires", "wire"],
+            ["shapes.face.createFacesFromWires", "wire"],
+            ["shapes.face.filterFacesPoints", "face"],
+            ["shapes.solid.getSolidsVolumes", "solid"],
+            ["shapes.solid.getSolidsCentersOfMass", "solid"],
+            ["shapes.edge.getEdgesLengths", "edge"],
+            ["shapes.edge.getEdgesCentersOfMass", "edge"],
+            ["shapes.edge.pointsOnEdgesAtParam", "edge"],
+            ["shapes.edge.tangentsOnEdgesAtParam", "edge"],
+            ["shapes.edge.pointsOnEdgesAtLength", "edge"],
+            ["shapes.edge.tangentsOnEdgesAtLength", "edge"],
+            ["shapes.edge.startPointsOnEdges", "edge"],
+            ["shapes.edge.endPointsOnEdges", "edge"],
+            ["shapes.edge.divideEdgesByParamsToPoints", "edge"],
+            ["shapes.edge.divideEdgesByEqualDistanceToPoints", "edge"],
+            ["shapes.wire.getWiresLengths", "wire"],
+            ["shapes.wire.getWiresCentersOfMass", "wire"],
+            ["shapes.wire.divideWiresByParamsToPoints", "wire"],
+            ["shapes.wire.divideWiresByEqualDistanceToPoints", "wire"],
+            ["shapes.wire.createWiresBetweenStartEndPointsOfWiresAndEdges", "edge"],
+            ["shapes.wire.createWiresBetweenSubdividedPointsOfWiresAndEdges", "edge"],
+            ["shapes.wire.addEdgesAndWiresToWire", "edge"],
+            ["shapes.shell.sewFaces", "face"],
+            ["shapes.vertex.verticesToPoints", "vertex"],
+            ["booleans.meshMeshIntersectionOfShapesWires", "solid"],
+            ["booleans.meshMeshIntersectionOfShapesPoints", "solid"],
+            ["booleans.union", "solid"],
+            ["booleans.difference", "solid"],
+            ["booleans.intersection", "solid"],
+            ["operations.loft", "wire"],
+            ["operations.loftAdvanced", "wire"],
+            ["operations.closestPointsOnShapesFromPoints", "solid"],
+            ["operations.extrudeShapes", "face"],
+            ["operations.splitShapeWithShapes", "face"],
+            ["operations.pipe", "wire"],
+            ["operations.pipeWiresCylindrical", "wire"],
+            ["operations.makeThickSolidByJoin", "face"],
+            ["fillets.fillet3DWires", "wire"],
+            ["fillets.fillet2dShapes", "wire"],
+            ["transforms.transformShapes", "solid"],
+            ["transforms.transformShapesByMatrix", "solid"],
+            ["transforms.rotateShapes", "solid"],
+            ["transforms.rotateAroundCenterShapes", "solid"],
+            ["transforms.alignShapes", "solid"],
+            ["transforms.alignAndTranslateShapes", "solid"],
+            ["transforms.translateShapes", "solid"],
+            ["transforms.scaleShapes", "solid"],
+            ["transforms.scale3dShapes", "solid"],
+            ["transforms.mirrorShapes", "solid"],
+            ["transforms.mirrorAlongNormalShapes", "solid"],
+    ])("%s refuses it as an input error naming its position", (path, kind) => {
+        // Arrange
+        const shapes = [valid(kind), new kernel.TopoDS_Shape()];
+
+        // Act
+        let thrown: unknown;
+        try {
+            call(path, { shape: valid(kind), shapes });
+        } catch (error) {
+            thrown = error;
+        }
+
+        // Assert
+        expect(thrown).toBeInstanceOf(InputError);
+        expect(thrown).toMatchObject({ property: "shapes", message: "`shapes` holds a missing or empty shape at position 1, as an operation that failed can leave it." });
+    });
+
+    it("refuses shapes that are not a list", () => {
+        // Act
+        let thrown: unknown;
+        try {
+            service.shapes.compound.makeCompound({ shapes: valid("solid") as [] });
+        } catch (error) {
+            thrown = error;
+        }
+
+        // Assert
+        expect(thrown).toMatchObject({ name: "InputError", property: "shapes", message: "`shapes` is not a list of shapes." });
+    });
+
+    it.each([
+        ["getEdges", (): unknown => service.shapes.edge.getEdges({ shape: new kernel.TopoDS_Shape() })],
+        ["getEdge", (): unknown => service.shapes.edge.getEdge({ shape: new kernel.TopoDS_Shape(), index: 0 })],
+        ["getWire", (): unknown => service.shapes.wire.getWire({ shape: new kernel.TopoDS_Shape(), index: 0 })],
+        ["getFace", (): unknown => service.shapes.face.getFace({ shape: new kernel.TopoDS_Shape(), index: 0 })],
+        ["getVertices", (): unknown => service.shapes.vertex.getVertices({ shape: new kernel.TopoDS_Shape() })],
+        ["getEdgesAlongWire", (): unknown => service.shapes.edge.getEdgesAlongWire({ shape: new kernel.TopoDS_Shape() })],
+    ])("%s refuses an empty shape as an input error", (_name, run) => {
+        // Act
+        let thrown: unknown;
+        try {
+            run();
+        } catch (error) {
+            thrown = error;
+        }
+
+        // Assert
+        expect(thrown).toMatchObject({ name: "InputError", property: "shape", message: "`shape` is missing or empty, as an operation that failed can leave it." });
+    });
+
+    it("takes the edge itself from an edge, as getEdges does", () => {
+        // Arrange
+        const edge = service.shapes.edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
+
+        // Act
+        const taken = service.shapes.edge.getEdge({ shape: edge, index: 0 });
+
+        // Assert
+        expect(taken.IsSame(edge)).toBe(true);
+        expect(service.shapes.edge.getEdges({ shape: edge })).toHaveLength(1);
     });
 });

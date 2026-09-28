@@ -12,6 +12,7 @@ import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
+import { checkedShapes } from "./input-checks";
 
 export class FacesService {
 
@@ -75,6 +76,7 @@ export class FacesService {
     }
 
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -86,6 +88,7 @@ export class FacesService {
     }
 
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): Base.Point3[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -297,6 +300,7 @@ export class FacesService {
     }
 
     createFaceFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
+        checkedShapes(inputs.shapes);
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.shapes, inputs.planar);
         return result;
     }
@@ -315,6 +319,7 @@ export class FacesService {
     }
 
     createFacesFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
+        checkedShapes(inputs.shapes);
         const result = inputs.shapes.map(shape => {
             return this.createFaceFromWire({ shape, planar: inputs.planar });
         });

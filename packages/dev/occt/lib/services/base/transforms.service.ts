@@ -5,6 +5,7 @@ import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
 import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
+import { checkedShapes } from "./input-checks";
 
 /**
  * The smallest scale, in size, handed to the exact transform: nearer 0 a curved shape shrinks to a
@@ -270,6 +271,7 @@ export class TransformsService {
     }
 
     transformShapesByMatrix(inputs: Inputs.OCCT.TransformShapesByMatrixDto<TopoDS_Shape>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => this.transformByMatrix({ shape, transformation: inputs.transformation }));
     }
 

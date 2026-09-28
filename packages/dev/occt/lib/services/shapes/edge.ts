@@ -5,6 +5,7 @@ import * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { framesOnCurve } from "../base/frames";
+import { checkedShapes } from "../base/input-checks";
 
 /**
  * Edges in OpenCascade: single curves between two vertices, straight, circular, elliptical or
@@ -719,6 +720,7 @@ export class OCCTEdge {
      */
     pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtParam({ shape, param: resolved.param }));
     }
 
@@ -802,6 +804,7 @@ export class OCCTEdge {
      */
     tangentsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtParam({ shape, param: resolved.param }));
     }
 
@@ -837,6 +840,7 @@ export class OCCTEdge {
      */
     pointsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtLength({ shape, length: resolved.length }));
     }
 
@@ -872,6 +876,7 @@ export class OCCTEdge {
      */
     tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtLength({ shape, length: resolved.length }));
     }
 
@@ -979,6 +984,7 @@ export class OCCTEdge {
      * ```
      */
     startPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => this.och.edgesService.startPointOnEdge({ shape }));
     }
 
@@ -1011,6 +1017,7 @@ export class OCCTEdge {
      * ```
      */
     endPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => this.och.edgesService.endPointOnEdge({ shape }));
     }
 
@@ -1049,6 +1056,7 @@ export class OCCTEdge {
      */
     divideEdgesByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
         const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(shape => this.divideEdgeByParamsToPoints({ shape, nrOfDivisions: resolved.nrOfDivisions, removeEndPoint: resolved.removeEndPoint, removeStartPoint: resolved.removeStartPoint }));
     }
 
@@ -1087,6 +1095,7 @@ export class OCCTEdge {
      */
     divideEdgesByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
         const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(shape => this.divideEdgeByEqualDistanceToPoints({ shape, nrOfDivisions: resolved.nrOfDivisions, removeEndPoint: resolved.removeEndPoint, removeStartPoint: resolved.removeStartPoint }));
     }
 

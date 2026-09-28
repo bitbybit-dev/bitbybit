@@ -145,7 +145,7 @@ describe("OCCT edge unit tests", () => {
     it("should not be able to get an edge if shape is not provided", async () => {
         expect(() =>
             edge.getEdge({ shape: undefined as unknown as TopoDS_Shape, index: 0 })
-        ).toThrow("Edge can not be found for shape that is not provided or is of incorrect type");
+        ).toThrow("`shape` is missing or empty, as an operation that failed can leave it.");
     });
 
     it("should not remove internal edges if there are none", async () => {

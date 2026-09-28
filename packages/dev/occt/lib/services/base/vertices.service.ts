@@ -4,6 +4,7 @@ import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
 import { ShapeGettersService } from "./shape-getters";
 import * as Resolved from "../../api/resolved-inputs";
+import { checkedShapes } from "./input-checks";
 
 export class VerticesService {
 
@@ -42,6 +43,7 @@ export class VerticesService {
     }
 
     verticesToPoints(inputs: Inputs.OCCT.ShapesDto<TopoDS_Vertex>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(v => {
             const pt = this.occ.BRep_Tool_Pnt(v);
             const res = [pt.X(), pt.Y(), pt.Z()] as Inputs.Base.Point3;
@@ -51,6 +53,7 @@ export class VerticesService {
     }
 
     pointsToVertices(inputs: Inputs.OCCT.ShapesDto<TopoDS_Vertex>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(v => {
             const pt = this.occ.BRep_Tool_Pnt(v);
             const res = [pt.X(), pt.Y(), pt.Z()] as Inputs.Base.Point3;

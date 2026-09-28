@@ -6,7 +6,7 @@ import * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { framesFromNumbers } from "../base/frames";
-import { checkedNumber, checkedPoint, checkedShape } from "../base/input-checks";
+import { checkedNumber, checkedPoint, checkedShape, checkedShapes } from "../base/input-checks";
 
 /**
  * Faces in OpenCascade: bounded pieces of a surface, flat or curved, with an outer boundary wire
@@ -1630,6 +1630,7 @@ export class OCCTFace {
      */
     filterFacesPoints(inputs: Inputs.OCCT.FilterFacesPointsDto<TopoDS_Face>): Base.Point3[] | Base.Point3[][] {
         const resolved = resolveDto(Inputs.OCCT.FilterFacesPointsDto, inputs) as Resolved.OCCT.FilterFacesPointsDto<TopoDS_Face>;
+        checkedShapes(resolved.shapes);
         let res: Base.Point3[] | Base.Point3[][] = resolved.shapes.map(s => this.och.facesService.filterFacePoints({ ...resolved, shape: s }));
         if (resolved.flatPointsArray) {
             res = res.flat();

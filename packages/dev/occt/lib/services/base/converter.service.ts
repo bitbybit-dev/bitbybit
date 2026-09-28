@@ -3,6 +3,7 @@ import {
     TopoDS_Shell, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
+import { checkedShapes } from "./input-checks";
 
 export class ConverterService {
 
@@ -33,6 +34,7 @@ export class ConverterService {
     }
 
     combineEdgesAndWiresIntoAWire(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge | TopoDS_Wire>): TopoDS_Wire {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -63,6 +65,7 @@ export class ConverterService {
     }
 
     makeCompound(inputs: Inputs.OCCT.CompoundShapesDto<TopoDS_Shape>): TopoDS_Compound {
+        checkedShapes(inputs.shapes);
         const builder = new this.occ.BRep_Builder();
         const resCompound = this.occ.BRep_Builder_MakeCompound(builder);
         inputs.shapes.forEach(shape => builder.Add(resCompound, shape));

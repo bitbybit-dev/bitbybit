@@ -5,7 +5,7 @@ import { Base } from "../api/inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import { numbersOfFrames, WORLD_FRAME } from "./base/frames";
-import { checkedFrame, checkedFrames, checkedPlacements, checkedShape } from "./base/input-checks";
+import { checkedFrame, checkedFrames, checkedPlacements, checkedShape, checkedShapes } from "./base/input-checks";
 import { readKernelException } from "../kernel-exception";
 
 /**
@@ -366,6 +366,7 @@ export class OCCTTransforms {
      */
     transformShapes(inputs: Inputs.OCCT.TransformShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.TransformShapesDto, inputs) as Resolved.OCCT.TransformShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.translations, resolved.rotationAxes, resolved.rotationAngles, resolved.scaleFactors]);
         resolved.scaleFactors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `scaleFactors[${index}]`));
         return resolved.shapes.map((s, index) => this.transform({
@@ -394,6 +395,7 @@ export class OCCTTransforms {
      */
     rotateShapes(inputs: Inputs.OCCT.RotateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.RotateShapesDto, inputs) as Resolved.OCCT.RotateShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
         return resolved.shapes.map((s, index) => this.rotate({
             shape: s,
@@ -424,6 +426,7 @@ export class OCCTTransforms {
      */
     rotateAroundCenterShapes(inputs: Inputs.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.RotateAroundCenterShapesDto, inputs) as Resolved.OCCT.RotateAroundCenterShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | number>([resolved.shapes, resolved.axes, resolved.angles]);
         return resolved.shapes.map((s, index) => this.rotateAroundCenter({
             shape: s,
@@ -455,6 +458,7 @@ export class OCCTTransforms {
      */
     alignShapes(inputs: Inputs.OCCT.AlignShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.AlignShapesDto, inputs) as Resolved.OCCT.AlignShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Point3 | Base.Vector3>([resolved.shapes, resolved.fromOrigins, resolved.fromDirections, resolved.toOrigins, resolved.toDirections]);
         return resolved.shapes.map((s, index) => this.align({
             shape: s,
@@ -485,6 +489,7 @@ export class OCCTTransforms {
      */
     alignAndTranslateShapes(inputs: Inputs.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.AlignAndTranslateShapesDto, inputs) as Resolved.OCCT.AlignAndTranslateShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.centers, resolved.directions]);
         return resolved.shapes.map((s, index) => this.alignAndTranslate({
             shape: s,
@@ -509,6 +514,7 @@ export class OCCTTransforms {
      */
     translateShapes(inputs: Inputs.OCCT.TranslateShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.TranslateShapesDto, inputs) as Resolved.OCCT.TranslateShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3>([resolved.shapes, resolved.translations]);
         return resolved.shapes.map((s, index) => this.translate({
             shape: s,
@@ -532,6 +538,7 @@ export class OCCTTransforms {
      */
     scaleShapes(inputs: Inputs.OCCT.ScaleShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.ScaleShapesDto, inputs) as Resolved.OCCT.ScaleShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | number>([resolved.shapes, resolved.factors]);
         resolved.factors.forEach((factor, index) => this.och.transformsService.refuseCollapsingScale(factor, `factors[${index}]`));
         return resolved.shapes.map((s, index) => this.scale({
@@ -560,6 +567,7 @@ export class OCCTTransforms {
      */
     scale3dShapes(inputs: Inputs.OCCT.Scale3DShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.Scale3DShapesDto, inputs) as Resolved.OCCT.Scale3DShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.scales, resolved.centers]);
         return resolved.shapes.map((s, index) => this.scale3d({
             shape: s,
@@ -589,6 +597,7 @@ export class OCCTTransforms {
      */
     mirrorShapes(inputs: Inputs.OCCT.MirrorShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.MirrorShapesDto, inputs) as Resolved.OCCT.MirrorShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.directions, resolved.origins]);
         return resolved.shapes.map((s, index) => this.mirror({
             shape: s,
@@ -617,6 +626,7 @@ export class OCCTTransforms {
      */
     mirrorAlongNormalShapes(inputs: Inputs.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.MirrorAlongNormalShapesDto, inputs) as Resolved.OCCT.MirrorAlongNormalShapesDto<TopoDS_Shape>;
+        checkedShapes(resolved.shapes);
         this.checkIfListsEqualLength<TopoDS_Shape | Base.Vector3 | Base.Point3>([resolved.shapes, resolved.normals, resolved.origins]);
         return resolved.shapes.map((s, index) => this.mirrorAlongNormal({
             shape: s,

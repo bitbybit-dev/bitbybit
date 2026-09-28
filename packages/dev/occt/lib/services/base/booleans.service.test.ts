@@ -162,9 +162,9 @@ describe("BooleansService", () => {
         });
 
         it.each([
-            ["the shape to cut from", (): unknown => helper.booleansService.difference({ shape: new occt.TopoDS_Shape(), shapes: [box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shape", "The shape is empty"],
-            ["a tool", (): unknown => helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 1), new occt.TopoDS_Shape()], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "The shape at position 1 of `shapes` is empty"],
-            ["a shape of a union", (): unknown => helper.booleansService.union({ shapes: [new occt.TopoDS_Shape(), box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "The shape at position 0 of `shapes` is empty"],
+            ["the shape to cut from", (): unknown => helper.booleansService.difference({ shape: new occt.TopoDS_Shape(), shapes: [box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shape", "`shape` is missing or empty"],
+            ["a tool", (): unknown => helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 1), new occt.TopoDS_Shape()], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "`shapes` holds a missing or empty shape at position 1"],
+            ["a shape of a union", (): unknown => helper.booleansService.union({ shapes: [new occt.TopoDS_Shape(), box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "`shapes` holds a missing or empty shape at position 0"],
         ])("refuses an empty %s as an input error", (_what, run, property, start) => {
             // Act
             const failure = failureOf(run);
@@ -347,7 +347,7 @@ describe("BooleansService", () => {
             const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
 
             // Assert
-            expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: "The shape at position 2 of `shapes` is empty, as an operation that failed can leave it; nothing can be combined with it." });
+            expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: "`shapes` holds a missing or empty shape at position 2, as an operation that failed can leave it." });
         });
 
         it("throws the named boolean failure when a later pair fails, and releases what the earlier pair made", () => {

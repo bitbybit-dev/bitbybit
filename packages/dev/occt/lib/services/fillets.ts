@@ -5,7 +5,7 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import * as Models from "../api/models";
 import { historyFromKernel } from "./base/history";
-import { checkedIndexes, checkedShape } from "./base/input-checks";
+import { checkedIndexes, checkedShape, checkedShapes } from "./base/input-checks";
 
 /**
  * Rounding and beveling the edges of OpenCascade shapes: a fillet replaces a sharp edge with a
@@ -214,6 +214,7 @@ export class OCCTFillets {
      */
     fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<TopoDS_Wire>): TopoDS_Shape[] {
         const resolved = resolveDto(Inputs.OCCT.Fillet3DWiresDto, inputs) as Resolved.OCCT.Fillet3DWiresDto<TopoDS_Wire>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(shape => this.och.filletsService.fillet3DWire({
             shape,
             radius: resolved.radius,
@@ -462,6 +463,7 @@ export class OCCTFillets {
      */
     fillet2dShapes(inputs: Inputs.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face[] | TopoDS_Wire[] {
         const resolved = resolveDto(Inputs.OCCT.FilletShapesDto, inputs) as Resolved.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(shape => this.och.filletsService.fillet2d({
             shape,
             radius: resolved.radius,

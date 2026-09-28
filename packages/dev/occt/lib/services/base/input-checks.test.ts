@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { InputError } from "@bitbybit-dev/base";
 import {
     checkedChoice, checkedCount, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedPlacements, checkedPoint,
-    checkedShape, withIndexesInRange,
+    checkedShape, checkedShapes, withIndexesInRange,
 } from "./input-checks";
 import { KernelExceptionReader } from "../../kernel-exception";
 
@@ -63,6 +63,46 @@ describe("input checks", () => {
 
             // Assert
             expect(checked).toBe(shape);
+        });
+    });
+
+    describe("checkedShapes", () => {
+        const shape = { IsNull: (): boolean => false };
+        const empty = { IsNull: (): boolean => true };
+
+        it.each([
+            { list: [shape, empty], position: 1 },
+            { list: [undefined, shape], position: 0 },
+            { list: [shape, shape, { name: "box" }], position: 2 },
+        ])("should refuse a list with a missing or empty shape at position $position, naming it", ({ list, position }) => {
+            // Act
+            const error = thrownBy(() => checkedShapes(list, "sections"));
+
+            // Assert
+            expect(error.property).toBe("sections");
+            expect(error.message).toBe(`\`sections\` holds a missing or empty shape at position ${position}, as an operation that failed can leave it.`);
+        });
+
+        it("should refuse shapes that are not a list", () => {
+            // Act
+            const error = thrownBy(() => checkedShapes(shape));
+
+            // Assert
+            expect(error.property).toBe("shapes");
+            expect(error.message).toBe("`shapes` is not a list of shapes.");
+        });
+
+        it("should hand back the list it was given, an empty one included", () => {
+            // Arrange
+            const list = [shape, shape];
+
+            // Act
+            const checked = checkedShapes(list);
+            const none = checkedShapes([]);
+
+            // Assert
+            expect(checked).toBe(list);
+            expect(none).toEqual([]);
         });
     });
 

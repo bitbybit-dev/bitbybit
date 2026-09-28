@@ -12,6 +12,7 @@ import { EnumService } from "./enum.service";
 import { GeomService } from "./geom.service";
 import { TransformsService } from "./transforms.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { checkedShape, checkedShapes } from "./input-checks";
 
 export class EdgesService {
 
@@ -66,11 +67,9 @@ export class EdgesService {
     }
 
     getEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Edge[] {
-        if (inputs.shape && this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
+        checkedShape(inputs.shape);
+        if (this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
             return [inputs.shape];
-        }
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw (new Error("Shape is not provided or is of incorrect type"));
         }
         const edges = this.occ.EdgesAlongWire(inputs.shape);
         if (edges.length === 0) {
@@ -152,6 +151,7 @@ export class EdgesService {
     }
 
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -159,6 +159,7 @@ export class EdgesService {
     }
 
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Base.Point3[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }

@@ -19,6 +19,7 @@ import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
+import { checkedShapes } from "./input-checks";
 
 export class OperationsService {
 
@@ -38,6 +39,7 @@ export class OperationsService {
     ) { }
 
     loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         if (inputs.periodic && !inputs.closed) {
             throw new Error("Cant construct periodic non closed loft.");
         }
@@ -136,6 +138,7 @@ export class OperationsService {
     }
 
     closestPointsOnShapesFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapesFromPointsDto<TopoDS_Shape>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.flatMap(shape => this.closestPointsOn(shape, inputs.points));
     }
 
@@ -198,6 +201,7 @@ export class OperationsService {
     }
 
     loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes.length < 2) {
             throw new InputError(`A loft needs at least two sections, and got ${inputs.shapes.length}.`, "shapes");
         }
@@ -304,6 +308,7 @@ export class OperationsService {
     }
 
     extrudeShapes(inputs: Resolved.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => {
             const extruded = this.extrude({ shape, direction: inputs.direction });
             const result = this.converterService.getActualTypeOfShape(extruded);
@@ -345,6 +350,7 @@ export class OperationsService {
     }
 
     splitShapeWithShapes(inputs: Resolved.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         const bopalgoBuilder = new this.occ.BOPAlgo_Builder();
         bopalgoBuilder.SetNonDestructive(inputs.nonDestructive);
         bopalgoBuilder.SetFuzzyValue(inputs.localFuzzyTolerance);
@@ -471,6 +477,7 @@ export class OperationsService {
     }
 
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
             pipe.Add(sh, false, false);
@@ -570,6 +577,7 @@ export class OperationsService {
     }
 
     pipeWiresCylindrical(inputs: Resolved.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(wire => {
             return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, makeSolid: inputs.makeSolid, trihedronEnum: inputs.trihedronEnum, forceApproxC1: inputs.forceApproxC1 });
         });
@@ -595,6 +603,7 @@ export class OperationsService {
     }
 
     makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         const facesToRemove = new this.occ.TopTools_ListOfShape();
         inputs.shapes.forEach(shape => {
             facesToRemove.Append(shape);

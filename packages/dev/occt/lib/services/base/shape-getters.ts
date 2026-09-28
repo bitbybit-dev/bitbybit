@@ -5,6 +5,7 @@ import {
 import * as Inputs from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import * as Resolved from "../../api/resolved-inputs";
+import { checkedShape } from "./input-checks";
 
 export class ShapeGettersService {
 
@@ -14,19 +15,15 @@ export class ShapeGettersService {
     ) { }
 
     getEdges(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Edge[] {
-        if (inputs.shape && this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
+        checkedShape(inputs.shape);
+        if (this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
             return [inputs.shape];
-        }
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw (new Error("Shape is not provided or is of incorrect type"));
         }
         return this.occ.EdgesOf(inputs.shape, true);
     }
 
     getEdge(inputs: Resolved.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {
-        if (!inputs.shape || (inputs.shape.ShapeType && inputs.shape.ShapeType() > this.occ.TopAbs_ShapeEnum.WIRE) || inputs.shape.IsNull()) {
-            throw (new Error("Edge can not be found for shape that is not provided or is of incorrect type"));
-        }
+        checkedShape(inputs.shape);
         const index = inputs.index || 0;
         const edge = this.occ.EdgeAt(inputs.shape, true, index);
         if (edge.IsNull()) {
@@ -41,9 +38,7 @@ export class ShapeGettersService {
     }
 
     getWire(inputs: Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Wire {
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw (new Error("Shape is not provided or is null"));
-        }
+        checkedShape(inputs.shape);
         const shapeType = this.enumService.getShapeTypeEnum(inputs.shape);
         if ((shapeType === Inputs.OCCT.shapeTypeEnum.wire ||
             shapeType === Inputs.OCCT.shapeTypeEnum.edge ||
@@ -67,9 +62,7 @@ export class ShapeGettersService {
     }
 
     getFace(inputs: Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face {
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw new Error("Shape is not provided or is null");
-        }
+        checkedShape(inputs.shape);
         const shapeType = this.enumService.getShapeTypeEnum(inputs.shape);
         if (shapeType === Inputs.OCCT.shapeTypeEnum.wire ||
             shapeType === Inputs.OCCT.shapeTypeEnum.edge ||
@@ -85,11 +78,9 @@ export class ShapeGettersService {
     }
 
     getVertices(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Vertex[] {
-        if (inputs.shape && this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.vertex) {
+        checkedShape(inputs.shape);
+        if (this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.vertex) {
             return [inputs.shape];
-        }
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw (new Error("Shape is not provided or is of incorrect type"));
         }
         return this.occ.VerticesOf(inputs.shape, false);
     }

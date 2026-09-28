@@ -1,5 +1,6 @@
 import { InputError } from "@bitbybit-dev/base";
 import { isFrameShaped, isTriple, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { composed, isTransformMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
 import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { KernelExceptionReader, readKernelException } from "../../kernel-exception";
 import * as Inputs from "../../api/inputs";
@@ -8,13 +9,32 @@ type Vec3 = Inputs.Base.Vector3;
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
+const isShape = (value: unknown): value is TopoDS_Shape => {
+    const candidate = value as { IsNull?: unknown } | null | undefined;
+    return candidate !== null && candidate !== undefined && typeof candidate.IsNull === "function" && !(value as TopoDS_Shape).IsNull();
+};
+
 /** A shape the caller handed in, refused when it is missing or empty, as an operation that failed can leave it. */
 export function checkedShape(shape: unknown, property = "shape"): TopoDS_Shape {
-    const candidate = shape as { IsNull?: unknown } | null | undefined;
-    if (candidate === null || candidate === undefined || typeof candidate.IsNull !== "function" || (shape as TopoDS_Shape).IsNull()) {
+    if (!isShape(shape)) {
         throw new InputError(`\`${property}\` is missing or empty, as an operation that failed can leave it.`, property);
     }
-    return shape as TopoDS_Shape;
+    return shape;
+}
+
+/**
+ * A list of shapes the caller handed in, each refused as `checkedShape` refuses one, with the
+ * position of the first that is missing or empty.
+ */
+export function checkedShapes<T extends TopoDS_Shape = TopoDS_Shape>(shapes: unknown, property = "shapes"): T[] {
+    if (!Array.isArray(shapes)) {
+        throw new InputError(`\`${property}\` is not a list of shapes.`, property);
+    }
+    const faulty = shapes.findIndex(shape => !isShape(shape));
+    if (faulty !== -1) {
+        throw new InputError(`\`${property}\` holds a missing or empty shape at position ${faulty}, as an operation that failed can leave it.`, property);
+    }
+    return shapes as T[];
 }
 
 /** Three finite numbers. */
@@ -105,22 +125,9 @@ export function checkedFrames(value: unknown, property: string): Inputs.Base.Fra
     });
 }
 
-const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-
-const isMatrix = (value: unknown): value is number[] => Array.isArray(value) && value.length === 16 && value.every(isFiniteNumber);
-
-/** The product of two column-major 4 x 4 matrices: `first` applied, then `second`. */
-const followedBy = (first: readonly number[], second: readonly number[]): number[] =>
-    Array.from({ length: 16 }, (_, index) => {
-        const column = Math.floor(index / 4);
-        const row = index % 4;
-        return second[row]! * first[column * 4]! + second[4 + row]! * first[column * 4 + 1]!
-            + second[8 + row]! * first[column * 4 + 2]! + second[12 + row]! * first[column * 4 + 3]!;
-    });
-
 /** The matrices of a placement, however deep the lists hold them, in order. */
 const matricesOf = (value: unknown): unknown[] =>
-    isMatrix(value) ? [value] : Array.isArray(value) ? value.flatMap(matricesOf) : [value];
+    isTransformMatrix(value) ? [value] : Array.isArray(value) ? value.flatMap(matricesOf) : [value];
 
 /**
  * The placements a caller handed in, each as one column-major matrix: an entry is a matrix of
@@ -133,10 +140,10 @@ export function checkedPlacements(value: unknown, property: string): number[][] 
     }
     return value.map((entry, position) => {
         const matrices = matricesOf(entry);
-        if (matrices.length === 0 || !matrices.every(isMatrix)) {
+        if (matrices.length === 0 || !matrices.every(isTransformMatrix)) {
             throw new InputError(`\`${property}\` holds something other than a placement at position ${position}: each is a matrix of sixteen finite numbers, or a list of them.`, property);
         }
-        return matrices.reduce<number[]>((total, matrix) => followedBy(total, matrix), IDENTITY);
+        return composed(matrices);
     });
 }
 

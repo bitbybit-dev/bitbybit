@@ -5,7 +5,7 @@ import * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { framesOnCurve } from "../base/frames";
-import { checkedShape } from "../base/input-checks";
+import { checkedShape, checkedShapes } from "../base/input-checks";
 
 /**
  * Wires in OpenCascade: chains of edges joined end to end, open like a path or closed like an
@@ -862,6 +862,7 @@ export class OCCTWire {
      */
     divideWiresByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs.Base.Point3[][] {
         const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Wire>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(s => this.divideWireByParamsToPoints({ ...resolved, shape: s }));
     }
 
@@ -899,6 +900,7 @@ export class OCCTWire {
      */
     divideWiresByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs.Base.Point3[][] {
         const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Wire>;
+        checkedShapes(resolved.shapes);
         return resolved.shapes.map(s => this.divideWireByEqualDistanceToPoints({ ...resolved, shape: s }));
     }
 
@@ -1862,6 +1864,7 @@ export class OCCTWire {
      * ```
      */
     getWiresCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(w => this.och.wiresService.getWireCenterOfMass({
             shape: w
         }));

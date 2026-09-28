@@ -6,6 +6,7 @@ import { InputError } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, type MeshArrays, type MeshContents } from "./mesh-arrays";
+import { checkedShapes } from "./input-checks";
 
 function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new (length: number): T; name: string }): T {
     if (!(view instanceof kind)) {
@@ -268,6 +269,7 @@ export class MeshingService {
     }
 
     meshMeshIntersectionOfShapesWires(inputs: Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
+        checkedShapes(inputs.shapes);
         const wireIntersections: TopoDS_Wire[] = [];
 
         inputs.shapes.forEach((_shape, index) => {
@@ -288,6 +290,7 @@ export class MeshingService {
     }
 
     meshMeshIntersectionOfShapesPoints(inputs: Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+        checkedShapes(inputs.shapes);
         const pointIntersections: Inputs.Base.Point3[][] = [];
 
         inputs.shapes.forEach((_shape, index) => {

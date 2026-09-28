@@ -185,6 +185,14 @@
             "branches": 93.55,
             "functions": 99.1,
             "statements": 98.02
+        },
+        {
+            "measured": "2026-09-28",
+            "tests": 10174,
+            "lines": 98.11,
+            "branches": 93.57,
+            "functions": 99.1,
+            "statements": 98.03
         }
     ],
     "packages": {
@@ -199,12 +207,12 @@
         },
         "base": {
             "runner": "vitest",
-            "tests": 1648,
-            "suites": 30,
+            "tests": 1676,
+            "suites": 31,
             "lines": 99.56,
-            "branches": 96.22,
+            "branches": 96.25,
             "functions": 100,
-            "statements": 99.56
+            "statements": 99.57
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -276,12 +284,12 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 2202,
+            "tests": 2269,
             "suites": 48,
-            "lines": 96.65,
+            "lines": 96.73,
             "branches": 88.69,
             "functions": 98.25,
-            "statements": 96.62
+            "statements": 96.69
         },
         "occt-worker": {
             "runner": "vitest",

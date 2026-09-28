@@ -603,7 +603,7 @@ describe("OCCT wire unit tests", () => {
     });
 
     it("should throw error if shape is undefined", async () => {
-        expect(() => wire.getWire({ shape: undefined as unknown as TopoDS_Shape, index: 0 })).toThrow("Shape is not provided or is null");
+        expect(() => wire.getWire({ shape: undefined as unknown as TopoDS_Shape, index: 0 })).toThrow("`shape` is missing or empty, as an operation that failed can leave it.");
     });
 
     it("should throw error if shape is of incorrect type", async () => {

@@ -5,6 +5,7 @@ import * as Models from "../../api/models";
 import { historyFromKernel } from "./history";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
+import { checkedShape, checkedShapes } from "./input-checks";
 
 export class BooleansService {
 
@@ -17,7 +18,7 @@ export class BooleansService {
             throw (new Error("Intersection requires 2 or more shapes to be given"));
         }
 
-        this.refuseEmpty(inputs.shapes, "shapes");
+        checkedShapes(inputs.shapes);
         const intersectShape = inputs.shapes[0]!;
         const intersectionResults: TopoDS_Shape[] = [];
 
@@ -39,11 +40,11 @@ export class BooleansService {
     }
 
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
-        this.refuseEmpty([inputs.shape], "shape");
+        checkedShape(inputs.shape);
         if (inputs.shapes.length === 0) {
             throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
         }
-        this.refuseEmpty(inputs.shapes, "shapes");
+        checkedShapes(inputs.shapes);
         return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
     }
 
@@ -80,7 +81,7 @@ export class BooleansService {
         if (inputs.shapes.length === 0) {
             throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
         }
-        this.refuseEmpty(inputs.shapes, "shapes");
+        checkedShapes(inputs.shapes);
         return this.resultOf(this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy)));
     }
 
@@ -99,17 +100,17 @@ export class BooleansService {
         if (inputs.shapes.length === 0) {
             throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
         }
-        this.refuseEmpty(inputs.shapes, "shapes");
+        checkedShapes(inputs.shapes);
         const result = this.occ.BooleanFuseWithHistory(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
         return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
     }
 
     differenceWithHistory(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
-        this.refuseEmpty([inputs.shape], "shape");
+        checkedShape(inputs.shape);
         if (inputs.shapes.length === 0) {
             throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
         }
-        this.refuseEmpty(inputs.shapes, "shapes");
+        checkedShapes(inputs.shapes);
         const result = this.occ.BooleanCutWithHistory([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
         return { shape: this.loneSolidOf(this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
     }
@@ -119,15 +120,6 @@ export class BooleansService {
             throw result.errorAlerts.split(" ").includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
         }
         return result.shape;
-    }
-
-    private refuseEmpty(shapes: readonly (TopoDS_Shape | undefined)[], property: string): void {
-        shapes.forEach((shape, index) => {
-            if (!shape || shape.IsNull()) {
-                const which = property === "shape" ? "The shape" : `The shape at position ${index} of \`shapes\``;
-                throw new InputError(`${which} is empty, as an operation that failed can leave it; nothing can be combined with it.`, property);
-            }
-        });
     }
 
     private hasContent(shape: TopoDS_Shape): boolean {

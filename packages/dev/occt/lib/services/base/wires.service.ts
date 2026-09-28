@@ -20,6 +20,7 @@ import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { resolveDto } from "@bitbybit-dev/base";
+import { checkedShapes } from "./input-checks";
 export class WiresService {
 
     constructor(
@@ -47,6 +48,7 @@ export class WiresService {
     }
 
     getWiresLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
@@ -717,6 +719,7 @@ export class WiresService {
     }
 
     createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Resolved.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        checkedShapes(inputs.shapes);
         if (!inputs.shapes || inputs.shapes.length < 2) {
             throw new Error("You must provide at least two wires or edges to connect their start and end points.");
         }
@@ -737,6 +740,7 @@ export class WiresService {
     }
 
     createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs: Resolved.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
+        checkedShapes(inputs.shapes);
         if (!inputs.shapes || inputs.shapes.length < 2) {
             throw new Error("You must provide at least two wires or edges to connect their subdivided points.");
         }
@@ -979,6 +983,7 @@ export class WiresService {
     }
 
     addEdgesAndWiresToWire(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire {
+        checkedShapes(inputs.shapes);
         const makeWire = new this.occ.BRepBuilderAPI_MakeWire();
         makeWire.AddWire(inputs.shape);
         inputs.shapes.forEach((shape) => {
