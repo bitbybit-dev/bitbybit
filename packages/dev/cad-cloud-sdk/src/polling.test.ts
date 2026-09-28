@@ -40,10 +40,10 @@ describe("pollTask", () => {
     it("throws TASK_FAILED for failed tasks", async () => {
         // Arrange
         const fetcher = vi.fn()
-            .mockImplementation(async () => jsonResponse({
+            .mockImplementation(() => Promise.resolve(jsonResponse({
                 ok: true,
                 data: { taskId: "t-1", status: "failed", error: "out of memory" },
-            }));
+            })));
 
         // Act
         let error: BitbybitApiError | undefined;
@@ -61,10 +61,10 @@ describe("pollTask", () => {
     it("throws TASK_CANCELLED for cancelled tasks", async () => {
         // Arrange
         const fetcher = vi.fn()
-            .mockImplementation(async () => jsonResponse({
+            .mockImplementation(() => Promise.resolve(jsonResponse({
                 ok: true,
                 data: { taskId: "t-1", status: "cancelled" },
-            }));
+            })));
 
         // Act
         let error: BitbybitApiError | undefined;
@@ -81,10 +81,10 @@ describe("pollTask", () => {
     it("throws TASK_EXPIRED for expired tasks", async () => {
         // Arrange
         const fetcher = vi.fn()
-            .mockImplementation(async () => jsonResponse({
+            .mockImplementation(() => Promise.resolve(jsonResponse({
                 ok: true,
                 data: { taskId: "t-1", status: "expired" },
-            }));
+            })));
 
         // Act
         let error: BitbybitApiError | undefined;
@@ -101,10 +101,10 @@ describe("pollTask", () => {
     it("throws POLL_TIMEOUT when maxAttempts exceeded", async () => {
         // Arrange
         const fetcher = vi.fn()
-            .mockImplementation(async () => jsonResponse({
+            .mockImplementation(() => Promise.resolve(jsonResponse({
                 ok: true,
                 data: { taskId: "t-1", status: "processing" },
-            }));
+            })));
 
         // Act
         let error: BitbybitApiError | undefined;
@@ -123,10 +123,10 @@ describe("pollTask", () => {
     it("throws BitbybitApiError when API returns error envelope", async () => {
         // Arrange
         const fetcher = vi.fn()
-            .mockImplementation(async () => jsonResponse(
+            .mockImplementation(() => Promise.resolve(jsonResponse(
                 { ok: false, error: { code: "UNAUTHORIZED", message: "bad key" } },
                 401,
-            ));
+            )));
 
         // Act
         let error: BitbybitApiError | undefined;

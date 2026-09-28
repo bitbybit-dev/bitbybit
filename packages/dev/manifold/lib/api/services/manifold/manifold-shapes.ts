@@ -144,8 +144,7 @@ export class ManifoldShapes {
     cube(inputs: Inputs.Manifold.CubeDto): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.CubeDto, inputs) as Resolved.Manifold.CubeDto;
         const { Manifold } = this.manifold;
-        const { cube } = Manifold;
-        return cube(resolved.size, resolved.center);
+        return Manifold.cube(resolved.size, resolved.center);
     }
 
     /**
@@ -166,8 +165,7 @@ export class ManifoldShapes {
     sphere(inputs: Inputs.Manifold.SphereDto): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.SphereDto, inputs) as Resolved.Manifold.SphereDto;
         const { Manifold } = this.manifold;
-        const { sphere } = Manifold;
-        return sphere(resolved.radius, resolved.circularSegments);
+        return Manifold.sphere(resolved.radius, resolved.circularSegments);
     }
 
     /**
@@ -184,8 +182,7 @@ export class ManifoldShapes {
      */
     tetrahedron(): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { tetrahedron } = Manifold;
-        return tetrahedron();
+        return Manifold.tetrahedron();
     }
 
     /**
@@ -208,8 +205,7 @@ export class ManifoldShapes {
     cylinder(inputs: Inputs.Manifold.CylinderDto): Manifold3D.Manifold {
         const resolved = resolveDto(Inputs.Manifold.CylinderDto, inputs) as Resolved.Manifold.CylinderDto;
         const { Manifold } = this.manifold;
-        const { cylinder } = Manifold;
-        return cylinder(resolved.height, resolved.radiusLow, resolved.radiusHigh, resolved.circularSegments, resolved.center);
+        return Manifold.cylinder(resolved.height, resolved.radiusLow, resolved.radiusHigh, resolved.circularSegments, resolved.center);
     }
 
 }

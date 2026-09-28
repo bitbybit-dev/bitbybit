@@ -11,6 +11,7 @@ const IDENTITY: Inputs.JSCAD.JSCADMat4 = [
 const SOLID: Inputs.JSCAD.JSCADGeom3 = { polygons: [], transforms: IDENTITY };
 const REGION: Inputs.JSCAD.JSCADGeom2 = { sides: [], transforms: IDENTITY };
 const PATH: Inputs.JSCAD.JSCADPath2 = { points: [], isClosed: false, transforms: IDENTITY };
+const loose = <T>(value: unknown): T => value as T;
 
 describe("narrowing a JSCAD entity to the kind an operation needs", () => {
     describe("asSolid", () => {
@@ -85,7 +86,7 @@ describe("narrowing a JSCAD entity to the kind an operation needs", () => {
         });
 
         it("should pass a list through unchanged", () => {
-            const many = [SOLID, REGION] as unknown as Inputs.JSCAD.JSCADEntity;
+            const many = loose<Inputs.JSCAD.JSCADEntity>([SOLID, REGION]);
 
             // Act
             const list = oneOrMany(many);

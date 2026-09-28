@@ -45,7 +45,7 @@ describe("Math unit tests", () => {
     });
 
     it("should not perform unknown two nr operation", () => {
-        const result = math.twoNrOperation({ first: 2, second: 3, operation: "unknown" as any });
+        const result = math.twoNrOperation({ first: 2, second: 3, operation: "unknown" as Inputs.Math.mathTwoNrOperatorEnum });
         expect(result).toEqual(undefined);
     });
 
@@ -145,7 +145,7 @@ describe("Math unit tests", () => {
     });
 
     it("should convert rad to deg", () => {
-        const result = math.oneNrOperation({ number: 3.14, operation: "unknown" as any });
+        const result = math.oneNrOperation({ number: 3.14, operation: "unknown" as Inputs.Math.mathOneNrOperatorEnum });
         expect(result).toEqual(undefined);
     });
 

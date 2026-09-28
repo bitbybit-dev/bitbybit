@@ -36,7 +36,7 @@ export class ShapeParser {
                                 if (typeof (shapes as Record<string, unknown>)[key] !== "string") {
                                     let id;
                                     if ((current as { id?: unknown }).id) {
-                                        id = `${prefix}-${(current as { id?: unknown }).id}-${key}-${index}`;
+                                        id = `${prefix}-${String((current as { id?: unknown }).id)}-${key}-${index}`;
                                     } else {
                                         id = `${prefix}-${key}-${index}`;
                                     }
@@ -53,7 +53,7 @@ export class ShapeParser {
                 }
             }
         }
-        return obj as unknown as WithShapeIds<T>;
+        return obj as WithShapeIds<T>;
     }
 
     static alignAndTranslateShapesWithChildren<T extends { 

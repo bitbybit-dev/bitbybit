@@ -118,13 +118,13 @@ export class JSCADExtrusions {
      */
     extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Inputs.JSCAD.JSCADEntity {
         const resolved = resolveDto(Inputs.JSCAD.ExtrudeRotateDto, inputs) as Resolved.JSCAD.ExtrudeRotateDto;
-        const options = {
+        const options: JSCAD.extrusions.ExtrudeRotateOptions = {
             angle: this.math.degToRad({ number: resolved.angle }),
             startAngle: this.math.degToRad({ number: resolved.startAngle }),
             overflow: "cap",
             segments: resolved.segments
         };
-        const extrusion = this.jscad.extrusions.extrudeRotate(options as any, asRegion(resolved.polygon, "extrudeRotate"));
+        const extrusion = this.jscad.extrusions.extrudeRotate(options, asRegion(resolved.polygon, "extrudeRotate"));
         return extrusion;
     }
 

@@ -458,7 +458,7 @@ export class DrawHelper extends DrawHelperCore {
 
     drawSurfaces(inputs: Inputs.Verb.DrawSurfacesDto<BABYLON.Mesh>): BABYLON.Mesh {
         const resolved = resolveDto(Inputs.Verb.DrawSurfacesDto, inputs) as Resolved.Verb.DrawSurfacesDto<BABYLON.Mesh>;
-        const tessellatedSurfaces: { faces: number[][] }[] = [];
+        const tessellatedSurfaces: { points: number[][]; normals: number[][]; faces: number[][] }[] = [];
         resolved.surfaces.forEach(srf => {
             tessellatedSurfaces.push(srf.tessellate());
         });
@@ -868,7 +868,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     updatePointsInstances(mesh: BABYLON.Mesh, positions: Inputs.Base.Point3[]): void {
-        const children = mesh.getChildMeshes() as BABYLON.Mesh[];
+        const children = mesh.getChildMeshes<BABYLON.Mesh>();
         
         const positionMap = new Map<number, Inputs.Base.Point3>();
         positions.forEach((pos, index) => {
@@ -1365,7 +1365,7 @@ export class DrawHelper extends DrawHelperCore {
                     resolvedOptions.edgeArrowAngle
                 );
                 if (mesh) {
-                    (mesh as unknown as { name: string }).name = `edge ${edge.edgeIndex}`;
+                    (mesh as { name: string }).name = `edge ${edge.edgeIndex}`;
                     mesh.parent = shapeMesh;
                 }
             });
@@ -1518,15 +1518,15 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private parseFaces(
-        faceIndices: any,
-        meshData: any,
+        faceIndices: number[],
+        meshData: { points: number[][]; normals: number[][]; },
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; },
         countIndices: number): number {
-        faceIndices.forEach((x: number) => {
-            const vn = meshData.normals[x];
-            meshDataConverted.normals.push(vn[0], vn[1], vn[2]);
-            const pt = meshData.points[x];
-            meshDataConverted.positions.push(pt[0], pt[1], pt[2]);
+        faceIndices.forEach((x) => {
+            const vn = meshData.normals[x]!;
+            meshDataConverted.normals.push(vn[0]!, vn[1]!, vn[2]!);
+            const pt = meshData.points[x]!;
+            meshDataConverted.positions.push(pt[0]!, pt[1]!, pt[2]!);
             meshDataConverted.indices.push(countIndices);
             countIndices++;
         });

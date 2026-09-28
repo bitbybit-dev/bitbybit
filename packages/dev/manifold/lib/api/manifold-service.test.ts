@@ -138,5 +138,39 @@ describe("Manifold unit tests", () => {
             expect(polygons).toEqual([]);
             expect(warned).toHaveLength(1);
         });
+
+        it("should refuse a mesh with fewer than three numbers per vertex", () => {
+            // Arrange
+            const flat = { getMesh: () => ({ numProp: 2, vertProperties: new Float32Array([0, 0, 1, 0, 0, 1]), triVerts: new Uint32Array([0, 1, 2]) }) };
+
+            // Act & Assert
+            expect(() => manifold.toPolygonPoints({ manifold: flat as never }))
+                .toThrow("Expected numProp >= 3 (for x, y, z), but found 2");
+        });
+
+        it("should refuse triangle indexes that do not come in threes", () => {
+            // Arrange
+            const torn = { getMesh: () => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2, 0]) }) };
+
+            // Act & Assert
+            expect(() => manifold.toPolygonPoints({ manifold: torn as never }))
+                .toThrow("triVerts length (4) is not a multiple of 3");
+        });
+
+        it("should skip a triangle that points past the last vertex and keep the rest", () => {
+            // Arrange
+            const mesh = { getMesh: () => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2, 0, 1, 7]) }) };
+            const logged: unknown[] = [];
+            const consoleError = console.error;
+            console.error = (message: unknown) => { logged.push(message); };
+
+            // Act
+            const polygons = manifold.toPolygonPoints({ manifold: mesh as never });
+            console.error = consoleError;
+
+            // Assert
+            expect(polygons).toEqual([[[0, 0, 0], [1, 0, 0], [0, 1, 0]]]);
+            expect(logged).toHaveLength(1);
+        });
     });
 });

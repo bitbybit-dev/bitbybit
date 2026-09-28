@@ -150,7 +150,7 @@ export class Draw extends DrawCore {
         const options = this.mergedOcctShapeOptions(inputs);
         return this.drawHelper.handleDecomposedMesh(
             options,
-            inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+            inputs.entity as Inputs.OCCT.DecomposedMeshDto,
             options
         ).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
@@ -160,7 +160,7 @@ export class Draw extends DrawCore {
 
     private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
-        const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+        const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
             options, dm, options)));
         const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);

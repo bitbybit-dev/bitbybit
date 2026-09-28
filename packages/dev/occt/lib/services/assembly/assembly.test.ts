@@ -29,14 +29,14 @@ describe("OCCTAssembly unit tests", () => {
 
         it("should have manager as instance of OCCTAssemblyManager", () => {
             expect(assembly.manager).toBeDefined();
-            expect(assembly.manager.createPart).toBeDefined();
-            expect(assembly.manager.buildAssemblyDocument).toBeDefined();
+            expect(typeof assembly.manager.createPart).not.toBe("undefined");
+            expect(typeof assembly.manager.buildAssemblyDocument).not.toBe("undefined");
         });
 
         it("should have query as instance of OCCTAssemblyQuery", () => {
             expect(assembly.query).toBeDefined();
-            expect(assembly.query.getDocumentParts).toBeDefined();
-            expect(assembly.query.getAssemblyHierarchy).toBeDefined();
+            expect(typeof assembly.query.getDocumentParts).not.toBe("undefined");
+            expect(typeof assembly.query.getAssemblyHierarchy).not.toBe("undefined");
         });
     });
 

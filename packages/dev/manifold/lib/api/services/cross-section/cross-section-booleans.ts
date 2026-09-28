@@ -76,8 +76,7 @@ export class CrossSectionBooleans {
      */
     differenceTwo(inputs: Inputs.Manifold.TwoCrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { difference } = CrossSection;
-        return difference(inputs.crossSection1, inputs.crossSection2);
+        return CrossSection.difference(inputs.crossSection1, inputs.crossSection2);
     }
 
     /**
@@ -94,8 +93,7 @@ export class CrossSectionBooleans {
      */
     unionTwo(inputs: Inputs.Manifold.TwoCrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { union } = CrossSection;
-        return union(inputs.crossSection1, inputs.crossSection2);
+        return CrossSection.union(inputs.crossSection1, inputs.crossSection2);
     }
 
     /**
@@ -112,8 +110,7 @@ export class CrossSectionBooleans {
      */
     intersectionTwo(inputs: Inputs.Manifold.TwoCrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { intersection } = CrossSection;
-        return intersection(inputs.crossSection1, inputs.crossSection2);
+        return CrossSection.intersection(inputs.crossSection1, inputs.crossSection2);
     }
 
     /**
@@ -130,8 +127,7 @@ export class CrossSectionBooleans {
      */
     difference(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { difference } = CrossSection;
-        return difference(inputs.crossSections);
+        return CrossSection.difference(inputs.crossSections);
     }
 
     /**
@@ -148,8 +144,7 @@ export class CrossSectionBooleans {
      */
     union(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { union } = CrossSection;
-        return union(inputs.crossSections);
+        return CrossSection.union(inputs.crossSections);
     }
 
     /**
@@ -166,8 +161,7 @@ export class CrossSectionBooleans {
      */
     intersection(inputs: Inputs.Manifold.CrossSectionsDto<Manifold3D.CrossSection>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { intersection } = CrossSection;
-        return intersection(inputs.crossSections);
+        return CrossSection.intersection(inputs.crossSections);
     }
 
 }

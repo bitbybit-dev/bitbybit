@@ -22,7 +22,8 @@ function getValidator(schemaName: string): Validator | undefined {
     const cached = validators.get(schemaName);
     if (cached) return cached;
 
-    const def = (schemaBundle.$defs as unknown as Record<string, Schema>)[schemaName];
+    const defs: Readonly<Record<string, unknown>> = schemaBundle.$defs;
+    const def = defs[schemaName];
     if (!def) return undefined;
 
     const rootSchema: Schema = {

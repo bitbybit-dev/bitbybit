@@ -33,7 +33,7 @@ describe("OCCT operations unit tests", () => {
         transforms = new OCCTTransforms(occt, occHelper);
     });
 
-    it("should get two closest points between two shapes", async () => {
+    it("should get two closest points between two shapes", () => {
 
         const sph1 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
         const sph2 = occHelper.entitiesService.bRepPrimAPIMakeSphere([3, 3, 3], [0, 1, 0], 1);
@@ -45,7 +45,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should get five closest points between a shape and a collection of points", async () => {
+    it("should get five closest points between a shape and a collection of points", () => {
         const points = [
             [0, 2, 0],
             [1, 1, 1],
@@ -65,7 +65,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should get ten closest points between two shape and a collection of points", async () => {
+    it("should get ten closest points between two shape and a collection of points", () => {
         const points = [
             [0, 2, 0],
             [1, 1, 1],
@@ -119,7 +119,7 @@ describe("OCCT operations unit tests", () => {
         [bottom, top, cap, loft].forEach(s => s.delete());
     });
 
-    it("should loft three ellipses correctly", async () => {
+    it("should loft three ellipses correctly", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -146,7 +146,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method", async () => {
+    it("should loft three ellipses correctly by using advanced loft method", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -174,7 +174,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that is closed", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that is closed", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -203,7 +203,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that uses approxChordLength parametrisation", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that uses approxChordLength parametrisation", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -232,7 +232,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that uses approxIsoParametric parametrisation", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that uses approxIsoParametric parametrisation", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -261,7 +261,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method and start and end vertexes", async () => {
+    it("should loft three ellipses correctly by using advanced loft method and start and end vertexes", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 3, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -293,7 +293,7 @@ describe("OCCT operations unit tests", () => {
         );
     });
 
-    it("should loft three ellipses correctly by using advanced loft method with closed and periodic interpolation enabled", async () => {
+    it("should loft three ellipses correctly by using advanced loft method with closed and periodic interpolation enabled", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -325,7 +325,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should not loft three ellipses by using advanced loft method if periodic option is enabled and closed disabled", async () => {
+    it("should not loft three ellipses by using advanced loft method if periodic option is enabled and closed disabled", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });

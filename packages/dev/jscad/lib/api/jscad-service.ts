@@ -15,6 +15,13 @@ import { JSCADColors } from "./services/jscad-colors";
 import * as JSCAD from "@jscad/modeling";
 import * as Resolved from "./resolved-inputs";
 
+type JscadSerializer = { serialize: (options: object, ...objects: unknown[]) => BlobPart[] };
+type JscadWithSerializers = typeof JSCAD & {
+    STLSERIALIZER: JscadSerializer;
+    DXFSERIALIZER: JscadSerializer;
+    THREEMFSERIALIZER: JscadSerializer;
+};
+
 
 /**
  * The entry point to the JSCAD kernel, a mesh-based solid modeler with three kinds of geometry: a
@@ -238,22 +245,22 @@ export class Jscad {
      * ```
      */
     transformSolid(inputs: Inputs.JSCAD.TransformSolidDto): Inputs.JSCAD.JSCADEntity {
-        const transformation = inputs.transformation;
+        const transformation: unknown = inputs.transformation;
         let transformedMesh = this.asSolid(inputs.mesh, "transformSolid");
         if (this.getArrayDepth(transformation) === 2) {
-            transformation.forEach((transform: Base.TransformMatrix) => {
+            (transformation as Base.TransformMatrixes).forEach((transform: Base.TransformMatrix) => {
                 transformedMesh = this.jscad.transforms.transform(transform, transformedMesh);
             });
         }
         else if (this.getArrayDepth(transformation) === 3) {
-            (transformation as unknown as Base.TransformMatrixes[]).forEach((transforms) => {
+            (transformation as Base.TransformMatrixes[]).forEach((transforms) => {
                 transforms.forEach((mat: Base.TransformMatrix) => {
                     transformedMesh = this.jscad.transforms.transform(mat, transformedMesh);
                 });
             });
         }
         else {
-            transformedMesh = this.jscad.transforms.transform(transformation as any, transformedMesh);
+            transformedMesh = this.jscad.transforms.transform(transformation as Base.TransformMatrix, transformedMesh);
         }
         return transformedMesh;
     }
@@ -271,7 +278,7 @@ export class Jscad {
      * ```
      */
     downloadSolidSTL(inputs: Inputs.JSCAD.DownloadSolidDto): { blob: Blob } {
-        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
+        const rawData = (this.jscad as JscadWithSerializers).STLSERIALIZER.serialize({ binary: true },
             inputs.mesh
         );
         const madeBlob = new Blob(rawData, { type: "application/sla" });
@@ -291,7 +298,7 @@ export class Jscad {
      * ```
      */
     downloadSolidsSTL(inputs: Inputs.JSCAD.DownloadSolidsDto): { blob: Blob } {
-        const rawData = (this.jscad as any).STLSERIALIZER.serialize({ binary: true },
+        const rawData = (this.jscad as JscadWithSerializers).STLSERIALIZER.serialize({ binary: true },
             ...inputs.meshes);
         const madeBlob = new Blob(rawData, { type: "application/sla" });
         return { blob: madeBlob };
@@ -315,7 +322,7 @@ export class Jscad {
     downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
         const options = resolved.options ? resolved.options : {};
-        const rawData = (this.jscad as any).DXFSERIALIZER.serialize(options,
+        const rawData = (this.jscad as JscadWithSerializers).DXFSERIALIZER.serialize(options,
             resolved.geometry
         );
         const madeBlob = new Blob(rawData);
@@ -339,7 +346,7 @@ export class Jscad {
     downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): { blob: Blob } {
         const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
         const options = resolved.options ? resolved.options : {};
-        const rawData = (this.jscad as any).THREEMFSERIALIZER.serialize(options,
+        const rawData = (this.jscad as JscadWithSerializers).THREEMFSERIALIZER.serialize(options,
             resolved.geometry
         );
         const madeBlob = new Blob(rawData);

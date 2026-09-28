@@ -105,7 +105,7 @@ describe("JSON unit tests", () => {
     });
 
     it("should get value on prop even if json is circular", () => {
-        const circ = { a: 2 } as any;
+        const circ: { a: number; circ?: unknown } = { a: 2 };
         circ.circ = circ;
         const result = json.getValueOnProp({ json: circ, property: "a" });
         expect(result).toEqual(2);

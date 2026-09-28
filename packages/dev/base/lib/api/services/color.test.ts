@@ -6,7 +6,7 @@ import * as Inputs from "../inputs";
 describe("Color unit tests", () => {
     let color: Color;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const math = new MathBitByBit();
         color = new Color(math);
     });

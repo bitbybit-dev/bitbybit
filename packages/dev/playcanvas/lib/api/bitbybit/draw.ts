@@ -20,6 +20,7 @@ interface TextureTransformData {
 }
 
 type TextureWithTransform = pc.Texture & { _bitbybitTransform?: TextureTransformData };
+type TextureMapSlot = "diffuseMap" | "normalMap" | "emissiveMap" | "metalnessMap" | "aoMap";
 
 /**
  * Drawing anything into the scene: kernel shapes, points, lines, polylines, frames, curves, meshes
@@ -145,7 +146,7 @@ export class Draw extends DrawCore {
             const merged = this.occtOptions(options);
             return this.drawHelper.handleDecomposedMesh(
                 merged,
-                inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+                inputs.entity as Inputs.OCCT.DecomposedMeshDto,
                 merged
             );
         }, Inputs.Draw.drawingTypes.occt);
@@ -154,7 +155,7 @@ export class Draw extends DrawCore {
     private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
             const merged = this.occtOptions(options);
-            const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+            const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
             const container = new pc.Entity("decomposedMeshesContainer");
@@ -411,14 +412,14 @@ export class Draw extends DrawCore {
     private applyTextureTransform(
         mat: pc.StandardMaterial, 
         texture: TextureWithTransform, 
-        mapType: "diffuseMap" | "normalMap" | "emissiveMap" | "metalnessMap" | "aoMap"
+        mapType: TextureMapSlot
     ): void {
         const transform = texture._bitbybitTransform;
         if (!transform) {
             return;
         }
 
-        const propertyMap: Record<string, string> = {
+        const propertyMap: Record<string, TextureMapSlot> = {
             "diffuseMap": "diffuseMap",
             "normalMap": "normalMap",
             "emissiveMap": "emissiveMap",
@@ -432,17 +433,17 @@ export class Draw extends DrawCore {
         }
 
         const vScaleMultiplier = transform.invertZ ? -1 : 1;
-        (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Tiling`] = new pc.Vec2(
+        mat[`${prefix}Tiling` as const] = new pc.Vec2(
             transform.uScale, 
             transform.vScale * vScaleMultiplier
         );
         
-        (mat as unknown as Record<string, pc.Vec2>)[`${prefix}Offset`] = new pc.Vec2(
+        mat[`${prefix}Offset` as const] = new pc.Vec2(
             transform.uOffset, 
             transform.vOffset
         );
         
-        (mat as unknown as Record<string, number>)[`${prefix}Rotation`] = transform.wAng;
+        mat[`${prefix}Rotation` as const] = transform.wAng;
     }
 
     /**

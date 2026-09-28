@@ -76,7 +76,7 @@ export class BabylonGaussianSplatting {
      * ```
      */
     getSplatPositions(inputs: Inputs.BabylonGaussianSplatting.GaussianSplattingMeshDto): Inputs.Base.Point3[] {
-        const data = (inputs.babylonMesh as any)._splatPositions as Float32Array | null;
+        const data = inputs.babylonMesh["_splatPositions"];
         const points: Inputs.Base.Point3[] = [];
         if (!data) {
             return points;

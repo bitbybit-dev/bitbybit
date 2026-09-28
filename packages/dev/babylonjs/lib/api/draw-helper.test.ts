@@ -4,8 +4,8 @@ vi.mock("@babylonjs/core", async () => {
     return createBabylonJSMock();
 });
 
-import { createDrawHelperMocks } from "./__mocks__/test-helpers";
-import { MockGreasedLineMesh, type MockLinesMesh, type MockScene } from "./__mocks__/babylonjs.mock";
+import { createDrawHelperMocks, partialMock } from "./__mocks__/test-helpers";
+import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, instanceOf, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -47,6 +47,11 @@ describe("DrawHelper unit tests", () => {
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
     let mockScene: MockScene;
+    let jscadWorkerCall: Mock;
+    let manifoldWorkerCall: Mock;
+    let occtWorkerCall: Mock;
+    let createVectorText: Mock;
+    let vectorAdd: Mock;
     const greasedLineOf = (mesh: unknown): MockGreasedLineMesh => {
         expect(mesh).toBeInstanceOf(MockGreasedLineMesh);
         return mesh as MockGreasedLineMesh;
@@ -61,6 +66,11 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
+        jscadWorkerCall = mocks.jscadWorkerCall;
+        manifoldWorkerCall = mocks.manifoldWorkerCall;
+        occtWorkerCall = mocks.occtWorkerCall;
+        createVectorText = mocks.createVectorText;
+        vectorAdd = mocks.vectorAdd;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -439,7 +449,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0]]);
         });
 
@@ -452,7 +462,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[0, 0, 1], [0, 0, 1], [0, 1, 0], [0, 1, 0]]);
         });
 
@@ -469,7 +479,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const points = (result as unknown as MockGreasedLineMesh)._points;
+            const points = greasedLineOf(result)._points;
             expect(points).toHaveLength(1);
             expect(points[0]!.slice(0, 3)).toEqual([0, 0, 0]);
             expect(points[0]!.slice(-3)).toEqual([0, 0, 0]);
@@ -793,7 +803,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawLines(inputs);
 
-            const colours = (result as unknown as MockLinesMesh)._colors;
+            const colours = instanceOf(result, MockLinesMesh)._colors;
             expect(colours).toHaveLength(2);
             expect(colours[0]!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0]]);
             expect(colours[1]!.map((c) => [c.r, c.g, c.b])).toEqual([[0, 1, 0], [0, 1, 0]]);
@@ -972,7 +982,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawSurface(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1338,7 +1348,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should handle mesh with baked-in color", async () => {
@@ -1355,7 +1365,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1419,7 +1429,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1625,7 +1635,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1798,7 +1808,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
     });
@@ -1822,7 +1832,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
+            expect(manifoldWorkerCall).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
         });
 
         it("should return undefined when triVerts is empty", async () => {
@@ -2072,7 +2082,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawPath(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect([options.color!.r, options.color!.g, options.color!.b]).toEqual([1, 0, 0]);
         });
     });
@@ -2270,7 +2280,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
+            expect(jscadWorkerCall).toHaveBeenCalled();
             const [callArgs] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [unknown[]];
             expect(callArgs[1]).toMatchObject({
                 mesh: mockMesh
@@ -2296,7 +2306,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(occtWorkerCall).toHaveBeenCalledWith(
                 "shapeToMesh",
                 expect.objectContaining({
                     shape: inputs.shape
@@ -2318,7 +2328,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
 
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(manifoldWorkerCall).toHaveBeenCalledWith(
                 "decomposeManifoldOrCrossSection",
                 expect.objectContaining({
                     manifoldOrCrossSection: inputs.manifoldOrCrossSection
@@ -2547,11 +2557,11 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle error during material disposal", () => {
-            const mockErrorMaterial = {
+            const mockErrorMaterial = partialMock<BABYLON.PBRMetallicRoughnessMaterial>({
                 dispose: vi.fn().mockImplementation(() => {
                     throw new Error("Disposal error");
                 })
-            } as unknown as BABYLON.PBRMetallicRoughnessMaterial;
+            });
             
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
             drawHelper["materialCache"].set("error-material", mockErrorMaterial);
@@ -3186,7 +3196,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
             
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
@@ -3224,8 +3234,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
         });
 
         it("should handle edge with exactly 3 vertex coordinates (use middle vertex)", async () => {
@@ -3257,7 +3267,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
 
         it("should handle edge with more than 3 vertex coordinates", async () => {
@@ -3289,7 +3299,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
 
         it("should set zOffset on edge index mesh material", async () => {
@@ -3370,7 +3380,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(1);
             
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
@@ -3458,8 +3468,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
         });
 
         it("should set zOffset on face index mesh when drawEdges is true", async () => {
@@ -3538,7 +3548,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
     });
 
@@ -3761,7 +3771,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs);
 
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
             const [[firstAdd]] = (mockVector.add as Mock).mock.calls as [[{ first: number[] }]];
             expect(firstAdd.first[1]).toBe(0.05);
         });

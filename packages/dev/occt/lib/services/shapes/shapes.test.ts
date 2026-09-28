@@ -16,7 +16,7 @@ describe("OCCT face unit tests", () => {
         occHelper = new OccHelper(vec, s, occt);
     });
 
-    it("should create shapes object", async () => {
+    it("should create shapes object", () => {
         const shapes = new OCCTShapes(occt, occHelper);
         expect(shapes).toBeDefined();
         expect(shapes.compound).toBeDefined();

@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initBabylonJS } from "./scene-helper";
 import { BabylonJSScene } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
-import { MockMeshType } from "../../__mocks__/babylonjs.mock";
+import { MockGroundMesh, instanceOf } from "../../__mocks__/babylonjs.mock";
 
 vi.mock("@babylonjs/core", async () => {
     const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/babylonjs.mock")>("../../__mocks__/babylonjs.mock");
@@ -233,8 +233,9 @@ describe("initBabylonJS unit tests", () => {
 
             // Assert
             const expectedSize = config.sceneSize * config.groundScaleFactor;
-            expect((result.ground as unknown as MockMeshType)._groundWidth).toBe(expectedSize);
-            expect((result.ground as unknown as MockMeshType)._groundHeight).toBe(expectedSize);
+            const ground = instanceOf(result.ground, MockGroundMesh);
+            expect(ground._groundWidth).toBe(expectedSize);
+            expect(ground._groundHeight).toBe(expectedSize);
 
             result.dispose();
         });
@@ -285,7 +286,7 @@ describe("initBabylonJS unit tests", () => {
             const result = initBabylonJS(config);
 
             // Assert
-            expect((result.ground as unknown as MockMeshType).receiveShadows).toBe(true);
+            expect(instanceOf(result.ground, MockGroundMesh).receiveShadows).toBe(true);
 
             result.dispose();
         });

@@ -545,7 +545,7 @@ export class TransformsService {
     }
 
     private multiplyMatricesColumnMajor(a: Inputs.Base.TransformMatrix, b: Inputs.Base.TransformMatrix): Inputs.Base.TransformMatrix {
-        const result = new Array(16).fill(0) as unknown as Inputs.Base.TransformMatrix;
+        const result: Inputs.Base.TransformMatrix = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for (let col = 0; col < 4; col++) {
             for (let row = 0; row < 4; row++) {
                 let sum = 0;

@@ -19,6 +19,8 @@ import { BitByBitBase } from "./bitbybit-base";
 
 import * as pc from "playcanvas";
 
+type ServiceField = { [K in keyof BitByBitBase]: BitByBitBase[K] extends (...args: never[]) => unknown ? never : K }[keyof BitByBitBase];
+
 describe("BitByBitBase unit tests", () => {
     let bitByBit: BitByBitBase;
 
@@ -31,7 +33,7 @@ describe("BitByBitBase unit tests", () => {
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
+        const wiring: [ServiceField, new (...args: never[]) => object][] = [
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
             ["manifoldWorkerManager", ManifoldWorkerManager],
@@ -105,7 +107,7 @@ describe("BitByBitBase unit tests", () => {
         it("should initialize with app, scene and occt worker", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
-            const mockOcctWorker = {
+            const mockOcctWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -114,7 +116,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockApp, scene, mockOcctWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -124,7 +126,7 @@ describe("BitByBitBase unit tests", () => {
         it("should initialize with app, scene and jscad worker", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
-            const mockJscadWorker = {
+            const mockJscadWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -133,7 +135,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockApp, scene, undefined, mockJscadWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -143,7 +145,7 @@ describe("BitByBitBase unit tests", () => {
         it("should initialize with app, scene and manifold worker", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
-            const mockManifoldWorker = {
+            const mockManifoldWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -152,7 +154,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockApp, scene, undefined, undefined, mockManifoldWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -162,7 +164,7 @@ describe("BitByBitBase unit tests", () => {
         it("should initialize with all workers", () => {
             const mockApp = {} as pc.AppBase;
             const scene = new pc.Entity("root");
-            const createMockWorker = () => ({
+            const createMockWorker = (): Worker => ({
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -171,7 +173,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker);
+            });
             
             const mockOcctWorker = createMockWorker();
             const mockJscadWorker = createMockWorker();
@@ -289,14 +291,14 @@ describe("BitByBitBase unit tests", () => {
 
     describe("Scene manipulation after init", () => {
         it("should allow adding objects to the scene via draw", () => {
-            const mockApp = {
+            const mockApp: unknown = {
                 graphicsDevice: {
                     vram: { vb: 0, ib: 0, tex: 0, total: 0 }
                 },
                 systems: {}
-            } as unknown as pc.AppBase;
+            };
             const scene = new pc.Entity("root");
-            bitByBit.init(mockApp, scene);
+            bitByBit.init(mockApp as pc.AppBase, scene);
             
             const result = bitByBit.draw.drawAny({ entity: [1, 2, 3] });
             expect(result).toBeDefined();
@@ -304,14 +306,14 @@ describe("BitByBitBase unit tests", () => {
         });
 
         it("should allow multiple draws to the same scene", () => {
-            const mockApp = {
+            const mockApp: unknown = {
                 graphicsDevice: {
                     vram: { vb: 0, ib: 0, tex: 0, total: 0 }
                 },
                 systems: {}
-            } as unknown as pc.AppBase;
+            };
             const scene = new pc.Entity("root");
-            bitByBit.init(mockApp, scene);
+            bitByBit.init(mockApp as pc.AppBase, scene);
             
             bitByBit.draw.drawAny({ entity: [1, 2, 3] });
             bitByBit.draw.drawAny({ entity: [4, 5, 6] });

@@ -131,7 +131,7 @@ export class DrawHelper extends DrawHelperCore {
                 this.context.scene.addChild(meshToUpdate);
             }
             
-            let colour;
+            let colour: string | undefined;
             if (resolved.mesh.color && resolved.mesh.color.length > 0) {
                 const c = resolved.mesh.color;
                 colour = this.normalizeColor(c, DEFAULT_COLORS.DEFAULT);

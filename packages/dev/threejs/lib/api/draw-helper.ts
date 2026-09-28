@@ -180,7 +180,7 @@ export class DrawHelper extends DrawHelperCore {
                 meshToUpdate.name = this.generateEntityId("jscadMesh");
                 this.context.scene.add(meshToUpdate);
             }
-            let colour;
+            let colour: string | undefined;
             if (resolved.mesh.color && resolved.mesh.color.length > 0) {
                 const c = resolved.mesh.color;
                 colour = "#" + new THREEJS.Color(c[0], c[1], c[2]).getHexString();

@@ -25,7 +25,7 @@ describe("OCCT brep graph unit tests", () => {
         brepGraph = new OCCTBrepGraph(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
         compound = new OCCTCompound(occt, occHelper);
-        hasBindings = typeof (occt as unknown as { BRepGraphAnalyze?: unknown }).BRepGraphAnalyze === "function";
+        hasBindings = typeof Reflect.get(occt, "BRepGraphAnalyze") === "function";
         if (!hasBindings) {
 
             console.warn("BRepGraph wasm bindings are not present in this build; skipping runtime brep graph assertions.");

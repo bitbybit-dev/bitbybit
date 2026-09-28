@@ -22,7 +22,7 @@ describe("OCCT compound unit tests", () => {
         compound = new OCCTCompound(occt, occHelper);
     });
 
-    it("should compound any shapes", async () => {
+    it("should compound any shapes", () => {
         const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0], direction: [0, 0, 1] });
         const c = compound.makeCompound({ shapes: [box, cylinder] });

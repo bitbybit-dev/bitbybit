@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
+import { MockMaterial, MockPlaneGeometry, instanceOf } from "../../__mocks__/threejs.mock";
 vi.mock("three", async () => {
     const { createThreeJSMock } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return createThreeJSMock();
@@ -317,7 +318,7 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS(config);
 
             // Assert
-            const material = result.ground?.material as unknown as { color: { r: number; g: number; b: number } };
+            const material = instanceOf(result.ground?.material, MockMaterial);
             const expectedColor = hexToRgb("#ff0000");
             expect(Math.abs(material.color.r - expectedColor.r)).toBeLessThan(0.01);
             expect(Math.abs(material.color.g - expectedColor.g)).toBeLessThan(0.01);
@@ -516,7 +517,7 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS(config);
 
             // Assert
-            const geometry = result.ground?.geometry as unknown as { parameters: { width: number; height: number } };
+            const geometry = instanceOf(result.ground?.geometry, MockPlaneGeometry);
             const expectedSize = config.sceneSize * config.groundScaleFactor;
             expect(geometry.parameters.width).toBe(expectedSize);
             expect(geometry.parameters.height).toBe(expectedSize);

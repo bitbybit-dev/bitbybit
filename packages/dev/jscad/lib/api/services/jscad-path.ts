@@ -197,7 +197,7 @@ export class JSCADPath {
         }, asPath(resolved.path, "path operations"));
     }
 
-    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): any {
+    private removeDuplicatesAndCreateFromPoints(twoDimensionalPoints: number[][], closed: boolean): JSCAD.geometries.path2.Path2 {
         const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         let path2d = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved  as JSCAD.maths.vec2.Vec2[]);
         if (closed) {

@@ -78,10 +78,10 @@ export class JSCADText {
         });
     }
 
-    private adjustTextToBeOnCenter(text: any[]): void {
+    private adjustTextToBeOnCenter(text: Base.Point2[][]): void {
         let maxX = 0;
         text.forEach(txt => {
-            txt.forEach((center: Base.Point3) => {
+            txt.forEach((center: Base.Point2) => {
                 if (center[0] > maxX) {
                     maxX = center[0];
                 }
@@ -89,7 +89,7 @@ export class JSCADText {
         });
         const compensate = maxX / 2;
         text.forEach(txt => {
-            txt.forEach((center: Base.Point3) => {
+            txt.forEach((center: Base.Point2) => {
                 let z = center[0];
                 z = z - compensate;
                 center[0] = z;

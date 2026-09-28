@@ -139,7 +139,7 @@ export class Draw extends DrawCore {
             const merged = this.occtOptions(options);
             return this.drawHelper.handleDecomposedMesh(
                 merged,
-                inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+                inputs.entity as Inputs.OCCT.DecomposedMeshDto,
                 merged
             );
         }, Inputs.Draw.drawingTypes.occt);
@@ -148,7 +148,7 @@ export class Draw extends DrawCore {
     private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
             const merged = this.occtOptions(options);
-            const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+            const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
             const container = new THREEJS.Group();

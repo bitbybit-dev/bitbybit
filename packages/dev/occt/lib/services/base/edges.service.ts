@@ -245,11 +245,11 @@ export class EdgesService {
     }
 
     makeEdgeFromGeom2dCurveAndSurfaceBounded(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>, umin: number, umax: number): TopoDS_Edge {
-        return this.occ.MakeEdgeFromGeom2dCurveAndSurfaceBounded(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface, umin, umax);
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurfaceBounded(inputs.curve as Handle_Geom2d_Curve, inputs.surface, umin, umax);
     }
 
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>): TopoDS_Edge {
-        return this.occ.MakeEdgeFromGeom2dCurveAndSurface(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface);
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurface(inputs.curve as Handle_Geom2d_Curve, inputs.surface);
     }
 
     constraintTanLinesFromTwoPtsToCircle(inputs: Resolved.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {

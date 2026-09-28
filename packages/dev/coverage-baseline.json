@@ -4,14 +4,6 @@
     "history": [
         {
             "measured": "2026-09-07",
-            "tests": 3991,
-            "lines": 68.29,
-            "branches": 51.95,
-            "functions": 57.82,
-            "statements": 65.59
-        },
-        {
-            "measured": "2026-09-07",
             "tests": 4004,
             "lines": 68.32,
             "branches": 52.03,
@@ -193,6 +185,14 @@
             "branches": 93.57,
             "functions": 99.1,
             "statements": 98.03
+        },
+        {
+            "measured": "2026-09-28",
+            "tests": 10177,
+            "lines": 98.13,
+            "branches": 93.6,
+            "functions": 99.1,
+            "statements": 98.05
         }
     ],
     "packages": {
@@ -257,12 +257,12 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 371,
+            "tests": 374,
             "suites": 10,
-            "lines": 99.43,
-            "branches": 99.25,
+            "lines": 100,
+            "branches": 100,
             "functions": 100,
-            "statements": 99.54
+            "statements": 100
         },
         "manifold-worker": {
             "runner": "vitest",

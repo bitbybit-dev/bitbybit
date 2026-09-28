@@ -61,7 +61,8 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
         };
 
         it("should throw error if app is not initialized", () => {
-            mockContext.app = null as unknown as pc.AppBase;
+            const missingApp: unknown = null;
+            mockContext.app = missingApp as pc.AppBase;
             expect(() => orbitCamera.create(defaultInputs)).toThrow();
         });
 
@@ -259,14 +260,15 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
             const controller = orbitCamera.create(defaultInputs);
             const mockEntity = new pc.Entity();
             
-            controller.orbitCamera.focus = vi.fn();
+            const focus = vi.fn();
+            controller.orbitCamera.focus = focus;
 
             orbitCamera.focusOnEntity({
                 orbitCamera: controller,
                 entity: mockEntity,
             });
 
-            expect(controller.orbitCamera.focus).toHaveBeenCalledWith(mockEntity);
+            expect(focus).toHaveBeenCalledWith(mockEntity);
         });
     });
 
@@ -291,7 +293,8 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
-            controller.orbitCamera.reset = vi.fn();
+            const reset = vi.fn();
+            controller.orbitCamera.reset = reset;
 
             orbitCamera.resetCamera({
                 orbitCamera: controller,
@@ -300,7 +303,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
                 distance: 15,
             });
 
-            expect(controller.orbitCamera.reset).toHaveBeenCalledWith(45, 30, 15);
+            expect(reset).toHaveBeenCalledWith(45, 30, 15);
         });
     });
 
@@ -1098,11 +1101,12 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             const controller = orbitCamera.create(defaultInputs);
             
+            const screenToWorld = vi.fn((x: number, y: number, distance: number, result: pc.Vec3) => {
+                result.set(x / 100, y / 100, distance);
+                return result;
+            });
             if (controller.cameraEntity.camera) {
-                controller.cameraEntity.camera.screenToWorld = vi.fn((x: number, y: number, distance: number, result: pc.Vec3) => {
-                    result.set(x / 100, y / 100, distance);
-                    return result;
-                });
+                controller.cameraEntity.camera.screenToWorld = screenToWorld;
             }
 
             const mouseDownCall = mockApp.mouse!.on.mock.calls.find(
@@ -1119,7 +1123,7 @@ describe("PlayCanvasOrbitCamera unit tests", () => {
 
             onMouseMove({ dx: 10, dy: 5, x: 110, y: 105 });
 
-            expect(controller.cameraEntity.camera?.screenToWorld).toHaveBeenCalled();
+            expect(screenToWorld).toHaveBeenCalled();
         });
 
         it("should handle mouse wheel for zoom", () => {

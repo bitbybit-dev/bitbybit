@@ -6,6 +6,20 @@
  * This file contains all reusable mock classes for BabylonJS types
  */
 
+/**
+ * Hands `value` back as an instance of `type` once it has checked that it is one, so a test that
+ * reads a double's own state, or hands a double to code typed for the engine class, gets there
+ * through a check instead of an assertion. Where `@babylonjs/core` is mocked, its classes are the
+ * doubles in this file, so a `MockScene` is an instance of `BABYLON.Scene` there - and a suite that
+ * forgot the mock fails here, by name, rather than somewhere downstream.
+ */
+export function instanceOf<T>(value: unknown, type: abstract new (...args: never[]) => T): T {
+    if (value instanceof type) {
+        return value;
+    }
+    throw new TypeError(`Expected an instance of ${type.name}`);
+}
+
 export class MockVector3 {
     x: number;
     y: number;
@@ -741,14 +755,17 @@ export const MockTools = {
     ToRadians: (degrees: number) => degrees * (Math.PI / 180)
 };
 
-// Type definitions for test assertions
-export interface MockMeshType {
-    name: string;
-    position: MockVector3;
-    receiveShadows: boolean;
-    material: object | null;
-    _groundWidth?: number;
-    _groundHeight?: number;
+/** The ground `CreateGround` builds, holding the size it was asked for so a suite can assert it. */
+export class MockGroundMesh extends MockMesh {
+    receiveShadows = false;
+    _groundWidth: number;
+    _groundHeight: number;
+
+    constructor(name: string, options: { width: number; height: number }) {
+        super(name, null);
+        this._groundWidth = options.width;
+        this._groundHeight = options.height;
+    }
 }
 
 /**
@@ -767,11 +784,7 @@ export function createSceneHelperMock() {
         ArcRotateCamera: MockArcRotateCamera,
         MeshBuilder: {
             CreateGround: (name: string, options: { width: number; height: number }, _scene: MockBabylonScene) => {
-                const mesh = new MockMesh(name, null) as unknown as MockMeshType;
-                mesh._groundWidth = options.width;
-                mesh._groundHeight = options.height;
-                mesh.receiveShadows = false;
-                return mesh;
+                return new MockGroundMesh(name, options);
             }
         },
         StandardMaterial: MockStandardMaterial,

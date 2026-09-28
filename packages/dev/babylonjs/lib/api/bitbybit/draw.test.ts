@@ -15,8 +15,8 @@ import { BabylonNode } from "./babylon/node";
 import { Tag } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import * as Inputs from "../inputs";
-import { MockScene, MockMesh, MockGreasedLineMesh } from "../__mocks__/babylonjs.mock";
-import { createDrawHelperMocks } from "../__mocks__/test-helpers";
+import { MockScene, MockMesh, MockGreasedLineMesh, instanceOf } from "../__mocks__/babylonjs.mock";
+import { createDrawHelperMocks, partialMock } from "../__mocks__/test-helpers";
 
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [
     1, 0, 0, 0,
@@ -99,6 +99,105 @@ type DrawPrivateMethods = {
     applyNodeSettingsAndMetadata: (type: any, options: any, node: BABYLON.TransformNode, meshes: BABYLON.AbstractMesh[]) => void;
 };
 
+const drawPrivateMethodNames: Record<keyof DrawPrivateMethods, true> = {
+    drawResolved: true,
+    drawResolvedAsync: true,
+    detectLine: true,
+    detectPoint: true,
+    detectPolyline: true,
+    detectNode: true,
+    detectVerbCurve: true,
+    detectVerbSurface: true,
+    detectPolylines: true,
+    detectLines: true,
+    detectPoints: true,
+    detectNodes: true,
+    detectVerbCurves: true,
+    detectVerbSurfaces: true,
+    detectTag: true,
+    detectTags: true,
+    detectJscadMesh: true,
+    detectOcctShape: true,
+    detectOcctShapes: true,
+    detectJscadMeshes: true,
+    detectManifoldShape: true,
+    detectManifoldShapes: true,
+    handleLine: true,
+    handlePoint: true,
+    handlePolyline: true,
+    handleNode: true,
+    handleVerbCurve: true,
+    handleVerbSurface: true,
+    handlePolylines: true,
+    handleLines: true,
+    handlePoints: true,
+    handleNodes: true,
+    handleVerbCurves: true,
+    handleVerbSurfaces: true,
+    handleTag: true,
+    handleTags: true,
+    handleJscadMesh: true,
+    handleJscadMeshes: true,
+    handleOcctShape: true,
+    handleOcctShapes: true,
+    handleManifoldShape: true,
+    handleManifoldShapes: true,
+    updateAny: true,
+    applyGlobalSettingsAndMetadataAndShadowCasting: true,
+    applyNodeSettingsAndMetadata: true,
+};
+
+const exposesDrawPrivateMethods = (value: unknown): value is DrawPrivateMethods =>
+    typeof value === "object" && value !== null
+    && Object.keys(drawPrivateMethodNames).every((name) => typeof Reflect.get(value, name) === "function");
+
+const privateMethodsOf = (value: unknown): DrawPrivateMethods => {
+    if (exposesDrawPrivateMethods(value)) {
+        return value;
+    }
+    throw new TypeError("Draw no longer has every method this suite calls");
+};
+
+const createDrawHelperDouble = () => ({
+    drawPoints: vi.fn(),
+    drawPoint: vi.fn(),
+    drawLines: vi.fn(),
+    drawPolylines: vi.fn(),
+    drawPolylineClose: vi.fn(),
+    drawPolylinesWithColours: vi.fn(),
+    drawCurves: vi.fn(),
+    drawCurve: vi.fn(),
+    drawSurfacesMultiColour: vi.fn(),
+    drawSurface: vi.fn(),
+    drawVerbSurface: vi.fn(),
+    drawVerbCurve: vi.fn(),
+    drawJSCADMesh: vi.fn(),
+    drawJSCADMeshes: vi.fn(),
+    drawSolidOrPolygonMesh: vi.fn(),
+    drawSolidOrPolygonMeshes: vi.fn(),
+    drawManifoldMesh: vi.fn(),
+    drawManifoldMeshes: vi.fn(),
+    drawManifoldOrCrossSection: vi.fn(),
+    drawManifoldsOrCrossSections: vi.fn(),
+    drawOcctShapesAsync: vi.fn(),
+    drawOcctShapeAsync: vi.fn(),
+    drawShape: vi.fn(),
+    drawShapes: vi.fn(),
+    handleDecomposedMesh: vi.fn(),
+    dispose: vi.fn(),
+});
+
+const createNodeDouble = () => ({
+    drawNodesWithLabels: vi.fn(),
+    drawNodes: vi.fn(),
+    drawNode: vi.fn(),
+});
+
+const createTagDouble = () => ({
+    drawTag: vi.fn(),
+    drawTags: vi.fn(),
+});
+
 type DetectorName = "Line" | "Point" | "Polyline" | "Node" | "VerbCurve" 
     | "VerbSurface" | "Polylines" | "Lines" | "Points" | "Nodes" 
     | "VerbCurves" | "VerbSurfaces" | "Tag" | "Tags" | "JscadMesh" 
@@ -108,7 +207,7 @@ type DetectorName = "Line" | "Point" | "Polyline" | "Node" | "VerbCurve"
 type SpyManager = {
     spies: Map<string, MockInstance>;
     setupDetectors: (activeDetectors?: DetectorName | DetectorName[]) => void;
-    setupHandler: <T = unknown>(handler: string, returnValue: T) => MockInstance<() => T>;
+    setupHandler: (handler: keyof DrawPrivateMethods, returnValue: unknown) => MockInstance;
     getDetectorSpy: (detector: DetectorName) => MockInstance | undefined;
     getHandlerSpy: (handler: string) => MockInstance | undefined;
     reset: () => void;
@@ -117,17 +216,18 @@ type SpyManager = {
 describe("Draw unit tests", () => {
     let draw: Draw;
     let drawPrivate: DrawPrivateMethods;
-    let mockDrawHelper: DrawHelper;
+    let mockDrawHelper: ReturnType<typeof createDrawHelperDouble>;
     let handleDecomposedMeshMock: Mock;
-    let mockNode: BabylonNode;
-    let mockTag: Tag;
+    let mockNode: ReturnType<typeof createNodeDouble>;
+    let mockTag: ReturnType<typeof createTagDouble>;
     let mockContext: Context;
+    let sceneDouble: MockScene;
     let mockScene: BABYLON.Scene;
     let spyManager: SpyManager;
 
     function createMockMesh(name: string, withChildren = false): BABYLON.Mesh {
         
-        const mesh = new MockMesh(name, mockScene as any) as unknown as BABYLON.Mesh;
+        const mesh = instanceOf(new MockMesh(name, sceneDouble), BABYLON.Mesh);
         mesh.getChildMeshes = vi.fn().mockReturnValue(withChildren ? [mesh] : []);
         return mesh;
     }
@@ -144,52 +244,16 @@ describe("Draw unit tests", () => {
     }
 
     beforeEach(() => {
-        mockScene = new MockScene() as unknown as BABYLON.Scene;
+        sceneDouble = new MockScene();
+        mockScene = instanceOf(sceneDouble, BABYLON.Scene);
         mockScene.metadata = { shadowGenerators: [] };
         
-        handleDecomposedMeshMock = vi.fn();
-        mockDrawHelper = {
-            drawPoints: vi.fn(),
-            drawPoint: vi.fn(),
-            drawLines: vi.fn(),
-            drawPolylines: vi.fn(),
-            drawPolylineClose: vi.fn(),
-            drawPolylinesWithColours: vi.fn(),
-            drawCurves: vi.fn(),
-            drawCurve: vi.fn(),
-            drawSurfacesMultiColour: vi.fn(),
-            drawSurface: vi.fn(),
-            drawVerbSurface: vi.fn(),
-            drawVerbCurve: vi.fn(),
-            drawJSCADMesh: vi.fn(),
-            drawJSCADMeshes: vi.fn(),
-            drawSolidOrPolygonMesh: vi.fn(),
-            drawSolidOrPolygonMeshes: vi.fn(),
-            drawManifoldMesh: vi.fn(),
-            drawManifoldMeshes: vi.fn(),
-            drawManifoldOrCrossSection: vi.fn(),
-            drawManifoldsOrCrossSections: vi.fn(),
-            drawOcctShapesAsync: vi.fn(),
-            drawOcctShapeAsync: vi.fn(),
-            drawShape: vi.fn(),
-            drawShapes: vi.fn(),
-            handleDecomposedMesh: handleDecomposedMeshMock,
-            dispose: vi.fn(),
-            
-        } as any;
+        mockDrawHelper = createDrawHelperDouble();
+        handleDecomposedMeshMock = mockDrawHelper.handleDecomposedMesh;
 
-        mockNode = {
-            drawNodesWithLabels: vi.fn(),
-            drawNodes: vi.fn(),
-            drawNode: vi.fn(),
-            
-        } as any;
+        mockNode = createNodeDouble();
 
-        mockTag = {
-            drawTag: vi.fn(),
-            drawTags: vi.fn(),
-            
-        } as any;
+        mockTag = createTagDouble();
 
         mockContext = {
             scene: mockScene,
@@ -197,8 +261,8 @@ describe("Draw unit tests", () => {
             
         } as any;
 
-        draw = new Draw(mockDrawHelper, mockNode, mockTag, mockContext);
-        drawPrivate = draw as unknown as DrawPrivateMethods;
+        draw = new Draw(partialMock<DrawHelper>(mockDrawHelper), partialMock<BabylonNode>(mockNode), partialMock<Tag>(mockTag), mockContext);
+        drawPrivate = privateMethodsOf(draw);
 
         spyManager = {
             spies: new Map(),
@@ -217,14 +281,14 @@ describe("Draw unit tests", () => {
                 );
 
                 detectors.forEach(detector => {
-                    const spy = vi.spyOn(drawPrivate, `detect${detector}` as keyof DrawPrivateMethods) as unknown as MockInstance<() => boolean>;
+                    const spy = vi.spyOn(drawPrivate, `detect${detector}` as const);
                     spy.mockReturnValue(activeSet.has(detector));
                     this.spies.set(`detect${detector}`, spy);
                 });
             },
 
-            setupHandler<T = unknown>(handler: string, returnValue: T): MockInstance<() => T> {
-                const spy = vi.spyOn(drawPrivate, handler as keyof DrawPrivateMethods) as unknown as MockInstance<() => T>;
+            setupHandler(handler: keyof DrawPrivateMethods, returnValue: unknown): MockInstance {
+                const spy: MockInstance = vi.spyOn(drawPrivate, handler);
                 spy.mockReturnValue(returnValue);
                 this.spies.set(handler, spy);
                 return spy;
@@ -274,7 +338,8 @@ describe("Draw unit tests", () => {
 
     describe("drawAnyAsync", () => {
         it("should resolve undefined for undefined entity", async () => {
-            const result = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny);
+            const inputs: unknown = { entity: undefined };
+            const result = await draw.drawAnyAsync(inputs as Inputs.Draw.DrawAny);
             expect(result).toBeUndefined();
         });
 
@@ -813,7 +878,7 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
+            vi.mocked(GridMaterial).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
             BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(mockGroundMesh);
@@ -838,7 +903,7 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle errors gracefully", () => {
-            (GridMaterial as unknown as Mock).mockImplementation(() => {
+            vi.mocked(GridMaterial).mockImplementation(() => {
                 throw new Error("Grid material error");
             });
 
@@ -878,7 +943,7 @@ describe("Draw unit tests", () => {
                 lineColor: new BABYLON.Color3(0, 0, 0),
                 opacity: 1,
             };
-            (GridMaterial as unknown as Mock).mockImplementation(function () { return mockGridMaterial; });
+            vi.mocked(GridMaterial).mockImplementation(function () { return mockGridMaterial; });
 
             const mockGroundMesh = createMockMesh("ground");
             BABYLON.MeshBuilder.CreateGround = vi.fn().mockReturnValue(mockGroundMesh);
@@ -909,7 +974,7 @@ describe("Draw unit tests", () => {
     describe("drawGridMeshNoReturn", () => {
         it("should call drawGridMesh without returning value", () => {
             const mockMesh = createMockMesh("grid");
-            vi.spyOn(draw, "drawGridMesh").mockReturnValue(mockMesh);
+            const drawGridMesh = vi.spyOn(draw, "drawGridMesh").mockReturnValue(mockMesh);
             
             const inputs: Inputs.Draw.SceneDrawGridMeshDto = {
                 width: 100,
@@ -926,7 +991,7 @@ describe("Draw unit tests", () => {
             
             const result = draw.drawGridMeshNoReturn(inputs);
             
-            expect(draw.drawGridMesh).toHaveBeenCalled();
+            expect(drawGridMesh).toHaveBeenCalled();
             expect(result).toBeUndefined();
         });
     });
@@ -1039,11 +1104,12 @@ describe("Draw unit tests", () => {
             const mockTag = { tag: "single" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: {} };
-            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
+            const drawTag = vi.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = drawTag;
             
             const result = drawPrivate.handleTag({ entity: mockTag });
             
-            expect(draw.tag.drawTag).toHaveBeenCalled();
+            expect(drawTag).toHaveBeenCalled();
             expect(result).toBeDefined();
             expect(result!.metadata.type).toBe(Inputs.Draw.drawingTypes.tag);
         });
@@ -1265,14 +1331,14 @@ describe("Draw unit tests", () => {
 
     describe("Multiple instances", () => {
         it("should create independent Draw instances", () => {
-            const draw2 = new Draw(mockDrawHelper, mockNode, mockTag, mockContext);
+            const draw2 = new Draw(partialMock<DrawHelper>(mockDrawHelper), partialMock<BabylonNode>(mockNode), partialMock<Tag>(mockTag), mockContext);
             
             expect(draw).not.toBe(draw2);
             expect(draw.context).toBe(draw2.context);
         });
 
         it("should handle different entities independently", () => {
-            const draw2 = new Draw(mockDrawHelper, mockNode, mockTag, mockContext);
+            const draw2 = new Draw(partialMock<DrawHelper>(mockDrawHelper), partialMock<BabylonNode>(mockNode), partialMock<Tag>(mockTag), mockContext);
             
             const mockMesh1 = createMockMesh("mesh1");
             const mockMesh2 = createMockMesh("mesh2");
@@ -1662,14 +1728,15 @@ describe("Draw unit tests", () => {
 
         it("handleNode should call node.drawNode", () => {
             const mockNode = new BABYLON.TransformNode("node-1", mockScene);
-            draw.node.drawNode = vi.fn();
+            const drawNode = vi.fn();
+            draw.node.drawNode = drawNode;
             
             
             vi.spyOn(draw as any, "applyNodeSettingsAndMetadata").mockImplementation(() => undefined);
             
             const result = drawPrivate.handleNode({ entity: mockNode });
             
-            expect(draw.node.drawNode).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNode).toHaveBeenCalledWith(expect.objectContaining({
                 node: mockNode
             }));
             expect(result).toBe(mockNode);
@@ -2159,13 +2226,14 @@ describe("Draw unit tests", () => {
 
         it("handleNode should use default node options", () => {
             const mockNodeData = new BABYLON.TransformNode("node-1", mockScene);
-            draw.node.drawNode = vi.fn();
+            const drawNode = vi.fn();
+            draw.node.drawNode = drawNode;
             
             vi.spyOn(draw as any, "applyNodeSettingsAndMetadata").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData });
             
-            expect(draw.node.drawNode).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNode).toHaveBeenCalledWith(expect.objectContaining({
                 colorX: "#ff0000",
                 colorY: "#00ff00",
                 colorZ: "#0000ff",
@@ -2177,13 +2245,14 @@ describe("Draw unit tests", () => {
             const mockNodeData = new BABYLON.TransformNode("node-1", mockScene);
             const mockMesh = createMockMesh("node");
             mockMesh.metadata = { options: { size: 25, colorX: "#AABBCC", colorY: "#DDEEFF" } };
-            draw.node.drawNode = vi.fn();
+            const drawNode = vi.fn();
+            draw.node.drawNode = drawNode;
             
             vi.spyOn(draw as any, "applyNodeSettingsAndMetadata").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData, babylonMesh: mockMesh });
             
-            expect(draw.node.drawNode).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNode).toHaveBeenCalledWith(expect.objectContaining({
                 size: 25,
                 colorX: "#AABBCC",
                 colorY: "#DDEEFF"
@@ -2302,13 +2371,14 @@ describe("Draw unit tests", () => {
             const mockNodes = [new BABYLON.TransformNode("node-1", mockScene), new BABYLON.TransformNode("node-2", mockScene)];
             const mockMesh = createMockMesh("nodes");
             mockMesh.metadata = { options: { size: 11, colorX: "#111111" } };
-            draw.node.drawNodes = vi.fn();
+            const drawNodes = vi.fn();
+            draw.node.drawNodes = drawNodes;
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNodes({ entity: mockNodes, babylonMesh: mockMesh });
             
-            expect(draw.node.drawNodes).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNodes).toHaveBeenCalledWith(expect.objectContaining({
                 size: 11,
                 colorX: "#111111"
             }));
@@ -2318,11 +2388,12 @@ describe("Draw unit tests", () => {
             const mockTagEntity = { tag: "test" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: { size: 14, colours: "#fedcba" } };
-            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
+            const drawTag = vi.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = drawTag;
             
             drawPrivate.handleTag({ entity: mockTagEntity, babylonMesh: mockMesh });
             
-            expect(draw.tag.drawTag).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({
                 size: 14,
                 colours: "#fedcba"
             }));
@@ -2437,11 +2508,12 @@ describe("Draw unit tests", () => {
             const customOptions = { size: 99, colours: "#990099" };
             const mockMesh = createMockMesh("tag");
             mockMesh.metadata = { options: {} };
-            draw.tag.drawTag = vi.fn().mockReturnValue(mockMesh);
+            const drawTag = vi.fn().mockReturnValue(mockMesh);
+            draw.tag.drawTag = drawTag;
             
             drawPrivate.handleTag({ entity: mockTagEntity, options: customOptions });
             
-            expect(draw.tag.drawTag).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({
                 size: 99,
                 colours: "#990099"
             }));
@@ -2480,13 +2552,14 @@ describe("Draw unit tests", () => {
         it("handleNodes should use provided options when options are passed", () => {
             const mockNodes = [new BABYLON.TransformNode("node-1", mockScene), new BABYLON.TransformNode("node-2", mockScene)];
             const customOptions = { size: 30, colorX: "#303030", colorY: "#404040" };
-            draw.node.drawNodes = vi.fn();
+            const drawNodes = vi.fn();
+            draw.node.drawNodes = drawNodes;
             
             vi.spyOn(draw as any, "applyGlobalSettingsAndMetadataAndShadowCasting").mockImplementation(() => undefined);
             
             drawPrivate.handleNodes({ entity: mockNodes, options: customOptions });
             
-            expect(draw.node.drawNodes).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNodes).toHaveBeenCalledWith(expect.objectContaining({
                 size: 30,
                 colorX: "#303030",
                 colorY: "#404040"
@@ -2571,13 +2644,14 @@ describe("Draw unit tests", () => {
         it("handleNode should use provided options when options are passed", () => {
             const mockNodeData = new BABYLON.TransformNode("node-1", mockScene);
             const customOptions = { size: 65, colorX: "#656565", colorY: "#757575" };
-            draw.node.drawNode = vi.fn();
+            const drawNode = vi.fn();
+            draw.node.drawNode = drawNode;
             
             vi.spyOn(draw as any, "applyNodeSettingsAndMetadata").mockImplementation(() => undefined);
             
             drawPrivate.handleNode({ entity: mockNodeData, options: customOptions });
             
-            expect(draw.node.drawNode).toHaveBeenCalledWith(expect.objectContaining({
+            expect(drawNode).toHaveBeenCalledWith(expect.objectContaining({
                 size: 65,
                 colorX: "#656565",
                 colorY: "#757575"
@@ -3134,7 +3208,7 @@ describe("Draw unit tests", () => {
         const drawWithRealHelper = (): Draw => {
             const mocks = createDrawHelperMocks();
             const helper = new DrawHelper(mocks.mockContext, mocks.mockSolidText, mocks.mockVector, mocks.mockJscadWorkerManager, mocks.mockManifoldWorkerManager, mocks.mockOccWorkerManager);
-            return new Draw(helper, mockNode, mockTag, mockContext);
+            return new Draw(helper, partialMock<BabylonNode>(mockNode), partialMock<Tag>(mockTag), mockContext);
         };
 
         it("handleOcctShape should draw the entity it is given when the options it redraws with name another", async () => {

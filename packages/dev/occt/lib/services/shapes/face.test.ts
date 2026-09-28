@@ -28,7 +28,7 @@ describe("OCCT face unit tests", () => {
         solid = new OCCTSolid(occt, occHelper);
     });
 
-    it("should create a face from closed planar wire", async () => {
+    it("should create a face from closed planar wire", () => {
         const w = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const f = face.createFaceFromWire({ shape: w, planar: true });
         const area = face.getFaceArea({ shape: f });
@@ -38,7 +38,7 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should create a face from closed non-planar wire", async () => {
+    it("should create a face from closed non-planar wire", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], periodic: true, tolerance: 1e-7 });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
@@ -48,7 +48,7 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not create a good face from open non-planar wire", async () => {
+    it("should not create a good face from open non-planar wire", () => {
         const w = wire.createBezier({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], closed: false });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
@@ -58,13 +58,13 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not create a good face from shape that is not a wire", async () => {
+    it("should not create a good face from shape that is not a wire", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.createFaceFromWire({ shape: b, planar: false })).toThrow("Provided input shape is not a wire");
         b.delete();
     });
 
-    it("should create a faces from closed planar wires", async () => {
+    it("should create a faces from closed planar wires", () => {
         const w1 = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const w2 = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
         const f = face.createFacesFromWires({ shapes: [w1, w2], planar: true });
@@ -77,7 +77,7 @@ describe("OCCT face unit tests", () => {
         f.forEach(s => s.delete());
     });
 
-    it("should create an infinite face from surface", async () => {
+    it("should create an infinite face from surface", () => {
         const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
         const area = face.getFaceArea({ shape: f });
@@ -85,7 +85,7 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should create an face from surface and wire", async () => {
+    it("should create an face from surface and wire", () => {
         const f1 = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const srf = geom.surfaces.surfaceFromFace({ shape: f1 });
         const w = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
@@ -980,25 +980,25 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not get a face of a shape that does not have faces", async () => {
+    it("should not get a face of a shape that does not have faces", () => {
         const d = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 1, 1] });
         expect(() => face.getFace({ shape: d, index: 22 })).toThrow("Shape is of incorrect type");
         d.delete();
     });
 
-    it("should not get a face of a shape that does not have particular index", async () => {
+    it("should not get a face of a shape that does not have particular index", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.getFace({ shape: b, index: 22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
-    it("should not get a face of a shape that does not have particular index", async () => {
+    it("should not get a face of a shape that does not have particular index", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.getFace({ shape: b, index: -22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
-    it("should get faces", async () => {
+    it("should get faces", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         const faces = face.getFaces({ shape: b });
         expect(faces.length).toBe(6);
@@ -1006,7 +1006,7 @@ describe("OCCT face unit tests", () => {
         faces.forEach(f => f.delete());
     });
 
-    it("should reverse a face", async () => {
+    it("should reverse a face", () => {
         const f = face.createRectangleFace({ center: [0, 0, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const w = wire.getWire({ shape: f, index: 0 });
         const fr = face.reversedFace({ shape: f });
@@ -1020,7 +1020,7 @@ describe("OCCT face unit tests", () => {
         wr.delete();
     });
 
-    it("should get faces areas", async () => {
+    it("should get faces areas", () => {
         const f1 = face.createRectangleFace({ center: [0, 0, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const f2 = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const areas = face.getFacesAreas({ shapes: [f1, f2] });
@@ -1031,7 +1031,7 @@ describe("OCCT face unit tests", () => {
         f2.delete();
     });
 
-    it("should get faces centers of mass", async () => {
+    it("should get faces centers of mass", () => {
         const f1 = face.createRectangleFace({ center: [0, 1, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const f2 = face.createCircleFace({ radius: 3, center: [0, 3, 3], direction: [0, 0, 1] });
         const centers = face.getFacesCentersOfMass({ shapes: [f1, f2] });
@@ -1043,7 +1043,7 @@ describe("OCCT face unit tests", () => {
         f2.delete();
     });
 
-    it("should get face center of mass", async () => {
+    it("should get face center of mass", () => {
         const f1 = face.createRectangleFace({ center: [0, 1, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const center = face.getFaceCenterOfMass({ shape: f1 });
         expect(center).toEqual(
@@ -1052,7 +1052,7 @@ describe("OCCT face unit tests", () => {
         f1.delete();
     });
 
-    it("should filter points in and on the face", async () => {
+    it("should filter points in and on the face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -1083,7 +1083,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should filter points outside face", async () => {
+    it("should filter points outside face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -1126,7 +1126,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should filter points on the edge of the face", async () => {
+    it("should filter points on the edge of the face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -1160,7 +1160,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should not filter if provided points are empty", async () => {
+    it("should not filter if provided points are empty", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -1219,7 +1219,7 @@ describe("OCCT face unit tests", () => {
         square.delete();
     });
 
-    it("should create a face from wires", async () => {
+    it("should create a face from wires", () => {
         const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const circle2 = wire.createCircleWire({ radius: 0.2, center: [0, 0, 0.3], direction: [0, 1, 0] });
         const reverse2 = wire.reversedWire({ shape: circle2 });

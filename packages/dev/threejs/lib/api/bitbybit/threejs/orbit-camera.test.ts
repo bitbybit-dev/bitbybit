@@ -445,7 +445,8 @@ describe("ThreeJSOrbitCamera unit tests", () => {
 
             controller.update(0.016);
 
-            const currentDistance = (controller.orbitCamera as any)._distance || 
+            const instance: typeof controller.orbitCamera & { _distance?: number } = controller.orbitCamera;
+            const currentDistance = instance._distance || 
                                    controller.camera.position.length();
 
             expect(currentDistance).not.toBe(50);

@@ -13,6 +13,7 @@ import { Lists } from "./lists";
 describe("Polyline unit tests", () => {
 
     const uh = new UnitTestHelper();
+    const loose = <T>(value: unknown): T => value as T;
 
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
@@ -200,7 +201,7 @@ describe("Polyline unit tests", () => {
         });
 
         it("should return an empty array for undefined input", () => {
-            const result = polyline.sortSegmentsIntoPolylines({ segments: undefined as any });
+            const result = polyline.sortSegmentsIntoPolylines({ segments: loose<Inputs.Base.Segment3[]>(undefined) });
             expect(result).toEqual([]);
         });
 

@@ -140,8 +140,7 @@ export class CrossSectionOperations {
      */
     compose(inputs: Inputs.Manifold.ComposeDto<(Manifold3D.CrossSection | Manifold3D.Polygons)[]>): Manifold3D.CrossSection {
         const { CrossSection } = this.manifold;
-        const { compose } = CrossSection;
-        return compose(inputs.polygons);
+        return CrossSection.compose(inputs.polygons);
     }
 
     /**

@@ -38,7 +38,7 @@ describe("Draw unit tests", () => {
     let vector: Vector;
     let solidText: JSCADText;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const context = new Context();
         jscadWorkerManager = new JSCADWorkerManager();
         occtWorkerManager = new OCCTWorkerManager();
@@ -78,14 +78,15 @@ describe("Draw unit tests", () => {
             _textureRegistry: []
         };
 
-        context.app = {
+        const mockApp: unknown = {
             graphicsDevice: mockGraphicsDevice,
             systems: {
                 render: {
                     defaultMaterial: new pc.StandardMaterial()
                 }
             }
-        } as unknown as pc.Application;
+        };
+        context.app = mockApp as pc.Application;
 
         tag = new Tag(context);
         draw = new Draw(drawHelper, context, tag);
@@ -275,8 +276,8 @@ describe("Draw unit tests", () => {
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.line);
         });
 
-        it("should draw a line via draw any without options", async () => {
-            const res = await draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } }) as DrawnEntity;
+        it("should draw a line via draw any without options", () => {
+            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } }) as DrawnEntity;
             expect(res.name).toContain("polylines");
             expect(res.children.length).toBe(1);
             expect(res.children[0]).toBeDefined();
@@ -824,7 +825,8 @@ describe("Draw unit tests", () => {
     describe("Draw edge cases and undefined handling", () => {
 
         it("should return undefined for undefined entity via drawAnyAsync", async () => {
-            const res = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
+            const inputs: unknown = { entity: undefined };
+            const res = await draw.drawAnyAsync(inputs as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
             expect(res).toBeUndefined();
         });
 
@@ -1675,8 +1677,10 @@ describe("Draw unit tests", () => {
         });
 
         it("should handle undefined and null gracefully", async () => {
-            const resultUndefined = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
-            const resultNull = await draw.drawAnyAsync({ entity: null } as unknown as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
+            const undefinedEntityInputs: unknown = { entity: undefined };
+            const nullEntityInputs: unknown = { entity: null };
+            const resultUndefined = await draw.drawAnyAsync(undefinedEntityInputs as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
+            const resultNull = await draw.drawAnyAsync(nullEntityInputs as Inputs.Draw.DrawAny<pc.Entity>) as DrawnEntity;
 
             expect(resultUndefined).toBeUndefined();
             expect(resultNull).toBeUndefined();

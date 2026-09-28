@@ -50,8 +50,7 @@ export class ManifoldOperations {
      */
     hullPoints(inputs: Inputs.Manifold.HullPointsDto<(Inputs.Base.Point3 | Manifold3D.Manifold)[]>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { hull } = Manifold;
-        return hull(inputs.points);
+        return Manifold.hull(inputs.points);
     }
 
     /**
@@ -130,8 +129,7 @@ export class ManifoldOperations {
      */
     reserveIds(inputs: Inputs.Manifold.CountDto): number {
         const { Manifold } = this.manifold;
-        const { reserveIDs } = Manifold;
-        return reserveIDs(inputs.count);
+        return Manifold.reserveIDs(inputs.count);
     }
 
     /**
@@ -171,8 +169,7 @@ export class ManifoldOperations {
      */
     compose(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifolds);
+        return Manifold.union(inputs.manifolds);
     }
 
     /**

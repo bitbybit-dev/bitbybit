@@ -18,6 +18,8 @@ const IDENTITY: Inputs.Base.TransformMatrixes = [IDENTITY_MATRIX];
 const TRANSLATE_X: Inputs.Base.TransformMatrixes = [TRANSLATE_X_MATRIX];
 
 
+const loose = <T>(value: unknown): T => value as T;
+
 const meshData = (positions: number[], indices: number[]): Inputs.JSCAD.JSCADMeshData => ({
     positions,
     indices,
@@ -120,7 +122,7 @@ describe("Jscad", () => {
 
         it("should return nothing for a mesh with no polygons", () => {
             // Arrange
-            const inputs = new Inputs.JSCAD.MeshDto({ polygons: [] } as unknown as Inputs.JSCAD.JSCADEntity);
+            const inputs = new Inputs.JSCAD.MeshDto(loose<Inputs.JSCAD.JSCADEntity>({ polygons: [] }));
 
             // Act
             const polygons = jscad.toPolygonPoints(inputs);
@@ -158,7 +160,7 @@ describe("Jscad", () => {
 
     describe("transformSolid, in each shape it accepts", () => {
         it("should apply a single matrix given on its own", () => {
-            const inputs = new Inputs.JSCAD.TransformSolidDto(cube, TRANSLATE_X_MATRIX as unknown as Inputs.Base.TransformMatrixes);
+            const inputs = new Inputs.JSCAD.TransformSolidDto(cube, loose<Inputs.Base.TransformMatrixes>(TRANSLATE_X_MATRIX));
 
             // Act
             const moved = jscad.transformSolid(inputs);
@@ -179,7 +181,7 @@ describe("Jscad", () => {
 
         it("should flatten a list of lists of matrices", () => {
             // Arrange
-            const nested = [[TRANSLATE_X_MATRIX], [TRANSLATE_X_MATRIX]] as unknown as Inputs.Base.TransformMatrixes;
+            const nested = loose<Inputs.Base.TransformMatrixes>([[TRANSLATE_X_MATRIX], [TRANSLATE_X_MATRIX]]);
             const inputs = new Inputs.JSCAD.TransformSolidDto(cube, nested);
 
             // Act

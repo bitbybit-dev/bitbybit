@@ -36,6 +36,9 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
+    let jscadWorkerCall: Mock;
+    let manifoldWorkerCall: Mock;
+    let occtWorkerCall: Mock;
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -45,6 +48,9 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
+        jscadWorkerCall = mocks.jscadWorkerCall;
+        manifoldWorkerCall = mocks.manifoldWorkerCall;
+        occtWorkerCall = mocks.occtWorkerCall;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -1110,7 +1116,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.children.length).toBe(1);
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
 
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
@@ -1487,7 +1493,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1689,7 +1695,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
         });
     });
 
@@ -1711,7 +1717,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
+            expect(manifoldWorkerCall).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
         });
 
         it("should return undefined when triVerts is empty", async () => {
@@ -2170,7 +2176,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
+            expect(jscadWorkerCall).toHaveBeenCalled();
             const [[, secondArgument]] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [[unknown, unknown]];
             expect(secondArgument).toMatchObject({
                 mesh: mockMesh
@@ -2194,7 +2200,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs);
 
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(occtWorkerCall).toHaveBeenCalledWith(
                 "shapeToMesh",
                 expect.objectContaining({
                     shape: inputs.shape
@@ -2213,7 +2219,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
 
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(manifoldWorkerCall).toHaveBeenCalledWith(
                 "decomposeManifoldOrCrossSection",
                 expect.objectContaining({
                     manifoldOrCrossSection: inputs.manifoldOrCrossSection

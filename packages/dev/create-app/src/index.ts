@@ -151,7 +151,7 @@ const BACKEND_COLORS: Record<BackendType, (text: string) => string> = {
     "dotnet-rest": chalk.hex("#512BD4"),
 };
 
-async function displayWelcome(): Promise<void> {
+function displayWelcome(): void {
     console.clear();
     const goldGradient = gradient(["#F0CEBB", "#fff6f3", "#d6b39f", "#F0CEBB"]);
     
@@ -1083,7 +1083,7 @@ async function main(): Promise<void> {
         .option("-b, --backend <backend>", "Backend for cloud app (hono-sdk, hono-rest, nodejs-sdk, nodejs-rest, dotnet-rest)")
         .option("-T, --template <template>", `App template for --type app (${APP_TEMPLATE_IDS.join(", ")})`)
         .action(async (projectName: string | undefined, cmdOptions: { engine?: string; occtArchitecture?: string; type?: string; backend?: string; template?: string }) => {
-            await displayWelcome();
+            displayWelcome();
 
             let appType: AppType;
             if (cmdOptions.type) {

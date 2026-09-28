@@ -116,8 +116,7 @@ export class ManifoldBooleans {
      */
     differenceTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifold1, inputs.manifold2);
+        return Manifold.difference(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -134,8 +133,7 @@ export class ManifoldBooleans {
      */
     unionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifold1, inputs.manifold2);
+        return Manifold.union(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -152,8 +150,7 @@ export class ManifoldBooleans {
      */
     intersectionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifold1, inputs.manifold2);
+        return Manifold.intersection(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -170,8 +167,7 @@ export class ManifoldBooleans {
      */
     difference(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifolds);
+        return Manifold.difference(inputs.manifolds);
     }
 
     /**
@@ -188,8 +184,7 @@ export class ManifoldBooleans {
      */
     union(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifolds);
+        return Manifold.union(inputs.manifolds);
     }
 
     /**
@@ -206,8 +201,7 @@ export class ManifoldBooleans {
      */
     intersection(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifolds);
+        return Manifold.intersection(inputs.manifolds);
     }
 
     /**

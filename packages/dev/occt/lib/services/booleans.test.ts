@@ -26,7 +26,7 @@ describe("OCCT booleans unit tests", () => {
         booleans = new OCCTBooleans(occt, occHelper);
     });
 
-    it("should compute difference of two boxes", async () => {
+    it("should compute difference of two boxes", () => {
         const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 0.3, height: 0.5, length: 3, center: [0.5, 0.5, 0.5] });
         const result = booleans.difference({ shape: box1, shapes: [box2], keepEdges: false });
@@ -34,7 +34,7 @@ describe("OCCT booleans unit tests", () => {
         expect(volume).toBeCloseTo(1.925);
     });
 
-    it("should compute union of two boxes", async () => {
+    it("should compute union of two boxes", () => {
         const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 0.3, height: 0.5, length: 3, center: [0.5, 0.5, 0.5] });
         const result = booleans.union({ shapes: [box1, box2], keepEdges: false });
@@ -42,7 +42,7 @@ describe("OCCT booleans unit tests", () => {
         expect(volume).toBeCloseTo(2.375);
     });
 
-    it("should compute intersection of two boxes", async () => {
+    it("should compute intersection of two boxes", () => {
         const box1 = solid.createBox({ width: 1, height: 2, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 0.3, height: 0.5, length: 3, center: [0.5, 0.5, 0.5] });
         const result = booleans.intersection({ shapes: [box1, box2], keepEdges: false });
@@ -121,7 +121,7 @@ describe("OCCT booleans unit tests", () => {
         expect([result.ShapeType(), occt.SolidsOf(result, false).length]).toEqual([occt.TopAbs_ShapeEnum.COMPOUND, 2]);
     });
 
-    it("should compute mesh mesh intersection wires of two intersecting boxes", async () => {
+    it("should compute mesh mesh intersection wires of two intersecting boxes", () => {
         const box1 = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const wires = booleans.meshMeshIntersectionWires({ shape1: box1, shape2: box2, precision1: 0.01, precision2: 0.01 });
@@ -133,7 +133,7 @@ describe("OCCT booleans unit tests", () => {
         wires.forEach(w => w.delete());
     });
 
-    it("should compute mesh mesh intersection points of two intersecting boxes", async () => {
+    it("should compute mesh mesh intersection points of two intersecting boxes", () => {
         const box1 = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const points = booleans.meshMeshIntersectionPoints({ shape1: box1, shape2: box2, precision1: 0.01, precision2: 0.01 });
@@ -144,7 +144,7 @@ describe("OCCT booleans unit tests", () => {
         box2.delete();
     });
 
-    it("should return empty wires for non-intersecting boxes", async () => {
+    it("should return empty wires for non-intersecting boxes", () => {
         const box1 = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 1, height: 1, length: 1, center: [5, 5, 5] });
         const wires = booleans.meshMeshIntersectionWires({ shape1: box1, shape2: box2, precision1: 0.01, precision2: 0.01 });
@@ -153,7 +153,7 @@ describe("OCCT booleans unit tests", () => {
         box2.delete();
     });
 
-    it("should return empty points for non-intersecting boxes", async () => {
+    it("should return empty points for non-intersecting boxes", () => {
         const box1 = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 1, height: 1, length: 1, center: [5, 5, 5] });
         const points = booleans.meshMeshIntersectionPoints({ shape1: box1, shape2: box2, precision1: 0.01, precision2: 0.01 });
@@ -162,7 +162,7 @@ describe("OCCT booleans unit tests", () => {
         box2.delete();
     });
 
-    it("should compute mesh mesh intersection of shapes wires", async () => {
+    it("should compute mesh mesh intersection of shapes wires", () => {
         const box1 = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const box3 = solid.createBox({ width: 2, height: 2, length: 2, center: [-1, -1, -1] });
@@ -176,7 +176,7 @@ describe("OCCT booleans unit tests", () => {
         wires.forEach(w => w.delete());
     });
 
-    it("should compute mesh mesh intersection of shapes points", async () => {
+    it("should compute mesh mesh intersection of shapes points", () => {
         const box1 = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const box3 = solid.createBox({ width: 2, height: 2, length: 2, center: [-1, -1, -1] });
@@ -189,7 +189,7 @@ describe("OCCT booleans unit tests", () => {
         box3.delete();
     });
 
-    it("should compute mesh mesh intersection of shapes with custom precisions", async () => {
+    it("should compute mesh mesh intersection of shapes with custom precisions", () => {
         const box1 = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
         const box3 = solid.createBox({ width: 2, height: 2, length: 2, center: [-1, -1, -1] });
@@ -201,7 +201,7 @@ describe("OCCT booleans unit tests", () => {
         wires.forEach(w => w.delete());
     });
 
-    it("should return empty wires for mesh mesh intersection of shapes with no intersections", async () => {
+    it("should return empty wires for mesh mesh intersection of shapes with no intersections", () => {
         const box1 = solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
         const box2 = solid.createBox({ width: 1, height: 1, length: 1, center: [10, 10, 10] });
         const box3 = solid.createBox({ width: 1, height: 1, length: 1, center: [-10, -10, -10] });
@@ -212,7 +212,7 @@ describe("OCCT booleans unit tests", () => {
         box3.delete();
     });
 
-    it("should compute mesh mesh intersection with sphere and box", async () => {
+    it("should compute mesh mesh intersection with sphere and box", () => {
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
         const box = solid.createBox({ width: 1, height: 1, length: 1, center: [0.5, 0.5, 0.5] });
         const wires = booleans.meshMeshIntersectionWires({ shape1: sphere, shape2: box, precision1: 0.01, precision2: 0.01 });

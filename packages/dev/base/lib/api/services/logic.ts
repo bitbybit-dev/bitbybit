@@ -216,21 +216,21 @@ export class Logic {
     compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
         const resolved = resolveDto(Inputs.Logic.ComparisonDto, inputs) as Resolved.Logic.ComparisonDto<T>;
         switch (resolved.operator) {
-            case "==":
+            case Inputs.Logic.BooleanOperatorsEnum.equal:
                 return resolved.first == resolved.second;
-            case "!=":
+            case Inputs.Logic.BooleanOperatorsEnum.notEqual:
                 return resolved.first != resolved.second;
-            case "===":
+            case Inputs.Logic.BooleanOperatorsEnum.tripleEqual:
                 return resolved.first === resolved.second;
-            case "!==":
+            case Inputs.Logic.BooleanOperatorsEnum.tripleNotEqual:
                 return resolved.first !== resolved.second;
-            case "<":
+            case Inputs.Logic.BooleanOperatorsEnum.less:
                 return resolved.first < resolved.second;
-            case "<=":
+            case Inputs.Logic.BooleanOperatorsEnum.lessOrEqual:
                 return resolved.first <= resolved.second;
-            case ">":
+            case Inputs.Logic.BooleanOperatorsEnum.greater:
                 return resolved.first > resolved.second;
-            case ">=":
+            case Inputs.Logic.BooleanOperatorsEnum.greaterOrEqual:
                 return resolved.first >= resolved.second;
             default:
                 return false;

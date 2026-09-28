@@ -9,7 +9,7 @@ import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
 import { Group, InstancedMesh, Mesh, MeshBasicMaterial, MeshPhongMaterial, Scene } from "three";
-import { flatOf } from "../__mocks__/test-helpers";
+import { flatOf, partialMock } from "../__mocks__/test-helpers";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import * as THREE from "three";
 import * as Inputs from "../inputs";
@@ -38,7 +38,7 @@ describe("Draw unit tests", () => {
     let vector: Vector;
     let solidText: JSCADText;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const context = new Context();
         jscadWorkerManager = new JSCADWorkerManager();
         occtWorkerManager = new OCCTWorkerManager();
@@ -281,8 +281,8 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
         });
 
-        it("should draw a line via draw any without options", async () => {
-            const res = await draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } });
+        it("should draw a line via draw any without options", () => {
+            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } });
             expect(res.name).toContain("polylines");
             expect(res.children.length).toBe(1);
             expect(res.children[0] instanceof LineSegments2).toBe(true);
@@ -826,7 +826,8 @@ describe("Draw unit tests", () => {
     describe("Draw edge cases and undefined handling", () => {
 
         it("should return undefined for undefined entity via drawAnyAsync", async () => {
-            const res = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny<THREE.Group>);
+            const inputs: unknown = { entity: undefined };
+            const res = await draw.drawAnyAsync(inputs as Inputs.Draw.DrawAny<THREE.Group>);
             expect(res).toBeUndefined();
         });
 
@@ -836,7 +837,8 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for undefined entity via drawAny", () => {
-            const res = draw.drawAny({ entity: { unknownType: true } as unknown as Inputs.Draw.Entity });
+            const unrecognisedEntity: unknown = { unknownType: true };
+            const res = draw.drawAny({ entity: unrecognisedEntity as Inputs.Draw.Entity });
             expect(res).toBeUndefined();
         });
     });
@@ -1423,9 +1425,9 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined when group userData type is unknown", () => {
-            const mockGroup = {
+            const mockGroup = partialMock<THREE.Group>({
                 userData: { type: "unknownType" },
-            } as unknown as THREE.Group;
+            });
             const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup });
             expect(res).toBeUndefined();
         });
@@ -1565,7 +1567,7 @@ describe("Draw unit tests", () => {
 
         it("should apply textures when provided", () => {
             // Arrange
-            const mockTexture = {} as unknown as THREE.Texture;
+            const mockTexture = partialMock<THREE.Texture>({});
             const inputs = new Inputs.Draw.GenericPBRMaterialDto();
             inputs.baseColorTexture = mockTexture;
             inputs.metallicRoughnessTexture = mockTexture;

@@ -54,8 +54,7 @@ export class CrossSectionShapes {
     square(inputs: Inputs.Manifold.SquareDto): Manifold3D.CrossSection {
         const resolved = resolveDto(Inputs.Manifold.SquareDto, inputs) as Resolved.Manifold.SquareDto;
         const { CrossSection } = this.manifold;
-        const { square } = CrossSection;
-        return square(resolved.size, resolved.center);
+        return CrossSection.square(resolved.size, resolved.center);
     }
 
     /**
@@ -74,8 +73,7 @@ export class CrossSectionShapes {
     circle(inputs: Inputs.Manifold.CircleDto): Manifold3D.CrossSection {
         const resolved = resolveDto(Inputs.Manifold.CircleDto, inputs) as Resolved.Manifold.CircleDto;
         const { CrossSection } = this.manifold;
-        const { circle } = CrossSection;
-        return circle(resolved.radius, resolved.circularSegments);
+        return CrossSection.circle(resolved.radius, resolved.circularSegments);
     }
 
     /**
@@ -94,7 +92,6 @@ export class CrossSectionShapes {
     rectangle(inputs: Inputs.Manifold.RectangleDto): Manifold3D.CrossSection {
         const resolved = resolveDto(Inputs.Manifold.RectangleDto, inputs) as Resolved.Manifold.RectangleDto;
         const { CrossSection } = this.manifold;
-        const { square } = CrossSection;
-        return square([resolved.length, resolved.height], resolved.center);
+        return CrossSection.square([resolved.length, resolved.height], resolved.center);
     }
 }

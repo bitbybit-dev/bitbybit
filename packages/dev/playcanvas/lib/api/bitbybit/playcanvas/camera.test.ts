@@ -24,7 +24,7 @@ describe("PlayCanvasCamera unit tests", () => {
         });
 
         it("should have context reference", () => {
-            expect((camera as any).context).toBe(mockContext);
+            expect(camera["context"]).toBe(mockContext);
         });
     });
 });

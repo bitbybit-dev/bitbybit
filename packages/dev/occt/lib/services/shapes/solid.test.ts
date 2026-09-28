@@ -28,7 +28,7 @@ describe("OCCT solid unit tests", () => {
         compound = new OCCTCompound(occt, occHelper);
     });
 
-    it("should recreate a solid from closed shell if sewing all edges of the box", async () => {
+    it("should recreate a solid from closed shell if sewing all edges of the box", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 2, 2, [0, 0, 0]);
         const faces = face.getFaces({ shape: box });
         const s = shell.sewFaces({ shapes: faces, tolerance: 1e-7 });
@@ -41,13 +41,13 @@ describe("OCCT solid unit tests", () => {
         so.delete();
     });
 
-    it("should create a box solid", async () => {
+    it("should create a box solid", () => {
         const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: box })).toBeCloseTo(8);
         box.delete();
     });
 
-    it("should create a box solid from corner", async () => {
+    it("should create a box solid from corner", () => {
         const box = solid.createBoxFromCorner({ corner: [-1, -1, -1], width: 3, height: 2, length: 2 });
         const center = solid.getSolidCenterOfMass({ shape: box });
         expect(solid.getSolidVolume({ shape: box })).toBeCloseTo(12);
@@ -58,50 +58,50 @@ describe("OCCT solid unit tests", () => {
         box.delete();
     });
 
-    it("should create a cube solid", async () => {
+    it("should create a cube solid", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cube })).toBeCloseTo(8);
         cube.delete();
     });
 
-    it("should create a cylinder solid", async () => {
+    it("should create a cylinder solid", () => {
         const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0], direction: [0, 0, 1], angle: 360 });
         expect(solid.getSolidVolume({ shape: cylinder })).toBeCloseTo(25.13274122871834);
         cylinder.delete();
     });
 
-    it("should create a cylinder solid wit default direction", async () => {
+    it("should create a cylinder solid wit default direction", () => {
         const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cylinder })).toBeCloseTo(25.13274122871834);
         cylinder.delete();
     });
 
-    it("should create a sphere solid", async () => {
+    it("should create a sphere solid", () => {
         const sphere = solid.createSphere({ radius: 2, center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: sphere })).toBeCloseTo(33.51032163829113);
         sphere.delete();
     });
 
-    it("should create a cone solid", async () => {
+    it("should create a cone solid", () => {
         const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 180, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366);
         expect(solid.getSolidSurfaceArea({ shape: cone })).toBeCloseTo(50.36231006622692);
         cone.delete();
     });
 
-    it("should create a cone of half angle solid", async () => {
+    it("should create a cone of half angle solid", () => {
         const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366 / 2);
         cone.delete();
     });
 
-    it("should create a cone of half angle solid", async () => {
+    it("should create a cone of half angle solid", () => {
         const cone = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
         expect(solid.getSolidVolume({ shape: cone })).toBeCloseTo(20.42035224833366 / 2);
         cone.delete();
     });
 
-    it("should create cylinders on lines and get volumes", async () => {
+    it("should create cylinders on lines and get volumes", () => {
         const cylinders = solid.createCylindersOnLines({
             radius: 2,
             lines: [
@@ -124,7 +124,7 @@ describe("OCCT solid unit tests", () => {
     });
 
 
-    it("get solids of a compound", async () => {
+    it("get solids of a compound", () => {
         const cone1 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 0] });
         const cone2 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 10, 0] });
         const cone3 = solid.createCone({ height: 3, radius1: 3, radius2: 1, angle: 90, direction: [0, 1, 0], center: [0, 0, 10] });
@@ -140,7 +140,7 @@ describe("OCCT solid unit tests", () => {
         compundShape.delete();
     });
 
-    it("should filter points in the solid", async () => {
+    it("should filter points in the solid", () => {
         const f1 = face.createRectangleFace({ width: 2, length: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const subdOpt = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(f1);
         subdOpt.nrDivisionsU = 5;
@@ -164,7 +164,7 @@ describe("OCCT solid unit tests", () => {
         f1.delete();
     });
 
-    it("should filter points outside the solid", async () => {
+    it("should filter points outside the solid", () => {
         const f1 = face.createRectangleFace({ width: 2, length: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const subdOpt = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(f1);
         subdOpt.nrDivisionsU = 5;
@@ -190,7 +190,7 @@ describe("OCCT solid unit tests", () => {
         f1.delete();
     });
 
-    it("should filter points on the solid", async () => {
+    it("should filter points on the solid", () => {
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
         const sphereFace = face.getFaces({ shape: sphere })[0]!;
         const subdOpt = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(sphereFace);
@@ -208,7 +208,7 @@ describe("OCCT solid unit tests", () => {
         sphereFace.delete();
     });
 
-    it("should not filter points if input is empty", async () => {
+    it("should not filter points if input is empty", () => {
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
         const filterOptions = new Inputs.OCCT.FilterSolidPointsDto<TopoDS_Solid>(sphere, []);
         filterOptions.keepIn = false;
@@ -219,7 +219,7 @@ describe("OCCT solid unit tests", () => {
         sphere.delete();
     });
 
-    it("should create an I-beam profile solid with default values", async () => {
+    it("should create an I-beam profile solid with default values", () => {
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -229,7 +229,7 @@ describe("OCCT solid unit tests", () => {
         ibeam.delete();
     });
 
-    it("should create an I-beam profile solid with bidirectional extrusion", async () => {
+    it("should create an I-beam profile solid with bidirectional extrusion", () => {
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0.5;
@@ -277,7 +277,7 @@ describe("OCCT solid unit tests", () => {
         expect([box.min[2], box.max[2]]).toEqual(span.map(value => expect.closeTo(value, 6)));
     });
 
-    it("should create an H-beam profile solid with default values", async () => {
+    it("should create an H-beam profile solid with default values", () => {
         const opt = new Inputs.OCCT.HBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -287,7 +287,7 @@ describe("OCCT solid unit tests", () => {
         hbeam.delete();
     });
 
-    it("should create an H-beam profile solid with backward extrusion only", async () => {
+    it("should create an H-beam profile solid with backward extrusion only", () => {
         const opt = new Inputs.OCCT.HBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 0;
         opt.extrusionLengthBack = 2;
@@ -297,7 +297,7 @@ describe("OCCT solid unit tests", () => {
         hbeam.delete();
     });
 
-    it("should create a T-beam profile solid with default values", async () => {
+    it("should create a T-beam profile solid with default values", () => {
         const opt = new Inputs.OCCT.TBeamProfileSolidDto(2, 2, 0.2, 0.3);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -307,7 +307,7 @@ describe("OCCT solid unit tests", () => {
         tbeam.delete();
     });
 
-    it("should create a U-beam profile solid with default values", async () => {
+    it("should create a U-beam profile solid with default values", () => {
         const opt = new Inputs.OCCT.UBeamProfileSolidDto(2, 3, 0.2, 0.3, 0.5);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -317,7 +317,7 @@ describe("OCCT solid unit tests", () => {
         ubeam.delete();
     });
 
-    it("should create a star solid with default values", async () => {
+    it("should create a star solid with default values", () => {
         const opt = new Inputs.OCCT.StarSolidDto(2, 1, 5);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -328,7 +328,7 @@ describe("OCCT solid unit tests", () => {
         star.delete();
     });
 
-    it("should create a star solid and verify volume is positive", async () => {
+    it("should create a star solid and verify volume is positive", () => {
         const opt = new Inputs.OCCT.StarSolidDto(2, 1, 6);
         opt.half = false;
         opt.extrusionLengthFront = 1;
@@ -339,7 +339,7 @@ describe("OCCT solid unit tests", () => {
         star.delete();
     });
 
-    it("should create a hexagon (6-gon) solid", async () => {
+    it("should create a hexagon (6-gon) solid", () => {
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 6, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -349,7 +349,7 @@ describe("OCCT solid unit tests", () => {
         hexagon.delete();
     });
 
-    it("should create a pentagon (5-gon) solid", async () => {
+    it("should create a pentagon (5-gon) solid", () => {
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 5, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -359,7 +359,7 @@ describe("OCCT solid unit tests", () => {
         pentagon.delete();
     });
 
-    it("should create a triangle (3-gon) solid", async () => {
+    it("should create a triangle (3-gon) solid", () => {
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 3, 1);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -369,7 +369,7 @@ describe("OCCT solid unit tests", () => {
         triangle.delete();
     });
 
-    it("should create a parallelogram solid", async () => {
+    it("should create a parallelogram solid", () => {
         const opt = new Inputs.OCCT.ParallelogramSolidDto([0, 0, 0], [0, 1, 0], true, 2, 1, 15);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -379,7 +379,7 @@ describe("OCCT solid unit tests", () => {
         parallelogram.delete();
     });
 
-    it("should create a parallelogram solid with bidirectional extrusion", async () => {
+    it("should create a parallelogram solid with bidirectional extrusion", () => {
         const opt = new Inputs.OCCT.ParallelogramSolidDto([0, 0, 0], [0, 1, 0], true, 2, 1, 30);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 1;
@@ -389,7 +389,7 @@ describe("OCCT solid unit tests", () => {
         parallelogram.delete();
     });
 
-    it("should create a heart solid", async () => {
+    it("should create a heart solid", () => {
         const opt = new Inputs.OCCT.HeartSolidDto([0, 0, 0], [0, 1, 0], 0, 2);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -399,7 +399,7 @@ describe("OCCT solid unit tests", () => {
         heart.delete();
     });
 
-    it("should create a rotated heart solid with same volume", async () => {
+    it("should create a rotated heart solid with same volume", () => {
         const opt1 = new Inputs.OCCT.HeartSolidDto([0, 0, 0], [0, 1, 0], 0, 2);
         opt1.extrusionLengthFront = 1;
         opt1.extrusionLengthBack = 0;
@@ -417,7 +417,7 @@ describe("OCCT solid unit tests", () => {
         heart2.delete();
     });
 
-    it("should create a christmas tree solid", async () => {
+    it("should create a christmas tree solid", () => {
         const opt = new Inputs.OCCT.ChristmasTreeSolidDto(6, 1.5, 3, 5, 1, 1, false, 0, [0, 0, 0], [0, 1, 0]);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -427,7 +427,7 @@ describe("OCCT solid unit tests", () => {
         tree.delete();
     });
 
-    it("should create christmas tree solid with bidirectional extrusion", async () => {
+    it("should create christmas tree solid with bidirectional extrusion", () => {
         const opt = new Inputs.OCCT.ChristmasTreeSolidDto(6, 1.5, 3, 5, 1, 1, false, 0, [0, 0, 0], [0, 1, 0]);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 1;
@@ -437,7 +437,7 @@ describe("OCCT solid unit tests", () => {
         tree.delete();
     });
 
-    it("should create an L-polygon solid with default values", async () => {
+    it("should create an L-polygon solid with default values", () => {
         const opt = new Inputs.OCCT.LPolygonSolidDto(1, 2, 0.5, 2);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 0;
@@ -447,7 +447,7 @@ describe("OCCT solid unit tests", () => {
         lpolygon.delete();
     });
 
-    it("should create an L-polygon solid with bidirectional extrusion", async () => {
+    it("should create an L-polygon solid with bidirectional extrusion", () => {
         const opt = new Inputs.OCCT.LPolygonSolidDto(1, 2, 0.5, 2);
         opt.extrusionLengthFront = 1;
         opt.extrusionLengthBack = 1;
@@ -457,14 +457,14 @@ describe("OCCT solid unit tests", () => {
         lpolygon.delete();
     });
 
-    it("should throw error when both extrusion lengths are zero", async () => {
+    it("should throw error when both extrusion lengths are zero", () => {
         const opt = new Inputs.OCCT.IBeamProfileSolidDto(2, 3, 0.2, 0.3);
         opt.extrusionLengthFront = 0;
         opt.extrusionLengthBack = 0;
         expect(() => solid.createIBeamProfileSolid(opt)).toThrow("Cannot create solid: both extrusionLengthFront and extrusionLengthBack are 0");
     });
 
-    it("should throw error for NGon solid when both extrusion lengths are zero", async () => {
+    it("should throw error for NGon solid when both extrusion lengths are zero", () => {
         const opt = new Inputs.OCCT.NGonSolidDto([0, 0, 0], [0, 1, 0], 6, 1);
         opt.extrusionLengthFront = 0;
         opt.extrusionLengthBack = 0;

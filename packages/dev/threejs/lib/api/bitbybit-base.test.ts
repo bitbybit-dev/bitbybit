@@ -13,6 +13,8 @@ import { Draw } from "./bitbybit/draw";
 import { ThreeJS } from "./bitbybit/threejs";
 import { BitByBitBase } from "./bitbybit-base";
 
+type ServiceField = { [K in keyof BitByBitBase]: BitByBitBase[K] extends (...args: never[]) => unknown ? never : K }[keyof BitByBitBase];
+
 describe("BitByBitBase unit tests", () => {
     let bitByBit: BitByBitBase;
 
@@ -25,7 +27,7 @@ describe("BitByBitBase unit tests", () => {
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
+        const wiring: [ServiceField, new (...args: never[]) => object][] = [
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
             ["manifoldWorkerManager", ManifoldWorkerManager],
@@ -96,7 +98,7 @@ describe("BitByBitBase unit tests", () => {
 
         it("should initialize with scene and occt worker", () => {
             const scene = new THREEJS.Scene();
-            const mockOcctWorker = {
+            const mockOcctWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -105,7 +107,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(scene, mockOcctWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -113,7 +115,7 @@ describe("BitByBitBase unit tests", () => {
 
         it("should initialize with scene and jscad worker", () => {
             const scene = new THREEJS.Scene();
-            const mockJscadWorker = {
+            const mockJscadWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -122,7 +124,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(scene, undefined, mockJscadWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -130,7 +132,7 @@ describe("BitByBitBase unit tests", () => {
 
         it("should initialize with scene and manifold worker", () => {
             const scene = new THREEJS.Scene();
-            const mockManifoldWorker = {
+            const mockManifoldWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -139,7 +141,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(scene, undefined, undefined, mockManifoldWorker);
             expect(bitByBit.context.scene).toBe(scene);
@@ -147,7 +149,7 @@ describe("BitByBitBase unit tests", () => {
 
         it("should initialize with all workers", () => {
             const scene = new THREEJS.Scene();
-            const createMockWorker = () => ({
+            const createMockWorker = (): Worker => ({
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -156,7 +158,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker);
+            });
             
             const mockOcctWorker = createMockWorker();
             const mockJscadWorker = createMockWorker();

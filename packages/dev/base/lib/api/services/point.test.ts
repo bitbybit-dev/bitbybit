@@ -10,6 +10,7 @@ import { Lists } from "./lists";
 
 describe("Point unit tests", () => {
     const uh = new UnitTestHelper();
+    const loose = <T>(value: unknown): T => value as T;
 
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
@@ -109,7 +110,7 @@ describe("Point unit tests", () => {
 
             it("should handle empty arrays", () => {
                 const pts: Inputs.Base.Point3[] = [];
-                const transformations: any[] = [];
+                const transformations: Inputs.Base.TransformMatrixes[] = [];
                 const result = point.transformsForPoints({ points: pts, transformation: transformations });
                 expect(result).toEqual([]);
             });
@@ -649,11 +650,11 @@ describe("Point unit tests", () => {
             });
 
             it("should throw error for invalid point formats", () => {
-                const p1: any = [0, 0];
+                const p1 = loose<Inputs.Base.Point3>([0, 0]);
                 const p2: Inputs.Base.Point3 = [1, 1, 1];
                 const p3: Inputs.Base.Point3 = [2, 2, 2];
                 expect(() => point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
-                expect(() => point.normalFromThreePoints({ point1: null as any, point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
+                expect(() => point.normalFromThreePoints({ point1: loose<Inputs.Base.Point3>(null), point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
             });
         });
 

@@ -130,7 +130,7 @@ export class PlayCanvasOrbitCamera {
         orbitCamera.pitch = resolved.pitch;
         orbitCamera.yaw = resolved.yaw;
 
-        const state = orbitCamera as any;
+        const state: OrbitCameraInstance & { _pivotPoint?: pc.Vec3 } = orbitCamera;
         if (state._pivotPoint) {
             state._pivotPoint.copy(pivotVec);
         }

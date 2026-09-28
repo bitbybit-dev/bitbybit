@@ -289,7 +289,7 @@ export class CSVBitByBit {
         resolved.json.forEach(obj => {
             const row = resolved.headers.map(header => {
                 const value = (obj as Record<string, unknown>)[header];
-                return this.escapeCsvCell(value !== undefined && value !== null ? String(value) : "", columnSeparator);
+                return this.escapeCsvCell(value, columnSeparator);
             });
             lines.push(row.join(columnSeparator));
         });
@@ -436,7 +436,11 @@ export class CSVBitByBit {
         return result;
     }
     private escapeCsvCell(cell: unknown, separator: string): string {
-        const cellStr = cell !== undefined && cell !== null ? String(cell) : "";
+        let cellStr = "";
+        if (cell !== undefined && cell !== null) {
+            const printable: { toString(): string } = cell;
+            cellStr = String(printable);
+        }
         if (cellStr.includes(separator) || cellStr.includes("\"") || cellStr.includes("\n") || cellStr.includes("\r")) {
             return "\"" + cellStr.replace(/"/g, "\"\"") + "\"";
         }

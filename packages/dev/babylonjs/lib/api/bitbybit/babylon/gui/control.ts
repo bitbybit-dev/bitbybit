@@ -58,24 +58,24 @@ export class BabylonGuiControl {
     changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.Control>): BABYLON.GUI.Control {
         const resolved = resolveDto(Inputs.BabylonGui.AlignmentDto, inputs) as Resolved.BabylonGui.AlignmentDto<BABYLON.GUI.Control>;
         switch (resolved.horizontalAlignment) {
-            case "left":
+            case Inputs.BabylonGui.horizontalAlignmentEnum.left:
                 resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 break;
-            case "right":
+            case Inputs.BabylonGui.horizontalAlignmentEnum.right:
                 resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 break;
-            case "center":
+            case Inputs.BabylonGui.horizontalAlignmentEnum.center:
                 resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 break;
         }
         switch (resolved.verticalAlignment) {
-            case "top":
+            case Inputs.BabylonGui.verticalAlignmentEnum.top:
                 resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 break;
-            case "bottom":
+            case Inputs.BabylonGui.verticalAlignmentEnum.bottom:
                 resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
                 break;
-            case "center":
+            case Inputs.BabylonGui.verticalAlignmentEnum.center:
                 resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
                 break;
         }

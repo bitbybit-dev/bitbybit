@@ -454,7 +454,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should find the depth of the deepest level count in the list with one level", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(1);
     });
 
@@ -464,12 +464,12 @@ describe("Lists unit tests", () => {
     });
 
     it("should find the depth of the deepest level count in the list", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, [3, 4], 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, [3, 4], 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(2);
     });
 
     it("should find the depth of the deepest level count in the list", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, [3, [2], 4], 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, [3, [2], 4], 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(3);
     });
 
