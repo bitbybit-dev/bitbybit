@@ -1,8 +1,11 @@
 import { OccHelper } from "../occ-helper";
 import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
+import * as Models from "../api/models";
+import { historyFromKernel } from "./base/history";
+import { checkedIndexes, checkedShape } from "./base/input-checks";
 
 /**
  * Rounding and beveling the edges of OpenCascade shapes: a fillet replaces a sharp edge with a
@@ -41,6 +44,31 @@ export class OCCTFillets {
     filletEdges(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.FilletDto, inputs) as Resolved.OCCT.FilletDto<TopoDS_Shape>;
         return this.och.filletsService.filletEdges(resolved);
+    }
+
+    /**
+     * Rounds edges as `filletEdges` does, and reports what became of every face, edge and vertex
+     * of the shape: `history.facesFromEdges` holds the round made along each edge, and
+     * `history.faces` what each face was trimmed to, all as indexes the selectors and fillets take.
+     * @param inputs - The shape, the radius or the radius list, and the optional 0-based edge indexes
+     * @returns The shape with rounded edges and its history
+     * @group 3d fillets
+     * @shortname fillet edges with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.filletEdgesWithHistory({ shape: box, radius: 1, indexes: [0] });
+     * const round = history.facesFromEdges[0];
+     * ```
+     */
+    filletEdgesWithHistory(inputs: Inputs.OCCT.FilletDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.FilletDto, inputs) as Resolved.OCCT.FilletDto<TopoDS_Shape>;
+        this.checkEdgeIndexes(checkedShape(resolved.shape), resolved.indexes);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.filletsService.filletEdges(resolved, (maker, result) => {
+            history = historyFromKernel(this.occ.HistoryOfFillet(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
     }
 
     /**
@@ -215,6 +243,30 @@ export class OCCTFillets {
     chamferEdges(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.ChamferDto, inputs) as Resolved.OCCT.ChamferDto<TopoDS_Shape>;
         return this.och.filletsService.chamferEdges(resolved);
+    }
+
+    /**
+     * Bevels edges as `chamferEdges` does, and reports what became of every face, edge and vertex of
+     * the shape: `history.facesFromEdges` holds the bevel made along each edge, and `history.faces`
+     * what each face was trimmed to.
+     * @param inputs - The shape, the distance or the distance list, and the optional 0-based edge indexes
+     * @returns The beveled shape and its history
+     * @group 3d chamfers
+     * @shortname chamfer edges with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.fillets.chamferEdgesWithHistory({ shape: box, distance: 1, indexes: [0] });
+     * ```
+     */
+    chamferEdgesWithHistory(inputs: Inputs.OCCT.ChamferDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.ChamferDto, inputs) as Resolved.OCCT.ChamferDto<TopoDS_Shape>;
+        this.checkEdgeIndexes(checkedShape(resolved.shape), resolved.indexes);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.filletsService.chamferEdges(resolved, (maker, result) => {
+            history = historyFromKernel(this.occ.HistoryOfChamfer(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
     }
 
     /**
@@ -483,4 +535,20 @@ export class OCCTFillets {
         return this.och.filletsService.chamfer2dVertices(resolved);
     }
 
+
+    /**
+     * Refuses an index that names no edge of `shape`, counted as `shapes.edge.getEdges` counts them,
+     * so the history of a rounding or a beveling always describes one that was made.
+     * @ignore true
+     */
+    private checkEdgeIndexes(shape: TopoDS_Shape, indexes: number[] | undefined): void {
+        if (indexes === undefined) {
+            return;
+        }
+        const edges = this.occ.CountSubShapes(shape, this.occ.TopAbs_ShapeEnum.EDGE, true);
+        const outside = checkedIndexes(indexes, "indexes").find(index => index >= edges);
+        if (outside !== undefined) {
+            throw new InputError(`\`indexes\` holds ${outside}, past the shape's last edge: its edges are numbered from 0 to ${edges - 1}.`, "indexes");
+        }
+    }
 }

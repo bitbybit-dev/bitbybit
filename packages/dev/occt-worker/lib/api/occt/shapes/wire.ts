@@ -999,6 +999,98 @@ export class OCCTWire {
     }
 
     /**
+     * Finds a frame on a wire at a parameter, from 0 where the wire starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the wire level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the wire runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The wire, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtParam({ shape: wire, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.frameOnWireAtParam", inputs);
+    }
+
+    /**
+     * Finds a frame on a wire at a length from its start, as `frameOnWireAtParam` finds it at a
+     * parameter.
+     * @param inputs - The wire, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtLength({ shape: wire, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.frameOnWireAtLength", inputs);
+    }
+
+    /**
+     * Finds frames on a wire at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole wire from its start, so each is the frame a swept profile would ride on
+     * there.
+     * @param inputs - The wire, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtParams({ shape: wire, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesOnWireAtParams", inputs);
+    }
+
+    /**
+     * Finds frames on a wire at several lengths from its start in one pass, as
+     * `framesOnWireAtParams` finds them at parameters.
+     * @param inputs - The wire, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtLengths({ shape: wire, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesOnWireAtLengths", inputs);
+    }
+
+    /**
+     * Spreads `count` frames evenly by length along a wire, the first at its start, to place copies
+     * along a path or to carry a profile along it.
+     *
+     * On an open wire the last sits at the end; on a closed wire they go around the loop without
+     * repeating the first, unless `skipEndOnClosed` is off.
+     * @param inputs - The wire, how many frames, the kind of frame, the up vector and the closed-wire rule
+     * @returns The frames from the start onward
+     * @group frames
+     * @shortname frames along wire
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const frames = await bitbybit.occt.shapes.wire.framesAlongWire({ shape: circle, count: 10, kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1], skipEndOnClosed: true });
+     * ```
+     */
+    framesAlongWire(inputs: Inputs.OCCT.FramesAlongWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesAlongWire", inputs);
+    }
+
+    /**
      * Reads the point where a wire starts, in the wire's own direction.
      * @param inputs - The wire
      * @returns The start point

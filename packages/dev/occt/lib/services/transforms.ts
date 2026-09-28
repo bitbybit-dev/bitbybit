@@ -2,8 +2,11 @@ import { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbyb
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { Base } from "../api/inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
+import { numbersOfFrames, WORLD_FRAME } from "./base/frames";
+import { checkedFrame, checkedFrames, checkedPlacements, checkedShape } from "./base/input-checks";
+import { readKernelException } from "../kernel-exception";
 
 /**
  * Moving, turning, scaling and mirroring OpenCascade shapes, and building the 4x4 matrices that
@@ -165,6 +168,80 @@ export class OCCTTransforms {
     alignAndTranslate(inputs: Inputs.OCCT.AlignAndTranslateDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.AlignAndTranslateDto, inputs) as Resolved.OCCT.AlignAndTranslateDto<TopoDS_Shape>;
         return this.och.transformsService.alignAndTranslate(resolved);
+    }
+
+    /**
+     * Moves a shape from one frame onto another in a single rigid motion: whatever sat on `from`
+     * sits the same way on `to`. The result shares its geometry with the shape.
+     *
+     * Leaving out `from` moves from the world frame at the origin, normal along z and direction along x.
+     * @param inputs - The shape, the frame to land on and the frame to move from
+     * @returns The moved shape
+     * @group frames
+     * @shortname orient
+     * @drawable true
+     * @example
+     * ```typescript
+     * const placed = await bitbybit.occt.transforms.orient({ shape: bracket, to: { origin: [10, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] } });
+     * ```
+     */
+    orient(inputs: Inputs.OCCT.OrientDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.OrientDto, inputs) as Resolved.OCCT.OrientDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const to = checkedFrame(resolved.to, "to");
+        const from = resolved.from === undefined ? WORLD_FRAME : checkedFrame(resolved.from, "from");
+        return this.och.occ.OrientShape(shape, numbersOfFrames([from]), numbersOfFrames([to]));
+    }
+
+    /**
+     * Places a copy of a shape on every frame, as `orient` would move it from `from`, all in one
+     * compound whose copies share the shape's geometry: an array of hundreds costs one shape's worth
+     * of geometry, and an export writes it once.
+     * @param inputs - The shape, the frames and the frame to move from
+     * @returns A compound of the placed copies, in the order of the frames
+     * @group frames
+     * @shortname place on frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const pattern = await bitbybit.occt.transforms.placeOnFrames({ shape: bolt, frames });
+     * ```
+     */
+    placeOnFrames(inputs: Inputs.OCCT.PlaceOnFramesDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.PlaceOnFramesDto, inputs) as Resolved.OCCT.PlaceOnFramesDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const frames = checkedFrames(resolved.frames, "frames");
+        const from = resolved.from === undefined ? WORLD_FRAME : checkedFrame(resolved.from, "from");
+        return this.och.occ.PlaceOnFrames(shape, numbersOfFrames([from]), numbersOfFrames(frames));
+    }
+
+    /**
+     * Places a copy of a shape by every placement, a matrix or a list of them, in one compound whose
+     * copies share the shape's geometry. Each must come to a turn and a move; one that scales or
+     * mirrors is refused and named, since a shared copy cannot hold either.
+     * @param inputs - The shape and one placement per copy
+     * @returns A compound of the placed copies, in the order of the placements
+     * @group frames
+     * @shortname place by matrices
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = bitbybit.frame.polar({ count: 6, radius: 20 });
+     * const matrices = frames.map(frame => bitbybit.frame.toMatrix({ frame }));
+     * const copies = await bitbybit.occt.transforms.placeByMatrices({ shape: bolt, matrices });
+     * ```
+     */
+    placeByMatrices(inputs: Inputs.OCCT.PlaceByMatricesDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.PlaceByMatricesDto, inputs) as Resolved.OCCT.PlaceByMatricesDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const placements = checkedPlacements(resolved.matrices, "matrices");
+        try {
+            return this.och.occ.PlaceByMatrices(shape, placements.flat());
+        } catch (thrown) {
+            const read = readKernelException(this.och.occ, thrown);
+            const refused = read instanceof Error ? /matrix (\d+) is not a rigid motion \((.*)\)/.exec(read.message) : null;
+            throw refused === null ? read : new InputError(`\`matrices\` holds a placement at position ${refused[1]} that is not a turn and a move: ${refused[2]}.`, "matrices");
+        }
     }
 
     /**

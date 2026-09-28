@@ -230,3 +230,57 @@ export enum cornerModeEnum {
     auto = "auto",
     planarOnly = "planarOnly",
 }
+/**
+ * How a union or a difference goes through its shapes. oneAfterAnother takes one shape per step:
+ * right for any shapes, and the edge and face numbering results have always had. inGroups puts shapes
+ * whose boxes do not meet into one step: faster, numbered differently. allAtOnce takes every shape in
+ * one step: fast, but wrong without an error where shapes touch each other at a single point.
+ */
+export enum booleanStrategyEnum {
+    oneAfterAnother = "oneAfterAnother",
+    inGroups = "inGroups",
+    allAtOnce = "allAtOnce",
+}
+/**
+ * The kind of surface a face lies on: the analytic ones (plane, cylinder, cone, sphere, torus), Bezier
+ * and B-spline patches, surfaces of revolution and extrusion, offsets of another surface, and other.
+ */
+export enum surfaceTypeEnum {
+    plane = "plane",
+    cylinder = "cylinder",
+    cone = "cone",
+    sphere = "sphere",
+    torus = "torus",
+    bezier = "bezier",
+    bspline = "bspline",
+    revolution = "revolution",
+    extrusion = "extrusion",
+    offset = "offset",
+    other = "other",
+}
+/**
+ * The kind of curve an edge runs along: line, circle, ellipse, hyperbola, parabola, Bezier and
+ * B-spline curves, offsets of another curve, and other.
+ */
+export enum curveTypeEnum {
+    line = "line",
+    circle = "circle",
+    ellipse = "ellipse",
+    hyperbola = "hyperbola",
+    parabola = "parabola",
+    bezier = "bezier",
+    bspline = "bspline",
+    offset = "offset",
+    other = "other",
+}
+/**
+ * How a frame follows a curve. frenet lies in the plane the curve bends in, its direction along the
+ * tangent, and has no normal where the curve runs straight. perpendicular stands across the curve,
+ * level with an up vector. rotationMinimizing stands across the curve and is carried along it from
+ * the start without twisting, the way a swept profile rides.
+ */
+export enum curveFrameEnum {
+    frenet = "frenet",
+    perpendicular = "perpendicular",
+    rotationMinimizing = "rotationMinimizing",
+}

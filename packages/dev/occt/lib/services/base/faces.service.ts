@@ -184,7 +184,7 @@ export class FacesService {
         }
         let result;
         if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false });
+            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
         } else {
             result = this.converterService.makeCompound({ shapes: faces });
         }
@@ -273,7 +273,7 @@ export class FacesService {
         }
         let result;
         if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false });
+            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
         } else {
             result = this.converterService.makeCompound({ shapes: faces });
         }

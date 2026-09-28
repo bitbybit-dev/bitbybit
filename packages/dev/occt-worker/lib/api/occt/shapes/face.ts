@@ -1146,6 +1146,107 @@ export class OCCTFace {
     }
 
     /**
+     * Finds the frame of a face at a UV fraction pair, where a profile or a copy would sit: at the
+     * surface point, normal as `normalOnUV` gives it, direction along U.
+     *
+     * U and V run from 0 to 1 over the face's range. Where the surface has no normal, as at a cone's
+     * point, it is read inside the face.
+     * @param inputs - The face and the U and V fractions
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on uv
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
+     * ```
+     */
+    frameOnUV(inputs: Inputs.OCCT.DataOnUVDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.frameOnUV", inputs);
+    }
+
+    /**
+     * Finds the frames of a face at several UV fraction pairs at once, each as `frameOnUV` finds it.
+     * @param inputs - The face and the list of U and V fraction pairs
+     * @returns One frame per pair, in the same order
+     * @group frames
+     * @shortname frames on uvs
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesOnUVs({ shape: face, paramsUV: [[0.25, 0.5], [0.75, 0.5]] });
+     * ```
+     */
+    framesOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.framesOnUVs", inputs);
+    }
+
+    /**
+     * Places frames on a face in a grid, one at each point `subdivideToPoints` gives for the same
+     * inputs, each turned as `frameOnUV` turns it.
+     *
+     * The frames come in the order of the points, their normals match `subdivideToNormals` and
+     * their X axes run along the face's U direction.
+     * @param inputs - The face, the number of points in U and V, and the shift and removal options
+     * @returns One frame per point of the grid, in order
+     * @group frames
+     * @shortname subdivide to frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.subdivideToFrames({
+     *     shape: face,
+     *     nrDivisionsU: 5,
+     *     nrDivisionsV: 5,
+     *     shiftHalfStepU: false,
+     *     removeStartEdgeU: false,
+     *     removeEndEdgeU: false,
+     *     shiftHalfStepV: false,
+     *     removeStartEdgeV: false,
+     *     removeEndEdgeV: false,
+     * });
+     * const studs = await bitbybit.occt.transforms.placeOnFrames({ shape: stud, frames });
+     * ```
+     */
+    subdivideToFrames(inputs: Inputs.OCCT.FaceSubdivisionDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.subdivideToFrames", inputs);
+    }
+
+    /**
+     * Finds the frame of a face at the place nearest a point, as `frameOnUV` finds it there; a point
+     * beyond the face's edge comes to the edge.
+     * @param inputs - The face and the point
+     * @returns The frame at the nearest place
+     * @group frames
+     * @shortname frame nearest point
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameNearestPoint({ shape: face, point: [1, 2, 10] });
+     * ```
+     */
+    frameNearestPoint(inputs: Inputs.OCCT.FrameNearestPointDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.frameNearestPoint", inputs);
+    }
+
+    /**
+     * Finds the frames of a face at the places nearest several points at once, each as
+     * `frameNearestPoint` finds it.
+     * @param inputs - The face and the points
+     * @returns One frame per point, in the same order
+     * @group frames
+     * @shortname frames nearest points
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesNearestPoints({ shape: face, points: [[1, 2, 10], [4, 5, 10]] });
+     * ```
+     */
+    framesNearestPoints(inputs: Inputs.OCCT.FramesNearestPointsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.framesNearestPoints", inputs);
+    }
+
+    /**
      * Places evenly spaced points along one straight line across a face's UV range.
      *
      * With `isU` true the line sits at `param` (a fraction from 0 to 1 of the U range) and

@@ -25,6 +25,8 @@ export namespace Base {
     export type TrianglePlane3 = BaseTypes.TrianglePlane3;
     export type Triangle3 = BaseTypes.Triangle3;
     export type Mesh3 = BaseTypes.Mesh3;
+    export type Frame = BaseTypes.Frame;
+    /** @deprecated Use `Frame`; `Plane3` is removed in the next major version. */
     export type Plane3 = BaseTypes.Plane3;
     export type BoundingBox = BaseTypes.BoundingBox;
     export type Line2 = BaseTypes.Line2;

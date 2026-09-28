@@ -59,6 +59,11 @@ export namespace Base {
         b: number;
         a: number;
     };
+    export type Frame = {
+        origin: Base.Point3;
+        normal: Base.Vector3;
+        direction: Base.Vector3;
+    };
     export enum horizontalAlignEnum {
         // (undocumented)
         center = "center",
@@ -77,11 +82,8 @@ export namespace Base {
     };
     export type Material = any;
     export type Mesh3 = Triangle3[];
-    export type Plane3 = {
-        origin: Base.Point3;
-        normal: Base.Vector3;
-        direction: Base.Vector3;
-    };
+    // @deprecated
+    export type Plane3 = Frame;
     export type Point2 = [number, number];
     export type Point3 = [number, number, number];
     export type Polyline2 = {
@@ -463,6 +465,193 @@ export function englishList(items: readonly string[]): string;
 // @public
 export function fillFailureMessage(template: string, details: KernelFailureDetails | undefined, formatList?: (items: readonly string[]) => string): string;
 
+// @public
+export class Frame {
+    constructor(geometryHelper: GeometryHelper);
+    bestFit(inputs: Inputs_2.Frame.BestFitDto): Inputs_2.Base.Frame;
+    create(inputs: Inputs_2.Frame.CreateFrameDto): Inputs_2.Base.Frame;
+    direction(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.Vector3;
+    flip(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.Frame;
+    frameToLocal(inputs: Inputs_2.Frame.ChildFrameDto): Inputs_2.Base.Frame;
+    frameToWorld(inputs: Inputs_2.Frame.ChildFrameDto): Inputs_2.Base.Frame;
+    fromMatrix(inputs: Inputs_2.Frame.TransformationDto): Inputs_2.Base.Frame;
+    fromPointAndNormal(inputs: Inputs_2.Frame.PointAndNormalDto): Inputs_2.Base.Frame;
+    fromThreePoints(inputs: Inputs_2.Frame.ThreePointsDto): Inputs_2.Base.Frame;
+    grid(inputs: Inputs_2.Frame.GridDto): Inputs_2.Base.Frame[];
+    hexGrid(inputs: Inputs_2.Frame.HexGridDto): Inputs_2.Base.Frame[];
+    matrixFromTo(inputs: Inputs_2.Frame.FromToDto): Inputs_2.Base.TransformMatrixes;
+    normal(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.Vector3;
+    offset(inputs: Inputs_2.Frame.OffsetDto): Inputs_2.Base.Frame;
+    origin(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.Point3;
+    pointsToLocal(inputs: Inputs_2.Frame.FramePointsDto): Inputs_2.Base.Point3[];
+    pointsToWorld(inputs: Inputs_2.Frame.FramePointsDto): Inputs_2.Base.Point3[];
+    pointToLocal(inputs: Inputs_2.Frame.FramePointDto): Inputs_2.Base.Point3;
+    pointToWorld(inputs: Inputs_2.Frame.FramePointDto): Inputs_2.Base.Point3;
+    polar(inputs: Inputs_2.Frame.PolarDto): Inputs_2.Base.Frame[];
+    rotate(inputs: Inputs_2.Frame.RotateDto): Inputs_2.Base.Frame;
+    toMatrix(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.TransformMatrixes;
+    translate(inputs: Inputs_2.Frame.TranslateDto): Inputs_2.Base.Frame;
+    vectorToLocal(inputs: Inputs_2.Frame.FrameVectorDto): Inputs_2.Base.Vector3;
+    vectorToWorld(inputs: Inputs_2.Frame.FrameVectorDto): Inputs_2.Base.Vector3;
+    world(): Inputs_2.Base.Frame;
+    xy(inputs: Inputs_2.Frame.OriginDto): Inputs_2.Base.Frame;
+    yDirection(inputs: Inputs_2.Frame.FrameDto): Inputs_2.Base.Vector3;
+    yz(inputs: Inputs_2.Frame.OriginDto): Inputs_2.Base.Frame;
+    zx(inputs: Inputs_2.Frame.OriginDto): Inputs_2.Base.Frame;
+}
+
+// @public
+namespace Frame_2 {
+    class BestFitDto {
+        constructor(points?: Base.Point3[]);
+        points: Base.Point3[];
+    }
+    class ChildFrameDto {
+        constructor(parent?: Base.Frame, child?: Base.Frame);
+        child: Base.Frame;
+        parent: Base.Frame;
+    }
+    class CreateFrameDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3, direction?: Base.Vector3);
+        direction?: Base.Vector3 | undefined;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    enum frameAxisEnum {
+        // (undocumented)
+        x = "x",
+        // (undocumented)
+        y = "y",
+        // (undocumented)
+        z = "z"
+    }
+    class FrameDto {
+        constructor(frame?: Base.Frame);
+        frame: Base.Frame;
+    }
+    class FramePointDto {
+        constructor(frame?: Base.Frame, point?: Base.Point3);
+        frame: Base.Frame;
+        point: Base.Point3;
+    }
+    class FramePointsDto {
+        constructor(frame?: Base.Frame, points?: Base.Point3[]);
+        frame: Base.Frame;
+        points: Base.Point3[];
+    }
+    class FrameVectorDto {
+        constructor(frame?: Base.Frame, vector?: Base.Vector3);
+        frame: Base.Frame;
+        vector: Base.Vector3;
+    }
+    class FromToDto {
+        constructor(to?: Base.Frame, from?: Base.Frame);
+        from?: Base.Frame | undefined;
+        to: Base.Frame;
+    }
+    class GridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, spacingX?: number, spacingY?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        spacingX?: number | undefined;
+        spacingY?: number | undefined;
+    }
+    class HexGridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, radius?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+    }
+    class OffsetDto {
+        constructor(frame?: Base.Frame, distance?: number);
+        distance?: number | undefined;
+        frame: Base.Frame;
+    }
+    class OriginDto {
+        constructor(origin?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+    }
+    class PointAndNormalDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3);
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    class PolarDto {
+        constructor(frame?: Base.Frame, count?: number, radius?: number, angle?: number, startAngle?: number, rotate?: boolean);
+        angle?: number | undefined;
+        count?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+        rotate?: boolean | undefined;
+        startAngle?: number | undefined;
+    }
+    class RotateDto {
+        constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number);
+        angle?: number | undefined;
+        axis?: frameAxisEnum | undefined;
+        frame: Base.Frame;
+    }
+    class ThreePointsDto {
+        constructor(origin?: Base.Point3, xPoint?: Base.Point3, planePoint?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+        planePoint?: Base.Point3 | undefined;
+        xPoint?: Base.Point3 | undefined;
+    }
+    class TransformationDto {
+        constructor(transformation?: Base.TransformMatrixes);
+        transformation: Base.TransformMatrixes;
+    }
+    class TranslateDto {
+        constructor(frame?: Base.Frame, translation?: Base.Vector3);
+        frame: Base.Frame;
+        translation?: Base.Vector3 | undefined;
+    }
+}
+
+// @public
+namespace Frame_3 {
+    // (undocumented)
+    type BestFitDto = Inputs_2.Frame.BestFitDto;
+    // (undocumented)
+    type ChildFrameDto = Inputs_2.Frame.ChildFrameDto;
+    // (undocumented)
+    type CreateFrameDto = WithDefaults<Inputs_2.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
+    // (undocumented)
+    type FrameDto = Inputs_2.Frame.FrameDto;
+    // (undocumented)
+    type FramePointDto = Inputs_2.Frame.FramePointDto;
+    // (undocumented)
+    type FramePointsDto = Inputs_2.Frame.FramePointsDto;
+    // (undocumented)
+    type FrameVectorDto = Inputs_2.Frame.FrameVectorDto;
+    // (undocumented)
+    type FromToDto = Inputs_2.Frame.FromToDto;
+    // (undocumented)
+    type GridDto = WithDefaults<Inputs_2.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
+    // (undocumented)
+    type HexGridDto = WithDefaults<Inputs_2.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
+    // (undocumented)
+    type OffsetDto = WithDefaults<Inputs_2.Frame.OffsetDto, "distance">;
+    // (undocumented)
+    type OriginDto = WithDefaults<Inputs_2.Frame.OriginDto, "origin">;
+    // (undocumented)
+    type PointAndNormalDto = WithDefaults<Inputs_2.Frame.PointAndNormalDto, "origin" | "normal">;
+    // (undocumented)
+    type PolarDto = WithDefaults<Inputs_2.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
+    // (undocumented)
+    type RotateDto = WithDefaults<Inputs_2.Frame.RotateDto, "axis" | "angle">;
+    // (undocumented)
+    type ThreePointsDto = WithDefaults<Inputs_2.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
+    // (undocumented)
+    type TransformationDto = Inputs_2.Frame.TransformationDto;
+    // (undocumented)
+    type TranslateDto = WithDefaults<Inputs_2.Frame.TranslateDto, "translation">;
+}
+
 // @public (undocumented)
 export class GeometryHelper {
     approxEq(num1: number, num2: number, tolerance: number): boolean;
@@ -526,7 +715,8 @@ declare namespace Inputs {
         Line_2 as Line,
         Polyline_2 as Polyline,
         Mesh,
-        IO
+        IO,
+        Frame_2 as Frame
     }
 }
 
@@ -637,7 +827,7 @@ export type KernelFailureDetail = string | number | boolean | readonly string[] 
 export type KernelFailureDetails = Readonly<Record<string, KernelFailureDetail>>;
 
 // @public
-export type KernelFailureKind = "input" | "kernel" | "crash";
+export type KernelFailureKind = "input" | "kernel" | "crash" | "cancelled";
 
 // @public
 export class KernelOperationError extends Error {
@@ -1946,6 +2136,7 @@ declare namespace Resolved {
     export {
         Color_3 as Color,
         Dates_3 as Dates,
+        Frame_3 as Frame,
         IO_2 as IO,
         Line_3 as Line,
         Lists_3 as Lists,

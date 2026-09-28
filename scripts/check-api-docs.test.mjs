@@ -473,6 +473,17 @@ describe("pair-parity", () => {
         assert.deepEqual(reported(audit, "pair-parity"), ["BoxesDto.width: differs from BoxDto.width in minimum", "DrawsDto.size: differs from DrawDto.size in type", "DrawShapesDto.size: differs from DrawDto.size in default"]);
     });
 
+    it("should pair a name of several words with the plural of its first and its last word", async () => {
+        // Arrange
+        const pair = "export class FrameOnCurveAtParamDto {\n    /**\n     * @default perpendicular\n     */\n    kind?: string | undefined = \"perpendicular\";\n}\nexport class FramesOnCurveAtParamsDto {\n    /**\n     * @default rotationMinimizing\n     */\n    kind?: string | undefined = \"rotationMinimizing\";\n}\n";
+
+        // Act
+        const audit = await auditOf(pair);
+
+        // Assert
+        assert.deepEqual(reported(audit, "pair-parity"), ["FramesOnCurveAtParamsDto.kind: differs from FrameOnCurveAtParamDto.kind in default"]);
+    });
+
     it("should compare a property one of the pair inherits from a concrete parent", async () => {
         // Arrange
         const inherited = "export class RadiusDto {\n    /**\n     * @default 1\n     */\n    radius?: number | undefined = 1;\n}\nexport class SphereDto extends RadiusDto {\n    center!: number[];\n}\nexport class SphereCentersDto {\n    /**\n     * @default 2\n     */\n    radius?: number | undefined = 2;\n}\nexport class CubeDto {\n    /**\n     * @default 3\n     */\n    size?: number | undefined = 3;\n}\nexport class CubeCentersDto extends SizeDto {\n}\nexport class SizeDto {\n    /**\n     * @default 4\n     */\n    size?: number | undefined = 4;\n}\n";

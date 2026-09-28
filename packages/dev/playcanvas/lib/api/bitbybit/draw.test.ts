@@ -429,15 +429,17 @@ describe("Draw unit tests", () => {
                 updatable: true,
             };
             const res = draw.drawAny({ entity: [{ points: [[1, -3, 3], [0, -3, 4], [3, 4, 5]] }, { points: [[3, -3, 3], [4, -4, 5], [4, 6, 5]] }], options }) as DrawnEntity;
+            const firstLines = res.children[0]!;
+            const scene = res.parent!;
+            const groupsBefore = scene.children.length;
             const res2 = draw.drawAny({ entity: [{ points: [[2, -4, 5], [1, -2, 3], [4, 6, 7], [3, 4, 6]] }, { points: [[9, -4, 2], [3, -3, 5], [6, 4, 3]] }], options, group: res }) as DrawnEntity;
 
             expect(res2.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.polylines);
-            expect(res.name).not.toEqual(res2.name);
-
-            const lineSegments1 = res.children[0]!;
-            const lineSegments2 = res2.children[0]!;
-
-            expect(lineSegments1.name).not.toEqual(lineSegments2.name);
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(res2.children[0]!.name).not.toEqual(firstLines.name);
+            expect(firstLines.parent).toBeNull();
+            expect(scene.children).toHaveLength(groupsBefore);
         });
     });
 
@@ -2395,6 +2397,159 @@ describe("Draw unit tests", () => {
         });
     });
 
+
+    describe("Draw frame tests", () => {
+        const world: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const raised: Inputs.Base.Frame = { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] };
+
+        it("should draw a frame as one line entity", () => {
+            // Act
+            const res = draw.drawAny({ entity: world }) as DrawnEntity;
+
+            // Assert
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(res.children).toHaveLength(1);
+        });
+
+        it("should draw a whole list of frames as one line entity", () => {
+            // Act
+            const res = draw.drawAny({ entity: [world, raised, world] }) as DrawnEntity;
+
+            // Assert
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.frames);
+            expect(res.children).toHaveLength(1);
+        });
+
+        it("should keep the frame options it was drawn with", () => {
+            // Arrange
+            const options = draw.optionsFrame({ size: 2, drawPlane: false });
+
+            // Act
+            const res = draw.drawAny({ entity: world, options }) as DrawnEntity;
+
+            // Assert
+            expect(res.bitbybitMeta.options).toEqual(options);
+        });
+
+        it("should redraw frames in place when they are updatable", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: [world], options }) as DrawnEntity;
+
+            // Act
+            const res2 = draw.drawAny({ entity: [raised], options, group: res }) as DrawnEntity;
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.frames);
+        });
+
+        const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+        const vertexColor = (colors: number[], vertex: number): number[] => colors.slice(vertex * 4, vertex * 4 + 4);
+
+        it("should color the axes red, green and blue and the grid gray, two vertices a segment", () => {
+            // Arrange
+            const setColors = vi.spyOn(pc.Mesh.prototype, "setColors32");
+
+            // Act
+            draw.drawAny({ entity: world });
+
+            // Assert
+            const colors = setColors.mock.calls.at(-1)![0] as number[];
+            expect(colors).toHaveLength(13 * 2 * 4);
+            expect(vertexColor(colors, 0)).toEqual([255, 0, 0, 255]);
+            expect(vertexColor(colors, 2)).toEqual([0, 255, 0, 255]);
+            expect(vertexColor(colors, 4)).toEqual([0, 0, 255, 255]);
+            expect(vertexColor(colors, 6)).toEqual([128, 128, 128, 255]);
+            setColors.mockRestore();
+        });
+
+        it.each([
+            { first: world, second: [world, raised], type: Inputs.Draw.drawingTypes.frames },
+            { first: [world, raised], second: raised, type: Inputs.Draw.drawingTypes.frame },
+        ])("should redraw with a $type, reading whether it is one frame or a list from the entity", ({ first, second, type }) => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: first, options }) as DrawnEntity;
+
+            // Act
+            const res2 = draw.drawAny({ entity: second, options, group: res }) as DrawnEntity;
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(res2.bitbybitMeta.type).toBe(type);
+        });
+
+        it("should keep one group in the scene when updatable frames are redrawn with another count", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: [world], options }) as DrawnEntity;
+            const scene = res.parent!;
+            const before = scene.children.length;
+
+            // Act
+            const res2 = draw.drawAny({ entity: [world, raised], options, group: res }) as DrawnEntity;
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(scene.children).toHaveLength(before);
+        });
+
+        it("should recolor updatable frames redrawn in place with the same count", () => {
+            // Arrange
+            const res = draw.drawAny({ entity: [world], options: draw.optionsFrame({ updatable: true }) }) as DrawnEntity;
+            const setColors = vi.spyOn(pc.Mesh.prototype, "setColors32");
+
+            // Act
+            const res2 = draw.drawAny({ entity: [raised], options: draw.optionsFrame({ updatable: true, colorX: "#ffff00" }), group: res }) as DrawnEntity;
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(vertexColor(setColors.mock.calls.at(-1)![0] as number[], 0)).toEqual([255, 255, 0, 255]);
+            setColors.mockRestore();
+        });
+
+        it("should draw nothing for frames that cannot be squared", () => {
+            // Act
+            const res = draw.drawAny({ entity: [flat, flat] });
+
+            // Assert
+            expect(res).toBeUndefined();
+        });
+
+        it("should take an updatable drawing out of the scene when it is redrawn with frames that cannot be squared", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: world, options }) as DrawnEntity;
+            const scene = res.parent!;
+
+            // Act
+            const res2 = draw.drawAny({ entity: flat, options, group: res });
+
+            // Assert
+            expect(res2).toBeUndefined();
+            expect(scene.children).not.toContain(res);
+        });
+
+        it("should draw a frame through drawAnyAsync as drawAny does", async () => {
+            // Act
+            const res = await draw.drawAnyAsync({ entity: world }) as DrawnEntity;
+
+            // Assert
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(res.children).toHaveLength(1);
+        });
+
+        it("should keep what the frame options are given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsFrame({ lineWidth: 4 });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawFrameOptions(), lineWidth: 4 });
+        });
+    });
 });
 
 

@@ -18,7 +18,7 @@ export namespace Draw {
      * draw API picks the right one from the entity you pass. Reach for the specific option class when
      * you want type checking on the fields.
      */
-    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions;
+    export type DrawOptions = DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawOcctShapeOptions | DrawOcctShapeSimpleOptions | DrawOcctShapeMaterialOptions | DrawNodeOptions | DrawFrameOptions;
     /**
      * Everything a draw call will accept: points, lines, segments and polylines; Verb curves and
      * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; tags; a BabylonJS node, which draws as an axis triad; whatever a layer
@@ -45,6 +45,7 @@ export namespace Draw {
         | Base.Line3
         | Base.Segment3
         | Base.Polyline3
+        | Base.Frame
         | Base.VerbCurve
         | Base.VerbSurface
         | Inputs.OCCT.TopoDSShapePointer
@@ -61,6 +62,7 @@ export namespace Draw {
         | Base.Line3[]
         | Base.Segment3[]
         | Base.Polyline3[]
+        | Base.Frame[]
         | Base.VerbCurve[]
         | Base.VerbSurface[]
         | Inputs.OCCT.TopoDSShapePointer[]
@@ -1083,6 +1085,69 @@ export namespace Draw {
     }
 
     /**
+     * Feeds `draw.optionsFrame`: how a frame is drawn, as its three axes in their own colors and a
+     * small grid in its plane that marks it as a plane.
+     */
+    export class DrawFrameOptions {
+        constructor(size?: number, colorX?: Base.Color, colorY?: Base.Color, colorZ?: Base.Color, drawPlane?: boolean, colorPlane?: Base.Color, lineWidth?: number, updatable?: boolean) {
+            if (size !== undefined) { this.size = size; }
+            if (colorX !== undefined) { this.colorX = colorX; }
+            if (colorY !== undefined) { this.colorY = colorY; }
+            if (colorZ !== undefined) { this.colorZ = colorZ; }
+            if (drawPlane !== undefined) { this.drawPlane = drawPlane; }
+            if (colorPlane !== undefined) { this.colorPlane = colorPlane; }
+            if (lineWidth !== undefined) { this.lineWidth = lineWidth; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+        }
+        /**
+         * Length of each axis, in model units; the grid in the plane is as wide, centered on the origin.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        size?: number | undefined = 1;
+        /**
+         * Color of the X axis, which runs along the frame's direction.
+         * @default #ff0000
+         */
+        colorX?: Base.Color | undefined = "#ff0000";
+        /**
+         * Color of the Y axis.
+         * @default #00ff00
+         */
+        colorY?: Base.Color | undefined = "#00ff00";
+        /**
+         * Color of the Z axis, which runs along the frame's normal.
+         * @default #0000ff
+         */
+        colorZ?: Base.Color | undefined = "#0000ff";
+        /**
+         * Whether to draw the small grid in the frame's plane around its origin.
+         * @default true
+         */
+        drawPlane?: boolean | undefined = true;
+        /**
+         * Color of the grid in the frame's plane.
+         * @default #808080
+         */
+        colorPlane?: Base.Color | undefined = "#808080";
+        /**
+         * How wide the lines are, on the scale the simple drawing options use for a line's `size`.
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineWidth?: number | undefined = 2;
+        /**
+         * Whether the drawn frame can be redrawn in place by passing it back.
+         * @default false
+         */
+        updatable?: boolean | undefined = false;
+    }
+    /**
      * The kind of geometry a draw call detected, in singular and plural forms - point, line, node,
      * polyline, Verb curve and surface, JSCAD mesh, and so on. Written onto a drawn object so that
      * handing it back finds the handler that made it, and readable so you can tell what a handle
@@ -1102,6 +1167,8 @@ export namespace Draw {
         nodes = "nodes",
         polyline = "polyline",
         polylines = "polylines",
+        frame = "frame",
+        frames = "frames",
         verbCurve = "verbCurve",
         verbCurves = "verbCurves",
         verbSurface = "verbSurface",

@@ -15,6 +15,7 @@ import { OCCTAssembly } from "./assembly/assembly";
 import { OCCTBrepGraph } from "./brep-graph";
 import { OCCTCorners } from "./corners";
 import { OCCTDraft } from "./draft";
+import { OCCTSelect } from "./select/select";
 import { OCCTIO } from "./io";
 import { OCCTPath } from "./path";
 import { OCCTSVG } from "./svg";
@@ -23,10 +24,11 @@ import { OCCTSVG } from "./svg";
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners` and `draft` change
- * shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and other
- * files; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations,
- * topology graphs, machining paths and SVG. The methods on the service itself turn shapes into
- * triangle meshes for drawing.
+ * shapes; `select` picks faces and edges by what they are and where they lie; `geom` handles
+ * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `assembly`,
+ * `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology graphs,
+ * machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
+ * drawing.
  */
 export class OCCT {
     public readonly shapes: OCCTShapes;
@@ -41,6 +43,7 @@ export class OCCT {
     public readonly brepGraph: OCCTBrepGraph;
     public readonly corners: OCCTCorners;
     public readonly draft: OCCTDraft;
+    public readonly select: OCCTSelect;
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly svg: OCCTSVG;
@@ -60,6 +63,7 @@ export class OCCT {
         this.brepGraph = new OCCTBrepGraph(occWorkerManager);
         this.corners = new OCCTCorners(occWorkerManager);
         this.draft = new OCCTDraft(occWorkerManager);
+        this.select = new OCCTSelect(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
         this.path = new OCCTPath(occWorkerManager);
         this.svg = new OCCTSVG(occWorkerManager);

@@ -17,9 +17,9 @@ import * as Resolved from "../resolved-inputs";
 export type DrawnEntity = Inputs.Draw.DrawnAny<THREEJS.Group>;
 
 /**
- * Drawing anything into the scene: kernel shapes, points, lines, polylines, curves, meshes and tags
- * all go through `drawAnyAsync`, which picks the right renderer for the entity and returns the
- * drawn object. The `options` methods build the drawing options with defaults for each kind of
+ * Drawing anything into the scene: kernel shapes, points, lines, polylines, frames, curves, meshes
+ * and tags all go through `drawAnyAsync`, which picks the right renderer for the entity and returns
+ * the drawn object. The `options` methods build the drawing options with defaults for each kind of
  * entity, `createPBRMaterial` and `createTexture` make materials for the face slots, and a drawn
  * object can be redrawn in place by passing it back.
  */
@@ -30,6 +30,7 @@ export class Draw extends DrawCore {
         size: 2,
         colours: "#ff00ff",
     };
+    private defaultFrameOptions = new Inputs.Draw.DrawFrameOptions();
 
     constructor(
         public readonly drawHelper: DrawHelper,
@@ -41,8 +42,8 @@ export class Draw extends DrawCore {
 
     /**
      * Draws any entity the library produces into the scene and gives back the drawn object: kernel
-     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, curves, meshes, tags and
-     * nodes.
+     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, frames, curves, meshes, tags
+     * and nodes.
      *
      * The options are matched to the entity, with defaults when none are given; pass the previous
      * result back in the update slot to redraw in place.
@@ -74,10 +75,12 @@ export class Draw extends DrawCore {
             point: (i) => this.handlePoint(i),
             jscadPath: (i) => this.handleJscadPath(i),
             polyline: (i) => this.handlePolyline(i),
+            frame: (i) => this.handleFrames(i),
             verbCurve: (i) => this.handleVerbCurve(i),
             verbSurface: (i) => this.handleVerbSurface(i),
             jscadPaths: (i) => this.handleJscadPaths(i),
             polylines: (i) => this.handlePolylines(i),
+            frames: (i) => this.handleFrames(i),
             lines: (i) => this.handleLines(i),
             points: (i) => this.handlePoints(i),
             verbCurves: (i) => this.handleVerbCurves(i),
@@ -159,7 +162,7 @@ export class Draw extends DrawCore {
 
     /**
      * Draws an entity that needs no kernel work into the scene right away and gives back the drawn
-     * object: points, lines, polylines, tags and nodes.
+     * object: points, lines, polylines, frames, tags and nodes.
      *
      * Kernel shapes from OCCT, JSCAD and Manifold must go through `drawAnyAsync`, which waits for
      * the kernel to mesh them.
@@ -214,6 +217,24 @@ export class Draw extends DrawCore {
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
         return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
+    }
+
+    /**
+     * Builds drawing options for frames: how long the axes are and their colors, whether the small
+     * grid in the frame's plane is drawn and in which color, the line width and whether the frame
+     * can be redrawn in place, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group options
+     * @shortname frame
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsFrame({ size: 2, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", drawPlane: true, colorPlane: "#808080", lineWidth: 2, updatable: false });
+     * const drawn = bitbybit.draw.drawAny({ entity: bitbybit.frame.world(), options });
+     * ```
+     */
+    optionsFrame(inputs: Inputs.Draw.DrawFrameOptions): Inputs.Draw.DrawFrameOptions {
+        return resolveDto(Inputs.Draw.DrawFrameOptions, inputs);
     }
 
     /**
@@ -488,6 +509,46 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
+    /**
+     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
+     * frame in the list go into the same draw call, however long the list is. Whether it is one
+     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
+     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
+     */
+    private handleFrames(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group | undefined {
+        let options: Inputs.Draw.DrawOptions = inputs.options ? inputs.options : this.defaultFrameOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
+            options = inputs.group.userData["options"];
+        }
+        const style = resolveDto(Inputs.Draw.DrawFrameOptions, options) as Resolved.Draw.DrawFrameOptions;
+        const entity: unknown = inputs.entity;
+        const frames: Inputs.Base.Frame[] = this.detectFrames(entity) ? entity : this.detectFrame(entity) ? [entity] : [];
+        const type = Array.isArray(entity) ? Inputs.Draw.drawingTypes.frames : Inputs.Draw.drawingTypes.frame;
+        const { polylines, colours } = this.frameMarkerLines(frames, style);
+        if (polylines.length === 0) {
+            if (style.updatable && inputs.group) {
+                inputs.group.traverse(child => {
+                    if ("geometry" in child && child.geometry instanceof THREEJS.BufferGeometry) {
+                        child.geometry.dispose();
+                    }
+                });
+                inputs.group.removeFromParent();
+            }
+            return undefined;
+        }
+        const result = this.drawHelper.drawPolylinesWithColours({
+            polylinesMesh: inputs.group,
+            polylines,
+            colours,
+            size: style.lineWidth,
+            opacity: 1,
+            updatable: style.updatable,
+            colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
+        return result;
+    }
+
     private handlePolylines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, type = Inputs.Draw.drawingTypes.polylines): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylinesWithColours({
@@ -601,6 +662,10 @@ export class Draw extends DrawCore {
                     break;
                 case Inputs.Draw.drawingTypes.polylines:
                     result = this.handlePolylines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.frame:
+                case Inputs.Draw.drawingTypes.frames:
+                    result = this.handleFrames(inputs);
                     break;
                 case Inputs.Draw.drawingTypes.jscadPath:
                     result = this.handleJscadPath(inputs);

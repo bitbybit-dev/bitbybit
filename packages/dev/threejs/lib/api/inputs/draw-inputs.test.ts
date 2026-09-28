@@ -28,6 +28,31 @@ describe("Draw DTO unit tests", () => {
         });
     });
 
+    describe("DrawFrameOptions", () => {
+        it("should set properties from constructor parameters", () => {
+            // Act
+            const result = new Draw.DrawFrameOptions(3, "#111111", "#222222", "#333333", false, "#444444", 5, true);
+
+            // Assert
+            expect(result.size).toBe(3);
+            expect(result.colorX).toBe("#111111");
+            expect(result.colorY).toBe("#222222");
+            expect(result.colorZ).toBe("#333333");
+            expect(result.drawPlane).toBe(false);
+            expect(result.colorPlane).toBe("#444444");
+            expect(result.lineWidth).toBe(5);
+            expect(result.updatable).toBe(true);
+        });
+
+        it("should have correct default values when no parameters are provided", () => {
+            // Act
+            const result = new Draw.DrawFrameOptions();
+
+            // Assert
+            expect(result).toEqual({ size: 1, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", drawPlane: true, colorPlane: "#808080", lineWidth: 2, updatable: false });
+        });
+    });
+
     describe("DrawManifoldOrCrossSectionOptions", () => {
         it("should set properties from constructor parameters", () => {
             // Arrange

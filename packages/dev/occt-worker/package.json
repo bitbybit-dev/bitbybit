@@ -94,6 +94,11 @@
             "types": "./dist/lib/api/occt/geom/index.d.ts",
             "default": "./dist/lib/api/occt/geom/index.js"
         },
+        "./lib/api/occt/select": {
+            "@bitbybit-dev/source": "./lib/api/occt/select/index.ts",
+            "types": "./dist/lib/api/occt/select/index.d.ts",
+            "default": "./dist/lib/api/occt/select/index.js"
+        },
         "./lib/api/occt/shapes": {
             "@bitbybit-dev/source": "./lib/api/occt/shapes/index.ts",
             "types": "./dist/lib/api/occt/shapes/index.d.ts",

@@ -5,7 +5,7 @@ import { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitby
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import {
-    Vector, Point, Line, Polyline, TextBitByBit, Color, MathBitByBit,
+    Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
 import { Context } from "./context";
@@ -38,6 +38,7 @@ describe("BitByBitBase unit tests", () => {
             ["vector", Vector],
             ["three", ThreeJS],
             ["point", Point],
+            ["frame", Frame],
             ["line", Line],
             ["transforms", Transforms],
             ["polyline", Polyline],

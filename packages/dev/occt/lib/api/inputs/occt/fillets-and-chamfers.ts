@@ -4,7 +4,8 @@ import { Base } from "@bitbybit-dev/base";
 
 /**
  * A shape, a radius and optional edge or corner indexes for `fillets.filletEdges` and
- * `fillets.fillet2d`; `radiusList` pairs with `indexes` when both are given.
+ * `fillets.fillet2d`; `radiusList` gives the listed edges or corners their radii in the order the
+ * shape holds them.
  */
 export class FilletDto<T> {
     constructor(shape?: T, radius?: number, radiusList?: number[], indexes?: number[]) {
@@ -29,7 +30,8 @@ export class FilletDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
+     * One radius per entry of `indexes`, given to the listed edges or corners in the shape's own
+     * order, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */
@@ -69,7 +71,8 @@ export class FilletShapesDto<T> {
      */
     radius?: number | undefined = 0.1;
     /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
+     * One radius per entry of `indexes`, given to the listed corners in their order along each
+     * outline, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */
@@ -312,8 +315,8 @@ export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
     shape!: T;
 }
 /**
- * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` pairs
- * with `indexes` when both are given.
+ * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` gives the
+ * listed edges their distances in the order `shapes.edge.getEdges` lists them.
  */
 export class ChamferDto<T> {
     constructor(shape?: T, distance?: number, distanceList?: number[], indexes?: number[]) {
@@ -338,7 +341,8 @@ export class ChamferDto<T> {
      */
     distance?: number | undefined = 0.1;
     /**
-     * One distance per entry of `indexes`, in the same order; needs `indexes`.
+     * One distance per entry of `indexes`, given to the listed edges in the order `shapes.edge.getEdges`
+     * lists them, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */

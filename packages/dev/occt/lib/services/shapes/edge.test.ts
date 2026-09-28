@@ -591,7 +591,6 @@ describe("OCCT edge unit tests", () => {
         expect(startPointsAlong).not.toEqual(startPointsNotAlong);
         expect(startPointsNotAlong).toEqual(
             [
-                [5, 0, -3],
                 [5, 0, -1],
                 [5, 0, 3],
                 [5, 0, 5],
@@ -612,10 +611,12 @@ describe("OCCT edge unit tests", () => {
                 [1, 0, -10],
                 [1.9999999999999998, 0, -9],
                 [3, 0, -9.999999999999996],
-                [5, 0, -10]
+                [5, 0, -10],
+                [5, 0, -3]
             ]);
         expect(startPointsAlong).toEqual(
             [
+                [5, 0, -1],
                 [5, 0, -3],
                 [5, 0, -10],
                 [3, 0, -9.999999999999996],
@@ -636,8 +637,7 @@ describe("OCCT edge unit tests", () => {
                 [2, 0, 10],
                 [5, 0, 10],
                 [5, 0, 5],
-                [5, 0, 3],
-                [5, 0, -1]
+                [5, 0, 3]
             ]);
         squareFace.delete();
         edges.forEach(e => e.delete());

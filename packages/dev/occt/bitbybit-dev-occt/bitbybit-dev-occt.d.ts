@@ -1016,6 +1016,11 @@ export interface BRepAlgoAPI_Splitter extends ClassHandle {
   SetTools(_0: TopTools_ListOfShape): void;
 }
 
+export interface BitbybitBool_StrategyValue<T extends number> {
+  value: T;
+}
+export type BitbybitBool_Strategy = BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>;
+
 export interface BRepBuilderAPI_MakeVertex extends ClassHandle {
   Vertex(): TopoDS_Vertex;
   IsDone(): boolean;
@@ -1872,6 +1877,11 @@ export type PartDefinitionInfo = {
   nbComponents: number
 };
 
+export interface BitbybitFrame_CurveFrameValue<T extends number> {
+  value: T;
+}
+export type BitbybitFrame_CurveFrame = BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>;
+
 interface EmbindModule {
   gp_XYZ: {
     new(): gp_XYZ;
@@ -2148,6 +2158,7 @@ interface EmbindModule {
   BRepAlgoAPI_Splitter: {
     new(): BRepAlgoAPI_Splitter;
   };
+  BitbybitBool_Strategy: {OneAfterAnother: BitbybitBool_StrategyValue<number>, InGroups: BitbybitBool_StrategyValue<number>, AllAtOnce: BitbybitBool_StrategyValue<number>};
   BRepBuilderAPI_MakeVertex: {
     new(_0: gp_Pnt): BRepBuilderAPI_MakeVertex;
   };
@@ -2382,8 +2393,8 @@ interface EmbindModule {
   OutlinesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): TopoDS_Wire[] | null;
   OutlinesOnPlane(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: ArrayLike<number>): TopoDS_Wire[] | null;
   ShapeToManifoldMesh(_0: TopoDS_Shape, _1: number): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } | null;
-  BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number): { shape: TopoDS_Shape | null; errorAlerts: string };
-  BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
   BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
   FilletWireCorners(_0: TopoDS_Wire, _1: ArrayLike<number>): { wire: TopoDS_Wire | null; failedCorners: Int32Array };
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
@@ -2765,6 +2776,52 @@ interface EmbindModule {
   ClassifyCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number): string;
   CornerByPointReport(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): string;
   BuildShapesFromSegments(_0: VectorInt, _1: VectorDouble, _2: VectorDouble, _3: VectorInt, _4: VectorInt, _5: VectorInt, _6: VectorInt, _7: number, _8: boolean, _9: number): TopoDS_Compound;
+  SelectFacesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectFacesFacing(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+  SelectFacesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+  SelectFacesBySize(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectFacesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectFacesAdjacentTo(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectFacesOfEdges(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectFacesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectFacesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+  SelectEdgesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+  SelectEdgesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+  SelectEdgesByLength(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectEdgesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectEdgesOfFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectEdgesBetween(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesTangentChain(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesConvex(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesConcave(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+  BitbybitFrame_CurveFrame: {Frenet: BitbybitFrame_CurveFrameValue<number>, Perpendicular: BitbybitFrame_CurveFrameValue<number>, RotationMinimizing: BitbybitFrame_CurveFrameValue<number>};
+  FramesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+  FramesOnFaceNearest(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+  FramesOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: BitbybitFrame_CurveFrame, _4: ArrayLike<number>): Float64Array;
+  PrincipalFrame(_0: TopoDS_Shape): Float64Array;
+  OrientedBoundingBox(_0: TopoDS_Shape): Float64Array;
+  PlaceOnFrames(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Compound;
+  PlaceByMatrices(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Compound;
+  OrientShape(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
+  BooleanFuseWithHistory(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  BooleanCutWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  BooleanCommonWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  HistoryOfFillet(_0: BRepFilletAPI_MakeFillet, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfChamfer(_0: BRepFilletAPI_MakeChamfer, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
 }
 
 export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;

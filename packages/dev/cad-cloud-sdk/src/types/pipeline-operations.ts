@@ -370,12 +370,14 @@ export type OperationPath =
     | "occt.assembly.query.getLabelTransform"
     | "occt.assembly.query.getShapeFromLabel"
     | "occt.booleans.difference"
+    | "occt.booleans.differenceWithHistory"
     | "occt.booleans.intersection"
     | "occt.booleans.meshMeshIntersectionOfShapesPoints"
     | "occt.booleans.meshMeshIntersectionOfShapesWires"
     | "occt.booleans.meshMeshIntersectionPoints"
     | "occt.booleans.meshMeshIntersectionWires"
     | "occt.booleans.union"
+    | "occt.booleans.unionWithHistory"
     | "occt.brepGraph.analyze"
     | "occt.brepGraph.assembly"
     | "occt.brepGraph.containment"
@@ -412,6 +414,7 @@ export type OperationPath =
     | "occt.fillets.chamferEdgesList"
     | "occt.fillets.chamferEdgesTwoDistances"
     | "occt.fillets.chamferEdgesTwoDistancesLists"
+    | "occt.fillets.chamferEdgesWithHistory"
     | "occt.fillets.chamferEdgeTwoDistances"
     | "occt.fillets.fillet2d"
     | "occt.fillets.fillet2dShapes"
@@ -422,6 +425,7 @@ export type OperationPath =
     | "occt.fillets.filletEdgesListOneRadius"
     | "occt.fillets.filletEdgesSameVariableRadius"
     | "occt.fillets.filletEdgesVariableRadius"
+    | "occt.fillets.filletEdgesWithHistory"
     | "occt.fillets.filletEdgeVariableRadius"
     | "occt.fillets.filletTwoEdgesInPlaneIntoAWire"
     | "occt.geom.curves.geom2dEllipse"
@@ -461,6 +465,7 @@ export type OperationPath =
     | "occt.operations.distancesToShapeFromPoints"
     | "occt.operations.extrude"
     | "occt.operations.extrudeShapes"
+    | "occt.operations.extrudeWithHistory"
     | "occt.operations.loft"
     | "occt.operations.loftAdvanced"
     | "occt.operations.makeThickSolidByJoin"
@@ -468,16 +473,48 @@ export type OperationPath =
     | "occt.operations.offset"
     | "occt.operations.offset3DWire"
     | "occt.operations.offsetAdv"
+    | "occt.operations.orientedBoundingBox"
     | "occt.operations.pipe"
     | "occt.operations.pipePolylineWireNGon"
     | "occt.operations.pipeWireCylindrical"
     | "occt.operations.pipeWiresCylindrical"
+    | "occt.operations.principalFrame"
     | "occt.operations.revolve"
+    | "occt.operations.revolveWithHistory"
     | "occt.operations.rotatedExtrude"
     | "occt.operations.slice"
     | "occt.operations.sliceInStepPattern"
     | "occt.operations.splitShapeWithShapes"
     | "occt.path.shapeFromPath"
+    | "occt.select.edges.along"
+    | "occt.select.edges.between"
+    | "occt.select.edges.byLength"
+    | "occt.select.edges.byRadius"
+    | "occt.select.edges.concave"
+    | "occt.select.edges.convex"
+    | "occt.select.edges.extreme"
+    | "occt.select.edges.groupAlong"
+    | "occt.select.edges.inBox"
+    | "occt.select.edges.inSphere"
+    | "occt.select.edges.nearest"
+    | "occt.select.edges.ofFaces"
+    | "occt.select.edges.ofType"
+    | "occt.select.edges.onPlane"
+    | "occt.select.edges.sortAlong"
+    | "occt.select.edges.tangentChain"
+    | "occt.select.faces.adjacentTo"
+    | "occt.select.faces.byRadius"
+    | "occt.select.faces.bySize"
+    | "occt.select.faces.extreme"
+    | "occt.select.faces.facing"
+    | "occt.select.faces.groupAlong"
+    | "occt.select.faces.inBox"
+    | "occt.select.faces.inSphere"
+    | "occt.select.faces.nearest"
+    | "occt.select.faces.ofEdges"
+    | "occt.select.faces.ofType"
+    | "occt.select.faces.onPlane"
+    | "occt.select.faces.sortAlong"
     | "occt.shapeFacesToPolygonPoints"
     | "occt.shapeFix.basicShapeRepair"
     | "occt.shapeFix.fixEdgeOrientationsAlongWire"
@@ -504,6 +541,10 @@ export type OperationPath =
     | "occt.shapes.edge.edgesToPoints"
     | "occt.shapes.edge.endPointOnEdge"
     | "occt.shapes.edge.endPointsOnEdges"
+    | "occt.shapes.edge.frameOnEdgeAtLength"
+    | "occt.shapes.edge.frameOnEdgeAtParam"
+    | "occt.shapes.edge.framesOnEdgeAtLengths"
+    | "occt.shapes.edge.framesOnEdgeAtParams"
     | "occt.shapes.edge.fromBaseLine"
     | "occt.shapes.edge.fromBaseLines"
     | "occt.shapes.edge.fromBaseMesh"
@@ -574,6 +615,10 @@ export type OperationPath =
     | "occt.shapes.face.filterFacePoints"
     | "occt.shapes.face.filterFacesPoints"
     | "occt.shapes.face.flipFaceUV"
+    | "occt.shapes.face.frameNearestPoint"
+    | "occt.shapes.face.frameOnUV"
+    | "occt.shapes.face.framesNearestPoints"
+    | "occt.shapes.face.framesOnUVs"
     | "occt.shapes.face.fromBaseMesh"
     | "occt.shapes.face.fromBaseTriangle"
     | "occt.shapes.face.getFace"
@@ -594,6 +639,7 @@ export type OperationPath =
     | "occt.shapes.face.pointsOnUVs"
     | "occt.shapes.face.rebuildFaceDegree"
     | "occt.shapes.face.reversedFace"
+    | "occt.shapes.face.subdivideToFrames"
     | "occt.shapes.face.subdivideToHexagonHoles"
     | "occt.shapes.face.subdivideToHexagonWires"
     | "occt.shapes.face.subdivideToNormals"
@@ -708,6 +754,11 @@ export type OperationPath =
     | "occt.shapes.wire.divideWiresByEqualDistanceToPoints"
     | "occt.shapes.wire.divideWiresByParamsToPoints"
     | "occt.shapes.wire.endPointOnWire"
+    | "occt.shapes.wire.frameOnWireAtLength"
+    | "occt.shapes.wire.frameOnWireAtParam"
+    | "occt.shapes.wire.framesAlongWire"
+    | "occt.shapes.wire.framesOnWireAtLengths"
+    | "occt.shapes.wire.framesOnWireAtParams"
     | "occt.shapes.wire.fromBaseLine"
     | "occt.shapes.wire.fromBaseLines"
     | "occt.shapes.wire.fromBaseMesh"
@@ -772,6 +823,9 @@ export type OperationPath =
     | "occt.transforms.mirrorPointToMatrix"
     | "occt.transforms.mirrorShapes"
     | "occt.transforms.multiplyTransforms"
+    | "occt.transforms.orient"
+    | "occt.transforms.placeByMatrices"
+    | "occt.transforms.placeOnFrames"
     | "occt.transforms.quaternionToMatrix"
     | "occt.transforms.rotate"
     | "occt.transforms.rotateAroundCenter"
@@ -5825,19 +5879,52 @@ export interface OperationParams {
      * Cuts shapes away from a main shape, the way a drill removes material: what remains is the
      * main shape minus every shape in the list.
      *
-     * All the shapes are subtracted in one operation. With `keepEdges` false, the default, faces
-     * left on one surface are merged, and a lone remaining solid is returned without a compound.
+     * `strategy` sets how many shapes are cut away in each step. With `keepEdges` false, the
+     * default, faces left on one surface are merged, and a lone remaining solid is returned
+     * without a compound.
      */
     "occt.booleans.difference": {
         /** The shape material is removed from. */
         shape: unknown | PipelineRef;
-        /** The shapes whose volume is cut away, all at once. */
+        /**
+         * The shapes whose volume is cut away, in order; the pieces of a compound are cut away as
+         * separate shapes.
+         */
         shapes: unknown[] | PipelineRef;
         /**
          * When false, faces left on one surface are merged and their seams removed; when true every
          * edge stays.
          */
         keepEdges?: boolean | PipelineRef;
+        /**
+         * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+         * differently; all at once is fastest but wrong where shapes touch at a point.
+         */
+        strategy?: "oneAfterAnother" | "inGroups" | "allAtOnce" | PipelineRef;
+    };
+    /**
+     * Cuts shapes away as `difference` does, and reports what became of the faces, edges and
+     * vertices of the main shape and of each cutting shape, in that order: a drill's side becomes
+     * the wall of its hole.
+     */
+    "occt.booleans.differenceWithHistory": {
+        /** The shape material is removed from. */
+        shape: unknown | PipelineRef;
+        /**
+         * The shapes whose volume is cut away, in order; the pieces of a compound are cut away as
+         * separate shapes.
+         */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * When false, faces left on one surface are merged and their seams removed; when true every
+         * edge stays.
+         */
+        keepEdges?: boolean | PipelineRef;
+        /**
+         * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+         * differently; all at once is fastest but wrong where shapes touch at a point.
+         */
+        strategy?: "oneAfterAnother" | "inGroups" | "allAtOnce" | PipelineRef;
     };
     /**
      * Keeps only the volume the first shape shares with each of the others.
@@ -5945,18 +6032,41 @@ export interface OperationParams {
     /**
      * Fuses several shapes into one, the way two overlapping blobs of clay become one lump.
      *
-     * All the shapes are fused in one operation, and a compound counts as its pieces, so
-     * overlapping pieces of one compound merge too. With `keepEdges` false, the default, faces left
-     * on one surface are merged; true keeps every edge of the inputs.
+     * A compound counts as its pieces, so overlapping pieces of one compound merge too. `strategy`
+     * sets how many shapes go into each step, and `keepEdges` false, the default, merges faces left
+     * on one surface.
      */
     "occt.booleans.union": {
-        /** The shapes to fuse, all at once; the pieces of a compound are fused as separate shapes. */
+        /** The shapes to fuse, in order; the pieces of a compound are fused as separate shapes. */
         shapes: unknown[] | PipelineRef;
         /**
          * When false, faces that end up on one surface are merged and their seams removed; when true
          * every edge of the inputs stays.
          */
         keepEdges?: boolean | PipelineRef;
+        /**
+         * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+         * differently; all at once is fastest but wrong where shapes touch at a point.
+         */
+        strategy?: "oneAfterAnother" | "inGroups" | "allAtOnce" | PipelineRef;
+    };
+    /**
+     * Fuses shapes as `union` does, and reports for each shape given, in order, what became of its
+     * faces, edges and vertices in the result, as indexes the selectors and fillets take.
+     */
+    "occt.booleans.unionWithHistory": {
+        /** The shapes to fuse, in order; the pieces of a compound are fused as separate shapes. */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * When false, faces that end up on one surface are merged and their seams removed; when true
+         * every edge of the inputs stays.
+         */
+        keepEdges?: boolean | PipelineRef;
+        /**
+         * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+         * differently; all at once is fastest but wrong where shapes touch at a point.
+         */
+        strategy?: "oneAfterAnother" | "inGroups" | "allAtOnce" | PipelineRef;
     };
     /**
      * Counts what a shape is made of: solids, shells, faces, wires, edges, coedges and vertices,
@@ -6586,7 +6696,10 @@ export interface OperationParams {
          * `distanceList` is given.
          */
         distance?: number | PipelineRef;
-        /** One distance per entry of `indexes`, in the same order; needs `indexes`. */
+        /**
+         * One distance per entry of `indexes`, given to the listed edges in the order `shapes.edge.getEdges`
+         * lists them, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
         distanceList?: number[] | PipelineRef;
         /**
          * Which edges to bevel, counted from 0 in the order `shapes.edge.getEdges` lists them; leave it
@@ -6686,6 +6799,30 @@ export interface OperationParams {
         distances2: number[] | PipelineRef;
     };
     /**
+     * Bevels edges as `chamferEdges` does, and reports what became of every face, edge and vertex of
+     * the shape: `history.facesFromEdges` holds the bevel made along each edge, and `history.faces`
+     * what each face was trimmed to.
+     */
+    "occt.fillets.chamferEdgesWithHistory": {
+        /** The shape whose edges are beveled. */
+        shape: unknown | PipelineRef;
+        /**
+         * How far the bevel cuts back from the edge in model units, used for every selected edge unless
+         * `distanceList` is given.
+         */
+        distance?: number | PipelineRef;
+        /**
+         * One distance per entry of `indexes`, given to the listed edges in the order `shapes.edge.getEdges`
+         * lists them, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
+        distanceList?: number[] | PipelineRef;
+        /**
+         * Which edges to bevel, counted from 0 in the order `shapes.edge.getEdges` lists them; leave it
+         * out to bevel them all.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
      * Bevels one edge of a shape with an uneven chamfer: `distance1` is measured on `face`, one of
      * the two faces meeting at the edge, and `distance2` on the other.
      *
@@ -6718,7 +6855,10 @@ export interface OperationParams {
          * given.
          */
         radius?: number | PipelineRef;
-        /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
+        /**
+         * One radius per entry of `indexes`, given to the listed edges or corners in the shape's own
+         * order, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
         radiusList?: number[] | PipelineRef;
         /**
          * Which edges to round, counted from 0 for `filletEdges`, or which corners, counted from 1 for
@@ -6738,7 +6878,10 @@ export interface OperationParams {
          * given.
          */
         radius?: number | PipelineRef;
-        /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
+        /**
+         * One radius per entry of `indexes`, given to the listed corners in their order along each
+         * outline, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
         radiusList?: number[] | PipelineRef;
         /** Which corners to round, counted from 1 along each outline; leave it out to round them all. */
         indexes?: number[] | PipelineRef;
@@ -6811,7 +6954,10 @@ export interface OperationParams {
          * given.
          */
         radius?: number | PipelineRef;
-        /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
+        /**
+         * One radius per entry of `indexes`, given to the listed edges or corners in the shape's own
+         * order, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
         radiusList?: number[] | PipelineRef;
         /**
          * Which edges to round, counted from 0 for `filletEdges`, or which corners, counted from 1 for
@@ -6887,6 +7033,30 @@ export interface OperationParams {
          * matching list in `radiusLists`.
          */
         paramsULists: unknown[] | PipelineRef;
+    };
+    /**
+     * Rounds edges as `filletEdges` does, and reports what became of every face, edge and vertex
+     * of the shape: `history.facesFromEdges` holds the round made along each edge, and
+     * `history.faces` what each face was trimmed to, all as indexes the selectors and fillets take.
+     */
+    "occt.fillets.filletEdgesWithHistory": {
+        /** The shape whose edges, or whose corners for a flat wire or face, are rounded. */
+        shape: unknown | PipelineRef;
+        /**
+         * The rounding radius in model units, used for every selected edge unless `radiusList` is
+         * given.
+         */
+        radius?: number | PipelineRef;
+        /**
+         * One radius per entry of `indexes`, given to the listed edges or corners in the shape's own
+         * order, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
+         */
+        radiusList?: number[] | PipelineRef;
+        /**
+         * Which edges to round, counted from 0 for `filletEdges`, or which corners, counted from 1 for
+         * `fillet2d`; leave it out to round them all.
+         */
+        indexes?: number[] | PipelineRef;
     };
     /**
      * Rounds one edge of a shape with a radius that changes along it.
@@ -7664,6 +7834,18 @@ export interface OperationParams {
         direction?: [number, number, number] | PipelineRef;
     };
     /**
+     * Extrudes a shape as `extrude` does, and reports what each part of the profile became:
+     * `history.firstFaces` and `lastFaces` are the caps of a face profile (a wire has none),
+     * `history.facesFromEdges` the side swept from each profile edge and
+     * `history.edgesFromVertices` the edge swept from each vertex.
+     */
+    "occt.operations.extrudeWithHistory": {
+        /** The shape to sweep: a face gives a solid, a wire a shell, an edge a face. */
+        shape: unknown | PipelineRef;
+        /** The direction and distance of the sweep as one vector, in model units. */
+        direction?: [number, number, number] | PipelineRef;
+    };
+    /**
      * Builds a surface through a series of wires, like skin stretched over ribs: each wire is one
      * section and the surface passes through them in list order.
      *
@@ -7855,6 +8037,15 @@ export interface OperationParams {
         removeIntEdges?: boolean | PipelineRef;
     };
     /**
+     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
+     * frame at the box's centre, its direction along the longest side and its normal along the
+     * shortest, with half the box's size along each.
+     */
+    "occt.operations.orientedBoundingBox": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Sweeps one or more profile shapes along a path wire and closes the result into a solid.
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
@@ -7933,6 +8124,17 @@ export interface OperationParams {
         forceApproxC1?: boolean | PipelineRef;
     };
     /**
+     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
+     * the axis it turns about most easily, the normal the one it resists most.
+     *
+     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
+     * a density of 1. Each axis's largest coordinate is positive.
+     */
+    "occt.operations.principalFrame": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
      * a solid, a wire a shell.
      *
@@ -7940,6 +8142,24 @@ export interface OperationParams {
      * a full turn, and 0 throws. The profile must not cross the axis along `direction`.
      */
     "occt.operations.revolve": {
+        /** The profile to spin: a wire gives a shell, a face a solid; it must not cross the axis. */
+        shape: unknown | PipelineRef;
+        /**
+         * How far to spin, in degrees; a negative angle spins the other way, 360 or more either way
+         * gives a full turn, and 0 is not allowed.
+         */
+        angle?: number | PipelineRef;
+        /** The direction of the axis, which passes through the origin. */
+        direction?: [number, number, number] | PipelineRef;
+        /** When true, the profile's geometry is copied instead of shared with the result. */
+        copy?: boolean | PipelineRef;
+    };
+    /**
+     * Revolves a shape as `revolve` does, and reports what each part of the profile became:
+     * `history.firstFaces` and `lastFaces` are the ends of a partial turn, `history.facesFromEdges`
+     * the surface swept from each profile edge, a whole turn included.
+     */
+    "occt.operations.revolveWithHistory": {
         /** The profile to spin: a wire gives a shell, a face a solid; it must not cross the axis. */
         shape: unknown | PipelineRef;
         /**
@@ -8049,6 +8269,451 @@ export interface OperationParams {
         flipY?: boolean | PipelineRef;
         /** The point the scaled and flipped drawing is moved to. */
         origin?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Chooses the straight edges that run within `angle` degrees of `direction`, either way along
+     * it: an angle of 0 finds the edges parallel to it.
+     */
+    "occt.select.edges.along": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The direction a face should face, or a straight edge run along; only its direction matters. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far in degrees a face's normal, or an edge's line, may turn from `direction`. */
+        angle?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges where a face of `indexes` meets a different face of `otherIndexes`, such as
+     * the edges round a top face where it meets the sides.
+     */
+    "occt.select.edges.between": {
+        /** The shape whose edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** One set of faces, counted from 0 as `shapes.face.getFaces` lists them. */
+        indexes: number[] | PipelineRef;
+        /** The other set of faces, counted the same way. */
+        otherIndexes: number[] | PipelineRef;
+    };
+    /** Chooses the edges whose length lies between `min` and `max`, both included. */
+    "occt.select.edges.byLength": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The smallest area, length or radius chosen. */
+        min?: number | PipelineRef;
+        /** The largest area, length or radius chosen. */
+        max?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /** Chooses the circular edges whose radius lies between `min` and `max`, both included. */
+    "occt.select.edges.byRadius": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The smallest area, length or radius chosen. */
+        min?: number | PipelineRef;
+        /** The largest area, length or radius chosen. */
+        max?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges where two faces meet at an inside corner, the valleys a fillet fills; faces
+     * meeting within `tangentAngle` degrees of smooth count as neither.
+     */
+    "occt.select.edges.concave": {
+        /** The shape whose edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /**
+         * How far in degrees, up to a right angle, two faces may turn at an edge and still count as
+         * smooth, neither convex nor concave.
+         */
+        tangentAngle?: number | PipelineRef;
+        /**
+         * The edges to choose among, counted from 0 as `shapes.edge.getEdges` lists them; left out, all
+         * are candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges where two faces meet at an outside corner, the ridges a fillet rounds off;
+     * faces meeting within `tangentAngle` degrees of smooth count as neither.
+     */
+    "occt.select.edges.convex": {
+        /** The shape whose edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /**
+         * How far in degrees, up to a right angle, two faces may turn at an edge and still count as
+         * smooth, neither convex nor concave.
+         */
+        tangentAngle?: number | PipelineRef;
+        /**
+         * The edges to choose among, counted from 0 as `shapes.edge.getEdges` lists them; left out, all
+         * are candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges whose centres lie furthest along `direction`, with any others within
+     * `tolerance` of them: the edges round the top along z.
+     */
+    "occt.select.edges.extreme": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The direction to look furthest along; `[0, 0, -1]` finds the lowest. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far short of the furthest centre another may lie and still be chosen, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Sorts edges along `direction` and groups them by level: a group ends where the next centre lies
+     * more than `tolerance` beyond the group's first.
+     */
+    "occt.select.edges.groupAlong": {
+        /** The shape whose faces or edges are grouped. */
+        shape: unknown | PipelineRef;
+        /** The direction to sort and group along. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far past a group's first centre another may lie and still join the group, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to group, counted from 0 as the getters list them; left out, all are grouped,
+         * and an empty list groups none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges whose centres lie inside a box lined up with the axes, given by two opposite
+     * corners in either order.
+     */
+    "occt.select.edges.inBox": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** One corner of the box, which lines up with the axes. */
+        corner?: [number, number, number] | PipelineRef;
+        /** The corner across from `corner`; the two may be given either way round. */
+        oppositeCorner?: [number, number, number] | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /** Chooses the edges whose centres lie within `radius` of `center`. */
+    "occt.select.edges.inSphere": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The point the chosen centres lie within `radius` of. */
+        center?: [number, number, number] | PipelineRef;
+        /** The radius of the sphere in model units. */
+        radius?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the `count` edges whose centres lie nearest `point`, nearest first; edges as near as
+     * each other keep their order.
+     */
+    "occt.select.edges.nearest": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The point the chosen faces or edges lie nearest. */
+        point?: [number, number, number] | PipelineRef;
+        /** How many to choose, nearest first; Infinity orders them all. */
+        count?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges that bound any of the given faces, counted as `shapes.face.getFaces` counts
+     * them.
+     */
+    "occt.select.edges.ofFaces": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The faces or edges to start from, counted from 0 as the getters list them. */
+        indexes: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges that run along one kind of curve, such as the straight edges of a part or
+     * the circular rims of its holes.
+     */
+    "occt.select.edges.ofType": {
+        /** The shape whose edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The kind of curve the chosen edges run along. */
+        type?: "line" | "circle" | "ellipse" | "hyperbola" | "parabola" | "bezier" | "bspline" | "offset" | "other" | PipelineRef;
+        /**
+         * The edges to choose among, counted from 0 as `shapes.edge.getEdges` lists them; left out, all
+         * are candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the edges that lie in a plane, given by a point on it and its normal: every point of an
+     * edge within `tolerance` of the plane.
+     */
+    "occt.select.edges.onPlane": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** A point the plane passes through. */
+        origin?: [number, number, number] | PipelineRef;
+        /** The direction across the plane; either way round gives the same plane. */
+        normal?: [number, number, number] | PipelineRef;
+        /** How far from the plane a face or an edge may lie and still be on it, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Orders edges by how far along `direction` their centres lie, from the lowest to the highest;
+     * edges level with each other keep their order.
+     */
+    "occt.select.edges.sortAlong": {
+        /** The shape whose faces or edges are sorted. */
+        shape: unknown | PipelineRef;
+        /** The direction to sort along, from the lowest centre to the highest. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * The faces or edges to sort, counted from 0 as the getters list them; left out, all are sorted,
+         * and an empty list sorts none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Grows the given edges into the chains they continue smoothly: two edges meeting where their
+     * tangents turn by no more than `angle` degrees are one chain, as a fillet runs along.
+     */
+    "occt.select.edges.tangentChain": {
+        /** The shape whose edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The edges the chain starts from, counted from 0 as `shapes.edge.getEdges` lists them. */
+        indexes: number[] | PipelineRef;
+        /** How far in degrees two edges may turn where they meet and still continue each other. */
+        angle?: number | PipelineRef;
+    };
+    /**
+     * Chooses the faces that share an edge with any of the given faces, leaving out the given faces
+     * themselves.
+     */
+    "occt.select.faces.adjacentTo": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The faces or edges to start from, counted from 0 as the getters list them. */
+        indexes: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces on cylinders and spheres whose radius lies between `min` and `max`, and the
+     * faces on tori whose tube radius does, the rounds a fillet makes along a curved edge.
+     */
+    "occt.select.faces.byRadius": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The smallest area, length or radius chosen. */
+        min?: number | PipelineRef;
+        /** The largest area, length or radius chosen. */
+        max?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /** Chooses the faces whose area lies between `min` and `max`, both included. */
+    "occt.select.faces.bySize": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The smallest area, length or radius chosen. */
+        min?: number | PipelineRef;
+        /** The largest area, length or radius chosen. */
+        max?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces whose centres lie furthest along `direction`, with any others within
+     * `tolerance` of them: the top faces along z, the lowest along minus z.
+     */
+    "occt.select.faces.extreme": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The direction to look furthest along; `[0, 0, -1]` finds the lowest. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far short of the furthest centre another may lie and still be chosen, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces whose normal, read at the middle of each face, points within `angle`
+     * degrees of `direction`: an angle of 0 finds the faces looking straight that way.
+     */
+    "occt.select.faces.facing": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The direction a face should face, or a straight edge run along; only its direction matters. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far in degrees a face's normal, or an edge's line, may turn from `direction`. */
+        angle?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Sorts faces along `direction` and groups them by level: a group ends where the next centre lies
+     * more than `tolerance` beyond the group's first.
+     */
+    "occt.select.faces.groupAlong": {
+        /** The shape whose faces or edges are grouped. */
+        shape: unknown | PipelineRef;
+        /** The direction to sort and group along. */
+        direction?: [number, number, number] | PipelineRef;
+        /** How far past a group's first centre another may lie and still join the group, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to group, counted from 0 as the getters list them; left out, all are grouped,
+         * and an empty list groups none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces whose centres lie inside a box lined up with the axes, given by two
+     * opposite corners in either order.
+     */
+    "occt.select.faces.inBox": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** One corner of the box, which lines up with the axes. */
+        corner?: [number, number, number] | PipelineRef;
+        /** The corner across from `corner`; the two may be given either way round. */
+        oppositeCorner?: [number, number, number] | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /** Chooses the faces whose centres lie within `radius` of `center`. */
+    "occt.select.faces.inSphere": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The point the chosen centres lie within `radius` of. */
+        center?: [number, number, number] | PipelineRef;
+        /** The radius of the sphere in model units. */
+        radius?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the `count` faces whose centres lie nearest `point`, nearest first; faces as near as
+     * each other keep their order.
+     */
+    "occt.select.faces.nearest": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The point the chosen faces or edges lie nearest. */
+        point?: [number, number, number] | PipelineRef;
+        /** How many to choose, nearest first; Infinity orders them all. */
+        count?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces bounded by any of the given edges, counted as `shapes.edge.getEdges` counts
+     * them: the two faces that meet along each.
+     */
+    "occt.select.faces.ofEdges": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The faces or edges to start from, counted from 0 as the getters list them. */
+        indexes: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the faces that lie on one kind of surface, such as the planar faces of a part or the
+     * cylindrical walls of its holes.
+     */
+    "occt.select.faces.ofType": {
+        /** The shape whose faces are chosen from. */
+        shape: unknown | PipelineRef;
+        /** The kind of surface the chosen faces lie on. */
+        type?: "plane" | "cylinder" | "cone" | "sphere" | "torus" | "bezier" | "bspline" | "revolution" | "extrusion" | "offset" | "other" | PipelineRef;
+        /**
+         * The faces to choose among, counted from 0 as `shapes.face.getFaces` lists them; left out, all
+         * are candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Chooses the planar faces that lie in a plane, given by a point on it and its normal; a face
+     * counts from either side, within `tolerance`.
+     */
+    "occt.select.faces.onPlane": {
+        /** The shape whose faces or edges are chosen from. */
+        shape: unknown | PipelineRef;
+        /** A point the plane passes through. */
+        origin?: [number, number, number] | PipelineRef;
+        /** The direction across the plane; either way round gives the same plane. */
+        normal?: [number, number, number] | PipelineRef;
+        /** How far from the plane a face or an edge may lie and still be on it, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * The faces or edges to choose among, counted from 0 as the getters list them; left out, all are
+         * candidates, and an empty list chooses none.
+         */
+        indexes?: number[] | PipelineRef;
+    };
+    /**
+     * Orders faces by how far along `direction` their centres lie, from the lowest to the highest;
+     * faces level with each other keep their order.
+     */
+    "occt.select.faces.sortAlong": {
+        /** The shape whose faces or edges are sorted. */
+        shape: unknown | PipelineRef;
+        /** The direction to sort along, from the lowest centre to the highest. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * The faces or edges to sort, counted from 0 as the getters list them; left out, all are sorted,
+         * and an empty list sorts none.
+         */
+        indexes?: number[] | PipelineRef;
     };
     /**
      * Triangulates a shape and returns every triangle as three points, in one flat list over all
@@ -8456,6 +9121,77 @@ export interface OperationParams {
     "occt.shapes.edge.endPointsOnEdges": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
+    };
+    /**
+     * Finds a frame on an edge at a length from its start, as `frameOnEdgeAtParam` finds it at a
+     * parameter.
+     */
+    "occt.shapes.edge.frameOnEdgeAtLength": {
+        /** The edge or wire the frame sits on. */
+        shape: unknown | PipelineRef;
+        /** How far along the curve from its start the frame sits, in model units, up to its length. */
+        length?: number | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds a frame on an edge at a parameter, from 0 where the edge starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the edge level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the edge runs straight, level
+     * ones where it runs along `up`.
+     */
+    "occt.shapes.edge.frameOnEdgeAtParam": {
+        /** The edge or wire the frame sits on. */
+        shape: unknown | PipelineRef;
+        /** Where the frame sits, as a fraction from 0 at the start to 1 at the end. */
+        param?: number | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds frames on an edge at several lengths from its start in one pass, as
+     * `framesOnEdgeAtParams` finds them at parameters.
+     */
+    "occt.shapes.edge.framesOnEdgeAtLengths": {
+        /** The edge or wire the frames sit on. */
+        shape: unknown | PipelineRef;
+        /** How far along the curve from its start each frame sits, in model units, up to its length. */
+        lengths: number[] | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds frames on an edge at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole edge from its start, so each is the frame a swept profile would ride
+     * on there.
+     */
+    "occt.shapes.edge.framesOnEdgeAtParams": {
+        /** The edge or wire the frames sit on. */
+        shape: unknown | PipelineRef;
+        /** Where the frames sit, each a fraction from 0 at the start to 1 at the end. */
+        params: number[] | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
     };
     /** Makes a straight edge from a line object of the form `{ start, end }`. */
     "occt.shapes.edge.fromBaseLine": {
@@ -9420,6 +10156,51 @@ export interface OperationParams {
         reverseV?: boolean | PipelineRef;
     };
     /**
+     * Finds the frame of a face at the place nearest a point, as `frameOnUV` finds it there; a point
+     * beyond the face's edge comes to the edge.
+     */
+    "occt.shapes.face.frameNearestPoint": {
+        /** The face the frame sits on. */
+        shape: unknown | PipelineRef;
+        /** The point whose nearest place on the face gets the frame; beyond the face's edge it comes to the edge. */
+        point?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds the frame of a face at a UV fraction pair, where a profile or a copy would sit: at the
+     * surface point, normal as `normalOnUV` gives it, direction along U.
+     *
+     * U and V run from 0 to 1 over the face's range. Where the surface has no normal, as at a cone's
+     * point, it is read inside the face.
+     */
+    "occt.shapes.face.frameOnUV": {
+        /** The face to evaluate. */
+        shape: unknown | PipelineRef;
+        /** The U position as a fraction from 0 to 1 of the face's U range. */
+        paramU?: number | PipelineRef;
+        /** The V position as a fraction from 0 to 1 of the face's V range. */
+        paramV?: number | PipelineRef;
+    };
+    /**
+     * Finds the frames of a face at the places nearest several points at once, each as
+     * `frameNearestPoint` finds it.
+     */
+    "occt.shapes.face.framesNearestPoints": {
+        /** The face the frames sit on. */
+        shape: unknown | PipelineRef;
+        /** The points whose nearest places on the face get a frame each. */
+        points: [number, number, number][] | PipelineRef;
+    };
+    /** Finds the frames of a face at several UV fraction pairs at once, each as `frameOnUV` finds it. */
+    "occt.shapes.face.framesOnUVs": {
+        /** The face to evaluate. */
+        shape: unknown | PipelineRef;
+        /**
+         * The positions as `[u, v]` pairs, each a fraction from 0 to 1 of the face's range, one result
+         * each.
+         */
+        paramsUV?: unknown[] | PipelineRef;
+    };
+    /**
      * Creates one flat triangular face per triangle of a mesh.
      *
      * A triangle that cannot form a face, for instance one with repeated points, is skipped with a
@@ -9685,6 +10466,39 @@ export interface OperationParams {
     "occt.shapes.face.reversedFace": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
+    };
+    /**
+     * Places frames on a face in a grid, one at each point `subdivideToPoints` gives for the same
+     * inputs, each turned as `frameOnUV` turns it.
+     *
+     * The frames come in the order of the points, their normals match `subdivideToNormals` and
+     * their X axes run along the face's U direction.
+     */
+    "occt.shapes.face.subdivideToFrames": {
+        /** The face to lay the grid over. */
+        shape: unknown | PipelineRef;
+        /** How many rows of points across the U range, edge to edge. */
+        nrDivisionsU?: number | PipelineRef;
+        /** How many points along each row across the V range, edge to edge. */
+        nrDivisionsV?: number | PipelineRef;
+        /**
+         * When true, every point moves half a step in U; on a closed face such as a cylinder this keeps
+         * points off the seam.
+         */
+        shiftHalfStepU?: boolean | PipelineRef;
+        /** When true, the row at the start of the U range is left out. */
+        removeStartEdgeU?: boolean | PipelineRef;
+        /** When true, the row at the end of the U range is left out. */
+        removeEndEdgeU?: boolean | PipelineRef;
+        /**
+         * When true, every point moves half a step in V; on a closed face such as a cylinder this keeps
+         * points off the seam.
+         */
+        shiftHalfStepV?: boolean | PipelineRef;
+        /** When true, the points at the start of the V range are left out of every row. */
+        removeStartEdgeV?: boolean | PipelineRef;
+        /** When true, the points at the end of the V range are left out of every row. */
+        removeEndEdgeV?: boolean | PipelineRef;
     };
     /**
      * Cuts a honeycomb of hexagonal holes into a face and returns the perforated face.
@@ -11729,6 +12543,105 @@ export interface OperationParams {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
+    /**
+     * Finds a frame on a wire at a length from its start, as `frameOnWireAtParam` finds it at a
+     * parameter.
+     */
+    "occt.shapes.wire.frameOnWireAtLength": {
+        /** The edge or wire the frame sits on. */
+        shape: unknown | PipelineRef;
+        /** How far along the curve from its start the frame sits, in model units, up to its length. */
+        length?: number | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds a frame on a wire at a parameter, from 0 where the wire starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the wire level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the wire runs straight, level
+     * ones where it runs along `up`.
+     */
+    "occt.shapes.wire.frameOnWireAtParam": {
+        /** The edge or wire the frame sits on. */
+        shape: unknown | PipelineRef;
+        /** Where the frame sits, as a fraction from 0 at the start to 1 at the end. */
+        param?: number | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Spreads `count` frames evenly by length along a wire, the first at its start, to place copies
+     * along a path or to carry a profile along it.
+     *
+     * On an open wire the last sits at the end; on a closed wire they go around the loop without
+     * repeating the first, unless `skipEndOnClosed` is off.
+     */
+    "occt.shapes.wire.framesAlongWire": {
+        /** The wire the frames sit on. */
+        shape: unknown | PipelineRef;
+        /**
+         * How many frames, the first at the start; `skipEndOnClosed` decides where the last goes on a
+         * closed wire.
+         */
+        count?: number | PipelineRef;
+        /**
+         * On a closed wire, leaves out the end frame, which would sit on the first, and spaces the
+         * frames evenly around the loop; open wires are unaffected.
+         */
+        skipEndOnClosed?: boolean | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds frames on a wire at several lengths from its start in one pass, as
+     * `framesOnWireAtParams` finds them at parameters.
+     */
+    "occt.shapes.wire.framesOnWireAtLengths": {
+        /** The edge or wire the frames sit on. */
+        shape: unknown | PipelineRef;
+        /** How far along the curve from its start each frame sits, in model units, up to its length. */
+        lengths: number[] | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds frames on a wire at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole wire from its start, so each is the frame a swept profile would ride on
+     * there.
+     */
+    "occt.shapes.wire.framesOnWireAtParams": {
+        /** The edge or wire the frames sit on. */
+        shape: unknown | PipelineRef;
+        /** Where the frames sit, each a fraction from 0 at the start to 1 at the end. */
+        params: number[] | PipelineRef;
+        /** How the frames follow the curve. */
+        kind?: "frenet" | "perpendicular" | "rotationMinimizing" | PipelineRef;
+        /**
+         * The way perpendicular frames keep level with, and the first rotation-minimizing frame starts
+         * from; ignored by Frenet frames.
+         */
+        up?: [number, number, number] | PipelineRef;
+    };
     /** Makes a straight single-edge wire from a line object of the form `{ start, end }`. */
     "occt.shapes.wire.fromBaseLine": {
         /** The line as `{ start, end }`. */
@@ -12702,6 +13615,53 @@ export interface OperationParams {
          * identity.
          */
         transformation: unknown | PipelineRef;
+    };
+    /**
+     * Moves a shape from one frame onto another in a single rigid motion: whatever sat on `from`
+     * sits the same way on `to`. The result shares its geometry with the shape.
+     *
+     * Leaving out `from` moves from the world frame at the origin, normal along z and direction along x.
+     */
+    "occt.transforms.orient": {
+        /** The shape to move. */
+        shape: unknown | PipelineRef;
+        /** The frame the shape lands on. */
+        to: unknown | PipelineRef;
+        /**
+         * The frame the shape is moved from; leave it out for the world frame at the origin, normal
+         * along z and direction along x.
+         */
+        from?: unknown | PipelineRef;
+    };
+    /**
+     * Places a copy of a shape by every placement, a matrix or a list of them, in one compound whose
+     * copies share the shape's geometry. Each must come to a turn and a move; one that scales or
+     * mirrors is refused and named, since a shared copy cannot hold either.
+     */
+    "occt.transforms.placeByMatrices": {
+        /** The shape a copy of which each placement places. */
+        shape: unknown | PipelineRef;
+        /**
+         * One placement per entry: a list of column-major 4 x 4 matrices applied first to last, as
+         * `frame.toMatrix` gives them, or a single matrix; each a turn and a move.
+         */
+        matrices: unknown[] | PipelineRef;
+    };
+    /**
+     * Places a copy of a shape on every frame, as `orient` would move it from `from`, all in one
+     * compound whose copies share the shape's geometry: an array of hundreds costs one shape's worth
+     * of geometry, and an export writes it once.
+     */
+    "occt.transforms.placeOnFrames": {
+        /** The shape a copy of which lands on every frame. */
+        shape: unknown | PipelineRef;
+        /** The frames a copy lands on, one copy each. */
+        frames: unknown[] | PipelineRef;
+        /**
+         * The frame the copies are moved from; leave it out for the world frame at the origin, normal
+         * along z and direction along x.
+         */
+        from?: unknown | PipelineRef;
     };
     /**
      * Builds the rotation matrix of a quaternion given as `[x, y, z, w]`.

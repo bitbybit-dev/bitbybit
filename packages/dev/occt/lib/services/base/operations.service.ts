@@ -1,5 +1,5 @@
 import {
-    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, Bnd_Box, EmbindEnumValue,
+    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue,
     BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -312,7 +312,10 @@ export class OperationsService {
         });
     }
 
-    extrude(inputs: Resolved.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the prism maker and its result before the maker is released.
+     */
+    extrude(inputs: Resolved.OCCT.ExtrudeDto<TopoDS_Shape>, read?: (maker: BRepPrimAPI_MakePrism, result: TopoDS_Shape) => void): TopoDS_Shape {
         const direction = inputs.direction;
         if (!direction.every(Number.isFinite)) {
             throw new InputError(`\`direction\` is [${direction.join(", ")}], and the direction of an extrusion has to be finite numbers.`, "direction");
@@ -329,8 +332,15 @@ export class OperationsService {
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();
-        prismMaker.delete();
-        gpVec.delete();
+        try {
+            read?.(prismMaker, prismShape);
+        } catch (error) {
+            prismShape.delete();
+            throw error;
+        } finally {
+            prismMaker.delete();
+            gpVec.delete();
+        }
         return prismShape;
     }
 
@@ -356,7 +366,10 @@ export class OperationsService {
         return shapes;
     }
 
-    revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the revolution maker and its result before the maker is released.
+     */
+    revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>, read?: (maker: BRepPrimAPI_MakeRevol, result: TopoDS_Shape) => void): TopoDS_Shape {
         const angle = inputs.angle;
         if (angle === 0) {
             throw new Error("The revolve angle must not be 0, or nothing is swept.");
@@ -366,20 +379,31 @@ export class OperationsService {
         const pt1 = new this.occ.gp_Pnt(0, 0, 0);
         const dir = new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
-        if (Math.abs(angle) >= 360.0) {
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
-            result = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
-            makeRevol.delete();
-        } else {
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
-                ax1,
-                angle * Math.PI / 180, inputs.copy);
-            result = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
-            makeRevol.delete();
+        const swept = (makeRevol: BRepPrimAPI_MakeRevol): TopoDS_Shape | undefined => {
+            try {
+                const made = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
+                if (made) {
+                    try {
+                        read?.(makeRevol, made);
+                    } catch (error) {
+                        made.delete();
+                        throw error;
+                    }
+                }
+                return made;
+            } finally {
+                makeRevol.delete();
+            }
+        };
+        try {
+            result = Math.abs(angle) >= 360.0
+                ? swept(new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1))
+                : swept(new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1, angle * Math.PI / 180, inputs.copy));
+        } finally {
+            pt1.delete();
+            dir.delete();
+            ax1.delete();
         }
-        pt1.delete();
-        dir.delete();
-        ax1.delete();
         if (!result) {
             throw occtFailure("occt.revolve.failed");
         }

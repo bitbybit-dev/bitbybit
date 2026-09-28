@@ -3,8 +3,10 @@ import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
+import { framesFromNumbers } from "../base/frames";
+import { checkedNumber, checkedPoint, checkedShape } from "../base/input-checks";
 
 /**
  * Faces in OpenCascade: bounded pieces of a surface, flat or curved, with an outer boundary wire
@@ -1242,6 +1244,136 @@ export class OCCTFace {
     normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
         return this.och.facesService.normalsOnUVs(resolved);
+    }
+
+    /**
+     * Finds the frame of a face at a UV fraction pair, where a profile or a copy would sit: at the
+     * surface point, normal as `normalOnUV` gives it, direction along U.
+     *
+     * U and V run from 0 to 1 over the face's range. Where the surface has no normal, as at a cone's
+     * point, it is read inside the face.
+     * @param inputs - The face and the U and V fractions
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on uv
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
+     * ```
+     */
+    frameOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        return framesFromNumbers(this.occ.FramesOnFace(face, [checkedNumber(resolved.paramU, "paramU"), checkedNumber(resolved.paramV, "paramV")]))[0]!;
+    }
+
+    /**
+     * Finds the frames of a face at several UV fraction pairs at once, each as `frameOnUV` finds it.
+     * @param inputs - The face and the list of U and V fraction pairs
+     * @returns One frame per pair, in the same order
+     * @group frames
+     * @shortname frames on uvs
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesOnUVs({ shape: face, paramsUV: [[0.25, 0.5], [0.75, 0.5]] });
+     * ```
+     */
+    framesOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        if (!Array.isArray(resolved.paramsUV)) {
+            throw new InputError("`paramsUV` is not a list of U and V pairs.", "paramsUV");
+        }
+        const faulty = resolved.paramsUV.findIndex(pair => !(Array.isArray(pair) && pair.length === 2 && pair.every(Number.isFinite)));
+        if (faulty !== -1) {
+            throw new InputError(`\`paramsUV\` holds something other than a U and V pair at position ${faulty}; each is two finite numbers.`, "paramsUV");
+        }
+        return framesFromNumbers(this.occ.FramesOnFace(face, resolved.paramsUV.flat()));
+    }
+
+    /**
+     * Places frames on a face in a grid, one at each point `subdivideToPoints` gives for the same
+     * inputs, each turned as `frameOnUV` turns it.
+     *
+     * The frames come in the order of the points, their normals match `subdivideToNormals` and
+     * their X axes run along the face's U direction.
+     * @param inputs - The face, the number of points in U and V, and the shift and removal options
+     * @returns One frame per point of the grid, in order
+     * @group frames
+     * @shortname subdivide to frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.subdivideToFrames({
+     *     shape: face,
+     *     nrDivisionsU: 5,
+     *     nrDivisionsV: 5,
+     *     shiftHalfStepU: false,
+     *     removeStartEdgeU: false,
+     *     removeEndEdgeU: false,
+     *     shiftHalfStepV: false,
+     *     removeStartEdgeV: false,
+     *     removeEndEdgeV: false,
+     * });
+     * const studs = await bitbybit.occt.transforms.placeOnFrames({ shape: stud, frames });
+     * ```
+     */
+    subdivideToFrames(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        checkedShape(resolved.shape);
+        const { uMin, uMax, vMin, vMax } = this.och.facesService.getUVBounds(resolved.shape);
+        const fractions = this.och.facesService.subdivideToUV(resolved).flatMap(([u, v]) => [(u - uMin) / (uMax - uMin), (v - vMin) / (vMax - vMin)]);
+        return framesFromNumbers(this.occ.FramesOnFace(resolved.shape, fractions));
+    }
+
+    /**
+     * Finds the frame of a face at the place nearest a point, as `frameOnUV` finds it there; a point
+     * beyond the face's edge comes to the edge.
+     * @param inputs - The face and the point
+     * @returns The frame at the nearest place
+     * @group frames
+     * @shortname frame nearest point
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameNearestPoint({ shape: face, point: [1, 2, 10] });
+     * ```
+     */
+    frameNearestPoint(inputs: Inputs.OCCT.FrameNearestPointDto<TopoDS_Face>): Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameNearestPointDto, inputs) as Resolved.OCCT.FrameNearestPointDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        return framesFromNumbers(this.occ.FramesOnFaceNearest(face, checkedPoint(resolved.point, "point")))[0]!;
+    }
+
+    /**
+     * Finds the frames of a face at the places nearest several points at once, each as
+     * `frameNearestPoint` finds it.
+     * @param inputs - The face and the points
+     * @returns One frame per point, in the same order
+     * @group frames
+     * @shortname frames nearest points
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesNearestPoints({ shape: face, points: [[1, 2, 10], [4, 5, 10]] });
+     * ```
+     */
+    framesNearestPoints(inputs: Inputs.OCCT.FramesNearestPointsDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesNearestPointsDto, inputs) as Resolved.OCCT.FramesNearestPointsDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        if (!Array.isArray(resolved.points)) {
+            throw new InputError("`points` is not a list of points.", "points");
+        }
+        const points = resolved.points.map((point, position) => {
+            try {
+                return checkedPoint(point, "points");
+            } catch {
+                throw new InputError(`\`points\` holds something other than a point at position ${position}; each is three finite numbers.`, "points");
+            }
+        });
+        return framesFromNumbers(this.occ.FramesOnFaceNearest(face, points.flat()));
     }
 
     /**

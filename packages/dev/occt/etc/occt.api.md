@@ -167,6 +167,11 @@ namespace Base {
         b: number;
         a: number;
     };
+    type Frame = {
+        origin: Base.Point3;
+        normal: Base.Vector3;
+        direction: Base.Vector3;
+    };
     enum horizontalAlignEnum {
         // (undocumented)
         center = "center",
@@ -185,11 +190,8 @@ namespace Base {
     };
     type Material = any;
     type Mesh3 = Triangle3[];
-    type Plane3 = {
-        origin: Base.Point3;
-        normal: Base.Vector3;
-        direction: Base.Vector3;
-    };
+    // @deprecated
+    type Plane3 = Frame;
     type Point2 = [number, number];
     type Point3 = [number, number, number];
     type Polyline2 = {
@@ -229,6 +231,24 @@ namespace Base {
         // (undocumented)
         top = "top"
     }
+}
+
+// @public (undocumented)
+export type BitbybitBool_Strategy = BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>;
+
+// @public (undocumented)
+export interface BitbybitBool_StrategyValue<T extends number> {
+    // (undocumented)
+    value: T;
+}
+
+// @public (undocumented)
+export type BitbybitFrame_CurveFrame = BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>;
+
+// @public (undocumented)
+export interface BitbybitFrame_CurveFrameValue<T extends number> {
+    // (undocumented)
+    value: T;
 }
 
 // @public (undocumented)
@@ -1774,6 +1794,10 @@ export interface EmbindModule {
     // (undocumented)
     Approx_ParametrizationType: {ChordLength: Approx_ParametrizationTypeValue<number>, Centripetal: Approx_ParametrizationTypeValue<number>, IsoParametric: Approx_ParametrizationTypeValue<number>};
     // (undocumented)
+    BitbybitBool_Strategy: {OneAfterAnother: BitbybitBool_StrategyValue<number>, InGroups: BitbybitBool_StrategyValue<number>, AllAtOnce: BitbybitBool_StrategyValue<number>};
+    // (undocumented)
+    BitbybitFrame_CurveFrame: {Frenet: BitbybitFrame_CurveFrameValue<number>, Perpendicular: BitbybitFrame_CurveFrameValue<number>, RotationMinimizing: BitbybitFrame_CurveFrameValue<number>};
+    // (undocumented)
     BitListOfShapesToCompound(_0: TopTools_ListOfShape): TopoDS_Compound;
     // (undocumented)
     Bnd_Box: {
@@ -1784,9 +1808,15 @@ export interface EmbindModule {
     // (undocumented)
     BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
     // (undocumented)
-    BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+    BooleanCommonWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
-    BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+    BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
+    // (undocumented)
+    BooleanCutWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    // (undocumented)
+    BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
+    // (undocumented)
+    BooleanFuseWithHistory(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     BOPAlgo_Builder: {
         new(): BOPAlgo_Builder;
@@ -2315,6 +2345,12 @@ export interface EmbindModule {
     // (undocumented)
     FlipFaceUV(_0: TopoDS_Face, _1: boolean, _2: boolean, _3: boolean): TopoDS_Face;
     // (undocumented)
+    FramesOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: BitbybitFrame_CurveFrame, _4: ArrayLike<number>): Float64Array;
+    // (undocumented)
+    FramesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+    // (undocumented)
+    FramesOnFaceNearest(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+    // (undocumented)
     GccAna_Circ2d2TanRad: {
         new(_0: gp_Pnt2d, _1: gp_Pnt2d, _2: number, _3: number): GccAna_Circ2d2TanRad;
     };
@@ -2662,6 +2698,16 @@ export interface EmbindModule {
         new(): Handle_XCAFDoc_ShapeTool;
     };
     // (undocumented)
+    HistoryOfChamfer(_0: BRepFilletAPI_MakeChamfer, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfFillet(_0: BRepFilletAPI_MakeFillet, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
     IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
     // (undocumented)
     IGESControl_Reader: {
@@ -2806,6 +2852,10 @@ export interface EmbindModule {
     // (undocumented)
     OffsetWire3D(_0: TopoDS_Wire, _1: number, _2: number, _3: number, _4: number): TopoDS_Shape;
     // (undocumented)
+    OrientedBoundingBox(_0: TopoDS_Shape): Float64Array;
+    // (undocumented)
+    OrientShape(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
+    // (undocumented)
     OutlinesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): TopoDS_Wire[] | null;
     // (undocumented)
     OutlinesOnPlane(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: ArrayLike<number>): TopoDS_Wire[] | null;
@@ -2815,6 +2865,10 @@ export interface EmbindModule {
     ParseStepAssemblyToJsonFromBinary(_0: any): string;
     // (undocumented)
     ParseStepAssemblyToJsonFromMemory(_0: EmbindString): string;
+    // (undocumented)
+    PlaceByMatrices(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Compound;
+    // (undocumented)
+    PlaceOnFrames(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Compound;
     // (undocumented)
     Poly_Connect: {
         new(): Poly_Connect;
@@ -2829,6 +2883,8 @@ export interface EmbindModule {
     Poly_Triangulation: {
         new(): Poly_Triangulation;
     };
+    // (undocumented)
+    PrincipalFrame(_0: TopoDS_Shape): Float64Array;
     // (undocumented)
     ProgressBeginCall(): void;
     // (undocumented)
@@ -2876,6 +2932,64 @@ export interface EmbindModule {
     RotatePeriodicEdgeSeamToPoint(_0: TopoDS_Edge, _1: gp_Pnt): TopoDS_Edge;
     // (undocumented)
     RunsInParallel(): boolean;
+    // (undocumented)
+    SelectEdgesAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesBetween(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectEdgesByLength(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesConcave(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+    // (undocumented)
+    SelectEdgesConvex(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+    // (undocumented)
+    SelectEdgesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+    // (undocumented)
+    SelectEdgesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectEdgesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectEdgesOfFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectEdgesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectEdgesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+    // (undocumented)
+    SelectEdgesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectEdgesTangentChain(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+    // (undocumented)
+    SelectFacesAdjacentTo(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectFacesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesBySize(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesFacing(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+    // (undocumented)
+    SelectFacesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectFacesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+    // (undocumented)
+    SelectFacesOfEdges(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectFacesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+    // (undocumented)
+    SelectFacesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+    // (undocumented)
+    SelectFacesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
     // (undocumented)
     SetDocLabelColor(_0: Handle_TDocStd_Document, _1: EmbindString, _2: number, _3: number, _4: number, _5: number): boolean;
     // (undocumented)
@@ -3246,6 +3360,158 @@ export type FaceTriangulationInfo = {
     nodeStartIndex: number,
     nodeCount: number
 };
+
+// @public
+namespace Frame {
+    class BestFitDto {
+        constructor(points?: Base.Point3[]);
+        points: Base.Point3[];
+    }
+    class ChildFrameDto {
+        constructor(parent?: Base.Frame, child?: Base.Frame);
+        child: Base.Frame;
+        parent: Base.Frame;
+    }
+    class CreateFrameDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3, direction?: Base.Vector3);
+        direction?: Base.Vector3 | undefined;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    enum frameAxisEnum {
+        // (undocumented)
+        x = "x",
+        // (undocumented)
+        y = "y",
+        // (undocumented)
+        z = "z"
+    }
+    class FrameDto {
+        constructor(frame?: Base.Frame);
+        frame: Base.Frame;
+    }
+    class FramePointDto {
+        constructor(frame?: Base.Frame, point?: Base.Point3);
+        frame: Base.Frame;
+        point: Base.Point3;
+    }
+    class FramePointsDto {
+        constructor(frame?: Base.Frame, points?: Base.Point3[]);
+        frame: Base.Frame;
+        points: Base.Point3[];
+    }
+    class FrameVectorDto {
+        constructor(frame?: Base.Frame, vector?: Base.Vector3);
+        frame: Base.Frame;
+        vector: Base.Vector3;
+    }
+    class FromToDto {
+        constructor(to?: Base.Frame, from?: Base.Frame);
+        from?: Base.Frame | undefined;
+        to: Base.Frame;
+    }
+    class GridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, spacingX?: number, spacingY?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        spacingX?: number | undefined;
+        spacingY?: number | undefined;
+    }
+    class HexGridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, radius?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+    }
+    class OffsetDto {
+        constructor(frame?: Base.Frame, distance?: number);
+        distance?: number | undefined;
+        frame: Base.Frame;
+    }
+    class OriginDto {
+        constructor(origin?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+    }
+    class PointAndNormalDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3);
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    class PolarDto {
+        constructor(frame?: Base.Frame, count?: number, radius?: number, angle?: number, startAngle?: number, rotate?: boolean);
+        angle?: number | undefined;
+        count?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+        rotate?: boolean | undefined;
+        startAngle?: number | undefined;
+    }
+    class RotateDto {
+        constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number);
+        angle?: number | undefined;
+        axis?: frameAxisEnum | undefined;
+        frame: Base.Frame;
+    }
+    class ThreePointsDto {
+        constructor(origin?: Base.Point3, xPoint?: Base.Point3, planePoint?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+        planePoint?: Base.Point3 | undefined;
+        xPoint?: Base.Point3 | undefined;
+    }
+    class TransformationDto {
+        constructor(transformation?: Base.TransformMatrixes);
+        transformation: Base.TransformMatrixes;
+    }
+    class TranslateDto {
+        constructor(frame?: Base.Frame, translation?: Base.Vector3);
+        frame: Base.Frame;
+        translation?: Base.Vector3 | undefined;
+    }
+}
+
+// @public
+namespace Frame_2 {
+    // (undocumented)
+    type BestFitDto = Inputs_3.Frame.BestFitDto;
+    // (undocumented)
+    type ChildFrameDto = Inputs_3.Frame.ChildFrameDto;
+    // (undocumented)
+    type CreateFrameDto = WithDefaults<Inputs_3.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
+    // (undocumented)
+    type FrameDto = Inputs_3.Frame.FrameDto;
+    // (undocumented)
+    type FramePointDto = Inputs_3.Frame.FramePointDto;
+    // (undocumented)
+    type FramePointsDto = Inputs_3.Frame.FramePointsDto;
+    // (undocumented)
+    type FrameVectorDto = Inputs_3.Frame.FrameVectorDto;
+    // (undocumented)
+    type FromToDto = Inputs_3.Frame.FromToDto;
+    // (undocumented)
+    type GridDto = WithDefaults<Inputs_3.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
+    // (undocumented)
+    type HexGridDto = WithDefaults<Inputs_3.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
+    // (undocumented)
+    type OffsetDto = WithDefaults<Inputs_3.Frame.OffsetDto, "distance">;
+    // (undocumented)
+    type OriginDto = WithDefaults<Inputs_3.Frame.OriginDto, "origin">;
+    // (undocumented)
+    type PointAndNormalDto = WithDefaults<Inputs_3.Frame.PointAndNormalDto, "origin" | "normal">;
+    // (undocumented)
+    type PolarDto = WithDefaults<Inputs_3.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
+    // (undocumented)
+    type RotateDto = WithDefaults<Inputs_3.Frame.RotateDto, "axis" | "angle">;
+    // (undocumented)
+    type ThreePointsDto = WithDefaults<Inputs_3.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
+    // (undocumented)
+    type TransformationDto = Inputs_3.Frame.TransformationDto;
+    // (undocumented)
+    type TranslateDto = WithDefaults<Inputs_3.Frame.TranslateDto, "translation">;
+}
 
 // @public (undocumented)
 export class FSNode {
@@ -4444,7 +4710,8 @@ declare namespace Inputs {
         Line,
         Polyline,
         Mesh,
-        IO
+        IO,
+        Frame
     }
 }
 
@@ -5554,6 +5821,14 @@ namespace OCCT {
         bezierWires: BezierDto[];
         returnCompound?: boolean | undefined;
     }
+    enum booleanStrategyEnum {
+        // (undocumented)
+        allAtOnce = "allAtOnce",
+        // (undocumented)
+        inGroups = "inGroups",
+        // (undocumented)
+        oneAfterAnother = "oneAfterAnother"
+    }
     class BoundingBoxDto {
         constructor(bbox?: BoundingBoxPropsDto);
         bbox?: BoundingBoxPropsDto | undefined;
@@ -5971,6 +6246,14 @@ namespace OCCT {
         curve: T;
         surface: U;
     }
+    enum curveFrameEnum {
+        // (undocumented)
+        frenet = "frenet",
+        // (undocumented)
+        perpendicular = "perpendicular",
+        // (undocumented)
+        rotationMinimizing = "rotationMinimizing"
+    }
     class CurveSeamByLengthDto<T> {
         constructor(shape?: T, length?: number);
         length?: number | undefined;
@@ -5980,6 +6263,26 @@ namespace OCCT {
         constructor(shape?: T, parameter?: number);
         parameter?: number | undefined;
         shape: T;
+    }
+    enum curveTypeEnum {
+        // (undocumented)
+        bezier = "bezier",
+        // (undocumented)
+        bspline = "bspline",
+        // (undocumented)
+        circle = "circle",
+        // (undocumented)
+        ellipse = "ellipse",
+        // (undocumented)
+        hyperbola = "hyperbola",
+        // (undocumented)
+        line = "line",
+        // (undocumented)
+        offset = "offset",
+        // (undocumented)
+        other = "other",
+        // (undocumented)
+        parabola = "parabola"
     }
     class CylinderDto {
         constructor(radius?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number, originOnCenter?: boolean);
@@ -6074,10 +6377,11 @@ namespace OCCT {
         pointsList: Base.Point3[];
     }
     class DifferenceDto<T> {
-        constructor(shape?: T, shapes?: T[], keepEdges?: boolean);
+        constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
         keepEdges?: boolean | undefined;
         shape: T;
         shapes: T[];
+        strategy?: booleanStrategyEnum | undefined;
     }
     enum dimensionEndTypeEnum {
         // (undocumented)
@@ -6587,6 +6891,46 @@ namespace OCCT {
         // (undocumented)
         outsideInside = "outsideInside"
     }
+    class FrameNearestPointDto<T> {
+        constructor(shape?: T, point?: Base.Point3);
+        point?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class FrameOnCurveAtLengthDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, length?: number, kind?: curveFrameEnum, up?: Base.Vector3);
+        length?: number | undefined;
+        shape: T;
+    }
+    class FrameOnCurveAtParamDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, param?: number, kind?: curveFrameEnum, up?: Base.Vector3);
+        param?: number | undefined;
+        shape: T;
+    }
+    abstract class FrameOnCurveSharedDto {
+        kind?: curveFrameEnum | undefined;
+        up?: Base.Vector3 | undefined;
+    }
+    class FramesAlongWireDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, count?: number, kind?: curveFrameEnum, up?: Base.Vector3, skipEndOnClosed?: boolean);
+        count?: number | undefined;
+        shape: T;
+        skipEndOnClosed?: boolean | undefined;
+    }
+    class FramesNearestPointsDto<T> {
+        constructor(shape?: T, points?: Base.Point3[]);
+        points: Base.Point3[];
+        shape: T;
+    }
+    class FramesOnCurveAtLengthsDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, lengths?: number[], kind?: curveFrameEnum, up?: Base.Vector3);
+        lengths: number[];
+        shape: T;
+    }
+    class FramesOnCurveAtParamsDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, params?: number[], kind?: curveFrameEnum, up?: Base.Vector3);
+        params: number[];
+        shape: T;
+    }
     enum gccEntPositionEnum {
         // (undocumented)
         enclosed = "enclosed",
@@ -7018,6 +7362,12 @@ namespace OCCT {
         shape: T;
         tolerance?: number | undefined;
     }
+    class OrientDto<T> {
+        constructor(shape?: T, to?: Base.Frame, from?: Base.Frame);
+        from?: Base.Frame | undefined;
+        shape: T;
+        to: Base.Frame;
+    }
     class ParallelogramDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number);
         angle?: number | undefined;
@@ -7119,6 +7469,17 @@ namespace OCCT {
         radius?: number | undefined;
         shapes: T[];
         trihedronEnum?: geomFillTrihedronEnum | undefined;
+    }
+    class PlaceByMatricesDto<T> {
+        constructor(shape?: T, matrices?: Base.TransformMatrixes[]);
+        matrices: Base.TransformMatrixes[];
+        shape: T;
+    }
+    class PlaceOnFramesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], from?: Base.Frame);
+        frames: Base.Frame[];
+        from?: Base.Frame | undefined;
+        shape: T;
     }
     class PointDto {
         constructor(point?: Base.Point3);
@@ -7340,6 +7701,104 @@ namespace OCCT {
     class SegmentsBaseDto {
         constructor(segments?: Base.Segment3[]);
         segments: Base.Segment3[];
+    }
+    class SelectBetweenDto<T> {
+        constructor(shape?: T, indexes?: number[], otherIndexes?: number[]);
+        indexes: number[];
+        otherIndexes: number[];
+        shape: T;
+    }
+    class SelectByDirectionDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, angle?: number, indexes?: number[]);
+        angle?: number | undefined;
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+    }
+    class SelectConvexityDto<T> {
+        constructor(shape?: T, tangentAngle?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        tangentAngle?: number | undefined;
+    }
+    class SelectEdgesOfTypeDto<T> {
+        constructor(shape?: T, type?: curveTypeEnum, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        type?: curveTypeEnum | undefined;
+    }
+    class SelectExtremeDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectFacesOfTypeDto<T> {
+        constructor(shape?: T, type?: surfaceTypeEnum, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        type?: surfaceTypeEnum | undefined;
+    }
+    class SelectFromIndexesDto<T> {
+        constructor(shape?: T, indexes?: number[]);
+        indexes: number[];
+        shape: T;
+    }
+    class SelectGroupAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectInBoxDto<T> {
+        constructor(shape?: T, corner?: Base.Point3, oppositeCorner?: Base.Point3, indexes?: number[]);
+        corner?: Base.Point3 | undefined;
+        indexes?: number[] | undefined;
+        oppositeCorner?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class SelectInRangeDto<T> {
+        constructor(shape?: T, min?: number, max?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        shape: T;
+    }
+    class SelectInSphereDto<T> {
+        constructor(shape?: T, center?: Base.Point3, radius?: number, indexes?: number[]);
+        center?: Base.Point3 | undefined;
+        indexes?: number[] | undefined;
+        radius?: number | undefined;
+        shape: T;
+    }
+    class SelectNearestDto<T> {
+        constructor(shape?: T, point?: Base.Point3, count?: number, indexes?: number[]);
+        count?: number | undefined;
+        indexes?: number[] | undefined;
+        point?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class SelectOnPlaneDto<T> {
+        constructor(shape?: T, origin?: Base.Point3, normal?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectSortAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+    }
+    class SelectTangentChainDto<T> {
+        constructor(shape?: T, indexes?: number[], angle?: number);
+        angle?: number | undefined;
+        indexes: number[];
+        shape: T;
     }
     class SetDocLabelColorDto<T> {
         constructor(document?: T, label?: string, r?: number, g?: number, b?: number, a?: number);
@@ -7564,6 +8023,30 @@ namespace OCCT {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number);
         extrusionLengthBack?: number | undefined;
         extrusionLengthFront?: number | undefined;
+    }
+    enum surfaceTypeEnum {
+        // (undocumented)
+        bezier = "bezier",
+        // (undocumented)
+        bspline = "bspline",
+        // (undocumented)
+        cone = "cone",
+        // (undocumented)
+        cylinder = "cylinder",
+        // (undocumented)
+        extrusion = "extrusion",
+        // (undocumented)
+        offset = "offset",
+        // (undocumented)
+        other = "other",
+        // (undocumented)
+        plane = "plane",
+        // (undocumented)
+        revolution = "revolution",
+        // (undocumented)
+        sphere = "sphere",
+        // (undocumented)
+        torus = "torus"
     }
     enum svgFaceStrategyEnum {
         // (undocumented)
@@ -7811,9 +8294,10 @@ namespace OCCT {
         unifyFaces?: boolean | undefined;
     }
     class UnionDto<T> {
-        constructor(shapes?: T[], keepEdges?: boolean);
+        constructor(shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
         keepEdges?: boolean | undefined;
         shapes: T[];
+        strategy?: booleanStrategyEnum | undefined;
     }
     class WireAlongParamDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number);
@@ -7953,7 +8437,12 @@ declare namespace OCCT_2 {
         WireDebugInfo,
         ShellDebugInfo,
         SolidDebugInfo,
-        FaceDebugInfo
+        FaceDebugInfo,
+        PrincipalFrame,
+        OrientedBoundingBox,
+        ShapeHistory,
+        ShapeWithHistory,
+        ShapeWithHistories
     }
 }
 
@@ -8114,7 +8603,7 @@ namespace OCCT_3 {
     // (undocumented)
     type DecomposedMeshDto = Inputs_2.OCCT.DecomposedMeshDto;
     // (undocumented)
-    type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges">;
+    type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
     type DivideDto<T> = WithDefaults<Inputs_2.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
@@ -8230,6 +8719,22 @@ namespace OCCT_3 {
     // (undocumented)
     type FlipFaceUVDto<T> = WithDefaults<Inputs_2.OCCT.FlipFaceUVDto<T>, "swapUV" | "reverseU" | "reverseV">;
     // (undocumented)
+    type FrameNearestPointDto<T> = WithDefaults<Inputs_2.OCCT.FrameNearestPointDto<T>, "point">;
+    // (undocumented)
+    type FrameOnCurveAtLengthDto<T> = WithDefaults<Inputs_2.OCCT.FrameOnCurveAtLengthDto<T>, "length" | "kind" | "up">;
+    // (undocumented)
+    type FrameOnCurveAtParamDto<T> = WithDefaults<Inputs_2.OCCT.FrameOnCurveAtParamDto<T>, "param" | "kind" | "up">;
+    // (undocumented)
+    type FrameOnCurveSharedDto = WithDefaults<Inputs_2.OCCT.FrameOnCurveSharedDto, "kind" | "up">;
+    // (undocumented)
+    type FramesAlongWireDto<T> = WithDefaults<Inputs_2.OCCT.FramesAlongWireDto<T>, "count" | "skipEndOnClosed" | "kind" | "up">;
+    // (undocumented)
+    type FramesNearestPointsDto<T> = Inputs_2.OCCT.FramesNearestPointsDto<T>;
+    // (undocumented)
+    type FramesOnCurveAtLengthsDto<T> = WithDefaults<Inputs_2.OCCT.FramesOnCurveAtLengthsDto<T>, "kind" | "up">;
+    // (undocumented)
+    type FramesOnCurveAtParamsDto<T> = WithDefaults<Inputs_2.OCCT.FramesOnCurveAtParamsDto<T>, "kind" | "up">;
+    // (undocumented)
     type Geom2dCircleDto = WithDefaults<Inputs_2.OCCT.Geom2dCircleDto, "center" | "direction" | "radius" | "sense">;
     // (undocumented)
     type Geom2dEllipseDto = WithDefaults<Inputs_2.OCCT.Geom2dEllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor" | "sense">;
@@ -8336,6 +8841,8 @@ namespace OCCT_3 {
     // (undocumented)
     type OffsetDto<T, U> = WithDefaults<Inputs_2.OCCT.OffsetDto<T, U>, "distance" | "tolerance">;
     // (undocumented)
+    type OrientDto<T> = Inputs_2.OCCT.OrientDto<T>;
+    // (undocumented)
     type ParallelogramDto = WithDefaults<Inputs_2.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
     // (undocumented)
     type ParallelogramSolidDto = WithDefaults<Inputs_2.OCCT.ParallelogramSolidDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle" | "extrusionLengthFront" | "extrusionLengthBack">;
@@ -8361,6 +8868,10 @@ namespace OCCT_3 {
     type PipeWireCylindricalDto<T> = WithDefaults<Inputs_2.OCCT.PipeWireCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
     // (undocumented)
     type PipeWiresCylindricalDto<T> = WithDefaults<Inputs_2.OCCT.PipeWiresCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PlaceByMatricesDto<T> = Inputs_2.OCCT.PlaceByMatricesDto<T>;
+    // (undocumented)
+    type PlaceOnFramesDto<T> = Inputs_2.OCCT.PlaceOnFramesDto<T>;
     // (undocumented)
     type PointDto = WithDefaults<Inputs_2.OCCT.PointDto, "point">;
     // (undocumented)
@@ -8433,6 +8944,36 @@ namespace OCCT_3 {
     type SegmentBaseDto = Inputs_2.OCCT.SegmentBaseDto;
     // (undocumented)
     type SegmentsBaseDto = Inputs_2.OCCT.SegmentsBaseDto;
+    // (undocumented)
+    type SelectBetweenDto<T> = Inputs_2.OCCT.SelectBetweenDto<T>;
+    // (undocumented)
+    type SelectByDirectionDto<T> = WithDefaults<Inputs_2.OCCT.SelectByDirectionDto<T>, "direction" | "angle">;
+    // (undocumented)
+    type SelectConvexityDto<T> = WithDefaults<Inputs_2.OCCT.SelectConvexityDto<T>, "tangentAngle">;
+    // (undocumented)
+    type SelectEdgesOfTypeDto<T> = WithDefaults<Inputs_2.OCCT.SelectEdgesOfTypeDto<T>, "type">;
+    // (undocumented)
+    type SelectExtremeDto<T> = WithDefaults<Inputs_2.OCCT.SelectExtremeDto<T>, "direction" | "tolerance">;
+    // (undocumented)
+    type SelectFacesOfTypeDto<T> = WithDefaults<Inputs_2.OCCT.SelectFacesOfTypeDto<T>, "type">;
+    // (undocumented)
+    type SelectFromIndexesDto<T> = Inputs_2.OCCT.SelectFromIndexesDto<T>;
+    // (undocumented)
+    type SelectGroupAlongDto<T> = WithDefaults<Inputs_2.OCCT.SelectGroupAlongDto<T>, "direction" | "tolerance">;
+    // (undocumented)
+    type SelectInBoxDto<T> = WithDefaults<Inputs_2.OCCT.SelectInBoxDto<T>, "corner" | "oppositeCorner">;
+    // (undocumented)
+    type SelectInRangeDto<T> = WithDefaults<Inputs_2.OCCT.SelectInRangeDto<T>, "min" | "max">;
+    // (undocumented)
+    type SelectInSphereDto<T> = WithDefaults<Inputs_2.OCCT.SelectInSphereDto<T>, "center" | "radius">;
+    // (undocumented)
+    type SelectNearestDto<T> = WithDefaults<Inputs_2.OCCT.SelectNearestDto<T>, "point" | "count">;
+    // (undocumented)
+    type SelectOnPlaneDto<T> = WithDefaults<Inputs_2.OCCT.SelectOnPlaneDto<T>, "origin" | "normal" | "tolerance">;
+    // (undocumented)
+    type SelectSortAlongDto<T> = WithDefaults<Inputs_2.OCCT.SelectSortAlongDto<T>, "direction">;
+    // (undocumented)
+    type SelectTangentChainDto<T> = WithDefaults<Inputs_2.OCCT.SelectTangentChainDto<T>, "angle">;
     // (undocumented)
     type SetDocLabelColorDto<T> = WithDefaults<Inputs_2.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
     // (undocumented)
@@ -8524,7 +9065,7 @@ namespace OCCT_3 {
     // (undocumented)
     type UnifySameDomainDto<T> = WithDefaults<Inputs_2.OCCT.UnifySameDomainDto<T>, "unifyEdges" | "unifyFaces" | "concatBSplines">;
     // (undocumented)
-    type UnionDto<T> = WithDefaults<Inputs_2.OCCT.UnionDto<T>, "keepEdges">;
+    type UnionDto<T> = WithDefaults<Inputs_2.OCCT.UnionDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
     type WireAlongParamDto<T> = WithDefaults<Inputs_2.OCCT.WireAlongParamDto<T>, "isU" | "param">;
     // (undocumented)
@@ -8592,12 +9133,14 @@ export class OCCTAssemblyQuery {
 export class OCCTBooleans {
     constructor(_occ: BitbybitOcctModule, och: OccHelper);
     difference(inputs: Inputs_2.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape;
+    differenceWithHistory(inputs: Inputs_2.OCCT.DifferenceDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
     intersection(inputs: Inputs_2.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape;
     meshMeshIntersectionOfShapesPoints(inputs: Inputs_2.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
     meshMeshIntersectionOfShapesWires(inputs: Inputs_2.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[];
     meshMeshIntersectionPoints(inputs: Inputs_2.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
     meshMeshIntersectionWires(inputs: Inputs_2.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[];
     union(inputs: Inputs_2.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape;
+    unionWithHistory(inputs: Inputs_2.OCCT.UnionDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
 }
 
 // @public
@@ -8653,6 +9196,10 @@ export class OCCTEdge {
     edgesToPoints(inputs: Inputs_2.OCCT.EdgesToPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
     endPointOnEdge(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Edge>): Inputs_2.Base.Point3;
     endPointsOnEdges(inputs: Inputs_2.OCCT.ShapesDto<TopoDS_Edge>): Inputs_2.Base.Point3[];
+    frameOnEdgeAtLength(inputs: Inputs_2.OCCT.FrameOnCurveAtLengthDto<TopoDS_Edge>): Inputs_2.Base.Frame;
+    frameOnEdgeAtParam(inputs: Inputs_2.OCCT.FrameOnCurveAtParamDto<TopoDS_Edge>): Inputs_2.Base.Frame;
+    framesOnEdgeAtLengths(inputs: Inputs_2.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Edge>): Inputs_2.Base.Frame[];
+    framesOnEdgeAtParams(inputs: Inputs_2.OCCT.FramesOnCurveAtParamsDto<TopoDS_Edge>): Inputs_2.Base.Frame[];
     fromBaseLine(inputs: Inputs_2.OCCT.LineBaseDto): TopoDS_Edge;
     fromBaseLines(inputs: Inputs_2.OCCT.LinesBaseDto): TopoDS_Edge[];
     fromBaseMesh(inputs: Inputs_2.OCCT.MeshBaseDto): TopoDS_Edge[];
@@ -8728,6 +9275,10 @@ export class OCCTFace {
     filterFacePoints(inputs: Inputs_2.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[];
     filterFacesPoints(inputs: Inputs_2.OCCT.FilterFacesPointsDto<TopoDS_Face>): Base.Point3[] | Base.Point3[][];
     flipFaceUV(inputs: Inputs_2.OCCT.FlipFaceUVDto<TopoDS_Face>): TopoDS_Face;
+    frameNearestPoint(inputs: Inputs_2.OCCT.FrameNearestPointDto<TopoDS_Face>): Base.Frame;
+    frameOnUV(inputs: Inputs_2.OCCT.DataOnUVDto<TopoDS_Face>): Base.Frame;
+    framesNearestPoints(inputs: Inputs_2.OCCT.FramesNearestPointsDto<TopoDS_Face>): Base.Frame[];
+    framesOnUVs(inputs: Inputs_2.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Frame[];
     fromBaseMesh(inputs: Inputs_2.OCCT.MeshBaseDto): TopoDS_Face[];
     fromBaseTriangle(inputs: Inputs_2.OCCT.TriangleBaseDto): TopoDS_Face;
     getFace(inputs: Inputs_2.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face;
@@ -8748,6 +9299,7 @@ export class OCCTFace {
     pointsOnUVs(inputs: Inputs_2.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[];
     rebuildFaceDegree(inputs: Inputs_2.OCCT.RebuildFaceDegreeDto<TopoDS_Face>): TopoDS_Face;
     reversedFace(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Face>): TopoDS_Face;
+    subdivideToFrames(inputs: Inputs_2.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Frame[];
     subdivideToHexagonHoles(inputs: Inputs_2.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[];
     subdivideToHexagonWires(inputs: Inputs_2.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[];
     subdivideToNormals(inputs: Inputs_2.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[];
@@ -8802,6 +9354,7 @@ export class OCCTFillets {
     chamferEdgesList(inputs: Inputs_2.OCCT.ChamferEdgesListDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape;
     chamferEdgesTwoDistances(inputs: Inputs_2.OCCT.ChamferEdgesTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape;
     chamferEdgesTwoDistancesLists(inputs: Inputs_2.OCCT.ChamferEdgesTwoDistancesListsDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape;
+    chamferEdgesWithHistory(inputs: Inputs_2.OCCT.ChamferDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     chamferEdgeTwoDistances(inputs: Inputs_2.OCCT.ChamferEdgeTwoDistancesDto<TopoDS_Shape, TopoDS_Edge, TopoDS_Face>): TopoDS_Shape;
     fillet2d(inputs: Inputs_2.OCCT.FilletDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face | TopoDS_Wire;
     fillet2dShapes(inputs: Inputs_2.OCCT.FilletShapesDto<TopoDS_Wire | TopoDS_Face>): TopoDS_Face[] | TopoDS_Wire[];
@@ -8812,6 +9365,7 @@ export class OCCTFillets {
     filletEdgesListOneRadius(inputs: Inputs_2.OCCT.FilletEdgesListOneRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape;
     filletEdgesSameVariableRadius(inputs: Inputs_2.OCCT.FilletEdgesSameVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape;
     filletEdgesVariableRadius(inputs: Inputs_2.OCCT.FilletEdgesVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape;
+    filletEdgesWithHistory(inputs: Inputs_2.OCCT.FilletDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     filletEdgeVariableRadius(inputs: Inputs_2.OCCT.FilletEdgeVariableRadiusDto<TopoDS_Shape, TopoDS_Edge>): TopoDS_Shape;
     filletTwoEdgesInPlaneIntoAWire(inputs: Inputs_2.OCCT.FilletTwoEdgesInPlaneDto<TopoDS_Edge>): TopoDS_Wire;
 }
@@ -8860,6 +9414,7 @@ export class OCCTOperations {
     distancesToShapeFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): number[];
     extrude(inputs: Inputs_2.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape;
     extrudeShapes(inputs: Inputs_2.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[];
+    extrudeWithHistory(inputs: Inputs_2.OCCT.ExtrudeDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     loft(inputs: Inputs_2.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
     loftAdvanced(inputs: Inputs_2.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
     makeThickSolidByJoin(inputs: Inputs_2.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape;
@@ -8867,11 +9422,14 @@ export class OCCTOperations {
     offset(inputs: Inputs_2.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
     offset3DWire(inputs: Inputs_2.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[];
     offsetAdv(inputs: Inputs_2.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
+    orientedBoundingBox(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Models_2.OCCT.OrientedBoundingBox;
     pipe(inputs: Inputs_2.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Shape;
     pipePolylineWireNGon(inputs: Inputs_2.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWireCylindrical(inputs: Inputs_2.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWiresCylindrical(inputs: Inputs_2.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[];
+    principalFrame(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Models_2.OCCT.PrincipalFrame;
     revolve(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape;
+    revolveWithHistory(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     rotatedExtrude(inputs: Inputs_2.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape;
     slice(inputs: Inputs_2.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound;
     sliceInStepPattern(inputs: Inputs_2.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound;
@@ -8922,6 +9480,10 @@ export class OCCTService {
         };
         [key: string]: unknown;
     };
+    // Warning: (ae-forgotten-export) The symbol "OCCTSelect" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly select: OCCTSelect;
     shapeFacesToPolygonPoints(inputs: Inputs_2.OCCT.ShapeFacesToPolygonPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
     // Warning: (ae-forgotten-export) The symbol "OCCTShapeFix" needs to be exported by the entry point index.d.ts
     //
@@ -9032,6 +9594,9 @@ export class OCCTTransforms {
     mirrorPointToMatrix(inputs: Inputs_2.OCCT.MirrorPointToMatrixDto): Base.TransformMatrix;
     mirrorShapes(inputs: Inputs_2.OCCT.MirrorShapesDto<TopoDS_Shape>): TopoDS_Shape[];
     multiplyTransforms(inputs: Inputs_2.OCCT.MultiplyTransformsDto): Base.TransformMatrix;
+    orient(inputs: Inputs_2.OCCT.OrientDto<TopoDS_Shape>): TopoDS_Shape;
+    placeByMatrices(inputs: Inputs_2.OCCT.PlaceByMatricesDto<TopoDS_Shape>): TopoDS_Shape;
+    placeOnFrames(inputs: Inputs_2.OCCT.PlaceOnFramesDto<TopoDS_Shape>): TopoDS_Shape;
     quaternionToMatrix(inputs: Inputs_2.OCCT.QuaternionToMatrixDto): Base.TransformMatrix;
     rotate(inputs: Inputs_2.OCCT.RotateDto<TopoDS_Shape>): TopoDS_Shape;
     rotateAroundCenter(inputs: Inputs_2.OCCT.RotateAroundCenterDto<TopoDS_Shape>): TopoDS_Shape;
@@ -9117,6 +9682,11 @@ export class OCCTWire {
     divideWiresByEqualDistanceToPoints(inputs: Inputs_2.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs_2.Base.Point3[][];
     divideWiresByParamsToPoints(inputs: Inputs_2.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs_2.Base.Point3[][];
     endPointOnWire(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Wire>): Inputs_2.Base.Point3;
+    frameOnWireAtLength(inputs: Inputs_2.OCCT.FrameOnCurveAtLengthDto<TopoDS_Wire>): Inputs_2.Base.Frame;
+    frameOnWireAtParam(inputs: Inputs_2.OCCT.FrameOnCurveAtParamDto<TopoDS_Wire>): Inputs_2.Base.Frame;
+    framesAlongWire(inputs: Inputs_2.OCCT.FramesAlongWireDto<TopoDS_Wire>): Inputs_2.Base.Frame[];
+    framesOnWireAtLengths(inputs: Inputs_2.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Wire>): Inputs_2.Base.Frame[];
+    framesOnWireAtParams(inputs: Inputs_2.OCCT.FramesOnCurveAtParamsDto<TopoDS_Wire>): Inputs_2.Base.Frame[];
     fromBaseLine(inputs: Inputs_2.OCCT.LineBaseDto): TopoDS_Wire;
     fromBaseLines(inputs: Inputs_2.OCCT.LinesBaseDto): TopoDS_Wire[];
     fromBaseMesh(inputs: Inputs_2.OCCT.MeshBaseDto): TopoDS_Wire[];
@@ -9158,6 +9728,14 @@ export class OCCTWire {
     textWires(inputs: Inputs_2.OCCT.TextWiresDto): TopoDS_Wire[];
     textWiresWithData(inputs: Inputs_2.OCCT.TextWiresDto): Models_2.OCCT.ObjectDefinition<Models_2.OCCT.TextWiresDataDto<string>, TopoDS_Shape>;
     wiresToPoints(inputs: Inputs_2.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
+}
+
+// @public
+interface OrientedBoundingBox {
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    halfSizes: Base.Vector3;
 }
 
 // @public (undocumented)
@@ -9549,6 +10127,14 @@ namespace Polyline_2 {
     type TwoPolylinesToleranceDto = WithDefaults<Inputs_3.Polyline.TwoPolylinesToleranceDto, "tolerance">;
 }
 
+// @public
+interface PrincipalFrame {
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    moments: Base.Vector3;
+}
+
 // @public (undocumented)
 export interface PropertiesResult extends ClassHandle {
     // (undocumented)
@@ -9602,6 +10188,7 @@ declare namespace Resolved {
         OCCT_3 as OCCT,
         Color_2 as Color,
         Dates_2 as Dates,
+        Frame_2 as Frame,
         IO_2 as IO,
         Line_2 as Line,
         Lists_2 as Lists,
@@ -10169,6 +10756,24 @@ export interface ShapeFix_Wire extends ClassHandle {
     WireAPIMake(): TopoDS_Wire;
 }
 
+// @public
+interface ShapeHistory {
+    // (undocumented)
+    edges: number[][];
+    // (undocumented)
+    edgesFromVertices: number[][];
+    // (undocumented)
+    faces: number[][];
+    // (undocumented)
+    facesFromEdges: number[][];
+    // (undocumented)
+    facesFromVertices: number[][];
+    // (undocumented)
+    firstFaces: number[];
+    // (undocumented)
+    lastFaces: number[];
+}
+
 // @public (undocumented)
 export class ShapeParser {
     // (undocumented)
@@ -10223,6 +10828,22 @@ export class ShapesHelperService {
     polygonLMiddle(widthFirst: number, lengthFirst: number, widthSecond: number, lengthSecond: number): Base.Point3[];
     // (undocumented)
     starLines(innerRadius: number, outerRadius: number, numRays: number, half: boolean, offsetOuterEdges: number): Base.Line3[];
+}
+
+// @public
+interface ShapeWithHistories<T> {
+    // (undocumented)
+    histories: ShapeHistory[];
+    // (undocumented)
+    shape: T;
+}
+
+// @public
+interface ShapeWithHistory<T> {
+    // (undocumented)
+    history: ShapeHistory;
+    // (undocumented)
+    shape: T;
 }
 
 // @public

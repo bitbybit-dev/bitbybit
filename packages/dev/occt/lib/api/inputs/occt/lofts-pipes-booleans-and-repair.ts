@@ -1,7 +1,7 @@
 // A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
-import { approxParametrizationTypeEnum, geomFillTrihedronEnum, joinTypeEnum } from "./enums";
+import { approxParametrizationTypeEnum, booleanStrategyEnum, geomFillTrihedronEnum, joinTypeEnum } from "./enums";
 
 /**
  * Section wires and a solid flag for `operations.loft`, which stretches a surface through the
@@ -504,12 +504,13 @@ export class SplitDto<T> {
  * Shapes and an edge flag for `booleans.union`, which fuses them into one.
  */
 export class UnionDto<T> {
-    constructor(shapes?: T[], keepEdges?: boolean) {
+    constructor(shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (keepEdges !== undefined) { this.keepEdges = keepEdges; }
+        if (strategy !== undefined) { this.strategy = strategy; }
     }
     /**
-     * The shapes to fuse, all at once; the pieces of a compound are fused as separate shapes.
+     * The shapes to fuse, in order; the pieces of a compound are fused as separate shapes.
      * @default undefined
      */
     shapes!: T[];
@@ -519,15 +520,22 @@ export class UnionDto<T> {
      * @default false
      */
     keepEdges?: boolean | undefined = false;
+    /**
+     * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+     * differently; all at once is fastest but wrong where shapes touch at a point.
+     * @default oneAfterAnother
+     */
+    strategy?: booleanStrategyEnum | undefined = booleanStrategyEnum.oneAfterAnother;
 }
 /**
  * A main shape and the shapes to cut away from it for `booleans.difference`.
  */
 export class DifferenceDto<T> {
-    constructor(shape?: T, shapes?: T[], keepEdges?: boolean) {
+    constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum) {
         if (shape !== undefined) { this.shape = shape; }
         if (shapes !== undefined) { this.shapes = shapes; }
         if (keepEdges !== undefined) { this.keepEdges = keepEdges; }
+        if (strategy !== undefined) { this.strategy = strategy; }
     }
     /**
      * The shape material is removed from.
@@ -535,7 +543,8 @@ export class DifferenceDto<T> {
      */
     shape!: T;
     /**
-     * The shapes whose volume is cut away, all at once.
+     * The shapes whose volume is cut away, in order; the pieces of a compound are cut away as
+     * separate shapes.
      * @default undefined
      */
     shapes!: T[];
@@ -545,6 +554,12 @@ export class DifferenceDto<T> {
      * @default false
      */
     keepEdges?: boolean | undefined = false;
+    /**
+     * One shape per step suits any; in groups is faster for shapes apart but numbers faces
+     * differently; all at once is fastest but wrong where shapes touch at a point.
+     * @default oneAfterAnother
+     */
+    strategy?: booleanStrategyEnum | undefined = booleanStrategyEnum.oneAfterAnother;
 }
 
 /**

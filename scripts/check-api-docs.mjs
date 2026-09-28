@@ -436,8 +436,9 @@ export function checkSpelling(item) {
 }
 
 /**
- * A singular DTO and its plural - `XDto` beside `XsDto`, `XShapesDto` or `XCentersDto` in the same
- * file - that keep separate classes still describe the same setting under the same name, so a
+ * A singular DTO and its plural - `XDto` beside `XsDto`, `XShapesDto` or `XCentersDto`, or a name
+ * of several words with both its first and its last plural (`FrameOnCurveAtParamDto` beside
+ * `FramesOnCurveAtParamsDto`), in the same file - that keep separate classes still describe the same setting under the same name, so a
  * property both have - declared or inherited - agrees on its type, its default and its bounds. Where
  * the two share their common properties through an abstract parent there is nothing to compare:
  * each property is declared once. A difference is reported on the plural's declaration of it.
@@ -457,7 +458,9 @@ export function checkPairParity() {
     for (const single of dtos) {
         const match = /^(.+)Dto$/.exec(single.name);
         if (!match) continue;
+        const words = match[1].match(/[A-Z][a-z0-9]*/g) ?? [];
         const plurals = [`${match[1]}sDto`, `${match[1]}esDto`, `${match[1]}ShapesDto`, `${match[1]}CentersDto`];
+        if (words.length > 1) plurals.push(`${words[0]}s${words.slice(1, -1).join("")}${words[words.length - 1]}sDto`);
         for (const plural of dtos.filter((d) => d.file === single.file && plurals.includes(d.name))) {
             const singleProps = propsOf(single);
             for (const [name, p] of propsOf(plural)) {

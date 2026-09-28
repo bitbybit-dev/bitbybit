@@ -13,6 +13,7 @@ import {
 import {
     Vector,
     Point,
+    Frame,
     Line,
     Polyline,
     TextBitByBit,
@@ -40,7 +41,7 @@ import { DrawHelper } from "./draw-helper";
 /**
  * The whole library behind one object for a BabylonJS scene: `occt`, `jscad` and `manifold` for the
  * CAD kernels, `draw` to put anything into the scene, `babylon` for the engine's meshes, cameras,
- * lights, materials and GUI, and the plain data helpers `math`, `vector`, `point`, `line`,
+ * lights, materials and GUI, and the plain data helpers `math`, `vector`, `point`, `frame`, `line`,
  * `polyline`, `transforms`, `lists`, `logic`, `json`, `csv`, `text`, `dates`, `color`, `asset`,
  * `tag` and `time`. Call `init` once with the scene and the kernel workers before using any of
  * them. The `bitbybit` object in the examples throughout these docs is an instance of this class.
@@ -60,6 +61,7 @@ export class BitByBitBase {
     public vector: Vector;
     public babylon: Babylon;
     public point: Point;
+    public frame: Frame;
     public line: Line;
     public transforms: Transforms;
     public polyline: Polyline;
@@ -98,6 +100,7 @@ export class BitByBitBase {
         this.color = shared.color;
         this.transforms = shared.transforms;
         this.point = shared.point;
+        this.frame = shared.frame;
         this.line = shared.line;
         this.polyline = shared.polyline;
         this.verb = shared.verb;

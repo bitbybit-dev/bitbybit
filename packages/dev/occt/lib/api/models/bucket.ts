@@ -5,3 +5,5 @@ export * from "./assembly/bucket";
 export * from "./brep-graph/bucket";
 export * from "./corners/bucket";
 export * from "./geom/debug-info";
+export * from "./frames/bucket";
+export * from "./history/bucket";

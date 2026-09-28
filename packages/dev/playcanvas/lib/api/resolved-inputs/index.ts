@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { WithDefaults } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-export type { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
+export type { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
 
 /**
  * The Draw inputs DTOs as their defaults leave them: every property with a default is present,
@@ -12,6 +12,7 @@ export type { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, D
 export namespace Draw {
     export type DrawAny<U, E extends Inputs.Draw.Entity = Inputs.Draw.Entity> = Inputs.Draw.DrawAny<U, E>;
     export type DrawBasicGeometryOptions = WithDefaults<Inputs.Draw.DrawBasicGeometryOptions, "colours" | "colorMapStrategy" | "size" | "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "arrowSize" | "arrowAngle">;
+    export type DrawFrameOptions = WithDefaults<Inputs.Draw.DrawFrameOptions, "size" | "colorX" | "colorY" | "colorZ" | "drawPlane" | "colorPlane" | "lineWidth" | "updatable">;
     export type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     export type DrawOcctShapeOptions = WithDefaults<Inputs.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type GenericPBRMaterialDto = WithDefaults<Inputs.Draw.GenericPBRMaterialDto, "name" | "baseColor" | "metallic" | "roughness" | "alpha" | "emissiveColor" | "emissiveIntensity" | "zOffset" | "zOffsetUnits" | "alphaMode" | "alphaCutoff" | "doubleSided" | "wireframe" | "unlit">;

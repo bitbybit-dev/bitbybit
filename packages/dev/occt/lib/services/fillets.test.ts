@@ -196,6 +196,24 @@ describe("OCCT fillets unit tests", () => {
         expect([hasEnd(ends, [10, 0, 0]), hasEnd(ends, [10, 0, 10]), hasEnd(ends, [0, 0, 10])]).toEqual([true, false, true]);
     });
 
+    it("should give the listed corners their radii in their order along the outline on a wire its 2D fillet cannot take", () => {
+        // Arrange
+        const bulge = wire.interpolatePoints({ points: [[10, 0, 0], [12, 0, 5], [10, 0, 10]], periodic: false, tolerance: 1e-7 });
+        const outline = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [
+            wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), bulge,
+            wire.createLineWire({ start: [10, 0, 10], end: [0, 0, 10] }), wire.createLineWire({ start: [0, 0, 10], end: [0, 0, 0] }),
+        ] });
+
+        // Act
+        const unsorted = fillets.fillet2d({ shape: outline, radiusList: [1, 0.5], indexes: [2, 1] });
+        const sorted = fillets.fillet2d({ shape: outline, radiusList: [1, 0.5], indexes: [1, 2] });
+        const swapped = fillets.fillet2d({ shape: outline, radiusList: [0.5, 1], indexes: [1, 2] });
+
+        // Assert
+        expect(endsAlong(unsorted)).toEqual(endsAlong(sorted));
+        expect(endsAlong(unsorted)).not.toEqual(endsAlong(swapped));
+    });
+
     it("should report the 2D fillet's failure, not round nothing, when a wire it cannot take is given a radius of 0", () => {
         // Arrange
         const bulge = wire.interpolatePoints({ points: [[10, 0, 0], [12, 0, 5], [10, 0, 10]], periodic: false, tolerance: 1e-7 });

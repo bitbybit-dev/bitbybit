@@ -47,6 +47,10 @@ describe("DrawHelper unit tests", () => {
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
     let mockScene: MockScene;
+    const greasedLineOf = (mesh: unknown): MockGreasedLineMesh => {
+        expect(mesh).toBeInstanceOf(MockGreasedLineMesh);
+        return mesh as MockGreasedLineMesh;
+    };
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -499,7 +503,26 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(updateInputs);
 
+            expect(result).not.toBe(existingMesh);
+            expect(greasedLineOf(result)._points).toHaveLength(2);
+            expect(mockScene._meshes).not.toContain(existingMesh);
+        });
+
+        it("should move the points of an updatable line in place and give it the new width and colors", () => {
+            const lines = (end: number) => [
+                { points: [[0, 0, 0], [end, 0, 0]] as Inputs.Base.Point3[], isClosed: false },
+                { points: [[0, 0, 0], [0, end, 0]] as Inputs.Base.Point3[], isClosed: false },
+            ];
+            const existingMesh = drawHelper.drawPolylinesWithColours(new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(lines(1), 1, ["#ff0000", "#00ff00"], 2, true));
+
+            const result = drawHelper.drawPolylinesWithColours(new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(lines(3), 1, ["#0000ff", "#ffff00"], 5, true, existingMesh));
+
             expect(result).toBe(existingMesh);
+            const line = greasedLineOf(result);
+            expect(line._points[0]).toEqual([0, 0, 0, 3, 0, 0]);
+            expect(line.greasedLineMaterial!.width).toBeCloseTo(0.05, 12);
+            expect(line.greasedLineMaterial!.color!.toHexString()).toBe("#0000ff");
+            expect(line.greasedLineMaterial!.colors!.map(c => c.toHexString())).toEqual(["#0000ff", "#0000ff", "#ffff00", "#ffff00"]);
         });
     });
 

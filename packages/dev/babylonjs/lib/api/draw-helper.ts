@@ -638,26 +638,53 @@ export class DrawHelper extends DrawHelperCore {
             const babylonColors = allColors.map(c => BABYLON.Color3.FromHexString(c));
 
             if (mesh && updatable) {
-                if (!mesh?.metadata?.linesForRenderLengths.some((s: number, i: number) => s !== allLinesForRender[i]?.length)) {
+                if (this.canRestyleGreasedPolylines(mesh, allLinesForRender, babylonColors)) {
                     mesh.setPoints(allLinesForRender);
+                    this.restyleGreasedPolylines(mesh, allLinesForRender, width, babylonColors, opacity);
                     return mesh;
-                } else {
-                    mesh.dispose();
-                    mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
-                    mesh.metadata = { linesForRenderLengths: allLinesForRender.map(l => l.length) };
                 }
-            } else {
-                mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
-                mesh.metadata = { linesForRenderLengths: allLinesForRender.map(l => l.length) };
+                mesh.dispose();
             }
-
+            mesh = this.createGreasedPolylines(updatable, allLinesForRender, width, babylonColors, opacity);
+            mesh.metadata = { linesForRenderLengths: allLinesForRender.map(l => l.length) };
             return mesh;
         } else {
             return undefined;
         }
     }
 
-    createGreasedPolylines(updatable: boolean, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): BABYLON.GreasedLineMesh {
+    /**
+     * Whether a line drawn before can take new lines in place: the same number of lines, each with
+     * the same number of points, colored the same way (one color, or a color per point). Anything
+     * else rebuilds the line, since its color texture is laid out per point.
+     */
+    private canRestyleGreasedPolylines(mesh: BABYLON.GreasedLineMesh, lines: number[][], colors: BABYLON.Color3[]): boolean {
+        const previous: number[] | undefined = mesh.metadata?.linesForRenderLengths;
+        return previous !== undefined
+            && previous.length === lines.length
+            && previous.every((length, i) => length === lines[i]!.length)
+            && mesh.greasedLineMaterial !== undefined
+            && mesh.greasedLineMaterial.useColors === this.hasMultipleGreasedColors(lines, colors);
+    }
+
+    /** Applies the width, the colors and the opacity of a redraw to a line updated in place. */
+    private restyleGreasedPolylines(mesh: BABYLON.GreasedLineMesh, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): void {
+        const material = mesh.greasedLineMaterial!;
+        material.width = width;
+        material.setColor(colors[0]!);
+        if (material.useColors) {
+            material.setColors(this.expandedGreasedColors(lines, colors), false);
+        }
+        mesh.material!.alpha = visibility;
+        mesh.material!.transparencyMode = visibility < 1 ? BABYLON.Material.MATERIAL_ALPHABLEND : null;
+    }
+
+    private hasMultipleGreasedColors(lines: number[][], colors: BABYLON.Color3[]): boolean {
+        return colors.length > 1 || (colors.length === 1 && lines.length > 1);
+    }
+
+    /** One color per point: every point of a line takes that line's color, the first when a line has none. */
+    private expandedGreasedColors(lines: number[][], colors: BABYLON.Color3[]): BABYLON.Color3[] {
         const expandedColors: BABYLON.Color3[] = [];
         lines.forEach((line, lineIndex) => {
             const lineColor = colors[lineIndex] || colors[0]!;
@@ -666,8 +693,12 @@ export class DrawHelper extends DrawHelperCore {
                 expandedColors.push(lineColor);
             }
         });
-        
-        const hasMultipleColors = colors.length > 1 || (colors.length === 1 && lines.length > 1);
+        return expandedColors;
+    }
+
+    createGreasedPolylines(updatable: boolean, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): BABYLON.GreasedLineMesh {
+        const expandedColors = this.expandedGreasedColors(lines, colors);
+        const hasMultipleColors = this.hasMultipleGreasedColors(lines, colors);
         
         const materialOptions: Parameters<typeof BABYLON.CreateGreasedLine>[2] = {
             width,

@@ -2,8 +2,10 @@ import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_S
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
+import { framesOnCurve } from "../base/frames";
+import { checkedShape } from "../base/input-checks";
 
 /**
  * Wires in OpenCascade: chains of edges joined end to end, open like a path or closed like an
@@ -1113,6 +1115,111 @@ export class OCCTWire {
         curve.delete();
         gpPnt.delete();
         return der;
+    }
+
+    /**
+     * Finds a frame on a wire at a parameter, from 0 where the wire starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the wire level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the wire runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The wire, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtParam({ shape: wire, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<TopoDS_Wire>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtParamDto, inputs) as Resolved.OCCT.FrameOnCurveAtParamDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.param], false, resolved.kind, resolved.up, "param")[0]!;
+    }
+
+    /**
+     * Finds a frame on a wire at a length from its start, as `frameOnWireAtParam` finds it at a
+     * parameter.
+     * @param inputs - The wire, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtLength({ shape: wire, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<TopoDS_Wire>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtLengthDto, inputs) as Resolved.OCCT.FrameOnCurveAtLengthDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.length], true, resolved.kind, resolved.up, "length")[0]!;
+    }
+
+    /**
+     * Finds frames on a wire at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole wire from its start, so each is the frame a swept profile would ride on
+     * there.
+     * @param inputs - The wire, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtParams({ shape: wire, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtParamsDto, inputs) as Resolved.OCCT.FramesOnCurveAtParamsDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.params, false, resolved.kind, resolved.up, "params");
+    }
+
+    /**
+     * Finds frames on a wire at several lengths from its start in one pass, as
+     * `framesOnWireAtParams` finds them at parameters.
+     * @param inputs - The wire, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtLengths({ shape: wire, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtLengthsDto, inputs) as Resolved.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.lengths, true, resolved.kind, resolved.up, "lengths");
+    }
+
+    /**
+     * Spreads `count` frames evenly by length along a wire, the first at its start, to place copies
+     * along a path or to carry a profile along it.
+     *
+     * On an open wire the last sits at the end; on a closed wire they go around the loop without
+     * repeating the first, unless `skipEndOnClosed` is off.
+     * @param inputs - The wire, how many frames, the kind of frame, the up vector and the closed-wire rule
+     * @returns The frames from the start onward
+     * @group frames
+     * @shortname frames along wire
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const frames = await bitbybit.occt.shapes.wire.framesAlongWire({ shape: circle, count: 10, kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1], skipEndOnClosed: true });
+     * ```
+     */
+    framesAlongWire(inputs: Inputs.OCCT.FramesAlongWireDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesAlongWireDto, inputs) as Resolved.OCCT.FramesAlongWireDto<TopoDS_Wire>;
+        checkedShape(resolved.shape);
+        if (!Number.isInteger(resolved.count) || resolved.count < 2) {
+            throw new InputError(`\`count\` must be a whole number of 2 or more; it is ${resolved.count}.`, "count");
+        }
+        const length = this.och.wiresService.getWireLength({ shape: resolved.shape });
+        const aroundTheLoop = resolved.skipEndOnClosed && this.och.wiresService.isWireClosed({ shape: resolved.shape });
+        const steps = aroundTheLoop ? resolved.count : resolved.count - 1;
+        const lengths = Array.from({ length: resolved.count }, (_, index) => length * index / steps);
+        return framesOnCurve(this.occ, resolved.shape, lengths, true, resolved.kind, resolved.up, "count");
     }
 
     /**

@@ -1,5 +1,8 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
 import * as Resolved from "../../api/resolved-inputs";
+import * as Models from "../../api/models";
+import { historyFromKernel } from "./history";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 
@@ -41,19 +44,36 @@ export class BooleansService {
             throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
         }
         this.refuseEmpty(inputs.shapes, "shapes");
-        let difference = this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0));
+        return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
+    }
 
-        if (difference.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
-            const solids = this.occ.SolidsOf(difference, false);
-            if (solids.length === 1) {
-                difference.delete();
-                difference = solids[0]!;
-            } else {
-                solids.forEach(solid => solid.delete());
+    /**
+     * The solid of a compound that holds nothing but that one solid, or the shape as it is: a
+     * compound that also holds a face or a wire keeps them.
+     */
+    private loneSolidOf(shape: TopoDS_Shape): TopoDS_Shape {
+        let current: TopoDS_Shape = shape.clone();
+        while (current.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
+            const children = new this.occ.TopoDS_Iterator(current);
+            const only = children.More() ? children.Value() : undefined;
+            if (only !== undefined) {
+                children.Next();
             }
+            const isAlone = only !== undefined && !children.More();
+            children.delete();
+            current.delete();
+            if (!isAlone) {
+                only?.delete();
+                return shape;
+            }
+            current = only;
         }
-
-        return difference;
+        if (current.ShapeType() !== this.occ.TopAbs_ShapeEnum.SOLID) {
+            current.delete();
+            return shape;
+        }
+        shape.delete();
+        return current;
     }
 
     union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
@@ -61,7 +81,37 @@ export class BooleansService {
             throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
         }
         this.refuseEmpty(inputs.shapes, "shapes");
-        return this.resultOf(this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0));
+        return this.resultOf(this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy)));
+    }
+
+    private strategyOf(strategy: Inputs.OCCT.booleanStrategyEnum): BitbybitBool_Strategy {
+        switch (strategy) {
+            case Inputs.OCCT.booleanStrategyEnum.inGroups:
+                return this.occ.BitbybitBool_Strategy.InGroups;
+            case Inputs.OCCT.booleanStrategyEnum.allAtOnce:
+                return this.occ.BitbybitBool_Strategy.AllAtOnce;
+            default:
+                return this.occ.BitbybitBool_Strategy.OneAfterAnother;
+        }
+    }
+
+    unionWithHistory(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
+        }
+        this.refuseEmpty(inputs.shapes, "shapes");
+        const result = this.occ.BooleanFuseWithHistory(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+    }
+
+    differenceWithHistory(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        this.refuseEmpty([inputs.shape], "shape");
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
+        }
+        this.refuseEmpty(inputs.shapes, "shapes");
+        const result = this.occ.BooleanCutWithHistory([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return { shape: this.loneSolidOf(this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
     }
 
     private resultOf(result: { shape: TopoDS_Shape | null, errorAlerts: string }): TopoDS_Shape {

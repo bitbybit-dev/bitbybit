@@ -240,6 +240,7 @@ const DTOS: [string, AnyDto][] = [
     ["Draw.SceneDrawGridMeshDto", Inputs.Draw.SceneDrawGridMeshDto],
     ["Draw.DrawBasicGeometryOptions", Inputs.Draw.DrawBasicGeometryOptions],
     ["Draw.DrawNodeOptions", Inputs.Draw.DrawNodeOptions],
+    ["Draw.DrawFrameOptions", Inputs.Draw.DrawFrameOptions],
     ["Draw.DrawManifoldOrCrossSectionOptions", Inputs.Draw.DrawManifoldOrCrossSectionOptions],
     ["Draw.DrawOcctShapeOptions", Inputs.Draw.DrawOcctShapeOptions],
     ["Draw.DrawOcctShapeSimpleOptions", Inputs.Draw.DrawOcctShapeSimpleOptions],

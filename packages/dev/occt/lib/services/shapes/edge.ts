@@ -4,6 +4,7 @@ import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
+import { framesOnCurve } from "../base/frames";
 
 /**
  * Edges in OpenCascade: single curves between two vertices, straight, circular, elliptical or
@@ -872,6 +873,81 @@ export class OCCTEdge {
     tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3[] {
         const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>;
         return resolved.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtLength({ shape, length: resolved.length }));
+    }
+
+    /**
+     * Finds a frame on an edge at a parameter, from 0 where the edge starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the edge level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the edge runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The edge, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtParam({ shape: edge, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<TopoDS_Edge>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtParamDto, inputs) as Resolved.OCCT.FrameOnCurveAtParamDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.param], false, resolved.kind, resolved.up, "param")[0]!;
+    }
+
+    /**
+     * Finds a frame on an edge at a length from its start, as `frameOnEdgeAtParam` finds it at a
+     * parameter.
+     * @param inputs - The edge, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtLength({ shape: edge, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<TopoDS_Edge>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtLengthDto, inputs) as Resolved.OCCT.FrameOnCurveAtLengthDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.length], true, resolved.kind, resolved.up, "length")[0]!;
+    }
+
+    /**
+     * Finds frames on an edge at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole edge from its start, so each is the frame a swept profile would ride
+     * on there.
+     * @param inputs - The edge, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on edge at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtParams({ shape: edge, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<TopoDS_Edge>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtParamsDto, inputs) as Resolved.OCCT.FramesOnCurveAtParamsDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.params, false, resolved.kind, resolved.up, "params");
+    }
+
+    /**
+     * Finds frames on an edge at several lengths from its start in one pass, as
+     * `framesOnEdgeAtParams` finds them at parameters.
+     * @param inputs - The edge, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on edge at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtLengths({ shape: edge, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Edge>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtLengthsDto, inputs) as Resolved.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.lengths, true, resolved.kind, resolved.up, "lengths");
     }
 
     /**

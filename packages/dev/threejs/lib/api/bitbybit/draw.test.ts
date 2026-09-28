@@ -2021,4 +2021,154 @@ describe("Draw unit tests", () => {
             expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({ tag: entity }));
         });
     });
+
+    describe("Draw frame tests", () => {
+        const world: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const raised: Inputs.Base.Frame = { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] };
+
+        it("should draw a frame as one set of segments: its three axes and the grid in its plane", () => {
+            // Act
+            const res = draw.drawAny({ entity: world });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(res.children).toHaveLength(1);
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(13);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 18)).toEqual([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1]);
+        });
+
+        it("should draw a whole list of frames as one set of segments", () => {
+            // Act
+            const res = draw.drawAny({ entity: [world, raised] });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frames);
+            expect(res.children).toHaveLength(1);
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(26);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(78, 84)).toEqual([0, 0, 5, 1, 0, 5]);
+        });
+
+        it("should draw only the axes, as long as asked, when the plane is left out", () => {
+            // Act
+            const res = draw.drawAny({ entity: world, options: draw.optionsFrame({ size: 2, drawPlane: false }) });
+
+            // Assert
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(3);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 6)).toEqual([0, 0, 0, 2, 0, 0]);
+        });
+
+        it("should redraw frames in place when they are updatable", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: [world], options });
+
+            // Act
+            const res2 = draw.drawAny({ entity: [raised], options, group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res.children).toHaveLength(1);
+            const segments = res2.children[0]! as LineSegments2;
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 6)).toEqual([0, 0, 5, 1, 0, 5]);
+        });
+
+        const segmentsOf = (drawn: THREE.Group): LineSegments2 => drawn.children[0]! as LineSegments2;
+        const segmentColor = (drawn: THREE.Group, segment: number): number[] => flatOf(segmentsOf(drawn).geometry.attributes["instanceColorStart"]!).slice(segment * 6, segment * 6 + 3);
+        const expectColor = (received: number[], hex: string): void => {
+            const color = new THREE.Color(hex);
+            [color.r, color.g, color.b].forEach((value, i) => expect(received[i]).toBeCloseTo(value, 6));
+        };
+        const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+
+        it("should color the axes red, green and blue and the grid gray, at the frame's line width", () => {
+            // Act
+            const res = draw.drawAny({ entity: world, options: draw.optionsFrame({ lineWidth: 6 }) });
+
+            // Assert
+            expectColor(segmentColor(res, 0), "#ff0000");
+            expectColor(segmentColor(res, 1), "#00ff00");
+            expectColor(segmentColor(res, 2), "#0000ff");
+            expectColor(segmentColor(res, 3), "#808080");
+            expectColor(segmentColor(res, 12), "#808080");
+            expect(segmentsOf(res).material.linewidth).toBe(2);
+        });
+
+        it.each([
+            { first: world, second: [world, raised], segments: 26, type: Inputs.Draw.drawingTypes.frames },
+            { first: [world, raised], second: raised, segments: 13, type: Inputs.Draw.drawingTypes.frame },
+        ])("should redraw with a $type, reading whether it is one frame or a list from the entity", ({ first, second, segments, type }) => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: first, options });
+
+            // Act
+            const res2 = draw.drawAny({ entity: second, options, group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(segmentsOf(res2).geometry.attributes["instanceStart"]!.count).toBe(segments);
+            expect(res2.userData["type"]).toBe(type);
+        });
+
+        it("should redraw updatable frames in place when their count changes, with the new colors", () => {
+            // Arrange
+            const res = draw.drawAny({ entity: [world], options: draw.optionsFrame({ updatable: true }) });
+
+            // Act
+            const res2 = draw.drawAny({ entity: [world, raised, world], options: draw.optionsFrame({ updatable: true, colorX: "#ffff00" }), group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(segmentsOf(res2).geometry.attributes["instanceStart"]!.count).toBe(39);
+            expectColor(segmentColor(res2, 0), "#ffff00");
+            expectColor(segmentColor(res2, 13), "#ffff00");
+            expectColor(segmentColor(res2, 14), "#00ff00");
+        });
+
+        it("should draw nothing for frames that cannot be squared", () => {
+            // Act
+            const res = draw.drawAny({ entity: [flat, flat] });
+
+            // Assert
+            expect(res).toBeUndefined();
+        });
+
+        it("should take an updatable drawing out of the scene when it is redrawn with frames that cannot be squared", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: world, options });
+            const scene = res.parent;
+
+            // Act
+            const res2 = draw.drawAny({ entity: flat, options, group: res });
+
+            // Assert
+            expect(scene).not.toBeNull();
+            expect(res2).toBeUndefined();
+            expect(res.parent).toBeNull();
+            expect(scene!.children).not.toContain(res);
+        });
+
+        it("should draw a frame through drawAnyAsync as drawAny does", async () => {
+            // Act
+            const res = await draw.drawAnyAsync({ entity: world });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(segmentsOf(res).geometry.attributes["instanceStart"]!.count).toBe(13);
+        });
+
+        it("should keep what the frame options are given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsFrame({ colorPlane: "#ffffff" });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawFrameOptions(), colorPlane: "#ffffff" });
+        });
+    });
 });

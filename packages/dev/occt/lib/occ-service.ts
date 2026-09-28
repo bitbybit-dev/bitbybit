@@ -12,6 +12,7 @@ import { OCCTAssembly } from "./services/assembly/assembly";
 import { OCCTBrepGraph } from "./services/brep-graph/brep-graph";
 import { OCCTCorners } from "./services/corners/corners";
 import { OCCTDraft } from "./services/draft/draft";
+import { OCCTSelect } from "./services/select/select";
 import { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 import { OCCTPath } from "./services/path";
@@ -23,10 +24,11 @@ import * as Resolved from "./api/resolved-inputs";
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners` and `draft` change
- * shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and other
- * files; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations,
- * topology graphs, machining paths and SVG. The methods on the service itself turn shapes into
- * triangle meshes for drawing.
+ * shapes; `select` picks faces and edges by what they are and where they lie; `geom` handles
+ * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `assembly`,
+ * `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology graphs,
+ * machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
+ * drawing.
  */
 export class OCCTService {
     public readonly shapes: OCCTShapes;
@@ -41,6 +43,7 @@ export class OCCTService {
     public readonly brepGraph: OCCTBrepGraph;
     public readonly corners: OCCTCorners;
     public readonly draft: OCCTDraft;
+    public readonly select: OCCTSelect;
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly svg: OCCTSVG;
@@ -62,6 +65,7 @@ export class OCCTService {
         this.brepGraph = new OCCTBrepGraph(occ, och);
         this.corners = new OCCTCorners(occ, och);
         this.draft = new OCCTDraft(occ, och);
+        this.select = new OCCTSelect(occ);
         this.io = new OCCTIO(occ, och);
         this.path = new OCCTPath(occ, och);
         this.svg = new OCCTSVG(occ, och);

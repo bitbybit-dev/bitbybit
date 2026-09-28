@@ -4,8 +4,9 @@ import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
+import * as Inputs from "../../api/inputs";
 
-type BooleanCall = "BooleanFuse" | "BooleanCut" | "BooleanCommon";
+type BooleanCall = "BooleanFuse" | "BooleanCut" | "BooleanCommon" | "BooleanFuseWithHistory" | "BooleanCutWithHistory";
 type BooleanAnswer = { shape: TopoDS_Shape | null, errorAlerts: string };
 
 describe("BooleansService", () => {
@@ -24,12 +25,13 @@ describe("BooleansService", () => {
         while (restores.length) restores.pop()!();
     });
 
-    function watch(name: BooleanCall, failFrom = Infinity, alerts = ""): { sizes: number[][], shapes: (TopoDS_Shape | null)[] } {
-        const tally = { sizes: [] as number[][], shapes: [] as (TopoDS_Shape | null)[] };
+    function watch(name: BooleanCall, failFrom = Infinity, alerts = ""): { sizes: number[][], shapes: (TopoDS_Shape | null)[], strategies: unknown[] } {
+        const tally = { sizes: [] as number[][], shapes: [] as (TopoDS_Shape | null)[], strategies: [] as unknown[] };
         const original: unknown = Reflect.get(occt, name);
         const call = (original as (...args: unknown[]) => BooleanAnswer).bind(occt);
         Reflect.set(occt, name, (...args: unknown[]): BooleanAnswer => {
             tally.sizes.push(args.filter(Array.isArray).map(list => list.length));
+            tally.strategies.push(args[args.length - 1]);
             const answer = tally.sizes.length >= failFrom ? { shape: null, errorAlerts: alerts } : call(...args);
             tally.shapes.push(answer.shape);
             return answer;
@@ -139,8 +141,8 @@ describe("BooleansService", () => {
 
             // Act
             const failure = failureOf(() => {
-                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
-                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true });
+                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
                 return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
             });
 
@@ -153,16 +155,16 @@ describe("BooleansService", () => {
             watch("BooleanFuse", 1, "BOPAlgo_AlertIntersectionFailed");
 
             // Act
-            const failure = failureOf(() => helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true }));
+            const failure = failureOf(() => helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }));
 
             // Assert
             expect(failure).toMatchObject(BOOLEAN_FAILED);
         });
 
         it.each([
-            ["the shape to cut from", (): unknown => helper.booleansService.difference({ shape: new occt.TopoDS_Shape(), shapes: [box(0, 10)], keepEdges: true }), "shape", "The shape is empty"],
-            ["a tool", (): unknown => helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 1), new occt.TopoDS_Shape()], keepEdges: true }), "shapes", "The shape at position 1 of `shapes` is empty"],
-            ["a shape of a union", (): unknown => helper.booleansService.union({ shapes: [new occt.TopoDS_Shape(), box(0, 10)], keepEdges: true }), "shapes", "The shape at position 0 of `shapes` is empty"],
+            ["the shape to cut from", (): unknown => helper.booleansService.difference({ shape: new occt.TopoDS_Shape(), shapes: [box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shape", "The shape is empty"],
+            ["a tool", (): unknown => helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 1), new occt.TopoDS_Shape()], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "The shape at position 1 of `shapes` is empty"],
+            ["a shape of a union", (): unknown => helper.booleansService.union({ shapes: [new occt.TopoDS_Shape(), box(0, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }), "shapes", "The shape at position 0 of `shapes` is empty"],
         ])("refuses an empty %s as an input error", (_what, run, property, start) => {
             // Act
             const failure = failureOf(run);
@@ -210,8 +212,8 @@ describe("BooleansService", () => {
 
             // Act
             const failure = failureOf(() => {
-                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
-                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true });
+                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
                 return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
             });
 
@@ -226,7 +228,7 @@ describe("BooleansService", () => {
             const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
 
             // Act
-            const failure = failureOf(() => helper.booleansService.difference({ shape: solid, shapes: [tool, edge], keepEdges: true }));
+            const failure = failureOf(() => helper.booleansService.difference({ shape: solid, shapes: [tool, edge], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }));
 
             // Assert
             expect(failure).toMatchObject(MIXED_DIMENSIONS);
@@ -241,7 +243,7 @@ describe("BooleansService", () => {
             const edge = service.shapes.edge.line({ start: [-20, 0, 0], end: [20, 0, 0] });
 
             // Act
-            const failure = failureOf(() => helper.booleansService.union({ shapes: [first, second, edge], keepEdges: true }));
+            const failure = failureOf(() => helper.booleansService.union({ shapes: [first, second, edge], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother }));
 
             // Assert
             expect(failure).toMatchObject(MIXED_DIMENSIONS);
@@ -372,6 +374,45 @@ describe("BooleansService", () => {
             // Assert
             expect(result.ShapeType()).toBe(occt.TopAbs_ShapeEnum.COMPOUND);
             expect(volumes(service.shapes.compound.getShapesOfCompound({ shape: result }))).toEqual([64]);
+        });
+    });
+
+    describe("strategy", () => {
+        it.each([
+            { strategy: undefined, expected: "OneAfterAnother" as const },
+            { strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother, expected: "OneAfterAnother" as const },
+            { strategy: Inputs.OCCT.booleanStrategyEnum.inGroups, expected: "InGroups" as const },
+            { strategy: Inputs.OCCT.booleanStrategyEnum.allAtOnce, expected: "AllAtOnce" as const },
+        ])("hands the kernel $expected for unions and differences asked for $strategy, with history or without", ({ strategy, expected }) => {
+            // Arrange
+            const fuse = watch("BooleanFuse");
+            const cut = watch("BooleanCut");
+            const fuseWithHistory = watch("BooleanFuseWithHistory");
+            const cutWithHistory = watch("BooleanCutWithHistory");
+
+            // Act
+            service.booleans.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: false, strategy });
+            service.booleans.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: false, strategy });
+            service.booleans.unionWithHistory({ shapes: [box(0, 10), box(5, 10)], keepEdges: false, strategy });
+            service.booleans.differenceWithHistory({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: false, strategy });
+
+            // Assert
+            const wanted = occt.BitbybitBool_Strategy[expected];
+            expect([...fuse.strategies, ...cut.strategies, ...fuseWithHistory.strategies, ...cutWithHistory.strategies]).toEqual([wanted, wanted, wanted, wanted]);
+        });
+
+        it("unites and cuts as one after another does when the strategy is left out, numbering the faces the same", () => {
+            // Arrange
+            const tools = (): TopoDS_Shape[] => [box(5, 10), service.shapes.solid.createSphere({ radius: 4, center: [12, 0, 0] })];
+            const centres = (shape: TopoDS_Shape): Inputs.Base.Point3[] => service.shapes.face.getFacesCentersOfMass({ shapes: service.shapes.face.getFaces({ shape }) });
+
+            // Act
+            const unset = service.booleans.difference({ shape: box(0, 20), shapes: tools(), keepEdges: false });
+            const asked = service.booleans.difference({ shape: box(0, 20), shapes: tools(), keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+
+            // Assert
+            expect(centres(unset)).toEqual(centres(asked).map(centre => centre.map(value => expect.closeTo(value, 9))));
+            expect(volume(unset)).toBeCloseTo(volume(asked), 9);
         });
     });
 });

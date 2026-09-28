@@ -6,6 +6,7 @@ import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTBooleans } from "./booleans";
 import { OCCTSolid } from "./shapes/solid";
 import { OCCTWire } from "./shapes/wire";
+import * as Inputs from "../api/inputs";
 
 describe("OCCT booleans unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -223,6 +224,39 @@ describe("OCCT booleans unit tests", () => {
         wires.forEach(w => w.delete());
     });
 
+    describe("strategies", () => {
+        const midpoints = (shape: TopoDS_Shape): Inputs.Base.Point3[] =>
+            occHelper.shapeGettersService.getEdges({ shape }).map(edge => occHelper.edgesService.pointOnEdgeAtParam({ shape: edge, param: 0.5 }).map(value => Math.round(value * 1e6) / 1e6) as Inputs.Base.Point3);
+
+        it("should fuse shapes apart from each other in one step in groups, numbering them as all at once does", () => {
+            // Arrange
+            const block = solid.createBox({ width: 50, height: 10, length: 10, center: [25, 5, 5] });
+            const pegs = [0, 1, 2, 3, 4].map(step => solid.createCylinder({ radius: 2, height: 12, center: [5 + 10 * step, 5, 5], direction: [0, 0, 1] }));
+            const fuse = (strategy: Inputs.OCCT.booleanStrategyEnum): TopoDS_Shape => booleans.union({ shapes: [block, ...pegs], keepEdges: true, strategy });
+
+            // Act
+            const oneByOne = fuse(Inputs.OCCT.booleanStrategyEnum.oneAfterAnother);
+            const grouped = fuse(Inputs.OCCT.booleanStrategyEnum.inGroups);
+            const allAtOnce = fuse(Inputs.OCCT.booleanStrategyEnum.allAtOnce);
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: grouped })).toBeCloseTo(solid.getSolidVolume({ shape: oneByOne }), 6);
+            expect(midpoints(grouped)).toEqual(midpoints(allAtOnce));
+            expect(midpoints(grouped)).not.toEqual(midpoints(oneByOne));
+        });
+
+        it("should cut tools that touch each other at one point right in groups", () => {
+            // Arrange
+            const cube = solid.createCube({ size: 6, center: [0, 0, 0], originOnCenter: true });
+            const centres: Inputs.Base.Point3[] = [[0, 2.1, 0], [0, -2.1, 0], [2.1, 0, 0], [-2.1, 0, 0], [0, 0, -2.1], [0, 0, 2.1]];
+            const spheres = centres.map(center => solid.createSphere({ radius: 2.1, center }));
+
+            // Act
+            const cut = booleans.difference({ shape: cube, shapes: spheres, keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.inGroups });
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: cut })).toBeCloseTo(76.2286, 3);
+        });
+    });
+
 });
-
-

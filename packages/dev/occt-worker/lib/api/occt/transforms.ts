@@ -159,6 +159,63 @@ export class OCCTTransforms {
     }
 
     /**
+     * Moves a shape from one frame onto another in a single rigid motion: whatever sat on `from`
+     * sits the same way on `to`. The result shares its geometry with the shape.
+     *
+     * Leaving out `from` moves from the world frame at the origin, normal along z and direction along x.
+     * @param inputs - The shape, the frame to land on and the frame to move from
+     * @returns The moved shape
+     * @group frames
+     * @shortname orient
+     * @drawable true
+     * @example
+     * ```typescript
+     * const placed = await bitbybit.occt.transforms.orient({ shape: bracket, to: { origin: [10, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] } });
+     * ```
+     */
+    orient(inputs: Inputs.OCCT.OrientDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("transforms.orient", inputs);
+    }
+
+    /**
+     * Places a copy of a shape on every frame, as `orient` would move it from `from`, all in one
+     * compound whose copies share the shape's geometry: an array of hundreds costs one shape's worth
+     * of geometry, and an export writes it once.
+     * @param inputs - The shape, the frames and the frame to move from
+     * @returns A compound of the placed copies, in the order of the frames
+     * @group frames
+     * @shortname place on frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const pattern = await bitbybit.occt.transforms.placeOnFrames({ shape: bolt, frames });
+     * ```
+     */
+    placeOnFrames(inputs: Inputs.OCCT.PlaceOnFramesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("transforms.placeOnFrames", inputs);
+    }
+
+    /**
+     * Places a copy of a shape by every placement, a matrix or a list of them, in one compound whose
+     * copies share the shape's geometry. Each must come to a turn and a move; one that scales or
+     * mirrors is refused and named, since a shared copy cannot hold either.
+     * @param inputs - The shape and one placement per copy
+     * @returns A compound of the placed copies, in the order of the placements
+     * @group frames
+     * @shortname place by matrices
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = bitbybit.frame.polar({ count: 6, radius: 20 });
+     * const matrices = frames.map(frame => bitbybit.frame.toMatrix({ frame }));
+     * const copies = await bitbybit.occt.transforms.placeByMatrices({ shape: bolt, matrices });
+     * ```
+     */
+    placeByMatrices(inputs: Inputs.OCCT.PlaceByMatricesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("transforms.placeByMatrices", inputs);
+    }
+
+    /**
      * Moves a shape by a vector, in model units.
      * @param inputs - The shape and the vector to move it by
      * @returns The moved shape

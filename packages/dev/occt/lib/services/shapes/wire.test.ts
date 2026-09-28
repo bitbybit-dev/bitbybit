@@ -2191,11 +2191,11 @@ describe("OCCT wire unit tests", () => {
         const pts = wire.wiresToPoints(opt);
         expect(pts.length).toBe(1);
         expect(pts[0]!.length).toBe(269);
-        expect(pts[0]![0]).toEqual([5, 0, -3]);
-        expect(pts[0]![1]).toEqual([5, 0, -10]);
-        expect(pts[0]![168]).toEqual([-1, 0, 10]);
-        expect(pts[0]![236]).toEqual([5, 0, -1]);
-        expect(pts[0]![268]).toEqual([5, 0, -3]);
+        expect(pts[0]![0]).toEqual([5, 0, -1]);
+        expect(pts[0]![33]).toEqual([5, 0, -10]);
+        expect(pts[0]![123]).toEqual([-4.168530387697455, 0, -3.444429766980398]);
+        expect(pts[0]![200]).toEqual([-1, 0, 10]);
+        expect(pts[0]![268]).toEqual([5, 0, -1]);
         squareFace.delete();
         edges.forEach(e => e.delete());
         circleFaces.forEach(f => f.delete());

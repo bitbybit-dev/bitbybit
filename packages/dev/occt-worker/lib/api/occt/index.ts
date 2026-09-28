@@ -11,6 +11,7 @@ export * from "./io";
 export * from "./occt";
 export * from "./operations";
 export * from "./path";
+export * from "./select";
 export * from "./shape-fix";
 export * from "./shapes";
 export * from "./svg";

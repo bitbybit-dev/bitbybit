@@ -3350,4 +3350,170 @@ describe("Draw unit tests", () => {
             expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({ tag: entity }));
         });
     });
+
+    describe("drawing frames", () => {
+        const world: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const raised: Inputs.Base.Frame = { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] };
+        let drawPolylines: Mock<DrawHelper["drawPolylinesWithColours"]>;
+        const answerWith = (mesh: BABYLON.Mesh): void => {
+            drawPolylines = vi.fn<DrawHelper["drawPolylinesWithColours"]>().mockReturnValue(mesh as BABYLON.GreasedLineMesh);
+            mockDrawHelper.drawPolylinesWithColours = drawPolylines;
+        };
+        const polylineCall = (): Parameters<DrawHelper["drawPolylinesWithColours"]>[0] => drawPolylines.mock.calls[0]![0];
+
+        it("should draw a frame as its axes and plane grid in one call, with the frame defaults", () => {
+            // Arrange
+            const mesh = createMockMesh("frame");
+            answerWith(mesh);
+
+            // Act
+            const drawn = draw.drawAny({ entity: world });
+
+            // Assert
+            expect(drawn).toBe(mesh);
+            expect(drawPolylines).toHaveBeenCalledTimes(1);
+            expect(polylineCall().polylines).toHaveLength(10);
+            expect(polylineCall().colours).toEqual(["#ff0000", "#00ff00", "#0000ff", ...Array<string>(7).fill("#808080")]);
+            expect(polylineCall().polylines[0]!.points).toEqual([[0, 0, 0], [1, 0, 0]]);
+            expect(polylineCall().size).toBe(2);
+            expect(polylineCall().updatable).toBe(false);
+            expect(mesh.metadata.type).toBe(Inputs.Draw.drawingTypes.frame);
+        });
+
+        it("should draw a whole list of frames in one call", () => {
+            // Arrange
+            const mesh = createMockMesh("frames");
+            answerWith(mesh);
+
+            // Act
+            draw.drawAny({ entity: [world, raised, world] });
+
+            // Assert
+            expect(drawPolylines).toHaveBeenCalledTimes(1);
+            expect(polylineCall().polylines).toHaveLength(30);
+            expect(polylineCall().polylines[10]!.points).toEqual([[0, 0, 5], [1, 0, 5]]);
+            expect(mesh.metadata.type).toBe(Inputs.Draw.drawingTypes.frames);
+        });
+
+        it("should follow the frame options it is given", () => {
+            // Arrange
+            answerWith(createMockMesh("frame"));
+            const options = draw.optionsFrame({ size: 3, drawPlane: false, lineWidth: 5, updatable: true, colorX: "#123456" });
+
+            // Act
+            draw.drawAny({ entity: world, options });
+
+            // Assert
+            expect(polylineCall().polylines).toHaveLength(3);
+            expect(polylineCall().colours).toEqual(["#123456", "#00ff00", "#0000ff"]);
+            expect(polylineCall().polylines[0]!.points).toEqual([[0, 0, 0], [3, 0, 0]]);
+            expect(polylineCall().size).toBe(5);
+            expect(polylineCall().updatable).toBe(true);
+        });
+
+        it.each([
+            { type: Inputs.Draw.drawingTypes.frame, entity: raised },
+            { type: Inputs.Draw.drawingTypes.frames, entity: [raised] },
+        ])("should redraw a $type in place with the options it was drawn with", ({ type, entity }) => {
+            // Arrange
+            const existing = createMockMeshWithMetadata("existing", type, { ...new Inputs.Draw.DrawFrameOptions(), size: 4, updatable: true });
+            answerWith(existing);
+
+            // Act
+            const drawn = draw.drawAny({ entity, babylonMesh: existing });
+
+            // Assert
+            expect(drawn).toBe(existing);
+            expect(polylineCall().polylinesMesh).toBe(existing);
+            expect(polylineCall().polylines[0]!.points).toEqual([[0, 0, 5], [4, 0, 5]]);
+            expect(polylineCall().updatable).toBe(true);
+        });
+
+        it.each([
+            { drawnAs: Inputs.Draw.drawingTypes.frame, entity: [world, raised], lines: 20, redrawnAs: Inputs.Draw.drawingTypes.frames },
+            { drawnAs: Inputs.Draw.drawingTypes.frames, entity: raised, lines: 10, redrawnAs: Inputs.Draw.drawingTypes.frame },
+        ])("should redraw a $drawnAs drawing with a $redrawnAs, reading which it is from the entity", ({ drawnAs, entity, lines, redrawnAs }) => {
+            // Arrange
+            const existing = createMockMeshWithMetadata("existing", drawnAs, { ...new Inputs.Draw.DrawFrameOptions(), updatable: true });
+            answerWith(existing);
+
+            // Act
+            const drawn = draw.drawAny({ entity, babylonMesh: existing });
+
+            // Assert
+            expect(drawn).toBe(existing);
+            expect(polylineCall().polylines).toHaveLength(lines);
+            expect(existing.metadata.type).toBe(redrawnAs);
+        });
+
+        it("should draw nothing for frames that cannot be squared", () => {
+            // Arrange
+            answerWith(createMockMesh("unused"));
+            const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+
+            // Act
+            const drawn = draw.drawAny({ entity: [flat, flat] });
+
+            // Assert
+            expect(drawn).toBeUndefined();
+            expect(drawPolylines).not.toHaveBeenCalled();
+        });
+
+        it("should remove an updatable drawing redrawn with frames that cannot be squared, and leave one that is not updatable", () => {
+            // Arrange
+            answerWith(createMockMesh("unused"));
+            const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+            const updatable = createMockMeshWithMetadata("updatable", Inputs.Draw.drawingTypes.frame, { ...new Inputs.Draw.DrawFrameOptions(), updatable: true });
+            const fixed = createMockMeshWithMetadata("fixed", Inputs.Draw.drawingTypes.frame, { ...new Inputs.Draw.DrawFrameOptions(), updatable: false });
+            const disposeUpdatable = vi.spyOn(updatable, "dispose");
+            const disposeFixed = vi.spyOn(fixed, "dispose");
+
+            // Act
+            const redrawnUpdatable = draw.drawAny({ entity: flat, babylonMesh: updatable });
+            const redrawnFixed = draw.drawAny({ entity: flat, babylonMesh: fixed });
+
+            // Assert
+            expect(redrawnUpdatable).toBeUndefined();
+            expect(redrawnFixed).toBeUndefined();
+            expect(disposeUpdatable).toHaveBeenCalledTimes(1);
+            expect(disposeFixed).not.toHaveBeenCalled();
+        });
+
+        it("should remove an updatable frame drawing redrawn with something that is not a frame", () => {
+            // Arrange
+            answerWith(createMockMesh("unused"));
+            const existing = createMockMeshWithMetadata("existing", Inputs.Draw.drawingTypes.frames, { ...new Inputs.Draw.DrawFrameOptions(), updatable: true });
+            const dispose = vi.spyOn(existing, "dispose");
+
+            // Act
+            const drawn = draw.drawAny({ entity: [[0, 0, 0], [1, 1, 1]], babylonMesh: existing });
+
+            // Assert
+            expect(drawn).toBeUndefined();
+            expect(drawPolylines).not.toHaveBeenCalled();
+            expect(dispose).toHaveBeenCalledTimes(1);
+        });
+
+        it("should draw a frame through drawAnyAsync as drawAny does", async () => {
+            // Arrange
+            const mesh = createMockMesh("frame");
+            answerWith(mesh);
+
+            // Act
+            const drawn = await draw.drawAnyAsync({ entity: world });
+
+            // Assert
+            expect(drawn).toBe(mesh);
+            expect(polylineCall().polylines).toHaveLength(10);
+            expect(mesh.metadata.type).toBe(Inputs.Draw.drawingTypes.frame);
+        });
+
+        it("optionsFrame should keep what it is given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsFrame({ size: 2 });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawFrameOptions(), size: 2 });
+        });
+    });
 });

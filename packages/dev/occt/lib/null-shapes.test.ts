@@ -52,6 +52,18 @@ describe("kernel functions given a null shape", () => {
         ["BRepOffsetAPI_MakeOffset from a face", (k: BitbybitOcctModule): unknown => new k.BRepOffsetAPI_MakeOffset(new k.TopoDS_Face()), "BRepOffsetAPI_MakeOffset: the face is null"],
         ["BRepOffsetAPI_ThruSections.AddWire", (k: BitbybitOcctModule): unknown => new k.BRepOffsetAPI_ThruSections(false).AddWire(new k.TopoDS_Wire()), "BRepOffsetAPI_ThruSections.AddWire: the wire is null"],
         ["BRepFill_Filling_AddEdge", (k: BitbybitOcctModule): unknown => k.BRepFill_Filling_AddEdge(new k.BRepFill_Filling(), new k.TopoDS_Edge(), 0, true), "BRepFill_Filling_AddEdge: the edge is null"],
+        ["SelectFacesOfType", (k: BitbybitOcctModule): unknown => k.SelectFacesOfType(new k.TopoDS_Shape(), [], [0]), "SelectFacesOfType: the shape is null"],
+        ["SelectFacesAdjacentTo", (k: BitbybitOcctModule): unknown => k.SelectFacesAdjacentTo(new k.TopoDS_Shape(), [0]), "SelectFacesAdjacentTo: the shape is null"],
+        ["SelectEdgesConvex", (k: BitbybitOcctModule): unknown => k.SelectEdgesConvex(new k.TopoDS_Shape(), [], 0), "SelectEdgesConvex: the shape is null"],
+        ["SelectEdgesGroupedAlong", (k: BitbybitOcctModule): unknown => k.SelectEdgesGroupedAlong(new k.TopoDS_Shape(), [], [0, 0, 1], 0.1), "SelectEdgesGroupedAlong: the shape is null"],
+        ["FramesOnFace", (k: BitbybitOcctModule): unknown => k.FramesOnFace(new k.TopoDS_Face(), [0.5, 0.5]), "FramesOnFace: the face is null"],
+        ["FramesOnFaceNearest", (k: BitbybitOcctModule): unknown => k.FramesOnFaceNearest(new k.TopoDS_Face(), [0, 0, 0]), "FramesOnFaceNearest: the face is null"],
+        ["FramesOnCurve", (k: BitbybitOcctModule): unknown => k.FramesOnCurve(new k.TopoDS_Shape(), [0.5], false, k.BitbybitFrame_CurveFrame.Frenet, [0, 0, 1]), "FramesOnCurve: the shape is null"],
+        ["PrincipalFrame", (k: BitbybitOcctModule): unknown => k.PrincipalFrame(new k.TopoDS_Shape()), "PrincipalFrame: the shape is null"],
+        ["OrientedBoundingBox", (k: BitbybitOcctModule): unknown => k.OrientedBoundingBox(new k.TopoDS_Shape()), "OrientedBoundingBox: the shape is null"],
+        ["OrientShape", (k: BitbybitOcctModule): unknown => k.OrientShape(new k.TopoDS_Shape(), [0, 0, 0, 0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0]), "OrientShape: the shape is null"],
+        ["PlaceOnFrames", (k: BitbybitOcctModule): unknown => k.PlaceOnFrames(new k.TopoDS_Shape(), [0, 0, 0, 0, 0, 1, 1, 0, 0], []), "PlaceOnFrames: the shape is null"],
+        ["PlaceByMatrices", (k: BitbybitOcctModule): unknown => k.PlaceByMatrices(new k.TopoDS_Shape(), []), "PlaceByMatrices: the shape is null"],
     ])("%s names the null shape instead of crashing", (_name, run, message) => {
         // Act
         const read = messageOf(run);
@@ -106,5 +118,32 @@ describe("kernel functions given a null shape", () => {
 
         // Assert
         expect(derivatives.isValid).toBe(false);
+    });
+
+    it("gives a null shape a boolean skips an empty history, and the others theirs", () => {
+        // Arrange
+        const box = new occt.BRepPrimAPI_MakeBox(10, 10, 10).Shape();
+        const drill = new occt.BRepPrimAPI_MakeCylinder(2, 12).Shape();
+
+        // Act
+        const result = occt.BooleanCutWithHistory([box], [new occt.TopoDS_Shape(), drill], true, 0, occt.BitbybitBool_Strategy.OneAfterAnother);
+
+        // Assert
+        expect(result.shape).not.toBeNull();
+        expect(result.histories).toHaveLength(3);
+        expect(result.histories[1]!.faces).toHaveLength(0);
+        expect(result.histories[2]!.faces.length).toBeGreaterThan(0);
+    });
+
+    it("names the history maker that was given a null input", () => {
+        // Arrange
+        const box = new occt.BRepPrimAPI_MakeBox(10, 10, 10).Shape();
+        const fillet = new occt.BRepFilletAPI_MakeFillet(box, occt.ChFi3d_FilletShape.Rational);
+
+        // Act
+        const read = messageOf(k => k.HistoryOfFillet(fillet, new k.TopoDS_Shape(), box));
+
+        // Assert
+        expect(read).toBe("Standard_NullObject: HistoryOfFillet: the input is null");
     });
 });

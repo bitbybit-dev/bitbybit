@@ -484,10 +484,34 @@ export class MockLinesMesh extends MockMesh {
     }
 }
 
+/** The line material's own settings, which a redraw in place changes without rebuilding the line. */
+export class MockGreasedLineMaterial {
+    width: number;
+    useColors: boolean;
+    color: MockColor3 | null;
+    colors: MockColor3[] | null;
+
+    constructor(options: { color?: MockColor3, colors?: MockColor3[], width?: number, useColors?: boolean }) {
+        this.width = options.width ?? 1;
+        this.useColors = options.useColors ?? false;
+        this.color = options.color ?? null;
+        this.colors = options.colors ?? null;
+    }
+
+    setColor(value: MockColor3 | null) {
+        this.color = value;
+    }
+
+    setColors(colors: MockColor3[] | null) {
+        this.colors = colors;
+    }
+}
+
 export class MockGreasedLineMesh extends MockMesh {
     _points: number[][] = [];
     /** The material options the line was created with, so a suite can assert colour and width. */
     _materialOptions: { color?: MockColor3, colors?: MockColor3[], width?: number, useColors?: boolean } = {};
+    greasedLineMaterial: MockGreasedLineMaterial | undefined;
     
     setPoints(points: number[][]) {
         this._points = points;
@@ -555,6 +579,7 @@ export function CreateGreasedLine(
     // The colour and width the line was built with are what a caller is choosing; a mock that dropped
     // the material options left every colour decision unassertable.
     mesh._materialOptions = materialOptions ?? {};
+    mesh.greasedLineMaterial = new MockGreasedLineMaterial(materialOptions ?? {});
     const material = new MockPBRMetallicRoughnessMaterial(name + "-material");
     if (materialOptions?.color) {
         material.baseColor = materialOptions.color;

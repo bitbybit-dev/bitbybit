@@ -5,6 +5,10 @@ import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
+import * as Models from "../api/models";
+import { framesFromNumbers } from "./base/frames";
+import { historyFromKernel } from "./base/history";
+import { checkedShape } from "./base/input-checks";
 
 /**
  * The modeling operations that turn OpenCascade wires and faces into surfaces and solids and
@@ -336,6 +340,46 @@ export class OCCTOperations {
     }
 
     /**
+     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
+     * the axis it turns about most easily, the normal the one it resists most.
+     *
+     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
+     * a density of 1. Each axis's largest coordinate is positive.
+     * @param inputs - The shape
+     * @returns The frame and the moments about its direction, y axis and normal
+     * @group frames
+     * @shortname principal frame
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { frame, moments } = await bitbybit.occt.operations.principalFrame({ shape: part });
+     * ```
+     */
+    principalFrame(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.PrincipalFrame {
+        const numbers = this.och.occ.PrincipalFrame(checkedShape(inputs.shape));
+        return { frame: framesFromNumbers(numbers)[0]!, moments: [numbers[9]!, numbers[10]!, numbers[11]!] };
+    }
+
+    /**
+     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
+     * frame at the box's centre, its direction along the longest side and its normal along the
+     * shortest, with half the box's size along each.
+     * @param inputs - The shape
+     * @returns The frame and the half sizes along its direction, y axis and normal
+     * @group frames
+     * @shortname oriented bounding box
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { frame, halfSizes } = await bitbybit.occt.operations.orientedBoundingBox({ shape: part });
+     * ```
+     */
+    orientedBoundingBox(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.OrientedBoundingBox {
+        const numbers = this.och.occ.OrientedBoundingBox(checkedShape(inputs.shape));
+        return { frame: framesFromNumbers(numbers)[0]!, halfSizes: [numbers[9]!, numbers[10]!, numbers[11]!] };
+    }
+
+    /**
      * Sweeps a shape in a straight line along a vector, whose length is the distance: a face
      * becomes a solid, a wire a shell, an edge a face.
      *
@@ -355,6 +399,32 @@ export class OCCTOperations {
     extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.ExtrudeDto, inputs) as Resolved.OCCT.ExtrudeDto<TopoDS_Shape>;
         return this.och.operationsService.extrude(resolved);
+    }
+
+    /**
+     * Extrudes a shape as `extrude` does, and reports what each part of the profile became:
+     * `history.firstFaces` and `lastFaces` are the caps of a face profile (a wire has none),
+     * `history.facesFromEdges` the side swept from each profile edge and
+     * `history.edgesFromVertices` the edge swept from each vertex.
+     * @param inputs - The profile and the direction and length of the extrusion
+     * @returns The extruded shape and its history
+     * @group extrusions
+     * @shortname extrude with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.extrudeWithHistory({ shape: squareFace, direction: [0, 0, 5] });
+     * const top = history.lastFaces;
+     * ```
+     */
+    extrudeWithHistory(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.ExtrudeDto, inputs) as Resolved.OCCT.ExtrudeDto<TopoDS_Shape>;
+        checkedShape(resolved.shape);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.operationsService.extrude(resolved, (maker, result) => {
+            history = historyFromKernel(this.och.occ.HistoryOfPrism(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
     }
 
     /**
@@ -416,6 +486,30 @@ export class OCCTOperations {
     revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.RevolveDto, inputs) as Resolved.OCCT.RevolveDto<TopoDS_Shape>;
         return this.och.operationsService.revolve(resolved);
+    }
+
+    /**
+     * Revolves a shape as `revolve` does, and reports what each part of the profile became:
+     * `history.firstFaces` and `lastFaces` are the ends of a partial turn, `history.facesFromEdges`
+     * the surface swept from each profile edge, a whole turn included.
+     * @param inputs - The profile, the angle in degrees, the axis direction and the copy flag
+     * @returns The revolved shape and its history
+     * @group revolutions
+     * @shortname revolve with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.revolveWithHistory({ shape: profile, angle: 90, direction: [0, 0, 1], copy: false });
+     * ```
+     */
+    revolveWithHistory(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RevolveDto, inputs) as Resolved.OCCT.RevolveDto<TopoDS_Shape>;
+        checkedShape(resolved.shape);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.operationsService.revolve(resolved, (maker, result) => {
+            history = historyFromKernel(this.och.occ.HistoryOfRevol(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
     }
 
     /**

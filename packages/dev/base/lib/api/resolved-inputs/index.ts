@@ -45,6 +45,31 @@ export namespace Dates {
 }
 
 /**
+ * The Frame inputs DTOs as their defaults leave them: every property with a default is present,
+ * the way `resolveDto` hands a DTO to the code that reads it.
+ */
+export namespace Frame {
+    export type BestFitDto = Inputs.Frame.BestFitDto;
+    export type ChildFrameDto = Inputs.Frame.ChildFrameDto;
+    export type CreateFrameDto = WithDefaults<Inputs.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
+    export type FrameDto = Inputs.Frame.FrameDto;
+    export type FramePointDto = Inputs.Frame.FramePointDto;
+    export type FramePointsDto = Inputs.Frame.FramePointsDto;
+    export type FrameVectorDto = Inputs.Frame.FrameVectorDto;
+    export type FromToDto = Inputs.Frame.FromToDto;
+    export type GridDto = WithDefaults<Inputs.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
+    export type HexGridDto = WithDefaults<Inputs.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
+    export type OffsetDto = WithDefaults<Inputs.Frame.OffsetDto, "distance">;
+    export type OriginDto = WithDefaults<Inputs.Frame.OriginDto, "origin">;
+    export type PointAndNormalDto = WithDefaults<Inputs.Frame.PointAndNormalDto, "origin" | "normal">;
+    export type PolarDto = WithDefaults<Inputs.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
+    export type RotateDto = WithDefaults<Inputs.Frame.RotateDto, "axis" | "angle">;
+    export type ThreePointsDto = WithDefaults<Inputs.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
+    export type TransformationDto = Inputs.Frame.TransformationDto;
+    export type TranslateDto = WithDefaults<Inputs.Frame.TranslateDto, "translation">;
+}
+
+/**
  * The IO inputs DTOs as their defaults leave them: every property with a default is present,
  * the way `resolveDto` hands a DTO to the code that reads it.
  */

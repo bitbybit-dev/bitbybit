@@ -177,26 +177,34 @@
             "branches": 93.39,
             "functions": 99.03,
             "statements": 97.92
+        },
+        {
+            "measured": "2026-09-28",
+            "tests": 10079,
+            "lines": 98.09,
+            "branches": 93.55,
+            "functions": 99.1,
+            "statements": 98.02
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 2006,
+            "tests": 2023,
             "suites": 55,
-            "lines": 98.57,
-            "branches": 96.08,
-            "functions": 98.58,
-            "statements": 98.75
+            "lines": 98.65,
+            "branches": 96.17,
+            "functions": 98.67,
+            "statements": 98.83
         },
         "base": {
             "runner": "vitest",
-            "tests": 1497,
-            "suites": 28,
-            "lines": 99.52,
-            "branches": 95.93,
+            "tests": 1648,
+            "suites": 30,
+            "lines": 99.56,
+            "branches": 96.22,
             "functions": 100,
-            "statements": 99.51
+            "statements": 99.56
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -209,7 +217,7 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 312,
+            "tests": 328,
             "suites": 13,
             "lines": 100,
             "branches": 100,
@@ -268,16 +276,16 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 2042,
-            "suites": 43,
-            "lines": 96.39,
-            "branches": 88.16,
-            "functions": 98.04,
-            "statements": 96.35
+            "tests": 2202,
+            "suites": 48,
+            "lines": 96.65,
+            "branches": 88.69,
+            "functions": 98.25,
+            "statements": 96.62
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 877,
+            "tests": 931,
             "suites": 15,
             "lines": 100,
             "branches": 100,
@@ -286,21 +294,21 @@
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 549,
+            "tests": 565,
             "suites": 10,
-            "lines": 95.48,
-            "branches": 84.92,
-            "functions": 97.71,
-            "statements": 94.53
+            "lines": 95.58,
+            "branches": 85.38,
+            "functions": 97.75,
+            "statements": 94.66
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 480,
+            "tests": 495,
             "suites": 9,
             "lines": 97.61,
-            "branches": 90.3,
-            "functions": 98.58,
-            "statements": 97.16
+            "branches": 90.41,
+            "functions": 98.61,
+            "statements": 97.18
         }
     }
 }

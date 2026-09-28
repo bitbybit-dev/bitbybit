@@ -1,5 +1,5 @@
 import {
-    Color, Dates, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit,
+    Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit,
     Point, Polyline, TextBitByBit, Transforms, Vector,
 } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
@@ -31,6 +31,7 @@ export type SharedServices = {
     color: Color;
     transforms: Transforms;
     point: Point;
+    frame: Frame;
     line: Line;
     polyline: Polyline;
     /**
@@ -79,6 +80,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
     return {
         jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, jscad, manifold,
         lists, math, vector, transforms, point, line, polyline, geometryHelper,
+        frame: new Frame(geometryHelper),
         tag: new Tag(context),
         color: new Color(math),
         verb: new Verb(context, geometryHelper, math),

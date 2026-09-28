@@ -928,14 +928,16 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     /**
-     * Update an existing polyline entity with new position data
+     * Update an existing polyline entity with new positions and vertex colors
      * @param entity - Entity to update
      * @param linePositions - New line positions
+     * @param vertexColors - New colors, four bytes per vertex
      * @returns True if update succeeded, false otherwise
      */
     private updatePolylineEntityPositions(
         entity: pc.Entity, 
-        linePositions: number[]
+        linePositions: number[],
+        vertexColors: number[]
     ): boolean {
         const renderComponent = entity.render;
         if (!renderComponent?.meshInstances?.[0]?.mesh) {
@@ -946,6 +948,7 @@ export class DrawHelper extends DrawHelperCore {
         try {
             const mesh = renderComponent.meshInstances[0].mesh;
             mesh.setPositions(linePositions);
+            mesh.setColors32(vertexColors);
             mesh.update(pc.PRIMITIVE_LINES);
             return true;
         } catch (error) {
@@ -1128,7 +1131,7 @@ export class DrawHelper extends DrawHelperCore {
         const allExplicitColors = [...resolvedPolylineColors, ...arrowLineColors];
         
         if (this.canUpdatePolylineEntity(existingEntity, polylinesPoints, updatable)) {
-            if (this.updatePolylineEntityPositions(existingEntity, linePositions)) {
+            if (this.updatePolylineEntityPositions(existingEntity, linePositions, this.computePolylineColorsWithExplicit(segmentCounts, allExplicitColors))) {
                 return existingEntity;
             }
             console.warn("Polyline update failed, creating new entity");
@@ -1395,7 +1398,13 @@ export class DrawHelper extends DrawHelperCore {
         existingGroup?: pc.Entity,
         updatable?: boolean
     ): pc.Entity {
-        if (existingGroup && updatable && existingGroup.children[0]?.name === polylineEntity.name) {
+        if (existingGroup && updatable) {
+            const previous = existingGroup.children[0];
+            if (previous?.name === polylineEntity.name) {
+                return existingGroup;
+            }
+            previous?.destroy();
+            existingGroup.addChild(polylineEntity);
             return existingGroup;
         }
         

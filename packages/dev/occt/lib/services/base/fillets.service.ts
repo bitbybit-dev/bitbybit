@@ -20,7 +20,11 @@ export class FilletsService {
         private readonly shapeGettersService: ShapeGettersService
     ) { }
 
-    filletEdges(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the fillet maker and its result before the maker is released, which
+     * is where a history is read.
+     */
+    filletEdges(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
 
         if (!inputs.indexes || inputs.indexes.length === 0) {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
@@ -41,7 +45,7 @@ export class FilletsService {
             }
             anEdgeExplorer.delete();
             edges.forEach(e => e.delete());
-            return this.builtFillet(mkFillet, inputs.shape);
+            return this.builtFillet(mkFillet, inputs.shape, read);
         } else {
             const mkFillet = new this.occ.BRepFilletAPI_MakeFillet(
                 inputs.shape, (this.occ.ChFi3d_FilletShape.Rational)
@@ -65,10 +69,11 @@ export class FilletsService {
                 }
             });
             if (foundEdges === 0) {
+                mkFillet.delete();
                 throw (new Error("Fillet Edges Not Found!  Make sure you are looking at the object _before_ the Fillet is applied!"));
             }
             else {
-                curFillet = this.builtFillet(mkFillet, inputs.shape);
+                curFillet = this.builtFillet(mkFillet, inputs.shape, read);
             }
             const result = this.converterService.getActualTypeOfShape(curFillet);
             curFillet.delete();
@@ -164,7 +169,7 @@ export class FilletsService {
         throw new Error("Edges, radius lists and params U lists must be provided with the same length");
     }
 
-    private builtFillet(maker: BRepFilletAPI_MakeFillet, shape: TopoDS_Shape): TopoDS_Shape {
+    private builtFillet(maker: BRepFilletAPI_MakeFillet, shape: TopoDS_Shape, read?: (maker: BRepFilletAPI_MakeFillet, result: TopoDS_Shape) => void): TopoDS_Shape {
         maker.Build();
         if (!maker.IsDone()) {
             const faulty = maker.FaultyEdges(shape);
@@ -174,18 +179,32 @@ export class FilletsService {
             throw edges.length > 0 ? occtFailure("occt.fillet.failedOnEdges", { edges }) : occtFailure("occt.fillet.failed");
         }
         const result = maker.Shape();
-        maker.delete();
+        try {
+            read?.(maker, result);
+        } catch (error) {
+            result.delete();
+            throw error;
+        } finally {
+            maker.delete();
+        }
         return result;
     }
 
-    private builtChamfer(maker: BRepFilletAPI_MakeChamfer): TopoDS_Shape {
+    private builtChamfer(maker: BRepFilletAPI_MakeChamfer, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         maker.Build();
         if (!maker.IsDone()) {
             maker.delete();
             throw occtFailure("occt.chamfer.failed");
         }
         const result = maker.Shape();
-        maker.delete();
+        try {
+            read?.(maker, result);
+        } catch (error) {
+            result.delete();
+            throw error;
+        } finally {
+            maker.delete();
+        }
         return result;
     }
 
@@ -200,7 +219,10 @@ export class FilletsService {
         array.delete();
     }
 
-    chamferEdges(inputs: Resolved.OCCT.ChamferDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the chamfer maker and its result before the maker is released.
+     */
+    chamferEdges(inputs: Resolved.OCCT.ChamferDto<TopoDS_Shape>, read?: (maker: BRepFilletAPI_MakeChamfer, result: TopoDS_Shape) => void): TopoDS_Shape {
         if (!inputs.indexes || inputs.indexes.length === 0) {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
@@ -220,7 +242,7 @@ export class FilletsService {
             }
             anEdgeExplorer.delete();
             edges.forEach(e => e.delete());
-            return this.builtChamfer(mkChamfer);
+            return this.builtChamfer(mkChamfer, read);
         } else {
             const mkChamfer = new this.occ.BRepFilletAPI_MakeChamfer(
                 inputs.shape
@@ -247,7 +269,7 @@ export class FilletsService {
                 mkChamfer.delete();
                 return this.converterService.getActualTypeOfShape(inputs.shape);
             }
-            const curChamfer = this.builtChamfer(mkChamfer);
+            const curChamfer = this.builtChamfer(mkChamfer, read);
             const result = this.converterService.getActualTypeOfShape(curChamfer);
             curChamfer.delete();
             return result;
@@ -532,9 +554,10 @@ export class FilletsService {
     }
 
     /**
-     * One radius per corner of a wire as `fillet2d` reads its inputs: corners counted from 1, a
-     * `radiusList` without `indexes` giving each corner in turn its radius, and listed corners the
-     * wire does not have passed over.
+     * One radius per corner of a wire for the fallback of `fillet2d`, read as its main path reads
+     * its inputs: corners counted from 1, a `radiusList` without `indexes` giving each corner in
+     * turn its radius, listed corners taking the entries of `radiusList` in their order along the
+     * outline, and listed corners the wire does not have passed over.
      */
     private radiiOf2dCorners(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, corners: number): number[] {
         const radiusAt = (position: number): number => (inputs.radiusList ? inputs.radiusList[position] : inputs.radius) ?? 0;
@@ -542,10 +565,9 @@ export class FilletsService {
             return Array.from({ length: corners }, (_, corner) => radiusAt(corner));
         }
         const radii = Array.from({ length: corners }, () => 0);
-        inputs.indexes.forEach((corner, position) => {
-            if (corner >= 1 && corner <= corners) {
-                radii[corner - 1] = radiusAt(position);
-            }
+        const listed = Array.from(new Set(inputs.indexes)).filter(corner => corner >= 1 && corner <= corners).sort((a, b) => a - b);
+        listed.forEach((corner, position) => {
+            radii[corner - 1] = radiusAt(position);
         });
         return radii;
     }

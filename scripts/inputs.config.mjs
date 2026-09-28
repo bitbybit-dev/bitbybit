@@ -50,6 +50,7 @@ export const targets = [
             "faces-2d-curves-and-decorative-wires",
             "dimensions-and-shaped-solids",
             "paths-and-svg",
+            "selectors-frames-and-placement",
         ],
     },
     {

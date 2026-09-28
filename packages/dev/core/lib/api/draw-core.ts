@@ -1,4 +1,5 @@
 import * as Inputs from "./inputs";
+import { isFrameShaped, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 
 /**
  * Base interface for draw options - engine-specific implementations extend this
@@ -12,9 +13,24 @@ export interface DrawOptionsBase {
 }
 
 /**
- * Base class for Draw implementations across all game engines.
- * Contains entity detection methods and shared validation utilities.
+ * How a frame is drawn: the length of its axes and their colors, and whether the small grid in its
+ * plane is drawn and in which color.
  */
+export interface FrameMarkerStyle {
+    size: number;
+    colorX: string;
+    colorY: string;
+    colorZ: string;
+    drawPlane: boolean;
+    colorPlane: string;
+}
+
+/** The lines a list of frames is drawn with, and one color per line in the same order. */
+export interface FrameMarkerLines {
+    polylines: Inputs.Base.Polyline3[];
+    colours: string[];
+}
+
 /** Which of the two draw entry points can resolve a kind. */
 export type DrawPhase = "sync" | "async";
 
@@ -31,6 +47,10 @@ export interface DrawableKind {
     matches(entity: unknown): boolean;
 }
 
+/**
+ * Base class for Draw implementations across all game engines.
+ * Contains entity detection methods and shared validation utilities.
+ */
 export class DrawCore {
 
     /**
@@ -63,11 +83,13 @@ export class DrawCore {
             { kind: "point", phase: "sync", matches: (e) => this.detectPoint(e) },
             { kind: "jscadPath", phase: "sync", matches: (e) => this.detectJscadPath(e) },
             { kind: "polyline", phase: "sync", matches: (e) => this.detectPolyline(e) },
+            { kind: "frame", phase: "sync", matches: (e) => this.detectFrame(e) },
             { kind: "node", phase: "sync", matches: (e) => this.detectNode(e) },
             { kind: "verbCurve", phase: "sync", matches: (e) => this.detectVerbCurve(e) },
             { kind: "verbSurface", phase: "sync", matches: (e) => this.detectVerbSurface(e) },
             { kind: "jscadPaths", phase: "sync", matches: (e) => this.detectJscadPaths(e) },
             { kind: "polylines", phase: "sync", matches: (e) => this.detectPolylines(e) },
+            { kind: "frames", phase: "sync", matches: (e) => this.detectFrames(e) },
             { kind: "lines", phase: "sync", matches: (e) => this.detectLines(e) },
             { kind: "points", phase: "sync", matches: (e) => this.detectPoints(e) },
             { kind: "nodes", phase: "sync", matches: (e) => this.detectNodes(e) },
@@ -191,6 +213,63 @@ export class DrawCore {
 
     detectPolylines(entity: unknown): boolean {
         return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectPolyline(el));
+    }
+
+    /**
+     * Whether the entity is a frame: an object with an `origin`, a `normal` and a `direction`,
+     * three finite numbers each.
+     */
+    detectFrame(entity: unknown): entity is Inputs.Base.Frame {
+        return isFrameShaped(entity);
+    }
+
+    detectFrames(entity: unknown): entity is Inputs.Base.Frame[] {
+        return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectFrame(el));
+    }
+
+    /**
+     * The lines a list of frames is drawn with, gathered into one list so that the whole list
+     * draws as one object, whatever its length.
+     *
+     * Each frame gives its X, Y and Z axes from its origin, `size` long, and, with `drawPlane`, a
+     * square grid in its plane centered on the origin, as wide as an axis is long and so reaching
+     * half as far, four cells a side. The grid's two middle lines stop at the origin, where the X
+     * and Y axes carry on, so no two lines overlap. A frame whose axes cannot be squared draws
+     * nothing, and a list of only such frames gives no lines at all.
+     */
+    protected frameMarkerLines(frames: readonly Inputs.Base.Frame[], style: FrameMarkerStyle): FrameMarkerLines {
+        const polylines: Inputs.Base.Polyline3[] = [];
+        const colours: string[] = [];
+        const add = (points: Inputs.Base.Point3[], colour: string): void => {
+            polylines.push({ points });
+            colours.push(colour);
+        };
+        frames.forEach(frame => {
+            const axes = squareFrame(frame.origin, frame.normal, frame.direction);
+            if (typeof axes === "string") {
+                return;
+            }
+            const at = (u: number, v: number, w: number): Inputs.Base.Point3 => [
+                axes.origin[0] + u * axes.x[0] + v * axes.y[0] + w * axes.z[0],
+                axes.origin[1] + u * axes.x[1] + v * axes.y[1] + w * axes.z[1],
+                axes.origin[2] + u * axes.x[2] + v * axes.y[2] + w * axes.z[2],
+            ];
+            const length = style.size;
+            add([at(0, 0, 0), at(length, 0, 0)], style.colorX);
+            add([at(0, 0, 0), at(0, length, 0)], style.colorY);
+            add([at(0, 0, 0), at(0, 0, length)], style.colorZ);
+            if (style.drawPlane) {
+                const half = length / 2;
+                add([at(-half, -half, 0), at(half, -half, 0), at(half, half, 0), at(-half, half, 0), at(-half, -half, 0)], style.colorPlane);
+                [-half / 2, half / 2].forEach(line => {
+                    add([at(line, -half, 0), at(line, half, 0)], style.colorPlane);
+                    add([at(-half, line, 0), at(half, line, 0)], style.colorPlane);
+                });
+                add([at(-half, 0, 0), at(0, 0, 0)], style.colorPlane);
+                add([at(0, -half, 0), at(0, 0, 0)], style.colorPlane);
+            }
+        });
+        return { polylines, colours };
     }
 
     /**
