@@ -2,46 +2,15 @@ import * as Inputs from "../inputs";
 import { InputError, resolveDto } from "../kernel-calls";
 import * as Resolved from "../resolved-inputs";
 import { GeometryHelper } from "./geometry-helper";
+import { MathBitByBit } from "./math";
+import { Vector } from "./vector";
 import { FrameAxes, isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./helpers/frame-axes";
+import { composed, symmetricEigen } from "./helpers/matrices";
 
 type Vec3 = Inputs.Base.Vector3;
 type Axes = FrameAxes;
 
 const WORLD: Axes = { origin: [0, 0, 0], x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
-
-const dot = (a: Vec3, b: Vec3): number => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-const cross = (a: Vec3, b: Vec3): Vec3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
-const scaled = (a: Vec3, s: number): Vec3 => [a[0] * s, a[1] * s, a[2] * s];
-const added = (a: Vec3, b: Vec3): Vec3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
-const subtracted = (a: Vec3, b: Vec3): Vec3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
-const lengthOf = (a: Vec3): number => Math.hypot(a[0], a[1], a[2]);
-const negated = (a: Vec3): Vec3 => [-a[0], -a[1], -a[2]];
-const radians = (degrees: number): number => degrees * Math.PI / 180;
-
-/** The vector `u` along `x`, `v` along `y` and `w` along `z` of the axes, from their origin. */
-const along = (axes: Axes, u: number, v: number, w: number): Vec3 => [
-    u * axes.x[0] + v * axes.y[0] + w * axes.z[0],
-    u * axes.x[1] + v * axes.y[1] + w * axes.z[1],
-    u * axes.x[2] + v * axes.y[2] + w * axes.z[2],
-];
-
-/** The same vector read against the axes: its components along `x`, `y` and `z`. */
-const against = (axes: Axes, vector: Vec3): Vec3 => [dot(vector, axes.x), dot(vector, axes.y), dot(vector, axes.z)];
-
-/**
- * Flips a unit vector whose largest component is negative, so a sign the data leaves open is decided
- * the same way every time. Components within 1e-12 of each other count as equal and the first of
- * them decides, so rounding cannot tip the choice; OCCT's frames break the tie the same way.
- */
-const withLargestPositive = (vector: Vec3): Vec3 => {
-    let largest = 0;
-    for (let i = 1; i < 3; i++) {
-        if (Math.abs(vector[i]!) > Math.abs(vector[largest]!) + 1e-12) {
-            largest = i;
-        }
-    }
-    return vector[largest]! < 0 ? negated(vector) : vector;
-};
 
 /** The largest absolute coordinate in a list of vectors, by a loop, so a long list cannot overflow the call stack. */
 const reachOf = (vectors: readonly Vec3[]): number => {
@@ -52,54 +21,6 @@ const reachOf = (vectors: readonly Vec3[]): number => {
     return reach;
 };
 
-/** The product of two column-major 4 x 4 matrices: `first` applied, then `second`. */
-const followedBy = (first: readonly number[], second: readonly number[]): number[] =>
-    Array.from({ length: 16 }, (_, index) => {
-        const column = Math.floor(index / 4);
-        const row = index % 4;
-        return second[row]! * first[column * 4]! + second[4 + row]! * first[column * 4 + 1]!
-            + second[8 + row]! * first[column * 4 + 2]! + second[12 + row]! * first[column * 4 + 3]!;
-    });
-
-/**
- * The eigenvalues of a symmetric 3 x 3 matrix, largest first, each with its unit eigenvector, by
- * cyclic Jacobi rotations; the vectors come out at right angles to each other.
- */
-const symmetricEigen = (matrix: number[][]): { value: number, vector: Vec3 }[] => {
-    let a = matrix.map(row => [...row]);
-    let v = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
-    const multiply = (p: number[][], q: number[][]): number[][] =>
-        p.map((row, i) => q[0]!.map((_, j) => row.reduce((total, _unused, k) => total + p[i]![k]! * q[k]![j]!, 0)));
-    const transpose = (p: number[][]): number[][] => p[0]!.map((_, j) => p.map(row => row[j]!));
-    const size = a.flat().reduce((total, entry) => total + entry * entry, 0);
-    for (let sweep = 0; sweep < 64; sweep++) {
-        const off = a[0]![1]! ** 2 + a[0]![2]! ** 2 + a[1]![2]! ** 2;
-        if (off <= 1e-30 * size) {
-            break;
-        }
-        for (const [p, q] of [[0, 1], [0, 2], [1, 2]] as const) {
-            const apq = a[p]![q]!;
-            if (apq === 0) {
-                continue;
-            }
-            const theta = (a[q]![q]! - a[p]![p]!) / (2 * apq);
-            const t = (theta >= 0 ? 1 : -1) / (Math.abs(theta) + Math.sqrt(theta * theta + 1));
-            const c = 1 / Math.sqrt(t * t + 1);
-            const s = t * c;
-            const rotation = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
-            rotation[p]![p] = c;
-            rotation[q]![q] = c;
-            rotation[p]![q] = s;
-            rotation[q]![p] = -s;
-            a = multiply(transpose(rotation), multiply(a, rotation));
-            v = multiply(v, rotation);
-        }
-    }
-    return [0, 1, 2]
-        .map(k => ({ value: a[k]![k]!, vector: [v[0]![k]!, v[1]![k]!, v[2]![k]!] as Vec3 }))
-        .sort((first, second) => second.value - first.value);
-};
-
 /**
  * Frames: a frame is a point with three axes at right angles, written as its `origin`, its `normal`
  * (the Z axis) and its `direction` (the X axis), the Y axis following from those two. Frames place
@@ -108,7 +29,7 @@ const symmetricEigen = (matrix: number[][]): { value: number, vector: Vec3 }[] =
  */
 export class Frame {
 
-    constructor(private readonly geometryHelper: GeometryHelper) { }
+    constructor(private readonly vector: Vector, private readonly math: MathBitByBit, private readonly geometryHelper: GeometryHelper) { }
 
     /**
      * Builds a frame from where it sits, where its Z axis points and roughly where its X axis
@@ -229,13 +150,13 @@ export class Frame {
     fromThreePoints(inputs: Inputs.Frame.ThreePointsDto): Inputs.Base.Frame {
         const resolved = resolveDto(Inputs.Frame.ThreePointsDto, inputs) as Resolved.Frame.ThreePointsDto;
         const origin = this.pointOf(resolved.origin, "origin");
-        const toX = unitOf(subtracted(this.pointOf(resolved.xPoint, "xPoint"), origin));
+        const toX = unitOf(this.vector.sub({ first: this.pointOf(resolved.xPoint, "xPoint"), second: origin }) as Vec3);
         if (toX === undefined) {
             throw new InputError("`xPoint` is at `origin`, so it gives the X axis no direction.", "xPoint");
         }
-        const toPlane = unitOf(subtracted(this.pointOf(resolved.planePoint, "planePoint"), origin));
-        const normal = toPlane === undefined ? undefined : cross(toX, toPlane);
-        if (normal === undefined || !(lengthOf(normal) > PARALLEL_SINE)) {
+        const toPlane = unitOf(this.vector.sub({ first: this.pointOf(resolved.planePoint, "planePoint"), second: origin }) as Vec3);
+        const normal = toPlane === undefined ? undefined : this.vector.cross({ first: toX, second: toPlane }) as Vec3;
+        if (normal === undefined || !(this.vector.length({ vector: normal }) > PARALLEL_SINE)) {
             throw new InputError("`planePoint` lies on the line through `origin` and `xPoint`, or within a billionth of a radian of it, so the three points do not fix a plane.", "planePoint");
         }
         return this.frameOf(this.squared(origin, normal, toX, { normal: "The three points do not fix a plane.", direction: "The three points do not fix a plane.", property: "planePoint" }));
@@ -298,21 +219,21 @@ export class Frame {
         if (points.length < 3) {
             throw new InputError("`points` holds fewer than three points, so no plane fits them.", "points");
         }
-        const center = points.reduce<Vec3>((total, point) => added(total, scaled(point, 1 / points.length)), [0, 0, 0]);
-        const reach = reachOf(points.map(point => subtracted(point, center)));
+        const center = points.reduce<Vec3>((total, point) => this.vector.add({ first: total, second: this.vector.mul({ vector: point, scalar: 1 / points.length }) }) as Vec3, [0, 0, 0]);
+        const reach = reachOf(points.map(point => this.vector.sub({ first: point, second: center }) as Vec3));
         if (!(reach > 0 && reach < Infinity)) {
             throw new InputError("`points` all lie at one point, so no plane fits them.", "points");
         }
-        const offsets = points.map(point => scaled(subtracted(point, center), 1 / reach));
+        const offsets = points.map(point => this.vector.mul({ vector: this.vector.sub({ first: point, second: center }), scalar: 1 / reach }) as Vec3);
         const covariance = [0, 1, 2].map(i => [0, 1, 2].map(j => offsets.reduce((total, offset) => total + offset[i]! * offset[j]!, 0)));
         const [widest, middle, flattest] = symmetricEigen(covariance);
         if (!(middle!.value > 1e-12 * widest!.value)) {
             throw new InputError("`points` lie on one line, or so near one that their spread across it is under a millionth of their spread along it, so no plane fits them reliably.", "points");
         }
-        const spread = offsets.reduce((total, offset) => total + dot(offset, offset), 0);
-        const turning = offsets.reduce<Vec3>((total, offset, i) => added(total, cross(offset, offsets[(i + 1) % offsets.length]!)), [0, 0, 0]);
-        const turn = dot(turning, flattest!.vector);
-        const normal = Math.abs(turn) > 1e-9 * spread ? (turn < 0 ? negated(flattest!.vector) : flattest!.vector) : withLargestPositive(flattest!.vector);
+        const spread = offsets.reduce((total, offset) => total + this.vector.dot({ first: offset, second: offset }), 0);
+        const turning = offsets.reduce<Vec3>((total, offset, i) => this.vector.add({ first: total, second: this.vector.cross({ first: offset, second: offsets[(i + 1) % offsets.length]! }) }) as Vec3, [0, 0, 0]);
+        const turn = this.vector.dot({ first: turning, second: flattest!.vector });
+        const normal = Math.abs(turn) > 1e-9 * spread ? (turn < 0 ? this.vector.neg({ vector: flattest!.vector }) as Vec3 : flattest!.vector) : this.withLargestPositive(flattest!.vector);
         const direction = widest!.value - middle!.value > 1e-6 * widest!.value
             ? this.alongWidest(widest!.vector, offsets[0]!, spread)
             : this.towardFirstPoint(offsets, normal, spread) ?? widest!.vector;
@@ -383,7 +304,28 @@ export class Frame {
     translate(inputs: Inputs.Frame.TranslateDto): Inputs.Base.Frame {
         const resolved = resolveDto(Inputs.Frame.TranslateDto, inputs) as Resolved.Frame.TranslateDto;
         const axes = this.axesOf(resolved.frame, "frame");
-        return this.frameOf({ ...axes, origin: added(axes.origin, this.vectorOf(resolved.translation, "translation")) });
+        return this.translated(axes, this.vectorOf(resolved.translation, "translation"));
+    }
+
+    /**
+     * Moves frames by one vector in world coordinates, as `translate` moves one; their axes keep
+     * their directions.
+     * @param inputs - The frames and the vector to move them by
+     * @returns New frames, in the same order
+     * @group change
+     * @shortname translate frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const floor = bitbybit.frame.grid({ countX: 3, countY: 3, spacingX: 2, spacingY: 2, centered: true });
+     * const ceiling = bitbybit.frame.translateFrames({ frames: floor, translation: [0, 0, 3] });
+     * ```
+     */
+    translateFrames(inputs: Inputs.Frame.TranslateFramesDto): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.Frame.TranslateFramesDto, inputs) as Resolved.Frame.TranslateFramesDto;
+        const frames = this.axesOfEach(resolved.frames, "frames");
+        const translation = this.vectorOf(resolved.translation, "translation");
+        return frames.map(axes => this.translated(axes, translation));
     }
 
     /**
@@ -403,7 +345,31 @@ export class Frame {
     offset(inputs: Inputs.Frame.OffsetDto): Inputs.Base.Frame {
         const resolved = resolveDto(Inputs.Frame.OffsetDto, inputs) as Resolved.Frame.OffsetDto;
         const axes = this.axesOf(resolved.frame, "frame");
-        return this.frameOf({ ...axes, origin: added(axes.origin, scaled(axes.z, this.numberOf(resolved.distance, "distance"))) });
+        return this.offsetBy(axes, this.numberOf(resolved.distance, "distance"));
+    }
+
+    /**
+     * Moves each frame along its own normal by the same distance, as `offset` moves one; their
+     * axes keep their directions.
+     *
+     * Frames facing different ways move different ways: a negative distance moves each against its
+     * own normal.
+     * @param inputs - The frames and the distance in model units
+     * @returns New frames, in the same order
+     * @group change
+     * @shortname offset frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const ring = bitbybit.frame.polar({ count: 8, radius: 5, angle: 360, startAngle: 0, rotate: true });
+     * const raised = bitbybit.frame.offsetFrames({ frames: ring, distance: 2 });
+     * ```
+     */
+    offsetFrames(inputs: Inputs.Frame.OffsetFramesDto): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.Frame.OffsetFramesDto, inputs) as Resolved.Frame.OffsetFramesDto;
+        const frames = this.axesOfEach(resolved.frames, "frames");
+        const distance = this.numberOf(resolved.distance, "distance");
+        return frames.map(axes => this.offsetBy(axes, distance));
     }
 
     /**
@@ -423,26 +389,30 @@ export class Frame {
     rotate(inputs: Inputs.Frame.RotateDto): Inputs.Base.Frame {
         const resolved = resolveDto(Inputs.Frame.RotateDto, inputs) as Resolved.Frame.RotateDto;
         const axes = this.axesOf(resolved.frame, "frame");
-        const angle = radians(this.numberOf(resolved.angle, "angle"));
-        const c = Math.cos(angle);
-        const s = Math.sin(angle);
-        const turn = (first: Vec3, second: Vec3): [Vec3, Vec3] => [added(scaled(first, c), scaled(second, s)), added(scaled(first, -s), scaled(second, c))];
-        switch (resolved.axis) {
-            case Inputs.Frame.frameAxisEnum.x: {
-                const [y, z] = turn(axes.y, axes.z);
-                return this.frameOf({ origin: axes.origin, x: axes.x, y, z });
-            }
-            case Inputs.Frame.frameAxisEnum.y: {
-                const [z, x] = turn(axes.z, axes.x);
-                return this.frameOf({ origin: axes.origin, x, y: axes.y, z });
-            }
-            case Inputs.Frame.frameAxisEnum.z: {
-                const [x, y] = turn(axes.x, axes.y);
-                return this.frameOf({ origin: axes.origin, x, y, z: axes.z });
-            }
-            default:
-                throw new InputError(`\`axis\` must be x, y or z; it is ${String(resolved.axis)}.`, "axis");
-        }
+        return this.turned(axes, this.axisOf(resolved.axis), this.math.degToRad({ number: this.numberOf(resolved.angle, "angle") }));
+    }
+
+    /**
+     * Turns each frame about one of its own axes, through its own origin, as `rotate` turns one.
+     *
+     * The angle is in degrees; positive is counter-clockwise when that axis points toward you.
+     * @param inputs - The frames, the axis to turn each about and the angle
+     * @returns New frames, in the same order
+     * @group change
+     * @shortname rotate frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const row = bitbybit.frame.grid({ countX: 4, countY: 1, spacingX: 2, spacingY: 2, centered: true });
+     * const tilted = bitbybit.frame.rotateFrames({ frames: row, axis: Bit.Inputs.Frame.frameAxisEnum.x, angle: 30 });
+     * ```
+     */
+    rotateFrames(inputs: Inputs.Frame.RotateFramesDto): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.Frame.RotateFramesDto, inputs) as Resolved.Frame.RotateFramesDto;
+        const frames = this.axesOfEach(resolved.frames, "frames");
+        const axis = this.axisOf(resolved.axis);
+        const angle = this.math.degToRad({ number: this.numberOf(resolved.angle, "angle") });
+        return frames.map(axes => this.turned(axes, axis, angle));
     }
 
     /**
@@ -459,8 +429,25 @@ export class Frame {
      * ```
      */
     flip(inputs: Inputs.Frame.FrameDto): Inputs.Base.Frame {
-        const axes = this.axesOf(inputs.frame, "frame");
-        return this.frameOf({ origin: axes.origin, x: axes.x, y: negated(axes.y), z: negated(axes.z) });
+        return this.flipped(this.axesOf(inputs.frame, "frame"));
+    }
+
+    /**
+     * Turns each frame over, as `flip` turns one: its normal and Y axis point the other way, its
+     * origin and X axis stay.
+     * @param inputs - The frames to turn over
+     * @returns New frames, in the same order
+     * @group change
+     * @shortname flip frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const tops = bitbybit.frame.grid({ countX: 2, countY: 2, spacingX: 3, spacingY: 3, centered: true });
+     * const bottoms = bitbybit.frame.flipFrames({ frames: tops });
+     * ```
+     */
+    flipFrames(inputs: Inputs.Frame.FramesDto): Inputs.Base.Frame[] {
+        return this.axesOfEach(inputs.frames, "frames").map(axes => this.flipped(axes));
     }
 
     /**
@@ -481,13 +468,27 @@ export class Frame {
      */
     frameToWorld(inputs: Inputs.Frame.ChildFrameDto): Inputs.Base.Frame {
         const parent = this.axesOf(inputs.parent, "parent");
-        const child = this.axesOf(inputs.child, "child");
-        return this.frameOf({
-            origin: added(parent.origin, along(parent, ...child.origin)),
-            x: along(parent, ...child.x),
-            y: along(parent, ...child.y),
-            z: along(parent, ...child.z),
-        });
+        return this.childToWorld(parent, this.axesOf(inputs.child, "child"));
+    }
+
+    /**
+     * Places frames given in one parent frame's coordinates into the world, as `frameToWorld`
+     * places one: every child sits on `parent` as it would sit on the world.
+     * @param inputs - The parent frame and the frames given in its coordinates
+     * @returns The frames in world coordinates, in the same order
+     * @group frame in frame
+     * @shortname frames to world
+     * @drawable true
+     * @example
+     * ```typescript
+     * const table = bitbybit.frame.zx({ origin: [0, 1, 0] });
+     * const spots = bitbybit.frame.grid({ countX: 3, countY: 2, spacingX: 0.4, spacingY: 0.4, centered: true });
+     * const onTable = bitbybit.frame.framesToWorld({ parent: table, children: spots });
+     * ```
+     */
+    framesToWorld(inputs: Inputs.Frame.ChildFramesDto): Inputs.Base.Frame[] {
+        const parent = this.axesOf(inputs.parent, "parent");
+        return this.axesOfEach(inputs.children, "children").map(child => this.childToWorld(parent, child));
     }
 
     /**
@@ -509,13 +510,26 @@ export class Frame {
      */
     frameToLocal(inputs: Inputs.Frame.ChildFrameDto): Inputs.Base.Frame {
         const parent = this.axesOf(inputs.parent, "parent");
-        const child = this.axesOf(inputs.child, "child");
-        return this.frameOf({
-            origin: against(parent, subtracted(child.origin, parent.origin)),
-            x: against(parent, child.x),
-            y: against(parent, child.y),
-            z: against(parent, child.z),
-        });
+        return this.childToLocal(parent, this.axesOf(inputs.child, "child"));
+    }
+
+    /**
+     * Describes frames given in world coordinates in one parent frame's coordinates, the reverse
+     * of `framesToWorld`, as `frameToLocal` describes one.
+     * @param inputs - The parent frame and the frames in world coordinates
+     * @returns The frames in the parent's coordinates, in the same order
+     * @group frame in frame
+     * @shortname frames to local
+     * @drawable true
+     * @example
+     * ```typescript
+     * const table = bitbybit.frame.zx({ origin: [0, 1, 0] });
+     * const seen = bitbybit.frame.framesToLocal({ parent: table, children: [bitbybit.frame.world(), bitbybit.frame.yz({ origin: [2, 0, 0] })] });
+     * ```
+     */
+    framesToLocal(inputs: Inputs.Frame.ChildFramesDto): Inputs.Base.Frame[] {
+        const parent = this.axesOf(inputs.parent, "parent");
+        return this.axesOfEach(inputs.children, "children").map(child => this.childToLocal(parent, child));
     }
 
     /**
@@ -535,7 +549,7 @@ export class Frame {
      */
     pointToWorld(inputs: Inputs.Frame.FramePointDto): Inputs.Base.Point3 {
         const axes = this.axesOf(inputs.frame, "frame");
-        return added(axes.origin, along(axes, ...this.pointOf(inputs.point, "point")));
+        return this.vector.add({ first: axes.origin, second: this.along(axes, ...this.pointOf(inputs.point, "point")) }) as Vec3;
     }
 
     /**
@@ -555,7 +569,7 @@ export class Frame {
      */
     pointToLocal(inputs: Inputs.Frame.FramePointDto): Inputs.Base.Point3 {
         const axes = this.axesOf(inputs.frame, "frame");
-        return against(axes, subtracted(this.pointOf(inputs.point, "point"), axes.origin));
+        return this.against(axes, this.vector.sub({ first: this.pointOf(inputs.point, "point"), second: axes.origin }) as Vec3);
     }
 
     /**
@@ -573,7 +587,7 @@ export class Frame {
      */
     pointsToWorld(inputs: Inputs.Frame.FramePointsDto): Inputs.Base.Point3[] {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.pointsOf(inputs.points, "points").map(point => added(axes.origin, along(axes, ...point)));
+        return this.pointsOf(inputs.points, "points").map(point => this.vector.add({ first: axes.origin, second: this.along(axes, ...point) }) as Vec3);
     }
 
     /**
@@ -591,7 +605,7 @@ export class Frame {
      */
     pointsToLocal(inputs: Inputs.Frame.FramePointsDto): Inputs.Base.Point3[] {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.pointsOf(inputs.points, "points").map(point => against(axes, subtracted(point, axes.origin)));
+        return this.pointsOf(inputs.points, "points").map(point => this.against(axes, this.vector.sub({ first: point, second: axes.origin }) as Vec3));
     }
 
     /**
@@ -608,7 +622,7 @@ export class Frame {
      * ```
      */
     vectorToWorld(inputs: Inputs.Frame.FrameVectorDto): Inputs.Base.Vector3 {
-        return along(this.axesOf(inputs.frame, "frame"), ...this.vectorOf(inputs.vector, "vector"));
+        return this.along(this.axesOf(inputs.frame, "frame"), ...this.vectorOf(inputs.vector, "vector"));
     }
 
     /**
@@ -625,7 +639,7 @@ export class Frame {
      * ```
      */
     vectorToLocal(inputs: Inputs.Frame.FrameVectorDto): Inputs.Base.Vector3 {
-        return against(this.axesOf(inputs.frame, "frame"), this.vectorOf(inputs.vector, "vector"));
+        return this.against(this.axesOf(inputs.frame, "frame"), this.vectorOf(inputs.vector, "vector"));
     }
 
     /**
@@ -681,12 +695,12 @@ export class Frame {
         if (projective !== -1) {
             throw new InputError(`\`transformation\` has a perspective part: the bottom row of matrix ${projective} is not 0, 0, 0, 1, so no frame follows from it.`, "transformation");
         }
-        const combined = flat.reduce<number[]>((total, matrix) => followedBy(total, matrix), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+        const combined = composed(flat);
         const flattened = "`transformation` flattens the X or the Z axis, so no frame follows from it.";
         return this.frameOf(this.squared(
-            [combined[12]!, combined[13]!, combined[14]!],
-            [combined[8]!, combined[9]!, combined[10]!],
-            [combined[0]!, combined[1]!, combined[2]!],
+            [combined[12], combined[13], combined[14]],
+            [combined[8], combined[9], combined[10]],
+            [combined[0], combined[1], combined[2]],
             { normal: flattened, direction: flattened, property: "transformation" }));
     }
 
@@ -741,7 +755,7 @@ export class Frame {
         const frames: Inputs.Base.Frame[] = [];
         for (let row = 0; row < countY; row++) {
             for (let column = 0; column < countX; column++) {
-                frames.push(this.frameOf({ ...axes, origin: added(axes.origin, along(axes, column * spacingX - shiftX, row * spacingY - shiftY, 0)) }));
+                frames.push(this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.along(axes, column * spacingX - shiftX, row * spacingY - shiftY, 0) }) as Vec3 }));
             }
         }
         return frames;
@@ -779,11 +793,11 @@ export class Frame {
         const step = Math.abs(sweep) === 360 ? sweep / count : count > 1 ? sweep / (count - 1) : 0;
         const frames: Inputs.Base.Frame[] = [];
         for (let i = 0; i < count; i++) {
-            const angle = radians(start + i * step);
-            const outward = added(scaled(axes.x, Math.cos(angle)), scaled(axes.y, Math.sin(angle)));
-            const origin = added(axes.origin, scaled(outward, radius));
+            const angle = this.math.degToRad({ number: start + i * step });
+            const outward = this.combined(axes.x, Math.cos(angle), axes.y, Math.sin(angle));
+            const origin = this.vector.add({ first: axes.origin, second: this.vector.mul({ vector: outward, scalar: radius }) }) as Vec3;
             frames.push(this.frameOf(resolved.rotate
-                ? { origin, x: outward, y: cross(axes.z, outward), z: axes.z }
+                ? { origin, x: outward, y: this.vector.cross({ first: axes.z, second: outward }) as Vec3, z: axes.z }
                 : { ...axes, origin }));
         }
         return frames;
@@ -823,7 +837,7 @@ export class Frame {
         for (let row = 0; row < countY; row++) {
             for (let column = 0; column < countX; column++) {
                 const u = column * columnSpacing + (row % 2 === 1 ? columnSpacing / 2 : 0);
-                frames.push(this.frameOf({ ...axes, origin: added(axes.origin, along(axes, u - shiftU, row * rowSpacing - shiftV, 0)) }));
+                frames.push(this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.along(axes, u - shiftU, row * rowSpacing - shiftV, 0) }) as Vec3 }));
             }
         }
         return frames;
@@ -835,11 +849,11 @@ export class Frame {
      * @ignore true
      */
     private alongWidest(widest: Vec3, first: Vec3, spread: number): Vec3 {
-        const toFirst = dot(first, widest);
+        const toFirst = this.vector.dot({ first, second: widest });
         if (!(Math.abs(toFirst) > 1e-9 * Math.sqrt(spread))) {
-            return withLargestPositive(widest);
+            return this.withLargestPositive(widest);
         }
-        return toFirst < 0 ? negated(widest) : widest;
+        return toFirst < 0 ? this.vector.neg({ vector: widest }) as Vec3 : widest;
     }
 
     /**
@@ -849,8 +863,118 @@ export class Frame {
      */
     private towardFirstPoint(offsets: readonly Vec3[], normal: Vec3, spread: number): Vec3 | undefined {
         return offsets
-            .map(offset => subtracted(offset, scaled(normal, dot(offset, normal))))
-            .find(inPlane => lengthOf(inPlane) > 1e-9 * Math.sqrt(spread));
+            .map(offset => this.vector.sub({ first: offset, second: this.vector.mul({ vector: normal, scalar: this.vector.dot({ first: offset, second: normal }) }) }) as Vec3)
+            .find(inPlane => this.vector.length({ vector: inPlane }) > 1e-9 * Math.sqrt(spread));
+    }
+
+    /**
+     * @ignore true
+     */
+    private translated(axes: Axes, translation: Vec3): Inputs.Base.Frame {
+        return this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: translation }) as Vec3 });
+    }
+
+    /**
+     * @ignore true
+     */
+    private offsetBy(axes: Axes, distance: number): Inputs.Base.Frame {
+        return this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.vector.mul({ vector: axes.z, scalar: distance }) }) as Vec3 });
+    }
+
+    /**
+     * The axes turned about one of their own by `angle` radians, through their origin.
+     * @ignore true
+     */
+    private turned(axes: Axes, axis: Inputs.Frame.frameAxisEnum, angle: number): Inputs.Base.Frame {
+        const c = Math.cos(angle);
+        const s = Math.sin(angle);
+        const turn = (first: Vec3, second: Vec3): [Vec3, Vec3] => [this.combined(first, c, second, s), this.combined(first, -s, second, c)];
+        switch (axis) {
+            case Inputs.Frame.frameAxisEnum.x: {
+                const [y, z] = turn(axes.y, axes.z);
+                return this.frameOf({ origin: axes.origin, x: axes.x, y, z });
+            }
+            case Inputs.Frame.frameAxisEnum.y: {
+                const [z, x] = turn(axes.z, axes.x);
+                return this.frameOf({ origin: axes.origin, x, y: axes.y, z });
+            }
+            default: {
+                const [x, y] = turn(axes.x, axes.y);
+                return this.frameOf({ origin: axes.origin, x, y, z: axes.z });
+            }
+        }
+    }
+
+    /**
+     * @ignore true
+     */
+    private flipped(axes: Axes): Inputs.Base.Frame {
+        return this.frameOf({ origin: axes.origin, x: axes.x, y: this.vector.neg({ vector: axes.y }) as Vec3, z: this.vector.neg({ vector: axes.z }) as Vec3 });
+    }
+
+    /**
+     * @ignore true
+     */
+    private childToWorld(parent: Axes, child: Axes): Inputs.Base.Frame {
+        return this.frameOf({
+            origin: this.vector.add({ first: parent.origin, second: this.along(parent, ...child.origin) }) as Vec3,
+            x: this.along(parent, ...child.x),
+            y: this.along(parent, ...child.y),
+            z: this.along(parent, ...child.z),
+        });
+    }
+
+    /**
+     * @ignore true
+     */
+    private childToLocal(parent: Axes, child: Axes): Inputs.Base.Frame {
+        return this.frameOf({
+            origin: this.against(parent, this.vector.sub({ first: child.origin, second: parent.origin }) as Vec3),
+            x: this.against(parent, child.x),
+            y: this.against(parent, child.y),
+            z: this.against(parent, child.z),
+        });
+    }
+
+    /**
+     * The vector `u` along `x`, `v` along `y` and `w` along `z` of the axes, from their origin.
+     * @ignore true
+     */
+    private along(axes: Axes, u: number, v: number, w: number): Vec3 {
+        return this.vector.add({ first: this.combined(axes.x, u, axes.y, v), second: this.vector.mul({ vector: axes.z, scalar: w }) }) as Vec3;
+    }
+
+    /**
+     * The same vector read against the axes: its components along `x`, `y` and `z`.
+     * @ignore true
+     */
+    private against(axes: Axes, vector: Vec3): Vec3 {
+        return [this.vector.dot({ first: vector, second: axes.x }), this.vector.dot({ first: vector, second: axes.y }), this.vector.dot({ first: vector, second: axes.z })];
+    }
+
+    /**
+     * `first` scaled by `a` plus `second` scaled by `b`.
+     * @ignore true
+     */
+    private combined(first: Vec3, a: number, second: Vec3, b: number): Vec3 {
+        return this.vector.add({ first: this.vector.mul({ vector: first, scalar: a }), second: this.vector.mul({ vector: second, scalar: b }) }) as Vec3;
+    }
+
+    /**
+     * Flips a unit vector whose largest component is negative, so a sign the data leaves open is
+     * decided the same way every time. Components within 1e-12 of each other count as equal and the
+     * first of them decides, so rounding cannot tip the choice; OCCT's frames break the tie the
+     * same way.
+     * @ignore true
+     */
+    private withLargestPositive(vector: Vec3): Vec3 {
+        let largest = 0;
+        for (let i = 1; i < 3; i++) {
+            if (Math.abs(vector[i]!) > Math.abs(vector[largest]!) + 1e-12) {
+                largest = i;
+            }
+        }
+        return vector[largest]! < 0 ? this.vector.neg({ vector }) as Vec3 : vector;
     }
 
     /**
@@ -858,8 +982,8 @@ export class Frame {
      * @ignore true
      */
     private matrixBetween(from: Axes, to: Axes): Inputs.Base.TransformMatrix {
-        const columns = [0, 1, 2].map(i => along(to, from.x[i]!, from.y[i]!, from.z[i]!));
-        const origin = added(to.origin, along(to, ...negated(against(from, from.origin))));
+        const columns = [0, 1, 2].map(i => this.along(to, from.x[i]!, from.y[i]!, from.z[i]!));
+        const origin = this.vector.add({ first: to.origin, second: this.along(to, ...this.vector.neg({ vector: this.against(from, from.origin) }) as Vec3) }) as Vec3;
         return [
             ...columns[0]!, 0,
             ...columns[1]!, 0,
@@ -872,15 +996,37 @@ export class Frame {
      * The axes of a frame a caller handed in, squared, or an error naming the input at fault.
      * @ignore true
      */
-    private axesOf(frame: unknown, property: string): Axes {
+    private axesOf(frame: unknown, property: string, subject = `\`${property}\``): Axes {
         if (!isFrameShaped(frame)) {
-            throw new InputError(`\`${property}\` is not a frame: it needs \`origin\`, \`normal\` and \`direction\`, three finite numbers each.`, property);
+            throw new InputError(`${subject} is not a frame: it needs \`origin\`, \`normal\` and \`direction\`, three finite numbers each.`, property);
         }
         return this.squared(frame.origin, frame.normal, frame.direction, {
-            normal: `\`${property}\` is not a frame: its \`normal\` has no length.`,
-            direction: `\`${property}\` is not a frame: its \`direction\` runs along its \`normal\` or has no length.`,
+            normal: `${subject} is not a frame: its \`normal\` has no length.`,
+            direction: `${subject} is not a frame: its \`direction\` runs along its \`normal\` or has no length.`,
             property,
         });
+    }
+
+    /**
+     * The axes of every frame in a list a caller handed in, or an error naming the list and the
+     * position at fault.
+     * @ignore true
+     */
+    private axesOfEach(frames: unknown, property: string): Axes[] {
+        if (!Array.isArray(frames)) {
+            throw new InputError(`\`${property}\` is not a list of frames.`, property);
+        }
+        return frames.map((frame, index) => this.axesOf(frame, property, `\`${property}\` at position ${index}`));
+    }
+
+    /**
+     * @ignore true
+     */
+    private axisOf(axis: unknown): Inputs.Frame.frameAxisEnum {
+        if (axis !== Inputs.Frame.frameAxisEnum.x && axis !== Inputs.Frame.frameAxisEnum.y && axis !== Inputs.Frame.frameAxisEnum.z) {
+            throw new InputError(`\`axis\` must be x, y or z; it is ${String(axis)}.`, "axis");
+        }
+        return axis;
     }
 
     /**

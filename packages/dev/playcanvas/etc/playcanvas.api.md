@@ -973,9 +973,15 @@ namespace Frame {
         constructor(points?: Base.Point3[]);
         points: Base.Point3[];
     }
-    class ChildFrameDto {
-        constructor(parent?: Base.Frame, child?: Base.Frame);
+    class ChildFrameDto extends ChildFrameSharedDto {
+        constructor(child?: Base.Frame, parent?: Base.Frame);
         child: Base.Frame;
+    }
+    class ChildFramesDto extends ChildFrameSharedDto {
+        constructor(children?: Base.Frame[], parent?: Base.Frame);
+        children: Base.Frame[];
+    }
+    abstract class ChildFrameSharedDto {
         parent: Base.Frame;
     }
     class CreateFrameDto {
@@ -1006,6 +1012,10 @@ namespace Frame {
         frame: Base.Frame;
         points: Base.Point3[];
     }
+    class FramesDto {
+        constructor(frames?: Base.Frame[]);
+        frames: Base.Frame[];
+    }
     class FrameVectorDto {
         constructor(frame?: Base.Frame, vector?: Base.Vector3);
         frame: Base.Frame;
@@ -1033,10 +1043,16 @@ namespace Frame {
         frame?: Base.Frame | undefined;
         radius?: number | undefined;
     }
-    class OffsetDto {
+    class OffsetDto extends OffsetSharedDto {
         constructor(frame?: Base.Frame, distance?: number);
-        distance?: number | undefined;
         frame: Base.Frame;
+    }
+    class OffsetFramesDto extends OffsetSharedDto {
+        constructor(frames?: Base.Frame[], distance?: number);
+        frames: Base.Frame[];
+    }
+    abstract class OffsetSharedDto {
+        distance?: number | undefined;
     }
     class OriginDto {
         constructor(origin?: Base.Point3);
@@ -1056,11 +1072,17 @@ namespace Frame {
         rotate?: boolean | undefined;
         startAngle?: number | undefined;
     }
-    class RotateDto {
+    class RotateDto extends RotateSharedDto {
         constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number);
+        frame: Base.Frame;
+    }
+    class RotateFramesDto extends RotateSharedDto {
+        constructor(frames?: Base.Frame[], axis?: frameAxisEnum, angle?: number);
+        frames: Base.Frame[];
+    }
+    abstract class RotateSharedDto {
         angle?: number | undefined;
         axis?: frameAxisEnum | undefined;
-        frame: Base.Frame;
     }
     class ThreePointsDto {
         constructor(origin?: Base.Point3, xPoint?: Base.Point3, planePoint?: Base.Point3);
@@ -1072,9 +1094,15 @@ namespace Frame {
         constructor(transformation?: Base.TransformMatrixes);
         transformation: Base.TransformMatrixes;
     }
-    class TranslateDto {
+    class TranslateDto extends TranslateSharedDto {
         constructor(frame?: Base.Frame, translation?: Base.Vector3);
         frame: Base.Frame;
+    }
+    class TranslateFramesDto extends TranslateSharedDto {
+        constructor(frames?: Base.Frame[], translation?: Base.Vector3);
+        frames: Base.Frame[];
+    }
+    abstract class TranslateSharedDto {
         translation?: Base.Vector3 | undefined;
     }
 }
@@ -1086,6 +1114,10 @@ namespace Frame_2 {
     // (undocumented)
     type ChildFrameDto = Inputs_7.Frame.ChildFrameDto;
     // (undocumented)
+    type ChildFramesDto = Inputs_7.Frame.ChildFramesDto;
+    // (undocumented)
+    type ChildFrameSharedDto = Inputs_7.Frame.ChildFrameSharedDto;
+    // (undocumented)
     type CreateFrameDto = WithDefaults<Inputs_7.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
     // (undocumented)
     type FrameDto = Inputs_7.Frame.FrameDto;
@@ -1093,6 +1125,8 @@ namespace Frame_2 {
     type FramePointDto = Inputs_7.Frame.FramePointDto;
     // (undocumented)
     type FramePointsDto = Inputs_7.Frame.FramePointsDto;
+    // (undocumented)
+    type FramesDto = Inputs_7.Frame.FramesDto;
     // (undocumented)
     type FrameVectorDto = Inputs_7.Frame.FrameVectorDto;
     // (undocumented)
@@ -1104,6 +1138,10 @@ namespace Frame_2 {
     // (undocumented)
     type OffsetDto = WithDefaults<Inputs_7.Frame.OffsetDto, "distance">;
     // (undocumented)
+    type OffsetFramesDto = WithDefaults<Inputs_7.Frame.OffsetFramesDto, "distance">;
+    // (undocumented)
+    type OffsetSharedDto = WithDefaults<Inputs_7.Frame.OffsetSharedDto, "distance">;
+    // (undocumented)
     type OriginDto = WithDefaults<Inputs_7.Frame.OriginDto, "origin">;
     // (undocumented)
     type PointAndNormalDto = WithDefaults<Inputs_7.Frame.PointAndNormalDto, "origin" | "normal">;
@@ -1112,11 +1150,19 @@ namespace Frame_2 {
     // (undocumented)
     type RotateDto = WithDefaults<Inputs_7.Frame.RotateDto, "axis" | "angle">;
     // (undocumented)
+    type RotateFramesDto = WithDefaults<Inputs_7.Frame.RotateFramesDto, "axis" | "angle">;
+    // (undocumented)
+    type RotateSharedDto = WithDefaults<Inputs_7.Frame.RotateSharedDto, "axis" | "angle">;
+    // (undocumented)
     type ThreePointsDto = WithDefaults<Inputs_7.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
     // (undocumented)
     type TransformationDto = Inputs_7.Frame.TransformationDto;
     // (undocumented)
     type TranslateDto = WithDefaults<Inputs_7.Frame.TranslateDto, "translation">;
+    // (undocumented)
+    type TranslateFramesDto = WithDefaults<Inputs_7.Frame.TranslateFramesDto, "translation">;
+    // (undocumented)
+    type TranslateSharedDto = WithDefaults<Inputs_7.Frame.TranslateSharedDto, "translation">;
 }
 
 // @public

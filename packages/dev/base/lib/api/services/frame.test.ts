@@ -1,13 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { Frame } from "./frame";
 import { GeometryHelper } from "./geometry-helper";
+import { MathBitByBit } from "./math";
+import { Vector } from "./vector";
 import { InputError } from "../kernel-calls";
 import * as Inputs from "../inputs";
 
 type Frame3 = Inputs.Base.Frame;
 
 const geometryHelper = new GeometryHelper();
-const frames = new Frame(geometryHelper);
+const math = new MathBitByBit();
+const frames = new Frame(new Vector(math, geometryHelper), math, geometryHelper);
 
 const loose = <T>(value: unknown): T => value as T;
 
@@ -691,6 +694,170 @@ describe("Frame", () => {
             // Assert
             expect(parentError.property).toBe("parent");
             expect(childError.property).toBe("child");
+        });
+    });
+
+    describe("many frames at once", () => {
+        const several = (): Frame3[] => [tilted(), frames.world(), frames.zx({ origin: [3, 0, -1] }), frames.flip({ frame: frames.yz({ origin: [0, 2, 5] }) })];
+
+        it.each([
+            {
+                name: "translateFrames",
+                many: (list: Frame3[]): Frame3[] => frames.translateFrames({ frames: list, translation: [1, -2, 0.5] }),
+                one: (frame: Frame3): Frame3 => frames.translate({ frame, translation: [1, -2, 0.5] }),
+            },
+            {
+                name: "offsetFrames",
+                many: (list: Frame3[]): Frame3[] => frames.offsetFrames({ frames: list, distance: -1.5 }),
+                one: (frame: Frame3): Frame3 => frames.offset({ frame, distance: -1.5 }),
+            },
+            {
+                name: "rotateFrames",
+                many: (list: Frame3[]): Frame3[] => frames.rotateFrames({ frames: list, axis: Inputs.Frame.frameAxisEnum.y, angle: 37 }),
+                one: (frame: Frame3): Frame3 => frames.rotate({ frame, axis: Inputs.Frame.frameAxisEnum.y, angle: 37 }),
+            },
+            {
+                name: "flipFrames",
+                many: (list: Frame3[]): Frame3[] => frames.flipFrames({ frames: list }),
+                one: (frame: Frame3): Frame3 => frames.flip({ frame }),
+            },
+            {
+                name: "framesToWorld",
+                many: (list: Frame3[]): Frame3[] => frames.framesToWorld({ parent: tilted(), children: list }),
+                one: (frame: Frame3): Frame3 => frames.frameToWorld({ parent: tilted(), child: frame }),
+            },
+            {
+                name: "framesToLocal",
+                many: (list: Frame3[]): Frame3[] => frames.framesToLocal({ parent: tilted(), children: list }),
+                one: (frame: Frame3): Frame3 => frames.frameToLocal({ parent: tilted(), child: frame }),
+            },
+        ])("$name should give what the single method gives each frame, in order", ({ many, one }) => {
+            // Arrange
+            const list = several();
+
+            // Act
+            const results = many(list);
+
+            // Assert
+            expect(results).toEqual(list.map(one));
+        });
+
+        it("should move each frame along its own normal, so frames facing apart move apart", () => {
+            // Arrange
+            const up = frames.world();
+            const down = frames.flip({ frame: frames.world() });
+
+            // Act
+            const [raised, lowered] = frames.offsetFrames({ frames: [up, down], distance: 2 });
+
+            // Assert
+            expectVector(raised!.origin, [0, 0, 2]);
+            expectVector(lowered!.origin, [0, 0, -2]);
+        });
+
+        it("should turn each frame about its own axis, through its own origin", () => {
+            // Arrange
+            const list = [frames.xy({ origin: [5, 0, 0] }), frames.zx({ origin: [0, 0, 7] })];
+
+            // Act
+            const [first, second] = frames.rotateFrames({ frames: list, axis: Inputs.Frame.frameAxisEnum.z, angle: 90 });
+
+            // Assert
+            expectFrame(first!, frameOf([5, 0, 0], [0, 0, 1], [0, 1, 0]));
+            expectFrame(second!, frameOf([0, 0, 7], [0, 1, 0], [1, 0, 0]));
+        });
+
+        it("should put a whole layout into one parent and bring it back", () => {
+            // Arrange
+            const parent = tilted();
+            const layout = frames.grid({ countX: 3, countY: 2, spacingX: 1.5, spacingY: 2, centered: true });
+
+            // Act
+            const placed = frames.framesToWorld({ parent, children: layout });
+            const back = frames.framesToLocal({ parent, children: placed });
+
+            // Assert
+            back.forEach((frame, i) => expectFrame(frame, layout[i]!));
+            placed.forEach(frame => expect(dotOf(frame.normal, parent.normal)).toBeCloseTo(1, 12));
+        });
+
+        it("should use the defaults for what is left out: no move, a distance of 1, a quarter turn about Z", () => {
+            // Arrange
+            const list = [frames.world()];
+
+            // Act
+            const translated = frames.translateFrames({ frames: list });
+            const offset = frames.offsetFrames({ frames: list });
+            const rotated = frames.rotateFrames({ frames: list });
+
+            // Assert
+            expectFrame(translated[0]!, frames.world());
+            expectVector(offset[0]!.origin, [0, 0, 1]);
+            expectVector(rotated[0]!.direction, [0, 1, 0]);
+        });
+
+        it("should give an empty list for an empty list", () => {
+            // Act
+            const results = [
+                frames.translateFrames({ frames: [], translation: [1, 0, 0] }),
+                frames.offsetFrames({ frames: [], distance: 1 }),
+                frames.rotateFrames({ frames: [], axis: Inputs.Frame.frameAxisEnum.x, angle: 10 }),
+                frames.flipFrames({ frames: [] }),
+                frames.framesToWorld({ parent: frames.world(), children: [] }),
+                frames.framesToLocal({ parent: frames.world(), children: [] }),
+            ];
+
+            // Assert
+            expect(results).toEqual([[], [], [], [], [], []]);
+        });
+
+        it("should give new frames and leave the list it was handed alone", () => {
+            // Arrange
+            const list = several();
+            const copy = structuredClone(list);
+
+            // Act
+            const moved = frames.translateFrames({ frames: list, translation: [0, 0, 0] });
+
+            // Assert
+            expect(list).toEqual(copy);
+            moved.forEach((frame, i) => {
+                expect(frame).not.toBe(list[i]);
+                expect(frame.origin).not.toBe(list[i]!.origin);
+            });
+        });
+
+        it("should refuse frames that are not a list, and name the position of one that is not a frame", () => {
+            // Act
+            const notList = thrownBy(() => frames.flipFrames({ frames: loose<Frame3[]>(frames.world()) }));
+            const notFrame = thrownBy(() => frames.offsetFrames({ frames: [frames.world(), frameOf([0, 0, 0], [0, 0, 0], [1, 0, 0])], distance: 1 }));
+            const notChild = thrownBy(() => frames.framesToWorld({ parent: frames.world(), children: [loose<Frame3>({ origin: [0, 0, 0] })] }));
+
+            // Assert
+            expect(notList.message).toBe("`frames` is not a list of frames.");
+            expect(notList.property).toBe("frames");
+            expect(notFrame.message).toBe("`frames` at position 1 is not a frame: its `normal` has no length.");
+            expect(notFrame.property).toBe("frames");
+            expect(notChild.message).toContain("`children` at position 0 is not a frame");
+            expect(notChild.property).toBe("children");
+        });
+
+        it("should refuse an axis that is not x, y or z even when there are no frames to turn", () => {
+            // Act
+            const error = thrownBy(() => frames.rotateFrames({ frames: [], axis: loose<Inputs.Frame.frameAxisEnum>("X"), angle: 30 }));
+
+            // Assert
+            expect(error.property).toBe("axis");
+        });
+
+        it("should refuse a parent that is not a frame, and a distance or angle that is not finite", () => {
+            // Act
+            const parent = thrownBy(() => frames.framesToLocal({ parent: loose<Frame3>(undefined), children: [frames.world()] }));
+            const distance = thrownBy(() => frames.offsetFrames({ frames: [frames.world()], distance: Number.NaN }));
+            const angle = thrownBy(() => frames.rotateFrames({ frames: [frames.world()], axis: Inputs.Frame.frameAxisEnum.z, angle: Number.POSITIVE_INFINITY }));
+
+            // Assert
+            expect([parent.property, distance.property, angle.property]).toEqual(["parent", "distance", "angle"]);
         });
     });
 

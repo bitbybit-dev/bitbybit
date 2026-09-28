@@ -141,10 +141,37 @@ export namespace Frame {
     }
 
     /**
+     * A list of frames for `frame.flipFrames`, which turns every one of them over.
+     */
+    export class FramesDto {
+        constructor(frames?: Base.Frame[]) {
+            if (frames !== undefined) { this.frames = frames; }
+        }
+        /**
+         * The frames to change, each on its own.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+    }
+
+    /**
+     * The vector `frame.translate` and `frame.translateFrames` move frames by; their axes keep
+     * their directions.
+     */
+    export abstract class TranslateSharedDto {
+        /**
+         * How far to move each origin, in world coordinates and model units.
+         * @default [0, 0, 0]
+         */
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
+    }
+
+    /**
      * A frame and the vector `frame.translate` moves it by; its axes keep their directions.
      */
-    export class TranslateDto {
+    export class TranslateDto extends TranslateSharedDto {
         constructor(frame?: Base.Frame, translation?: Base.Vector3) {
+            super();
             if (frame !== undefined) { this.frame = frame; }
             if (translation !== undefined) { this.translation = translation; }
         }
@@ -153,29 +180,33 @@ export namespace Frame {
          * @default undefined
          */
         frame!: Base.Frame;
-        /**
-         * How far to move the origin, in world coordinates and model units.
-         * @default [0, 0, 0]
-         */
-        translation?: Base.Vector3 | undefined = [0, 0, 0];
     }
 
     /**
-     * A frame and the distance `frame.offset` moves it along its own normal; its axes keep their
+     * Frames and the one vector `frame.translateFrames` moves them all by; their axes keep their
      * directions.
      */
-    export class OffsetDto {
-        constructor(frame?: Base.Frame, distance?: number) {
-            if (frame !== undefined) { this.frame = frame; }
-            if (distance !== undefined) { this.distance = distance; }
+    export class TranslateFramesDto extends TranslateSharedDto {
+        constructor(frames?: Base.Frame[], translation?: Base.Vector3) {
+            super();
+            if (frames !== undefined) { this.frames = frames; }
+            if (translation !== undefined) { this.translation = translation; }
         }
         /**
-         * The frame to move.
+         * The frames to move.
          * @default undefined
          */
-        frame!: Base.Frame;
+        frames!: Base.Frame[];
+    }
+
+    /**
+     * The distance `frame.offset` and `frame.offsetFrames` move frames along their own normals;
+     * their axes keep their directions.
+     */
+    export abstract class OffsetSharedDto {
         /**
-         * How far to move along the normal, in model units; a negative distance moves against it.
+         * How far to move each frame along its normal, in model units; a negative distance moves
+         * against it.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -185,22 +216,46 @@ export namespace Frame {
     }
 
     /**
-     * A frame, one of its own axes and the angle `frame.rotate` turns it by about that axis,
-     * through its origin.
+     * A frame and the distance `frame.offset` moves it along its own normal; its axes keep their
+     * directions.
      */
-    export class RotateDto {
-        constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number) {
+    export class OffsetDto extends OffsetSharedDto {
+        constructor(frame?: Base.Frame, distance?: number) {
+            super();
             if (frame !== undefined) { this.frame = frame; }
-            if (axis !== undefined) { this.axis = axis; }
-            if (angle !== undefined) { this.angle = angle; }
+            if (distance !== undefined) { this.distance = distance; }
         }
         /**
-         * The frame to turn.
+         * The frame to move.
          * @default undefined
          */
         frame!: Base.Frame;
+    }
+
+    /**
+     * Frames and the distance `frame.offsetFrames` moves each along its own normal; their axes keep
+     * their directions.
+     */
+    export class OffsetFramesDto extends OffsetSharedDto {
+        constructor(frames?: Base.Frame[], distance?: number) {
+            super();
+            if (frames !== undefined) { this.frames = frames; }
+            if (distance !== undefined) { this.distance = distance; }
+        }
         /**
-         * Which of the frame's own axes to turn about.
+         * The frames to move.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+    }
+
+    /**
+     * One of a frame's own axes and the angle `frame.rotate` and `frame.rotateFrames` turn frames
+     * by about it, through each frame's origin.
+     */
+    export abstract class RotateSharedDto {
+        /**
+         * Which of each frame's own axes to turn about.
          * @default z
          */
         axis?: frameAxisEnum | undefined = frameAxisEnum.z;
@@ -216,25 +271,87 @@ export namespace Frame {
     }
 
     /**
-     * Two frames for `frame.frameToWorld` and `frame.frameToLocal`: the `parent` whose coordinates
-     * are used, and the `child` to convert.
+     * A frame, one of its own axes and the angle `frame.rotate` turns it by about that axis,
+     * through its origin.
      */
-    export class ChildFrameDto {
-        constructor(parent?: Base.Frame, child?: Base.Frame) {
-            if (parent !== undefined) { this.parent = parent; }
-            if (child !== undefined) { this.child = child; }
+    export class RotateDto extends RotateSharedDto {
+        constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number) {
+            super();
+            if (frame !== undefined) { this.frame = frame; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
         }
         /**
-         * The frame whose coordinates `child` is given in or converted to.
+         * The frame to turn.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+    }
+
+    /**
+     * Frames, one of their own axes and the angle `frame.rotateFrames` turns each by about that
+     * axis, through its own origin.
+     */
+    export class RotateFramesDto extends RotateSharedDto {
+        constructor(frames?: Base.Frame[], axis?: frameAxisEnum, angle?: number) {
+            super();
+            if (frames !== undefined) { this.frames = frames; }
+            if (axis !== undefined) { this.axis = axis; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
+        /**
+         * The frames to turn.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+    }
+
+    /**
+     * The parent frame whose coordinates `frame.frameToWorld`, `frame.frameToLocal`,
+     * `frame.framesToWorld` and `frame.framesToLocal` read frames in.
+     */
+    export abstract class ChildFrameSharedDto {
+        /**
+         * The frame whose coordinates the frames are given in or converted to.
          * @default undefined
          */
         parent!: Base.Frame;
+    }
+
+    /**
+     * Two frames for `frame.frameToWorld` and `frame.frameToLocal`: the `child` to convert, and the
+     * `parent` whose coordinates are used.
+     */
+    export class ChildFrameDto extends ChildFrameSharedDto {
+        constructor(child?: Base.Frame, parent?: Base.Frame) {
+            super();
+            if (child !== undefined) { this.child = child; }
+            if (parent !== undefined) { this.parent = parent; }
+        }
         /**
          * The frame to convert: given in the coordinates of `parent` for `frameToWorld`, in world
          * coordinates for `frameToLocal`.
          * @default undefined
          */
         child!: Base.Frame;
+    }
+
+    /**
+     * Frames and one parent frame for `frame.framesToWorld` and `frame.framesToLocal`, which convert
+     * every frame between the parent's coordinates and world coordinates.
+     */
+    export class ChildFramesDto extends ChildFrameSharedDto {
+        constructor(children?: Base.Frame[], parent?: Base.Frame) {
+            super();
+            if (children !== undefined) { this.children = children; }
+            if (parent !== undefined) { this.parent = parent; }
+        }
+        /**
+         * The frames to convert: given in the coordinates of `parent` for `framesToWorld`, in world
+         * coordinates for `framesToLocal`.
+         * @default undefined
+         */
+        children!: Base.Frame[];
     }
 
     /**

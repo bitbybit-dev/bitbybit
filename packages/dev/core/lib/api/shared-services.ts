@@ -80,7 +80,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
     return {
         jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, jscad, manifold,
         lists, math, vector, transforms, point, line, polyline, geometryHelper,
-        frame: new Frame(geometryHelper),
+        frame: new Frame(vector, math, geometryHelper),
         tag: new Tag(context),
         color: new Color(math),
         verb: new Verb(context, geometryHelper, math),

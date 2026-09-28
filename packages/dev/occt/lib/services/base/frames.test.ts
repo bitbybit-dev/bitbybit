@@ -6,7 +6,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
-import { Frame, GeometryHelper, InputError } from "@bitbybit-dev/base";
+import { Frame, GeometryHelper, InputError, MathBitByBit, Vector } from "@bitbybit-dev/base";
 
 describe("OCCT frames and placements", () => {
     let occt: OCCTService;
@@ -18,7 +18,7 @@ describe("OCCT frames and placements", () => {
     }, 120_000);
 
     const close = (values: number[], digits = 9): unknown[] => values.map(value => expect.closeTo(value, digits));
-    const baseFrames = new Frame(new GeometryHelper());
+    const baseFrames = new Frame(new Vector(new MathBitByBit(), new GeometryHelper()), new MathBitByBit(), new GeometryHelper());
     const loose = <T>(value: unknown): T => value as T;
     const thrownBy = (action: () => unknown): InputError => {
         try {

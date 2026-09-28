@@ -51,22 +51,31 @@ export namespace Dates {
 export namespace Frame {
     export type BestFitDto = Inputs.Frame.BestFitDto;
     export type ChildFrameDto = Inputs.Frame.ChildFrameDto;
+    export type ChildFramesDto = Inputs.Frame.ChildFramesDto;
+    export type ChildFrameSharedDto = Inputs.Frame.ChildFrameSharedDto;
     export type CreateFrameDto = WithDefaults<Inputs.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
     export type FrameDto = Inputs.Frame.FrameDto;
     export type FramePointDto = Inputs.Frame.FramePointDto;
     export type FramePointsDto = Inputs.Frame.FramePointsDto;
+    export type FramesDto = Inputs.Frame.FramesDto;
     export type FrameVectorDto = Inputs.Frame.FrameVectorDto;
     export type FromToDto = Inputs.Frame.FromToDto;
     export type GridDto = WithDefaults<Inputs.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
     export type HexGridDto = WithDefaults<Inputs.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
     export type OffsetDto = WithDefaults<Inputs.Frame.OffsetDto, "distance">;
+    export type OffsetFramesDto = WithDefaults<Inputs.Frame.OffsetFramesDto, "distance">;
+    export type OffsetSharedDto = WithDefaults<Inputs.Frame.OffsetSharedDto, "distance">;
     export type OriginDto = WithDefaults<Inputs.Frame.OriginDto, "origin">;
     export type PointAndNormalDto = WithDefaults<Inputs.Frame.PointAndNormalDto, "origin" | "normal">;
     export type PolarDto = WithDefaults<Inputs.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
     export type RotateDto = WithDefaults<Inputs.Frame.RotateDto, "axis" | "angle">;
+    export type RotateFramesDto = WithDefaults<Inputs.Frame.RotateFramesDto, "axis" | "angle">;
+    export type RotateSharedDto = WithDefaults<Inputs.Frame.RotateSharedDto, "axis" | "angle">;
     export type ThreePointsDto = WithDefaults<Inputs.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
     export type TransformationDto = Inputs.Frame.TransformationDto;
     export type TranslateDto = WithDefaults<Inputs.Frame.TranslateDto, "translation">;
+    export type TranslateFramesDto = WithDefaults<Inputs.Frame.TranslateFramesDto, "translation">;
+    export type TranslateSharedDto = WithDefaults<Inputs.Frame.TranslateSharedDto, "translation">;
 }
 
 /**
