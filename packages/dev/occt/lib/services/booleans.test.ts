@@ -81,13 +81,17 @@ describe("OCCT booleans unit tests", () => {
         // Arrange
         const box = solid.createBox({ width: 4, height: 4, length: 4, center: [0, 0, 0] });
         const corner = solid.createBox({ width: 2, height: 2, length: 2, center: [2, 2, 2] });
-        const unified: TopoDS_Shape[] = [];
-        const original: unknown = Reflect.get(occt, "ShapeUpgrade_UnifySameDomain_Perform");
-        const unify = occt.ShapeUpgrade_UnifySameDomain_Perform.bind(occt);
-        Reflect.set(occt, "ShapeUpgrade_UnifySameDomain_Perform", (shape: TopoDS_Shape, edges: boolean, faces: boolean, bsplines: boolean): TopoDS_Shape => {
-            const result = unify(shape, edges, faces, bsplines);
-            unified.push(result);
-            return result;
+        const cut: TopoDS_Shape[] = [];
+        const cutTypes: unknown[] = [];
+        const original: unknown = Reflect.get(occt, "BooleanCut");
+        const booleanCut = occt.BooleanCut.bind(occt);
+        Reflect.set(occt, "BooleanCut", (...args: Parameters<typeof occt.BooleanCut>): ReturnType<typeof occt.BooleanCut> => {
+            const answer = booleanCut(...args);
+            if (answer.shape !== null) {
+                cut.push(answer.shape);
+                cutTypes.push(answer.shape.ShapeType());
+            }
+            return answer;
         });
 
         // Act
@@ -95,12 +99,13 @@ describe("OCCT booleans unit tests", () => {
         try {
             result = booleans.difference({ shape: box, shapes: [corner], keepEdges: false });
         } finally {
-            Reflect.set(occt, "ShapeUpgrade_UnifySameDomain_Perform", original);
+            Reflect.set(occt, "BooleanCut", original);
         }
 
         // Assert
         expect(result.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
-        expect(unified.map(shape => shape.isDeleted())).toEqual([true]);
+        expect(cutTypes).toEqual([occt.TopAbs_ShapeEnum.COMPOUND]);
+        expect(cut.map(shape => shape.isDeleted())).toEqual([true]);
     });
 
     it("should keep a compound when a difference leaves two solids", () => {

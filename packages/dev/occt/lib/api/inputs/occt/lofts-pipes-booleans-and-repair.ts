@@ -509,7 +509,7 @@ export class UnionDto<T> {
         if (keepEdges !== undefined) { this.keepEdges = keepEdges; }
     }
     /**
-     * The shapes to fuse, joined one after another in this order.
+     * The shapes to fuse, all at once; the pieces of a compound are fused as separate shapes.
      * @default undefined
      */
     shapes!: T[];
@@ -535,7 +535,7 @@ export class DifferenceDto<T> {
      */
     shape!: T;
     /**
-     * The shapes whose volume is cut away, one after another.
+     * The shapes whose volume is cut away, all at once.
      * @default undefined
      */
     shapes!: T[];

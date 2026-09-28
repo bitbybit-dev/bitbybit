@@ -1,17 +1,12 @@
 import { BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { IteratorService } from "./iterator.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
-import { EdgesService } from "./edges.service";
 import { ShapeGettersService } from "./shape-getters";
-import { TransformsService } from "./transforms.service";
-import { OperationsService } from "./operations.service";
-import { FacesService } from "./faces.service";
 import * as Resolved from "../../api/resolved-inputs";
-import { KernelOperationError } from "@bitbybit-dev/base";
+import { InputError, KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 
 export class FilletsService {
@@ -22,11 +17,7 @@ export class FilletsService {
         private readonly iteratorService: IteratorService,
         private readonly converterService: ConverterService,
         private readonly entitiesService: EntitiesService,
-        private readonly transformsService: TransformsService,
-        private readonly shapeGettersService: ShapeGettersService,
-        private readonly edgesService: EdgesService,
-        private readonly operationsService: OperationsService,
-        private readonly facesService: FacesService
+        private readonly shapeGettersService: ShapeGettersService
     ) { }
 
     filletEdges(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>): TopoDS_Shape {
@@ -472,16 +463,17 @@ export class FilletsService {
                     result = filletedWires[0];
                 }
             }
-            else {
-                const normal = this.facesService.faceNormalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
+            else if (!this.everyGivenRadiusRounds(inputs.radius, inputs.radiusList)) {
+                failure = cornersFailed();
+            } else {
                 try {
-                    result = this.fillet3DWire({ shape: inputs.shape, radius: inputs.radius, radiusList: inputs.radiusList, indexes: inputs.indexes, direction: normal });
+                    result = this.filletWireCorners(inputs.shape, this.radiiOf2dCorners(inputs, this.occ.WireCornerCount(inputs.shape)));
                 } catch (thrown) {
                     if (!(thrown instanceof KernelOperationError)) {
                         release();
                         throw thrown;
                     }
-                    failure = cornersFailed();
+                    failure = thrown;
                 }
             }
         }
@@ -495,109 +487,83 @@ export class FilletsService {
         return result;
     }
 
-    /**
-     * Fillets the corners of a wire that does not lie in a plane.
-     *
-     * OCCT has no 3D wire fillet, so the wire is extruded into a shell, the shell's edges are filleted,
-     * and the wanted edge of each resulting face is collected back into a wire. That makes the whole
-     * operation depend on how OCCT numbers the edges of an extrusion, which is observed behaviour
-     * rather than anything documented, and cannot be worked out from first principles:
-     *
-     * - a 0-based corner `i >= 2` becomes extruded edge `4 + 3 * (i - 2)`
-     * - a closed wire has its edge list rotated by one before that mapping applies
-     * - on an open wire, corner 0 becomes edge 1
-     * - after filleting, the edge wanted from each resulting face is always at index 3
-     *
-     * The assembled wire is finally translated back along the negated extrusion direction, undoing the
-     * lift. The 2D fillet also falls back to this path whenever a wire is not made purely of straight
-     * and circular edges, because the planar routine only handles those.
-     * @param inputs wire, radius or radius list, corner indexes and the extrusion direction
-     * @returns the filleted wire
-     */
-    fillet3DWire(inputs: Resolved.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Shape {
-        let useRadiusList = false;
-        if (inputs.radiusList && inputs.radiusList.length > 0 && inputs.indexes && inputs.indexes.length > 0) {
-            if (inputs.radiusList.length !== inputs.indexes.length) {
-                throw new Error("Radius list and indexes are not the same length");
-            } else {
-                useRadiusList = true;
-            }
+    fillet3DWire(inputs: Resolved.OCCT.Fillet3DWireDto<TopoDS_Wire>): TopoDS_Wire {
+        const perIndex = inputs.radiusList !== undefined && inputs.radiusList.length > 0 && inputs.indexes !== undefined && inputs.indexes.length > 0;
+        if (!this.everyGivenRadiusRounds(inputs.radius, perIndex ? inputs.radiusList : undefined)) {
+            throw perIndex
+                ? new InputError("Every radius in `radiusList` must be above 0; a radius of 0 or less rounds nothing.", "radiusList")
+                : new InputError(`\`radius\` must be above 0, and is ${inputs.radius}; a radius of 0 or less rounds nothing.`, "radius");
         }
-
-        let wireTouse: TopoDS_Wire;
-        if (useRadiusList && inputs.shape.Closed()) {
-            const edgesOfWire = this.edgesService.getEdgesAlongWire({ shape: inputs.shape });
-            const firstEdge = edgesOfWire.shift();
-            if (!firstEdge) {
-                throw new Error("Wire has no edges");
-            }
-            const adjustEdges = [...edgesOfWire, firstEdge];
-            wireTouse = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: adjustEdges });
-        } else {
-            wireTouse = this.converterService.getActualTypeOfShape(inputs.shape.Reversed());
-        }
-        const extrusion = this.operationsService.extrude({ shape: wireTouse, direction: inputs.direction });
-
-        let adjustedIndexes = inputs.indexes;
-        if (useRadiusList) {
-            const filteredEnd = (inputs.indexes ?? []).filter(i => i > 1);
-            const maxNr = Math.max(...filteredEnd);
-
-            const adjacentList = [4];
-            let lastNr = 4;
-            for (let i = 0; i < maxNr; i++) {
-                lastNr += 3;
-                adjacentList.push(lastNr);
-            }
-
-            adjustedIndexes = (inputs.indexes ?? []).map((index) => {
-                if (inputs.shape.Closed()) {
-                    if (index <= 1) {
-                        return index;
-                    } else {
-                        return adjacentList[index - 2]!;
-                    }
-                } else {
-                    if (index === 0) {
-                        return 1;
-                    } else {
-                        return adjacentList[index - 1]!;
-                    }
-                }
-            });
-        }
-
-        let filletShape: TopoDS_Shape;
-        try {
-            filletShape = this.filletEdges({ shape: extrusion, radius: inputs.radius, indexes: adjustedIndexes, radiusList: inputs.radiusList });
-        } catch (thrown) {
-            extrusion.delete();
-            throw thrown instanceof KernelOperationError ? occtFailure("occt.fillet.failed") : thrown;
-        }
-
-        const faceEdges: TopoDS_Edge[] = [];
-        const faces = this.shapeGettersService.getFaces({ shape: filletShape });
-        faces.forEach((f, _i) => {
-            const edgeToAdd = this.shapeGettersService.getEdges({ shape: f })[3]!;
-            faceEdges.push(edgeToAdd);
-        });
-
-        let res: TopoDS_Wire | undefined;
-        try {
-            res = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: faceEdges });
-        } catch {
-            res = undefined;
-        }
-        extrusion.delete();
-        filletShape.delete();
-        faces.forEach(f => f.delete());
-        faceEdges.forEach(e => e.delete());
-        if (!res) {
-            throw occtFailure("occt.fillet.failed");
-        }
-        return this.transformsService.translate({ shape: res, translation: inputs.direction.map(s => -s) as Base.Vector3 });
+        const corners = this.occ.WireCornerCount(inputs.shape);
+        return this.filletWireCorners(inputs.shape, this.radiiOfCorners(corners, inputs.radius, inputs.radiusList, inputs.indexes));
     }
-    
+
+    /**
+     * One radius per corner of a wire: `radius` at every corner, or at the corners `indexes` lists,
+     * counted from 0, or the entry of `radiusList` beside each listed corner. A corner given no
+     * radius gets 0, which leaves it sharp.
+     */
+    private radiiOfCorners(corners: number, radius: number, radiusList: number[] | undefined, indexes: number[] | undefined): number[] {
+        if (!indexes || indexes.length === 0) {
+            return Array.from({ length: corners }, () => radius);
+        }
+        const perIndex = radiusList !== undefined && radiusList.length > 0;
+        if (perIndex && radiusList.length !== indexes.length) {
+            throw new InputError(`\`radiusList\` must hold one radius per entry of \`indexes\`: it holds ${radiusList.length} for ${indexes.length}.`, "radiusList");
+        }
+        const radii = Array.from({ length: corners }, () => 0);
+        indexes.forEach((corner, position) => {
+            if (!Number.isInteger(corner) || corner < 0 || corner >= corners) {
+                throw new InputError(`\`indexes\` counts the wire's ${corners} corners from 0 to ${corners - 1}, and holds ${corner}.`, "indexes");
+            }
+            radii[corner] = perIndex ? radiusList[position]! : radius;
+        });
+        return radii;
+    }
+
+    /**
+     * True when every radius the caller gave is above 0: the list when there is one, otherwise the
+     * single radius. The corner rounding reads 0 as a corner to leave sharp, so a radius of 0 the
+     * caller asked for would otherwise come back as a wire rounded nowhere.
+     */
+    private everyGivenRadiusRounds(radius: number | undefined, radiusList: number[] | undefined): boolean {
+        const given = radiusList !== undefined && radiusList.length > 0 ? radiusList : [radius];
+        return given.every(value => value !== undefined && value > 0);
+    }
+
+    /**
+     * One radius per corner of a wire as `fillet2d` reads its inputs: corners counted from 1, a
+     * `radiusList` without `indexes` giving each corner in turn its radius, and listed corners the
+     * wire does not have passed over.
+     */
+    private radiiOf2dCorners(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, corners: number): number[] {
+        const radiusAt = (position: number): number => (inputs.radiusList ? inputs.radiusList[position] : inputs.radius) ?? 0;
+        if (!inputs.indexes) {
+            return Array.from({ length: corners }, (_, corner) => radiusAt(corner));
+        }
+        const radii = Array.from({ length: corners }, () => 0);
+        inputs.indexes.forEach((corner, position) => {
+            if (corner >= 1 && corner <= corners) {
+                radii[corner - 1] = radiusAt(position);
+            }
+        });
+        return radii;
+    }
+
+    /**
+     * Rounds every corner of a wire in one kernel call, each in the plane of the two edges that meet
+     * there, and names the corners that could not be rounded, counted from 1.
+     */
+    private filletWireCorners(wire: TopoDS_Wire, radii: number[]): TopoDS_Wire {
+        const { wire: rounded, failedCorners } = this.occ.FilletWireCorners(wire, radii);
+        if (rounded === null) {
+            throw failedCorners.length > 0
+                ? occtFailure("occt.fillet.failedAtCorners", { corners: Array.from(failedCorners, corner => corner + 1) })
+                : occtFailure("occt.fillet.failed");
+        }
+        return rounded;
+    }
+
     private applyRadiusToVertex(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, filletMaker: BRepFilletAPI_MakeFillet2d, cvx: TopoDS_Vertex, index: number): boolean {
         if (inputs.radiusList) {
             const radiusList = inputs.radiusList;

@@ -4,7 +4,20 @@ import { OccInfo } from "./occ-info";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+
+/** How far the OCCT call running now has got. */
+export type OccProgress = {
+    /** The dotted path of the call. */
+    functionName: string;
+    /** How far the algorithm running inside it has got, from 0 to 1. */
+    fraction: number;
+    /** How many kernel algorithms the call has started so far; each reports from 0 to 1 again. */
+    algorithms: number;
+};
+
+/** How often the progress of a running call is read, in milliseconds. */
+const PROGRESS_INTERVAL = 100;
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -15,9 +28,35 @@ type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: stri
 export class OCCTWorkerManager {
 
     occWorkerState$: Subject<OccInfo> = new Subject();
+    /**
+     * The progress of the call running now, read ten times a second while calls are pending, when
+     * the worker can share its progress: in a browser, only on a cross-origin isolated page.
+     */
+    occWorkerProgress$: Subject<OccProgress> = new Subject();
     errorCallback!: (err: string) => void;
     private occWorker!: Worker | OCCTWorkerMock;
     private promisesMade: PendingCall[] = [];
+    private progressWords: Int32Array | undefined;
+    private progressTimer: ReturnType<typeof setInterval> | undefined;
+    private lastProgress = "";
+
+    /** True when calls can be cancelled and report progress: the worker shared its progress words. */
+    canCancel(): boolean {
+        return this.progressWords !== undefined;
+    }
+
+    /**
+     * Asks the OCCT call running now to stop at its next check. It rejects with a `KernelCallError`
+     * of kind `cancelled` and keeps nothing it made; calls queued behind it run as usual. Returns
+     * false, and changes nothing, when the worker cannot be reached while it computes (see `canCancel`).
+     */
+    cancelCurrentCall(): boolean {
+        if (this.progressWords === undefined || this.promisesMade.length === 0) {
+            return false;
+        }
+        Atomics.store(this.progressWords, 0, 1);
+        return true;
+    }
 
     occWorkerAlreadyInitialised(): boolean {
         return this.occWorker ? true : false;
@@ -43,7 +82,17 @@ export class OCCTWorkerManager {
 
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
+        this.progressWords = undefined;
+        this.stopWatchingProgress();
         this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
+            if (typeof data === "object" && "progressWords" in data) {
+                this.progressWords = data.progressWords;
+                this.stopWatchingProgress();
+                if (this.promisesMade.length > 0) {
+                    this.watchProgress();
+                }
+                return;
+            }
             if (data === "occ-initialised") {
                 this.occWorkerState$.next({
                     state: OccStateEnum.initialised,
@@ -71,6 +120,7 @@ export class OCCTWorkerManager {
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
                 if (this.promisesMade.length === 0) {
+                    this.stopWatchingProgress();
                     this.occWorkerState$.next({
                         state: OccStateEnum.loaded,
                     });
@@ -85,6 +135,39 @@ export class OCCTWorkerManager {
 
     cleanPromisesMade(): void {
         this.promisesMade = [];
+        this.stopWatchingProgress();
+    }
+
+    /** Starts reading the running call's progress, when the worker shares it and nothing reads it yet. */
+    private watchProgress(): void {
+        const words = this.progressWords;
+        if (words === undefined || this.progressTimer !== undefined) {
+            return;
+        }
+        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL);
+    }
+
+    private stopWatchingProgress(): void {
+        if (this.progressTimer !== undefined) {
+            clearInterval(this.progressTimer);
+            this.progressTimer = undefined;
+        }
+        this.lastProgress = "";
+    }
+
+    /**
+     * Publishes the running call's progress when it moved; the oldest pending call is the one running.
+     * Only the timer calls it, and the timer is stopped whenever the last pending call settles.
+     */
+    private readProgress(words: Int32Array): void {
+        const running = this.promisesMade[0]!;
+        const permille = Atomics.load(words, 1);
+        const algorithms = Atomics.load(words, 2);
+        const key = `${running.uid}:${permille}:${algorithms}`;
+        if (key !== this.lastProgress) {
+            this.lastProgress = key;
+            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms });
+        }
     }
 
     /**
@@ -107,6 +190,7 @@ export class OCCTWorkerManager {
         });
         obj.promise = prom;
         this.promisesMade.push(obj);
+        this.watchProgress();
 
         try {
             this.occWorker.postMessage({
@@ -120,6 +204,7 @@ export class OCCTWorkerManager {
             this.promisesMade = this.promisesMade.filter(i => i.uid !== uid);
             obj.reject!(new KernelCallError(`${functionName}: the inputs could not be sent to the worker${error instanceof Error ? `: ${error.message}` : ""}`, functionName, "input"));
             if (this.promisesMade.length === 0) {
+                this.stopWatchingProgress();
                 this.occWorkerState$.next({
                     state: OccStateEnum.loaded,
                 });

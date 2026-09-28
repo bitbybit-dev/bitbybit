@@ -1,11 +1,11 @@
 import { KernelCallError } from "@bitbybit-dev/base";
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { OCCTWorkerManager } from "./occ-worker-manager";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { OCCTWorkerManager, OccProgress } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
 import { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel"; code?: string; details?: Record<string, unknown>; stack?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -471,6 +471,207 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect(settled).toBe(false);
+        });
+    });
+
+    describe("progress and cancelling", () => {
+        let words: Int32Array;
+        let progress: OccProgress[];
+
+        const shareWords = (): void => {
+            words = new Int32Array(new SharedArrayBuffer(12));
+            answer({ progressWords: words });
+        };
+
+        beforeEach(() => {
+            vi.useFakeTimers();
+            progress = [];
+            manager.occWorkerProgress$.subscribe((reading) => progress.push(reading));
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("should not offer cancelling before the worker shares its progress words", () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(manager.canCancel()).toBe(false);
+            expect(cancelled).toBe(false);
+        });
+
+        it("should not treat the shared words as an answer or a state", () => {
+            // Act
+            shareWords();
+
+            // Assert
+            expect(manager.canCancel()).toBe(true);
+            expect(states).toEqual([]);
+        });
+
+        it("should raise the stop word for the call running now", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(cancelled).toBe(true);
+            expect(Atomics.load(words, 0)).toBe(1);
+        });
+
+        it("should leave the stop word alone when no call is pending", () => {
+            // Arrange
+            shareWords();
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(cancelled).toBe(false);
+            expect(Atomics.load(words, 0)).toBe(0);
+        });
+
+        it("should reject a cancelled call as cancelled", async () => {
+            // Arrange
+            shareWords();
+            const pending = manager.genericCallToWorkerPromise("booleans.union", {});
+            manager.cancelCurrentCall();
+
+            // Act
+            answer({ uid: uidOf(0), error: "OCCT 'booleans.union' was cancelled before it finished; nothing it made was kept.", errorKind: "cancelled" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ kind: "cancelled" });
+        });
+
+        it("should report the oldest pending call's progress as it moves", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Act
+            Atomics.store(words, 1, 250);
+            Atomics.store(words, 2, 1);
+            vi.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
+            Atomics.store(words, 1, 600);
+            vi.advanceTimersByTime(100);
+
+            // Assert
+            expect(progress).toEqual([
+                { functionName: "booleans.union", fraction: 0.25, algorithms: 1 },
+                { functionName: "booleans.union", fraction: 0.6, algorithms: 1 },
+            ]);
+        });
+
+        it("should move on to the next call once the running one is answered", async () => {
+            // Arrange
+            shareWords();
+            const first = manager.genericCallToWorkerPromise("booleans.union", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            vi.advanceTimersByTime(100);
+
+            // Act
+            answer({ uid: uidOf(0), result: "a-union" });
+            await first;
+            vi.advanceTimersByTime(100);
+
+            // Assert
+            expect(progress.map((reading) => reading.functionName)).toEqual(["booleans.union", "shapes.solid.createBox"]);
+        });
+
+        it("should stop reading once nothing is pending", async () => {
+            // Arrange
+            shareWords();
+            const pending = manager.genericCallToWorkerPromise("booleans.union", {});
+            answer({ uid: uidOf(0), result: "a-union" });
+            await pending;
+
+            // Act
+            Atomics.store(words, 1, 500);
+            vi.advanceTimersByTime(1000);
+
+            // Assert
+            expect(progress).toEqual([]);
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should stop reading when a call it could not send was the only one", async () => {
+            // Arrange
+            shareWords();
+            worker.refusals = 1;
+
+            // Act
+            await expect(manager.genericCallToWorkerPromise("booleans.union", {})).rejects.toThrow();
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should stop reading when the outstanding calls are forgotten", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            manager.cleanPromisesMade();
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should read the words a restarted kernel shares, while a call is pending", () => {
+            // Arrange
+            shareWords();
+            const first = words;
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            shareWords();
+            Atomics.store(first, 1, 900);
+            Atomics.store(words, 1, 300);
+            vi.advanceTimersByTime(100);
+            manager.cancelCurrentCall();
+
+            // Assert
+            expect(progress).toEqual([{ functionName: "booleans.union", fraction: 0.3, algorithms: 0 }]);
+            expect(Atomics.load(words, 0)).toBe(1);
+            expect(Atomics.load(first, 0)).toBe(0);
+            expect(vi.getTimerCount()).toBe(1);
+        });
+
+        it("should forget the words of a worker it replaces", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            manager.setOccWorker(new RecordingWorker());
+
+            // Assert
+            expect(manager.canCancel()).toBe(false);
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should not read progress when the worker never shared its words", () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            vi.advanceTimersByTime(1000);
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+            expect(progress).toEqual([]);
         });
     });
 

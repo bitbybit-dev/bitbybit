@@ -14,11 +14,11 @@ import { ConverterService } from "./converter.service";
 import { EnumService } from "./enum.service";
 import { TextWiresDataDto, ObjectDefinition } from "../../api/models/bucket";
 import { OperationsService } from "./operations.service";
-import { FilletsService } from "./fillets.service";
 import { BaseBitByBit } from "../../base";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
+import { occtFailure } from "../../kernel-failures";
 import { resolveDto } from "@bitbybit-dev/base";
 export class WiresService {
 
@@ -34,14 +34,8 @@ export class WiresService {
         private readonly geomService: GeomService,
         private readonly edgesService: EdgesService,
         private readonly vecHelper: VectorHelperService,
-        private readonly fillets: () => FilletsService,
         private readonly operations: () => OperationsService,
     ) { }
-
-    /** The fillets service, resolved on use because it and this one refer to each other. */
-    get filletsService(): FilletsService {
-        return this.fillets();
-    }
 
     /** The operations service, resolved on use because it and this one refer to each other. */
     get operationsService(): OperationsService {
@@ -784,9 +778,6 @@ export class WiresService {
 
     hexagonsInGrid(inputs: Resolved.OCCT.HexagonsInGridDto): TopoDS_Wire[] {
         const hex = this.base.point.hexGridScaledToFit({ ...inputs, centerGrid: true, pointsOnGround: true });
-        const wires = hex.hexagons.map(hex => {
-            return this.createPolygonWire({ points: hex });
-        });
 
         let currentScalePatternWidthIndex = 0;
         let currentScalePatternHeightIndex = 0;
@@ -795,7 +786,9 @@ export class WiresService {
 
         const nrHexagonsInHeight = inputs.nrHexagonsInHeight;
         const nrHexagonsInWidth = inputs.nrHexagonsInWidth;
-        const res = [];
+        const counts: number[] = [];
+        const corners: number[] = [];
+        const placements: number[] = [];
 
         for (let i = 0; i < nrHexagonsInHeight; i++) {
             for (let j = 0; j < nrHexagonsInWidth; j++) {
@@ -835,46 +828,26 @@ export class WiresService {
                     }
                 }
 
-                if (include) {
-                    fillet = (hex.maxFilletRadius ?? 0) * fillet;
-
-                    const hexagon = wires[i * nrHexagonsInWidth + j]!;
-                    const hexagonCenter = hex.centers[i * nrHexagonsInWidth + j]!;
-
-                    if (fillet > 0) {
-                        const filletRectangle = this.filletsService.fillet2d({
-                            shape: hexagon,
-                            radius: fillet,
-                        });
-
-                        const scaleVec2 = [scaleFromPatternWidth, 1, scaleFromPatternHeight] as Base.Vector3;
-                        let hexScaled = filletRectangle;
-                        if (scaleFromPatternWidth !== 1 || scaleFromPatternHeight !== 1) {
-                            hexScaled = this.transformsService.scale3d({
-                                shape: filletRectangle,
-                                center: hexagonCenter,
-                                scale: scaleVec2,
-                            });
-                        }
-
-                        res.push(hexScaled);
-                    } else {
-                        const scaleVec2 = [scaleFromPatternWidth, 1, scaleFromPatternHeight] as Base.Vector3;
-                        let hexScaled = hexagon;
-                        if (scaleFromPatternWidth !== 1 || scaleFromPatternHeight !== 1) {
-                            hexScaled = this.transformsService.scale3d({
-                                shape: hexagon,
-                                center: hexagonCenter,
-                                scale: scaleVec2,
-                            });
-                        }
-
-                        res.push(hexScaled);
-                    }
+                if (include && scaleFromPatternWidth > 0 && scaleFromPatternHeight > 0) {
+                    const hexagon = hex.hexagons[i * nrHexagonsInWidth + j]!;
+                    const center = hex.centers[i * nrHexagonsInWidth + j]!;
+                    counts.push(hexagon.length);
+                    corners.push(...hexagon.flatMap(point => [point[0] - center[0], point[2] - center[2]]));
+                    placements.push(Math.max((hex.maxFilletRadius ?? 0) * fillet, 0), scaleFromPatternWidth, scaleFromPatternHeight, center[0], center[2]);
                 }
             }
         }
-        return res;
+        const origin = this.entitiesService.gpPnt([0, 0, 0]);
+        const normal = this.entitiesService.gpDir([0, -1, 0]);
+        const xDirection = this.entitiesService.gpDir([1, 0, 0]);
+        const wires = this.occ.OutlinesOnPlane(origin, normal, xDirection, counts, corners, placements);
+        origin.delete();
+        normal.delete();
+        xDirection.delete();
+        if (wires === null) {
+            throw occtFailure("occt.fillet.failed");
+        }
+        return wires;
     }
 
     createWireFromEdge(inputs: Inputs.OCCT.ShapeDto<TopoDS_Edge>): TopoDS_Wire {

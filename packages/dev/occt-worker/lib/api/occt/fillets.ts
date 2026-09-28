@@ -147,19 +147,19 @@ export class OCCTFillets {
     }
 
     /**
-     * Rounds the corners of a wire that does not lie in one plane.
+     * Rounds the corners of a wire, flat or not, each with an arc in the plane of the two edges
+     * that meet there, as a bent rod would be.
      *
-     * The kernel has no direct 3D wire fillet, so the wire is extruded along `direction` into a
-     * shell, the shell is filleted and the rounded wire is read back off it; `direction` must not
-     * be parallel to the wire and must leave room for the fillets.
-     * @param inputs - The wire, the radius or radius list, the optional 0-based corner indexes and the extrusion direction
+     * Corner `i` joins edge `i` to the next, counted from 0; a closed wire's last corner joins its
+     * last edge to its first. Smooth corners stay; `direction` is unused.
+     * @param inputs - The wire, the radius or radius list and the optional 0-based corner indexes
      * @returns The rounded wire
      * @group 3d fillets
      * @shortname fillet 3d wire
      * @drawable true
      * @example
      * ```typescript
-     * const rounded = await bitbybit.occt.fillets.fillet3DWire({ shape: zigzagWire, radius: 0.5, direction: [0, 5, 0] });
+     * const rounded = await bitbybit.occt.fillets.fillet3DWire({ shape: zigzagWire, radius: 0.5 });
      * ```
      */
     fillet3DWire(inputs: Inputs.OCCT.Fillet3DWireDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
@@ -167,16 +167,16 @@ export class OCCTFillets {
     }
 
     /**
-     * Rounds the corners of several wires that do not lie in one plane, as `fillet3DWire` does for
-     * one, with the same radius, indexes and direction for all.
-     * @param inputs - The wires, the radius or radius list, the optional corner indexes and the extrusion direction
+     * Rounds the corners of several wires, as `fillet3DWire` does for one, with the same radius and
+     * indexes for all.
+     * @param inputs - The wires, the radius or radius list and the optional corner indexes
      * @returns The rounded wires, in the same order
      * @group 3d fillets
      * @shortname fillet 3d wires
      * @drawable true
      * @example
      * ```typescript
-     * const rounded = await bitbybit.occt.fillets.fillet3DWires({ shapes: [wireA, wireB], radius: 0.5, direction: [0, 5, 0] });
+     * const rounded = await bitbybit.occt.fillets.fillet3DWires({ shapes: [wireA, wireB], radius: 0.5 });
      * ```
      */
     fillet3DWires(inputs: Inputs.OCCT.Fillet3DWiresDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {

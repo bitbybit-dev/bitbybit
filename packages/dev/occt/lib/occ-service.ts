@@ -113,6 +113,29 @@ export class OCCTService {
     }
 
     /**
+     * Meshes a shape into one indexed triangle mesh whose faces share vertices where they meet, the
+     * form `manifold.shapes.manifoldFromMesh` takes, so an OCCT solid can carry on as a Manifold
+     * solid.
+     *
+     * Vertices are shared through the shape's own edges, not by matching coordinates, so a closed
+     * solid gives a closed mesh. `precision` is the meshing tolerance.
+     * @param inputs - The shape and the meshing precision
+     * @returns The mesh: three numbers per vertex and three vertex indexes per triangle
+     * @group convert
+     * @shortname shape to manifold mesh
+     * @drawable false
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.occt.shapeToManifoldMesh({ shape: solid, precision: 0.01 });
+     * const manifold = await bitbybit.manifold.manifold.shapes.manifoldFromMesh({ mesh });
+     * ```
+     */
+    shapeToManifoldMesh(inputs: Inputs.OCCT.ShapeToManifoldMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedManifoldMeshDto {
+        const resolved = resolveDto(Inputs.OCCT.ShapeToManifoldMeshDto, inputs) as Resolved.OCCT.ShapeToManifoldMeshDto<TopoDS_Shape>;
+        return this.och.meshingService.shapeToManifoldMesh(resolved);
+    }
+
+    /**
      * Triangulates several shapes with the same settings, as `shapeToMesh` does for one.
      * @param inputs - The shapes, the meshing precision and the options
      * @returns One mesh per shape, in the same order

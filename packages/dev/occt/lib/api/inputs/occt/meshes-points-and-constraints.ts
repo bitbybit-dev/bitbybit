@@ -33,6 +33,25 @@ export class DecomposedMeshDto {
 }
 
 /**
+ * An indexed triangle mesh as `shapeToManifoldMesh` returns it, in the form
+ * `manifold.shapes.manifoldFromMesh` takes: the vertex positions and the triangles that index them.
+ */
+export class DecomposedManifoldMeshDto {
+    /**
+     * How many numbers each vertex carries in `vertProperties`: 3, its position.
+     */
+    numProp!: number;
+    /**
+     * The x, y and z of every vertex, one vertex after another.
+     */
+    vertProperties!: Float32Array;
+    /**
+     * The triangles as vertex indexes, three per triangle, wound so that they face out of the shape.
+     */
+    triVerts!: Uint32Array;
+}
+
+/**
  * The triangulation of one face inside a `DecomposedMeshDto`: flat coordinate lists the way
  * graphics libraries take them, plus optional facts about the face when `computeMetadata` was set.
  */

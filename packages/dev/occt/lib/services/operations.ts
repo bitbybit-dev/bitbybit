@@ -684,13 +684,13 @@ export class OCCTOperations {
     }
 
     /**
-     * Offsets a wire that does not lie in one plane, by extruding it along `direction`, thickening
-     * the result and reading the offset edge back off it.
+     * Offsets a wire that does not lie in one plane: every point moves by `offset` at right angles to
+     * both the wire and `direction`, keeping its height along `direction`.
      *
-     * It works best on smooth wires; fillet sharp corners first with `fillets.fillet3DWire`. When
-     * the offset edges cannot be joined into one wire they come back as a list of edges.
-     * @param inputs - The wire, the offset distance and the direction to extrude along
-     * @returns The offset wire, or the loose edges when they could not be joined
+     * Best on smooth wires; round sharp corners first with `fillets.fillet3DWire`, since at one the
+     * offset edges do not meet and come back as a list of edges.
+     * @param inputs - The wire, the offset distance and the direction to offset across
+     * @returns The offset wire, or its edges in order when they do not meet
      * @group offsets
      * @shortname offset 3d wire
      * @drawable true

@@ -41,8 +41,8 @@ export class ThisckSolidSimpleDto<T> {
     offset?: number | undefined = 1;
 }
 /**
- * A wire, an offset and an extrusion direction for `operations.offset3DWire`, which offsets a wire
- * that does not lie in one plane.
+ * A wire, an offset and a direction for `operations.offset3DWire`, which offsets a wire that does
+ * not lie in one plane across that direction.
  */
 export class Offset3DWireDto<T> {
     constructor(shape?: T, offset?: number, direction?: Base.Vector3) {
@@ -56,7 +56,8 @@ export class Offset3DWireDto<T> {
      */
     shape!: T;
     /**
-     * The offset distance in model units.
+     * How far every point moves, in model units. A positive offset moves a loop that runs
+     * counterclockwise, seen from the tip of `direction`, inwards.
      * @default 1
      * @minimum -Infinity
      * @maximum Infinity
@@ -64,8 +65,8 @@ export class Offset3DWireDto<T> {
      */
     offset?: number | undefined = 1;
     /**
-     * The direction the wire is extruded along to build the offset; it must not be parallel to the
-     * wire.
+     * The direction the offset is taken across: every point moves at right angles to both it and the
+     * wire. It must cross the wire everywhere, never running along it.
      * @default [0, 1, 0]
      */
     direction?: Base.Vector3 | undefined = [0, 1, 0];

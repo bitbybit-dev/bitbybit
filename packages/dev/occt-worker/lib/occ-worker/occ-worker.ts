@@ -21,6 +21,39 @@ let kernelGeneration = 0;
 let restarting: Promise<void> | undefined;
 /** What crashed the kernel, when it was not replaced; every later call is refused. */
 let lostKernel: string | undefined;
+/**
+ * The kernel's three progress words, shared with the manager: word 0 asks the running call to stop,
+ * word 1 is its progress in thousandths, word 2 counts the algorithms it started. Undefined where
+ * memory cannot be shared (a page that is not cross-origin isolated) or the kernel predates them.
+ */
+let progressWords: Int32Array | undefined;
+
+/**
+ * The words the kernel reports progress in and reads a stop request from, over memory the manager
+ * can share: the multithreaded kernel's own memory, or for the other kernels a SharedArrayBuffer
+ * handed to the module, which the kernel keeps in step with its own words.
+ */
+function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
+    const control = (occ as Partial<BitbybitOcctModule>).ProgressControl;
+    if (typeof SharedArrayBuffer === "undefined" || control === undefined) {
+        return undefined;
+    }
+    const kernelWords = control();
+    if (kernelWords.buffer instanceof SharedArrayBuffer) {
+        return kernelWords;
+    }
+    const hostWords = new Int32Array(new SharedArrayBuffer(3 * Int32Array.BYTES_PER_ELEMENT));
+    (occ as BitbybitOcctModule & { bitbybitControl?: Int32Array }).bitbybitControl = hostWords;
+    return hostWords;
+}
+
+/** True when the manager asked the running call to stop. */
+function stopRequested(): boolean {
+    return progressWords !== undefined && Atomics.load(progressWords, 0) !== 0;
+}
+
+/** Thrown inside a call the manager stopped, so nothing it made is cached. */
+class CallStopped extends Error { }
 
 /**
  * Pending dependencies that need to be added to plugins once OpenCascade is initialized.
@@ -90,6 +123,10 @@ export const initializationComplete = (
         });
     }
 
+    progressWords = progressWordsOf(occ);
+    if (!doNotPost && progressWords !== undefined) {
+        postMessage({ progressWords });
+    }
     if (!doNotPost && restarting === undefined) {
         postMessage(WorkerMessages.INITIALIZED);
     }
@@ -161,7 +198,11 @@ function executeStandardFunction(
 
     const res = cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {
         call.reportIssues();
-        return functionPathResolver.callFunction(openCascade, action.functionName, shapeResolver.resolveShapeReferences(call.inputs));
+        const computed = functionPathResolver.callFunction(openCascade, action.functionName, shapeResolver.resolveShapeReferences(call.inputs));
+        if (stopRequested()) {
+            throw new CallStopped();
+        }
+        return computed;
     });
 
     return resultSerializer.serializeResult(res);
@@ -189,11 +230,14 @@ export const onMessageInput = (
         return;
     }
     postMessage(WorkerMessages.BUSY);
+    (kernel as Partial<BitbybitOcctModule>).ProgressBeginCall?.();
 
     let result: unknown;
+    let started = "";
 
     try {
         const { functionName, inputs } = d.action;
+        started = functionName;
 
         const commandHandler = getCommandHandler(functionName);
 
@@ -204,14 +248,26 @@ export const onMessageInput = (
             result = executeStandardFunction(d.action);
         }
 
+        if (stopRequested()) {
+            throw new CallStopped();
+        }
         postMessage({
             uid: d.uid,
             result,
         });
     } catch (e) {
+        const cancelled = (): void => postMessage({ uid: d.uid, result: undefined, error: `OCCT '${started}' was cancelled before it finished; nothing it made was kept.`, errorKind: "cancelled" });
+        if (e instanceof CallStopped) {
+            cancelled();
+            return;
+        }
         try {
             const read = readKernelException(kernel, e);
             const failure = describeKernelFailure("OCCT", d.action?.functionName ?? "", d.action?.inputs, read);
+            if (failure.kind !== "crash" && started !== "" && stopRequested()) {
+                cancelled();
+                return;
+            }
             const next = read instanceof Error && failure.kind === "crash" ? afterCrash(read.message) : "";
             postMessage({
                 uid: d.uid,

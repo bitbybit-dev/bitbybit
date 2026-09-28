@@ -1,6 +1,6 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-09-27",
+    "measured": "2026-09-28",
     "history": [
         {
             "measured": "2026-09-07",
@@ -169,6 +169,14 @@
             "branches": 93.2,
             "functions": 99.01,
             "statements": 97.84
+        },
+        {
+            "measured": "2026-09-28",
+            "tests": 9650,
+            "lines": 98,
+            "branches": 93.39,
+            "functions": 99.03,
+            "statements": 97.92
         }
     ],
     "packages": {
@@ -260,16 +268,16 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 1986,
-            "suites": 42,
-            "lines": 96.23,
-            "branches": 87.44,
-            "functions": 97.96,
-            "statements": 96.16
+            "tests": 2042,
+            "suites": 43,
+            "lines": 96.39,
+            "branches": 88.16,
+            "functions": 98.04,
+            "statements": 96.35
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 855,
+            "tests": 877,
             "suites": 15,
             "lines": 100,
             "branches": 100,

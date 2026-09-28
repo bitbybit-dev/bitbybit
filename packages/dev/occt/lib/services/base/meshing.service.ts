@@ -2,6 +2,7 @@ import { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape,
 import * as Inputs from "../../api/inputs";
 import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
+import { InputError } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, type MeshArrays, type MeshContents } from "./mesh-arrays";
@@ -61,6 +62,14 @@ export class MeshingService {
             allowQualityDecrease: inputs.allowQualityDecrease,
             forceFaceDeflection: inputs.forceFaceDeflection,
         }));
+    }
+
+    shapeToManifoldMesh(inputs: Resolved.OCCT.ShapeToManifoldMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedManifoldMeshDto {
+        const mesh = this.occ.ShapeToManifoldMesh(inputs.shape, inputs.precision);
+        if (mesh === null) {
+            throw new InputError("`shape` is empty or has a face the mesher left without triangles, so it has no mesh.", "shape");
+        }
+        return mesh;
     }
 
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs.OCCT.DecomposedMeshDto {

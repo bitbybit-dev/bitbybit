@@ -228,6 +228,7 @@ const OCCT_ShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)) };
 const OCCT_ShapeShapesDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)) };
 const OCCT_ShapesToMeshesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
 const OCCT_ShapeToDxfPathsDto: DtoConstraints = { shape: k.required(k.opaque), angularDeflection: k.between(k.number, { min: 0 }), curvatureDeflection: k.between(k.number, { min: 0 }), minimumOfPoints: k.between(k.number, { min: 0 }), uTolerance: k.between(k.number, { min: 0 }), minimumLength: k.between(k.number, { min: 0 }) };
+const OCCT_ShapeToManifoldMeshDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }) };
 const OCCT_ShapeToMeshDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
 const OCCT_ShapeTransformQueryDto: DtoConstraints = { shape: k.required(k.opaque) };
 const OCCT_ShapeWithToleranceDto: DtoConstraints = { shape: k.required(k.opaque), tolerance: k.between(k.number, { min: 0 }) };
@@ -678,6 +679,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "shapes.wire.textWiresWithData": { dto: Inputs.OCCT.TextWiresDto, constraints: OCCT_TextWiresDto },
     "shapes.wire.wiresToPoints": { dto: Inputs.OCCT.WiresToPointsDto, constraints: OCCT_WiresToPointsDto },
     "shapesToMeshes": { dto: Inputs.OCCT.ShapesToMeshesDto, constraints: OCCT_ShapesToMeshesDto },
+    "shapeToManifoldMesh": { dto: Inputs.OCCT.ShapeToManifoldMeshDto, constraints: OCCT_ShapeToManifoldMeshDto },
     "shapeToMesh": { dto: Inputs.OCCT.ShapeToMeshDto, constraints: OCCT_ShapeToMeshDto },
     "svg.loadSVG": { dto: Inputs.OCCT.LoadSVGDto, constraints: OCCT_LoadSVGDto },
     "svg.loadSVGStructured": { dto: Inputs.OCCT.LoadSVGDto, constraints: OCCT_LoadSVGDto },

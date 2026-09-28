@@ -169,14 +169,21 @@ describe("OCCT operations the kernel cannot complete", () => {
 
         it("passes on an error the 3D fallback throws that is not a kernel failure, instead of naming corners", () => {
             // Arrange
-            vi.spyOn(helper.filletsService, "fillet3DWire").mockImplementation(() => {
+            const arch = s.shapes.wire.interpolatePoints({ points: [[10, 0, 0], [5, 0, 6], [0, 0, 0]], periodic: false, tolerance: 1e-7 });
+            const outline = helper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [
+                s.shapes.wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), arch,
+            ] });
+            const fallback = vi.fn();
+            vi.spyOn(occt, "FilletWireCorners").mockImplementation(() => {
+                fallback();
                 throw new Error("not a kernel failure");
             });
 
             // Act
-            const failure = failureOf(() => s.fillets.fillet2d({ shape: square(), radius: 20 }));
+            const failure = failureOf(() => s.fillets.fillet2d({ shape: outline, radius: 1 }));
 
             // Assert
+            expect(fallback).toHaveBeenCalledTimes(1);
             expect(failure).toMatchObject({ name: "Error", message: "not a kernel failure" });
         });
 
@@ -196,15 +203,15 @@ describe("OCCT operations the kernel cannot complete", () => {
             expect(failure).toMatchObject({ message: "The fillet could not be built at these edges of the shape, counted from 0: 4. A radius may be too large for the faces beside them, or the edges may meet at a corner the fillet cannot round." });
         });
 
-        it("names no edges of the extrusion a 3D wire fillet is built through, which are not the wire's", () => {
+        it("names the corners of a 3D wire it could not round, counted from 1", () => {
             // Arrange
             const star = s.shapes.wire.createStarWire({ numRays: 5, outerRadius: 10, innerRadius: 6, center: [0, 0, 0], direction: [0, 1, 0], half: false });
 
             // Act
-            const failure = failureOf(() => s.fillets.fillet3DWire({ shape: star, radius: 20, direction: [0, 1, 0] }));
+            const failure = failureOf(() => s.fillets.fillet3DWire({ shape: star, radius: 20, indexes: [1, 4] }));
 
             // Assert
-            expect(failure).toMatchObject(named("occt.fillet.failed"));
+            expect(failure).toMatchObject({ name: "KernelOperationError", code: "occt.fillet.failedAtCorners", details: { corners: [2, 5] } });
         });
 
         it.each([

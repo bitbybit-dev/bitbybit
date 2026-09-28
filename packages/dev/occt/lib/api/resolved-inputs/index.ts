@@ -85,6 +85,7 @@ export namespace OCCT {
     export type DataOnUVsDto<T> = WithDefaults<Inputs.OCCT.DataOnUVsDto<T>, "paramsUV">;
     export type DecomposedEdgeDto = Inputs.OCCT.DecomposedEdgeDto;
     export type DecomposedFaceDto = Inputs.OCCT.DecomposedFaceDto;
+    export type DecomposedManifoldMeshDto = Inputs.OCCT.DecomposedManifoldMeshDto;
     export type DecomposedMeshDto = Inputs.OCCT.DecomposedMeshDto;
     export type DifferenceDto<T> = WithDefaults<Inputs.OCCT.DifferenceDto<T>, "keepEdges">;
     export type DivideDto<T> = WithDefaults<Inputs.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
@@ -257,6 +258,7 @@ export namespace OCCT {
     export type ShapeShapesDto<T, U> = Inputs.OCCT.ShapeShapesDto<T, U>;
     export type ShapesToMeshesDto<T> = WithDefaults<Inputs.OCCT.ShapesToMeshesDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type ShapeToDxfPathsDto<T> = WithDefaults<Inputs.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    export type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     export type ShapeToMeshDto<T> = WithDefaults<Inputs.OCCT.ShapeToMeshDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     export type ShapeTransformQueryDto<T> = Inputs.OCCT.ShapeTransformQueryDto<T>;
     export type ShapeWithToleranceDto<T> = WithDefaults<Inputs.OCCT.ShapeWithToleranceDto<T>, "tolerance">;

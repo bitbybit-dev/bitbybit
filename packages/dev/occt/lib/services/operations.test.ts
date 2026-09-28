@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
@@ -506,129 +506,94 @@ describe("OCCT operations unit tests", () => {
         expect(() => operations.sliceInStepPattern({ shape: starWire, direction: [0, 1, 1], steps: [0.1] })).toThrow("No solids found to slice.");
     });
 
-    it("should offset 3D wire by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 24, -20],
-            [-10, 20, -10],
-            [0, 15, 0],
-            [0, 12, 10],
-            [20, 7, 16],
-            [40, 25, 40],
-            [-20, 7, 16],
-            [-20, 7, -16]
-        ] as Inputs.Base.Point3[];
-
-        const polylineWire = wire.createPolylineWire({
-            points,
+    const offsetPoints = (source: TopoDS_Wire, distance: number, direction: Inputs.Base.Vector3, samples: number): Inputs.Base.Point3[] =>
+        Array.from({ length: samples + 1 }, (_, index) => {
+            const param = index / samples;
+            const [x, y, z] = wire.pointOnWireAtParam({ shape: source, param });
+            const [tx, ty, tz] = wire.tangentOnWireAtParam({ shape: source, param });
+            const side: Inputs.Base.Vector3 = [direction[1] * tz - direction[2] * ty, direction[2] * tx - direction[0] * tz, direction[0] * ty - direction[1] * tx];
+            const scale = distance / Math.hypot(side[0], side[1], side[2]);
+            return [x + side[0] * scale, y + side[1] * scale, z + side[2] * scale];
         });
 
-        const filletWire = occHelper.filletsService.fillet3DWire({ shape: polylineWire, radius: 5, direction: [0, 30, 0] });
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: filletWire,
-            direction: [0, 1, 0],
-            offset: 2,
-        }) as TopoDS_Wire;
+    const pointsAtFractions = (shape: TopoDS_Wire, samples: number): Inputs.Base.Point3[] =>
+        Array.from({ length: samples + 1 }, (_, index) => wire.pointOnWireAtParam({ shape, param: index / samples }));
 
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: filletWire,
-            direction: [0, 1, 0],
-            offset: -2,
-        }) as TopoDS_Wire;
+    const closeTo9 = (points: Inputs.Base.Point3[]): unknown[] => points.map(point => point.map(value => expect.closeTo(value, 9)));
 
-        const filletLength = wire.getWireLength({ shape: filletWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
+    it("should move every point of a rounded 3D polyline at right angles to it and to the direction", () => {
+        // Arrange
+        const polyline = wire.createPolylineWire({ points: [[0, 24, -20], [-10, 20, -10], [0, 15, 0], [0, 12, 10], [20, 7, 16], [40, 25, 40], [-20, 7, 16], [-20, 7, -16]] });
+        const rounded = occHelper.filletsService.fillet3DWire({ shape: polyline, radius: 5, direction: [0, 1, 0] });
 
-        expect(wireLength1).toBeCloseTo(168.790359306275);
-        expect(filletLength).toBeCloseTo(164.11239253261422);
-        expect(wireLength2).toBeCloseTo(160.25576209902425);
+        // Act
+        const outward = operations.offset3DWire({ shape: rounded, direction: [0, 1, 0], offset: 2 }) as TopoDS_Wire;
+        const inward = operations.offset3DWire({ shape: rounded, direction: [0, 1, 0], offset: -2 }) as TopoDS_Wire;
 
+        // Assert
+        expect(pointsAtFractions(outward, 40)).toEqual(closeTo9(offsetPoints(rounded, 2, [0, 1, 0], 40)));
+        expect(pointsAtFractions(inward, 40)).toEqual(closeTo9(offsetPoints(rounded, -2, [0, 1, 0], 40)));
     });
 
-    it("should offset 3D wire by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 24, -20],
-            [-10, 20, -10],
-            [0, 15, 0],
-            [0, 12, 10],
-            [20, 7, 16],
-            [40, 25, 40],
-            [-20, 7, 16],
-            [-20, 7, -16]
-        ] as Inputs.Base.Point3[];
+    it("should move every point of a smooth 3D curve at right angles to it and to the direction", () => {
+        // Arrange
+        const curve = wire.interpolatePoints({ points: [[0, 24, -20], [-10, 20, -10], [0, 15, 0], [0, 12, 10], [20, 7, 16], [40, 25, 40], [-20, 7, 16], [-20, 7, -16]], periodic: false, tolerance: 0.1 });
 
-        const interpolatedWire = wire.interpolatePoints({
-            points,
-            periodic: false,
-            tolerance: 0.1,
-        });
+        // Act
+        const offset = operations.offset3DWire({ shape: curve, direction: [0, 3, 0], offset: 2 }) as TopoDS_Wire;
 
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: interpolatedWire,
-            direction: [0, 1, 0],
-            offset: 2,
-        }) as TopoDS_Wire;
-
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: interpolatedWire,
-            direction: [0, 1, 0],
-            offset: -2,
-        }) as TopoDS_Wire;
-
-        const interpWireLength = wire.getWireLength({ shape: interpolatedWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
-
-        expect(wireLength1).toBeCloseTo(218.52116637474018);
-        expect(interpWireLength).toBeCloseTo(213.1483348902019);
-        expect(wireLength2).toBeCloseTo(208.59746753494878);
-
+        // Assert
+        expect(pointsAtFractions(offset, 40)).toEqual(closeTo9(offsetPoints(curve, 2, [0, 1, 0], 40)));
     });
 
-    it("should offset 3D combined wire from interpolation and a line by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 0, 0],
-            [0, 1, 1],
-            [2, 0.5, 1],
-            [2, 0, 2],
-        ] as Inputs.Base.Point3[];
+    it("should hand back the offset edges in order where a sharp corner keeps them apart", () => {
+        // Arrange
+        const curve = wire.interpolatePoints({ points: [[0, 0, 0], [0, 1, 1], [2, 0.5, 1], [2, 0, 2]], periodic: false, tolerance: 0.1 });
+        const joined = wire.combineEdgesAndWiresIntoAWire({ shapes: [curve, wire.createLineWire({ start: [2, 0, 2], end: [5, 0, 0] })] });
 
-        const polylineWire = wire.interpolatePoints({
-            points,
-            periodic: false,
-            tolerance: 0.1,
-        });
+        // Act
+        const offset = operations.offset3DWire({ shape: joined, direction: [0, 1, 0], offset: 0.1 });
 
-        const lineWire = wire.createLineWire({
-            start: [2, 0, 2],
-            end: [5, 0, 0],
-        });
+        // Assert
+        expect(Array.isArray(offset)).toBe(true);
+        const edges = offset as TopoDS_Edge[];
+        expect(edges).toHaveLength(2);
+        expect(occHelper.edgesService.startPointOnEdge({ shape: edges[1]! }))
+            .toEqual(closeTo9([[2 - 0.2 / Math.sqrt(13), 0, 2 - 0.3 / Math.sqrt(13)]])[0]);
+    });
 
-        const combinedWire = wire.combineEdgesAndWiresIntoAWire({
-            shapes: [polylineWire, lineWire]
-        });
+    it("should shrink a circle about the direction in its own plane, running the same way", () => {
+        // Arrange
+        const circle = wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
 
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: combinedWire,
-            direction: [0, 1, 0],
-            offset: 0.1,
-        }) as TopoDS_Wire;
+        // Act
+        const offset = operations.offset3DWire({ shape: circle, direction: [0, 1, 0], offset: 1 }) as TopoDS_Wire;
 
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: combinedWire,
-            direction: [0, 1, 0],
-            offset: -0.1,
-        }) as TopoDS_Wire;
+        // Assert
+        expect(wire.getWireLength({ shape: offset })).toBeCloseTo(8 * Math.PI, 12);
+        expect(pointsAtFractions(offset, 4)).toEqual(closeTo9(pointsAtFractions(circle, 4).map(([x, y, z]) => [x * 0.8, y, z * 0.8])));
+    });
 
+    it("should refuse a direction of length 0", () => {
+        // Arrange
+        const circle = wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
 
-        const interpWireLength = wire.getWireLength({ shape: combinedWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
+        // Act
+        const act = (): unknown => operations.offset3DWire({ shape: circle, direction: [0, 0, 0], offset: 1 });
 
-        expect(wireLength1).toBeCloseTo(8.606363207743371);
-        expect(interpWireLength).toBeCloseTo(8.58583309897651);
-        expect(wireLength2).toBeCloseTo(8.592691735283145);
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "direction" }));
+    });
 
+    it("should fail where the wire runs along the direction, having no side to go to", () => {
+        // Arrange
+        const rise = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+
+        // Act
+        const act = (): unknown => operations.offset3DWire({ shape: rise, direction: [0, 1, 0], offset: 1 });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.offset.failed" }));
     });
 
     it("should measure distances from points to a shape", () => {

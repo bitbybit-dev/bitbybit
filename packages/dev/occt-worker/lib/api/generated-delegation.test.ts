@@ -146,6 +146,7 @@ const DELEGATIONS: [string, (occt: OCCT) => unknown][] = [
     ["shapeFix.fixEdgeOrientationsAlongWire", (o) => o.shapeFix.fixEdgeOrientationsAlongWire(asInputs())],
     ["shapeFix.fixSmallEdgeOnWire", (o) => o.shapeFix.fixSmallEdgeOnWire(asInputs())],
     ["shapeToMesh", (o) => o.shapeToMesh(asInputs())],
+    ["shapeToManifoldMesh", (o) => o.shapeToManifoldMesh(asInputs())],
     ["shapes.compound.getShapesOfCompound", (o) => o.shapes.compound.getShapesOfCompound(asInputs())],
     ["shapes.compound.makeCompound", (o) => o.shapes.compound.makeCompound(asInputs())],
     ["shapes.edge.arcFromCircleAndTwoAngles", (o) => o.shapes.edge.arcFromCircleAndTwoAngles(asInputs())],

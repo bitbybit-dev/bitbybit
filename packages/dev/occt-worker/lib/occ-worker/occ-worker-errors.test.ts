@@ -3,9 +3,10 @@ import { InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitb
 import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
 import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
-const { thrown } = vi.hoisted(() => {
+const { thrown, progress } = vi.hoisted(() => {
     const thrown: { value: unknown } = { value: undefined };
-    return { thrown };
+    const progress: { words: Int32Array, stopDuring: boolean, runs: number } = { words: new Int32Array(3), stopDuring: false, runs: 0 };
+    return { thrown, progress };
 });
 
 vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
@@ -16,6 +17,21 @@ vi.mock("@bitbybit-dev/occt", async (importOriginal) => {
     class OCCTService {
         plugins: { dependencies: Record<string, unknown> } | undefined;
         boom = (): unknown => { throw thrown.value; };
+        work = (inputs: unknown): unknown => {
+            progress.runs++;
+            if (progress.stopDuring) {
+                Atomics.store(progress.words, 0, 1);
+            }
+            return inputs;
+        };
+        shapeToMesh = (inputs: unknown): unknown => {
+            Atomics.store(progress.words, 0, 1);
+            return inputs;
+        };
+        stopThenBoom = (): unknown => {
+            Atomics.store(progress.words, 0, 1);
+            throw thrown.value;
+        };
         echo = (inputs: unknown): unknown => inputs;
         measure = (inputs: unknown): unknown => inputs;
     }
@@ -458,5 +474,128 @@ describe("what the worker says when a call fails", () => {
         expect(reports.map((report) => `${report.kernel} ${report.path} ${report.issue.property} ${report.issue.code}`)).toEqual(["OCCT measure size type"]);
         expect(answer().result).toEqual({ size: "big" });
         setInputIssueSink();
+    });
+
+    describe("progress and cancelling", () => {
+        let posted: unknown[];
+        let beginCall: ReturnType<typeof vi.fn>;
+
+        const progressKernel = (words: Int32Array): BitbybitOcctModule => {
+            const kernel = {} as BitbybitOcctModule;
+            beginCall = vi.fn((): void => {
+                progress.words.fill(0);
+            });
+            Reflect.set(kernel, "ProgressControl", (): Int32Array => words);
+            Reflect.set(kernel, "ProgressBeginCall", beginCall);
+            return kernel;
+        };
+
+        beforeEach(() => {
+            posted = [];
+            vi.stubGlobal("postMessage", (message: unknown) => posted.push(message));
+            progress.words = new Int32Array(new SharedArrayBuffer(12));
+            progress.stopDuring = false;
+            progress.runs = 0;
+        });
+
+        afterEach(() => {
+            vi.unstubAllGlobals();
+        });
+
+        it("should share the kernel's own progress words before it says it is initialised", () => {
+            // Act
+            initializationComplete(progressKernel(progress.words), undefined, false);
+
+            // Assert
+            expect(posted).toEqual([{ progressWords: progress.words }, "occ-initialised"]);
+            expect((posted[0] as { progressWords: Int32Array }).progressWords).toBe(progress.words);
+        });
+
+        it("should share words of its own with a kernel whose memory cannot be shared, and hand them to the kernel", () => {
+            // Arrange
+            const kernel = progressKernel(new Int32Array(3));
+
+            // Act
+            initializationComplete(kernel, undefined, false);
+
+            // Assert
+            const shared = (posted[0] as { progressWords: Int32Array }).progressWords;
+            expect(shared.buffer).toBeInstanceOf(SharedArrayBuffer);
+            expect(shared).toHaveLength(3);
+            expect(Reflect.get(kernel, "bitbybitControl")).toBe(shared);
+        });
+
+        it("should share no words for a kernel that has none", () => {
+            // Act
+            initializationComplete(A_MODULE, undefined, false);
+
+            // Assert
+            expect(posted).toEqual(["occ-initialised"]);
+        });
+
+        it("should start every call afresh", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, true);
+            Atomics.store(progress.words, 0, 1);
+
+            // Act
+            run({ functionName: "work", inputs: { size: 1 } });
+            run({ functionName: "work", inputs: { size: 2 } });
+
+            // Assert
+            expect(beginCall).toHaveBeenCalledTimes(2);
+            expect(answer()).toEqual({ uid: "uid-1", result: { size: 1 } });
+        });
+
+        it("should answer a call stopped while it ran as cancelled, and keep nothing it made", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, true);
+            progress.stopDuring = true;
+
+            // Act
+            run({ functionName: "work", inputs: { size: 1 } });
+            progress.stopDuring = false;
+            run({ functionName: "work", inputs: { size: 1 } });
+
+            // Assert
+            expect(messages[1]).toEqual({ uid: "uid-1", result: undefined, error: "OCCT 'work' was cancelled before it finished; nothing it made was kept.", errorKind: "cancelled" });
+            expect(messages[3]).toEqual({ uid: "uid-1", result: { size: 1 } });
+            expect(progress.runs).toBe(2);
+        });
+
+        it("should answer a mesh stopped while it was drawn as cancelled, though meshing returned", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, true);
+
+            // Act
+            run({ functionName: "shapeToMesh", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "OCCT 'shapeToMesh' was cancelled before it finished; nothing it made was kept.", errorKind: "cancelled" });
+        });
+
+        it("should answer a kernel failure raised while stopping as cancelled", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, true);
+
+            // Act
+            run({ functionName: "stopThenBoom", inputs: {} });
+
+            // Assert
+            expect(answer().errorKind).toBe("cancelled");
+        });
+
+        it("should still answer a crash while stopping as a crash", () => {
+            // Arrange
+            initializationComplete(progressKernel(progress.words), undefined, true);
+            const RuntimeError = Reflect.get(WebAssembly, "RuntimeError") as new (message: string) => Error;
+            thrown.value = new RuntimeError("memory access out of bounds");
+
+            // Act
+            run({ functionName: "stopThenBoom", inputs: {} });
+
+            // Assert
+            expect(answer().errorKind).toBe("crash");
+        });
     });
 });

@@ -23,9 +23,9 @@ export class OCCTBooleans {
     /**
      * Fuses several shapes into one, the way two overlapping blobs of clay become one lump.
      *
-     * The shapes are fused one after another in list order. With `keepEdges` false, the default,
-     * faces that end up on one surface are merged and the seams removed; true keeps every edge of
-     * the inputs.
+     * All the shapes are fused in one operation, and a compound counts as its pieces, so
+     * overlapping pieces of one compound merge too. With `keepEdges` false, the default, faces left
+     * on one surface are merged; true keeps every edge of the inputs.
      * @param inputs - The shapes to fuse and whether to keep the seam edges
      * @returns The fused shape
      * @group booleans
@@ -45,9 +45,8 @@ export class OCCTBooleans {
      * Cuts shapes away from a main shape, the way a drill removes material: what remains is the
      * main shape minus every shape in the list.
      *
-     * The shapes are subtracted one after another. With `keepEdges` false, the default, faces left
-     * on one surface are merged; when exactly one solid remains it is returned on its own rather
-     * than inside a compound.
+     * All the shapes are subtracted in one operation. With `keepEdges` false, the default, faces
+     * left on one surface are merged, and a lone remaining solid is returned without a compound.
      * @param inputs - The main shape, the shapes to subtract and whether to keep the seam edges
      * @returns What is left of the main shape
      * @group booleans

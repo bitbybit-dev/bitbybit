@@ -27,18 +27,16 @@ describe("OccHelper", () => {
     });
 
     describe("the services that refer to each other", () => {
-        it("should resolve the ring to the same instances OccHelper holds", () => {
-            expect(occHelper.wiresService.filletsService).toBe(occHelper.filletsService);
+        it("should resolve the ring to the same instance OccHelper holds", () => {
             expect(occHelper.wiresService.operationsService).toBe(occHelper.operationsService);
-            expect(occHelper.facesService.filletsService).toBe(occHelper.filletsService);
         });
 
-        it("should give the fillets service a working operations service, not an empty one", () => {
+        it("should give the wires service a working operations service, not an empty one", () => {
             // Act
-            const throughTheRing = occHelper.wiresService.filletsService;
+            const throughTheRing = occHelper.wiresService.operationsService;
 
             // Assert
-            expect(typeof throughTheRing.fillet2d).toBe("function");
+            expect(typeof throughTheRing.boundingBoxOfShape).toBe("function");
         });
     });
 

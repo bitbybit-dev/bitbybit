@@ -750,6 +750,7 @@ export type OperationPath =
     | "occt.shapes.wire.textWiresWithData"
     | "occt.shapes.wire.wiresToPoints"
     | "occt.shapesToMeshes"
+    | "occt.shapeToManifoldMesh"
     | "occt.shapeToMesh"
     | "occt.svg.loadSVG"
     | "occt.svg.loadSVGStructured"
@@ -5824,14 +5825,13 @@ export interface OperationParams {
      * Cuts shapes away from a main shape, the way a drill removes material: what remains is the
      * main shape minus every shape in the list.
      *
-     * The shapes are subtracted one after another. With `keepEdges` false, the default, faces left
-     * on one surface are merged; when exactly one solid remains it is returned on its own rather
-     * than inside a compound.
+     * All the shapes are subtracted in one operation. With `keepEdges` false, the default, faces
+     * left on one surface are merged, and a lone remaining solid is returned without a compound.
      */
     "occt.booleans.difference": {
         /** The shape material is removed from. */
         shape: unknown | PipelineRef;
-        /** The shapes whose volume is cut away, one after another. */
+        /** The shapes whose volume is cut away, all at once. */
         shapes: unknown[] | PipelineRef;
         /**
          * When false, faces left on one surface are merged and their seams removed; when true every
@@ -5945,12 +5945,12 @@ export interface OperationParams {
     /**
      * Fuses several shapes into one, the way two overlapping blobs of clay become one lump.
      *
-     * The shapes are fused one after another in list order. With `keepEdges` false, the default,
-     * faces that end up on one surface are merged and the seams removed; true keeps every edge of
-     * the inputs.
+     * All the shapes are fused in one operation, and a compound counts as its pieces, so
+     * overlapping pieces of one compound merge too. With `keepEdges` false, the default, faces left
+     * on one surface are merged; true keeps every edge of the inputs.
      */
     "occt.booleans.union": {
-        /** The shapes to fuse, joined one after another in this order. */
+        /** The shapes to fuse, all at once; the pieces of a compound are fused as separate shapes. */
         shapes: unknown[] | PipelineRef;
         /**
          * When false, faces that end up on one surface are merged and their seams removed; when true
@@ -6744,11 +6744,11 @@ export interface OperationParams {
         indexes?: number[] | PipelineRef;
     };
     /**
-     * Rounds the corners of a wire that does not lie in one plane.
+     * Rounds the corners of a wire, flat or not, each with an arc in the plane of the two edges
+     * that meet there, as a bent rod would be.
      *
-     * The kernel has no direct 3D wire fillet, so the wire is extruded along `direction` into a
-     * shell, the shell is filleted and the rounded wire is read back off it; `direction` must not
-     * be parallel to the wire and must leave room for the fillets.
+     * Corner `i` joins edge `i` to the next, counted from 0; a closed wire's last corner joins its
+     * last edge to its first. Smooth corners stay; `direction` is unused.
      */
     "occt.fillets.fillet3DWire": {
         /** The wire whose corners are rounded. */
@@ -6760,17 +6760,20 @@ export interface OperationParams {
         radius?: number | PipelineRef;
         /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
         radiusList?: number[] | PipelineRef;
-        /** Which corners to round, counted from 0 along each wire; leave it out to round them all. */
+        /**
+         * Corners to round, counted from 0: corner `i` joins edge `i` to the next; a closed wire's last
+         * corner joins its last edge to its first. Omit for all.
+         */
         indexes?: number[] | PipelineRef;
         /**
-         * The direction each wire is extruded along to build the fillets; it must not be parallel to
-         * the wire and must leave room for the radius.
+         * Not used: each corner is rounded in the plane of the two edges that meet there. It is kept
+         * so that scripts which set it keep working.
          */
         direction?: [number, number, number] | PipelineRef;
     };
     /**
-     * Rounds the corners of several wires that do not lie in one plane, as `fillet3DWire` does for
-     * one, with the same radius, indexes and direction for all.
+     * Rounds the corners of several wires, as `fillet3DWire` does for one, with the same radius and
+     * indexes for all.
      */
     "occt.fillets.fillet3DWires": {
         /** The wires whose corners are rounded. */
@@ -6782,11 +6785,14 @@ export interface OperationParams {
         radius?: number | PipelineRef;
         /** One radius per entry of `indexes`, in the same order; needs `indexes`. */
         radiusList?: number[] | PipelineRef;
-        /** Which corners to round, counted from 0 along each wire; leave it out to round them all. */
+        /**
+         * Corners to round, counted from 0: corner `i` joins edge `i` to the next; a closed wire's last
+         * corner joins its last edge to its first. Omit for all.
+         */
         indexes?: number[] | PipelineRef;
         /**
-         * The direction each wire is extruded along to build the fillets; it must not be parallel to
-         * the wire and must leave room for the radius.
+         * Not used: each corner is rounded in the plane of the two edges that meet there. It is kept
+         * so that scripts which set it keep working.
          */
         direction?: [number, number, number] | PipelineRef;
     };
@@ -7799,20 +7805,23 @@ export interface OperationParams {
         tolerance?: number | PipelineRef;
     };
     /**
-     * Offsets a wire that does not lie in one plane, by extruding it along `direction`, thickening
-     * the result and reading the offset edge back off it.
+     * Offsets a wire that does not lie in one plane: every point moves by `offset` at right angles to
+     * both the wire and `direction`, keeping its height along `direction`.
      *
-     * It works best on smooth wires; fillet sharp corners first with `fillets.fillet3DWire`. When
-     * the offset edges cannot be joined into one wire they come back as a list of edges.
+     * Best on smooth wires; round sharp corners first with `fillets.fillet3DWire`, since at one the
+     * offset edges do not meet and come back as a list of edges.
      */
     "occt.operations.offset3DWire": {
         /** The wire to offset; smooth wires work best, so fillet sharp corners first. */
         shape: unknown | PipelineRef;
-        /** The offset distance in model units. */
+        /**
+         * How far every point moves, in model units. A positive offset moves a loop that runs
+         * counterclockwise, seen from the tip of `direction`, inwards.
+         */
         offset?: number | PipelineRef;
         /**
-         * The direction the wire is extruded along to build the offset; it must not be parallel to the
-         * wire.
+         * The direction the offset is taken across: every point moves at right angles to both it and the
+         * wire. It must cross the wire everywhere, never running along it.
          */
         direction?: [number, number, number] | PipelineRef;
     };
@@ -9598,8 +9607,8 @@ export interface OperationParams {
      * Finds the surface normals of a face at several UV fraction pairs at once.
      *
      * Each pair holds U then V, both from 0 to 1 over the face's range. The normals are unit
-     * vectors of the underlying surface; unlike `normalOnUV`, they are not flipped for a reversed
-     * face.
+     * vectors and follow the face's orientation, as `normalOnUV` does, so a reversed face gives them
+     * flipped.
      */
     "occt.shapes.face.normalsOnUVs": {
         /** The face to evaluate. */
@@ -9680,9 +9689,9 @@ export interface OperationParams {
     /**
      * Cuts a honeycomb of hexagonal holes into a face and returns the perforated face.
      *
-     * The holes follow the same layout and patterns as `subdivideToHexagonWires`; when no scale
-     * pattern is given each hole is half the size of its hexagon. With `holesToFaces` true the
-     * result also carries one face per hole, after the perforated face.
+     * The holes follow the layout and patterns of `subdivideToHexagonWires`; with no scale pattern
+     * each is half its hexagon, and existing holes stay. With `holesToFaces` true one face per hole
+     * follows the perforated face.
      */
     "occt.shapes.face.subdivideToHexagonHoles": {
         /** The face to cut the holes into. */
@@ -9733,9 +9742,9 @@ export interface OperationParams {
      * Lays a honeycomb of hexagonal wires over a face, `nrHexagonsU` by `nrHexagonsV` of them
      * fitted into its UV range, each following the surface.
      *
-     * The border offsets trim a fraction of the range at each end; `flatU` turns a flat side toward
-     * U, the extend flags stretch the outer rows past the edges. Scale, fillet and inclusion
-     * patterns repeat per hexagon.
+     * Border offsets trim the range; `flatU` turns a flat side toward U, the extend flags stretch
+     * the outer rows past the edges, and patterns repeat per hexagon. One crossing a trim or hole is
+     * left out.
      */
     "occt.shapes.face.subdivideToHexagonWires": {
         /** The face to draw the hexagons on. */
@@ -9936,9 +9945,9 @@ export interface OperationParams {
     /**
      * Cuts a grid of rectangular holes into a face and returns the perforated face.
      *
-     * The holes follow the same cells and patterns as `subdivideToRectangleWires`; when no scale
-     * pattern is given each hole covers half its cell. With `holesToFaces` true the result also
-     * carries one face per hole, after the perforated face, which is handy for lids or fillers.
+     * The holes follow the cells and patterns of `subdivideToRectangleWires`; with no scale pattern
+     * each covers half its cell, and existing holes stay. With `holesToFaces` true one face per hole
+     * follows the perforated face.
      */
     "occt.shapes.face.subdivideToRectangleHoles": {
         /** The face to cut the holes into. */
@@ -9981,9 +9990,9 @@ export interface OperationParams {
      * Lays rectangular wires over a face, one per cell of an `nrRectanglesU` by `nrRectanglesV`
      * division of its UV range, following the surface.
      *
-     * The border offsets trim the range at each end. Each rectangle sits centered in its cell,
-     * sized by the scale patterns as a fraction of it; the fillet pattern rounds corners, the
-     * inclusion pattern skips cells.
+     * Border offsets trim the range; each rectangle is centered in its cell, sized by the scale
+     * patterns, rounded by the fillet pattern, skipped by the inclusion pattern. One crossing a trim
+     * or hole is left out.
      */
     "occt.shapes.face.subdivideToRectangleWires": {
         /** The face to draw the rectangles on. */
@@ -12319,6 +12328,23 @@ export interface OperationParams {
          * cached.
          */
         forceFaceDeflection?: boolean | PipelineRef;
+    };
+    /**
+     * Meshes a shape into one indexed triangle mesh whose faces share vertices where they meet, the
+     * form `manifold.shapes.manifoldFromMesh` takes, so an OCCT solid can carry on as a Manifold
+     * solid.
+     *
+     * Vertices are shared through the shape's own edges, not by matching coordinates, so a closed
+     * solid gives a closed mesh. `precision` is the meshing tolerance.
+     */
+    "occt.shapeToManifoldMesh": {
+        /** The shape to mesh; a closed solid gives a closed mesh. */
+        shape: unknown | PipelineRef;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * with more triangles.
+         */
+        precision?: number | PipelineRef;
     };
     /**
      * Triangulates a shape into a mesh for drawing: one entry per face with its vertices, normals,

@@ -5,7 +5,8 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 
-type BooleanClass = "BRepAlgoAPI_Fuse" | "BRepAlgoAPI_Cut" | "BRepAlgoAPI_Common";
+type BooleanCall = "BooleanFuse" | "BooleanCut" | "BooleanCommon";
+type BooleanAnswer = { shape: TopoDS_Shape | null, errorAlerts: string };
 
 describe("BooleansService", () => {
     let occt: BitbybitOcctModule;
@@ -23,49 +24,20 @@ describe("BooleansService", () => {
         while (restores.length) restores.pop()!();
     });
 
-    function watch(name: BooleanClass): { made: number; built: number } {
-        const tally = { made: 0, built: 0 };
-        const original = occt[name];
-        const build = original.prototype.Build;
-        original.prototype.Build = function (this: unknown, ...args: unknown[]): unknown {
-            tally.built++;
-            return build.apply(this, args);
-        };
-        Reflect.set(occt, name, new Proxy(original, {
-            construct(target, args): object {
-                tally.made++;
-                return Reflect.construct(target, args);
-            },
-        }));
+    function watch(name: BooleanCall, failFrom = Infinity, alerts = ""): { sizes: number[][], shapes: (TopoDS_Shape | null)[] } {
+        const tally = { sizes: [] as number[][], shapes: [] as (TopoDS_Shape | null)[] };
+        const original: unknown = Reflect.get(occt, name);
+        const call = (original as (...args: unknown[]) => BooleanAnswer).bind(occt);
+        Reflect.set(occt, name, (...args: unknown[]): BooleanAnswer => {
+            tally.sizes.push(args.filter(Array.isArray).map(list => list.length));
+            const answer = tally.sizes.length >= failFrom ? { shape: null, errorAlerts: alerts } : call(...args);
+            tally.shapes.push(answer.shape);
+            return answer;
+        });
         restores.push(() => {
-            original.prototype.Build = build;
             Reflect.set(occt, name, original);
         });
         return tally;
-    }
-
-    function reportErrors(name: BooleanClass = "BRepAlgoAPI_Common"): void {
-        const original = occt[name].prototype.HasErrors;
-        occt[name].prototype.HasErrors = (): boolean => true;
-        restores.push(() => {
-            occt[name].prototype.HasErrors = original;
-        });
-    }
-
-    function reportNotDone(name: BooleanClass): void {
-        const original = occt[name].prototype.IsDone;
-        occt[name].prototype.IsDone = (): boolean => false;
-        restores.push(() => {
-            occt[name].prototype.IsDone = original;
-        });
-    }
-
-    function returnNullShape(name: BooleanClass): void {
-        const original = occt[name].prototype.Shape;
-        occt[name].prototype.Shape = (): TopoDS_Shape => new occt.TopoDS_Shape();
-        restores.push(() => {
-            occt[name].prototype.Shape = original;
-        });
     }
 
     function failureOf(run: () => unknown): unknown {
@@ -80,17 +52,6 @@ describe("BooleansService", () => {
     const BOOLEAN_FAILED = { name: "KernelOperationError", code: "occt.boolean.failed" };
     const MIXED_DIMENSIONS = { name: "KernelOperationError", code: "occt.boolean.mixedDimensions" };
 
-    function reportAlerts(name: BooleanClass, alerts: string): void {
-        const errors = occt[name].prototype.HasErrors;
-        const read = occt[name].prototype.ErrorAlerts;
-        occt[name].prototype.HasErrors = (): boolean => true;
-        occt[name].prototype.ErrorAlerts = (): string => alerts;
-        restores.push(() => {
-            occt[name].prototype.HasErrors = errors;
-            occt[name].prototype.ErrorAlerts = read;
-        });
-    }
-
     function box(x: number, size: number): TopoDS_Shape {
         return service.shapes.solid.createBox({ width: size, length: size, height: size, center: [x, 0, 0] });
     }
@@ -104,81 +65,77 @@ describe("BooleansService", () => {
     }
 
     describe("union", () => {
-        it("fuses two shapes with one boolean, computed once", () => {
+        it("fuses every shape in one kernel call", () => {
             // Arrange
-            const fuse = watch("BRepAlgoAPI_Fuse");
-
-            // Act
-            const result = service.booleans.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: false });
-
-            // Assert
-            expect(fuse).toEqual({ made: 1, built: 0 });
-            expect(volume(result)).toBeCloseTo(1500);
-        });
-
-        it("fuses each further shape once", () => {
-            // Arrange
-            const fuse = watch("BRepAlgoAPI_Fuse");
+            const fuse = watch("BooleanFuse");
 
             // Act
             const result = service.booleans.union({ shapes: [box(0, 10), box(5, 10), box(10, 10)], keepEdges: false });
 
             // Assert
-            expect(fuse).toEqual({ made: 2, built: 0 });
+            expect(fuse.sizes).toEqual([[3]]);
             expect(volume(result)).toBeCloseTo(2000);
         });
 
-        it("fuses a compound that comes first straight with the next shape", () => {
+        it("merges the overlapping pieces of a compound it is given", () => {
             // Arrange
-            const fuse = watch("BRepAlgoAPI_Fuse");
+            const pieces = service.shapes.compound.makeCompound({ shapes: [box(0, 10), box(5, 10)] });
+
+            // Act
+            const result = service.booleans.union({ shapes: [pieces], keepEdges: false });
+
+            // Assert
+            expect(service.shapes.solid.getSolids({ shape: result })).toHaveLength(1);
+            expect(volume(result)).toBeCloseTo(1500);
+        });
+
+        it("fuses the pieces of a compound that comes first with the next shape, and keeps a piece that meets nothing apart", () => {
+            // Arrange
             const pieces = service.shapes.compound.makeCompound({ shapes: [box(0, 10), box(30, 10)] });
 
             // Act
             const result = service.booleans.union({ shapes: [pieces, box(5, 10)], keepEdges: false });
 
             // Assert
-            expect(fuse).toEqual({ made: 1, built: 0 });
-            expect(volume(result)).toBeCloseTo(2500);
+            expect(volumes(service.shapes.solid.getSolids({ shape: result })).sort((a, b) => a - b)).toEqual([1000, 1500]);
         });
 
-        it("fuses a single shape with itself, returning a new shape", () => {
+        it("returns a single shape as a new shape", () => {
             // Arrange
-            const fuse = watch("BRepAlgoAPI_Fuse");
             const single = box(0, 10);
 
             // Act
             const result = service.booleans.union({ shapes: [single], keepEdges: true });
 
             // Assert
-            expect(fuse).toEqual({ made: 1, built: 0 });
             expect(result).not.toBe(single);
             expect(volume(result)).toBeCloseTo(1000);
         });
     });
 
     describe("difference", () => {
-        it("cuts each tool once, computed once", () => {
+        it("cuts with every tool in one kernel call", () => {
             // Arrange
-            const cut = watch("BRepAlgoAPI_Cut");
+            const cut = watch("BooleanCut");
             const drill = (x: number): TopoDS_Shape => service.shapes.solid.createCylinder({ radius: 1, height: 20, center: [x, -10, 0], direction: [0, 1, 0] });
 
             // Act
             const result = service.booleans.difference({ shape: box(0, 10), shapes: [drill(-3), drill(0), drill(3)], keepEdges: false });
 
             // Assert
-            expect(cut).toEqual({ made: 3, built: 0 });
+            expect(cut.sizes).toEqual([[1, 3]]);
             expect(volume(result)).toBeCloseTo(1000 - 3 * Math.PI * 10);
         });
     });
 
     describe("when the kernel cannot combine the shapes", () => {
         it.each([
-            ["union", "BRepAlgoAPI_Fuse"],
-            ["difference", "BRepAlgoAPI_Cut"],
-            ["intersection", "BRepAlgoAPI_Common"],
+            ["union", "BooleanFuse"],
+            ["difference", "BooleanCut"],
+            ["intersection", "BooleanCommon"],
         ] as const)("names shapes of different dimensions when %s's kernel reports the operation not allowed", (operation, name) => {
             // Arrange
-            reportAlerts(name, "BOPAlgo_AlertNoFiller BOPAlgo_AlertBOPNotAllowed");
+            watch(name, 1, "BOPAlgo_AlertNoFiller BOPAlgo_AlertBOPNotAllowed");
 
             // Act
             const failure = failureOf(() => {
@@ -193,7 +150,7 @@ describe("BooleansService", () => {
 
         it("names no reason for alerts it does not know", () => {
             // Arrange
-            reportAlerts("BRepAlgoAPI_Fuse", "BOPAlgo_AlertIntersectionFailed");
+            watch("BooleanFuse", 1, "BOPAlgo_AlertIntersectionFailed");
 
             // Act
             const failure = failureOf(() => helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true }));
@@ -244,44 +201,12 @@ describe("BooleansService", () => {
         });
 
         it.each([
-            ["union", "BRepAlgoAPI_Fuse"],
-            ["difference", "BRepAlgoAPI_Cut"],
-        ] as const)("throws the named boolean failure from %s when the kernel reports errors", (operation, name) => {
+            ["union", "BooleanFuse"],
+            ["difference", "BooleanCut"],
+            ["intersection", "BooleanCommon"],
+        ] as const)("throws the named boolean failure from %s when the kernel builds no shape and names no alert", (operation, name) => {
             // Arrange
-            reportErrors(name);
-
-            // Act
-            const failure = failureOf(() => operation === "union"
-                ? helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true })
-                : helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true }));
-
-            // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
-        });
-
-        it.each([
-            ["union", "BRepAlgoAPI_Fuse"],
-            ["difference", "BRepAlgoAPI_Cut"],
-        ] as const)("throws the named boolean failure from %s when the kernel says it is not done", (operation, name) => {
-            // Arrange
-            reportNotDone(name);
-
-            // Act
-            const failure = failureOf(() => operation === "union"
-                ? helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true })
-                : helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true }));
-
-            // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
-        });
-
-        it.each([
-            ["union", "BRepAlgoAPI_Fuse"],
-            ["difference", "BRepAlgoAPI_Cut"],
-            ["intersection", "BRepAlgoAPI_Common"],
-        ] as const)("throws the named boolean failure from %s when the kernel returns no shape", (operation, name) => {
-            // Arrange
-            returnNullShape(name);
+            watch(name, 1);
 
             // Act
             const failure = failureOf(() => {
@@ -326,15 +251,15 @@ describe("BooleansService", () => {
     });
 
     describe("intersection", () => {
-        it("keeps an intersection where one shape lies wholly inside the other, computed once", () => {
+        it("keeps an intersection where one shape lies wholly inside the other, in one kernel call", () => {
             // Arrange
-            const common = watch("BRepAlgoAPI_Common");
+            const common = watch("BooleanCommon");
 
             // Act
             const results = helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false });
 
             // Assert
-            expect(common).toEqual({ made: 1, built: 0 });
+            expect(common.sizes).toEqual([[1, 1]]);
             expect(volumes(results)).toEqual([64]);
         });
 
@@ -412,17 +337,6 @@ describe("BooleansService", () => {
             expect(service.shapes.face.getFaces({ shape: results[2]! }).map(f => service.shapes.face.getFaceArea({ shape: f }))).toEqual([expect.closeTo(16)]);
         });
 
-        it("throws the named boolean failure when the kernel reports errors, even for a result with content", () => {
-            // Arrange
-            reportErrors();
-
-            // Act
-            const failure = failureOf(() => helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false }));
-
-            // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
-        });
-
         it("refuses an empty operand as an input error that says which", () => {
             // Arrange
             const shapes = [box(0, 10), box(0, 4), new occt.TopoDS_Shape()];
@@ -434,36 +348,18 @@ describe("BooleansService", () => {
             expect(failure).toMatchObject({ name: "InputError", property: "shapes", message: "The shape at position 2 of `shapes` is empty, as an operation that failed can leave it; nothing can be combined with it." });
         });
 
-        it("throws the named boolean failure when a later pair fails, after an earlier pair succeeded", () => {
+        it("throws the named boolean failure when a later pair fails, and releases what the earlier pair made", () => {
             // Arrange
             const shapes = [box(0, 10), box(0, 4), box(20, 1)];
-            let pairs = 0;
-            const errors = occt.BRepAlgoAPI_Common.prototype.HasErrors;
-            occt.BRepAlgoAPI_Common.prototype.HasErrors = function (this: never): boolean {
-                pairs++;
-                return pairs > 1 || errors.call(this);
-            };
-            restores.push(() => {
-                occt.BRepAlgoAPI_Common.prototype.HasErrors = errors;
-            });
+            const common = watch("BooleanCommon", 2);
 
             // Act
             const failure = failureOf(() => helper.booleansService.intersection({ shapes, keepEdges: false }));
 
             // Assert
             expect(failure).toMatchObject(BOOLEAN_FAILED);
-            expect(pairs).toBe(2);
-        });
-
-        it("throws the named boolean failure when the kernel says it is not done", () => {
-            // Arrange
-            reportNotDone("BRepAlgoAPI_Common");
-
-            // Act
-            const failure = failureOf(() => helper.booleansService.intersection({ shapes: [box(0, 10), box(0, 4)], keepEdges: false }));
-
-            // Assert
-            expect(failure).toMatchObject(BOOLEAN_FAILED);
+            expect(common.sizes).toHaveLength(2);
+            expect(common.shapes[0]!.isDeleted()).toBe(true);
         });
 
         it("wraps the intersections in one compound through the public API", () => {

@@ -1950,12 +1950,27 @@ describe("OCCT wire unit tests", () => {
             points: [[0, 0, 0], [0, 0, 1], [1, 1, 0], [1, 0, 1]],
             closed: false
         });
+        const points = wire.divideWireByEqualDistanceToPoints({ shape: w, nrOfDivisions: 20000, removeStartPoint: false, removeEndPoint: false });
+        const reference = [0, 0, 0];
+        let length = 0;
+        for (let i = 1; i < points.length; i++) {
+            const a = points[i - 1]!;
+            const b = points[i]!;
+            const piece = Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]);
+            length += piece;
+            for (let axis = 0; axis < 3; axis++) {
+                reference[axis]! += piece * (a[axis]! + b[axis]!) / 2;
+            }
+        }
+
         const center = wire.getWireCenterOfMass({
             shape: w
         });
-        expect(center[0]).toBe(0.5927437729817302);
-        expect(center[1]).toBe(0.392179685881662);
-        expect(center[2]).toBe(0.48928161123208896);
+
+        expect(center[0]).toBeCloseTo(reference[0]! / length, 7);
+        expect(center[1]).toBeCloseTo(reference[1]! / length, 7);
+        expect(center[2]).toBeCloseTo(reference[2]! / length, 7);
+        w.delete();
     });
 
     it("should get centers of mass from two wires", () => {
@@ -2176,11 +2191,11 @@ describe("OCCT wire unit tests", () => {
         const pts = wire.wiresToPoints(opt);
         expect(pts.length).toBe(1);
         expect(pts[0]!.length).toBe(269);
-        expect(pts[0]![0]).toEqual([5, 0, -1]);
-        expect(pts[0]![33]).toEqual([5, 0, -10]);
-        expect(pts[0]![123]).toEqual([-4.168530387697455, 0, -3.444429766980398]);
-        expect(pts[0]![200]).toEqual([-1, 0, 10]);
-        expect(pts[0]![268]).toEqual([5, 0, -1]);
+        expect(pts[0]![0]).toEqual([5, 0, -3]);
+        expect(pts[0]![1]).toEqual([5, 0, -10]);
+        expect(pts[0]![168]).toEqual([-1, 0, 10]);
+        expect(pts[0]![236]).toEqual([5, 0, -1]);
+        expect(pts[0]![268]).toEqual([5, 0, -3]);
         squareFace.delete();
         edges.forEach(e => e.delete());
         circleFaces.forEach(f => f.delete());
@@ -2835,6 +2850,22 @@ describe("OCCT wire unit tests", () => {
                 expect(length).toBeCloseTo(7.772757295452931);
             });
             wires.forEach(w => w.delete());
+        });
+
+        it("should leave out a hexagon scaled to 0 along either direction", () => {
+            // Act
+            const wires = wire.hexagonsInGrid({ width: 5, height: 5, nrHexagonsInWidth: 2, nrHexagonsInHeight: 2, scalePatternWidth: [0.5, 0], scalePatternHeight: [0, 0.5, 0.5, 0.5] });
+
+            // Assert
+            expect(wires).toHaveLength(1);
+        });
+
+        it("should name the fillet when a rounding fraction above 1 does not fit the hexagons", () => {
+            // Act
+            const act = (): unknown => wire.hexagonsInGrid({ width: 5, height: 5, nrHexagonsInWidth: 2, nrHexagonsInHeight: 2, filletPattern: [2] });
+
+            // Assert
+            expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failed" }));
         });
 
         it("should create hexagons in a grid with flat top", () => {

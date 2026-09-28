@@ -2223,6 +2223,7 @@ interface EmbindModule {
     new(_0: TopoDS_Wire, _1: gp_Pln): ChFi2d_FilletAlgo;
     new(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: gp_Pln): ChFi2d_FilletAlgo;
   };
+  WireCornerCount(_0: TopoDS_Wire): number;
   BRepOffsetAPI_MakeOffset: {
     new(): BRepOffsetAPI_MakeOffset;
     new(_0: TopoDS_Face): BRepOffsetAPI_MakeOffset;
@@ -2257,6 +2258,7 @@ interface EmbindModule {
   BRepOffsetAPI_MakeDraft: {
     new(_0: TopoDS_Shape, _1: gp_Dir, _2: number): BRepOffsetAPI_MakeDraft;
   };
+  OffsetWire3D(_0: TopoDS_Wire, _1: number, _2: number, _3: number, _4: number): TopoDS_Shape;
   GProp_GProps: {
     new(): GProp_GProps;
     new(_0: gp_Pnt): GProp_GProps;
@@ -2355,8 +2357,11 @@ interface EmbindModule {
   MakeInterpolatedBSplineEdge(_0: VectorDouble, _1: boolean, _2: number, _3: number, _4: VectorDouble, _5: VectorInt): TopoDS_Edge;
   ClosestPointsOnShape(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array;
   BoundingBoxOf(_0: TopoDS_Shape): Float64Array;
+  DxfPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number): Float64Array;
   CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
   CurvePointsAtLengths(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+  FacePointsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+  FaceNormalsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
   ClassifyPointsInSolid(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
   ClassifyPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
   ChildrenOf(_0: TopoDS_Shape): TopoDS_Shape[];
@@ -2367,11 +2372,20 @@ interface EmbindModule {
   EdgesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Edge[];
   EdgesAlongWire(_0: TopoDS_Wire): TopoDS_Edge[];
   WiresOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Wire[];
+  FaceWithHoles(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face;
   FacesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Face[];
+  FacesInsideWires(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face[];
   ShellsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Shell[];
   SolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Solid[];
   CompSolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_CompSolid[];
   CompoundsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Compound[];
+  OutlinesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): TopoDS_Wire[] | null;
+  OutlinesOnPlane(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: ArrayLike<number>): TopoDS_Wire[] | null;
+  ShapeToManifoldMesh(_0: TopoDS_Shape, _1: number): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } | null;
+  BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+  FilletWireCorners(_0: TopoDS_Wire, _1: ArrayLike<number>): { wire: TopoDS_Wire | null; failedCorners: Int32Array };
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
   gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
   gp_Dir_GetCoord(_0: gp_Dir): CoordResult;
@@ -2574,6 +2588,11 @@ interface EmbindModule {
   BitListOfShapesToCompound(_0: TopTools_ListOfShape): TopoDS_Compound;
   RunsInParallel(): boolean;
   SetRunsInParallel(_0: boolean): void;
+  ThreadCount(): number;
+  SetThreadCount(_0: number): void;
+  ProgressControl(): Int32Array;
+  ProgressBeginCall(): void;
+  ProgressRequestStop(): void;
   IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
   BRepBuilderAPI_MakeWire_Error(_0: BRepBuilderAPI_MakeWire): BRepBuilderAPI_WireError;
   BRepBuilderAPI_WireError: {WireDone: BRepBuilderAPI_WireErrorValue<number>, EmptyWire: BRepBuilderAPI_WireErrorValue<number>, DisconnectedWire: BRepBuilderAPI_WireErrorValue<number>, NonManifoldWire: BRepBuilderAPI_WireErrorValue<number>};

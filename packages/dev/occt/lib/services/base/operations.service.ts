@@ -284,42 +284,23 @@ export class OperationsService {
     }
 
     offset3DWire(inputs: Resolved.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
-        const extrusion = this.extrude({
-            shape: inputs.shape,
-            direction: inputs.direction,
-        });
-
-        const thickSolid = this.makeThickSolidSimple({
-            shape: extrusion,
-            offset: inputs.offset,
-        });
-
-        const nrOfEdges = this.shapeGettersService.getEdges({ shape: inputs.shape }).length;
-        const predictedNrOfFaces = nrOfEdges * 4 + 2;
-
-        const lastFaceIndex = predictedNrOfFaces / 2 - 1;
-        const firstFaceIndex = lastFaceIndex - nrOfEdges + 1;
-
-        const faceEdges: TopoDS_Edge[] = [];
-        this.shapeGettersService.getFaces({ shape: thickSolid }).forEach((f, index) => {
-            if (index >= firstFaceIndex && index <= lastFaceIndex) {
-                const firstEdge = this.shapeGettersService.getEdges({ shape: f })[2]!;
-                faceEdges.push(firstEdge);
-            }
-        });
-
-        let result: TopoDS_Wire | TopoDS_Edge[];
-        try {
-            result = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: faceEdges });
-            result = result.Reversed();
-            result = this.converterService.getActualTypeOfShape(result);
+        const [x, y, z] = inputs.direction;
+        if (x === 0 && y === 0 && z === 0) {
+            throw new InputError("`direction` must not be the zero vector: the offset is taken across it.", "direction");
         }
-        catch {
-            result = faceEdges;
-            return result;
+        const offset = this.occ.OffsetWire3D(inputs.shape, inputs.offset, x, y, z);
+        if (offset.IsNull()) {
+            offset.delete();
+            throw occtFailure("occt.offset.failed");
         }
-        return result;
-
+        if (offset.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+            const wire = this.occ.CastToWire(offset);
+            offset.delete();
+            return wire;
+        }
+        const edges = this.occ.EdgesOf(offset, true);
+        offset.delete();
+        return edges;
     }
 
     extrudeShapes(inputs: Resolved.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {

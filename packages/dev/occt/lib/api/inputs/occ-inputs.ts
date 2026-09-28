@@ -409,6 +409,25 @@ export namespace OCCT {
     }
 
     /**
+     * An indexed triangle mesh as `shapeToManifoldMesh` returns it, in the form
+     * `manifold.shapes.manifoldFromMesh` takes: the vertex positions and the triangles that index them.
+     */
+    export class DecomposedManifoldMeshDto {
+        /**
+         * How many numbers each vertex carries in `vertProperties`: 3, its position.
+         */
+        numProp!: number;
+        /**
+         * The x, y and z of every vertex, one vertex after another.
+         */
+        vertProperties!: Float32Array;
+        /**
+         * The triangles as vertex indexes, three per triangle, wound so that they face out of the shape.
+         */
+        triVerts!: Uint32Array;
+    }
+
+    /**
      * The triangulation of one face inside a `DecomposedMeshDto`: flat coordinate lists the way
      * graphics libraries take them, plus optional facts about the face when `computeMetadata` was set.
      */
@@ -3781,7 +3800,7 @@ export namespace OCCT {
 
     /**
      * How the corners of a 3D wire are rounded, shared by `Fillet3DWireDto` and `Fillet3DWiresDto`: the
-     * radius or radii, which corners, and the direction the fillets are built along.
+     * radius or radii, and which corners.
      */
     export abstract class Fillet3DWireSharedDto {
         /**
@@ -3801,21 +3820,24 @@ export namespace OCCT {
          */
         radiusList?: number[] | undefined;
         /**
-         * Which corners to round, counted from 0 along each wire; leave it out to round them all.
+         * Corners to round, counted from 0: corner `i` joins edge `i` to the next; a closed wire's last
+         * corner joins its last edge to its first. Omit for all.
          * @default undefined
          * @optional true
          */
         indexes?: number[] | undefined;
         /**
-         * The direction each wire is extruded along to build the fillets; it must not be parallel to
-         * the wire and must leave room for the radius.
+         * Not used: each corner is rounded in the plane of the two edges that meet there. It is kept
+         * so that scripts which set it keep working.
          * @default [0, 1, 0]
+         * @deprecated Has no effect and will be removed in the next major version, with the constructors'
+         * `direction` parameter; leave it out.
          */
         direction?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
-     * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
-     * which rounds the corners of wires that do not lie in a plane.
+     * Wires, a radius and optional corner indexes for `fillets.fillet3DWires`, which rounds the corners
+     * of wires whether or not they lie in a plane.
      */
     export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
         constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
@@ -3833,8 +3855,8 @@ export namespace OCCT {
         shapes!: T[];
     }
     /**
-     * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
-     * which rounds the corners of a wire that does not lie in a plane.
+     * A wire, a radius and optional corner indexes for `fillets.fillet3DWire`, which rounds the corners
+     * of a wire whether or not it lies in a plane.
      */
     export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
         constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
@@ -6008,7 +6030,7 @@ export namespace OCCT {
             if (keepEdges !== undefined) { this.keepEdges = keepEdges; }
         }
         /**
-         * The shapes to fuse, joined one after another in this order.
+         * The shapes to fuse, all at once; the pieces of a compound are fused as separate shapes.
          * @default undefined
          */
         shapes!: T[];
@@ -6034,7 +6056,7 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * The shapes whose volume is cut away, one after another.
+         * The shapes whose volume is cut away, all at once.
          * @default undefined
          */
         shapes!: T[];
@@ -8064,6 +8086,31 @@ export namespace OCCT {
         reversedPoints?: boolean | undefined = false;
     }
     /**
+     * A shape and a meshing precision for `shapeToManifoldMesh`, which meshes the shape into one indexed
+     * mesh for the Manifold kernel.
+     */
+    export class ShapeToManifoldMeshDto<T> {
+        constructor(shape?: T, precision?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (precision !== undefined) { this.precision = precision; }
+        }
+        /**
+         * The shape to mesh; a closed solid gives a closed mesh.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * with more triangles.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+    }
+    /**
      * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
      * settings.
      */
@@ -9696,8 +9743,8 @@ export namespace OCCT {
         offset?: number | undefined = 1;
     }
     /**
-     * A wire, an offset and an extrusion direction for `operations.offset3DWire`, which offsets a wire
-     * that does not lie in one plane.
+     * A wire, an offset and a direction for `operations.offset3DWire`, which offsets a wire that does
+     * not lie in one plane across that direction.
      */
     export class Offset3DWireDto<T> {
         constructor(shape?: T, offset?: number, direction?: Base.Vector3) {
@@ -9711,7 +9758,8 @@ export namespace OCCT {
          */
         shape!: T;
         /**
-         * The offset distance in model units.
+         * How far every point moves, in model units. A positive offset moves a loop that runs
+         * counterclockwise, seen from the tip of `direction`, inwards.
          * @default 1
          * @minimum -Infinity
          * @maximum Infinity
@@ -9719,8 +9767,8 @@ export namespace OCCT {
          */
         offset?: number | undefined = 1;
         /**
-         * The direction the wire is extruded along to build the offset; it must not be parallel to the
-         * wire.
+         * The direction the offset is taken across: every point moves at right angles to both it and the
+         * wire. It must cross the wire everywhere, never running along it.
          * @default [0, 1, 0]
          */
         direction?: Base.Vector3 | undefined = [0, 1, 0];

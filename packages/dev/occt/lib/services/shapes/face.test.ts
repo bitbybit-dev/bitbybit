@@ -122,7 +122,7 @@ describe("OCCT face unit tests", () => {
             expect(grids).toEqual(Array(6).fill(true));
         });
 
-        it("should delete the parameter point it asks the surface about", () => {
+        it("should ask the surface without making a parameter point it would have to delete", () => {
             // Arrange
             const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
             const points: { isDeleted(): boolean }[] = [];
@@ -143,7 +143,7 @@ describe("OCCT face unit tests", () => {
             }
 
             // Assert
-            expect(points.map(point => point.isDeleted())).toEqual([true]);
+            expect(points).toEqual([]);
         });
     });
 
@@ -166,19 +166,10 @@ describe("OCCT face unit tests", () => {
         const square = (): TopoDS_Face => face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
 
         it.each([
-            ["normalOnUV", (): unknown => face.normalOnUV({ shape: square(), paramU: 0.5, paramV: 0.5 })],
-            ["subdivideToPointsControlled", (): unknown => face.subdivideToPointsControlled({ shape: square() })],
-            ["subdivideToPoints", (): unknown => face.subdivideToPoints({ shape: square() })],
             ["subdivideToWires", (): unknown => face.subdivideToWires({ shape: square() })],
-            ["subdivideToRectangleWires", (): unknown => face.subdivideToRectangleWires({ shape: square() })],
-            ["subdivideToHexagonWires", (): unknown => face.subdivideToHexagonWires({ shape: square() })],
-            ["subdivideToNormals", (): unknown => face.subdivideToNormals({ shape: square() })],
+            ["subdivideToRectangleWires with round corners", (): unknown => face.subdivideToRectangleWires({ shape: square(), filletPattern: [0.5] })],
             ["wireAlongParam", (): unknown => face.wireAlongParam({ shape: square(), param: 0.5, isU: true })],
             ["wiresAlongParams", (): unknown => face.wiresAlongParams({ shape: square(), params: [0.25, 0.75], isU: true })],
-            ["subdivideToPointsOnParam", (): unknown => face.subdivideToPointsOnParam({ shape: square(), nrPoints: 4, param: 0.5, isU: true })],
-            ["pointsOnUVs", (): unknown => face.pointsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
-            ["normalsOnUVs", (): unknown => face.normalsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
-            ["pointOnUV", (): unknown => face.pointOnUV({ shape: square(), paramU: 0.2, paramV: 0.3 })],
             ["surfaceFromFace", (): unknown => geom.surfaces.surfaceFromFace({ shape: square() })],
         ])("releases every surface handle %s takes", (_method, run) => {
             // Arrange
@@ -192,9 +183,30 @@ describe("OCCT face unit tests", () => {
             expect(handles.every(handle => handle.IsNull())).toBe(true);
         });
 
-        it("releases the surface handle when the face has no parametric range for a hexagon grid", () => {
+        it.each([
+            ["normalOnUV", (): unknown => face.normalOnUV({ shape: square(), paramU: 0.5, paramV: 0.5 })],
+            ["subdivideToPointsControlled", (): unknown => face.subdivideToPointsControlled({ shape: square() })],
+            ["subdivideToPoints", (): unknown => face.subdivideToPoints({ shape: square() })],
+            ["subdivideToRectangleWires", (): unknown => face.subdivideToRectangleWires({ shape: square() })],
+            ["subdivideToHexagonWires", (): unknown => face.subdivideToHexagonWires({ shape: square() })],
+            ["subdivideToNormals", (): unknown => face.subdivideToNormals({ shape: square() })],
+            ["subdivideToPointsOnParam", (): unknown => face.subdivideToPointsOnParam({ shape: square(), nrPoints: 4, param: 0.5, isU: true })],
+            ["pointsOnUVs", (): unknown => face.pointsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["normalsOnUVs", (): unknown => face.normalsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["pointOnUV", (): unknown => face.pointOnUV({ shape: square(), paramU: 0.2, paramV: 0.3 })],
+        ])("reads the surface inside the kernel for %s, taking no handle", (_method, run) => {
             // Arrange
             const handles = capturedHandles();
+
+            // Act
+            run();
+
+            // Assert
+            expect(handles).toHaveLength(0);
+        });
+
+        it("gives no hexagons when the face has no parametric range for a grid", () => {
+            // Arrange
             vi.spyOn(console, "warn").mockImplementation(() => undefined);
             vi.spyOn(occHelper.facesService, "getUVBounds").mockReturnValue({ uMin: 0, uMax: 0, vMin: 0, vMax: 1 });
 
@@ -203,12 +215,10 @@ describe("OCCT face unit tests", () => {
 
             // Assert
             expect(wires).toEqual([]);
-            expect(handles.every(handle => handle.IsNull())).toBe(true);
         });
 
-        it("releases the surface handle when a hexagon grid leaves no room on the face", () => {
+        it("gives no hexagons when the grid leaves no room on the face", () => {
             // Arrange
-            const handles = capturedHandles();
             vi.spyOn(console, "warn").mockImplementation(() => undefined);
 
             // Act
@@ -216,7 +226,6 @@ describe("OCCT face unit tests", () => {
 
             // Assert
             expect(wires).toEqual([]);
-            expect(handles.every(handle => handle.IsNull())).toBe(true);
         });
     });
 
@@ -2120,6 +2129,62 @@ describe("OCCT face unit tests", () => {
         });
     });
 
+    describe("face patterns on a face with a hole", () => {
+        const withSquareHole = (): TopoDS_Face => {
+            const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            return face.subdivideToRectangleHoles(new OCCT.FaceSubdivideToRectangleHolesDto(panel, 1, 1, [0.4], [0.4]))[0]!;
+        };
+
+        it("should leave out the cells that fall in the face's hole", () => {
+            // Arrange
+            const holed = withSquareHole();
+
+            // Act
+            const wires = face.subdivideToRectangleWires(new OCCT.FaceSubdivideToRectangleWiresDto(holed, 3, 3, [0.5], [0.5]));
+
+            // Assert
+            expect(wires).toHaveLength(8);
+        });
+
+        it("should keep the face's own hole when it cuts new ones", () => {
+            // Arrange
+            const holed = withSquareHole();
+
+            // Act
+            const faces = face.subdivideToRectangleHoles(new OCCT.FaceSubdivideToRectangleHolesDto(holed, 3, 3, [0.5], [0.5]));
+
+            // Assert
+            expect(faces).toHaveLength(1);
+            expect(face.getFaceArea({ shape: faces[0]! })).toBeCloseTo(100 - 16 - 8 * (10 / 6) ** 2, 9);
+        });
+
+        it("should face the new cells the way the face does", () => {
+            // Arrange
+            const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const flipped = occHelper.converterService.getActualTypeOfShape(panel.Reversed());
+
+            // Act
+            const faces = face.subdivideToHexagonHoles(new OCCT.FaceSubdivideToHexagonHolesDto(flipped, 2, 2, false, true));
+
+            // Assert
+            const normals = faces.map(cell => face.normalOnUV({ shape: cell, paramU: 0.5, paramV: 0.5 }));
+            expect(normals).toEqual(faces.map(() => face.normalOnUV({ shape: flipped, paramU: 0.5, paramV: 0.5 }).map(value => expect.closeTo(value, 12))));
+        });
+    });
+
+    it("should flip the normals of a reversed face at every uv pair, as normalOnUV does", () => {
+        // Arrange
+        const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+        const flipped = occHelper.converterService.getActualTypeOfShape(panel.Reversed());
+
+        // Act
+        const normals = face.normalsOnUVs({ shape: flipped, paramsUV: [[0.2, 0.3], [0.5, 0.4]] });
+
+        // Assert
+        expect(normals).toEqual([face.normalOnUV({ shape: flipped, paramU: 0.2, paramV: 0.3 }), face.normalOnUV({ shape: flipped, paramU: 0.5, paramV: 0.4 })]);
+        expect(normals[0]).toEqual(face.normalOnUV({ shape: panel, paramU: 0.2, paramV: 0.3 }).map(value => expect.closeTo(-value, 12)));
+    });
+
     describe("Face subdivision to hexagon wires and holes", () => {
         it("should subdivide face to hexagon wires", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
@@ -2453,6 +2518,48 @@ describe("OCCT face unit tests", () => {
 
             // Assert
             expect(centres).toEqual([[1, 0, 1], [0, 0, 5]].map(point => point.map(value => expect.closeTo(value, 12))));
+        });
+    });
+
+    describe("patterns with cells of no size and roundings that cannot fit", () => {
+        const square = (): TopoDS_Face => face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it("should leave out a rectangle cell scaled to 0 along either direction", () => {
+            // Act
+            const wires = face.subdivideToRectangleWires({ shape: square(), nrRectanglesU: 2, nrRectanglesV: 2, scalePatternU: [0, 0.5], scalePatternV: [0.5, 0.5, 0.5, 0], offsetFromBorderU: 0, offsetFromBorderV: 0 });
+
+            // Assert
+            expect(wires).toHaveLength(1);
+        });
+
+        it("should leave out a hexagon cell scaled to 0 along either direction", () => {
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square(), nrHexagonsU: 2, nrHexagonsV: 2, scalePatternU: [0.5, 0], scalePatternV: [0, 0.5, 0.5, 0.5] });
+
+            // Assert
+            expect(wires).toHaveLength(1);
+        });
+
+        it.each([
+            ["rectangles", (): unknown => face.subdivideToRectangleWires({ shape: square(), nrRectanglesU: 2, nrRectanglesV: 2, filletPattern: [2], offsetFromBorderU: 0, offsetFromBorderV: 0 })],
+            ["hexagons", (): unknown => face.subdivideToHexagonWires({ shape: square(), nrHexagonsU: 2, nrHexagonsV: 2, filletPattern: [2] })],
+        ])("should name the fillet when a rounding fraction above 1 does not fit the %s", (_what, run) => {
+            // Act
+            const act = (): unknown => run();
+
+            // Assert
+            expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failed" }));
+        });
+
+        it.each([
+            ["a point", (): unknown => face.pointOnUV({ shape: new occt.TopoDS_Face(), paramU: 0.5, paramV: 0.5 })],
+            ["a normal", (): unknown => face.normalOnUV({ shape: new occt.TopoDS_Face(), paramU: 0.5, paramV: 0.5 })],
+        ])("should say a face without a surface has no %s on it", (_what, run) => {
+            // Act
+            const act = (): unknown => run();
+
+            // Assert
+            expect(act).toThrow("Face has no surface");
         });
     });
 });

@@ -70,7 +70,7 @@ export class OccHelper {
 
         this.wiresService = new WiresService(occ, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
-            () => this.filletsService, () => this.operationsService);
+            () => this.operationsService);
 
         this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService);
 
@@ -80,8 +80,7 @@ export class OccHelper {
         this.meshingService = new MeshingService(occ, this.wiresService, this.base);
 
         this.facesService = new FacesService(occ, this.entitiesService, this.enumService,
-            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base,
-            () => this.filletsService);
+            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.base);
 
         this.shellsService = new ShellsService(occ, this.converterService);
 
@@ -93,9 +92,9 @@ export class OccHelper {
             this.vecHelper, this.wiresService, this.facesService, this.solidsService);
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
-            this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);
+            this.shapeGettersService);
 
-        this.dxfService = new DxfService(this.base, this.shapeGettersService, this.edgesService, this.wiresService);
+        this.dxfService = new DxfService(occ, this.base);
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {

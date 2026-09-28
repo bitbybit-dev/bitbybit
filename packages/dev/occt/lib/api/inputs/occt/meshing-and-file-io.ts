@@ -103,6 +103,31 @@ export class ShapeFacesToPolygonPointsDto<T> {
     reversedPoints?: boolean | undefined = false;
 }
 /**
+ * A shape and a meshing precision for `shapeToManifoldMesh`, which meshes the shape into one indexed
+ * mesh for the Manifold kernel.
+ */
+export class ShapeToManifoldMeshDto<T> {
+    constructor(shape?: T, precision?: number) {
+        if (shape !== undefined) { this.shape = shape; }
+        if (precision !== undefined) { this.precision = precision; }
+    }
+    /**
+     * The shape to mesh; a closed solid gives a closed mesh.
+     * @default undefined
+     */
+    shape!: T;
+    /**
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.001
+     */
+    precision?: number | undefined = 0.01;
+}
+/**
  * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
  * settings.
  */

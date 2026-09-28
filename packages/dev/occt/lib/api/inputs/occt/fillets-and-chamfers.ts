@@ -238,7 +238,7 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
 
 /**
  * How the corners of a 3D wire are rounded, shared by `Fillet3DWireDto` and `Fillet3DWiresDto`: the
- * radius or radii, which corners, and the direction the fillets are built along.
+ * radius or radii, and which corners.
  */
 export abstract class Fillet3DWireSharedDto {
     /**
@@ -258,21 +258,24 @@ export abstract class Fillet3DWireSharedDto {
      */
     radiusList?: number[] | undefined;
     /**
-     * Which corners to round, counted from 0 along each wire; leave it out to round them all.
+     * Corners to round, counted from 0: corner `i` joins edge `i` to the next; a closed wire's last
+     * corner joins its last edge to its first. Omit for all.
      * @default undefined
      * @optional true
      */
     indexes?: number[] | undefined;
     /**
-     * The direction each wire is extruded along to build the fillets; it must not be parallel to
-     * the wire and must leave room for the radius.
+     * Not used: each corner is rounded in the plane of the two edges that meet there. It is kept
+     * so that scripts which set it keep working.
      * @default [0, 1, 0]
+     * @deprecated Has no effect and will be removed in the next major version, with the constructors'
+     * `direction` parameter; leave it out.
      */
     direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
- * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
- * which rounds the corners of wires that do not lie in a plane.
+ * Wires, a radius and optional corner indexes for `fillets.fillet3DWires`, which rounds the corners
+ * of wires whether or not they lie in a plane.
  */
 export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
     constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
@@ -290,8 +293,8 @@ export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
     shapes!: T[];
 }
 /**
- * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
- * which rounds the corners of a wire that does not lie in a plane.
+ * A wire, a radius and optional corner indexes for `fillets.fillet3DWire`, which rounds the corners
+ * of a wire whether or not it lies in a plane.
  */
 export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
     constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {

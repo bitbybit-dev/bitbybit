@@ -1782,6 +1782,12 @@ export interface EmbindModule {
     // (undocumented)
     Bnd_Box_IsThin(_0: Bnd_Box, _1: number): boolean;
     // (undocumented)
+    BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+    // (undocumented)
+    BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+    // (undocumented)
+    BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+    // (undocumented)
     BOPAlgo_Builder: {
         new(): BOPAlgo_Builder;
     };
@@ -2259,6 +2265,8 @@ export interface EmbindModule {
     // (undocumented)
     DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
+    DxfPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number): Float64Array;
+    // (undocumented)
     EdgeAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Edge;
     // (undocumented)
     EdgeDebugInfoJson(_0: TopoDS_Edge): string;
@@ -2291,9 +2299,19 @@ export interface EmbindModule {
     // (undocumented)
     FaceDebugInfoJson(_0: TopoDS_Face): string;
     // (undocumented)
+    FaceNormalsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+    // (undocumented)
+    FacePointsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+    // (undocumented)
+    FacesInsideWires(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face[];
+    // (undocumented)
     FacesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Face[];
     // (undocumented)
+    FaceWithHoles(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face;
+    // (undocumented)
     FilletCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): TopoDS_Shape;
+    // (undocumented)
+    FilletWireCorners(_0: TopoDS_Wire, _1: ArrayLike<number>): { wire: TopoDS_Wire | null; failedCorners: Int32Array };
     // (undocumented)
     FlipFaceUV(_0: TopoDS_Face, _1: boolean, _2: boolean, _3: boolean): TopoDS_Face;
     // (undocumented)
@@ -2786,6 +2804,12 @@ export interface EmbindModule {
     // (undocumented)
     NormalizeFaceParametrization(_0: TopoDS_Face, _1: boolean, _2: boolean, _3: number, _4: number): TopoDS_Face;
     // (undocumented)
+    OffsetWire3D(_0: TopoDS_Wire, _1: number, _2: number, _3: number, _4: number): TopoDS_Shape;
+    // (undocumented)
+    OutlinesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): TopoDS_Wire[] | null;
+    // (undocumented)
+    OutlinesOnPlane(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: ArrayLike<number>): TopoDS_Wire[] | null;
+    // (undocumented)
     ParseStepAssemblyToJson(_0: EmbindString): string;
     // (undocumented)
     ParseStepAssemblyToJsonFromBinary(_0: any): string;
@@ -2805,6 +2829,12 @@ export interface EmbindModule {
     Poly_Triangulation: {
         new(): Poly_Triangulation;
     };
+    // (undocumented)
+    ProgressBeginCall(): void;
+    // (undocumented)
+    ProgressControl(): Int32Array;
+    // (undocumented)
+    ProgressRequestStop(): void;
     // (undocumented)
     ProjectPointOnCurve(_0: gp_Pnt, _1: TopoDS_Edge): CurvePointResult;
     // (undocumented)
@@ -2853,6 +2883,8 @@ export interface EmbindModule {
     // (undocumented)
     SetRunsInParallel(_0: boolean): void;
     // (undocumented)
+    SetThreadCount(_0: number): void;
+    // (undocumented)
     ShapeCrossingsAlong(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number): VectorDouble;
     // (undocumented)
     ShapeFix_Shape: {
@@ -2868,6 +2900,8 @@ export interface EmbindModule {
     };
     // (undocumented)
     ShapeIsValid(_0: TopoDS_Shape): boolean;
+    // (undocumented)
+    ShapeToManifoldMesh(_0: TopoDS_Shape, _1: number): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } | null;
     // (undocumented)
     ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): MeshBuffers;
     // (undocumented)
@@ -2976,6 +3010,8 @@ export interface EmbindModule {
     // (undocumented)
     TDocStd_Document: {};
     // (undocumented)
+    ThreadCount(): number;
+    // (undocumented)
     TopAbs_Orientation: {FORWARD: TopAbs_OrientationValue<number>, REVERSED: TopAbs_OrientationValue<number>, INTERNAL: TopAbs_OrientationValue<number>, EXTERNAL: TopAbs_OrientationValue<number>};
     // (undocumented)
     TopAbs_ShapeEnum: {COMPOUND: TopAbs_ShapeEnumValue<number>, COMPSOLID: TopAbs_ShapeEnumValue<number>, SOLID: TopAbs_ShapeEnumValue<number>, SHELL: TopAbs_ShapeEnumValue<number>, FACE: TopAbs_ShapeEnumValue<number>, WIRE: TopAbs_ShapeEnumValue<number>, EDGE: TopAbs_ShapeEnumValue<number>, VERTEX: TopAbs_ShapeEnumValue<number>, SHAPE: TopAbs_ShapeEnumValue<number>};
@@ -3067,6 +3103,8 @@ export interface EmbindModule {
     VolumePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
     // (undocumented)
     WireAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Wire;
+    // (undocumented)
+    WireCornerCount(_0: TopoDS_Wire): number;
     // (undocumented)
     WiresOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Wire[];
     // (undocumented)
@@ -6021,6 +6059,11 @@ namespace OCCT {
         vertexCoord: number[];
         vertexCoordVec: Base.Vector3[];
     }
+    class DecomposedManifoldMeshDto {
+        numProp: number;
+        triVerts: Uint32Array;
+        vertProperties: Float32Array;
+    }
     class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]);
         colorGroups?: {
@@ -6405,6 +6448,7 @@ namespace OCCT {
         shapes: T[];
     }
     abstract class Fillet3DWireSharedDto {
+        // @deprecated
         direction?: Base.Vector3 | undefined;
         indexes?: number[] | undefined;
         radius?: number | undefined;
@@ -7371,6 +7415,11 @@ namespace OCCT {
         shape: T;
         uTolerance?: number | undefined;
     }
+    class ShapeToManifoldMeshDto<T> {
+        constructor(shape?: T, precision?: number);
+        precision?: number | undefined;
+        shape: T;
+    }
     class ShapeToMeshDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
         adjustYtoZ?: boolean | undefined;
@@ -8061,6 +8110,8 @@ namespace OCCT_3 {
     // (undocumented)
     type DecomposedFaceDto = Inputs_2.OCCT.DecomposedFaceDto;
     // (undocumented)
+    type DecomposedManifoldMeshDto = Inputs_2.OCCT.DecomposedManifoldMeshDto;
+    // (undocumented)
     type DecomposedMeshDto = Inputs_2.OCCT.DecomposedMeshDto;
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges">;
@@ -8404,6 +8455,8 @@ namespace OCCT_3 {
     type ShapesToMeshesDto<T> = WithDefaults<Inputs_2.OCCT.ShapesToMeshesDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
     type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     // (undocumented)
     type ShapeToMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToMeshDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
@@ -8877,6 +8930,7 @@ export class OCCTService {
     // (undocumented)
     readonly shapes: OCCTShapes;
     shapesToMeshes(inputs: Inputs_2.OCCT.ShapesToMeshesDto<TopoDS_Shape>): Inputs_2.OCCT.DecomposedMeshDto[];
+    shapeToManifoldMesh(inputs: Inputs_2.OCCT.ShapeToManifoldMeshDto<TopoDS_Shape>): Inputs_2.OCCT.DecomposedManifoldMeshDto;
     shapeToMesh(inputs: Inputs_2.OCCT.ShapeToMeshDto<TopoDS_Shape>): Inputs_2.OCCT.DecomposedMeshDto;
     // Warning: (ae-forgotten-export) The symbol "OCCTSVG" needs to be exported by the entry point index.d.ts
     //

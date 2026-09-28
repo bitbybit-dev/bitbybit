@@ -130,6 +130,7 @@
     "shapeFix.basicShapeRepair",
     "shapeFix.fixEdgeOrientationsAlongWire",
     "shapeFix.fixSmallEdgeOnWire",
+    "shapeToManifoldMesh",
     "shapeToMesh",
     "shapes.compound.getShapesOfCompound",
     "shapes.compound.makeCompound",

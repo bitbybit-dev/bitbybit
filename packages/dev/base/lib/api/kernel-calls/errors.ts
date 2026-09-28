@@ -1,9 +1,10 @@
 /**
- * Whether a kernel call failed on what it was given, inside the kernel itself, or by crashing the
- * kernel: a WebAssembly trap such as an out-of-bounds access, after which the kernel's memory can no
- * longer be trusted and every object it held is gone.
+ * Whether a kernel call failed on what it was given, inside the kernel itself, by crashing the
+ * kernel - a WebAssembly trap such as an out-of-bounds access, after which the kernel's memory can no
+ * longer be trusted and every object it held is gone - or was cancelled: stopped on request before it
+ * finished, keeping nothing it made.
  */
-export type KernelFailureKind = "input" | "kernel" | "crash";
+export type KernelFailureKind = "input" | "kernel" | "crash" | "cancelled";
 
 /**
  * An input the operation cannot accept, thrown before the kernel runs. `property` names the input
@@ -58,7 +59,7 @@ export class KernelOperationError extends Error {
 export class KernelCallError extends Error {
     /** The dotted path of the operation that was called. */
     readonly functionName: string;
-    /** Whether the inputs or the kernel were at fault, or the kernel crashed. */
+    /** Whether the inputs or the kernel were at fault, the kernel crashed, or the call was cancelled. */
     readonly kind: KernelFailureKind;
     /** The stack of the failure inside the worker, when it reported one. */
     readonly workerStack: string | undefined;

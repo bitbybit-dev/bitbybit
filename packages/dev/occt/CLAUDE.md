@@ -46,14 +46,14 @@ after the other: a compile in the background moves the numbers more than most ch
 
 ## Services are built in a ring
 
-Wires, operations, fillets and faces need each other in a cycle: wires needs operations and fillets,
-operations needs wires and faces, fillets needs operations and faces, faces needs wires and fillets.
-No construction order gives every one of them its collaborators.
+Wires and operations need each other: operations builds on wires and faces, and wires asks
+operations for a bounding box. No construction order gives both their collaborator.
 
-Each link that closes a cycle is therefore passed in as a **supplier function**, called when it is
-needed rather than when the object is built. Everything else is built in true dependency order, and
-nothing is assigned onto a service afterwards. Replace a supplier with a direct reference, or go back
-to assigning fields after construction, and collaborators are undefined at runtime.
+The link that closes the cycle, wires to operations, is therefore passed in as a **supplier
+function**, called when it is needed rather than when the object is built. Everything else is built
+in true dependency order, and nothing is assigned onto a service afterwards. Replace the supplier
+with a direct reference, or go back to assigning fields after construction, and the collaborator is
+undefined at runtime.
 
 ## Living with the embind bindings
 
