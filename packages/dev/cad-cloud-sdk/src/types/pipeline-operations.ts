@@ -366,6 +366,8 @@ export type OperationPath =
     | "occt.analysis.measure.dihedralAngle"
     | "occt.analysis.measure.extrema"
     | "occt.analysis.measure.minCurvatureRadius"
+    | "occt.analysis.measure.orientedBoundingBox"
+    | "occt.analysis.measure.principalFrame"
     | "occt.analysis.measure.tightBoundingBox"
     | "occt.analysis.surfaces.closestPoints"
     | "occt.analysis.surfaces.curvaturesOnUVs"
@@ -523,13 +525,11 @@ export type OperationPath =
     | "occt.operations.offset"
     | "occt.operations.offset3DWire"
     | "occt.operations.offsetAdv"
-    | "occt.operations.orientedBoundingBox"
     | "occt.operations.pipe"
     | "occt.operations.pipePolylineWireNGon"
     | "occt.operations.pipeWireCylindrical"
     | "occt.operations.pipeWiresCylindrical"
     | "occt.operations.pipeWithScaling"
-    | "occt.operations.principalFrame"
     | "occt.operations.revolve"
     | "occt.operations.revolveWithHistory"
     | "occt.operations.rotatedExtrude"
@@ -578,6 +578,7 @@ export type OperationPath =
     | "occt.shapeFix.fixSmallEdgeOnWire"
     | "occt.shapeFix.fixSolid"
     | "occt.shapeFix.freeBoundaries"
+    | "occt.shapeFix.isValid"
     | "occt.shapeFix.orientClosedSolid"
     | "occt.shapeFix.sewWithReport"
     | "occt.shapeFix.validityReport"
@@ -743,7 +744,6 @@ export type OperationPath =
     | "occt.shapes.shape.isNull"
     | "occt.shapes.shape.isPartner"
     | "occt.shapes.shape.isSame"
-    | "occt.shapes.shape.isValid"
     | "occt.shapes.shape.purgeInternalEdges"
     | "occt.shapes.shape.unifySameDomain"
     | "occt.shapes.shell.debugInfo"
@@ -5742,8 +5742,8 @@ export interface OperationParams {
      * world's.
      *
      * The box's x runs along the frame's direction and its z along the normal. It comes back as a
-     * frame at its center and half its size along each axis; `operations.orientedBoundingBox` turns
-     * the box to fit instead.
+     * frame at its center and half its size along each axis; `orientedBoundingBox` turns the box to
+     * fit instead.
      */
     "occt.analysis.measure.boundingBoxInFrame": {
         /** The shape the box is found around. */
@@ -5806,6 +5806,28 @@ export interface OperationParams {
          * and convex bends are then skipped.
          */
         concaveOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
+     * frame at the box's centre, its direction along the longest side and its normal along the
+     * shortest, with half the box's size along each.
+     *
+     * `boundingBoxInFrame` keeps the axes of a frame you give instead.
+     */
+    "occt.analysis.measure.orientedBoundingBox": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
+     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
+     * the axis it turns about most easily, the normal the one it resists most.
+     *
+     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
+     * a density of 1. Each axis's largest coordinate is positive.
+     */
+    "occt.analysis.measure.principalFrame": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
     };
     /**
      * Finds the box lined up with the axes that just holds a shape's exact geometry.
@@ -6685,7 +6707,7 @@ export interface OperationParams {
      * Checks the structure of a shape's graph for problems such as dangling references or
      * inconsistent links, and lists every issue found with its severity.
      *
-     * This checks the bookkeeping, not the geometry; `shapes.shape.isValid` and
+     * This checks the bookkeeping, not the geometry; `shapeFix.isValid` and
      * `shapeFix.basicShapeRepair` deal with geometric validity.
      */
     "occt.brepGraph.validate": {
@@ -8810,6 +8832,8 @@ export interface OperationParams {
      *
      * This is not the center of mass; `shapes.solid.getSolidCenterOfMass` and its siblings give
      * that.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingBoxCenterOfShape": {
         /** The shape to work on; it is not changed. */
@@ -8818,6 +8842,8 @@ export interface OperationParams {
     /**
      * Reads the maximum corner of a shape's axis-aligned bounding box, the point with the largest
      * X, Y and Z.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingBoxMaxOfShape": {
         /** The shape to work on; it is not changed. */
@@ -8826,6 +8852,8 @@ export interface OperationParams {
     /**
      * Reads the minimum corner of a shape's axis-aligned bounding box, the point with the smallest
      * X, Y and Z.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingBoxMinOfShape": {
         /** The shape to work on; it is not changed. */
@@ -8838,6 +8866,8 @@ export interface OperationParams {
      * On curved shapes the box can be a little larger than the shape itself, because the kernel
      * bounds the control geometry rather than the exact surface. `analysis.measure.tightBoundingBox`
      * follows the exact geometry.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingBoxOfShape": {
         /** The shape to work on; it is not changed. */
@@ -8846,17 +8876,27 @@ export interface OperationParams {
     /**
      * Builds the axis-aligned bounding box of a shape as a box solid, handy for drawing it or using
      * it in a boolean.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingBoxShapeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /** Reads the size of a shape's axis-aligned bounding box along X, Y and Z, in model units. */
+    /**
+     * Reads the size of a shape's axis-aligned bounding box along X, Y and Z, in model units.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
+     */
     "occt.operations.boundingBoxSizeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /** Reads the center of a shape's bounding sphere, which is the center of its bounding box. */
+    /**
+     * Reads the center of a shape's bounding sphere, which is the center of its bounding box.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
+     */
     "occt.operations.boundingSphereCenterOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -8864,6 +8904,8 @@ export interface OperationParams {
     /**
      * Computes a sphere that encloses a shape: it is centered on the bounding box and reaches its
      * corners, so it always contains the shape but is not the smallest possible sphere.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingSphereOfShape": {
         /** The shape to work on; it is not changed. */
@@ -8872,12 +8914,18 @@ export interface OperationParams {
     /**
      * Reads the radius of a shape's bounding sphere, the distance from the bounding box center to
      * its corner, in model units.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.boundingSphereRadiusOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
-    /** Builds the bounding sphere of a shape as a sphere solid. */
+    /**
+     * Builds the bounding sphere of a shape as a sphere solid.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
+     */
     "occt.operations.boundingSphereShapeOfShape": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
@@ -8888,6 +8936,8 @@ export interface OperationParams {
      * The distance between them is the gap between the shapes; it is 0 when they touch or overlap.
      * Throws an error when no pair can be found. `analysis.measure.extrema` gives every closest pair,
      * with the sub-shapes the points lie on.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.closestPointsBetweenTwoShapes": {
         /** The first shape; the first point of the result lies on it. */
@@ -8899,6 +8949,8 @@ export interface OperationParams {
      * Finds, for each point in a list, the closest point on a shape.
      *
      * A point already on the shape maps to itself. Useful for snapping points onto a surface.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.closestPointsOnShapeFromPoints": {
         /** The shape the closest points are looked for on. */
@@ -8911,6 +8963,8 @@ export interface OperationParams {
      *
      * The result is one flat list: all the points for the first shape, in point order, then all the
      * points for the second shape, and so on.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.closestPointsOnShapesFromPoints": {
         /** The shapes the closest points are looked for on, in the order the result groups them. */
@@ -8924,6 +8978,8 @@ export interface OperationParams {
      *
      * The distance is to the shape's surface, so a point inside a solid still reports its distance
      * to the skin.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      */
     "occt.operations.distancesToShapeFromPoints": {
         /** The shape the closest points are looked for on. */
@@ -9196,17 +9252,6 @@ export interface OperationParams {
         removeIntEdges?: boolean | PipelineRef;
     };
     /**
-     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
-     * frame at the box's centre, its direction along the longest side and its normal along the
-     * shortest, with half the box's size along each.
-     *
-     * `analysis.measure.boundingBoxInFrame` keeps the axes of a frame you give instead.
-     */
-    "occt.operations.orientedBoundingBox": {
-        /** The shape to work on; it is not changed. */
-        shape: unknown | PipelineRef;
-    };
-    /**
      * Sweeps one or more profile shapes along a path wire and closes the result into a solid.
      *
      * The profiles should be placed on the path; with several profiles the sweep blends from one to
@@ -9311,17 +9356,6 @@ export interface OperationParams {
          * result is an open shell.
          */
         makeSolid?: boolean | PipelineRef;
-    };
-    /**
-     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
-     * the axis it turns about most easily, the normal the one it resists most.
-     *
-     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
-     * a density of 1. Each axis's largest coordinate is positive.
-     */
-    "occt.operations.principalFrame": {
-        /** The shape to work on; it is not changed. */
-        shape: unknown | PipelineRef;
     };
     /**
      * Spins a shape around an axis through the origin to sweep out a surface or solid: a face gives
@@ -10029,7 +10063,7 @@ export interface OperationParams {
      *
      * `precision` is the size of defect to look for, `minTolerance` and `maxTolerance` bound the
      * tolerances the repaired shape may carry, all in model units. Try it first on any shape that
-     * fails `shapes.shape.isValid`.
+     * fails `isValid`.
      */
     "occt.shapeFix.basicShapeRepair": {
         /** The shape to repair; it stays as it is and a repaired copy comes back. */
@@ -10110,6 +10144,17 @@ export interface OperationParams {
         tolerance?: number | PipelineRef;
     };
     /**
+     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
+     *
+     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
+     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
+     * bends, passes. Large parts take a few hundred milliseconds.
+     */
+    "occt.shapeFix.isValid": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Turns a closed solid so its material is inside, which gives an inside-out solid its positive
      * volume back; only the orientation changes.
      *
@@ -10139,7 +10184,7 @@ export interface OperationParams {
         nonManifold?: boolean | PipelineRef;
     };
     /**
-     * Checks a shape as `shapes.shape.isValid` does and reports each faulty sub-shape with the checks
+     * Checks a shape as `isValid` does and reports each faulty sub-shape with the checks
      * it fails, and the spread of its tolerances.
      *
      * A fault's index is the one the getter of its kind uses: `shapes.face.getFace` with a face
@@ -12732,17 +12777,6 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The second shape of the comparison. */
         otherShape: unknown | PipelineRef;
-    };
-    /**
-     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
-     *
-     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
-     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
-     * bends, passes. Large parts take a few hundred milliseconds.
-     */
-    "occt.shapes.shape.isValid": {
-        /** The shape to work on; it is not changed. */
-        shape: unknown | PipelineRef;
     };
     /**
      * Returns the shape as it is; the internal-edge purge is not applied in this version, so the
