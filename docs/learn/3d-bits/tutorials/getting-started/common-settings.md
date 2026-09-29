@@ -230,6 +230,18 @@ When you provide a base URL, the system uses it for **all** assets - not just th
 
 With the legacy full `.js` URL, the runner script loads from the URL you gave and the base CDN is derived by stripping the known path. That works, but it is less explicit and only supports the standard runner path structure.
 
+**The Lighter Viewer Runner:**
+
+A configurator without scripts does not need the scripting engine or the CAD kernels, so it can load a lighter viewer runner (`runner/bitbybit-runner-viewer-babylonjs.js`) - the same 3D rendering at about half the download. The app embed and the VIEWER block pick it automatically when all of these are true:
+
+- The runner link is empty, or a base URL on `https://git-cdn.bitbybit.dev/v...` at a runner release that ships the viewer runner. The default link above does. Links pinned to an earlier release, `latest` and self-hosted links keep the full runner.
+- The product was published again after the app update that added the viewer runner. Publishing is when the app checks that the configurator has no scripts, so a product that has not been republished keeps the full runner.
+- The block shows the product's published configurator. A scene config pasted into a VIEWER block keeps the full runner.
+
+A disabled script still counts as a script, because a rule can run it. If a configurator gains a script after it was published, the storefront notices the script and loads the full runner on its own; publish again so the page asks for the right runner from the start.
+
+To force the full runner on one block, paste the full runner's `.js` URL into this field, for example <b>{'https://git-cdn.bitbybit.dev/v'}<Version />{'/runner/bitbybit-runner-babylonjs.js'}</b>. You can see which runner a page asked for in its source: the runner's script tag carries `data-bb-runner-kind="viewer"` or `"full"`. The RUNNER block runs scripts, so it always loads the full runner.
+
 **When to Change:**
 
 Update this setting when you need features from a newer version of Bitbybit, when working with scripts created in a specific version of the [bitbybit.dev](https://bitbybit.dev) editor, when you need to roll back to a previous version for compatibility, or when you want to host assets on your own CDN.
