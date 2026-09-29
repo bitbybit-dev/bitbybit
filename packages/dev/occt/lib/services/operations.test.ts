@@ -1371,7 +1371,7 @@ describe("OCCT operations unit tests", () => {
         });
 
         it("should get bounding box center of a cylinder", () => {
-            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 2, 10, 360);
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 2, 10, 2 * Math.PI);
             const center = operations.boundingBoxCenterOfShape({ shape: cyl });
             
             expect(center[0]).toBeCloseTo(0, 5);
@@ -1494,7 +1494,7 @@ describe("OCCT operations unit tests", () => {
         });
 
         it("should get bounding sphere radius of a cylinder", () => {
-            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 360);
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 2 * Math.PI);
             const radius = operations.boundingSphereRadiusOfShape({ shape: cyl });
             
             expect(radius).toBeCloseTo(Math.sqrt(34), 2);

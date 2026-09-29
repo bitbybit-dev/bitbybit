@@ -180,7 +180,7 @@ describe("OCCT face unit tests", () => {
 
             // Assert
             expect(handles.length).toBeGreaterThan(0);
-            expect(handles.every(handle => handle.IsNull())).toBe(true);
+            expect(handles.every(handle => handle.isDeleted())).toBe(true);
         });
 
         it.each([

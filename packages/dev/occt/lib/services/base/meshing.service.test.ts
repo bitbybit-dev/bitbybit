@@ -134,7 +134,7 @@ describe("MeshingService.shapeToMesh", () => {
         expect(buffers).toHaveBeenCalledTimes(1);
         expect(json).toHaveBeenCalledTimes(1);
         expect(mesh).toEqual(expected);
-        expect(mesh).toEqual({ error: "BRepMesh_IncrementalMesh::initParameters : invalid parameter value" });
+        expect(mesh).toEqual({ error: "ShapeToMeshJson: the precision must be a finite number of at least 1e-7" });
     });
 
     it("meshes through the kernel's JSON when the kernel predates document and metadata buffers", () => {
@@ -368,11 +368,11 @@ describe("MeshingService documents", () => {
         const meshes = service.docToMeshes({ document, precision: 0, adjustYtoZ: false });
 
         // Assert
-        const failure = { error: "BRepMesh_IncrementalMesh::initParameters : invalid parameter value" };
+        const reason = ": the precision must be a finite number of at least 1e-7";
         expect(one).toHaveBeenCalledTimes(1);
         expect(each).toHaveBeenCalledTimes(1);
-        expect(mesh).toEqual(failure);
-        expect(meshes).toEqual(Array.from({ length: occt.DocumentFreeShapeCount(document.get()) }, () => failure));
+        expect(mesh).toEqual({ error: `DocumentToMeshJson${reason}` });
+        expect(meshes).toEqual(Array.from({ length: occt.DocumentFreeShapeCount(document.get()) }, () => ({ error: `DocumentToMeshesJson${reason}` })));
         expect(handles.every(handle => handle.isDeleted())).toBe(true);
     });
 
