@@ -8407,7 +8407,7 @@ export interface OperationParams {
      * the shape `io.saveShapeBrep` wrote.
      *
      * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
-     * one cut short, is refused.
+     * one cut short, is refused, and so is a damaged one, with where it is damaged.
      */
     "occt.io.loadBrep": {
         /** The BREP file's text, or a File or Blob that holds it. */
@@ -9397,8 +9397,8 @@ export interface OperationParams {
      * Cuts a solid into parallel slices along a direction, like a loaf of bread, every `step` model
      * units from the bottom of the shape up.
      *
-     * Each slice is the flat section where a cutting plane meets the solid; they come back together
-     * in one compound. The shape must be or contain solids, or an error is thrown.
+     * Each slice is the flat section where a cutting plane meets the solid, all in one compound. The
+     * shape must contain solids, and a step giving more than 100000 slices is refused.
      */
     "occt.operations.slice": {
         /** The solid, or shape holding solids, to slice. */
@@ -9435,8 +9435,8 @@ export interface OperationParams {
      * Cuts a solid into parallel slices like `slice`, but with a repeating pattern of gaps between
      * them, such as 0.1, 0.5, 0.1, 0.5.
      *
-     * The pattern repeats from the bottom of the shape up to its top; steps that do not add up to
-     * more than 0 throw an error.
+     * The pattern repeats from the bottom of the shape up to its top. Steps must add up to more than
+     * 0 and give at most 100000 slices.
      */
     "occt.operations.sliceInStepPattern": {
         /** The solid, or shape holding solids, to slice. */
