@@ -16,6 +16,34 @@ type SkyboxMeshInputs = Pick<Resolved.BabylonScene.SkyboxFromTextureDto,
 const PROJECTED_GROUND_MAX_LIGHTS = 8;
 
 /**
+ * The PBR skybox BabylonJS's `scene.createDefaultSkybox(texture, true, size, blur)` builds, made here
+ * so a skybox does not need that helper: it is registered together with the VR and XR experience
+ * helpers, which a bundle that only views models would otherwise have to ship.
+ */
+function createPbrSkybox(scene: BABYLON.Scene, texture: BABYLON.BaseTexture | undefined, inputs: SkyboxMeshInputs): BABYLON.Mesh | null {
+    if (!texture) {
+        BABYLON.Logger.Warn("Can not create default skybox without environment texture.");
+        return null;
+    }
+    scene.environmentTexture = texture;
+    const skybox = BABYLON.MeshBuilder.CreateBox("hdrSkyBox", { size: inputs.size }, scene);
+    const material = new BABYLON.PBRMaterial("skyBox", scene);
+    material.backFaceCulling = false;
+    material.reflectionTexture = texture.clone();
+    if (material.reflectionTexture) {
+        material.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    }
+    material.microSurface = 1.0 - inputs.blur;
+    material.disableLighting = true;
+    material.twoSidedLighting = true;
+    skybox.material = material;
+    skybox.isPickable = false;
+    skybox.infiniteDistance = true;
+    skybox.ignoreCameraMaxZ = true;
+    return skybox;
+}
+
+/**
  * The BabylonJS scene as a whole: the active camera and its limits, lights with shadows, the skybox
  * and environment lighting, fog, physics, pointer events, the canvas background and clearing
  * everything drawn. A scene holds every mesh, light and camera; most scripts touch it to set up
@@ -816,7 +844,7 @@ export class BabylonScene {
         this.context.scene.getMeshByName("bitbybit-hdrSkyBox")?.dispose(false, true);
         const skybox = inputs.enableGroundProjection && texture
             ? this.createGroundProjectedSkybox(texture, inputs)
-            : this.context.scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true)!;
+            : createPbrSkybox(this.context.scene, texture, inputs)!;
         skybox.name = "bitbybit-hdrSkyBox";
         if (inputs.hideSkybox) {
             skybox.isVisible = false;
@@ -828,7 +856,7 @@ export class BabylonScene {
         const scene = this.context.scene;
         const reflection = texture.clone();
         if (!reflection) {
-            return scene.createDefaultSkybox(texture, true, inputs.size, inputs.blur, true)!;
+            return createPbrSkybox(scene, texture, inputs)!;
         }
         scene.environmentTexture = texture;
         const skybox = BABYLON.MeshBuilder.CreateBox("bitbybit-hdrSkyBox", { size: inputs.size, sideOrientation: BABYLON.Mesh.BACKSIDE }, scene);
