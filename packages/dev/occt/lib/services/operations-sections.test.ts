@@ -361,5 +361,38 @@ describe("OCCT sections and splitting", () => {
             // Assert
             expect(occt.shapes.compound.getShapesOfCompound({ shape: slices })).toEqual([]);
         });
+
+        it("should refuse a step that would cut more than 100000 slices", () => {
+            // Arrange
+            const post = occt.shapes.solid.createBox({ width: 1, length: 1, height: 10, center: [0, 0, 0] });
+
+            // Act
+            const act = (): unknown => occt.operations.slice({ shape: post, step: 1e-5, direction: [0, 1, 0] });
+
+            // Assert
+            expect(act).toThrow(new InputError("`step` would cut the shape into more than 100000 slices; use a larger spacing.", "step"));
+        });
+
+        it("should refuse a step too small to move at the shape's distance from the origin instead of cutting forever", () => {
+            // Arrange
+            const far = occt.shapes.solid.createBox({ width: 1, length: 1, height: 4, center: [0, 1e16, 0] });
+
+            // Act
+            const act = (): unknown => occt.operations.slice({ shape: far, step: 0.5, direction: [0, 1, 0] });
+
+            // Assert
+            expect(act).toThrow(new InputError("`step` would cut the shape into more than 100000 slices; use a larger spacing.", "step"));
+        });
+
+        it("should refuse a step pattern that would cut more than 100000 slices", () => {
+            // Arrange
+            const post = occt.shapes.solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+
+            // Act
+            const act = (): unknown => occt.operations.sliceInStepPattern({ shape: post, steps: [1e-6, 1e-6], direction: [0, 1, 0] });
+
+            // Assert
+            expect(act).toThrow(new InputError("`steps` would cut the shape into more than 100000 slices; use a larger spacing.", "steps"));
+        });
     });
 });

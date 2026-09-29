@@ -1,15 +1,7 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-09-28",
+    "measured": "2026-09-29",
     "history": [
-        {
-            "measured": "2026-09-07",
-            "tests": 4004,
-            "lines": 68.32,
-            "branches": 52.03,
-            "functions": 57.92,
-            "statements": 65.62
-        },
         {
             "measured": "2026-09-07",
             "tests": 4008,
@@ -193,17 +185,25 @@
             "branches": 93.6,
             "functions": 99.1,
             "statements": 98.05
+        },
+        {
+            "measured": "2026-09-29",
+            "tests": 10807,
+            "lines": 98.21,
+            "branches": 93.84,
+            "functions": 99.14,
+            "statements": 98.12
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 2023,
-            "suites": 55,
-            "lines": 98.65,
-            "branches": 96.17,
-            "functions": 98.67,
-            "statements": 98.83
+            "tests": 2042,
+            "suites": 56,
+            "lines": 98.73,
+            "branches": 96.36,
+            "functions": 98.68,
+            "statements": 98.9
         },
         "base": {
             "runner": "vitest",
@@ -225,7 +225,7 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 328,
+            "tests": 344,
             "suites": 13,
             "lines": 100,
             "branches": 100,
@@ -284,17 +284,17 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 2269,
-            "suites": 48,
-            "lines": 96.73,
-            "branches": 88.69,
-            "functions": 98.25,
-            "statements": 96.69
+            "tests": 2739,
+            "suites": 74,
+            "lines": 97.04,
+            "branches": 89.87,
+            "functions": 98.45,
+            "statements": 97.01
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 931,
-            "suites": 15,
+            "tests": 1024,
+            "suites": 17,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -302,21 +302,21 @@
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 565,
-            "suites": 10,
-            "lines": 95.58,
-            "branches": 85.38,
-            "functions": 97.75,
-            "statements": 94.66
+            "tests": 581,
+            "suites": 11,
+            "lines": 95.69,
+            "branches": 86.24,
+            "functions": 97.77,
+            "statements": 94.8
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 495,
-            "suites": 9,
-            "lines": 97.61,
-            "branches": 90.41,
-            "functions": 98.61,
-            "statements": 97.18
+            "tests": 511,
+            "suites": 10,
+            "lines": 97.68,
+            "branches": 91.03,
+            "functions": 98.62,
+            "statements": 97.26
         }
     }
 }

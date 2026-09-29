@@ -326,6 +326,32 @@ describe("OCCT io reading and writing STL and BREP", () => {
             expect(occHelper.solidsService.getSolidVolume({ shape: brick() })).toBeCloseTo(6000, 9);
         });
 
+        it("should refuse a BREP text whose shape refers to one not written before it, and the kernel should keep working afterwards", () => {
+            // Arrange
+            const brep = io.saveShapeBrep({ shape: brick() }).replace(/\n([-+])\d+ 0 ([-+]\d+ 0 \*)/, "\n$11 0 $2");
+
+            // Act
+            const act = (): unknown => io.loadBrep({ brepData: brep });
+
+            // Assert
+            expect(act).toThrow(new InputError("`brepData` is damaged: shape 3 refers to a shape not written before it.", "brepData"));
+            expect(occHelper.solidsService.getSolidVolume({ shape: brick() })).toBeCloseTo(6000, 9);
+        });
+
+        it("should refuse a BREP text with a word where a number belongs instead of reading it forever", () => {
+            // Arrange
+            const whole = io.saveShapeBrep({ shape: brick() });
+            const edge = whole.indexOf("\nEd\n");
+            const curve = whole.indexOf("\n1  ", edge);
+            const brep = `${whole.slice(0, curve + 1)}q${whole.slice(curve + 2)}`;
+
+            // Act
+            const act = (): unknown => io.loadBrep({ brepData: brep });
+
+            // Assert
+            expect(act).toThrow(new InputError("`brepData` is damaged: shape 3 is missing a value or has a word for a number.", "brepData"));
+        });
+
         it("should refuse text that is not BREP at all", () => {
             // Act
             const act = (): unknown => io.loadBrep({ brepData: "hello" });

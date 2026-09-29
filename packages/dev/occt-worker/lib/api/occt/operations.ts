@@ -745,8 +745,8 @@ export class OCCTOperations {
      * Cuts a solid into parallel slices along a direction, like a loaf of bread, every `step` model
      * units from the bottom of the shape up.
      *
-     * Each slice is the flat section where a cutting plane meets the solid; they come back together
-     * in one compound. The shape must be or contain solids, or an error is thrown.
+     * Each slice is the flat section where a cutting plane meets the solid, all in one compound. The
+     * shape must contain solids, and a step giving more than 100000 slices is refused.
      * @param inputs - The shape, the distance between slices and the slicing direction
      * @returns A compound of the section faces
      * @group divisions
@@ -765,8 +765,8 @@ export class OCCTOperations {
      * Cuts a solid into parallel slices like `slice`, but with a repeating pattern of gaps between
      * them, such as 0.1, 0.5, 0.1, 0.5.
      *
-     * The pattern repeats from the bottom of the shape up to its top; steps that do not add up to
-     * more than 0 throw an error.
+     * The pattern repeats from the bottom of the shape up to its top. Steps must add up to more than
+     * 0 and give at most 100000 slices.
      * @param inputs - The shape, the pattern of gaps and the slicing direction
      * @returns A compound of the section faces
      * @group divisions

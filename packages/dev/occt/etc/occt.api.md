@@ -2778,8 +2778,8 @@ export interface EmbindModule {
     // (undocumented)
     gp_Dir2d: {
         new(): gp_Dir2d;
-        new(_0: gp_Vec2d): gp_Dir2d;
         new(_0: number, _1: number): gp_Dir2d;
+        new(_0: gp_Vec2d): gp_Dir2d;
     };
     // (undocumented)
     gp_Dir_fromVec(_0: gp_Vec): gp_Dir;
@@ -2843,8 +2843,8 @@ export interface EmbindModule {
     // (undocumented)
     gp_Pnt2d: {
         new(): gp_Pnt2d;
-        new(_0: gp_XY): gp_Pnt2d;
         new(_0: number, _1: number): gp_Pnt2d;
+        new(_0: gp_XY): gp_Pnt2d;
     };
     // (undocumented)
     gp_Pnt_fromXYZ(_0: gp_XYZ): gp_Pnt;
@@ -2872,8 +2872,8 @@ export interface EmbindModule {
     // (undocumented)
     gp_Vec2d: {
         new(): gp_Vec2d;
-        new(_0: gp_XY): gp_Vec2d;
         new(_0: number, _1: number): gp_Vec2d;
+        new(_0: gp_XY): gp_Vec2d;
     };
     // (undocumented)
     gp_Vec_fromPoints(_0: gp_Pnt, _1: gp_Pnt): gp_Vec;

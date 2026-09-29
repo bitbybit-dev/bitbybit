@@ -553,140 +553,6 @@ export interface gp_Circ extends ClassHandle {
   Contains(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_XY extends ClassHandle {
-  Added(_0: gp_XY): gp_XY;
-  Subtracted(_0: gp_XY): gp_XY;
-  Add(_0: gp_XY): void;
-  Subtract(_0: gp_XY): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Multiply(_0: number): void;
-  Multiplied(_0: number): gp_XY;
-  Modulus(): number;
-  SquareModulus(): number;
-  Dot(_0: gp_XY): number;
-  Crossed(_0: gp_XY): number;
-}
-
-export interface gp_Pnt2d extends ClassHandle {
-  Translated(_0: gp_Vec2d): gp_Pnt2d;
-  Translate(_0: gp_Vec2d): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Distance(_0: gp_Pnt2d): number;
-  SquareDistance(_0: gp_Pnt2d): number;
-  IsEqual(_0: gp_Pnt2d, _1: number): boolean;
-}
-
-export interface gp_Vec2d extends ClassHandle {
-  Added(_0: gp_Vec2d): gp_Vec2d;
-  Subtracted(_0: gp_Vec2d): gp_Vec2d;
-  Normalized(): gp_Vec2d;
-  Reversed(): gp_Vec2d;
-  Add(_0: gp_Vec2d): void;
-  Subtract(_0: gp_Vec2d): void;
-  Normalize(): void;
-  Reverse(): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Magnitude(): number;
-  SquareMagnitude(): number;
-  Angle(_0: gp_Vec2d): number;
-  Multiply(_0: number): void;
-  Multiplied(_0: number): gp_Vec2d;
-  Dot(_0: gp_Vec2d): number;
-  Crossed(_0: gp_Vec2d): number;
-}
-
-export interface gp_Dir2d extends ClassHandle {
-  Reversed(): gp_Dir2d;
-  Reverse(): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Angle(_0: gp_Dir2d): number;
-  Dot(_0: gp_Dir2d): number;
-  Crossed(_0: gp_Dir2d): number;
-}
-
-export interface gp_Ax2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  Direction(): gp_Dir2d;
-  Reversed(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetDirection(_0: gp_Dir2d): void;
-  Reverse(): void;
-  Angle(_0: gp_Ax2d): number;
-}
-
-export interface gp_Ax22d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  XDirection(): gp_Dir2d;
-  YDirection(): gp_Dir2d;
-  XAxis(): gp_Ax2d;
-  YAxis(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetXDirection(_0: gp_Dir2d): void;
-  SetYDirection(_0: gp_Dir2d): void;
-}
-
-export interface gp_Lin2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  Direction(): gp_Dir2d;
-  Position(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetDirection(_0: gp_Dir2d): void;
-  Angle(_0: gp_Lin2d): number;
-  Distance(_0: gp_Pnt2d): number;
-  Contains(_0: gp_Pnt2d, _1: number): boolean;
-}
-
-export interface gp_Circ2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  Radius(): number;
-  Area(): number;
-  SetRadius(_0: number): void;
-  Contains(_0: gp_Pnt2d, _1: number): boolean;
-  Distance(_0: gp_Pnt2d): number;
-}
-
-export interface gp_Elips2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  MajorRadius(): number;
-  MinorRadius(): number;
-  Area(): number;
-  SetMajorRadius(_0: number): void;
-  SetMinorRadius(_0: number): void;
-}
-
-export interface gp_Trsf2d extends ClassHandle {
-  TranslationPart(): gp_XY;
-  Inverted(): gp_Trsf2d;
-  Multiplied(_0: gp_Trsf2d): gp_Trsf2d;
-  SetMirror(_0: gp_Pnt2d): void;
-  SetMirrorAx2d(_0: gp_Ax2d): void;
-  SetTranslation(_0: gp_Vec2d): void;
-  SetTranslationPart(_0: gp_Vec2d): void;
-  Invert(): void;
-  Multiply(_0: gp_Trsf2d): void;
-  IsNegative(): boolean;
-  SetRotation(_0: gp_Pnt2d, _1: number): void;
-  SetScale(_0: gp_Pnt2d, _1: number): void;
-  ScaleFactor(): number;
-}
-
 export interface gp_Elips extends ClassHandle {
   Location(): gp_Pnt;
   Position(): gp_Ax2;
@@ -726,6 +592,140 @@ export interface gp_GTrsf extends ClassHandle {
   SetValue(_0: number, _1: number, _2: number): void;
   Value(_0: number, _1: number): number;
   SetVectorialPart(_0: gp_Mat): void;
+}
+
+export interface gp_XY extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Add(_0: gp_XY): void;
+  Added(_0: gp_XY): gp_XY;
+  Subtract(_0: gp_XY): void;
+  Subtracted(_0: gp_XY): gp_XY;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_XY;
+  Modulus(): number;
+  SquareModulus(): number;
+  Dot(_0: gp_XY): number;
+  Crossed(_0: gp_XY): number;
+}
+
+export interface gp_Pnt2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Distance(_0: gp_Pnt2d): number;
+  SquareDistance(_0: gp_Pnt2d): number;
+  IsEqual(_0: gp_Pnt2d, _1: number): boolean;
+  Translate(_0: gp_Vec2d): void;
+  Translated(_0: gp_Vec2d): gp_Pnt2d;
+}
+
+export interface gp_Vec2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Magnitude(): number;
+  SquareMagnitude(): number;
+  Angle(_0: gp_Vec2d): number;
+  Add(_0: gp_Vec2d): void;
+  Added(_0: gp_Vec2d): gp_Vec2d;
+  Subtract(_0: gp_Vec2d): void;
+  Subtracted(_0: gp_Vec2d): gp_Vec2d;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_Vec2d;
+  Dot(_0: gp_Vec2d): number;
+  Crossed(_0: gp_Vec2d): number;
+  Normalize(): void;
+  Normalized(): gp_Vec2d;
+  Reverse(): void;
+  Reversed(): gp_Vec2d;
+}
+
+export interface gp_Dir2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Angle(_0: gp_Dir2d): number;
+  Dot(_0: gp_Dir2d): number;
+  Crossed(_0: gp_Dir2d): number;
+  Reverse(): void;
+  Reversed(): gp_Dir2d;
+}
+
+export interface gp_Ax2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Direction(): gp_Dir2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Angle(_0: gp_Ax2d): number;
+  Reverse(): void;
+  Reversed(): gp_Ax2d;
+}
+
+export interface gp_Ax22d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  XDirection(): gp_Dir2d;
+  YDirection(): gp_Dir2d;
+  XAxis(): gp_Ax2d;
+  YAxis(): gp_Ax2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetXDirection(_0: gp_Dir2d): void;
+  SetYDirection(_0: gp_Dir2d): void;
+}
+
+export interface gp_Lin2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Direction(): gp_Dir2d;
+  Position(): gp_Ax2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Angle(_0: gp_Lin2d): number;
+  Distance(_0: gp_Pnt2d): number;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
+}
+
+export interface gp_Circ2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Radius(): number;
+  Area(): number;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetRadius(_0: number): void;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
+  Distance(_0: gp_Pnt2d): number;
+}
+
+export interface gp_Elips2d extends ClassHandle {
+  MajorRadius(): number;
+  MinorRadius(): number;
+  Location(): gp_Pnt2d;
+  Area(): number;
+  SetMajorRadius(_0: number): void;
+  SetMinorRadius(_0: number): void;
+}
+
+export interface gp_Trsf2d extends ClassHandle {
+  SetMirror(_0: gp_Pnt2d): void;
+  SetMirrorAx2d(_0: gp_Ax2d): void;
+  SetRotation(_0: gp_Pnt2d, _1: number): void;
+  SetScale(_0: gp_Pnt2d, _1: number): void;
+  SetTranslation(_0: gp_Vec2d): void;
+  SetTranslationPart(_0: gp_Vec2d): void;
+  IsNegative(): boolean;
+  ScaleFactor(): number;
+  TranslationPart(): gp_XY;
+  Invert(): void;
+  Inverted(): gp_Trsf2d;
+  Multiply(_0: gp_Trsf2d): void;
+  Multiplied(_0: gp_Trsf2d): gp_Trsf2d;
 }
 
 export interface Geom_Surface extends ClassHandle {
@@ -1942,24 +1942,40 @@ interface EmbindModule {
     new(): gp_Circ;
     new(_0: gp_Ax2, _1: number): gp_Circ;
   };
+  gp_Elips: {
+    new(): gp_Elips;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Elips;
+  };
+  gp_Hypr: {
+    new(): gp_Hypr;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Hypr;
+  };
+  gp_Parab: {
+    new(): gp_Parab;
+    new(_0: gp_Ax2, _1: number): gp_Parab;
+  };
+  gp_GTrsf: {
+    new(): gp_GTrsf;
+    new(_0: gp_Trsf): gp_GTrsf;
+  };
   gp_XY: {
     new(): gp_XY;
     new(_0: number, _1: number): gp_XY;
   };
   gp_Pnt2d: {
     new(): gp_Pnt2d;
-    new(_0: gp_XY): gp_Pnt2d;
     new(_0: number, _1: number): gp_Pnt2d;
+    new(_0: gp_XY): gp_Pnt2d;
   };
   gp_Vec2d: {
     new(): gp_Vec2d;
-    new(_0: gp_XY): gp_Vec2d;
     new(_0: number, _1: number): gp_Vec2d;
+    new(_0: gp_XY): gp_Vec2d;
   };
   gp_Dir2d: {
     new(): gp_Dir2d;
-    new(_0: gp_Vec2d): gp_Dir2d;
     new(_0: number, _1: number): gp_Dir2d;
+    new(_0: gp_Vec2d): gp_Dir2d;
   };
   gp_Ax2d: {
     new(): gp_Ax2d;
@@ -1984,22 +2000,6 @@ interface EmbindModule {
   };
   gp_Trsf2d: {
     new(): gp_Trsf2d;
-  };
-  gp_Elips: {
-    new(): gp_Elips;
-    new(_0: gp_Ax2, _1: number, _2: number): gp_Elips;
-  };
-  gp_Hypr: {
-    new(): gp_Hypr;
-    new(_0: gp_Ax2, _1: number, _2: number): gp_Hypr;
-  };
-  gp_Parab: {
-    new(): gp_Parab;
-    new(_0: gp_Ax2, _1: number): gp_Parab;
-  };
-  gp_GTrsf: {
-    new(): gp_GTrsf;
-    new(_0: gp_Trsf): gp_GTrsf;
   };
   Geom_Surface: {};
   GeomLib_NormEstim(_0: Geom_Surface | null, _1: gp_Pnt2d, _2: number): gp_Dir;

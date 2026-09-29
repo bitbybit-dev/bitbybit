@@ -6,6 +6,7 @@ import { IO } from "@bitbybit-dev/base/lib/api/inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
+import { readKernelException } from "../kernel-exception";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
 import { DrawingLine, svgOfDrawing } from "./base/svg-drawing";
@@ -375,7 +376,7 @@ export class OCCTIO {
      * the shape `io.saveShapeBrep` wrote.
      *
      * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
-     * one cut short, is refused.
+     * one cut short, is refused, and so is a damaged one, with where it is damaged.
      * @param inputs - The BREP file
      * @returns The shape the file holds
      * @group io
@@ -393,12 +394,26 @@ export class OCCTIO {
         if (!BREP_HEADER.test(text) || !BREP_ENDING.test(text)) {
             throw new InputError("`brepData` is not a whole BREP file: its header, its table of shapes or the shape it names at the end is missing.", "brepData");
         }
-        const shape = this.occ.ReadBREPFromString(text);
+        const shape = this.brepShapeOf(text);
         if (shape.IsNull()) {
             shape.delete();
             throw new InputError("`brepData` holds no shape a BREP reader can build.", "brepData");
         }
         return shape;
+    }
+
+    /** The kernel's reading of BREP text; text the kernel finds damaged is refused as an input error saying where. */
+    private brepShapeOf(text: string): TopoDS_Shape {
+        try {
+            return this.occ.ReadBREPFromString(text);
+        } catch (thrown) {
+            const read = readKernelException(this.occ, thrown);
+            const damage = read instanceof Error ? /the BREP text is damaged: (.+)$/.exec(read.message) : null;
+            if (damage === null) {
+                throw read;
+            }
+            throw new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
+        }
     }
 
     /**

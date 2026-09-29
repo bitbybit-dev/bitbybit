@@ -378,7 +378,7 @@ export class OCCTIO {
      * the shape `io.saveShapeBrep` wrote.
      *
      * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
-     * one cut short, is refused.
+     * one cut short, is refused, and so is a damaged one, with where it is damaged.
      * @param inputs - The BREP file
      * @returns The shape the file holds
      * @group io

@@ -20,6 +20,14 @@ import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
 import { checkedShapes } from "./input-checks";
 
+/** The most slices one call cuts, so a step too small for the shape, or for its distance from the origin, is refused rather than looped over. */
+const MOST_SLICES = 100000;
+
+/** The refusal of slicing that would cut more than `MOST_SLICES`, naming the property that set the spacing. */
+function tooManySlices(property: string): InputError {
+    return new InputError(`\`${property}\` would cut the shape into more than ${MOST_SLICES} slices; use a larger spacing.`, property);
+}
+
 export class OperationsService {
 
     constructor(
@@ -657,7 +665,13 @@ export class OperationsService {
         }
         return this.sliceAlong(inputs.shape, inputs.direction, (lowest, highest) => {
             const levels: number[] = [];
+            if ((highest - lowest) / inputs.step > MOST_SLICES) {
+                throw tooManySlices("step");
+            }
             for (let level = lowest; level < highest; level += inputs.step) {
+                if (levels.length === MOST_SLICES) {
+                    throw tooManySlices("step");
+                }
                 levels.push(level);
             }
             return levels;
@@ -672,6 +686,9 @@ export class OperationsService {
             const levels: number[] = [];
             let index = 0;
             for (let level = lowest; level < highest; level += inputs.steps[index]!) {
+                if (levels.length === MOST_SLICES) {
+                    throw tooManySlices("steps");
+                }
                 levels.push(level);
                 index = inputs.steps[index + 1] === undefined ? 0 : index + 1;
             }
