@@ -10396,19 +10396,33 @@ export class OCCTIO {
 // @public
 export class OCCTOperations {
     constructor(_occ: BitbybitOcctModule, och: OccHelper);
+    // @deprecated
     boundingBoxCenterOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.Base.Point3;
+    // @deprecated
     boundingBoxMaxOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.Base.Point3;
+    // @deprecated
     boundingBoxMinOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.Base.Point3;
+    // @deprecated
     boundingBoxOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.OCCT.BoundingBoxPropsDto;
+    // @deprecated
     boundingBoxShapeOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape;
+    // @deprecated
     boundingBoxSizeOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.Base.Vector3;
+    // @deprecated
     boundingSphereCenterOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.Base.Point3;
+    // @deprecated
     boundingSphereOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Inputs_2.OCCT.BoundingSpherePropsDto;
+    // @deprecated
     boundingSphereRadiusOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): number;
+    // @deprecated
     boundingSphereShapeOfShape(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape;
+    // @deprecated
     closestPointsBetweenTwoShapes(inputs: Inputs_2.OCCT.ClosestPointsBetweenTwoShapesDto<TopoDS_Shape>): [Inputs_2.Base.Point3, Inputs_2.Base.Point3];
+    // @deprecated
     closestPointsOnShapeFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[];
+    // @deprecated
     closestPointsOnShapesFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapesFromPointsDto<TopoDS_Shape>): Inputs_2.Base.Point3[];
+    // @deprecated
     distancesToShapeFromPoints(inputs: Inputs_2.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): number[];
     extrude(inputs: Inputs_2.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape;
     extrudeShapes(inputs: Inputs_2.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[];
@@ -10421,13 +10435,11 @@ export class OCCTOperations {
     offset(inputs: Inputs_2.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
     offset3DWire(inputs: Inputs_2.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[];
     offsetAdv(inputs: Inputs_2.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
-    orientedBoundingBox(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Models_2.OCCT.OrientedBoundingBox;
     pipe(inputs: Inputs_2.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Shape;
     pipePolylineWireNGon(inputs: Inputs_2.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWireCylindrical(inputs: Inputs_2.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWiresCylindrical(inputs: Inputs_2.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[];
     pipeWithScaling(inputs: Inputs_2.OCCT.PipeWithScalingDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
-    principalFrame(inputs: Inputs_2.OCCT.ShapeDto<TopoDS_Shape>): Models_2.OCCT.PrincipalFrame;
     revolve(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape;
     revolveWithHistory(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     rotatedExtrude(inputs: Inputs_2.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape;

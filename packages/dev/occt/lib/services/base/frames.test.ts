@@ -374,7 +374,7 @@ describe("OCCT frames and placements", () => {
             const box = occt.shapes.solid.createBox({ width: 10, length: 30, height: 20, center: [1, 2, 3], originOnCenter: true });
 
             // Act
-            const { frame, moments } = occt.operations.principalFrame({ shape: box });
+            const { frame, moments } = occt.analysis.measure.principalFrame({ shape: box });
 
             // Assert
             expect(frame.origin).toEqual(close([1, 2, 3], 7));
@@ -389,7 +389,7 @@ describe("OCCT frames and placements", () => {
             const turned = occt.transforms.rotate({ shape: box, axis: [0, 0, 1], angle: 30 });
 
             // Act
-            const { frame, halfSizes } = occt.operations.orientedBoundingBox({ shape: turned });
+            const { frame, halfSizes } = occt.analysis.measure.orientedBoundingBox({ shape: turned });
 
             // Assert
             expect(halfSizes).toEqual(close([15, 10, 5], 6));
@@ -405,7 +405,7 @@ describe("OCCT frames and placements", () => {
             const turned = occt.transforms.rotate({ shape: box, axis: [0, 0, 1], angle: 30 });
 
             // Act
-            const { frame } = occt.operations.orientedBoundingBox({ shape: turned });
+            const { frame } = occt.analysis.measure.orientedBoundingBox({ shape: turned });
 
             // Assert
             const turn = 30 * Math.PI / 180;
@@ -415,8 +415,8 @@ describe("OCCT frames and placements", () => {
 
         it("should refuse a missing shape", () => {
             // Act
-            const principal = thrownBy(() => occt.operations.principalFrame({ shape: loose<TopoDS_Shape>(undefined) }));
-            const oriented = thrownBy(() => occt.operations.orientedBoundingBox({ shape: loose<TopoDS_Shape>(null) }));
+            const principal = thrownBy(() => occt.analysis.measure.principalFrame({ shape: loose<TopoDS_Shape>(undefined) }));
+            const oriented = thrownBy(() => occt.analysis.measure.orientedBoundingBox({ shape: loose<TopoDS_Shape>(null) }));
 
             // Assert
             expect(principal.property).toBe("shape");

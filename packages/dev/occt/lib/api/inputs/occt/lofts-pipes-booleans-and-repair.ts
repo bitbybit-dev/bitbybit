@@ -584,8 +584,8 @@ export class IntersectionDto<T> {
     keepEdges?: boolean | undefined = false;
 }
 /**
- * One shape for the many methods that take nothing else, such as `shapes.shape.isValid`,
- * `shapes.face.getFaceArea` or `operations.boundingBoxOfShape`.
+ * One shape for the many methods that take nothing else, such as `shapeFix.isValid`,
+ * `shapes.face.getFaceArea` or `analysis.measure.tightBoundingBox`.
  */
 export class ShapeDto<T> {
     constructor(shape?: T) {

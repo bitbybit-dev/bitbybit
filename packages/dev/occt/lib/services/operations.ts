@@ -6,7 +6,7 @@ import * as Inputs from "../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import * as Models from "../api/models";
-import { framesFromNumbers, numbersOfFrames } from "./base/frames";
+import { numbersOfFrames } from "./base/frames";
 import { historyFromKernel } from "./base/history";
 import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
 
@@ -14,9 +14,10 @@ import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedS
  * The modeling operations that turn OpenCascade wires and faces into surfaces and solids and
  * measure shapes: lofting through sections, extruding and revolving, sweeping profiles along paths,
  * offsetting, thickening shells into solids, slicing, sectioning and splitting, and hidden-line
- * drawings, plus bounding boxes, bounding spheres and closest-point queries. Distances are in model
- * units and angles in degrees; every operation returns a new shape. Booleans live in `booleans`,
- * rounding in `fillets` and local features such as holes in `features`.
+ * drawings, plus bounding boxes, bounding spheres and closest-point queries, which move to
+ * `analysis.measure` in the next major version. Distances are in model units and angles in degrees;
+ * every operation returns a new shape. Booleans live in `booleans`, rounding in `fillets` and local
+ * features such as holes in `features`.
  */
 export class OCCTOperations {
 
@@ -90,8 +91,11 @@ export class OCCTOperations {
      * The distance between them is the gap between the shapes; it is 0 when they touch or overlap.
      * Throws an error when no pair can be found. `analysis.measure.extrema` gives every closest pair,
      * with the sub-shapes the points lie on.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The two shapes
      * @returns The point on the first shape and the point on the second
+     * @deprecated Moves to `analysis.measure.closestPointsBetweenTwoShapes` in the next major version; it works here until then.
      * @group closest pts
      * @shortname two shapes
      * @drawable true
@@ -108,8 +112,11 @@ export class OCCTOperations {
      * Finds, for each point in a list, the closest point on a shape.
      *
      * A point already on the shape maps to itself. Useful for snapping points onto a surface.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape and the points
      * @returns One point on the shape per input point, in the same order
+     * @deprecated Moves to `analysis.measure.closestPointsOnShapeFromPoints` in the next major version; it works here until then.
      * @group closest pts
      * @shortname on shape
      * @drawable true
@@ -127,8 +134,11 @@ export class OCCTOperations {
      *
      * The result is one flat list: all the points for the first shape, in point order, then all the
      * points for the second shape, and so on.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shapes and the points
      * @returns The closest points, grouped shape by shape
+     * @deprecated Moves to `analysis.measure.closestPointsOnShapesFromPoints` in the next major version; it works here until then.
      * @group closest pts
      * @shortname on shapes
      * @drawable true
@@ -147,8 +157,11 @@ export class OCCTOperations {
      *
      * The distance is to the shape's surface, so a point inside a solid still reports its distance
      * to the skin.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape and the points
      * @returns One distance per point, in the same order
+     * @deprecated Moves to `analysis.measure.distancesToShapeFromPoints` in the next major version; it works here until then.
      * @group measure
      * @shortname distances points to shape
      * @drawable false
@@ -168,8 +181,11 @@ export class OCCTOperations {
      * On curved shapes the box can be a little larger than the shape itself, because the kernel
      * bounds the control geometry rather than the exact surface. `analysis.measure.tightBoundingBox`
      * follows the exact geometry.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The box as `min`, `max`, `center` and `size`
+     * @deprecated Moves to `analysis.measure.boundingBoxOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox of shape
      * @drawable false
@@ -186,8 +202,11 @@ export class OCCTOperations {
     /**
      * Reads the minimum corner of a shape's axis-aligned bounding box, the point with the smallest
      * X, Y and Z.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The minimum corner
+     * @deprecated Moves to `analysis.measure.boundingBoxMinOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox min of shape
      * @drawable true
@@ -204,8 +223,11 @@ export class OCCTOperations {
     /**
      * Reads the maximum corner of a shape's axis-aligned bounding box, the point with the largest
      * X, Y and Z.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The maximum corner
+     * @deprecated Moves to `analysis.measure.boundingBoxMaxOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox max of shape
      * @drawable true
@@ -224,8 +246,11 @@ export class OCCTOperations {
      *
      * This is not the center of mass; `shapes.solid.getSolidCenterOfMass` and its siblings give
      * that.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The center of the box
+     * @deprecated Moves to `analysis.measure.boundingBoxCenterOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox center of shape
      * @drawable true
@@ -241,8 +266,11 @@ export class OCCTOperations {
 
     /**
      * Reads the size of a shape's axis-aligned bounding box along X, Y and Z, in model units.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The width, height and length of the box
+     * @deprecated Moves to `analysis.measure.boundingBoxSizeOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox size of shape
      * @drawable false
@@ -259,8 +287,11 @@ export class OCCTOperations {
     /**
      * Builds the axis-aligned bounding box of a shape as a box solid, handy for drawing it or using
      * it in a boolean.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The box solid
+     * @deprecated Moves to `analysis.measure.boundingBoxShapeOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bbox shape of shape
      * @drawable true
@@ -276,8 +307,11 @@ export class OCCTOperations {
     /**
      * Computes a sphere that encloses a shape: it is centered on the bounding box and reaches its
      * corners, so it always contains the shape but is not the smallest possible sphere.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The sphere as `center` and `radius`
+     * @deprecated Moves to `analysis.measure.boundingSphereOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bsphere of shape
      * @drawable false
@@ -293,8 +327,11 @@ export class OCCTOperations {
 
     /**
      * Reads the center of a shape's bounding sphere, which is the center of its bounding box.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The center of the sphere
+     * @deprecated Moves to `analysis.measure.boundingSphereCenterOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bsphere center of shape
      * @drawable false
@@ -311,8 +348,11 @@ export class OCCTOperations {
     /**
      * Reads the radius of a shape's bounding sphere, the distance from the bounding box center to
      * its corner, in model units.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The radius
+     * @deprecated Moves to `analysis.measure.boundingSphereRadiusOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bsphere radius of shape
      * @drawable false
@@ -328,8 +368,11 @@ export class OCCTOperations {
 
     /**
      * Builds the bounding sphere of a shape as a sphere solid.
+     *
+     * It moves to `analysis.measure` in the next major version, with the same inputs and result.
      * @param inputs - The shape
      * @returns The sphere solid
+     * @deprecated Moves to `analysis.measure.boundingSphereShapeOfShape` in the next major version; it works here until then.
      * @group measure
      * @shortname bsphere shape of shape
      * @drawable true
@@ -340,48 +383,6 @@ export class OCCTOperations {
      */
     boundingSphereShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
         return this.och.operationsService.boundingSphereShapeOfShape(inputs);
-    }
-
-    /**
-     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
-     * the axis it turns about most easily, the normal the one it resists most.
-     *
-     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
-     * a density of 1. Each axis's largest coordinate is positive.
-     * @param inputs - The shape
-     * @returns The frame and the moments about its direction, y axis and normal
-     * @group frames
-     * @shortname principal frame
-     * @drawable false
-     * @example
-     * ```typescript
-     * const { frame, moments } = await bitbybit.occt.operations.principalFrame({ shape: part });
-     * ```
-     */
-    principalFrame(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.PrincipalFrame {
-        const numbers = this.och.occ.PrincipalFrame(checkedShape(inputs.shape));
-        return { frame: framesFromNumbers(numbers)[0]!, moments: [numbers[9]!, numbers[10]!, numbers[11]!] };
-    }
-
-    /**
-     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
-     * frame at the box's centre, its direction along the longest side and its normal along the
-     * shortest, with half the box's size along each.
-     *
-     * `analysis.measure.boundingBoxInFrame` keeps the axes of a frame you give instead.
-     * @param inputs - The shape
-     * @returns The frame and the half sizes along its direction, y axis and normal
-     * @group frames
-     * @shortname oriented bounding box
-     * @drawable false
-     * @example
-     * ```typescript
-     * const { frame, halfSizes } = await bitbybit.occt.operations.orientedBoundingBox({ shape: part });
-     * ```
-     */
-    orientedBoundingBox(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.OrientedBoundingBox {
-        const numbers = this.och.occ.OrientedBoundingBox(checkedShape(inputs.shape));
-        return { frame: framesFromNumbers(numbers)[0]!, halfSizes: [numbers[9]!, numbers[10]!, numbers[11]!] };
     }
 
     /**

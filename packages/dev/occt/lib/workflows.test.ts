@@ -19,7 +19,7 @@ describe("workflows built from several operations", () => {
     }
 
     function valid(shape: TopoDS_Shape): boolean {
-        return occt.shapes.shape.isValid({ shape });
+        return occt.shapeFix.isValid({ shape });
     }
 
     describe("a cube cut by six spheres that all meet at its centre, then chamfered along every edge", () => {

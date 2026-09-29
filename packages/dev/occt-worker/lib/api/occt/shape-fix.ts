@@ -7,9 +7,10 @@ import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 /**
  * Checks and repairs for OpenCascade shapes that came out of a file or an operation with defects:
  * gaps between edges, edges too short to matter, faces turned the wrong way, shells left open,
- * tolerances that drifted. `validityReport` says what is wrong and where, and `freeBoundaries` shows
- * the rims of openings; `basicShapeRepair` is the general fix, the shell, solid and sewing fixes and
- * the wire fixes handle the rest. Every repair returns a new shape.
+ * tolerances that drifted. `isValid` tells whether a shape is well formed, `validityReport` says what
+ * is wrong and where, and `freeBoundaries` shows the rims of openings; `basicShapeRepair` is the
+ * general fix, the shell, solid and sewing fixes and the wire fixes handle the rest. Every repair
+ * returns a new shape.
  */
 export class OCCTShapeFix {
     constructor(
@@ -23,7 +24,7 @@ export class OCCTShapeFix {
      *
      * `precision` is the size of defect to look for, `minTolerance` and `maxTolerance` bound the
      * tolerances the repaired shape may carry, all in model units. Try it first on any shape that
-     * fails `shapes.shape.isValid`.
+     * fails `isValid`.
      * @param inputs - The shape and the precision and tolerance bounds
      * @returns The repaired shape
      * @group shape
@@ -78,7 +79,29 @@ export class OCCTShapeFix {
     }
 
     /**
-     * Checks a shape as `shapes.shape.isValid` does and reports each faulty sub-shape with the checks
+     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
+     *
+     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
+     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
+     * bends, passes. Large parts take a few hundred milliseconds.
+     * @param inputs - The shape
+     * @returns True when the shape is well formed
+     * @group shape
+     * @shortname is valid
+     * @drawable false
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
+     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 6 });
+     * const wellFormed = await bitbybit.occt.shapeFix.isValid({ shape: rounded });
+     * ```
+     */
+    isValid(inputs: Inputs.OCCT.ShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<boolean> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapeFix.isValid", inputs);
+    }
+
+    /**
+     * Checks a shape as `isValid` does and reports each faulty sub-shape with the checks
      * it fails, and the spread of its tolerances.
      *
      * A fault's index is the one the getter of its kind uses: `shapes.face.getFace` with a face

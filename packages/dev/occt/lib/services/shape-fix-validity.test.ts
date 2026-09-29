@@ -5,6 +5,7 @@ import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTShapeFix } from "./shape-fix";
+import { OCCTFillets } from "./fillets";
 import * as Inputs from "../api/inputs";
 
 const MISSING: unknown = undefined;
@@ -67,6 +68,56 @@ describe("OCCT shape fix validity report and free boundaries", () => {
         occt = await createBitbybitOcct();
         occHelper = new OccHelper(new VectorHelperService(), new ShapesHelperService(), occt);
         shapeFix = new OCCTShapeFix(occt, occHelper);
+    });
+
+    describe("isValid", () => {
+        it("should tell a box and a fillet that fits it are well formed", () => {
+            // Arrange
+            const solid = box();
+
+            // Act
+            const boxIsValid = shapeFix.isValid({ shape: solid });
+            const filletIsValid = shapeFix.isValid({ shape: new OCCTFillets(occt, occHelper).filletEdges({ shape: solid, radius: 1 }) });
+
+            // Assert
+            expect(boxIsValid).toBe(true);
+            expect(filletIsValid).toBe(true);
+        });
+
+        it("should tell a fillet too large for the faces beside its edges is not, though the kernel built it", () => {
+            // Arrange
+            const rounded = new OCCTFillets(occt, occHelper).filletEdges({ shape: box(), radius: 6 });
+
+            // Act
+            const valid = shapeFix.isValid({ shape: rounded });
+
+            // Assert
+            expect(rounded.IsNull()).toBe(false);
+            expect(valid).toBe(false);
+        });
+
+        it("should tell a face whose outline crosses itself is not", () => {
+            // Arrange
+            const bowTie = occHelper.wiresService.createPolygonWire({ points: [[0, 0, 0], [10, 0, 10], [10, 0, 0], [0, 0, 10]] });
+
+            // Act
+            const valid = shapeFix.isValid({ shape: occHelper.facesService.createFaceFromWire({ shape: bowTie, planar: true }) });
+
+            // Assert
+            expect(valid).toBe(false);
+        });
+
+        it("should tell a null shape is not", () => {
+            // Arrange
+            const cube = box(1);
+            cube.Nullify();
+
+            // Act
+            const valid = shapeFix.isValid({ shape: cube });
+
+            // Assert
+            expect(valid).toBe(false);
+        });
     });
 
     describe("validityReport", () => {

@@ -54,8 +54,8 @@ describe("OCCT hole features", () => {
             expect(occt.shapes.shape.getShapeType({ shape: through })).toBe(Inputs.OCCT.shapeTypeEnum.solid);
             expect(volumeOf(through)).toBeCloseTo(4000 - 40 * Math.PI, 6);
             expect(volumeOf(blind)).toBeCloseTo(4000 - 20 * Math.PI, 6);
-            expect(occt.shapes.shape.isValid({ shape: through })).toBe(true);
-            expect(occt.shapes.shape.isValid({ shape: blind })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: through })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: blind })).toBe(true);
         });
 
         it("should leave the cone of a drill point below a blind hole, its angle in degrees", () => {

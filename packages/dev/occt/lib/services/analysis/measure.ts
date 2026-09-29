@@ -7,14 +7,14 @@ import { InputError, resolveDto } from "@bitbybit-dev/base";
 import { FrameAxes, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import { readKernelException } from "../../kernel-exception";
 import { checkedFrame, checkedNumber, checkedShape, checkedWhole } from "../base/input-checks";
-import { numbersOfFrames } from "../base/frames";
+import { framesFromNumbers, numbersOfFrames } from "../base/frames";
 import { DEGREES_PER_RADIAN, fractionsOnSupport, supportType } from "../base/surface-analysis";
 
 /**
- * Measurements of shapes: a bounding box that follows the geometry exactly, a box in a frame, every
- * closest pair of points between two shapes with the sub-shapes they lie on, angles between faces
- * and edges, the dihedral angle along an edge, and the tightest radius of curvature. Lengths are in
- * model units and angles in degrees.
+ * Measurements of shapes: a bounding box that follows the geometry exactly, a box in a frame, the
+ * box turned to fit and the principal axes of inertia, every closest pair of points between two
+ * shapes with the sub-shapes they lie on, angles between faces and edges, the dihedral angle along an
+ * edge, and the tightest radius of curvature. Lengths are in model units and angles in degrees.
  */
 export class OCCTAnalysisMeasure {
 
@@ -61,8 +61,8 @@ export class OCCTAnalysisMeasure {
      * world's.
      *
      * The box's x runs along the frame's direction and its z along the normal. It comes back as a
-     * frame at its center and half its size along each axis; `operations.orientedBoundingBox` turns
-     * the box to fit instead.
+     * frame at its center and half its size along each axis; `orientedBoundingBox` turns the box to
+     * fit instead.
      * @param inputs - The shape and the frame whose axes the box follows
      * @returns The frame at the box's center and the half sizes along its direction, y axis and normal
      * @group boxes
@@ -91,6 +91,48 @@ export class OCCTAnalysisMeasure {
             frame: { origin: [along(0), along(1), along(2)], normal: axes.z, direction: axes.x },
             halfSizes: [(box.XMax - box.XMin) / 2, (box.YMax - box.YMin) / 2, (box.ZMax - box.ZMin) / 2],
         };
+    }
+
+    /**
+     * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
+     * frame at the box's centre, its direction along the longest side and its normal along the
+     * shortest, with half the box's size along each.
+     *
+     * `boundingBoxInFrame` keeps the axes of a frame you give instead.
+     * @param inputs - The shape
+     * @returns The frame and the half sizes along its direction, y axis and normal
+     * @group boxes
+     * @shortname oriented bounding box
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { frame, halfSizes } = await bitbybit.occt.analysis.measure.orientedBoundingBox({ shape: part });
+     * ```
+     */
+    orientedBoundingBox(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.OrientedBoundingBox {
+        const numbers = this.occ.OrientedBoundingBox(checkedShape(inputs.shape));
+        return { frame: framesFromNumbers(numbers)[0]!, halfSizes: [numbers[9]!, numbers[10]!, numbers[11]!] };
+    }
+
+    /**
+     * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
+     * the axis it turns about most easily, the normal the one it resists most.
+     *
+     * Solids are measured by volume, even inside out, else faces by area, else edges by length, at
+     * a density of 1. Each axis's largest coordinate is positive.
+     * @param inputs - The shape
+     * @returns The frame and the moments about its direction, y axis and normal
+     * @group frames
+     * @shortname principal frame
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { frame, moments } = await bitbybit.occt.analysis.measure.principalFrame({ shape: part });
+     * ```
+     */
+    principalFrame(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Models.OCCT.PrincipalFrame {
+        const numbers = this.occ.PrincipalFrame(checkedShape(inputs.shape));
+        return { frame: framesFromNumbers(numbers)[0]!, moments: [numbers[9]!, numbers[10]!, numbers[11]!] };
     }
 
     /**

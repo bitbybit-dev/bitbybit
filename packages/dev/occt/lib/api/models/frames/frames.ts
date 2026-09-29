@@ -12,9 +12,9 @@ export interface PrincipalFrame {
 
 /**
  * A box around a shape as a frame at its centre and half its size along the frame's direction, y
- * axis and normal. `operations.orientedBoundingBox` turns the box to fit the shape, its direction
- * along the longest side and its normal along the shortest; `analysis.measure.boundingBoxInFrame`
- * keeps the axes of the frame it is given.
+ * axis and normal. `analysis.measure.orientedBoundingBox` turns the box to fit the shape, its
+ * direction along the longest side and its normal along the shortest;
+ * `analysis.measure.boundingBoxInFrame` keeps the axes of the frame it is given.
  */
 export interface OrientedBoundingBox {
     frame: Base.Frame;

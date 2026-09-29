@@ -61,7 +61,7 @@ describe("OCCT face features", () => {
             expect(occt.shapes.shape.getShapeType({ shape: filled })).toBe(Inputs.OCCT.shapeTypeEnum.solid);
             expect(volumeOf(rounded)).toBeLessThan(1000 - 1);
             expect(volumeOf(sharp)).toBeCloseTo(1000, 6);
-            expect(occt.shapes.shape.isValid({ shape: filled })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: filled })).toBe(true);
         });
 
         it("should pass on the kernel's refusal of a gap it cannot close, a face the shape lacks, no faces and a shape that is not solid", () => {
@@ -112,7 +112,7 @@ describe("OCCT face features", () => {
             expect(tallerBox.max[1]).toBeCloseTo(12, 6);
             expect(volumeOf(byDefault)).toBeCloseTo(1100, 6);
             expect(volumeOf(shorter)).toBeCloseTo(700, 6);
-            expect(occt.shapes.shape.isValid({ shape: shorter })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: shorter })).toBe(true);
         });
 
         it("should keep the solid of a boolean result and move the faces of every solid of a compound", () => {

@@ -94,7 +94,7 @@ that would crash or trivially fail the kernel (a loft through fewer than two sec
 points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
 reports success for some results that are not valid solids - a fillet radius larger than the faces
 allow, a pipe whose profile does not fit its bends - and those still come back without an error;
-`shapes.shape.isValid` finds the first kind.
+`shapeFix.isValid` finds the first kind.
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

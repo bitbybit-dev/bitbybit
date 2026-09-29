@@ -70,7 +70,7 @@ describe("OCCT form features", () => {
             expect(volumeOf(pocketed)).toBeCloseTo(988, 6);
             expect(volumeOf(through)).toBeCloseTo(960, 6);
             expect(volumeOf(toBottom)).toBeCloseTo(960, 6);
-            expect(occt.shapes.shape.isValid({ shape: pocketed })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: pocketed })).toBe(true);
         });
 
         it("should grow a boss 1 up along y by default", () => {
@@ -222,7 +222,7 @@ describe("OCCT form features", () => {
             // Assert
             expect(volumeOf(grooved)).toBeCloseTo(250 * Math.PI - 18 * Math.PI, 6);
             expect(volumeOf(half)).toBeCloseTo(250 * Math.PI - 9 * Math.PI, 6);
-            expect(occt.shapes.shape.isValid({ shape: grooved })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: grooved })).toBe(true);
         });
 
         it("should refuse an angle of 0 or past a whole turn and an axis of no length", () => {
@@ -283,7 +283,7 @@ describe("OCCT form features", () => {
 
             // Assert
             expect(volumeOf(grooved)).toBeCloseTo(2000 - (200 - 50), 6);
-            expect(occt.shapes.shape.isValid({ shape: grooved })).toBe(true);
+            expect(occt.shapeFix.isValid({ shape: grooved })).toBe(true);
         });
 
         it("should refuse a negative thickness and pass on the kernel's refusal of no thickness at all and of a profile that is not a wire", () => {

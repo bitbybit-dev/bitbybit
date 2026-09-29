@@ -6,7 +6,7 @@ import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,
- * which way it is oriented, whether it is closed, valid or the same object as another, and
+ * which way it is oriented, whether it is closed or the same object as another, and
  * `unifySameDomain`, which merges faces and edges that lie on one surface after a boolean. For work
  * specific to one kind, use the vertex, edge, wire, face, shell, solid and compound classes beside
  * this one.
@@ -164,28 +164,6 @@ export class OCCTShape {
      */
     isNull(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
         return inputs.shape.IsNull();
-    }
-
-    /**
-     * Tells whether the shape is well formed, which a successful operation does not always guarantee.
-     *
-     * It checks that edges lie on their faces, wires and shells close, and tolerances agree. A fillet
-     * too large for its faces fails; a shape passing through itself, such as a pipe wider than its
-     * bends, passes. Large parts take a few hundred milliseconds.
-     * @param inputs - The shape
-     * @returns True when the shape is well formed
-     * @group analysis
-     * @shortname is valid
-     * @drawable false
-     * @example
-     * ```typescript
-     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10 });
-     * const rounded = await bitbybit.occt.fillets.filletEdges({ shape: box, radius: 6 });
-     * const wellFormed = await bitbybit.occt.shapes.shape.isValid({ shape: rounded });
-     * ```
-     */
-    isValid(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): boolean {
-        return this.occ.ShapeIsValid(inputs.shape);
     }
 
     /**
