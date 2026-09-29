@@ -13,7 +13,7 @@ import { AGENT_SECTION_FILE, applyAgentLayer, listFiles, restoreTemplateDotfiles
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLI_VERSION = "1.3.2";
+const CLI_VERSION = "1.4.0-rc.0";
 const TEMPLATES_ROOT = path.join(__dirname, "..", "templates");
 
 const BITBYBIT_LOGO = `
