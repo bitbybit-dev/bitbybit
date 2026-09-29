@@ -158,6 +158,8 @@ const privateMethodsOf = (value: unknown): DrawPrivateMethods => {
     throw new TypeError("Draw no longer has every method this suite calls");
 };
 
+const passThroughRange: DrawHelper["withSurfaceAnalysisRange"] = options => options;
+
 const createDrawHelperDouble = () => ({
     drawPoints: vi.fn(),
     drawPoint: vi.fn(),
@@ -184,6 +186,7 @@ const createDrawHelperDouble = () => ({
     drawShape: vi.fn(),
     drawShapes: vi.fn(),
     handleDecomposedMesh: vi.fn(),
+    withSurfaceAnalysisRange: passThroughRange,
     dispose: vi.fn(),
 });
 
@@ -493,6 +496,23 @@ describe("Draw unit tests", () => {
             expect(handleDecomposedMeshMock).toHaveBeenCalledTimes(2);
             expect(first.parent).toBe(container);
             expect(second.parent).toBe(container);
+        });
+
+        it("should color every mesh of a list over the surface analysis range of all of them", async () => {
+            // Arrange
+            handleDecomposedMeshMock.mockResolvedValue(createMockMesh("one"));
+            const meshes = [decomposedMesh(), decomposedMesh()];
+            const pooling = vi.spyOn(mockDrawHelper, "withSurfaceAnalysisRange").mockImplementation(options => ({ ...options, analysisMin: -1, analysisMax: 1 }));
+
+            // Act
+            await draw.drawAnyAsync({ entity: meshes, options: { faceColour: "#123456" } });
+
+            // Assert
+            expect(pooling).toHaveBeenCalledWith(expect.objectContaining({ faceColour: "#123456" }), meshes);
+            expect(handleDecomposedMeshMock.mock.calls.map(([inputs, mesh, options]) => [inputs.analysisMin, inputs.analysisMax, mesh, options.analysisMax])).toEqual([
+                [-1, 1, meshes[0], 1],
+                [-1, 1, meshes[1], 1],
+            ]);
         });
 
         it("should keep that container itself out of sight, since only its contents are drawn", async () => {

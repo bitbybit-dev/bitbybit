@@ -85,7 +85,7 @@ export class DrawHelper extends DrawHelperCore {
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = this.getMeshingOptions(resolved);
             const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
             return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
@@ -97,9 +97,10 @@ export class DrawHelper extends DrawHelperCore {
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = this.getMeshingOptions(resolved);
             const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
-            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(resolved, decomposedMesh, resolved)));
+            const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
+            const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
             const containerId = this.generateEntityId("shapesMeshContainer");
             const shapesMeshContainer = new pc.Entity(containerId);
             this.context.scene.addChild(shapesMeshContainer);
@@ -408,7 +409,7 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined; colors?: number[] | undefined }[],
         group: pc.Entity | undefined, updatable: boolean, material: pc.StandardMaterial, addToScene: boolean, hidden: boolean
     ): pc.Entity {
         const createMesh = () => {
@@ -416,6 +417,7 @@ export class DrawHelper extends DrawHelperCore {
             let totalNormals: number[] = [];
             const totalIndices: number[] = [];
             const totalUvs: number[] = [];
+            const totalColors: number[] = [];
             let indexOffset = 0;
 
             meshDataConverted.forEach(meshItem => {
@@ -425,6 +427,9 @@ export class DrawHelper extends DrawHelperCore {
                 }
                 if (meshItem.uvs) {
                     totalUvs.push(...meshItem.uvs);
+                }
+                if (meshItem.colors) {
+                    totalColors.push(...meshItem.colors);
                 }
                 const offsetIndices = meshItem.indices.map(i => i + indexOffset);
                 totalIndices.push(...offsetIndices);
@@ -441,6 +446,9 @@ export class DrawHelper extends DrawHelperCore {
             mesh.setIndices(totalIndices);
             if (totalUvs.length > 0) {
                 mesh.setUvs(0, totalUvs);
+            }
+            if (totalColors.length > 0 && totalColors.length === totalPositions.length / 3 * 4) {
+                mesh.setColors(totalColors);
             }
             mesh.update(pc.PRIMITIVE_TRIANGLES);
             return mesh;
@@ -673,19 +681,22 @@ export class DrawHelper extends DrawHelperCore {
         const resolvedOptions = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
         const shapeGroup = new pc.Entity(this.generateEntityId("brepMesh"));
         this.context.scene.addChild(shapeGroup);
+        const linesOnFaces = resolved.drawEdges || resolved.drawIsoCurves;
 
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
             let pbr: pc.StandardMaterial;
+            const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
+            const alpha = resolved.faceOpacity;
+            const zOffset = linesOnFaces ? 2 : 0;
+            const slopeOffset = linesOnFaces ? 2 : 0;
+            const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 4);
 
-            if (resolvedOptions.faceMaterial) {
+            if (analysisColors) {
+                pbr = this.getOrCreateAnalysisMaterial(alpha, zOffset);
+            } else if (resolvedOptions.faceMaterial) {
                 pbr = resolvedOptions.faceMaterial;
             } else {
-                const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
-                const alpha = resolved.faceOpacity;
-                const zOffset = resolved.drawEdges ? 2 : 0;
-                const slopeOffset = resolved.drawEdges ? 2 : 0;
-                
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new pc.StandardMaterial();
                     pbmat.diffuse = this.hexToColor(hex);
@@ -699,12 +710,13 @@ export class DrawHelper extends DrawHelperCore {
                 });
             }
 
-            const meshData = decomposedMesh.faceList.map(face => {
+            const meshData = decomposedMesh.faceList.map((face, index) => {
                 return {
                     positions: face.vertexCoord,
                     normals: face.normalCoord,
                     indices: face.triIndexes,
                     uvs: face.uvs,
+                    colors: analysisColors?.[index],
                 };
             });
 
@@ -716,7 +728,7 @@ export class DrawHelper extends DrawHelperCore {
                     meshData, 
                     resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE, 
                     resolved.backFaceOpacity,
-                    resolved.drawEdges ? 2 : 0
+                    zOffset
                 );
                 shapeGroup.addChild(backFaceMesh);
             }
@@ -740,6 +752,12 @@ export class DrawHelper extends DrawHelperCore {
                 resolvedOptions.edgeArrowAngle
             );
             shapeGroup.addChild(line!);
+        }
+
+        if (resolved.drawIsoCurves && decomposedMesh && decomposedMesh.isoCurveList && decomposedMesh.isoCurveList.length) {
+            const line = this.drawPolylines(undefined, decomposedMesh.isoCurveList, false, resolved.edgeWidth, resolved.edgeOpacity, resolved.isoCurvesColour)!;
+            line.name = this.generateEntityId("isoCurves");
+            shapeGroup.addChild(line);
         }
 
         if (resolved.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
@@ -823,11 +841,14 @@ export class DrawHelper extends DrawHelperCore {
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
             const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
             const alpha = resolved.faceOpacity;
-            const zOffset = resolved.drawEdges ? 2 : 0;
-            const slopeOffset = resolved.drawEdges ? 2 : 0;
+            const zOffset = resolved.drawEdges || resolved.drawIsoCurves ? 2 : 0;
+            const slopeOffset = zOffset;
+            const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 4);
 
             let pbr: pc.StandardMaterial;
-            if (resolvedOptions.faceMaterial) {
+            if (analysisColors) {
+                pbr = this.getOrCreateAnalysisMaterial(alpha, zOffset);
+            } else if (resolvedOptions.faceMaterial) {
                 pbr = resolvedOptions.faceMaterial;
             } else {
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
@@ -843,12 +864,13 @@ export class DrawHelper extends DrawHelperCore {
                 });
             }
 
-            decomposedMesh.faceList.forEach(face => {
+            decomposedMesh.faceList.forEach((face, index) => {
                 const meshData = [{
                     positions: [...face.vertexCoord],
                     normals: [...face.normalCoord],
                     indices: [...face.triIndexes],
                     uvs: face.uvs ? [...face.uvs] : undefined,
+                    colors: analysisColors?.[index],
                 }];
 
                 if (resolved.drawTwoSided !== false) {
@@ -887,6 +909,12 @@ export class DrawHelper extends DrawHelperCore {
                     shapeGroup.addChild(line);
                 }
             });
+        }
+
+        if (resolved.drawIsoCurves && decomposedMesh && decomposedMesh.isoCurveList && decomposedMesh.isoCurveList.length) {
+            const line = this.drawPolylines(undefined, decomposedMesh.isoCurveList, false, resolved.edgeWidth, resolved.edgeOpacity, resolved.isoCurvesColour)!;
+            line.name = "iso curves";
+            shapeGroup.addChild(line);
         }
 
         if (resolved.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
@@ -1313,6 +1341,38 @@ export class DrawHelper extends DrawHelperCore {
          
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions;
+    }
+
+    /**
+     * What the worker meshes a shape with: the options it can receive, with the iso curve counts
+     * only when the iso curves are drawn and the surface analysis only when the faces are.
+     */
+    private getMeshingOptions<T extends Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">>(inputs: T): Omit<T, "faceMaterial"> {
+        return {
+            ...this.getSafeWorkerOptions(inputs),
+            isoCurvesU: inputs.drawIsoCurves ? inputs.isoCurvesU : 0,
+            isoCurvesV: inputs.drawIsoCurves ? inputs.isoCurvesV : 0,
+            surfaceAnalysis: inputs.drawFaces ? inputs.surfaceAnalysis : Inputs.OCCT.surfaceAnalysisEnum.none,
+        };
+    }
+
+    /**
+     * The material of faces colored by a surface analysis: the OCCT face material in white and reading
+     * vertex colors, so each vertex shows its own color, cached like the plain face materials.
+     */
+    private getOrCreateAnalysisMaterial(alpha: number, zOffset: number): pc.StandardMaterial {
+        return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
+            const pbmat = new pc.StandardMaterial();
+            pbmat.diffuse = new pc.Color(1, 1, 1);
+            pbmat.diffuseVertexColor = true;
+            pbmat.metalness = 0.4;
+            pbmat.gloss = 0.2;
+            pbmat.opacity = alpha;
+            pbmat.depthBias = zOffset;
+            pbmat.slopeDepthBias = zOffset;
+            pbmat.update();
+            return pbmat;
+        });
     }
 
     /**

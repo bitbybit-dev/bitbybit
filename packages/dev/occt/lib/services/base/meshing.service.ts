@@ -1,18 +1,56 @@
-import { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitAnalysis_SurfaceQuantity, BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { WiresService } from "./wires.service";
 import { BaseBitByBit } from "../../base";
 import { InputError } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import { decodeMeshArrays, type MeshArrays, type MeshContents } from "./mesh-arrays";
-import { checkedShapes } from "./input-checks";
+import { decodeMeshArrays, decodePolylines, type MeshArrays, type MeshContents } from "./mesh-arrays";
+import { checkedChoice, checkedDirection, checkedShapes, checkedWhole } from "./input-checks";
+
+const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
+    Inputs.OCCT.surfaceAnalysisEnum.none,
+    Inputs.OCCT.surfaceAnalysisEnum.gaussian,
+    Inputs.OCCT.surfaceAnalysisEnum.mean,
+    Inputs.OCCT.surfaceAnalysisEnum.maxCurvature,
+    Inputs.OCCT.surfaceAnalysisEnum.minCurvature,
+    Inputs.OCCT.surfaceAnalysisEnum.minRadius,
+    Inputs.OCCT.surfaceAnalysisEnum.draftAngle,
+];
+
+const MOST_ISO_CURVES = 1000;
+
+const DEGREES_PER_RADIAN = 180 / Math.PI;
+
+/** The pull direction handed to the kernel for the analyses that read none, since it refuses a zero one whatever it measures. */
+const UNREAD_PULL: Inputs.Base.Vector3 = [0, 1, 0];
+
+/** The values of a surface analysis at the nodes of the mesh held in `buffers`, in the order of its positions. */
+type NodeAnalysis = (buffers: MeshBuffers) => Float64Array;
 
 function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new (length: number): T; name: string }): T {
     if (!(view instanceof kind)) {
         throw new Error(`the kernel returned mesh data that is not a ${kind.name}`);
     }
     return view.slice() as T;
+}
+
+/** The kernel's value for a surface analysis other than none. */
+function surfaceQuantity(occ: BitbybitOcctModule, analysis: Inputs.OCCT.surfaceAnalysisEnum): BitbybitAnalysis_SurfaceQuantity {
+    switch (analysis) {
+        case Inputs.OCCT.surfaceAnalysisEnum.gaussian:
+            return occ.BitbybitAnalysis_SurfaceQuantity.Gaussian;
+        case Inputs.OCCT.surfaceAnalysisEnum.mean:
+            return occ.BitbybitAnalysis_SurfaceQuantity.Mean;
+        case Inputs.OCCT.surfaceAnalysisEnum.maxCurvature:
+            return occ.BitbybitAnalysis_SurfaceQuantity.MaxCurvature;
+        case Inputs.OCCT.surfaceAnalysisEnum.minCurvature:
+            return occ.BitbybitAnalysis_SurfaceQuantity.MinCurvature;
+        case Inputs.OCCT.surfaceAnalysisEnum.minRadius:
+            return occ.BitbybitAnalysis_SurfaceQuantity.MinRadius;
+        default:
+            return occ.BitbybitAnalysis_SurfaceQuantity.DraftAngle;
+    }
 }
 
 export class MeshingService {
@@ -62,6 +100,10 @@ export class MeshingService {
             keepMeshData: inputs.keepMeshData,
             allowQualityDecrease: inputs.allowQualityDecrease,
             forceFaceDeflection: inputs.forceFaceDeflection,
+            isoCurvesU: inputs.isoCurvesU,
+            isoCurvesV: inputs.isoCurvesV,
+            surfaceAnalysis: inputs.surfaceAnalysis,
+            draftDirection: inputs.draftDirection,
         }));
     }
 
@@ -78,9 +120,12 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
-      
+        const isoCurvesU = checkedWhole(resolved.isoCurvesU, "isoCurvesU", 0, MOST_ISO_CURVES);
+        const isoCurvesV = checkedWhole(resolved.isoCurvesV, "isoCurvesV", 0, MOST_ISO_CURVES);
+        const analysis = this.nodeAnalysis(resolved.shape, resolved.surfaceAnalysis, resolved.draftDirection);
+
         if (this.kernelHasMeshBuffers()) {
-            const contents = { colors: false, metadata: resolved.computeMetadata };
+            const contents: MeshContents = { colors: false, metadata: resolved.computeMetadata, analysis: analysis !== undefined };
             const arrays = this.meshArrays(this.occ.ShapeToMeshBuffers(
                 resolved.shape,
                 resolved.precision,
@@ -89,9 +134,14 @@ export class MeshingService {
                 resolved.keepMeshData,
                 resolved.allowQualityDecrease,
                 resolved.forceFaceDeflection,
-            ), contents);
+            ), contents, analysis);
             if (arrays) {
-                return decodeMeshArrays(arrays, contents);
+                const mesh = decodeMeshArrays(arrays, contents);
+                if (isoCurvesU + isoCurvesV > 0 && this.kernelHas("IsoCurvePolylines")) {
+                    const polylines = this.occ.IsoCurvePolylines(resolved.shape, isoCurvesU, isoCurvesV, resolved.precision);
+                    mesh.isoCurveList = decodePolylines(copied(polylines.points, Float64Array), copied(polylines.counts, Int32Array), resolved.adjustYtoZ);
+                }
+                return mesh;
             }
         }
         const json = this.occ.ShapeToMeshJson(
@@ -109,17 +159,48 @@ export class MeshingService {
     /**
      * Whether the loaded kernel can hand its mesh over as buffers, with metadata and for documents. A
      * kernel built before `DocumentToMeshBuffers` existed, such as a pinned or custom build, is meshed
-     * through its JSON instead.
+     * through its JSON instead, which carries no iso curves and no surface analysis.
      */
     private kernelHasMeshBuffers(): boolean {
         return typeof (this.occ as Partial<BitbybitOcctModule>).DocumentToMeshBuffers === "function";
     }
 
     /**
-     * Copies a mesh out of the kernel's memory and frees the kernel's copy, or returns undefined when
-     * meshing failed, so the caller can report the failure the way the JSON path does.
+     * Whether the loaded kernel has the function `name`. A kernel built before it, such as a pinned or
+     * custom build, gives a mesh without what that function adds.
      */
-    private meshArrays(buffers: MeshBuffers, contents: MeshContents): MeshArrays | undefined {
+    private kernelHas(name: "IsoCurvePolylines" | "SurfaceAnalysisAtMeshNodes"): boolean {
+        return typeof (this.occ as Partial<BitbybitOcctModule>)[name] === "function";
+    }
+
+    /**
+     * What reads `surfaceAnalysis` of `shape` at the nodes of its mesh, draft angles in degrees, after
+     * checking the analysis and, for draft angles, the pull direction; undefined for none, and on a
+     * kernel without it.
+     */
+    private nodeAnalysis(shape: TopoDS_Shape, surfaceAnalysis: unknown, draftDirection: unknown): NodeAnalysis | undefined {
+        const analysis = checkedChoice(surfaceAnalysis, SURFACE_ANALYSES, "surfaceAnalysis");
+        if (analysis === Inputs.OCCT.surfaceAnalysisEnum.none) {
+            return undefined;
+        }
+        const isAngle = analysis === Inputs.OCCT.surfaceAnalysisEnum.draftAngle;
+        const pull = isAngle ? checkedDirection(draftDirection, "draftDirection") : UNREAD_PULL;
+        if (!this.kernelHas("SurfaceAnalysisAtMeshNodes")) {
+            return undefined;
+        }
+        const quantity = surfaceQuantity(this.occ, analysis);
+        return buffers => {
+            const values = copied(this.occ.SurfaceAnalysisAtMeshNodes(shape, quantity, pull, buffers), Float64Array);
+            return isAngle ? values.map(value => value * DEGREES_PER_RADIAN) : values;
+        };
+    }
+
+    /**
+     * Copies a mesh out of the kernel's memory, with the values of `analysis` at its nodes when one is
+     * given, and frees the kernel's copy; undefined when meshing failed, so the caller can report the
+     * failure the way the JSON path does.
+     */
+    private meshArrays(buffers: MeshBuffers, contents: MeshContents, analysis?: NodeAnalysis): MeshArrays | undefined {
         try {
             if (!buffers.IsValid) {
                 return undefined;
@@ -146,6 +227,9 @@ export class MeshingService {
                 arrays.edgeMetadata = copied(buffers.EdgeMetadata(), Float64Array);
                 arrays.edgeTypes = copied(buffers.EdgeTypes(), Int32Array);
                 arrays.edgeIncidence = copied(buffers.EdgeIncidence(), Int32Array);
+            }
+            if (analysis) {
+                arrays.analysis = analysis(buffers);
             }
             return arrays;
         } finally {

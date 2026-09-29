@@ -2,6 +2,7 @@
 // Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
 // when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
 import { Inputs } from "@bitbybit-dev/occt";
+import { Models } from "@bitbybit-dev/occt";
 import { Resolved } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
@@ -18,6 +19,56 @@ export class OCCTAssemblyManager {
             stepData
         };
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.loadStepToDoc", preparedInputs);
+    }
+
+    // replaces assembly.manager.loadGltfToDoc
+    async loadGltfToDoc(inputs: Inputs.OCCT.LoadGltfToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        const gltfData = await this.occWorkerManager.prepareStepData(inputs.gltfData);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.loadGltfToDoc", { ...inputs, gltfData });
+    }
+
+    // replaces assembly.manager.loadObjToDoc
+    async loadObjToDoc(inputs: Inputs.OCCT.LoadObjToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        const objData = await this.occWorkerManager.prepareStepData(inputs.objData);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.loadObjToDoc", { ...inputs, objData });
+    }
+
+    // replaces assembly.manager.exportDocumentToObj
+    async exportDocumentToObj(inputs: Inputs.OCCT.ExportDocumentToObjDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.ObjFiles> {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToObjDto, inputs) as Resolved.OCCT.ExportDocumentToObjDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        const files = await this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.ObjFiles>("assembly.manager.exportDocumentToObj", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(files.obj, resolved.fileName, "model/obj");
+            const library = /^mtllib (.+)$/m.exec(files.obj)?.[1]?.trim();
+            if (library !== undefined && files.mtl !== "") {
+                this.downloadFile(files.mtl, library, "model/mtl");
+            }
+        }
+        return files;
+    }
+
+    // replaces assembly.manager.exportDocumentToPly
+    async exportDocumentToPly(inputs: Inputs.OCCT.ExportDocumentToPlyDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToPlyDto, inputs) as Resolved.OCCT.ExportDocumentToPlyDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("assembly.manager.exportDocumentToPly", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "text/plain");
+        }
+        return text;
+    }
+
+    // after assembly.manager.exportDocumentToPly
+    private downloadFile(content: string, fileName: string, type: string): void {
+        if (typeof document === "undefined") {
+            return;
+        }
+        const blob = new Blob([content], { type });
+        const fileLink = document.createElement("a");
+        fileLink.href = URL.createObjectURL(blob);
+        fileLink.target = "_self";
+        fileLink.download = fileName;
+        fileLink.click();
+        fileLink.remove();
     }
 
     // replaces assembly.manager.exportDocumentToStep

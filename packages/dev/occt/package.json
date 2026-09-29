@@ -106,10 +106,20 @@
             "types": "./dist/lib/services/index.d.ts",
             "default": "./dist/lib/services/index.js"
         },
+        "./lib/services/analysis": {
+            "@bitbybit-dev/source": "./lib/services/analysis/index.ts",
+            "types": "./dist/lib/services/analysis/index.d.ts",
+            "default": "./dist/lib/services/analysis/index.js"
+        },
         "./lib/services/assembly": {
             "@bitbybit-dev/source": "./lib/services/assembly/index.ts",
             "types": "./dist/lib/services/assembly/index.d.ts",
             "default": "./dist/lib/services/assembly/index.js"
+        },
+        "./lib/services/features": {
+            "@bitbybit-dev/source": "./lib/services/features/index.ts",
+            "types": "./dist/lib/services/features/index.d.ts",
+            "default": "./dist/lib/services/features/index.js"
         },
         "./lib/services/geom": {
             "@bitbybit-dev/source": "./lib/services/geom/index.ts",

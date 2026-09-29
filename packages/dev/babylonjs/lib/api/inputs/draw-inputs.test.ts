@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { Draw } from "./draw-inputs";
+import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 
 describe("Draw DTO unit tests", () => {
@@ -195,6 +196,34 @@ describe("Draw DTO unit tests", () => {
             expect(result.backFaceOpacity).toBe(1);
             expect(result.edgeArrowSize).toBe(0);
             expect(result.edgeArrowAngle).toBe(15);
+        });
+
+        it("should take the iso curve and surface analysis options as its last constructor parameters", () => {
+            // Arrange
+            const draftDirection: Base.Vector3 = [0, 0, 1];
+
+            // Act
+            const result = new Draw.DrawOcctShapeOptions(
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+                true, 3, 4, "#123456", Inputs.OCCT.surfaceAnalysisEnum.draftAngle, draftDirection, -10, 10
+            );
+
+            // Assert
+            expect([result.drawIsoCurves, result.isoCurvesU, result.isoCurvesV, result.isoCurvesColour]).toEqual([true, 3, 4, "#123456"]);
+            expect([result.surfaceAnalysis, result.draftDirection, result.analysisMin, result.analysisMax]).toEqual([Inputs.OCCT.surfaceAnalysisEnum.draftAngle, draftDirection, -10, 10]);
+            expect(result.faceOpacity).toBe(1);
+        });
+
+        it("should draw no iso curves and no analysis by default, and leave the analysis range to the values found", () => {
+            // Act
+            const result = new Draw.DrawOcctShapeOptions();
+
+            // Assert
+            expect([result.drawIsoCurves, result.isoCurvesU, result.isoCurvesV, result.isoCurvesColour]).toEqual([false, 5, 5, "#808080"]);
+            expect([result.surfaceAnalysis, result.draftDirection]).toEqual([Inputs.OCCT.surfaceAnalysisEnum.none, [0, 1, 0]]);
+            expect("analysisMin" in result).toBe(false);
+            expect("analysisMax" in result).toBe(false);
         });
     });
 

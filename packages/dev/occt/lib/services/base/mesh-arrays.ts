@@ -4,7 +4,8 @@ import * as Inputs from "../../api/inputs";
  * The triangulated mesh of a shape as the kernel lays it out: every face's nodes, normals, UVs and
  * triangles concatenated in face order, one fixed-size record per face, then the edges and vertices.
  * A document's mesh adds one colour record per face; a mesh asked for with metadata adds one record
- * per face and per edge, with the adjacent and incident face indices concatenated after them.
+ * per face and per edge, with the adjacent and incident face indices concatenated after them. A
+ * surface analysis adds one value per node, in the order of the positions.
  */
 export interface MeshArrays {
     positions: Float64Array;
@@ -24,12 +25,17 @@ export interface MeshArrays {
     edgeMetadata?: Float64Array;
     edgeTypes?: Int32Array;
     edgeIncidence?: Int32Array;
+    analysis?: Float64Array;
 }
 
-/** What a mesh carries besides its geometry: the colour groups of a document, the metadata. */
+/**
+ * What a mesh carries besides its geometry: the colour groups of a document, the metadata, and the
+ * values of a surface analysis.
+ */
 export interface MeshContents {
     colors: boolean;
     metadata: boolean;
+    analysis?: boolean;
 }
 
 type DecodedFace = Omit<Inputs.OCCT.DecomposedFaceDto, "centerPoint" | "centerNormal"> & {
@@ -128,6 +134,9 @@ function checkContents(arrays: MeshArrays, contents: MeshContents): void {
         expectLength("edgeTypes", edgeTypes.length, EDGE_TYPE_RECORD * edgeCount);
         expectLength("edgeIncidence", required("edgeIncidence", arrays.edgeIncidence).length, sumOfCounts(edgeTypes, EDGE_TYPE_RECORD, 2));
     }
+    if (contents.analysis) {
+        expectLength("analysis", required("analysis", arrays.analysis).length, arrays.positions.length / 3);
+    }
 }
 
 function hex(value: number): string {
@@ -191,7 +200,8 @@ function checkLengths(arrays: MeshArrays): void {
 /**
  * Builds the decomposed mesh the kernel's JSON describes from its flat arrays: the same objects, the
  * same keys in the same order and the same numbers, including a null centre for a face without a
- * surface, the metadata of every face and edge when `contents` asks for it and a document's colour groups.
+ * surface, the metadata of every face and edge when `contents` asks for it and a document's colour
+ * groups. The values of a surface analysis, which the JSON cannot carry, follow each face's other keys.
  * @throws Error when an array holds more or fewer numbers than the records describe
  */
 export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { colors: false, metadata: false }): Inputs.OCCT.DecomposedMeshDto {
@@ -233,6 +243,9 @@ export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { 
             face.faceUid = metadata[at + 5]!;
             adjacent += count;
         }
+        if (contents.analysis) {
+            face.analysisValues = numbers(arrays.analysis!, node, node + nodes);
+        }
         faceList.push(face);
         node += nodes;
         uvNode += hasUvs ? nodes : 0;
@@ -271,4 +284,27 @@ export function decodeMeshArrays(arrays: MeshArrays, contents: MeshContents = { 
         mesh.colorGroups = colorGroups(arrays);
     }
     return mesh as Inputs.OCCT.DecomposedMeshDto;
+}
+
+/**
+ * The polylines the kernel's iso curves come as: `counts[i]` points in polyline `i`, their x, y and
+ * z one after another in `coordinates`. With `swapYZ` each point's Y and Z trade places, as a mesh
+ * turned from Y-up to Z-up has them.
+ * @throws Error when `coordinates` holds more or fewer numbers than the counts describe
+ */
+export function decodePolylines(coordinates: Float64Array, counts: Int32Array, swapYZ: boolean): Inputs.Base.Point3[][] {
+    const total = counts.reduce((sum, count) => sum + count, 0);
+    if (coordinates.length !== 3 * total) {
+        throw new Error(`the kernel's iso curves disagree with their counts: the points hold ${coordinates.length} numbers where ${3 * total} were described`);
+    }
+    const polylines = new Array<Inputs.Base.Point3[]>(counts.length);
+    let at = 0;
+    for (let i = 0; i < counts.length; i++) {
+        const polyline = new Array<Inputs.Base.Point3>(counts[i]!);
+        for (let p = 0; p < polyline.length; p++, at += 3) {
+            polyline[p] = swapYZ ? [coordinates[at]!, coordinates[at + 2]!, coordinates[at + 1]!] : point(coordinates, at);
+        }
+        polylines[i] = polyline;
+    }
+    return polylines;
 }

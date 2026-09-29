@@ -781,13 +781,11 @@ export interface Handle_Geom_Surface extends ClassHandle {
   IsNull(): boolean;
   get(): Geom_Surface | null;
   surface(): Geom_Surface | null;
-  delete(): void;
 }
 
 export interface Handle_Geom_Curve extends ClassHandle {
   IsNull(): boolean;
   get(): Geom_Curve | null;
-  delete(): void;
   FirstParameter(): number;
   LastParameter(): number;
   Value(_0: number): gp_Pnt;
@@ -800,7 +798,6 @@ export interface Handle_Geom_Curve extends ClassHandle {
 export interface Handle_Geom2d_Curve extends ClassHandle {
   IsNull(): boolean;
   get(): Geom2d_Curve | null;
-  delete(): void;
   Value(_0: number): gp_Pnt2d;
   FirstParameter(): number;
   LastParameter(): number;
@@ -1768,12 +1765,10 @@ export interface TDF_Attribute extends ClassHandle {
 export interface Handle_TDF_Attribute extends ClassHandle {
   IsNull(): boolean;
   get(): TDF_Attribute | null;
-  delete(): void;
 }
 
 export interface Handle_TDocStd_Document extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   Main(): TDF_Label;
   get(): TDocStd_Document | null;
 }
@@ -1797,19 +1792,16 @@ export interface TDataStd_Integer extends ClassHandle {
 
 export interface Handle_XCAFDoc_ShapeTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_ShapeTool | null;
 }
 
 export interface Handle_XCAFDoc_ColorTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_ColorTool | null;
 }
 
 export interface Handle_XCAFDoc_MaterialTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_MaterialTool | null;
 }
 
@@ -1881,6 +1873,16 @@ export interface BitbybitFrame_CurveFrameValue<T extends number> {
   value: T;
 }
 export type BitbybitFrame_CurveFrame = BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>;
+
+export interface BitbybitAnalysis_SurfaceQuantityValue<T extends number> {
+  value: T;
+}
+export type BitbybitAnalysis_SurfaceQuantity = BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>;
+
+export interface GeomFill_FillingStyleValue<T extends number> {
+  value: T;
+}
+export type GeomFill_FillingStyle = GeomFill_FillingStyleValue<number>|GeomFill_FillingStyleValue<number>|GeomFill_FillingStyleValue<number>;
 
 interface EmbindModule {
   gp_XYZ: {
@@ -2822,6 +2824,74 @@ interface EmbindModule {
   HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
   HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
   HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  SectionWires(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): TopoDS_Wire[];
+  SliceByFrames(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: number): TopoDS_Compound[];
+  SplitByFrame(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Compound[];
+  SplitFaceByWires(_0: TopoDS_Shape, _1: TopoDS_Shape[]): TopoDS_Face[];
+  ClosestPointsOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; parameter: number; length: number; distance: number; edge: number }[];
+  CurvaturesOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): { point: [number, number, number]; tangent: [number, number, number]; normal: [number, number, number]; binormal: [number, number, number]; curvature: number; radius: number; centre: [number, number, number]; torsion: number; isStraight: boolean }[];
+  CurvatureComb(_0: TopoDS_Shape, _1: number, _2: number): { bases: Float64Array; tips: Float64Array; scale: number };
+  KinksOfCurve(_0: TopoDS_Shape, _1: number): { point: [number, number, number]; edge: number; angle: number }[];
+  ExtremesAlongCurve(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; parameter: number; length: number; height: number; isMaximum: boolean; isGlobal: boolean }[];
+  IntersectCurves(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): { point: [number, number, number]; parameterA: number; parameterB: number; edgeA: number; edgeB: number; isOverlap: boolean }[];
+  IntersectCurveWithFace(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): { point: [number, number, number]; parameter: number; edge: number; u: number; v: number; isOverlap: boolean }[];
+  SplitCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): (TopoDS_Edge | TopoDS_Wire)[];
+  ExtendCurve(_0: TopoDS_Shape, _1: number, _2: number): TopoDS_Edge;
+  BlendCurves(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number): TopoDS_Edge;
+  BitbybitAnalysis_SurfaceQuantity: {Gaussian: BitbybitAnalysis_SurfaceQuantityValue<number>, Mean: BitbybitAnalysis_SurfaceQuantityValue<number>, MaxCurvature: BitbybitAnalysis_SurfaceQuantityValue<number>, MinCurvature: BitbybitAnalysis_SurfaceQuantityValue<number>, MinRadius: BitbybitAnalysis_SurfaceQuantityValue<number>, DraftAngle: BitbybitAnalysis_SurfaceQuantityValue<number>};
+  ClosestPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; u: number; v: number; distance: number; normal: [number, number, number]; isOnBoundary: boolean }[];
+  CurvaturesOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): { point: [number, number, number]; normal: [number, number, number]; maxCurvature: number; minCurvature: number; meanCurvature: number; gaussianCurvature: number; maxDirection: [number, number, number]; minDirection: [number, number, number]; isUmbilic: boolean; isDefined: boolean }[];
+  SurfaceAnalysisAtMeshNodes(_0: TopoDS_Shape, _1: BitbybitAnalysis_SurfaceQuantity, _2: ArrayLike<number>, _3: MeshBuffers): Float64Array;
+  BestFitPlane(_0: ArrayLike<number>): { origin: [number, number, number]; normal: [number, number, number]; xDirection: [number, number, number]; maxDeviation: number };
+  IsoCurvesOnFace(_0: TopoDS_Shape, _1: boolean, _2: ArrayLike<number>): TopoDS_Edge[];
+  IsoCurvePolylines(_0: TopoDS_Shape, _1: number, _2: number, _3: number): { points: Float64Array; counts: Int32Array };
+  TightBoundingBox(_0: TopoDS_Shape): BoundingBoxResult;
+  BoundingBoxInFrame(_0: TopoDS_Shape, _1: ArrayLike<number>): BoundingBoxResult;
+  ExtremaBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): { pointA: [number, number, number]; pointB: [number, number, number]; distance: number; supportA: 'vertex' | 'edge' | 'face'; supportB: 'vertex' | 'edge' | 'face'; indexA: number; indexB: number; uA: number; vA: number; uB: number; vB: number }[];
+  AngleBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): { angle: number; pointA: [number, number, number]; pointB: [number, number, number]; directionA: [number, number, number]; directionB: [number, number, number] };
+  DihedralAngle(_0: TopoDS_Shape, _1: number, _2: number): { angle: number; isConvex: boolean; point: [number, number, number]; normalA: [number, number, number]; normalB: [number, number, number]; faceA: number; faceB: number };
+  MinCurvatureRadius(_0: TopoDS_Shape, _1: number, _2: boolean): { radius: number; point: [number, number, number]; support: 'face' | 'edge' | 'none'; index: number };
+  ValidityReport(_0: TopoDS_Shape): { isValid: boolean; faults: { type: 'vertex' | 'edge' | 'wire' | 'face' | 'shell' | 'solid' | 'compsolid' | 'compound' | 'shape'; index: number; statuses: string[] }[]; minTolerance: number; maxTolerance: number; averageTolerance: number };
+  FreeBoundaries(_0: TopoDS_Shape, _1: number): { closed: TopoDS_Compound; open: TopoDS_Compound };
+  FixShell(_0: TopoDS_Shape): TopoDS_Shape;
+  FixSolid(_0: TopoDS_Shape): TopoDS_Shape;
+  OrientClosedSolid(_0: TopoDS_Shape): TopoDS_Shape;
+  SewWithReport(_0: TopoDS_Shape[], _1: number, _2: boolean): { shape: TopoDS_Shape; freeEdges: TopoDS_Compound; freeEdgeCount: number; multipleEdgeCount: number; contiguousEdgeCount: number; degeneratedCount: number };
+  GeomFill_FillingStyle: {StretchStyle: GeomFill_FillingStyleValue<number>, CoonsStyle: GeomFill_FillingStyleValue<number>, CurvedStyle: GeomFill_FillingStyleValue<number>};
+  FaceThroughPointGrid(_0: ArrayLike<number>, _1: number, _2: number, _3: boolean, _4: boolean, _5: number, _6: number, _7: number): TopoDS_Face;
+  RuledBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): TopoDS_Shape;
+  BoundaryPatch(_0: TopoDS_Shape[], _1: GeomFill_FillingStyle): TopoDS_Face;
+  FillPatch(_0: TopoDS_Shape[], _1: ArrayLike<number>, _2: TopoDS_Shape[], _3: ArrayLike<number>, _4: number, _5: number, _6: number, _7: number): TopoDS_Face;
+  ProjectNormal(_0: TopoDS_Shape[], _1: TopoDS_Shape, _2: number, _3: number): TopoDS_Compound;
+  ProjectConical(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>): TopoDS_Compound;
+  UnrollFace(_0: TopoDS_Shape, _1: number): TopoDS_Face;
+  WrapOnFace(_0: TopoDS_Shape[], _1: TopoDS_Shape, _2: number): TopoDS_Wire[];
+  DrillHoles(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): TopoDS_Shape;
+  RemoveFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
+  PushPullFaces(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
+  FeatureBoss(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
+  FeaturePocket(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
+  FeatureTaperedPrism(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number, _4: boolean, _5: number, _6: number, _7: boolean): TopoDS_Shape;
+  FeatureRevolved(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: boolean, _6: number): TopoDS_Shape;
+  FeatureRib(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
+  FeatureGroove(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
+  SweepEvolved(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: boolean): TopoDS_Shape;
+  PipeWithScaling(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: boolean): TopoDS_Shape;
+  HiddenLines(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: boolean, _4: boolean, _5: number, _6: number): { visible: TopoDS_Compound; hidden: TopoDS_Compound };
+  ReadStlFromBytes(_0: ArrayLike<number>, _1: boolean): TopoDS_Shape;
+  ReadGltfToDoc(_0: ArrayLike<number>, _1: boolean): Handle_TDocStd_Document;
+  ReadObjToDoc(_0: ArrayLike<number>): Handle_TDocStd_Document;
+  ExportDocumentToObj(_0: Handle_TDocStd_Document, _1: number, _2: EmbindString): { obj: string; mtl: string };
+  ExportDocumentToPly(_0: Handle_TDocStd_Document, _1: number): string;
+  DocumentPmiJson(_0: Handle_TDocStd_Document): string;
+  CirclesTangentToThree(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  CirclesTangentToTwoWithRadius(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number, _3: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  CirclesTangentToTwoCenteredOn(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: TopoDS_Shape, _3: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  LinesTangentToTwo(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number): { edge: TopoDS_Edge; direction: [number, number, number]; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  LinesTangentAtAngle(_0: ArrayLike<number>, _1: TopoDS_Shape, _2: TopoDS_Shape, _3: number, _4: number): { edge: TopoDS_Edge; direction: [number, number, number]; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  ClashesBetween(_0: TopoDS_Shape[], _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
+  FacesWithin(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
+  SelfIntersections(_0: TopoDS_Shape, _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
 }
 
 export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;

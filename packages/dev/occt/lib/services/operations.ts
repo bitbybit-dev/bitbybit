@@ -6,16 +6,17 @@ import * as Inputs from "../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import * as Models from "../api/models";
-import { framesFromNumbers } from "./base/frames";
+import { framesFromNumbers, numbersOfFrames } from "./base/frames";
 import { historyFromKernel } from "./base/history";
-import { checkedShape } from "./base/input-checks";
+import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
 
 /**
  * The modeling operations that turn OpenCascade wires and faces into surfaces and solids and
  * measure shapes: lofting through sections, extruding and revolving, sweeping profiles along paths,
- * offsetting, thickening shells into solids, slicing and splitting, plus bounding boxes, bounding
- * spheres and closest-point queries. Distances are in model units and angles in degrees; every
- * operation returns a new shape. Booleans live in `booleans`, rounding in `fillets`.
+ * offsetting, thickening shells into solids, slicing, sectioning and splitting, and hidden-line
+ * drawings, plus bounding boxes, bounding spheres and closest-point queries. Distances are in model
+ * units and angles in degrees; every operation returns a new shape. Booleans live in `booleans`,
+ * rounding in `fillets` and local features such as holes in `features`.
  */
 export class OCCTOperations {
 
@@ -87,7 +88,8 @@ export class OCCTOperations {
      * Finds the pair of points, one on each shape, that are closest to each other.
      *
      * The distance between them is the gap between the shapes; it is 0 when they touch or overlap.
-     * Throws an error when no pair can be found.
+     * Throws an error when no pair can be found. `analysis.measure.extrema` gives every closest pair,
+     * with the sub-shapes the points lie on.
      * @param inputs - The two shapes
      * @returns The point on the first shape and the point on the second
      * @group closest pts
@@ -164,7 +166,8 @@ export class OCCTOperations {
      * center and its size along X, Y and Z.
      *
      * On curved shapes the box can be a little larger than the shape itself, because the kernel
-     * bounds the control geometry rather than the exact surface.
+     * bounds the control geometry rather than the exact surface. `analysis.measure.tightBoundingBox`
+     * follows the exact geometry.
      * @param inputs - The shape
      * @returns The box as `min`, `max`, `center` and `size`
      * @group measure
@@ -364,6 +367,8 @@ export class OCCTOperations {
      * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
      * frame at the box's centre, its direction along the longest side and its normal along the
      * shortest, with half the box's size along each.
+     *
+     * `analysis.measure.boundingBoxInFrame` keeps the axes of a frame you give instead.
      * @param inputs - The shape
      * @returns The frame and the half sizes along its direction, y axis and normal
      * @group frames
@@ -634,6 +639,57 @@ export class OCCTOperations {
     }
 
     /**
+     * Sweeps a profile along a flat spine, keeping its place beside it, as a moulding follows a wall.
+     *
+     * Draw the profile about the origin: x along the spine, y to the left of travel, inside a
+     * counter-clockwise loop, and z up from the spine's plane. A spine out of plane is refused.
+     * @param inputs - The flat spine, the profile and whether to make a solid
+     * @returns The swept shell or solid
+     * @group pipeing
+     * @shortname sweep evolved
+     * @drawable true
+     * @example
+     * ```typescript
+     * const spine = await bitbybit.occt.shapes.wire.createSquareWire({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const profile = await bitbybit.occt.shapes.wire.createPolygonWire({ points: [[0, 0, 0], [0, 1, 0], [0, 1, 3], [0, 0, 3]] });
+     * const wall = await bitbybit.occt.operations.sweepEvolved({ spine, profile, makeSolid: true });
+     * ```
+     */
+    sweepEvolved(inputs: Inputs.OCCT.SweepEvolvedDto<TopoDS_Wire | TopoDS_Face, TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.SweepEvolvedDto, inputs) as Resolved.OCCT.SweepEvolvedDto<TopoDS_Wire | TopoDS_Face, TopoDS_Wire | TopoDS_Edge>;
+        const spine = checkedShape(resolved.spine, "spine");
+        const profile = checkedShape(resolved.profile, "profile");
+        return this.actual(this.och.occ.SweepEvolved(spine, profile, resolved.makeSolid));
+    }
+
+    /**
+     * Sweeps a profile along a spine while scaling it, such as a tube that widens toward one end.
+     *
+     * `params` are places along the spine from 0 to 1, each scaled by the entry of `scales` at the
+     * same position; between them the scale changes smoothly. Place the profile across the start of
+     * the spine; `makeSolid` needs it closed.
+     * @param inputs - The spine, the profile, the places and their scales, and whether to make a solid
+     * @returns The swept solid or shell
+     * @group pipeing
+     * @shortname pipe with scaling
+     * @drawable true
+     * @example
+     * ```typescript
+     * const spine = await bitbybit.occt.shapes.edge.line({ start: [0, 0, 0], end: [0, 10, 0] });
+     * const profile = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const horn = await bitbybit.occt.operations.pipeWithScaling({ spine, profile, params: [0, 1], scales: [1, 2], makeSolid: true });
+     * ```
+     */
+    pipeWithScaling(inputs: Inputs.OCCT.PipeWithScalingDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.PipeWithScalingDto, inputs) as Resolved.OCCT.PipeWithScalingDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Wire | TopoDS_Edge>;
+        const spine = checkedShape(resolved.spine, "spine");
+        const profile = checkedShape(resolved.profile, "profile");
+        const params = checkedNumberList(resolved.params, "params", { atLeast: 0, atMost: 1 });
+        const scales = checkedNumberList(resolved.scales, "scales", { above: 0 });
+        return this.actual(this.och.occ.PipeWithScaling(spine, profile, params, scales, resolved.makeSolid));
+    }
+
+    /**
      * Moves the boundary of a shape outward, or inward for a negative distance, by a fixed
      * distance: a wire grows into a parallel outline, a face or solid into a bigger one.
      *
@@ -778,6 +834,115 @@ export class OCCTOperations {
     }
 
     /**
+     * Finds the curves where two shapes meet and joins them end to end into wires, such as the
+     * outline a plane cuts from a solid.
+     *
+     * A loop comes back as a closed wire, branches or loose ends as open wires, and shapes that do
+     * not meet give an empty list.
+     * @param inputs - The two shapes and the joining tolerance
+     * @returns The wires where the shapes meet
+     * @group divisions
+     * @shortname section wires
+     * @drawable true
+     * @example
+     * ```typescript
+     * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 5, 0] });
+     * const plane = await bitbybit.occt.shapes.face.createSquareFace({ size: 20, center: [0, 3, 0], direction: [0, 1, 0] });
+     * const outline = await bitbybit.occt.operations.sectionWires({ shapeA: box, shapeB: plane, tolerance: 1e-7 });
+     * ```
+     */
+    sectionWires(inputs: Inputs.OCCT.SectionWiresDto<TopoDS_Shape>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.SectionWiresDto, inputs) as Resolved.OCCT.SectionWiresDto<TopoDS_Shape>;
+        const shapeA = checkedShape(resolved.shapeA, "shapeA");
+        const shapeB = checkedShape(resolved.shapeB, "shapeB");
+        const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
+        return this.och.occ.SectionWires(shapeA, shapeB, tolerance);
+    }
+
+    /**
+     * Slices a shape with the plane of each frame, which passes through the frame's origin square to
+     * its normal.
+     *
+     * With `makeFaces` true a slice holds the faces where the plane passes through the solids, holes
+     * included; with false, the section wires. A plane that misses the shape gives an empty compound.
+     * @param inputs - The shape, the frames, whether to make faces and the joining tolerance
+     * @returns One compound per frame, in the order of the frames
+     * @group divisions
+     * @shortname slice by frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const slices = await bitbybit.occt.operations.sliceByFrames({
+     *     shape: vase,
+     *     frames: [
+     *         { origin: [0, 2, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *         { origin: [0, 4, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     ],
+     *     makeFaces: true,
+     *     tolerance: 1e-7,
+     * });
+     * ```
+     */
+    sliceByFrames(inputs: Inputs.OCCT.SliceByFramesDto<TopoDS_Shape>): TopoDS_Compound[] {
+        const resolved = resolveDto(Inputs.OCCT.SliceByFramesDto, inputs) as Resolved.OCCT.SliceByFramesDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const frames = checkedFrames(resolved.frames, "frames");
+        const tolerance = checkedNumber(resolved.tolerance, "tolerance", 0);
+        return this.och.occ.SliceByFrames(shape, numbersOfFrames(frames), resolved.makeFaces, tolerance);
+    }
+
+    /**
+     * Splits a shape in two with the plane of a frame: what lies on the side the frame's normal
+     * points to comes back as `front`, the rest as `back`.
+     *
+     * The pieces are solids when the shape has any, else faces, else edges. A shape the plane misses
+     * comes back whole on its side.
+     * @param inputs - The shape and the frame whose plane splits it
+     * @returns The pieces in front of the plane and behind it, each in a compound
+     * @group divisions
+     * @shortname split by frame
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { front, back } = await bitbybit.occt.operations.splitByFrame({
+     *     shape: box,
+     *     frame: { origin: [2, 0, 0], normal: [1, 0, 0], direction: [0, 1, 0] },
+     * });
+     * ```
+     */
+    splitByFrame(inputs: Inputs.OCCT.SplitByFrameDto<TopoDS_Shape>): Models.OCCT.SplitByFrameResult<TopoDS_Compound> {
+        const resolved = resolveDto(Inputs.OCCT.SplitByFrameDto, inputs) as Resolved.OCCT.SplitByFrameDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const frame = checkedFrame(resolved.frame, "frame");
+        const [front, back] = this.och.occ.SplitByFrame(shape, numbersOfFrames([frame]));
+        return { front: front!, back: back! };
+    }
+
+    /**
+     * Cuts a face into pieces along edges or wires lying on it, like scoring a sheet.
+     *
+     * A cutter cuts only where it lies on the face, and a closed loop inside it cuts out the region it
+     * encloses. With no cutters the face comes back whole.
+     * @param inputs - The face and the edges or wires to cut it along
+     * @returns The pieces of the face
+     * @group divisions
+     * @shortname split face by wires
+     * @drawable true
+     * @example
+     * ```typescript
+     * const square = await bitbybit.occt.shapes.face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const line = await bitbybit.occt.shapes.edge.line({ start: [0, 0, -6], end: [0, 0, 6] });
+     * const halves = await bitbybit.occt.operations.splitFaceByWires({ shape: square, wires: [line] });
+     * ```
+     */
+    splitFaceByWires(inputs: Inputs.OCCT.SplitFaceByWiresDto<TopoDS_Face, TopoDS_Wire | TopoDS_Edge>): TopoDS_Face[] {
+        const resolved = resolveDto(Inputs.OCCT.SplitFaceByWiresDto, inputs) as Resolved.OCCT.SplitFaceByWiresDto<TopoDS_Face, TopoDS_Wire | TopoDS_Edge>;
+        const face = checkedShape(resolved.shape);
+        const wires = checkedShapes(resolved.wires, "wires");
+        return this.och.occ.SplitFaceByWires(face, wires);
+    }
+
+    /**
      * Offsets a wire that does not lie in one plane: every point moves by `offset` at right angles to
      * both the wire and `direction`, keeping its height along `direction`.
      *
@@ -796,5 +961,60 @@ export class OCCTOperations {
     offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
         const resolved = resolveDto(Inputs.OCCT.Offset3DWireDto, inputs) as Resolved.OCCT.Offset3DWireDto<TopoDS_Wire>;
         return this.och.operationsService.offset3DWire(resolved);
+    }
+
+    /**
+     * Draws a shape seen from a view frame as a technical drawing does, flat on the XZ plane: the
+     * edges the eye sees and those that faces hide.
+     *
+     * The eye looks back along the frame's normal. Its origin lands on the world origin, its direction
+     * on x and the normal crossed with the direction on z. Both compounds hold edges.
+     * @param inputs - The shape, the view frame and the drawing options
+     * @returns The visible and the hidden edges, each a compound on the XZ plane
+     * @group views
+     * @shortname hidden lines
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { visible, hidden } = await bitbybit.occt.operations.hiddenLines({
+     *     shape: part,
+     *     frame: { origin: [0, 0, 0], normal: [1, 1, 1], direction: [1, 0, -1] },
+     *     exact: true,
+     *     smoothEdges: false,
+     *     hiddenEdges: true,
+     *     focus: 0,
+     *     precision: 0.01,
+     * });
+     * ```
+     */
+    hiddenLines(inputs: Inputs.OCCT.HiddenLinesDto<TopoDS_Shape>): Models.OCCT.HiddenLinesResult<TopoDS_Compound> {
+        const resolved = resolveDto(Inputs.OCCT.HiddenLinesDto, inputs) as Resolved.OCCT.HiddenLinesDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const frame = checkedFrame(resolved.frame, "frame");
+        const focus = checkedNumber(resolved.focus, "focus", 0);
+        const precision = resolved.exact ? 0 : checkedWithin(resolved.precision, "precision", { above: 0 });
+        const drawing = this.och.occ.HiddenLines(shape, numbersOfFrames([frame]), resolved.exact, resolved.smoothEdges, resolved.hiddenEdges, focus, precision);
+        return { visible: this.ontoGround(drawing.visible), hidden: this.ontoGround(drawing.hidden) };
+    }
+
+    /**
+     * The kernel's drawing on the XY plane turned onto the XZ plane, its y becoming z. Its edges
+     * arrive as curves on the drawing plane only, so their 3D curves are built first, or turning
+     * would lose them. The kernel's compound is released.
+     */
+    private ontoGround(drawing: TopoDS_Compound): TopoDS_Compound {
+        this.och.occ.BRepLib_BuildCurves3d_Simple(drawing);
+        const turned = this.och.transformsService.rotate({ shape: drawing, angle: 90, axis: [1, 0, 0] });
+        drawing.delete();
+        const compound = this.och.occ.CastToCompound(turned);
+        turned.delete();
+        return compound;
+    }
+
+    /** The kernel's result as the kind of shape it is; the kernel's handle is released. */
+    private actual(made: TopoDS_Shape): TopoDS_Shape {
+        const shape = this.och.converterService.getActualTypeOfShape(made);
+        made.delete();
+        return shape;
     }
 }

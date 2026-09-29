@@ -262,9 +262,10 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     createOrUpdateSurfacesMesh(
-        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
+        meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined; colors?: number[] | undefined }[],
         mesh: BABYLON.Mesh | undefined, updatable: boolean, material: BABYLON.PBRMetallicRoughnessMaterial, addToScene: boolean, hidden: boolean
     ): BABYLON.Mesh {
+        const colored = meshDataConverted.every(meshData => meshData.colors !== undefined && meshData.colors.length === meshData.positions.length / 3 * 4);
         const createMesh = () => {
             const first = meshDataConverted[meshDataConverted.length - 1]!;
             const rest = meshDataConverted.slice(0, -1);
@@ -275,6 +276,9 @@ export class DrawHelper extends DrawHelperCore {
             if (first.uvs) {
                 vd.uvs = first.uvs;
             }
+            if (colored) {
+                vd.colors = first.colors!;
+            }
 
             const v: BABYLON.VertexData[] = [];
             rest.forEach(meshData => {
@@ -284,6 +288,9 @@ export class DrawHelper extends DrawHelperCore {
                 vertexData.normals = meshData.normals;
                 if (meshData.uvs) {
                     vertexData.uvs = meshData.uvs;
+                }
+                if (colored) {
+                    vertexData.colors = meshData.colors!;
                 }
                 v.push(vertexData);
             });
@@ -1122,16 +1129,17 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, inputs) as Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>;
-        const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+        const safeWorkerOptions = this.getMeshingOptions(resolved);
         const decomposedMesh: Inputs.OCCT.DecomposedMeshDto = await this.occWorkerManager.genericCallToWorkerPromise("shapeToMesh", safeWorkerOptions);
         return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
     }
 
     async drawShapes(inputs: Inputs.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapesDto, inputs) as Resolved.OCCT.DrawShapesDto<Inputs.OCCT.TopoDSShapePointer>;
-        const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+        const safeWorkerOptions = this.getMeshingOptions(resolved);
         const meshes: Inputs.OCCT.DecomposedMeshDto[] = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", safeWorkerOptions);
-        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(resolved, decomposedMesh, resolved)));
+        const pooled = this.withSurfaceAnalysisRange(resolved, meshes);
+        const meshesSolved = await Promise.all(meshes.map(async decomposedMesh => this.handleDecomposedMesh(pooled, decomposedMesh, pooled)));
         const shapesMeshContainer = new BABYLON.Mesh(this.generateEntityId("shapesMeshContainer"), this.context.scene);
         meshesSolved.forEach(mesh => {
             mesh.parent = shapesMeshContainer;
@@ -1145,18 +1153,21 @@ export class DrawHelper extends DrawHelperCore {
         const shapeMesh = new BABYLON.Mesh(this.generateEntityId("brepMesh"), this.context.scene);
         shapeMesh.isVisible = false;
         const dummy = undefined;
+        const linesOnFaces = resolved.drawEdges || resolved.drawIsoCurves;
 
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
             let pbr: BABYLON.PBRMetallicRoughnessMaterial;
+            const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
+            const alpha = resolved.faceOpacity;
+            const zOffset = linesOnFaces ? 2 : 0;
+            const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 4);
 
-            if (resolvedOptions.faceMaterial) {
+            if (analysisColors) {
+                pbr = this.getOrCreateAnalysisMaterial(alpha, zOffset);
+            } else if (resolvedOptions.faceMaterial) {
                 pbr = resolvedOptions.faceMaterial;
             } else {
-                const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
-                const alpha = resolved.faceOpacity;
-                const zOffset = resolved.drawEdges ? 2 : 0;
-                
                 pbr = this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                     const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                     pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
@@ -1171,12 +1182,13 @@ export class DrawHelper extends DrawHelperCore {
                 });
             }
 
-            const meshData: MeshData[] = decomposedMesh.faceList.map(face => {
+            const meshData: MeshData[] = decomposedMesh.faceList.map((face, index) => {
                 return {
                     positions: face.vertexCoord,
                     normals: face.normalCoord,
                     indices: face.triIndexes,
                     uvs: face.uvs,
+                    colors: analysisColors?.[index],
                 };
             });
 
@@ -1186,7 +1198,7 @@ export class DrawHelper extends DrawHelperCore {
                     meshData,
                     resolved.backFaceColour || DEFAULT_COLORS.BACK_FACE,
                     resolved.backFaceOpacity,
-                    resolved.drawEdges ? 2 : 0
+                    zOffset
                 );
             }
 
@@ -1204,11 +1216,11 @@ export class DrawHelper extends DrawHelperCore {
                 evs.push(ev);
             });
             const mesh = this.drawPolylines(
-                dummy, 
-                evs, 
-                false, 
-                resolved.edgeWidth, 
-                resolved.edgeOpacity, 
+                dummy,
+                evs,
+                false,
+                resolved.edgeWidth,
+                resolved.edgeOpacity,
                 resolved.edgeColour,
                 1e-7,
                 false,
@@ -1216,6 +1228,12 @@ export class DrawHelper extends DrawHelperCore {
                 resolvedOptions.edgeArrowSize,
                 resolvedOptions.edgeArrowAngle
             )!;
+            mesh.parent = shapeMesh;
+        }
+
+        if (resolved.drawIsoCurves && decomposedMesh && decomposedMesh.isoCurveList && decomposedMesh.isoCurveList.length) {
+            const mesh = this.drawPolylines(dummy, decomposedMesh.isoCurveList, false, resolved.edgeWidth, resolved.edgeOpacity, resolved.isoCurvesColour)!;
+            (mesh as { name: string }).name = this.generateEntityId("isoCurves");
             mesh.parent = shapeMesh;
         }
 
@@ -1305,9 +1323,10 @@ export class DrawHelper extends DrawHelperCore {
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
             const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
             const alpha = resolved.faceOpacity;
-            const zOffset = resolved.drawEdges ? 2 : 0;
+            const zOffset = resolved.drawEdges || resolved.drawIsoCurves ? 2 : 0;
+            const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 4);
 
-            const pbr = resolvedOptions.faceMaterial ?? this.getOrCreateMaterial(hex, alpha, zOffset, () => {
+            const pbr = analysisColors ? this.getOrCreateAnalysisMaterial(alpha, zOffset) : resolvedOptions.faceMaterial ?? this.getOrCreateMaterial(hex, alpha, zOffset, () => {
                 const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepMaterial"), this.context.scene);
                 pbmat.baseColor = BABYLON.Color3.FromHexString(hex);
                 pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
@@ -1320,7 +1339,7 @@ export class DrawHelper extends DrawHelperCore {
                 return pbmat;
             });
 
-            decomposedMesh.faceList.forEach(face => {
+            decomposedMesh.faceList.forEach((face, index) => {
                 if (resolved.drawTwoSided !== false) {
                     const backFaceMesh = this.createBackFaceMesh(
                         [{
@@ -1342,6 +1361,7 @@ export class DrawHelper extends DrawHelperCore {
                     normals: [...face.normalCoord],
                     indices: [...face.triIndexes],
                     uvs: face.uvs ? [...face.uvs] : undefined,
+                    colors: analysisColors?.[index],
                 }], dummy, false, pbr, true, false);
                 faceMesh.name = `face ${face.faceIndex}`;
                 faceMesh.parent = shapeMesh;
@@ -1371,6 +1391,12 @@ export class DrawHelper extends DrawHelperCore {
             });
         }
 
+        if (resolved.drawIsoCurves && decomposedMesh && decomposedMesh.isoCurveList && decomposedMesh.isoCurveList.length) {
+            const mesh = this.drawPolylines(dummy, decomposedMesh.isoCurveList, false, resolved.edgeWidth, resolved.edgeOpacity, resolved.isoCurvesColour)!;
+            (mesh as { name: string }).name = "iso curves";
+            mesh.parent = shapeMesh;
+        }
+
         if (resolved.drawVertices && decomposedMesh && decomposedMesh.pointsList && decomposedMesh.pointsList.length) {
             const mesh = this.drawPoints({
                 pointsMesh: dummy,
@@ -1385,6 +1411,25 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         return shapeMesh;
+    }
+
+    /**
+     * The material of faces colored by a surface analysis: the OCCT face material in white, so each
+     * vertex shows its own color, cached like the plain face materials.
+     */
+    private getOrCreateAnalysisMaterial(alpha: number, zOffset: number): BABYLON.PBRMetallicRoughnessMaterial {
+        return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
+            const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepAnalysisMaterial"), this.context.scene);
+            pbmat.baseColor = BABYLON.Color3.FromHexString("#ffffff");
+            pbmat.metallic = BABYLONJS_MATERIAL_DEFAULTS.METALLIC;
+            pbmat.roughness = BABYLONJS_MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+            pbmat.alpha = alpha;
+            pbmat.alphaMode = BABYLONJS_MATERIAL_DEFAULTS.ALPHA_MODE;
+            pbmat.backFaceCulling = true;
+            pbmat.doubleSided = false;
+            pbmat.zOffset = zOffset;
+            return pbmat;
+        });
     }
 
     private handleDecomposedManifold(
@@ -1534,8 +1579,21 @@ export class DrawHelper extends DrawHelperCore {
     }
 
     private getSafeWorkerOptions<T extends { faceMaterial?: BABYLON.Material | undefined }>(inputs: T): Omit<T, "faceMaterial"> {
-         
+
         const { faceMaterial, ...safeOptions } = inputs;
         return safeOptions;
+    }
+
+    /**
+     * What the worker meshes a shape with: the options it can receive, with the iso curve counts
+     * only when the iso curves are drawn and the surface analysis only when the faces are.
+     */
+    private getMeshingOptions<T extends Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">>(inputs: T): Omit<T, "faceMaterial"> {
+        return {
+            ...this.getSafeWorkerOptions(inputs),
+            isoCurvesU: inputs.drawIsoCurves ? inputs.isoCurvesU : 0,
+            isoCurvesV: inputs.drawIsoCurves ? inputs.isoCurvesV : 0,
+            surfaceAnalysis: inputs.drawFaces ? inputs.surfaceAnalysis : Inputs.OCCT.surfaceAnalysisEnum.none,
+        };
     }
 }

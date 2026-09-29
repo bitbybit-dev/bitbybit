@@ -4,15 +4,20 @@ import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
+import { checkedNumber } from "../base/input-checks";
+import { SMALLEST_MESH_DEFLECTION, bytesOfFile, checkedDocument, objNameOf } from "../base/file-data";
 
 export type { Handle_TDocStd_Document };
 
+/** The four bytes a binary glTF file starts with, `glTF` in ASCII. */
+const GLB_MAGIC: readonly number[] = [0x67, 0x6c, 0x54, 0x46];
+
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
- * object at a time, combine them into a structure, and build a document from it; or load a STEP
- * file into a document. Then recolor and rename labels, update or remove parts, and export to STEP
- * or glTF. A document is an in-memory handle that stays alive until it is deleted, so build once
- * and query or export as often as needed.
+ * object at a time, combine them into a structure, and build a document from it; or load a STEP,
+ * glTF or OBJ file into a document. Then recolor and rename labels, update or remove parts, and
+ * export to STEP, glTF, OBJ or PLY. A document is an in-memory handle that stays alive until it is
+ * deleted, so build once and query or export as often as needed.
  */
 export class OCCTAssemblyManager {
 
@@ -317,13 +322,60 @@ export class OCCTAssemblyManager {
      * ```
      */
     loadStepToDoc(inputs: Inputs.OCCT.LoadStepToDocDto): Handle_TDocStd_Document {
-        const document = this.occ.LoadStepToDoc(inputs.stepData);
-        
+        const document = this.occ.LoadStepToDoc(bytesOfFile(inputs.stepData, "stepData"));
+
         if (document.IsNull()) {
             throw new Error("Failed to load STEP file");
         }
-        
+
         return document;
+    }
+
+    /**
+     * Loads a glTF file into a new assembly document, with its hierarchy, names and colors, the
+     * meshes becoming faces that carry triangles.
+     *
+     * `gltfData` is a binary `.glb` or a `.gltf` with its buffers embedded; the file's header tells
+     * which. glTF's Y-up becomes the document's Z-up, as `exportDocumentToGltf` writes it, and a file
+     * that holds no mesh is refused.
+     * @param inputs - The glTF file
+     * @returns The document handle
+     * @group assembly
+     * @shortname load glTF to document
+     * @drawable false
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadGltfToDoc({ gltfData: glbBytes });
+     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
+     * ```
+     */
+    loadGltfToDoc(inputs: Inputs.OCCT.LoadGltfToDocDto): Handle_TDocStd_Document {
+        const resolved = resolveDto(Inputs.OCCT.LoadGltfToDocDto, inputs);
+        const bytes = bytesOfFile(resolved.gltfData, "gltfData");
+        const isBinary = bytes.length >= GLB_MAGIC.length && GLB_MAGIC.every((byte, at) => bytes[at] === byte);
+        return this.occ.ReadGltfToDoc(bytes, isBinary);
+    }
+
+    /**
+     * Loads an OBJ file into a new assembly document, its meshes becoming faces that carry
+     * triangles, named as the file names them.
+     *
+     * Coordinates are taken as they are, since OBJ has no agreed up axis. A material library the
+     * file names is not read, and a file that holds no mesh is refused.
+     * @param inputs - The OBJ file
+     * @returns The document handle
+     * @group assembly
+     * @shortname load OBJ to document
+     * @drawable false
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadObjToDoc({ objData: objText });
+     * const tree = await bitbybit.occt.assembly.query.getAssemblyHierarchy({ document: doc });
+     * ```
+     */
+    loadObjToDoc(inputs: Inputs.OCCT.LoadObjToDocDto): Handle_TDocStd_Document {
+        const resolved = resolveDto(Inputs.OCCT.LoadObjToDocDto, inputs);
+        return this.occ.ReadObjToDoc(bytesOfFile(resolved.objData, "objData"));
     }
 
     /**
@@ -470,6 +522,56 @@ export class OCCTAssemblyManager {
             throw new Error("Failed to export document to glTF");
         }
         return result;
+    }
+
+    /**
+     * Triangulates an assembly document and writes it as OBJ, returning the file's text and the
+     * text of the material library its `mtllib` line names.
+     *
+     * The file name without its extension names the library, which holds the parts' colors and is
+     * empty for a document without any. Coordinates keep six decimals. `meshDeflection` sets how
+     * finely curved surfaces are triangulated.
+     * @param inputs - The document, the meshing tolerance, the file name and the download option
+     * @returns The OBJ text and the material library text
+     * @group export
+     * @shortname export document OBJ
+     * @drawable false
+     * @example
+     * ```typescript
+     * const files = await bitbybit.occt.assembly.manager.exportDocumentToObj({ document: doc, meshDeflection: 0.1, fileName: "assembly.obj", tryDownload: false });
+     * console.log(files.obj, files.mtl);
+     * ```
+     */
+    exportDocumentToObj(inputs: Inputs.OCCT.ExportDocumentToObjDto<Handle_TDocStd_Document>): Models.OCCT.ObjFiles {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToObjDto, inputs) as Resolved.OCCT.ExportDocumentToObjDto<Handle_TDocStd_Document>;
+        const document = checkedDocument(resolved.document, "document");
+        const meshDeflection = checkedNumber(resolved.meshDeflection, "meshDeflection", SMALLEST_MESH_DEFLECTION);
+        const name = objNameOf(resolved.fileName, "fileName");
+        const files = this.occ.ExportDocumentToObj(document, meshDeflection, name);
+        return { obj: files.obj, mtl: files.mtl };
+    }
+
+    /**
+     * Triangulates an assembly document and writes it as ASCII PLY with a normal per vertex and the
+     * parts' colors, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so a model more than about 1000 units across loses
+     * detail below 0.01. `meshDeflection` sets how finely curved surfaces are triangulated.
+     * @param inputs - The document, the meshing tolerance, the file name and the download option
+     * @returns The PLY file as text
+     * @group export
+     * @shortname export document PLY
+     * @drawable false
+     * @example
+     * ```typescript
+     * const ply = await bitbybit.occt.assembly.manager.exportDocumentToPly({ document: doc, meshDeflection: 0.1, fileName: "assembly.ply", tryDownload: false });
+     * ```
+     */
+    exportDocumentToPly(inputs: Inputs.OCCT.ExportDocumentToPlyDto<Handle_TDocStd_Document>): string {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToPlyDto, inputs) as Resolved.OCCT.ExportDocumentToPlyDto<Handle_TDocStd_Document>;
+        const document = checkedDocument(resolved.document, "document");
+        const meshDeflection = checkedNumber(resolved.meshDeflection, "meshDeflection", SMALLEST_MESH_DEFLECTION);
+        return this.occ.ExportDocumentToPly(document, meshDeflection);
     }
 
 }

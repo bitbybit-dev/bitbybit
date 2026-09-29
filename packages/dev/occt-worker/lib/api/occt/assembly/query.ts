@@ -6,10 +6,10 @@ import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 /**
  * Reading an assembly document: the parts and sub-assemblies it holds, the shape behind a label, a
- * label's color, placement and details, and the whole hierarchy as a tree. Labels are the ids the
- * document gives every part, instance and assembly, such as `0:1:1:1`; `getDocumentParts` and
- * `getAssemblyHierarchy` list them, the other methods take one. The document itself is not changed
- * by any query.
+ * label's color, placement and details, the whole hierarchy as a tree, and the dimensions and
+ * tolerances it carries. Labels are the ids the document gives every part, instance and assembly,
+ * such as `0:1:1:1`; `getDocumentParts` and `getAssemblyHierarchy` list them, the other methods take
+ * one. The document itself is not changed by any query.
  */
 export class OCCTAssemblyQuery {
     constructor(
@@ -130,5 +130,27 @@ export class OCCTAssemblyQuery {
      */
     getAssemblyHierarchy(inputs: Inputs.OCCT.DocumentQueryDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.AssemblyHierarchyResult> {
         return this.occWorkerManager.genericCallToWorkerPromise("assembly.query.getAssemblyHierarchy", inputs);
+    }
+
+    /**
+     * Reads the product manufacturing information a document holds, as a STEP AP242 file brings it:
+     * dimensions, geometric tolerances and the datums they refer to.
+     *
+     * Each entry names its shapes by label, which `getShapeFromLabel` reads. Lengths are in the
+     * document's unit, millimeters for a loaded STEP file, and angles in degrees; a document without
+     * any gives empty lists.
+     * @param inputs - The document
+     * @returns The dimensions, the tolerances and the datums
+     * @group query
+     * @shortname get PMI
+     * @drawable false
+     * @example
+     * ```typescript
+     * const pmi = await bitbybit.occt.assembly.query.getDocumentPmi({ document: doc });
+     * const measured = await bitbybit.occt.assembly.query.getShapeFromLabel({ document: doc, label: pmi.dimensions[0].shapes[0] });
+     * ```
+     */
+    getDocumentPmi(inputs: Inputs.OCCT.DocumentQueryDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.DocumentPmi> {
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.query.getDocumentPmi", inputs);
     }
 }

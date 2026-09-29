@@ -15,7 +15,9 @@ import { OCCTAssembly } from "./assembly/assembly";
 import { OCCTBrepGraph } from "./brep-graph";
 import { OCCTCorners } from "./corners";
 import { OCCTDraft } from "./draft";
+import { OCCTFeatures } from "./features";
 import { OCCTSelect } from "./select/select";
+import { OCCTAnalysis } from "./analysis/analysis";
 import { OCCTIO } from "./io";
 import { OCCTPath } from "./path";
 import { OCCTSVG } from "./svg";
@@ -23,8 +25,9 @@ import { OCCTSVG } from "./svg";
 /**
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
- * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners` and `draft` change
- * shapes; `select` picks faces and edges by what they are and where they lie; `geom` handles
+ * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
+ * change shapes; `select` picks faces and edges by what they are and where they lie; `analysis`
+ * answers questions about shapes with points and numbers; `geom` handles
  * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `assembly`,
  * `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology graphs,
  * machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
@@ -43,7 +46,9 @@ export class OCCT {
     public readonly brepGraph: OCCTBrepGraph;
     public readonly corners: OCCTCorners;
     public readonly draft: OCCTDraft;
+    public readonly features: OCCTFeatures;
     public readonly select: OCCTSelect;
+    public readonly analysis: OCCTAnalysis;
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
     public readonly svg: OCCTSVG;
@@ -63,7 +68,9 @@ export class OCCT {
         this.brepGraph = new OCCTBrepGraph(occWorkerManager);
         this.corners = new OCCTCorners(occWorkerManager);
         this.draft = new OCCTDraft(occWorkerManager);
+        this.features = new OCCTFeatures(occWorkerManager);
         this.select = new OCCTSelect(occWorkerManager);
+        this.analysis = new OCCTAnalysis(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
         this.path = new OCCTPath(occWorkerManager);
         this.svg = new OCCTSVG(occWorkerManager);
@@ -94,18 +101,18 @@ export class OCCT {
      * Triangulates a shape into a mesh for drawing: one entry per face with its vertices, normals,
      * UVs and triangle indexes, one per edge with its points, and the vertex points.
      *
-     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely and cost more triangles. `adjustYtoZ` swaps Y and Z. A null shape gives empty
-     * lists.
+     * `precision` is the meshing tolerance in model units. `isoCurvesU` and `isoCurvesV` add each
+     * face's iso curves as polylines, and `surfaceAnalysis` a value per vertex. A null shape gives
+     * empty lists.
      * @param inputs - The shape, the meshing precision and the options
-     * @returns The mesh as face, edge and point lists
+     * @returns The mesh as face, edge and point lists, with iso curves and analysis values when asked for
      * @group convert
      * @shortname shape to mesh
      * @drawable false
      * @example
      * ```typescript
-     * const mesh = await bitbybit.occt.shapeToMesh({ shape: sphere, precision: 0.01, adjustYtoZ: false });
-     * console.log(mesh.faceList.length, mesh.edgeList.length);
+     * const mesh = await bitbybit.occt.shapeToMesh({ shape: sphere, precision: 0.01, isoCurvesU: 4, isoCurvesV: 4, surfaceAnalysis: Bit.Inputs.OCCT.surfaceAnalysisEnum.gaussian });
+     * console.log(mesh.isoCurveList?.length, mesh.faceList[0]?.analysisValues);
      * ```
      */
     shapeToMesh(inputs: Inputs.OCCT.ShapeToMeshDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto> {
@@ -135,7 +142,8 @@ export class OCCT {
     }
 
     /**
-     * Triangulates several shapes with the same settings, as `shapeToMesh` does for one.
+     * Triangulates several shapes with the same settings, as `shapeToMesh` does for one, iso curves
+     * and surface analysis included.
      * @param inputs - The shapes, the meshing precision and the options
      * @returns One mesh per shape, in the same order
      * @group convert
@@ -143,7 +151,7 @@ export class OCCT {
      * @drawable false
      * @example
      * ```typescript
-     * const meshes = await bitbybit.occt.shapesToMeshes({ shapes: [box, sphere], precision: 0.01, adjustYtoZ: false });
+     * const meshes = await bitbybit.occt.shapesToMeshes({ shapes: [box, sphere], precision: 0.01, isoCurvesU: 2, isoCurvesV: 2 });
      * ```
      */
     shapesToMeshes(inputs: Inputs.OCCT.ShapesToMeshesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.DecomposedMeshDto[]> {

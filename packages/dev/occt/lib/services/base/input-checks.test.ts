@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { InputError } from "@bitbybit-dev/base";
 import {
-    checkedChoice, checkedCount, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedPlacements, checkedPoint,
-    checkedShape, checkedShapes, withIndexesInRange,
+    checkedChoice, checkedCount, checkedDirection, checkedFlag, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList,
+    checkedPlacements, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin, withIndexesInRange,
 } from "./input-checks";
 import { KernelExceptionReader } from "../../kernel-exception";
 
@@ -124,6 +124,67 @@ describe("input checks", () => {
             expect(error.message).toBe("`tolerance` must be a finite number 0 or more; it is -1.");
         });
 
+        it.each([
+            { bounds: {}, words: "a finite number" },
+            { bounds: { above: 0 }, words: "a finite number above 0" },
+            { bounds: { atLeast: 0 }, words: "a finite number 0 or more" },
+            { bounds: { atLeast: 0, atMost: 1 }, words: "a finite number from 0 to 1" },
+            { bounds: { above: 0, atMost: 360 }, words: "a finite number above 0 and at most 360" },
+            { bounds: { atLeast: 0, below: 180 }, words: "a finite number at least 0 and below 180" },
+        ])("should word the bounds as $words", ({ bounds, words }) => {
+            // Act
+            const error = thrownBy(() => checkedWithin(Number.NaN, "angle", bounds));
+
+            // Assert
+            expect(error.message).toBe(`\`angle\` must be ${words}; it is NaN.`);
+        });
+
+        it.each([0, 180, Number.POSITIVE_INFINITY, "90"])("should refuse %s where a number above 0 and below 180 is asked for", (value) => {
+            // Act
+            const error = thrownBy(() => checkedWithin(value, "angle", { above: 0, below: 180 }));
+
+            // Assert
+            expect(error.property).toBe("angle");
+        });
+
+        it("should keep a number within its bounds, each end included only where it is", () => {
+            // Act
+            const checked = [
+                checkedWithin(0, "share", { atLeast: 0, atMost: 1 }),
+                checkedWithin(1, "share", { atLeast: 0, atMost: 1 }),
+                checkedWithin(0.5, "share", { above: 0, below: 1 }),
+            ];
+
+            // Assert
+            expect(checked).toEqual([0, 1, 0.5]);
+        });
+
+        it("should refuse a list of numbers at the first one out of bounds, and a value that is no list", () => {
+            // Act
+            const past = thrownBy(() => checkedNumberList([0.5, 1.5, 2], "params", { atLeast: 0, atMost: 1 }));
+            const notANumber = thrownBy(() => checkedNumberList([1, Number.NaN], "params"));
+            const notAList = thrownBy(() => checkedNumberList(0.5, "params"));
+            const kept = checkedNumberList([0, 0.5, 1], "params", { atLeast: 0, atMost: 1 });
+
+            // Assert
+            expect(past.message).toBe("`params` holds 1.5 at position 1; each is a finite number from 0 to 1.");
+            expect(notANumber.message).toBe("`params` holds NaN at position 1; each is a finite number.");
+            expect(notAList.message).toBe("`params` is not a list of numbers.");
+            expect(kept).toEqual([0, 0.5, 1]);
+        });
+
+        it("should refuse a list of points at the first that is not three finite numbers, and a value that is no list", () => {
+            // Act
+            const notAPoint = thrownBy(() => checkedPoints([[0, 0, 0], [1, Number.NaN, 0]], "points"));
+            const notAList = thrownBy(() => checkedPoints(7, "points"));
+            const kept = checkedPoints([[0, 0, 0], [1, 2, 3]], "points");
+
+            // Assert
+            expect(notAPoint.message).toBe("`points` holds something other than a point at position 1; each is three finite numbers.");
+            expect(notAList.message).toBe("`points` is not a list of points.");
+            expect(kept).toEqual([[0, 0, 0], [1, 2, 3]]);
+        });
+
         it("should refuse a direction of no length and one that is not three numbers", () => {
             // Act
             const zero = thrownBy(() => checkedDirection([0, 0, 0], "normal"));
@@ -172,6 +233,31 @@ describe("input checks", () => {
             // Assert
             expect(error.property).toBe("indexes");
             expect(checked).toEqual([4, 0, 4]);
+        });
+
+        it.each([
+            { value: 1, least: 2, most: Number.POSITIVE_INFINITY, words: "2 or more" },
+            { value: 2.5, least: 2, most: Number.POSITIVE_INFINITY, words: "2 or more" },
+            { value: 26, least: 1, most: 25, words: "from 1 to 25" },
+            { value: "3", least: 0, most: Number.POSITIVE_INFINITY, words: "0 or more" },
+        ])("should refuse $value where a whole number $words is asked for", ({ value, least, most, words }) => {
+            // Act
+            const error = thrownBy(() => checkedWhole(value, "degree", least, most));
+
+            // Assert
+            expect(error.message).toBe(`\`degree\` must be a whole number ${words}; it is ${String(value)}.`);
+        });
+
+        it("should keep a whole number within its range and a flag that is true or false", () => {
+            // Act
+            const whole = checkedWhole(25, "degree", 1, 25);
+            const flag = checkedFlag(false, "closed");
+            const notAFlag = thrownBy(() => checkedFlag("yes", "closed"));
+
+            // Assert
+            expect(whole).toBe(25);
+            expect(flag).toBe(false);
+            expect(notAFlag.message).toBe("`closed` must be true or false; it is yes.");
         });
 
         it("should refuse a choice that is none of those allowed, listing them", () => {

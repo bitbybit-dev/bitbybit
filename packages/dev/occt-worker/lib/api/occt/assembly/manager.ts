@@ -8,10 +8,10 @@ import { resolveDto } from "@bitbybit-dev/base";
 
 /**
  * Building and changing assembly documents: describe parts, assembly nodes and instance nodes one
- * object at a time, combine them into a structure, and build a document from it; or load a STEP
- * file into a document. Then recolor and rename labels, update or remove parts, and export to STEP
- * or glTF. A document is an in-memory handle that stays alive until it is deleted, so build once
- * and query or export as often as needed.
+ * object at a time, combine them into a structure, and build a document from it; or load a STEP,
+ * glTF or OBJ file into a document. Then recolor and rename labels, update or remove parts, and
+ * export to STEP, glTF, OBJ or PLY. A document is an in-memory handle that stays alive until it is
+ * deleted, so build once and query or export as often as needed.
  */
 export class OCCTAssemblyManager {
     constructor(
@@ -206,6 +206,51 @@ export class OCCTAssemblyManager {
     }
 
     /**
+     * Loads a glTF file into a new assembly document, with its hierarchy, names and colors, the
+     * meshes becoming faces that carry triangles.
+     *
+     * `gltfData` is a binary `.glb` or a `.gltf` with its buffers embedded; the file's header tells
+     * which. glTF's Y-up becomes the document's Z-up, as `exportDocumentToGltf` writes it, and a file
+     * that holds no mesh is refused.
+     * @param inputs - The glTF file
+     * @returns The document handle
+     * @group assembly
+     * @shortname load glTF to document
+     * @drawable false
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadGltfToDoc({ gltfData: glbBytes });
+     * const parts = await bitbybit.occt.assembly.query.getDocumentParts({ document: doc });
+     * ```
+     */
+    async loadGltfToDoc(inputs: Inputs.OCCT.LoadGltfToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        const gltfData = await this.occWorkerManager.prepareStepData(inputs.gltfData);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.loadGltfToDoc", { ...inputs, gltfData });
+    }
+
+    /**
+     * Loads an OBJ file into a new assembly document, its meshes becoming faces that carry
+     * triangles, named as the file names them.
+     *
+     * Coordinates are taken as they are, since OBJ has no agreed up axis. A material library the
+     * file names is not read, and a file that holds no mesh is refused.
+     * @param inputs - The OBJ file
+     * @returns The document handle
+     * @group assembly
+     * @shortname load OBJ to document
+     * @drawable false
+     * @example
+     * ```typescript
+     * const doc = await bitbybit.occt.assembly.manager.loadObjToDoc({ objData: objText });
+     * const tree = await bitbybit.occt.assembly.query.getAssemblyHierarchy({ document: doc });
+     * ```
+     */
+    async loadObjToDoc(inputs: Inputs.OCCT.LoadObjToDocDto): Promise<Inputs.OCCT.TDocStdDocumentPointer> {
+        const objData = await this.occWorkerManager.prepareStepData(inputs.objData);
+        return this.occWorkerManager.genericCallToWorkerPromise("assembly.manager.loadObjToDoc", { ...inputs, objData });
+    }
+
+    /**
      * Colors a label of a document, a part, instance or assembly, with red, green, blue and alpha
      * from 0 to 1.
      *
@@ -351,6 +396,75 @@ export class OCCTAssemblyManager {
             }
             return s;
         });
+    }
+
+    /**
+     * Triangulates an assembly document and writes it as OBJ, returning the file's text and the
+     * text of the material library its `mtllib` line names.
+     *
+     * The file name without its extension names the library, which holds the parts' colors and is
+     * empty for a document without any. Coordinates keep six decimals. `meshDeflection` sets how
+     * finely curved surfaces are triangulated.
+     * @param inputs - The document, the meshing tolerance, the file name and the download option
+     * @returns The OBJ text and the material library text
+     * @group export
+     * @shortname export document OBJ
+     * @drawable false
+     * @example
+     * ```typescript
+     * const files = await bitbybit.occt.assembly.manager.exportDocumentToObj({ document: doc, meshDeflection: 0.1, fileName: "assembly.obj", tryDownload: false });
+     * console.log(files.obj, files.mtl);
+     * ```
+     */
+    async exportDocumentToObj(inputs: Inputs.OCCT.ExportDocumentToObjDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<Models.OCCT.ObjFiles> {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToObjDto, inputs) as Resolved.OCCT.ExportDocumentToObjDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        const files = await this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.ObjFiles>("assembly.manager.exportDocumentToObj", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(files.obj, resolved.fileName, "model/obj");
+            const library = /^mtllib (.+)$/m.exec(files.obj)?.[1]?.trim();
+            if (library !== undefined && files.mtl !== "") {
+                this.downloadFile(files.mtl, library, "model/mtl");
+            }
+        }
+        return files;
+    }
+
+    /**
+     * Triangulates an assembly document and writes it as ASCII PLY with a normal per vertex and the
+     * parts' colors, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so a model more than about 1000 units across loses
+     * detail below 0.01. `meshDeflection` sets how finely curved surfaces are triangulated.
+     * @param inputs - The document, the meshing tolerance, the file name and the download option
+     * @returns The PLY file as text
+     * @group export
+     * @shortname export document PLY
+     * @drawable false
+     * @example
+     * ```typescript
+     * const ply = await bitbybit.occt.assembly.manager.exportDocumentToPly({ document: doc, meshDeflection: 0.1, fileName: "assembly.ply", tryDownload: false });
+     * ```
+     */
+    async exportDocumentToPly(inputs: Inputs.OCCT.ExportDocumentToPlyDto<Inputs.OCCT.TDocStdDocumentPointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.ExportDocumentToPlyDto, inputs) as Resolved.OCCT.ExportDocumentToPlyDto<Inputs.OCCT.TDocStdDocumentPointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("assembly.manager.exportDocumentToPly", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "text/plain");
+        }
+        return text;
+    }
+
+    private downloadFile(content: string, fileName: string, type: string): void {
+        if (typeof document === "undefined") {
+            return;
+        }
+        const blob = new Blob([content], { type });
+        const fileLink = document.createElement("a");
+        fileLink.href = URL.createObjectURL(blob);
+        fileLink.target = "_self";
+        fileLink.download = fileName;
+        fileLink.click();
+        fileLink.remove();
     }
 
     /**

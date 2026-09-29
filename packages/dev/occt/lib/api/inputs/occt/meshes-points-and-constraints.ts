@@ -1,7 +1,7 @@
 // A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
-import { circleInclusionEnum, positionResultEnum, twoCircleInclusionEnum } from "./enums";
+import { circleInclusionEnum, positionResultEnum, surfaceAnalysisEnum, twoCircleInclusionEnum } from "./enums";
 
 /**
  * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
@@ -30,6 +30,12 @@ export class DecomposedMeshDto {
      * @optional true
      */
     colorGroups?: { [color: string]: number[] } | undefined;
+    /**
+     * The faces' iso curves as polylines, face by face with u curves before v curves; a curve crossing
+     * a hole comes in pieces. Present only when asked for.
+     * @optional true
+     */
+    isoCurveList?: Base.Point3[][] | undefined;
 }
 
 /**
@@ -126,6 +132,12 @@ export class DecomposedFaceDto {
      * @optional true
      */
     faceUid?: number | undefined;
+    /**
+     * The surface analysis value at each vertex in `vertexCoord` order, such as a curvature or a draft
+     * angle in degrees, NaN where undefined; present only with `surfaceAnalysis`.
+     * @optional true
+     */
+    analysisValues?: number[] | undefined;
 }
 /**
  * One edge inside a `DecomposedMeshDto`: the points that trace it for drawing, plus optional facts
@@ -534,8 +546,9 @@ export class FilletTwoEdgesInPlaneDto<T> {
     solution?: number | undefined = -1;
 }
 /**
- * A shape and points for `operations.closestPointsOnShapeFromPoints` and
- * `operations.distancesToShapeFromPoints`.
+ * A shape and points for `operations.closestPointsOnShapeFromPoints`,
+ * `operations.distancesToShapeFromPoints`, `analysis.curves.closestPoints` and
+ * `analysis.surfaces.closestPoints`.
  */
 export class ClosestPointsOnShapeFromPointsDto<T> {
     constructor(shape?: T, points?: Base.Point3[]) {
@@ -729,7 +742,7 @@ export class WireOnFaceDto<T, U> {
 }
 /**
  * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
- * edges and vertices, what to show, and how finely to mesh the shape.
+ * edges and vertices, what to show, iso curves and surface analysis, and how finely to mesh the shape.
  */
 export abstract class DrawShapeSharedDto {
     /**
@@ -883,6 +896,60 @@ export abstract class DrawShapeSharedDto {
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
+    /**
+     * When true, each face's iso curves are drawn with the shape, as its edges are: at `edgeWidth`
+     * and `edgeOpacity`, in `isoCurvesColour`.
+     * @default false
+     */
+    drawIsoCurves?: boolean | undefined = false;
+    /**
+     * How many iso curves of constant u each face gets with `drawIsoCurves`, at values spread evenly
+     * inside its u range and trimmed to the face.
+     * @default 5
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesU?: number | undefined = 5;
+    /**
+     * How many iso curves of constant v each face gets with `drawIsoCurves`, at values spread evenly
+     * inside its v range and trimmed to the face.
+     * @default 5
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesV?: number | undefined = 5;
+    /**
+     * The color of the iso curves as a hex string.
+     * @default #808080
+     */
+    isoCurvesColour?: Base.Color | undefined = "#808080";
+    /**
+     * The surface analysis coloring the faces instead of `faceColour` and `faceMaterial`, from blue at
+     * `analysisMin` through green to red at `analysisMax`; vertices without a value keep `faceColour`.
+     * @default none
+     */
+    surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+    /**
+     * The pull direction the draft angles are measured against; read only by `draftAngle`.
+     * @default [0, 1, 0]
+     */
+    draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
+    /**
+     * The analysis value drawn blue, and anything below it; left out, the lowest finite value
+     * found.
+     * @default undefined
+     * @optional true
+     */
+    analysisMin?: number | undefined;
+    /**
+     * The analysis value drawn red, and anything above it; left out, the highest finite value
+     * found.
+     * @default undefined
+     * @optional true
+     */
+    analysisMax?: number | undefined;
 }
 /**
  * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
@@ -892,7 +959,7 @@ export class DrawShapeDto<T> extends DrawShapeSharedDto {
     /**
      * Provide options without default values
      */
-    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
         super();
         if (shape !== undefined) { this.shape = shape; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -919,6 +986,14 @@ export class DrawShapeDto<T> extends DrawShapeSharedDto {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+        if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
     }
     /**
      * The shape to draw; it is meshed at `precision` first.
@@ -936,7 +1011,7 @@ export class DrawShapesDto<T> extends DrawShapeSharedDto {
     /**
      * Provide options without default values
      */
-    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
         super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -963,6 +1038,14 @@ export class DrawShapesDto<T> extends DrawShapeSharedDto {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+        if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
     }
     /**
      * The shapes to draw with the same options.

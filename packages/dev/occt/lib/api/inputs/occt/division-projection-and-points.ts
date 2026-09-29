@@ -449,7 +449,9 @@ export class DataOnGeometryesAtLengthDto<T> {
 }
 
 /**
- * A wire and several distances for `shapes.wire.pointsOnWireAtLengths`.
+ * A curve and several distances along it, for `shapes.wire.pointsOnWireAtLengths`,
+ * `analysis.curves.curvaturesAtLengths`, `shapes.edge.splitEdgeAtLengths` and
+ * `shapes.wire.splitWireAtLengths`.
  */
 export class DataOnGeometryAtLengthsDto<T> {
     constructor(shape?: T, lengths?: number[]) {
@@ -457,7 +459,7 @@ export class DataOnGeometryAtLengthsDto<T> {
         if (lengths !== undefined) { this.lengths = lengths; }
     }
     /**
-     * The wire to evaluate.
+     * The edge or wire to evaluate; each method says which it takes.
      * @default undefined
      */
     shape!: T;

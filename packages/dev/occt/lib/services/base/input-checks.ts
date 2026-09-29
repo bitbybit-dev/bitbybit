@@ -65,6 +65,84 @@ export function checkedNumber(value: unknown, property: string, least = -Infinit
     return value;
 }
 
+/** Where a number may lie: each bound is left out, or holds it above, from, below or up to a value. */
+export type NumberBounds = {
+    readonly above?: number;
+    readonly atLeast?: number;
+    readonly below?: number;
+    readonly atMost?: number;
+};
+
+const isWithin = (value: unknown, bounds: NumberBounds): value is number =>
+    isFiniteNumber(value)
+    && (bounds.above === undefined || value > bounds.above)
+    && (bounds.atLeast === undefined || value >= bounds.atLeast)
+    && (bounds.below === undefined || value < bounds.below)
+    && (bounds.atMost === undefined || value <= bounds.atMost);
+
+const wordsOf = ({ above, atLeast, below, atMost }: NumberBounds): string => {
+    if (above === undefined && atLeast !== undefined && below === undefined && atMost !== undefined) {
+        return `a finite number from ${atLeast} to ${atMost}`;
+    }
+    const hasUpperEnd = below !== undefined || atMost !== undefined;
+    const words = [
+        above === undefined ? "" : `above ${above}`,
+        atLeast === undefined ? "" : hasUpperEnd ? `at least ${atLeast}` : `${atLeast} or more`,
+        below === undefined ? "" : `below ${below}`,
+        atMost === undefined ? "" : `at most ${atMost}`,
+    ].filter(part => part !== "");
+    return words.length === 0 ? "a finite number" : `a finite number ${words.join(" and ")}`;
+};
+
+/** A finite number within `bounds`, which may leave either end open. */
+export function checkedWithin(value: unknown, property: string, bounds: NumberBounds): number {
+    if (!isWithin(value, bounds)) {
+        throw new InputError(`\`${property}\` must be ${wordsOf(bounds)}; it is ${String(value)}.`, property);
+    }
+    return value;
+}
+
+/** A list of finite numbers, each within `bounds`, refused at the position of the first that is not. */
+export function checkedNumberList(value: unknown, property: string, bounds: NumberBounds = {}): number[] {
+    if (!Array.isArray(value)) {
+        throw new InputError(`\`${property}\` is not a list of numbers.`, property);
+    }
+    const faulty = value.findIndex(item => !isWithin(item, bounds));
+    if (faulty !== -1) {
+        throw new InputError(`\`${property}\` holds ${String(value[faulty])} at position ${faulty}; each is ${wordsOf(bounds)}.`, property);
+    }
+    return value as number[];
+}
+
+/** A whole number from `least` to `most`. */
+export function checkedWhole(value: unknown, property: string, least: number, most = Infinity): number {
+    if (!(typeof value === "number" && Number.isInteger(value) && value >= least && value <= most)) {
+        const range = most === Infinity ? `${least} or more` : `from ${least} to ${most}`;
+        throw new InputError(`\`${property}\` must be a whole number ${range}; it is ${String(value)}.`, property);
+    }
+    return value;
+}
+
+/** True or false. */
+export function checkedFlag(value: unknown, property: string): boolean {
+    if (typeof value !== "boolean") {
+        throw new InputError(`\`${property}\` must be true or false; it is ${String(value)}.`, property);
+    }
+    return value;
+}
+
+/** A list of points, refused at the position of the first that is not three finite numbers. */
+export function checkedPoints(value: unknown, property: string): Inputs.Base.Point3[] {
+    if (!Array.isArray(value)) {
+        throw new InputError(`\`${property}\` is not a list of points.`, property);
+    }
+    const faulty = value.findIndex(point => !isTriple(point));
+    if (faulty !== -1) {
+        throw new InputError(`\`${property}\` holds something other than a point at position ${faulty}; each is three finite numbers.`, property);
+    }
+    return value as Inputs.Base.Point3[];
+}
+
 /** A whole number of 1 or more, or Infinity for as many as there are. */
 export function checkedCount(value: unknown, property: string): number {
     if (!(typeof value === "number" && value >= 1 && (Number.isInteger(value) || value === Infinity))) {

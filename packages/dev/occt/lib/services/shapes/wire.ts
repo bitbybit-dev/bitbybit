@@ -1,21 +1,140 @@
-import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
-import { framesOnCurve } from "../base/frames";
-import { checkedShape, checkedShapes } from "../base/input-checks";
+import { occtFailure } from "../../kernel-failures";
+import { framesFromNumbers, framesOnCurve } from "../base/frames";
+import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
+import { checkedCurve, fromGroundToKernelPlane } from "../base/curve-analysis";
+
+const JOIN_TYPES: readonly Inputs.OCCT.joinTypeEnum[] = [
+    Inputs.OCCT.joinTypeEnum.arc,
+    Inputs.OCCT.joinTypeEnum.intersection,
+    Inputs.OCCT.joinTypeEnum.tangent,
+];
+
+/** The kernel's value for a way of joining offset pieces. */
+const kernelJoinType = (occ: BitbybitOcctModule, joinType: Inputs.OCCT.joinTypeEnum): EmbindEnumValue => {
+    switch (joinType) {
+        case Inputs.OCCT.joinTypeEnum.intersection:
+            return occ.GeomAbs_JoinType.Intersection;
+        case Inputs.OCCT.joinTypeEnum.tangent:
+            return occ.GeomAbs_JoinType.Tangent;
+        default:
+            return occ.GeomAbs_JoinType.Arc;
+    }
+};
+
+/** A new wire handle for an edge or a wire: a wire of that one edge, or the wire itself. */
+const wireOf = (occ: BitbybitOcctModule, och: OccHelper, curve: TopoDS_Shape): TopoDS_Wire => {
+    if (curve.ShapeType() === occ.TopAbs_ShapeEnum.WIRE) {
+        return occ.CastToWire(curve);
+    }
+    const edge = occ.CastToEdge(curve);
+    const wire = och.entitiesService.bRepBuilderAPIMakeWire(edge);
+    edge.delete();
+    return wire;
+};
+
+/**
+ * The pieces of an edge or a wire cut at fractions or at lengths, as wires: an edge is cut as a wire
+ * of that one edge.
+ */
+const splitAsWires = (occ: BitbybitOcctModule, och: OccHelper, shape: unknown, values: number[], isLength: boolean): TopoDS_Wire[] => {
+    const wire = wireOf(occ, och, checkedCurve(occ, checkedShape(shape), "shape"));
+    try {
+        return occ.SplitCurve(wire, values, isLength);
+    } finally {
+        wire.delete();
+    }
+};
+
+/** A new handle to the wire running the other way. */
+const reversedWireOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire): TopoDS_Wire => {
+    const reversed = wire.Reversed();
+    const cast = occ.CastToWire(reversed);
+    reversed.delete();
+    return cast;
+};
+
+/**
+ * An unbounded face on the plane of a flat face, with the face's normal, for an open offset to lie
+ * in: the offset maker would offset a face's own boundary too. The face must be flat and the wire
+ * must lie in its plane, or the offset maker fails, and can crash when the wire runs across it.
+ */
+const planeFaceOf = (occ: BitbybitOcctModule, och: OccHelper, face: TopoDS_Face, wire: TopoDS_Wire): TopoDS_Face => {
+    const frames = framesFromNumbers(occ.FramesOnFace(face, [0.5, 0.5, 0, 0, 1, 0, 0, 1, 1, 1]));
+    const middle = frames[0]!;
+    const offPlane = (point: Inputs.Base.Point3): number => Math.abs(
+        (point[0] - middle.origin[0]) * middle.normal[0] + (point[1] - middle.origin[1]) * middle.normal[1] + (point[2] - middle.origin[2]) * middle.normal[2]);
+    const slack = (point: Inputs.Base.Point3): number => 1e-6 * Math.max(1, ...point.map(Math.abs), ...middle.origin.map(Math.abs));
+    const bends = frames.some(frame =>
+        frame.normal[0] * middle.normal[0] + frame.normal[1] * middle.normal[1] + frame.normal[2] * middle.normal[2] < 1 - 1e-9 || offPlane(frame.origin) > slack(frame.origin));
+    if (bends) {
+        throw new InputError("`face` is not flat; an open wire is offset in a plane.", "face");
+    }
+    const edges = occ.EdgesOf(wire, true);
+    const samples = 4 * Math.max(1, edges.length);
+    edges.forEach(edge => edge.delete());
+    const points = och.geomService.pointsAtNormalizedParameters(wire, Array.from({ length: samples + 1 }, (_, index) => index / samples));
+    if (points.some(point => offPlane(point) > slack(point))) {
+        throw new InputError("`shape` does not lie in the plane of `face`.", "shape");
+    }
+    const square = och.facesService.createSquareFace({ size: 1, center: middle.origin, direction: middle.normal });
+    const plane = occ.MakeFaceFromFaceSurface(square, 0);
+    square.delete();
+    return plane;
+};
+
+/**
+ * What the offset maker makes of a wire in open mode, or nothing when it fails. On an unbounded plane
+ * face it offsets to the left of the wire, seen from the face's normal, whatever the distance's sign.
+ */
+const offsetOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire, plane: TopoDS_Face | undefined, joinType: EmbindEnumValue, distance: number): TopoDS_Shape | undefined => {
+    const maker = new occ.BRepOffsetAPI_MakeOffset();
+    try {
+        if (plane !== undefined) {
+            maker.Init(plane, joinType, true);
+        } else {
+            maker.InitJoin(joinType, true);
+        }
+        maker.AddWire(wire);
+        maker.Perform(distance, 0);
+        return maker.IsDone() ? maker.Shape() : undefined;
+    } finally {
+        maker.delete();
+    }
+};
+
+/**
+ * The one wire an open offset made, refused as a failed offset when there is none: the offset maker
+ * gives a wire, or a compound holding it.
+ */
+const onlyWireOf = (occ: BitbybitOcctModule, offset: TopoDS_Shape | undefined): TopoDS_Wire => {
+    if (offset === undefined || offset.IsNull()) {
+        offset?.delete();
+        throw occtFailure("occt.offset.failed");
+    }
+    const wires = occ.WiresOf(offset, true);
+    offset.delete();
+    if (wires.length !== 1) {
+        wires.forEach(wire => wire.delete());
+        throw occtFailure("occt.offset.failed");
+    }
+    return wires[0]!;
+};
 
 /**
  * Wires in OpenCascade: chains of edges joined end to end, open like a path or closed like an
  * outline. Build them from points and curves (polylines, B-splines, Beziers, interpolations,
  * helices, spirals), as ready-made flat outlines (circles, rectangles, stars, beam profiles, text)
  * that lie on the ground plane unless `direction` says otherwise, or by joining and splitting
- * existing edges and wires; read them back as points, tangents, lengths and centers; map them onto
- * faces or project them onto shapes. Parameters along a wire run from 0 at its start to 1 at its
- * end and follow each edge's own parameter, not distance. A closed wire is what `shapes.face` fills
- * to make a face.
+ * existing edges and wires; read them back as points, tangents, lengths and centers; offset an open
+ * one to one side; map, wrap or project them onto faces and shapes. Parameters along a wire run from
+ * 0 at its start to 1 at its end and follow each edge's own parameter, not distance. A closed wire is
+ * what `shapes.face` fills to make a face.
  */
 export class OCCTWire {
 
@@ -408,6 +527,100 @@ export class OCCTWire {
      */
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         return this.och.wiresService.splitOnPoints(inputs);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as fractions from 0 at its start to 1 at its end, every
+     * edge an equal share.
+     *
+     * A piece running across a corner holds an edge on each side. Ends and repeats are skipped, so n
+     * places inside give n + 1 pieces; an edge is cut as a one-edge wire.
+     * @param inputs - The wire and the fractions to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const [first, second] = await bitbybit.occt.shapes.wire.splitWireAtParams({ shape: wire, params: [0.5] });
+     * ```
+     */
+    splitWireAtParams(inputs: Inputs.OCCT.DataOnGeometryAtParamsDto<TopoDS_Wire>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamsDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamsDto<TopoDS_Wire>;
+        return splitAsWires(this.occ, this.och, resolved.shape, checkedNumberList(resolved.params, "params", { atLeast: 0, atMost: 1 }), false);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as lengths along it from its start, in model units.
+     *
+     * A piece running across a corner holds an edge on each side. Lengths at or past the ends and
+     * repeats are skipped, so n lengths inside give n + 1 pieces; an edge is cut as a wire of that one
+     * edge.
+     * @param inputs - The wire and the lengths to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const dashes = await bitbybit.occt.shapes.wire.splitWireAtLengths({ shape: wire, lengths: [1, 2, 3, 4] });
+     * ```
+     */
+    splitWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthsDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>;
+        return splitAsWires(this.occ, this.och, resolved.shape, checkedNumberList(resolved.lengths, "lengths", { atLeast: 0 }), true);
+    }
+
+    /**
+     * Draws the offset of an open wire or an edge on one side of it, not the loop
+     * `operations.offset` draws around it.
+     *
+     * A positive distance lies to the right of the wire's direction, seen from the side `face` looks
+     * to, or from above on the ground plane. A straight wire needs a flat `face` to give it a plane.
+     * @param inputs - The open wire or edge, an optional flat face, the distance and the corner style
+     * @returns The offset curve as a wire
+     * @group offsets
+     * @shortname offset open
+     * @drawable true
+     * @example
+     * ```typescript
+     * const alongside = await bitbybit.occt.shapes.wire.offsetOpen({ shape: path, distance: 1, joinType: Bit.Inputs.OCCT.joinTypeEnum.arc });
+     * ```
+     */
+    offsetOpen(inputs: Inputs.OCCT.OffsetOpenDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>): TopoDS_Wire {
+        const resolved = resolveDto(Inputs.OCCT.OffsetOpenDto, inputs) as Resolved.OCCT.OffsetOpenDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>;
+        const shape = checkedCurve(this.occ, checkedShape(resolved.shape), "shape");
+        const face = resolved.face;
+        if (face !== undefined && checkedShape(face, "face").ShapeType() !== this.occ.TopAbs_ShapeEnum.FACE) {
+            throw new InputError("`face` is not a face.", "face");
+        }
+        const distance = checkedNumber(resolved.distance, "distance");
+        const joinType = kernelJoinType(this.occ, checkedChoice(resolved.joinType, JOIN_TYPES, "joinType"));
+        const wire = wireOf(this.occ, this.och, shape);
+        try {
+            if (face === undefined) {
+                return onlyWireOf(this.occ, offsetOf(this.occ, wire, undefined, joinType, distance));
+            }
+            const plane = planeFaceOf(this.occ, this.och, face, wire);
+            try {
+                if (distance <= 0) {
+                    return onlyWireOf(this.occ, offsetOf(this.occ, wire, plane, joinType, -distance));
+                }
+                const reversed = reversedWireOf(this.occ, wire);
+                try {
+                    const offset = onlyWireOf(this.occ, offsetOf(this.occ, reversed, plane, joinType, distance));
+                    const turnedBack = reversedWireOf(this.occ, offset);
+                    offset.delete();
+                    return turnedBack;
+                } finally {
+                    reversed.delete();
+                }
+            } finally {
+                plane.delete();
+            }
+        } finally {
+            wire.delete();
+        }
     }
 
     /**
@@ -2006,6 +2219,36 @@ export class OCCTWire {
     }
 
     /**
+     * Wraps flat wires drawn on the ground plane around a plane, cylinder or cone face, keeping every
+     * length, as a label wraps a can.
+     *
+     * On a cylinder of radius r, X runs around it from the face's start, 2 pi r to a turn, and Z runs
+     * along its axis. The wires follow the surface past the face's edges.
+     * @param inputs - The flat wires or edges, the face and the tolerance
+     * @returns The wrapped wires, in the same order
+     * @group place
+     * @shortname wrap wires on face
+     * @drawable true
+     * @example
+     * ```typescript
+     * const band = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 6, length: 1, center: [3, 0, 2], direction: [0, 1, 0] });
+     * const wrapped = await bitbybit.occt.shapes.wire.wrapWiresOnFace({ wires: [band], face: cylinderWall, tolerance: 1e-4 });
+     * ```
+     */
+    wrapWiresOnFace(inputs: Inputs.OCCT.WrapWiresOnFaceDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.WrapWiresOnFaceDto, inputs) as Resolved.OCCT.WrapWiresOnFaceDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>;
+        const wires = checkedShapes(resolved.wires, "wires");
+        const face = checkedShape(resolved.face, "face");
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const onKernelPlane = wires.map(wire => fromGroundToKernelPlane(this.och, wire));
+        try {
+            return this.occ.WrapOnFace(onKernelPlane, face, tolerance);
+        } finally {
+            onKernelPlane.forEach(wire => wire.delete());
+        }
+    }
+
+    /**
      * Closes an open wire with a straight edge from its end point back to its start point.
      *
      * A wire whose ends already meet is returned as it is.
@@ -2085,5 +2328,54 @@ export class OCCTWire {
         });
 
         return shapes;
+    }
+
+    /**
+     * Lays edges or wires onto the faces of a shape along the surface's normals, rather than along one
+     * direction as `project` does.
+     *
+     * The pieces join into wires, one per loop or chain, within the faces' edges. `maxDistance` drops
+     * the parts landing farther than it; a projection that misses gives an empty compound.
+     * @param inputs - The edges or wires, the shape, the fitting tolerance and the greatest distance
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project normal
+     * @drawable true
+     * @example
+     * ```typescript
+     * const onBall = await bitbybit.occt.shapes.wire.projectNormal({ wires: [circle], shape: sphere, tolerance: 1e-4, maxDistance: 0 });
+     * ```
+     */
+    projectNormal(inputs: Inputs.OCCT.ProjectNormalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>): TopoDS_Compound {
+        const resolved = resolveDto(Inputs.OCCT.ProjectNormalDto, inputs) as Resolved.OCCT.ProjectNormalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>;
+        const wires = checkedShapes(resolved.wires, "wires");
+        const shape = checkedShape(resolved.shape);
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const maxDistance = checkedNumber(resolved.maxDistance, "maxDistance", 0);
+        return this.occ.ProjectNormal(wires, shape, tolerance, maxDistance);
+    }
+
+    /**
+     * Casts an edge or a wire onto the faces of a shape along the lines from a point through it, like
+     * the shadow a lamp throws.
+     *
+     * The result is a compound of the wires where those lines meet the shape, near side and far side
+     * alike; lines that miss give an empty compound.
+     * @param inputs - The edge or wire, the shape and the point to cast from
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project conical
+     * @drawable true
+     * @example
+     * ```typescript
+     * const shadow = await bitbybit.occt.shapes.wire.projectConical({ wire: square, shape: floor, from: [0, 20, 0] });
+     * ```
+     */
+    projectConical(inputs: Inputs.OCCT.ProjectConicalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>): TopoDS_Compound {
+        const resolved = resolveDto(Inputs.OCCT.ProjectConicalDto, inputs) as Resolved.OCCT.ProjectConicalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>;
+        const wire = checkedShape(resolved.wire, "wire");
+        const shape = checkedShape(resolved.shape);
+        const from = checkedPoint(resolved.from, "from");
+        return this.occ.ProjectConical(wire, shape, from);
     }
 }

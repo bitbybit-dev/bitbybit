@@ -434,6 +434,50 @@ export namespace OCCT {
         rotationMinimizing = "rotationMinimizing",
     }
     /**
+     * What a surface analysis shows at each point of a face. none leaves the faces as they are; gaussian
+     * and mean are the Gaussian and mean curvature, maxCurvature and minCurvature the two principal
+     * curvatures, positive where the face bulges out; minRadius is 1 over the larger principal curvature,
+     * infinite where the face is flat; draftAngle is the angle in degrees between the face and a pull
+     * direction, positive where the face looks along the pull.
+     */
+    export enum surfaceAnalysisEnum {
+        none = "none",
+        gaussian = "gaussian",
+        mean = "mean",
+        maxCurvature = "maxCurvature",
+        minCurvature = "minCurvature",
+        minRadius = "minRadius",
+        draftAngle = "draftAngle",
+    }
+    /**
+     * How a filled patch meets one of its boundary edges. position only passes through the edge; tangent
+     * also meets the face beside the edge without a crease; curvature also bends as that face does there.
+     */
+    export enum continuityEnum {
+        position = "position",
+        tangent = "tangent",
+        curvature = "curvature",
+    }
+    /**
+     * How a patch fills between its boundary edges. With three or four edges, coons blends the edges,
+     * stretch is flatter and curved rounder. With two edges, stretch and coons join them as opposite
+     * sides, while curved sweeps one along the other, so the two must share a corner.
+     */
+    export enum fillingStyleEnum {
+        stretch = "stretch",
+        coons = "coons",
+        curved = "curved",
+    }
+    /**
+     * How far a boss or a pocket runs from its sketch face. length stops after the given length,
+     * untilFace stops at a chosen face of the base, and throughAll runs through the whole base.
+     */
+    export enum featureExtentEnum {
+        length = "length",
+        untilFace = "untilFace",
+        throughAll = "throughAll",
+    }
+    /**
      * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
      * one per edge with its points, and the vertex points, ready for drawing.
      */
@@ -460,6 +504,12 @@ export namespace OCCT {
          * @optional true
          */
         colorGroups?: { [color: string]: number[] } | undefined;
+        /**
+         * The faces' iso curves as polylines, face by face with u curves before v curves; a curve crossing
+         * a hole comes in pieces. Present only when asked for.
+         * @optional true
+         */
+        isoCurveList?: Base.Point3[][] | undefined;
     }
 
     /**
@@ -556,6 +606,12 @@ export namespace OCCT {
          * @optional true
          */
         faceUid?: number | undefined;
+        /**
+         * The surface analysis value at each vertex in `vertexCoord` order, such as a curvature or a draft
+         * angle in degrees, NaN where undefined; present only with `surfaceAnalysis`.
+         * @optional true
+         */
+        analysisValues?: number[] | undefined;
     }
     /**
      * One edge inside a `DecomposedMeshDto`: the points that trace it for drawing, plus optional facts
@@ -964,8 +1020,9 @@ export namespace OCCT {
         solution?: number | undefined = -1;
     }
     /**
-     * A shape and points for `operations.closestPointsOnShapeFromPoints` and
-     * `operations.distancesToShapeFromPoints`.
+     * A shape and points for `operations.closestPointsOnShapeFromPoints`,
+     * `operations.distancesToShapeFromPoints`, `analysis.curves.closestPoints` and
+     * `analysis.surfaces.closestPoints`.
      */
     export class ClosestPointsOnShapeFromPointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[]) {
@@ -1159,7 +1216,7 @@ export namespace OCCT {
     }
     /**
      * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
-     * edges and vertices, what to show, and how finely to mesh the shape.
+     * edges and vertices, what to show, iso curves and surface analysis, and how finely to mesh the shape.
      */
     export abstract class DrawShapeSharedDto {
         /**
@@ -1313,6 +1370,60 @@ export namespace OCCT {
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * When true, each face's iso curves are drawn with the shape, as its edges are: at `edgeWidth`
+         * and `edgeOpacity`, in `isoCurvesColour`.
+         * @default false
+         */
+        drawIsoCurves?: boolean | undefined = false;
+        /**
+         * How many iso curves of constant u each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its u range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesU?: number | undefined = 5;
+        /**
+         * How many iso curves of constant v each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its v range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesV?: number | undefined = 5;
+        /**
+         * The color of the iso curves as a hex string.
+         * @default #808080
+         */
+        isoCurvesColour?: Base.Color | undefined = "#808080";
+        /**
+         * The surface analysis coloring the faces instead of `faceColour` and `faceMaterial`, from blue at
+         * `analysisMin` through green to red at `analysisMax`; vertices without a value keep `faceColour`.
+         * @default none
+         */
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+        /**
+         * The pull direction the draft angles are measured against; read only by `draftAngle`.
+         * @default [0, 1, 0]
+         */
+        draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
+        /**
+         * The analysis value drawn blue, and anything below it; left out, the lowest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMin?: number | undefined;
+        /**
+         * The analysis value drawn red, and anything above it; left out, the highest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMax?: number | undefined;
     }
     /**
      * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
@@ -1322,7 +1433,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1349,6 +1460,14 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+            if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
         }
         /**
          * The shape to draw; it is meshed at `precision` first.
@@ -1366,7 +1485,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
             super();
             if (shapes !== undefined) { this.shapes = shapes; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1393,6 +1512,14 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+            if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
         }
         /**
          * The shapes to draw with the same options.
@@ -5424,7 +5551,9 @@ export namespace OCCT {
     }
 
     /**
-     * A wire and several distances for `shapes.wire.pointsOnWireAtLengths`.
+     * A curve and several distances along it, for `shapes.wire.pointsOnWireAtLengths`,
+     * `analysis.curves.curvaturesAtLengths`, `shapes.edge.splitEdgeAtLengths` and
+     * `shapes.wire.splitWireAtLengths`.
      */
     export class DataOnGeometryAtLengthsDto<T> {
         constructor(shape?: T, lengths?: number[]) {
@@ -5432,7 +5561,7 @@ export namespace OCCT {
             if (lengths !== undefined) { this.lengths = lengths; }
         }
         /**
-         * The wire to evaluate.
+         * The edge or wire to evaluate; each method says which it takes.
          * @default undefined
          */
         shape!: T;
@@ -8061,10 +8190,11 @@ export namespace OCCT {
         internal?: boolean | undefined = false;
     }
     /**
-     * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing.
+     * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing, and can
+     * add each face's iso curves and a surface analysis value at every vertex.
      */
     export class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8072,6 +8202,10 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
         }
         /**
          * The shape to triangulate.
@@ -8118,6 +8252,35 @@ export namespace OCCT {
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+         * u range and trimmed to the face; 0 gives none.
+         * @default 0
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesU?: number | undefined = 0;
+        /**
+         * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+         * v range and trimmed to the face; 0 gives none.
+         * @default 0
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesV?: number | undefined = 0;
+        /**
+         * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+         * radius, or the draft angle in degrees. `none` leaves them out.
+         * @default none
+         */
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+        /**
+         * The pull direction the draft angles are measured against; read only by `draftAngle`.
+         * @default [0, 1, 0]
+         */
+        draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * A shape and meshing settings for `shapeFacesToPolygonPoints`, which returns every triangle of the
@@ -8185,10 +8348,10 @@ export namespace OCCT {
     }
     /**
      * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
-     * settings.
+     * settings, iso curves and surface analysis included.
      */
     export class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8196,6 +8359,10 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
         }
         /**
          * The shapes to triangulate, one mesh per shape.
@@ -8242,6 +8409,35 @@ export namespace OCCT {
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+         * u range and trimmed to the face; 0 gives none.
+         * @default 0
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesU?: number | undefined = 0;
+        /**
+         * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+         * v range and trimmed to the face; 0 gives none.
+         * @default 0
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesV?: number | undefined = 0;
+        /**
+         * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+         * radius, or the draft angle in degrees. `none` leaves them out.
+         * @default none
+         */
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+        /**
+         * The pull direction the draft angles are measured against; read only by `draftAngle`.
+         * @default [0, 1, 0]
+         */
+        draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
     }
     /**
      * An assembly document and meshing settings for `docToMesh`, which triangulates its top-level
@@ -8440,15 +8636,16 @@ export namespace OCCT {
         adjustYtoZ?: boolean | undefined = false;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
-         * itself only returns the text.
+         * itself only returns the text or the bytes.
          * @default true
          */
         tryDownload?: boolean | undefined = true;
         /**
-         * When true, the STL is written in its binary form, which is much smaller than the text form.
-         * @default true
+         * When true, the STL is written in its binary form, which is much smaller than the text form, and
+         * comes back as bytes; when false, as ASCII text.
+         * @default false
          */
-        binary?: boolean | undefined = true;
+        binary?: boolean | undefined = false;
     }
 
     /**
@@ -12623,5 +12820,1971 @@ export namespace OCCT {
          * @default undefined
          */
         matrices!: Base.TransformMatrixes[];
+    }
+    /**
+     * An edge or a wire and places along it as fractions, for `analysis.curves.curvaturesAtParams`,
+     * `shapes.edge.splitEdgeAtParams` and `shapes.wire.splitWireAtParams`.
+     */
+    export class DataOnGeometryAtParamsDto<T> {
+        constructor(shape?: T, params?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (params !== undefined) { this.params = params; }
+        }
+        /**
+         * The edge or wire to read or cut.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * Places along the curve, each a fraction from 0 at the start to 1 at the end; each edge of a
+         * wire takes an equal share, as in `shapes.wire.pointOnWireAtParam`.
+         * @default undefined
+         */
+        params!: number[];
+    }
+    /**
+     * An edge or a wire, a tooth count and a scale for `analysis.curves.curvatureComb`, which draws the
+     * curvature as teeth standing on the curve.
+     */
+    export class CurvatureCombDto<T> {
+        constructor(shape?: T, samples?: number, scale?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (samples !== undefined) { this.samples = samples; }
+            if (scale !== undefined) { this.scale = scale; }
+        }
+        /**
+         * The edge or wire whose curvature is drawn.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * How many teeth, spaced evenly by length from the start of the curve to its end.
+         * @default 50
+         * @minimum 2
+         * @maximum Infinity
+         * @step 1
+         */
+        samples?: number | undefined = 50;
+        /**
+         * How long a tooth is per unit of curvature; 0 picks the scale that makes the longest tooth a
+         * fifth of the curve's length.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        scale?: number | undefined = 0;
+    }
+    /**
+     * An edge or a wire and an angle for `analysis.curves.kinks`, which finds the joints where the
+     * tangent turns sharply.
+     */
+    export class CurveKinksDto<T> {
+        constructor(shape?: T, angle?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
+        /**
+         * The edge or wire to look along.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * How far the tangent must turn where two edges meet for the joint to count as a kink, in
+         * degrees; a turn of exactly this much does not count.
+         * @default 1
+         * @minimum 0
+         * @maximum 180
+         * @step 1
+         */
+        angle?: number | undefined = 1;
+    }
+    /**
+     * An edge or a wire and the way up for `analysis.curves.extremesAlong`, which finds the curve's
+     * highest and lowest points along that direction.
+     */
+    export class CurveExtremesAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (direction !== undefined) { this.direction = direction; }
+        }
+        /**
+         * The edge or wire to look along.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The way up: the highest points lie furthest along it; only its direction matters.
+         * @default [0, 1, 0]
+         */
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
+    }
+    /**
+     * Two edges or wires and a tolerance for `analysis.curves.intersectCurves`, which finds where the
+     * two cross or run together.
+     */
+    export class IntersectCurvesDto<T> {
+        constructor(shapeA?: T, shapeB?: T, tolerance?: number) {
+            if (shapeA !== undefined) { this.shapeA = shapeA; }
+            if (shapeB !== undefined) { this.shapeB = shapeB; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The first edge or wire; the points come back in order along it.
+         * @default undefined
+         */
+        shapeA!: T;
+        /**
+         * The second edge or wire, the one the first meets.
+         * @default undefined
+         */
+        shapeB!: T;
+        /**
+         * How close the curves may pass and still count as meeting, in model units; points closer than
+         * it to each other merge into one.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
+     * An edge or a wire, a face and a tolerance for `analysis.curves.intersectCurveWithFace`, which
+     * finds where the curve passes through the face or lies on it.
+     */
+    export class IntersectCurveWithFaceDto<T, U> {
+        constructor(shape?: T, face?: U, tolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (face !== undefined) { this.face = face; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The edge or wire that meets the face; the points come back in order along it.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The face the curve meets, within its edges; the surface beyond them does not count.
+         * @default undefined
+         */
+        face!: U;
+        /**
+         * How close the curve may pass and still count as meeting the face, in model units; points
+         * closer than it to each other merge into one.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
+     * An edge and the lengths to add at its ends for `shapes.edge.extendEdge`, which carries the curve
+     * on past its start and its end.
+     */
+    export class ExtendEdgeDto<T> {
+        constructor(shape?: T, atStart?: number, atEnd?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (atStart !== undefined) { this.atStart = atStart; }
+            if (atEnd !== undefined) { this.atEnd = atEnd; }
+        }
+        /**
+         * The edge to lengthen; it stays as it is and a longer copy comes back.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * How much length to add before the start, in model units.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        atStart?: number | undefined = 0;
+        /**
+         * How much length to add past the end, in model units.
+         * @default 1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        atEnd?: number | undefined = 1;
+    }
+    /**
+     * Two edges and the kind of join for `shapes.edge.blendBetweenEdges`, which bridges the gap from
+     * the end of one to the start of the other with a smooth curve.
+     */
+    export class BlendBetweenEdgesDto<T> {
+        constructor(from?: T, to?: T, matchCurvature?: boolean, bulge?: number) {
+            if (from !== undefined) { this.from = from; }
+            if (to !== undefined) { this.to = to; }
+            if (matchCurvature !== undefined) { this.matchCurvature = matchCurvature; }
+            if (bulge !== undefined) { this.bulge = bulge; }
+        }
+        /**
+         * The edge whose end the blend leaves from, along its tangent there.
+         * @default undefined
+         */
+        from!: T;
+        /**
+         * The edge whose start the blend arrives at, along its tangent there.
+         * @default undefined
+         */
+        to!: T;
+        /**
+         * False matches the tangents at both ends with a cubic curve; true also matches the curvature
+         * there, with a quintic curve.
+         * @default false
+         */
+        matchCurvature?: boolean | undefined = false;
+        /**
+         * How far the blend holds each tangent before it turns; larger values swing wider.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        bulge?: number | undefined = 1;
+    }
+    /**
+     * Three edges or vertices, the plane they lie in and a tolerance for
+     * `shapes.edge.circlesTangentToThree`, which draws every circle touching the edges and passing
+     * through the vertices.
+     */
+    export class CirclesTangentToThreeDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, tolerance?: number, onArgumentsOnly?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (onArgumentsOnly !== undefined) { this.onArgumentsOnly = onArgumentsOnly; }
+        }
+        /**
+         * Three edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * How close lines and circles may come to touching and still count as tangent, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+        /**
+         * When true, keeps only the circles that touch each edge within its ends; otherwise straight
+         * edges count as endless lines and arcs as whole circles.
+         * @default false
+         */
+        onArgumentsOnly?: boolean | undefined = false;
+    }
+    /**
+     * Two edges or vertices, a radius and the plane they lie in for
+     * `shapes.edge.circlesTangentToTwoWithRadius`, which draws every circle of that radius touching the
+     * edges and passing through the vertices.
+     */
+    export class CirclesTangentToTwoWithRadiusDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, radius?: number, tolerance?: number, onArgumentsOnly?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (radius !== undefined) { this.radius = radius; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (onArgumentsOnly !== undefined) { this.onArgumentsOnly = onArgumentsOnly; }
+        }
+        /**
+         * Two edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * The radius of every circle drawn, in model units.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        radius?: number | undefined = 1;
+        /**
+         * How close lines and circles may come to touching and still count as tangent, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+        /**
+         * When true, keeps only the circles that touch each edge within its ends; otherwise straight
+         * edges count as endless lines and arcs as whole circles.
+         * @default false
+         */
+        onArgumentsOnly?: boolean | undefined = false;
+    }
+    /**
+     * Two edges or vertices, the edge the centers lie on and the plane for
+     * `shapes.edge.circlesTangentToTwoCenteredOn`, which draws every circle centered on that edge
+     * touching the edges and passing through the vertices.
+     */
+    export class CirclesTangentToTwoCenteredOnDto<T> {
+        constructor(shapes?: T[], centerOn?: T, frame?: Base.Frame, tolerance?: number, onArgumentsOnly?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (centerOn !== undefined) { this.centerOn = centerOn; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (onArgumentsOnly !== undefined) { this.onArgumentsOnly = onArgumentsOnly; }
+        }
+        /**
+         * Two edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * The edge in the plane that the center of every circle lies on.
+         * @default undefined
+         */
+        centerOn!: T;
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * How close lines and circles may come to touching and still count as tangent, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+        /**
+         * When true, keeps only the circles touching each edge within its ends and centered within
+         * `centerOn`; otherwise straight edges count as endless lines and arcs as whole circles.
+         * @default false
+         */
+        onArgumentsOnly?: boolean | undefined = false;
+    }
+    /**
+     * Two edges, or an edge and a vertex, and the plane they lie in for
+     * `shapes.edge.linesTangentToTwo`, which draws every straight line touching both.
+     */
+    export class LinesTangentToTwoDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, angularTolerance?: number, onArgumentsOnly?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (angularTolerance !== undefined) { this.angularTolerance = angularTolerance; }
+            if (onArgumentsOnly !== undefined) { this.onArgumentsOnly = onArgumentsOnly; }
+        }
+        /**
+         * Two curved edges, or a curved edge and a vertex, lying in the plane; each line touches the
+         * edges and passes through the vertex.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the lines are drawn in it
+         * too.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * How nearly a line must run along a curve where it touches to count as tangent, as the sine of
+         * the angle between them.
+         * @default 1e-6
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        angularTolerance?: number | undefined = 1e-6;
+        /**
+         * When true, keeps only the lines that touch each edge within its ends; otherwise arcs count as
+         * whole circles.
+         * @default false
+         */
+        onArgumentsOnly?: boolean | undefined = false;
+    }
+    /**
+     * A curve, a straight reference edge, an angle and the plane for
+     * `shapes.edge.linesTangentAtAngle`, which draws every line touching the curve at that angle to the
+     * reference.
+     */
+    export class LinesTangentAtAngleDto<T> {
+        constructor(shape?: T, reference?: T, frame?: Base.Frame, angle?: number, angularTolerance?: number, onArgumentsOnly?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (reference !== undefined) { this.reference = reference; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (angularTolerance !== undefined) { this.angularTolerance = angularTolerance; }
+            if (onArgumentsOnly !== undefined) { this.onArgumentsOnly = onArgumentsOnly; }
+        }
+        /**
+         * The curved edge the lines touch, lying in the plane.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The straight edge the angle is measured from, lying in the plane; each line runs from its touch
+         * to where it crosses this edge's line.
+         * @default undefined
+         */
+        reference!: T;
+        /**
+         * A frame whose origin and normal give the plane the edges lie in; the angle turns about the
+         * normal.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * The angle from the reference's direction to the lines, in degrees, turning counterclockwise
+         * about the frame's normal.
+         * @default 45
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 1
+         */
+        angle?: number | undefined = 45;
+        /**
+         * The tolerance of the search for touching lines, in radians; an `angle` this close to 0, a
+         * right angle or a half turn is taken as exactly that.
+         * @default 1e-6
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        angularTolerance?: number | undefined = 1e-6;
+        /**
+         * When true, keeps only the lines that touch the curve within its ends and cross the reference
+         * within its ends, which leaves out lines parallel to it.
+         * @default false
+         */
+        onArgumentsOnly?: boolean | undefined = false;
+    }
+    /**
+     * An open wire or an edge, a distance and the corner style for `shapes.wire.offsetOpen`, which
+     * draws the offset curve on one side of it instead of a loop around it.
+     */
+    export class OffsetOpenDto<T, U> {
+        constructor(shape?: T, face?: U, distance?: number, joinType?: joinTypeEnum) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (face !== undefined) { this.face = face; }
+            if (distance !== undefined) { this.distance = distance; }
+            if (joinType !== undefined) { this.joinType = joinType; }
+        }
+        /**
+         * The open wire or edge to offset, lying in a plane; a straight one needs `face` to give it one.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * A flat face whose plane the offset lies in, seen from the side it looks to; leave it out to use
+         * the plane the wire lies in.
+         * @default undefined
+         * @optional true
+         */
+        face?: U | undefined;
+        /**
+         * How far the offset curve lies from the wire, in model units: positive to the right of the
+         * direction the wire runs, negative to the left.
+         * @default 0.2
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        distance?: number | undefined = 0.2;
+        /**
+         * How the offset pieces meet where the wire has a corner: `arc` rounds them, `intersection`
+         * extends them to a sharp corner, `tangent` keeps them tangent.
+         * @default arc
+         */
+        joinType?: joinTypeEnum | undefined = joinTypeEnum.arc;
+    }
+    /**
+     * Edges or wires, a shape with faces and the fitting settings for `shapes.wire.projectNormal`,
+     * which lays the curves onto the faces along their normals.
+     */
+    export class ProjectNormalDto<T, U> {
+        constructor(wires?: T[], shape?: U, tolerance?: number, maxDistance?: number) {
+            if (wires !== undefined) { this.wires = wires; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (maxDistance !== undefined) { this.maxDistance = maxDistance; }
+        }
+        /**
+         * The edges or wires to lay onto the shape.
+         * @default undefined
+         */
+        wires!: T[];
+        /**
+         * The shape whose faces the curves land on, within the faces' edges.
+         * @default undefined
+         */
+        shape!: U;
+        /**
+         * How far the fitted curves may stray from the exact projection, in model units.
+         * @default 1e-4
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-4;
+        /**
+         * Drops the parts of the projection lying farther than this from the curves they come from, in
+         * model units; 0 keeps everything.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        maxDistance?: number | undefined = 0;
+    }
+    /**
+     * An edge or a wire, a shape and a point for `shapes.wire.projectConical`, which casts the curve onto
+     * the shape along the lines from the point through it.
+     */
+    export class ProjectConicalDto<T, U> {
+        constructor(wire?: T, shape?: U, from?: Base.Point3) {
+            if (wire !== undefined) { this.wire = wire; }
+            if (shape !== undefined) { this.shape = shape; }
+            if (from !== undefined) { this.from = from; }
+        }
+        /**
+         * The edge or wire to cast onto the shape.
+         * @default undefined
+         */
+        wire!: T;
+        /**
+         * The shape whose faces the curve lands on.
+         * @default undefined
+         */
+        shape!: U;
+        /**
+         * The point the curve is cast from, like a lamp throwing its shadow; it must not lie on the curve.
+         * @default [0, 10, 0]
+         */
+        from?: Base.Point3 | undefined = [0, 10, 0];
+    }
+    /**
+     * Flat wires or edges, a face and a tolerance for `shapes.wire.wrapWiresOnFace`, which wraps the
+     * drawing around a plane, cylinder or cone face with its lengths kept.
+     */
+    export class WrapWiresOnFaceDto<T, U> {
+        constructor(wires?: T[], face?: U, tolerance?: number) {
+            if (wires !== undefined) { this.wires = wires; }
+            if (face !== undefined) { this.face = face; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The wires or edges drawn flat on the ground plane, where the face's development lies with X
+         * along its U direction and Z along V; Y is ignored.
+         * @default undefined
+         */
+        wires!: T[];
+        /**
+         * The plane, cylinder or cone face to wrap them around.
+         * @default undefined
+         */
+        face!: U;
+        /**
+         * How far the wrapped curves may stray from the exact wrap, in model units.
+         * @default 1e-4
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-4;
+    }
+    /**
+     * Two shapes for `shapes.face.ruledBetween`, `analysis.measure.extrema` and
+     * `analysis.measure.angleBetween`; each method says what the two may be, and results that name a
+     * side call the first A and the second B.
+     */
+    export class TwoShapesDto<T> {
+        constructor(shapeA?: T, shapeB?: T) {
+            if (shapeA !== undefined) { this.shapeA = shapeA; }
+            if (shapeB !== undefined) { this.shapeB = shapeB; }
+        }
+        /**
+         * The first shape, side A of the results.
+         * @default undefined
+         */
+        shapeA!: T;
+        /**
+         * The second shape, side B of the results.
+         * @default undefined
+         */
+        shapeB!: T;
+    }
+    /**
+     * A grid of points for `shapes.face.fromPointGrid`, which makes a B-spline face through them or
+     * near them, with the degrees and the tolerance an approximation keeps to.
+     */
+    export class FaceFromPointGridDto {
+        constructor(points?: Base.Point3[][], interpolate?: boolean, periodic?: boolean, degreeMin?: number, degreeMax?: number, tolerance?: number) {
+            if (points !== undefined) { this.points = points; }
+            if (interpolate !== undefined) { this.interpolate = interpolate; }
+            if (periodic !== undefined) { this.periodic = periodic; }
+            if (degreeMin !== undefined) { this.degreeMin = degreeMin; }
+            if (degreeMax !== undefined) { this.degreeMax = degreeMax; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * Rows of equal length, at least two of two points each; the rows step along u and each row runs
+         * along v.
+         * @default undefined
+         */
+        points!: Base.Point3[][];
+        /**
+         * True passes the face through every point at degree 3; false approximates the points within
+         * `tolerance`, smoothing what the tolerance allows.
+         * @default true
+         */
+        interpolate?: boolean | undefined = true;
+        /**
+         * Closes the face in u, joining the last row back to the first, which is not repeated; read only
+         * when interpolating.
+         * @default false
+         */
+        periodic?: boolean | undefined = false;
+        /**
+         * The lowest degree an approximation may use; read only when approximating.
+         * @default 3
+         * @minimum 1
+         * @maximum 25
+         * @step 1
+         */
+        degreeMin?: number | undefined = 3;
+        /**
+         * The highest degree an approximation may use, at least `degreeMin`; read only when
+         * approximating.
+         * @default 8
+         * @minimum 1
+         * @maximum 25
+         * @step 1
+         */
+        degreeMax?: number | undefined = 8;
+        /**
+         * How far an approximation may pass from the points, in model units; read only when
+         * approximating.
+         * @default 1e-3
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        tolerance?: number | undefined = 1e-3;
+    }
+    /**
+     * Two to four edges and a filling style for `shapes.face.boundaryPatch`, which makes a B-spline
+     * face bounded by the edges, each taken along its orientation.
+     */
+    export class BoundaryPatchDto<T> {
+        constructor(edges?: T[], style?: fillingStyleEnum) {
+            if (edges !== undefined) { this.edges = edges; }
+            if (style !== undefined) { this.style = style; }
+        }
+        /**
+         * Two to four edges: four that close up, three of which one meets the other two, or two opposite
+         * sides, which share a corner in the curved style.
+         * @default undefined
+         */
+        edges!: T[];
+        /**
+         * How the patch fills between the edges.
+         * @default coons
+         */
+        style?: fillingStyleEnum | undefined = fillingStyleEnum.coons;
+    }
+    /**
+     * Boundary edges, how the patch meets each, the faces beside them and points to pass near for
+     * `shapes.face.fillPatch`, with the settings of the plate surface it fits.
+     */
+    export class FillPatchDto<T, U> {
+        constructor(edges?: T[], continuities?: continuityEnum[], supports?: (U | undefined)[], points?: Base.Point3[], degree?: number, pointsOnCurves?: number, iterations?: number, tolerance?: number) {
+            if (edges !== undefined) { this.edges = edges; }
+            if (continuities !== undefined) { this.continuities = continuities; }
+            if (supports !== undefined) { this.supports = supports; }
+            if (points !== undefined) { this.points = points; }
+            if (degree !== undefined) { this.degree = degree; }
+            if (pointsOnCurves !== undefined) { this.pointsOnCurves = pointsOnCurves; }
+            if (iterations !== undefined) { this.iterations = iterations; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The boundary edges, in any order and direction, that close into one loop.
+         * @default undefined
+         */
+        edges!: T[];
+        /**
+         * How the patch meets each edge, one entry per edge in the order of `edges`; left out, the patch
+         * only passes through every edge.
+         * @default undefined
+         * @optional true
+         */
+        continuities?: continuityEnum[] | undefined;
+        /**
+         * One face per edge, the face beside it, for tangent or curvature along an edge that stores none;
+         * an undefined entry, or leaving it out, gives no face.
+         * @default undefined
+         * @optional true
+         */
+        supports?: (U | undefined)[] | undefined;
+        /**
+         * Points inside the boundary the patch passes near; left out, none.
+         * @default undefined
+         * @optional true
+         */
+        points?: Base.Point3[] | undefined;
+        /**
+         * The degree of the plate surface.
+         * @default 3
+         * @minimum 2
+         * @maximum 9
+         * @step 1
+         */
+        degree?: number | undefined = 3;
+        /**
+         * How many points of each boundary edge the plate is fitted to.
+         * @default 15
+         * @minimum 2
+         * @maximum Infinity
+         * @step 1
+         */
+        pointsOnCurves?: number | undefined = 15;
+        /**
+         * How many passes the fit makes; matching curvature may need more than two.
+         * @default 2
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        iterations?: number | undefined = 2;
+        /**
+         * How far the patch may pass from the boundary and the points, in model units.
+         * @default 1e-4
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance?: number | undefined = 1e-4;
+    }
+    /**
+     * A face and a tolerance for `shapes.face.unroll`, which lays a plane, cylinder or cone face flat
+     * without stretching it.
+     */
+    export class UnrollFaceDto<T> {
+        constructor(shape?: T, tolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The face to lay flat: one on a plane, a cylinder or a cone.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * How far the flat edges may stray from the exact development, in model units.
+         * @default 1e-4
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.0001
+         */
+        tolerance?: number | undefined = 1e-4;
+    }
+    /**
+     * A shape and a frame for `analysis.measure.boundingBoxInFrame`, which boxes the shape along the
+     * frame's axes instead of the world's.
+     */
+    export class BoundingBoxInFrameDto<T> {
+        constructor(shape?: T, frame?: Base.Frame) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shape the box is found around.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The frame whose axes the box follows: its x along the frame's direction and its z along the
+         * frame's normal. Only the axes matter, not the origin.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+    }
+    /**
+     * A shape, one of its edges and a place along the edge for `analysis.measure.dihedralAngle`, which
+     * measures the angle between the two faces that meet there.
+     */
+    export class DihedralAngleDto<T> {
+        constructor(shape?: T, index?: number, param?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (index !== undefined) { this.index = index; }
+            if (param !== undefined) { this.param = param; }
+        }
+        /**
+         * The shape the edge belongs to.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The edge, counted from 0 as `shapes.edge.getEdges` lists them.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        index?: number | undefined = 0;
+        /**
+         * Where along the edge the angle is read, as a share of its parameter range from 0 at its start
+         * to 1 at its end.
+         * @default 0.5
+         * @minimum 0
+         * @maximum 1
+         * @step 0.1
+         */
+        param?: number | undefined = 0.5;
+    }
+    /**
+     * A shape, how densely to sample it and whether to read concave bends only, for
+     * `analysis.measure.minCurvatureRadius`.
+     */
+    export class MinCurvatureRadiusDto<T> {
+        constructor(shape?: T, samples?: number, concaveOnly?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (samples !== undefined) { this.samples = samples; }
+            if (concaveOnly !== undefined) { this.concaveOnly = concaveOnly; }
+        }
+        /**
+         * The shape whose tightest bend is found.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * How densely the shape is read: a grid of this many by this many places on each face, and this
+         * many places along each edge.
+         * @default 16
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        samples?: number | undefined = 16;
+        /**
+         * True reads only where faces bend concavely, the tightest radius a round tool can reach; edges
+         * and convex bends are then skipped.
+         * @default false
+         */
+        concaveOnly?: boolean | undefined = false;
+    }
+    /**
+     * Shapes and a clearance for `analysis.clashes.betweenShapes`, which finds the pairs of shapes that
+     * overlap or come within the clearance of each other.
+     */
+    export class ClashesBetweenShapesDto<T> {
+        constructor(shapes?: T[], clearance?: number) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (clearance !== undefined) { this.clearance = clearance; }
+        }
+        /**
+         * The shapes to check against each other; a clash names two of them by their positions here.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * How close two shapes may come before they clash, in model units; 0 reports only shapes that
+         * touch or overlap.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        clearance?: number | undefined = 0;
+    }
+    /**
+     * Two shapes, a clearance and a meshing precision for `analysis.clashes.facesWithin`, which finds
+     * the faces of one that come within the clearance of faces of the other.
+     */
+    export class FacesWithinDto<T> {
+        constructor(shapeA?: T, shapeB?: T, clearance?: number, precision?: number) {
+            if (shapeA !== undefined) { this.shapeA = shapeA; }
+            if (shapeB !== undefined) { this.shapeB = shapeB; }
+            if (clearance !== undefined) { this.clearance = clearance; }
+            if (precision !== undefined) { this.precision = precision; }
+        }
+        /**
+         * The first shape, whose faces are side A of each clash.
+         * @default undefined
+         */
+        shapeA!: T;
+        /**
+         * The second shape, whose faces are side B of each clash.
+         * @default undefined
+         */
+        shapeB!: T;
+        /**
+         * How close a face of one shape may come to a face of the other before the two clash, in model
+         * units.
+         * @default 0.1
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        clearance?: number | undefined = 0.1;
+        /**
+         * The mesh deflection of the search for candidate pairs, in model units; every pair it finds is
+         * then measured exactly.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision?: number | undefined = 0.01;
+    }
+    /**
+     * A shape and a meshing precision for `analysis.clashes.selfIntersections`, which finds the faces
+     * of the shape that cross each other.
+     */
+    export class SelfIntersectionsDto<T> {
+        constructor(shape?: T, precision?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (precision !== undefined) { this.precision = precision; }
+        }
+        /**
+         * The shape whose faces are checked against each other.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The mesh deflection of the search for candidate pairs, in model units; every pair it finds is
+         * then confirmed exactly.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.01
+         */
+        precision?: number | undefined = 0.01;
+    }
+    /**
+     * Two shapes and a joining tolerance for `operations.sectionWires`, which gives the curves where the
+     * shapes meet, joined end to end into wires.
+     */
+    export class SectionWiresDto<T> {
+        constructor(shapeA?: T, shapeB?: T, tolerance?: number) {
+            if (shapeA !== undefined) { this.shapeA = shapeA; }
+            if (shapeB !== undefined) { this.shapeB = shapeB; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * One of the two shapes, such as a solid to cut through.
+         * @default undefined
+         */
+        shapeA!: T;
+        /**
+         * The shape it meets, such as a face or a solid passing through `shapeA`.
+         * @default undefined
+         */
+        shapeB!: T;
+        /**
+         * How close the ends of two section edges must lie to be joined into one wire, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
+     * A shape, the frames whose planes slice it and what each slice keeps for
+     * `operations.sliceByFrames`, which gives one slice per frame.
+     */
+    export class SliceByFramesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], makeFaces?: boolean, tolerance?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frames !== undefined) { this.frames = frames; }
+            if (makeFaces !== undefined) { this.makeFaces = makeFaces; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+        }
+        /**
+         * The shape to slice: faces come from its solids, wires from its solids, shells and faces.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * One plane per frame, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+        /**
+         * When true, each slice holds the faces where its plane passes through the solids, holes
+         * included; when false, it holds the section wires.
+         * @default true
+         */
+        makeFaces?: boolean | undefined = true;
+        /**
+         * How close the ends of two section edges must lie to be joined into one wire, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.00001
+         */
+        tolerance?: number | undefined = 1e-7;
+    }
+    /**
+     * A shape and the frame whose plane splits it for `operations.splitByFrame`, which returns what lies
+     * in front of the plane and what lies behind it.
+     */
+    export class SplitByFrameDto<T> {
+        constructor(shape?: T, frame?: Base.Frame) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frame !== undefined) { this.frame = frame; }
+        }
+        /**
+         * The shape to split: its solids become the pieces, or its faces when it has no solids, or its
+         * edges when it has neither.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The plane to split along, through the frame's origin; `front` holds what lies on the side its
+         * normal points to.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+    }
+    /**
+     * A face and the edges or wires that cut it for `operations.splitFaceByWires`, which returns the
+     * pieces of the face.
+     */
+    export class SplitFaceByWiresDto<T, U> {
+        constructor(shape?: T, wires?: U[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (wires !== undefined) { this.wires = wires; }
+        }
+        /**
+         * The face to cut.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The edges or wires to cut along, lying on the face; a closed loop cuts out the region it
+         * encloses.
+         * @default undefined
+         */
+        wires!: U[];
+    }
+    /**
+     * A shape, a view frame and drawing options for `operations.hiddenLines`, which draws the edges seen
+     * from the frame and the edges hidden behind faces, flat on the XZ plane.
+     */
+    export class HiddenLinesDto<T> {
+        constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (exact !== undefined) { this.exact = exact; }
+            if (smoothEdges !== undefined) { this.smoothEdges = smoothEdges; }
+            if (hiddenEdges !== undefined) { this.hiddenEdges = hiddenEdges; }
+            if (focus !== undefined) { this.focus = focus; }
+            if (precision !== undefined) { this.precision = precision; }
+        }
+        /**
+         * The shape to draw.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The view: the eye sits on the side the normal points to and looks back along it, and the
+         * drawing's x runs along the direction from the frame's origin.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * When true, the drawing is made from the exact geometry; when false, from a mesh, which is
+         * faster and draws parallel views only.
+         * @default true
+         */
+        exact?: boolean | undefined = true;
+        /**
+         * When true, the edges where faces meet without a crease, such as the borders of a fillet, are
+         * drawn too.
+         * @default false
+         */
+        smoothEdges?: boolean | undefined = false;
+        /**
+         * When true, the edges that faces cover are collected in `hidden`; when false, `hidden` stays
+         * empty.
+         * @default true
+         */
+        hiddenEdges?: boolean | undefined = true;
+        /**
+         * How far the eye sits from the frame's origin along its normal for a perspective, in model
+         * units; 0 draws a parallel view. A perspective needs `exact`.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        focus?: number | undefined = 0;
+        /**
+         * The meshing tolerance in model units when `exact` is false; a smaller value follows curved
+         * faces more closely.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+    }
+    /**
+     * A shape, the frames to drill at and the size of the holes for `features.holes`;
+     * `features.counterboredHoles` and `features.countersunkHoles` add a shaped mouth to each hole.
+     */
+    export class HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frames !== undefined) { this.frames = frames; }
+            if (diameter !== undefined) { this.diameter = diameter; }
+            if (depth !== undefined) { this.depth = depth; }
+            if (tipAngle !== undefined) { this.tipAngle = tipAngle; }
+        }
+        /**
+         * The shape to drill into.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         * @default undefined
+         */
+        frames!: Base.Frame[];
+        /**
+         * The diameter of each hole, in model units.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        diameter?: number | undefined = 1;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        depth?: number | undefined = 0;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         * @default 0
+         * @minimum 0
+         * @maximum 180
+         * @exclusiveMaximum true
+         * @step 1
+         */
+        tipAngle?: number | undefined = 0;
+    }
+    /**
+     * The holes of `features.holes` with a wider, flat-bottomed counterbore at each mouth that sinks a
+     * screw head below the surface, for `features.counterboredHoles`.
+     */
+    export class CounterboredHolesDto<T> extends HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number, counterboreDiameter?: number, counterboreDepth?: number) {
+            super(shape, frames, diameter, depth, tipAngle);
+            if (counterboreDiameter !== undefined) { this.counterboreDiameter = counterboreDiameter; }
+            if (counterboreDepth !== undefined) { this.counterboreDepth = counterboreDepth; }
+        }
+        /**
+         * The diameter of the counterbore, in model units; it must be wider than `diameter`.
+         * @default 2
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        counterboreDiameter?: number | undefined = 2;
+        /**
+         * How deep the counterbore goes from the hole's entry, in model units; it must stay shallower
+         * than a hole of a given `depth`.
+         * @default 0.5
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        counterboreDepth?: number | undefined = 0.5;
+    }
+    /**
+     * The holes of `features.holes` with a cone-shaped countersink at each mouth that sinks a flat screw
+     * head flush with the surface, for `features.countersunkHoles`.
+     */
+    export class CountersunkHolesDto<T> extends HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number, countersinkDiameter?: number, countersinkAngle?: number) {
+            super(shape, frames, diameter, depth, tipAngle);
+            if (countersinkDiameter !== undefined) { this.countersinkDiameter = countersinkDiameter; }
+            if (countersinkAngle !== undefined) { this.countersinkAngle = countersinkAngle; }
+        }
+        /**
+         * The diameter of the countersink where it meets the surface, in model units; it must be wider
+         * than `diameter`.
+         * @default 2
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        countersinkDiameter?: number | undefined = 2;
+        /**
+         * The full angle of the countersink cone, in degrees, such as 90 or 82 for common flat head
+         * screws.
+         * @default 90
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum 180
+         * @exclusiveMaximum true
+         * @step 1
+         */
+        countersinkAngle?: number | undefined = 90;
+    }
+    /**
+     * A solid and the faces to remove from it for `features.removeFaces`, which closes the gap by
+     * extending the faces around them.
+     */
+    export class RemoveFacesDto<T> {
+        constructor(shape?: T, indexes?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+        }
+        /**
+         * The shape to remove faces from; it must hold solids only.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The faces to remove, counted from 0 as `shapes.face.getFaces` lists them.
+         * @default undefined
+         */
+        indexes!: number[];
+    }
+    /**
+     * A shape, the faces to move and how far for `features.pushPullFaces`, which moves each face along
+     * its outward normal and stretches the faces around it to follow.
+     */
+    export class PushPullFacesDto<T> {
+        constructor(shape?: T, indexes?: number[], distance?: number, distances?: number[]) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (indexes !== undefined) { this.indexes = indexes; }
+            if (distance !== undefined) { this.distance = distance; }
+            if (distances !== undefined) { this.distances = distances; }
+        }
+        /**
+         * The shape whose faces move.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The faces to move, counted from 0 as `shapes.face.getFaces` lists them, each at most once.
+         * @default undefined
+         */
+        indexes!: number[];
+        /**
+         * How far every chosen face moves along its outward normal, in model units; a negative
+         * distance moves it inward.
+         * @default 1
+         * @minimum -Infinity
+         * @maximum Infinity
+         * @step 0.1
+         */
+        distance?: number | undefined = 1;
+        /**
+         * One distance per entry of `indexes`, in the same order, used instead of `distance`; left out,
+         * every chosen face moves by `distance`.
+         * @default undefined
+         * @optional true
+         */
+        distances?: number[] | undefined;
+    }
+    /**
+     * A base shape, a profile face sketched on one of its faces and how far to sweep it for
+     * `features.boss`, which adds material, and `features.pocket`, which removes it.
+     */
+    export class PrismFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, direction?: Base.Vector3, extent?: featureExtentEnum, length?: number, untilFaceIndex?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (profile !== undefined) { this.profile = profile; }
+            if (sketchFaceIndex !== undefined) { this.sketchFaceIndex = sketchFaceIndex; }
+            if (direction !== undefined) { this.direction = direction; }
+            if (extent !== undefined) { this.extent = extent; }
+            if (length !== undefined) { this.length = length; }
+            if (untilFaceIndex !== undefined) { this.untilFaceIndex = untilFaceIndex; }
+        }
+        /**
+         * The base shape the feature is built on.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names.
+         * @default undefined
+         */
+        profile!: U;
+        /**
+         * The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        sketchFaceIndex?: number | undefined = 0;
+        /**
+         * The direction the profile travels in: away from the base for a boss, into it for a pocket.
+         * @default [0, 1, 0]
+         */
+        direction?: Base.Vector3 | undefined = [0, 1, 0];
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         * @default length
+         */
+        extent?: featureExtentEnum | undefined = featureExtentEnum.length;
+        /**
+         * How far the profile travels when `extent` is `length`, in model units.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length?: number | undefined = 1;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        untilFaceIndex?: number | undefined = 0;
+    }
+    /**
+     * A base shape, a profile face sketched on one of its faces, a draft angle and how far to sweep the
+     * profile for `features.taperedBoss` and `features.taperedPocket`, whose sides lean by the angle.
+     */
+    export class TaperedPrismFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, angle?: number, extent?: featureExtentEnum, length?: number, untilFaceIndex?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (profile !== undefined) { this.profile = profile; }
+            if (sketchFaceIndex !== undefined) { this.sketchFaceIndex = sketchFaceIndex; }
+            if (angle !== undefined) { this.angle = angle; }
+            if (extent !== undefined) { this.extent = extent; }
+            if (length !== undefined) { this.length = length; }
+            if (untilFaceIndex !== undefined) { this.untilFaceIndex = untilFaceIndex; }
+        }
+        /**
+         * The base shape the feature is built on.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names.
+         * @default undefined
+         */
+        profile!: U;
+        /**
+         * The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        sketchFaceIndex?: number | undefined = 0;
+        /**
+         * How far the sides lean from straight, in degrees: a positive angle narrows the feature as it
+         * goes away from the sketch face, a negative one widens it.
+         * @default 5
+         * @minimum -90
+         * @exclusiveMinimum true
+         * @maximum 90
+         * @exclusiveMaximum true
+         * @step 1
+         */
+        angle?: number | undefined = 5;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         * @default length
+         */
+        extent?: featureExtentEnum | undefined = featureExtentEnum.length;
+        /**
+         * How far the feature runs from the sketch face when `extent` is `length`, in model units.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        length?: number | undefined = 1;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        untilFaceIndex?: number | undefined = 0;
+    }
+    /**
+     * A base shape, a profile face sketched on one of its faces and an axis for
+     * `features.revolvedBoss` and `features.revolvedPocket`, which turn the profile about the axis to
+     * add or remove a ring.
+     */
+    export class RevolvedFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, axisOrigin?: Base.Point3, axisDirection?: Base.Vector3, angle?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (profile !== undefined) { this.profile = profile; }
+            if (sketchFaceIndex !== undefined) { this.sketchFaceIndex = sketchFaceIndex; }
+            if (axisOrigin !== undefined) { this.axisOrigin = axisOrigin; }
+            if (axisDirection !== undefined) { this.axisDirection = axisDirection; }
+            if (angle !== undefined) { this.angle = angle; }
+        }
+        /**
+         * The base shape the feature is built on.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The face to turn, lying in a plane through the axis; it must lie on the face of the base that
+         * `sketchFaceIndex` names.
+         * @default undefined
+         */
+        profile!: U;
+        /**
+         * The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 1
+         */
+        sketchFaceIndex?: number | undefined = 0;
+        /**
+         * A point on the axis the profile turns about.
+         * @default [0, 0, 0]
+         */
+        axisOrigin?: Base.Point3 | undefined = [0, 0, 0];
+        /**
+         * The direction of the axis the profile turns about.
+         * @default [0, 1, 0]
+         */
+        axisDirection?: Base.Vector3 | undefined = [0, 1, 0];
+        /**
+         * How far the profile turns, in degrees, following the right-hand rule about the axis; 360
+         * makes a whole ring.
+         * @default 360
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum 360
+         * @step 1
+         */
+        angle?: number | undefined = 360;
+    }
+    /**
+     * A base shape, a wire and the plane it lies in for `features.rib`, which fills the region the wire
+     * closes off against the base, and `features.groove`, which cuts a region away.
+     */
+    export class RibFeatureDto<T, U> {
+        constructor(shape?: T, wire?: U, frame?: Base.Frame, thickness?: number, otherSideThickness?: number) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (wire !== undefined) { this.wire = wire; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (thickness !== undefined) { this.thickness = thickness; }
+            if (otherSideThickness !== undefined) { this.otherSideThickness = otherSideThickness; }
+        }
+        /**
+         * The base shape the feature is built on.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The wire outlining the rib or groove in the plane of `frame`; the feature lies on its left as
+         * it runs, seen from the side the normal points to.
+         * @default undefined
+         */
+        wire!: U;
+        /**
+         * The plane the wire lies in, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * How thick the feature is on the side of the plane the frame's normal points to, in model
+         * units.
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        thickness?: number | undefined = 0.5;
+        /**
+         * How thick the feature is on the other side of the plane, in model units; it and `thickness`
+         * are not both 0.
+         * @default 0.5
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        otherSideThickness?: number | undefined = 0.5;
+    }
+    /**
+     * A flat spine and a profile for `operations.sweepEvolved`, which sweeps the profile along the spine
+     * keeping its place beside it, the way a moulding follows a wall.
+     */
+    export class SweepEvolvedDto<T, U> {
+        constructor(spine?: T, profile?: U, makeSolid?: boolean) {
+            if (spine !== undefined) { this.spine = spine; }
+            if (profile !== undefined) { this.profile = profile; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
+        }
+        /**
+         * The path: a wire or a face lying in one plane; a face is swept along its boundary.
+         * @default undefined
+         */
+        spine!: T;
+        /**
+         * The edge or wire to sweep, drawn about the origin: x along the spine, y to the left of travel
+         * and z up from the spine's plane.
+         * @default undefined
+         */
+        profile!: U;
+        /**
+         * When true, the sweep is closed into a solid where it can be: a closed profile gives a solid
+         * wall, and a wall round a closed spine is capped.
+         * @default true
+         */
+        makeSolid?: boolean | undefined = true;
+    }
+    /**
+     * A spine, a profile and a scale at places along the spine for `operations.pipeWithScaling`, which
+     * sweeps the profile along the spine while scaling it.
+     */
+    export class PipeWithScalingDto<T, U> {
+        constructor(spine?: T, profile?: U, params?: number[], scales?: number[], makeSolid?: boolean) {
+            if (spine !== undefined) { this.spine = spine; }
+            if (profile !== undefined) { this.profile = profile; }
+            if (params !== undefined) { this.params = params; }
+            if (scales !== undefined) { this.scales = scales; }
+            if (makeSolid !== undefined) { this.makeSolid = makeSolid; }
+        }
+        /**
+         * The path to sweep along, an edge or a wire.
+         * @default undefined
+         */
+        spine!: T;
+        /**
+         * The edge or wire to sweep, placed across the start of the spine.
+         * @default undefined
+         */
+        profile!: U;
+        /**
+         * Places along the spine as fractions of it, rising from 0 at its start to 1 at its end; the
+         * first is 0 and the last is 1.
+         * @default [0, 1]
+         */
+        params?: number[] | undefined = [0, 1];
+        /**
+         * The scale of the profile at each place in `params`, in the same order, each above 0; 1 keeps
+         * the profile's size.
+         * @default [1, 0.5]
+         */
+        scales?: number[] | undefined = [1, 0.5];
+        /**
+         * When true, the ends are capped into a solid, which needs a closed profile; when false, the
+         * result is an open shell.
+         * @default true
+         */
+        makeSolid?: boolean | undefined = true;
+    }
+    /**
+     * Shapes to join for `shapeFix.sewWithReport`, which sews their faces together along edges that lie
+     * within `tolerance` of each other and reports what it joined and what it left open.
+     */
+    export class SewWithReportDto<T> {
+        constructor(shapes?: T[], tolerance?: number, nonManifold?: boolean) {
+            if (shapes !== undefined) { this.shapes = shapes; }
+            if (tolerance !== undefined) { this.tolerance = tolerance; }
+            if (nonManifold !== undefined) { this.nonManifold = nonManifold; }
+        }
+        /**
+         * The faces, shells or other shapes whose faces are sewn together.
+         * @default undefined
+         */
+        shapes!: T[];
+        /**
+         * How far apart two edges may lie and still be sewn into one, in model units.
+         * @default 1e-7
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.000001
+         */
+        tolerance?: number | undefined = 1e-7;
+        /**
+         * When true, an edge may join more than two faces, as where three sheets meet along one line;
+         * when false, an edge joins two faces at most.
+         * @default false
+         */
+        nonManifold?: boolean | undefined = false;
+    }
+
+    /**
+     * An STL file for `io.loadStl`, which reads its triangles into a shape: one planar face per triangle,
+     * or one face that carries the whole mesh.
+     */
+    export class LoadStlDto {
+        constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean) {
+            if (stlData !== undefined) { this.stlData = stlData; }
+            if (asFaces !== undefined) { this.asFaces = asFaces; }
+            if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        }
+        /**
+         * The STL file, ASCII or binary: the text of an ASCII file, or the file as ArrayBuffer,
+         * Uint8Array, File or Blob.
+         * @default undefined
+         */
+        stlData!: string | ArrayBuffer | Uint8Array | File | Blob;
+        /**
+         * When true, each triangle becomes a planar face that sewing can join into a shell; when false,
+         * one face carries the whole mesh, light to draw but not for modelling.
+         * @default false
+         */
+        asFaces?: boolean | undefined = false;
+        /**
+         * When true, the file's Z-up is turned into this library's Y-up.
+         * @default true
+         */
+        adjustZtoY?: boolean | undefined = true;
+    }
+
+    /**
+     * A BREP file for `io.loadBrep`, the text format that keeps a shape's exact geometry and topology,
+     * as `io.saveShapeBrep` writes it.
+     */
+    export class LoadBrepDto {
+        constructor(brepData?: string | File | Blob) {
+            if (brepData !== undefined) { this.brepData = brepData; }
+        }
+        /**
+         * The BREP file's text, or a File or Blob that holds it.
+         * @default undefined
+         */
+        brepData!: string | File | Blob;
+    }
+
+    /**
+     * A shape and file options for `io.saveShapeBrep`, which writes the shape as a BREP file, the exact
+     * text format `io.loadBrep` reads back.
+     */
+    export class SaveBrepDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The shape written to the file.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The name the downloaded file gets.
+         * @default shape.brep
+         */
+        fileName?: string | undefined = "shape.brep";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * A shape, a file name and meshing options for `io.saveShapeObj`, which triangulates the shape and
+     * writes it as an OBJ file with the material library its `mtllib` line names.
+     */
+    export class SaveObjDto<T> {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The shape written to the file.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The name the downloaded file gets. Without its extension it also names the shape and the
+         * material library, so it may hold no spaces or slashes.
+         * @default shape.obj
+         */
+        fileName?: string | undefined = "shape.obj";
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         * @default 0.01
+         * @minimum 1e-7
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * When true, the shape is turned so this library's Y-up becomes Z-up.
+         * @default false
+         */
+        adjustYtoZ?: boolean | undefined = false;
+        /**
+         * When true, a browser download of the OBJ file and of any material library is started where
+         * that is possible; the kernel itself only returns the texts.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * A shape, a file name and meshing options for `io.saveShapePly`, which triangulates the shape and
+     * writes it as an ASCII PLY file with normals.
+     */
+    export class SavePlyDto<T> {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The shape written to the file.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The name the downloaded file gets.
+         * @default shape.ply
+         */
+        fileName?: string | undefined = "shape.ply";
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         * @default 0.01
+         * @minimum 1e-7
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * When true, the shape is turned so this library's Y-up becomes Z-up.
+         * @default false
+         */
+        adjustYtoZ?: boolean | undefined = false;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * A shape, a view and file options for `io.saveShapeSvg`, which draws the edges the view sees as an
+     * SVG drawing, and the edges other faces cover dashed when asked.
+     */
+    export class SaveSvgDto<T> {
+        constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (frame !== undefined) { this.frame = frame; }
+            if (drawHidden !== undefined) { this.drawHidden = drawHidden; }
+            if (precision !== undefined) { this.precision = precision; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The shape to draw.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The view, as in `operations.hiddenLines`: the eye sits on the side the normal points to and
+         * looks back along it, and the drawing's x runs along the direction.
+         * @default undefined
+         */
+        frame!: Base.Frame;
+        /**
+         * When true, the edges other faces cover are drawn too, dashed.
+         * @default false
+         */
+        drawHidden?: boolean | undefined = false;
+        /**
+         * How far the straight segments that trace a curved edge may stray from it, in model units;
+         * a smaller value follows curves more closely and makes a bigger file.
+         * @default 0.01
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.001
+         */
+        precision?: number | undefined = 0.01;
+        /**
+         * The name the downloaded file gets.
+         * @default shape.svg
+         */
+        fileName?: string | undefined = "shape.svg";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+    }
+
+    /**
+     * A glTF file for `assembly.manager.loadGltfToDoc`, which reads its meshes, names, colors and
+     * hierarchy into an assembly document.
+     */
+    export class LoadGltfToDocDto {
+        constructor(gltfData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (gltfData !== undefined) { this.gltfData = gltfData; }
+        }
+        /**
+         * A binary `.glb`, or a `.gltf` with its buffers embedded, as text, ArrayBuffer, Uint8Array,
+         * File or Blob; the file's header tells which of the two it is.
+         * @default undefined
+         */
+        gltfData!: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
+
+    /**
+     * An OBJ file for `assembly.manager.loadObjToDoc`, which reads its meshes and names into an
+     * assembly document.
+     */
+    export class LoadObjToDocDto {
+        constructor(objData?: string | ArrayBuffer | Uint8Array | File | Blob) {
+            if (objData !== undefined) { this.objData = objData; }
+        }
+        /**
+         * The OBJ file as text, ArrayBuffer, Uint8Array, File or Blob; a material library it names is
+         * not read.
+         * @default undefined
+         */
+        objData!: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
+
+    /**
+     * A document, a meshing tolerance and file options for `assembly.manager.exportDocumentToObj`, which
+     * writes the document as an OBJ file with the material library its `mtllib` line names.
+     */
+    export class ExportDocumentToObjDto<T> {
+        constructor(document?: T, meshDeflection?: number, fileName?: string, tryDownload?: boolean) {
+            if (document !== undefined) { this.document = document; }
+            if (meshDeflection !== undefined) { this.meshDeflection = meshDeflection; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The document from `buildAssemblyDocument`, `loadStepToDoc` or another loader.
+         * @default undefined
+         */
+        document!: T;
+        /**
+         * How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh.
+         * @default 0.1
+         * @minimum 1e-7
+         * @maximum Infinity
+         * @step 0.01
+         */
+        meshDeflection?: number | undefined = 0.1;
+        /**
+         * The name the downloaded file gets. Without its extension it also names the material library,
+         * so it may hold no spaces or slashes.
+         * @default assembly.obj
+         */
+        fileName?: string | undefined = "assembly.obj";
+        /**
+         * When true, a browser download of the OBJ file and of any material library is started where
+         * that is possible; the kernel itself only returns the texts.
+         * @default false
+         */
+        tryDownload?: boolean | undefined = false;
+    }
+
+    /**
+     * A document, a meshing tolerance and file options for `assembly.manager.exportDocumentToPly`,
+     * which writes the document as an ASCII PLY file with normals and colors.
+     */
+    export class ExportDocumentToPlyDto<T> {
+        constructor(document?: T, meshDeflection?: number, fileName?: string, tryDownload?: boolean) {
+            if (document !== undefined) { this.document = document; }
+            if (meshDeflection !== undefined) { this.meshDeflection = meshDeflection; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        }
+        /**
+         * The document from `buildAssemblyDocument`, `loadStepToDoc` or another loader.
+         * @default undefined
+         */
+        document!: T;
+        /**
+         * How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh.
+         * @default 0.1
+         * @minimum 1e-7
+         * @maximum Infinity
+         * @step 0.01
+         */
+        meshDeflection?: number | undefined = 0.1;
+        /**
+         * The name the downloaded file gets.
+         * @default assembly.ply
+         */
+        fileName?: string | undefined = "assembly.ply";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         * @default false
+         */
+        tryDownload?: boolean | undefined = false;
     }
 }

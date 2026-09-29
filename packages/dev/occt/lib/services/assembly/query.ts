@@ -2,13 +2,40 @@ import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../..
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
+import { checkedDocument } from "../base/file-data";
+
+/** A dimension as the kernel writes it, a value it cannot hold in JSON written as null. */
+type KernelPmiDimension = {
+    entry: string;
+    type: string;
+    name: string;
+    value: number | null;
+    upperTolerance?: number | null;
+    lowerTolerance?: number | null;
+    lowerBound?: number | null;
+    upperBound?: number | null;
+    shapes: string[];
+    otherShapes: string[];
+};
+
+/** The product manufacturing information as the kernel writes it. */
+type KernelPmi = {
+    dimensions: KernelPmiDimension[];
+    tolerances: { entry: string; type: string; name: string; value: number | null; shapes: string[]; datums: string[] }[];
+    datums: { entry: string; name: string; shapes: string[] }[];
+};
+
+/** A number the kernel wrote, with the null it writes for an infinite or undefined value read as NaN. */
+const finiteOrNaN = (value: number | null): number => value ?? NaN;
 
 /**
  * Reading an assembly document: the parts and sub-assemblies it holds, the shape behind a label, a
- * label's color, placement and details, and the whole hierarchy as a tree. Labels are the ids the
- * document gives every part, instance and assembly, such as `0:1:1:1`; `getDocumentParts` and
- * `getAssemblyHierarchy` list them, the other methods take one. The document itself is not changed
- * by any query.
+ * label's color, placement and details, the whole hierarchy as a tree, and the dimensions and
+ * tolerances it carries. Labels are the ids the document gives every part, instance and assembly,
+ * such as `0:1:1:1`; `getDocumentParts` and `getAssemblyHierarchy` list them, the other methods take
+ * one. The document itself is not changed by any query.
  */
 export class OCCTAssemblyQuery {
 
@@ -135,6 +162,56 @@ export class OCCTAssemblyQuery {
     getAssemblyHierarchy(inputs: Inputs.OCCT.DocumentQueryDto<Handle_TDocStd_Document>): Models.OCCT.AssemblyHierarchyResult {
         const jsonString = this.occ.GetDocAssemblyHierarchy(inputs.document);
         return JSON.parse(jsonString) as Models.OCCT.AssemblyHierarchyResult;
+    }
+
+    /**
+     * Reads the product manufacturing information a document holds, as a STEP AP242 file brings it:
+     * dimensions, geometric tolerances and the datums they refer to.
+     *
+     * Each entry names its shapes by label, which `getShapeFromLabel` reads. Lengths are in the
+     * document's unit, millimeters for a loaded STEP file, and angles in degrees; a document without
+     * any gives empty lists.
+     * @param inputs - The document
+     * @returns The dimensions, the tolerances and the datums
+     * @group query
+     * @shortname get PMI
+     * @drawable false
+     * @example
+     * ```typescript
+     * const pmi = await bitbybit.occt.assembly.query.getDocumentPmi({ document: doc });
+     * const measured = await bitbybit.occt.assembly.query.getShapeFromLabel({ document: doc, label: pmi.dimensions[0].shapes[0] });
+     * ```
+     */
+    getDocumentPmi(inputs: Inputs.OCCT.DocumentQueryDto<Handle_TDocStd_Document>): Models.OCCT.DocumentPmi {
+        const resolved = resolveDto(Inputs.OCCT.DocumentQueryDto, inputs) as Resolved.OCCT.DocumentQueryDto<Handle_TDocStd_Document>;
+        const pmi = JSON.parse(this.occ.DocumentPmiJson(checkedDocument(resolved.document, "document"))) as KernelPmi;
+        return {
+            dimensions: pmi.dimensions.map(dimension => ({
+                label: dimension.entry,
+                type: dimension.type,
+                name: dimension.name,
+                value: finiteOrNaN(dimension.value),
+                ...(dimension.upperTolerance === undefined ? {} : { upperTolerance: finiteOrNaN(dimension.upperTolerance) }),
+                ...(dimension.lowerTolerance === undefined ? {} : { lowerTolerance: finiteOrNaN(dimension.lowerTolerance) }),
+                ...(dimension.lowerBound === undefined ? {} : { lowerBound: finiteOrNaN(dimension.lowerBound) }),
+                ...(dimension.upperBound === undefined ? {} : { upperBound: finiteOrNaN(dimension.upperBound) }),
+                shapes: dimension.shapes,
+                otherShapes: dimension.otherShapes,
+            })),
+            tolerances: pmi.tolerances.map(tolerance => ({
+                label: tolerance.entry,
+                type: tolerance.type,
+                name: tolerance.name,
+                value: finiteOrNaN(tolerance.value),
+                shapes: tolerance.shapes,
+                datums: tolerance.datums,
+            })),
+            datums: pmi.datums.map(datum => ({
+                label: datum.entry,
+                name: datum.name,
+                shapes: datum.shapes,
+            })),
+        };
     }
 
 }

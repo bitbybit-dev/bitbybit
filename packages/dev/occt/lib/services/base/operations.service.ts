@@ -8,7 +8,6 @@ import { Base } from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { EntitiesService } from "./entities.service";
 import { ConverterService } from "./converter.service";
-import { BooleansService } from "./booleans.service";
 import { TransformsService } from "./transforms.service";
 import { ShapeGettersService } from "./shape-getters";
 import { EdgesService } from "./edges.service";
@@ -28,7 +27,6 @@ export class OperationsService {
         private readonly enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
-        private readonly booleansService: BooleansService,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly edgesService: EdgesService,
         private readonly transformsService: TransformsService,
@@ -657,49 +655,90 @@ export class OperationsService {
         if (inputs.step <= 0) {
             throw new Error("Step needs to be positive.");
         }
-        const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
-        const intersections: TopoDS_Shape[] = [];
-        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist, centerX, centerZ } = this.computeBounds(bbox);
-
-            const planes: TopoDS_Face[] = [];
-            for (let i = minY; i < maxY; i += inputs.step) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [centerX, i, centerZ], direction: [0, 1, 0] });
-                planes.push(pq);
+        return this.sliceAlong(inputs.shape, inputs.direction, (lowest, highest) => {
+            const levels: number[] = [];
+            for (let level = lowest; level < highest; level += inputs.step) {
+                levels.push(level);
             }
-
-            this.applySlices(transformedShape, planes, inputs.direction, intersections);
-        }
-        const res = this.converterService.makeCompound({ shapes: intersections });
-        return res;
+            return levels;
+        });
     }
 
     sliceInStepPattern(inputs: Resolved.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
         if (inputs.steps.reduce((sum, step) => sum + step, 0) <= 0) {
             throw new Error("Steps must add up to more than 0, or the slices never move along the shape.");
         }
-        const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
-        const intersections: TopoDS_Shape[] = [];
-        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist, centerX, centerZ } = this.computeBounds(bbox);
-
-            const planes: TopoDS_Face[] = [];
-
+        return this.sliceAlong(inputs.shape, inputs.direction, (lowest, highest) => {
+            const levels: number[] = [];
             let index = 0;
-            for (let i = minY; i < maxY; i += inputs.steps[index]!) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [centerX, i, centerZ], direction: [0, 1, 0] });
-                planes.push(pq);
-                if (inputs.steps[index + 1] === undefined) {
-                    index = 0;
-                } else {
-                    index++;
+            for (let level = lowest; level < highest; level += inputs.steps[index]!) {
+                levels.push(level);
+                index = inputs.steps[index + 1] === undefined ? 0 : index + 1;
+            }
+            return levels;
+        });
+    }
+
+    /**
+     * The section faces of the solids of `shape` at the levels `levelsBetween` picks between the
+     * lowest and the highest point of the shape along `direction`, sliced by the kernel in one call
+     * per solid: one compound per solid that the planes cross, holding its faces once each, in
+     * a compound of them all. A shape too thin to slice gives an empty compound.
+     */
+    private sliceAlong(shape: TopoDS_Shape, direction: Inputs.Base.Vector3, levelsBetween: (lowest: number, highest: number) => number[]): TopoDS_Compound {
+        const { bbox, transformedShape } = this.createBBoxAndTransformShape(shape, direction);
+        try {
+            if (this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
+                return this.converterService.makeCompound({ shapes: [] });
+            }
+            const { minY, maxY, centerX, centerZ } = this.computeBounds(bbox);
+            const frames = levelsBetween(minY, maxY).flatMap(level => [centerX, level, centerZ, 0, 1, 0, 1, 0, 0]);
+            const isSolid = this.enumService.getShapeTypeEnum(transformedShape) === Inputs.OCCT.shapeTypeEnum.solid;
+            const solids = isSolid ? [transformedShape] : this.shapeGettersService.getSolids({ shape: transformedShape });
+            try {
+                if (solids.length === 0) {
+                    throw new Error("No solids found to slice.");
+                }
+                const slices = solids.flatMap(solid => this.slicesOfSolid(solid, frames, direction));
+                const result = this.converterService.makeCompound({ shapes: slices });
+                slices.forEach(slice => slice.delete());
+                return result;
+            } finally {
+                if (!isSolid) {
+                    solids.forEach(solid => solid.delete());
                 }
             }
-
-            this.applySlices(transformedShape, planes, inputs.direction, intersections);
+        } finally {
+            bbox.delete();
+            transformedShape.delete();
         }
-        const res = this.converterService.makeCompound({ shapes: intersections });
-        return res;
+    }
+
+    /**
+     * The faces where the planes of `frames` cross `solid`, gathered into one compound turned back
+     * from the Y axis onto `direction`, or nothing when no plane crosses it. A plane given twice
+     * receives the same face twice from the kernel, which is kept once.
+     */
+    private slicesOfSolid(solid: TopoDS_Shape, frames: number[], direction: Inputs.Base.Vector3): TopoDS_Shape[] {
+        const perFrame = this.occ.SliceByFrames(solid, frames, true, 1e-7);
+        const pieces = perFrame.flatMap(slice => this.occ.ChildrenOf(slice));
+        perFrame.forEach(slice => slice.delete());
+        const faces = pieces.filter((piece, index) => pieces.findIndex(other => other.IsSame(piece)) === index);
+        pieces.filter(piece => !faces.includes(piece)).forEach(piece => piece.delete());
+        if (faces.length === 0) {
+            return [];
+        }
+        const compound = this.converterService.makeCompound({ shapes: faces });
+        faces.forEach(face => face.delete());
+        const turned = this.transformsService.align({
+            shape: compound,
+            fromOrigin: [0, 0, 0],
+            fromDirection: [0, 1, 0],
+            toOrigin: [0, 0, 0],
+            toDirection: direction,
+        });
+        compound.delete();
+        return [turned];
     }
 
     private createBBoxAndTransformShape(shape: TopoDS_Shape, direction: Inputs.Base.Vector3) {
@@ -727,51 +766,9 @@ export class OperationsService {
 
         const minZ = cornerMin.Z();
         const maxZ = cornerMax.Z();
+        cornerMin.delete();
+        cornerMax.delete();
 
-        const distX = maxX - minX;
-        const distZ = maxZ - minZ;
-
-        const percentage = 1.2;
-        let maxDist = distX >= distZ ? distX : distZ;
-        maxDist *= percentage;
-        return { minY, maxY, maxDist, centerX: (minX + maxX) / 2, centerZ: (minZ + maxZ) / 2 };
-    }
-
-
-    private applySlices(transformedShape: TopoDS_Shape, planes: TopoDS_Face[], direction: Inputs.Base.Vector3, intersections: TopoDS_Shape[]) {
-        const shapesToSlice = [];
-        if (this.enumService.getShapeTypeEnum(transformedShape) === Inputs.OCCT.shapeTypeEnum.solid) {
-            shapesToSlice.push(transformedShape);
-        } else {
-            const solids = this.shapeGettersService.getSolids({ shape: transformedShape });
-            shapesToSlice.push(...solids);
-        }
-
-        if (shapesToSlice.length === 0) {
-            throw new Error("No solids found to slice.");
-        }
-
-        shapesToSlice.forEach(s => {
-            const intInputs = new Inputs.OCCT.IntersectionDto<TopoDS_Shape>() as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
-            intInputs.keepEdges = true;
-            intInputs.shapes = [s];
-
-            const compound = this.converterService.makeCompound({ shapes: planes });
-            intInputs.shapes.push(compound);
-
-            const ints = this.booleansService.intersection(intInputs);
-            ints.forEach(int => {
-                if (int && !int.IsNull()) {
-                    const transformedInt = this.transformsService.align({
-                        shape: int,
-                        fromOrigin: [0, 0, 0],
-                        fromDirection: [0, 1, 0],
-                        toOrigin: [0, 0, 0],
-                        toDirection: direction,
-                    });
-                    intersections.push(transformedInt);
-                }
-            });
-        });
+        return { minY, maxY, centerX: (minX + maxX) / 2, centerZ: (minZ + maxZ) / 2 };
     }
 }

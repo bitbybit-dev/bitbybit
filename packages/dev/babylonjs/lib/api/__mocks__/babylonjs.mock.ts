@@ -182,7 +182,8 @@ export class MockVertexData {
     indices: number[] | Uint16Array | Uint32Array = [];
     normals: number[] = [];
     uvs: number[] = [];
-    
+    colors: number[] | null = null;
+
     set(data: Float32Array, kind: string) {
         if (kind === "position") {
             this.positions = Array.from(data);
@@ -197,11 +198,17 @@ export class MockVertexData {
     
     merge(vertexDataArray: MockVertexData[]) {
         vertexDataArray.forEach(vd => {
+            if ((this.colors === null) !== (vd.colors === null)) {
+                throw new Error("Cannot merge vertex data that do not have the same set of attributes");
+            }
             const indexOffset = this.positions.length / 3;
             this.positions.push(...vd.positions);
             this.normals.push(...vd.normals);
             if (vd.uvs) {
                 this.uvs.push(...vd.uvs);
+            }
+            if (this.colors !== null && vd.colors !== null) {
+                this.colors = [...this.colors, ...vd.colors];
             }
             if (vd.indices) {
                 const indices = Array.isArray(vd.indices) ? vd.indices : Array.from(vd.indices);

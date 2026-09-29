@@ -6,12 +6,13 @@ import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 /**
  * Faces in OpenCascade: bounded pieces of a surface, flat or curved, with an outer boundary wire
- * and optional inner wires that make holes. Build them from wires or surfaces, or as ready-made
- * flat shapes (circles, rectangles, stars, beam profiles) that lie on the ground plane unless
- * `direction` says otherwise; walk their surface through UV parameters to get points, normals and
- * grids of wires; cut hole patterns into them; and measure area and center of mass. U and V are the
- * two directions of a surface, given here as fractions from 0 to 1 of the face's own range. Faces
- * join edge to edge into shells, which `shapes.shell` handles.
+ * and optional inner wires that make holes. Build them from wires or surfaces, through point grids,
+ * between or inside edges, or as ready-made flat shapes (circles, rectangles, stars, beam profiles)
+ * that lie on the ground plane unless `direction` says otherwise; walk their surface through UV
+ * parameters to get points, normals, iso curves and grids of wires; cut hole patterns into them, lay
+ * them flat, and measure area and center of mass. U and V are the two directions of a surface, given
+ * here as fractions from 0 to 1 of the face's own range. Faces join edge to edge into shells, which
+ * `shapes.shell` handles.
  */
 export class OCCTFace {
     constructor(
@@ -354,6 +355,128 @@ export class OCCTFace {
      */
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Inputs.OCCT.GeomSurfacePointer, Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.faceFromSurfaceAndWire", inputs);
+    }
+
+    /**
+     * Creates a B-spline face through a grid of points, or near them.
+     *
+     * The rows step along u and each row runs along v. Interpolating passes through every point at
+     * degree 3, closed in u when `periodic`; approximating keeps within `tolerance` at a degree from
+     * `degreeMin` to `degreeMax`. Neighbouring rows or columns holding the same points are refused.
+     * @param inputs - The rows of points, whether to interpolate, and the degrees and tolerance of an approximation
+     * @returns The face
+     * @group from
+     * @shortname face from point grid
+     * @drawable true
+     * @example
+     * ```typescript
+     * const face = await bitbybit.occt.shapes.face.fromPointGrid({
+     *     points: [
+     *         [[0, 0, 0], [0, 1, 5], [0, 0, 10]],
+     *         [[5, 2, 0], [5, 3, 5], [5, 2, 10]],
+     *         [[10, 0, 0], [10, 1, 5], [10, 0, 10]],
+     *     ],
+     *     interpolate: true,
+     * });
+     * ```
+     */
+    fromPointGrid(inputs: Inputs.OCCT.FaceFromPointGridDto): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.fromPointGrid", inputs);
+    }
+
+    /**
+     * Creates the ruled surface between two edges, or two wires edge by edge: straight lines from one
+     * to the other.
+     *
+     * Each line joins the points at the same share of the two curves, so reversing one twists the
+     * surface. Wires need as many edges each, paired as each wire runs. The shapes given are left
+     * unchanged.
+     * @param inputs - Two edges or two wires
+     * @returns A face for two edges, a shell of one face per pair of edges for two wires
+     * @group from
+     * @shortname ruled between
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bottom = await bitbybit.occt.shapes.edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
+     * const top = await bitbybit.occt.shapes.edge.arcThroughThreePoints({ start: [0, 5, 0], middle: [5, 5, 3], end: [10, 5, 0] });
+     * const face = await bitbybit.occt.shapes.face.ruledBetween({ shapeA: bottom, shapeB: top });
+     * ```
+     */
+    ruledBetween(inputs: Inputs.OCCT.TwoShapesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.ruledBetween", inputs);
+    }
+
+    /**
+     * Creates a B-spline face bounded by two, three or four edges.
+     *
+     * Four edges, in any order and direction, must close up. Of three, one must meet the other two,
+     * and a straight side closes their free ends. Two are opposite sides joined start to start; the
+     * curved style instead sweeps one along the other from a shared corner.
+     * @param inputs - The boundary edges and the filling style
+     * @returns The face
+     * @group from
+     * @shortname boundary patch
+     * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromPoints({ points: [[0, 0, 0], [10, 0, 2], [10, 10, 0], [0, 10, 2], [0, 0, 0]] });
+     * const patch = await bitbybit.occt.shapes.face.boundaryPatch({ edges, style: Bit.Inputs.OCCT.fillingStyleEnum.coons });
+     * ```
+     */
+    boundaryPatch(inputs: Inputs.OCCT.BoundaryPatchDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.boundaryPatch", inputs);
+    }
+
+    /**
+     * Creates a face that fills a closed loop of edges and passes near given points.
+     *
+     * The edges may come in any order and direction. Each continuity says whether the patch passes
+     * through its edge, meets the face beside it at a tangent, or also bends as it does; an edge that
+     * stores no face takes that face in `supports`.
+     * @param inputs - The boundary edges, their continuities and support faces, the points and the fit's settings
+     * @returns The face
+     * @group from
+     * @shortname fill patch
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 2, height: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const side = await bitbybit.occt.shapes.face.getFace({ shape: cylinder, index: 0 });
+     * const rim = await bitbybit.occt.shapes.edge.getEdge({ shape: cylinder, index: 0 });
+     * const dome = await bitbybit.occt.shapes.face.fillPatch({
+     *     edges: [rim],
+     *     continuities: [Bit.Inputs.OCCT.continuityEnum.tangent],
+     *     supports: [side],
+     *     points: [[0, 7, 0]],
+     * });
+     * ```
+     */
+    fillPatch(inputs: Inputs.OCCT.FillPatchDto<Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.fillPatch", inputs);
+    }
+
+    /**
+     * Lays a plane, cylinder or cone face out flat without stretching it, as the pattern a sheet is
+     * cut from.
+     *
+     * Lengths and areas are kept, holes and notches included, and a closed face opens along its seam.
+     * The flat face lies on the ground plane facing +Y, as the other flat shapes do, ready for a DXF
+     * export.
+     * @param inputs - The face and the tolerance of the flat edges
+     * @returns The flat face on the XZ plane
+     * @group develop
+     * @shortname unroll
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 2, height: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const wall = await bitbybit.occt.shapes.face.getFace({ shape: cylinder, index: 0 });
+     * const pattern = await bitbybit.occt.shapes.face.unroll({ shape: wall, tolerance: 1e-4 });
+     * ```
+     */
+    unroll(inputs: Inputs.OCCT.UnrollFaceDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSFacePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.unroll", inputs);
     }
 
     /**
@@ -1290,7 +1413,8 @@ export class OCCTFace {
      * Draws several wires across a face, one per parameter value, following the surface.
      *
      * With `isU` true each wire sits at its fraction of the U range and runs over the whole V
-     * range; with false the roles swap.
+     * range; with false the roles swap. The wires ignore the face's trims; `isoCurves` gives the
+     * exact curves trimmed to the face.
      * @param inputs - The face, the direction and the fractions along it
      * @returns One wire per fraction, in the same order
      * @group extract
@@ -1303,6 +1427,25 @@ export class OCCTFace {
      */
     wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.wiresAlongParams", inputs);
+    }
+
+    /**
+     * Finds a face's exact iso curves at fractions of its UV range, trimmed to the face.
+     *
+     * With `isU` true each curve holds u at its fraction and runs along v; false swaps them. A curve
+     * stops at a hole and goes on past it; 0 and 1 give the boundary, and values outside give none.
+     * @param inputs - The face, the direction and the fractions
+     * @returns The edges, value after value, each value's pieces in order along the curve
+     * @group extract
+     * @shortname iso curves
+     * @drawable true
+     * @example
+     * ```typescript
+     * const curves = await bitbybit.occt.shapes.face.isoCurves({ shape: face, isU: true, params: [0.25, 0.5, 0.75] });
+     * ```
+     */
+    isoCurves(inputs: Inputs.OCCT.WiresAlongParamsDto<Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.face.isoCurves", inputs);
     }
 
     /**

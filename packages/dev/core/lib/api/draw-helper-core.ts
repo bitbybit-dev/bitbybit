@@ -11,6 +11,70 @@ export interface MeshData {
     indices: number[];
     normals: number[];
     uvs?: number[] | undefined;
+    /** One color per vertex in the order of `positions`, three or four numbers from 0 to 1 each. */
+    colors?: number[] | undefined;
+}
+
+/**
+ * A face a surface analysis colors: its vertex positions, three numbers each, and, when the face was
+ * analyzed, one value per vertex in the same order.
+ */
+export interface SurfaceAnalysisFace {
+    vertexCoord: readonly number[];
+    analysisValues?: readonly number[] | undefined;
+}
+
+/** A mesh whose faces may carry the values of a surface analysis. */
+export interface SurfaceAnalysisMesh {
+    faceList?: readonly SurfaceAnalysisFace[] | undefined;
+}
+
+/** The ramp a surface analysis is drawn with, as normalized sRGB: blue, cyan, green, yellow, red. */
+const SURFACE_ANALYSIS_RAMP: readonly (readonly [number, number, number])[] = [[0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]];
+
+const isFiniteNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
+
+/** The lowest and highest finite values the faces of `meshes` carry, or undefined when they carry none. */
+function finiteRange(meshes: readonly SurfaceAnalysisMesh[]): { min: number; max: number } | undefined {
+    let min = Infinity;
+    let max = -Infinity;
+    for (const mesh of meshes) {
+        for (const face of mesh.faceList ?? []) {
+            for (const value of face.analysisValues ?? []) {
+                if (isFiniteNumber(value)) {
+                    min = Math.min(min, value);
+                    max = Math.max(max, value);
+                }
+            }
+        }
+    }
+    return min <= max ? { min, max } : undefined;
+}
+
+/**
+ * Where `value` lies on the ramp, from 0 at `min` to 1 at `max` and clamped past them; when both ends
+ * are the same value, the middle for that value and the nearer end for any other.
+ */
+function rampPlace(value: number, min: number, max: number): number {
+    if (max === min) {
+        return value > min ? 1 : value < min ? 0 : 0.5;
+    }
+    return Math.min(Math.max((value - min) / (max - min), 0), 1);
+}
+
+/** The ramp's color at `place`, from 0 to 1, as normalized sRGB. */
+function rampColor(place: number): [number, number, number] {
+    const scaled = place * (SURFACE_ANALYSIS_RAMP.length - 1);
+    const stop = Math.min(Math.floor(scaled), SURFACE_ANALYSIS_RAMP.length - 2);
+    const share = scaled - stop;
+    const from = SURFACE_ANALYSIS_RAMP[stop]!;
+    const to = SURFACE_ANALYSIS_RAMP[stop + 1]!;
+    return [from[0] + (to[0] - from[0]) * share, from[1] + (to[1] - from[1]) * share, from[2] + (to[2] - from[2]) * share];
+}
+
+/** A normalized sRGB channel in linear light, the space the engines' shaders read vertex colors in. */
+function linearChannel(value: number): number {
+    return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
 }
 
 /**
@@ -545,5 +609,65 @@ export class DrawHelperCore {
      */
     protected getDefaultBackFaceColor(): string {
         return DEFAULT_COLORS.BACK_FACE;
+    }
+
+    /**
+     * `options` with `analysisMin` and `analysisMax` set, where they are not finite numbers, to the
+     * lowest and highest finite values the faces of all `meshes` carry, so every mesh of a list is
+     * colored over the same range. Without such values the options come back as they are.
+     * @param options - Drawing options that may give either end of the range
+     * @param meshes - Every mesh the options will draw
+     * @returns New options with both ends of the range where the meshes give them
+     */
+    withSurfaceAnalysisRange<T extends { analysisMin?: number | undefined; analysisMax?: number | undefined }>(options: T, meshes: readonly SurfaceAnalysisMesh[]): T {
+        const found = finiteRange(meshes);
+        if (!found) {
+            return options;
+        }
+        return {
+            ...options,
+            analysisMin: isFiniteNumber(options.analysisMin) ? options.analysisMin : found.min,
+            analysisMax: isFiniteNumber(options.analysisMax) ? options.analysisMax : found.max,
+        };
+    }
+
+    /**
+     * The color of every vertex of every face of `mesh` from its surface analysis, in linear light as
+     * the engines read vertex colors. A value runs from blue at `min` through cyan, green and yellow
+     * to red at `max`, and is clamped past them; left out, they are the lowest and highest finite
+     * values the mesh carries. A NaN value, and every vertex of a face without values, keeps
+     * `fallback`.
+     * @param mesh - The mesh whose faces carry the values
+     * @param fallback - The hex color of a vertex without a value
+     * @param min - The value drawn blue
+     * @param max - The value drawn red
+     * @param components - Three numbers per vertex (red, green, blue), or four with an alpha of 1
+     * @returns One list of colors per face, or undefined when no face carries values
+     */
+    protected surfaceAnalysisColors(mesh: SurfaceAnalysisMesh, fallback: string, min: number | undefined, max: number | undefined, components: 3 | 4): number[][] | undefined {
+        const faces = mesh.faceList ?? [];
+        if (!faces.some(face => Array.isArray(face.analysisValues))) {
+            return undefined;
+        }
+        const found = finiteRange([mesh]);
+        const low = isFiniteNumber(min) ? min : found?.min ?? 0;
+        const high = isFiniteNumber(max) ? max : found?.max ?? 0;
+        const plain = this.hexToRgb(this.normalizeColor(fallback, DEFAULT_COLORS.FACE))!;
+        const fallbackColor = [plain.r, plain.g, plain.b].map(linearChannel);
+        return faces.map(face => {
+            const count = Math.floor(face.vertexCoord.length / 3);
+            const colors = new Array<number>(count * components);
+            for (let vertex = 0; vertex < count; vertex++) {
+                const value = face.analysisValues?.[vertex];
+                const color = typeof value === "number" && !Number.isNaN(value) ? rampColor(rampPlace(value, low, high)).map(linearChannel) : fallbackColor;
+                for (let channel = 0; channel < 3; channel++) {
+                    colors[vertex * components + channel] = color[channel]!;
+                }
+                if (components === 4) {
+                    colors[vertex * components + 3] = 1;
+                }
+            }
+            return colors;
+        });
     }
 }

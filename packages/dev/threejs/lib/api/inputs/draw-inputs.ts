@@ -241,7 +241,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -268,6 +268,14 @@ export namespace Draw {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+            if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -431,6 +439,60 @@ export namespace Draw {
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * When true, each face's iso curves are drawn with the shape, as its edges are: at `edgeWidth`
+         * and `edgeOpacity`, in `isoCurvesColour`.
+         * @default false
+         */
+        drawIsoCurves?: boolean | undefined = false;
+        /**
+         * How many iso curves of constant u each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its u range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesU?: number | undefined = 5;
+        /**
+         * How many iso curves of constant v each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its v range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesV?: number | undefined = 5;
+        /**
+         * The color of the iso curves as a hex string.
+         * @default #808080
+         */
+        isoCurvesColour?: Base.Color | undefined = "#808080";
+        /**
+         * The surface analysis coloring the faces instead of `faceColour` and `faceMaterial`, from blue at
+         * `analysisMin` through green to red at `analysisMax`; vertices without a value keep `faceColour`.
+         * @default none
+         */
+        surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum | undefined = Inputs.OCCT.surfaceAnalysisEnum.none;
+        /**
+         * The pull direction the draft angles are measured against; read only by `draftAngle`.
+         * @default [0, 1, 0]
+         */
+        draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
+        /**
+         * The analysis value drawn blue, and anything below it; left out, the lowest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMin?: number | undefined;
+        /**
+         * The analysis value drawn red, and anything above it; left out, the highest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMax?: number | undefined;
     }
 
     /**

@@ -161,8 +161,9 @@ export class Draw extends DrawCore {
     private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
         const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
+        const pooled = this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes);
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
-            options, dm, options)));
+            pooled, dm, pooled)));
         const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);
         container.isVisible = false;
         drawn.forEach(mesh => { if (mesh) { mesh.parent = container; } });
@@ -465,15 +466,15 @@ export class Draw extends DrawCore {
 
     /**
      * Builds the full drawing options for OCCT shapes: meshing precision, face, edge and vertex
-     * colors and sizes, index labels, arrows on edges, two-sided rendering and the triangulation
-     * cache, with defaults for what is left out.
+     * colors and sizes, index labels, arrows on edges, two-sided rendering, iso curves, a surface
+     * analysis coloring the faces and the triangulation cache, with defaults for what is left out.
      * @param inputs - The options to start from
      * @returns The drawing options
      * @group options
      * @shortname occt shape
      * @example
      * ```typescript
-     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false });
+     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false, drawIsoCurves: true, isoCurvesU: 5, isoCurvesV: 5, isoCurvesColour: "#808080", surfaceAnalysis: Bit.Inputs.OCCT.surfaceAnalysisEnum.gaussian, draftDirection: [0, 1, 0] });
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {

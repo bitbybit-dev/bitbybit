@@ -51,6 +51,10 @@ export const targets = [
             "dimensions-and-shaped-solids",
             "paths-and-svg",
             "selectors-frames-and-placement",
+            "curve-analysis-and-edits",
+            "surface-analysis-and-measurement",
+            "sections-features-and-sweeps",
+            "repair-and-files",
         ],
     },
     {

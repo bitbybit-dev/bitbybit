@@ -11,9 +11,10 @@ export interface PrincipalFrame {
 }
 
 /**
- * The smallest box found around a shape, turned to fit it: a frame at its centre with the direction
- * along its longest side and the normal along its shortest, and half its size along the direction,
- * the frame's y axis and the normal.
+ * A box around a shape as a frame at its centre and half its size along the frame's direction, y
+ * axis and normal. `operations.orientedBoundingBox` turns the box to fit the shape, its direction
+ * along the longest side and its normal along the shortest; `analysis.measure.boundingBoxInFrame`
+ * keeps the axes of the frame it is given.
  */
 export interface OrientedBoundingBox {
     frame: Base.Frame;

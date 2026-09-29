@@ -284,3 +284,47 @@ export enum curveFrameEnum {
     perpendicular = "perpendicular",
     rotationMinimizing = "rotationMinimizing",
 }
+/**
+ * What a surface analysis shows at each point of a face. none leaves the faces as they are; gaussian
+ * and mean are the Gaussian and mean curvature, maxCurvature and minCurvature the two principal
+ * curvatures, positive where the face bulges out; minRadius is 1 over the larger principal curvature,
+ * infinite where the face is flat; draftAngle is the angle in degrees between the face and a pull
+ * direction, positive where the face looks along the pull.
+ */
+export enum surfaceAnalysisEnum {
+    none = "none",
+    gaussian = "gaussian",
+    mean = "mean",
+    maxCurvature = "maxCurvature",
+    minCurvature = "minCurvature",
+    minRadius = "minRadius",
+    draftAngle = "draftAngle",
+}
+/**
+ * How a filled patch meets one of its boundary edges. position only passes through the edge; tangent
+ * also meets the face beside the edge without a crease; curvature also bends as that face does there.
+ */
+export enum continuityEnum {
+    position = "position",
+    tangent = "tangent",
+    curvature = "curvature",
+}
+/**
+ * How a patch fills between its boundary edges. With three or four edges, coons blends the edges,
+ * stretch is flatter and curved rounder. With two edges, stretch and coons join them as opposite
+ * sides, while curved sweeps one along the other, so the two must share a corner.
+ */
+export enum fillingStyleEnum {
+    stretch = "stretch",
+    coons = "coons",
+    curved = "curved",
+}
+/**
+ * How far a boss or a pocket runs from its sketch face. length stops after the given length,
+ * untilFace stops at a chosen face of the base, and throughAll runs through the whole base.
+ */
+export enum featureExtentEnum {
+    length = "length",
+    untilFace = "untilFace",
+    throughAll = "throughAll",
+}

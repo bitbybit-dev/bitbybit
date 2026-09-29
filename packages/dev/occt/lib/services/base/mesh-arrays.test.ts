@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { decodeMeshArrays, type MeshArrays } from "./mesh-arrays";
+import { decodeMeshArrays, decodePolylines, type MeshArrays } from "./mesh-arrays";
 
 function consistent(overrides: Partial<MeshArrays>): MeshArrays {
     return arrays({
@@ -308,5 +308,103 @@ describe("decodeMeshArrays with colours and metadata", () => {
 
         // Assert
         expect(decode).toThrow(`the kernel's mesh buffers disagree with their records: ${message}`);
+    });
+});
+
+describe("decodeMeshArrays with a surface analysis", () => {
+    it("splits the values into their faces, in the order of each face's vertices", () => {
+        // Arrange
+        const input = consistent({ analysis: new Float64Array([0.5, NaN, 2, Infinity, 4, -6]) });
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: false, metadata: false, analysis: true });
+
+        // Assert
+        expect(mesh.faceList.map(face => face.analysisValues)).toEqual([[0.5, NaN, 2], [Infinity, 4, -6]]);
+        expect(mesh.faceList.map(face => face.analysisValues!.length)).toEqual(mesh.faceList.map(face => face.vertexCoord.length / 3));
+    });
+
+    it("writes the values after every other key of a face, metadata included", () => {
+        // Arrange
+        const input = consistent({
+            analysis: new Float64Array(6),
+            faceMetadata: new Float64Array(12),
+            faceTypes: new Int32Array([0, 0, 0, 0]),
+            faceAdjacency: new Int32Array(0),
+            edgeMetadata: new Float64Array(10),
+            edgeTypes: new Int32Array(6),
+            edgeIncidence: new Int32Array(0),
+        });
+
+        // Act
+        const mesh = decodeMeshArrays(input, { colors: false, metadata: true, analysis: true });
+
+        // Assert
+        expect(Object.keys(mesh.faceList[0]!)).toEqual(["faceIndex", "vertexCoord", "vertexCoordVec", "uvs", "normalCoord", "triIndexes", "numberOfTriangles", "centerPoint", "centerNormal", "area", "centerOfMass", "surfaceType", "tolerance", "adjacentFaces", "faceUid", "analysisValues"]);
+    });
+
+    it("leaves the values out unless they were asked for", () => {
+        // Arrange
+        const input = consistent({ analysis: new Float64Array(6) });
+
+        // Act
+        const mesh = decodeMeshArrays(input);
+
+        // Assert
+        expect(mesh.faceList.some(face => "analysisValues" in face)).toBe(false);
+    });
+
+    it.each([
+        ["missing", {}, "analysis is missing"],
+        ["one value short", { analysis: new Float64Array(5) }, "analysis holds 5 numbers where 6 were described"],
+        ["one value too many", { analysis: new Float64Array(7) }, "analysis holds 7 numbers where 6 were described"],
+    ] as [string, Partial<MeshArrays>, string][])("refuses values that are %s", (_name, values, message) => {
+        // Arrange
+        const input = consistent(values);
+
+        // Act
+        const decode = (): unknown => decodeMeshArrays(input, { colors: false, metadata: false, analysis: true });
+
+        // Assert
+        expect(decode).toThrow(`the kernel's mesh buffers disagree with their records: ${message}`);
+    });
+});
+
+describe("decodePolylines", () => {
+    const coordinates = new Float64Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]);
+
+    it("cuts the points into polylines of the counts given, in order", () => {
+        // Act
+        const polylines = decodePolylines(coordinates, new Int32Array([2, 3]), false);
+
+        // Assert
+        expect(polylines).toEqual([[[0, 1, 2], [3, 4, 5]], [[6, 7, 8], [9, 10, 11], [12, 13, 14]]]);
+    });
+
+    it("trades each point's Y and Z when asked to", () => {
+        // Act
+        const polylines = decodePolylines(coordinates, new Int32Array([2, 3]), true);
+
+        // Assert
+        expect(polylines).toEqual([[[0, 2, 1], [3, 5, 4]], [[6, 8, 7], [9, 11, 10], [12, 14, 13]]]);
+    });
+
+    it("gives no polylines for no counts", () => {
+        // Act
+        const polylines = decodePolylines(new Float64Array(0), new Int32Array(0), true);
+
+        // Assert
+        expect(polylines).toEqual([]);
+    });
+
+    it.each([
+        ["short of a point", new Int32Array([2, 4]), "the points hold 15 numbers where 18 were described"],
+        ["past the last point", new Int32Array([2, 2]), "the points hold 15 numbers where 12 were described"],
+    ])("refuses points %s", (_name, counts, message) => {
+        // Act
+        const decode = (): unknown => decodePolylines(coordinates, counts, false);
+
+        // Assert
+        expect(decode).toThrow(`the kernel's iso curves disagree with their counts: ${message}`);
     });
 });

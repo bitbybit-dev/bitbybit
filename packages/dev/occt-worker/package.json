@@ -84,6 +84,11 @@
             "types": "./dist/lib/api/occt/index.d.ts",
             "default": "./dist/lib/api/occt/index.js"
         },
+        "./lib/api/occt/analysis": {
+            "@bitbybit-dev/source": "./lib/api/occt/analysis/index.ts",
+            "types": "./dist/lib/api/occt/analysis/index.d.ts",
+            "default": "./dist/lib/api/occt/analysis/index.js"
+        },
         "./lib/api/occt/assembly": {
             "@bitbybit-dev/source": "./lib/api/occt/assembly/index.ts",
             "types": "./dist/lib/api/occt/assembly/index.d.ts",

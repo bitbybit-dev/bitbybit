@@ -2,13 +2,14 @@
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
-import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum } from "./enums";
+import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEnum } from "./enums";
 
 /**
- * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing.
+ * A shape and meshing settings for `shapeToMesh`, which triangulates the shape for drawing, and can
+ * add each face's iso curves and a surface analysis value at every vertex.
  */
 export class ShapeToMeshDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -16,6 +17,10 @@ export class ShapeToMeshDto<T> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
     }
     /**
      * The shape to triangulate.
@@ -62,6 +67,35 @@ export class ShapeToMeshDto<T> {
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
+    /**
+     * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+     * u range and trimmed to the face; 0 gives none.
+     * @default 0
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesU?: number | undefined = 0;
+    /**
+     * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+     * v range and trimmed to the face; 0 gives none.
+     * @default 0
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesV?: number | undefined = 0;
+    /**
+     * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+     * radius, or the draft angle in degrees. `none` leaves them out.
+     * @default none
+     */
+    surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+    /**
+     * The pull direction the draft angles are measured against; read only by `draftAngle`.
+     * @default [0, 1, 0]
+     */
+    draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A shape and meshing settings for `shapeFacesToPolygonPoints`, which returns every triangle of the
@@ -129,10 +163,10 @@ export class ShapeToManifoldMeshDto<T> {
 }
 /**
  * Shapes and meshing settings for `shapesToMeshes`, which triangulates each shape with the same
- * settings.
+ * settings, iso curves and surface analysis included.
  */
 export class ShapesToMeshesDto<T> {
-    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -140,6 +174,10 @@ export class ShapesToMeshesDto<T> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
     }
     /**
      * The shapes to triangulate, one mesh per shape.
@@ -186,6 +224,35 @@ export class ShapesToMeshesDto<T> {
      * @default false
      */
     forceFaceDeflection?: boolean | undefined = false;
+    /**
+     * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+     * u range and trimmed to the face; 0 gives none.
+     * @default 0
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesU?: number | undefined = 0;
+    /**
+     * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+     * v range and trimmed to the face; 0 gives none.
+     * @default 0
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesV?: number | undefined = 0;
+    /**
+     * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+     * radius, or the draft angle in degrees. `none` leaves them out.
+     * @default none
+     */
+    surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+    /**
+     * The pull direction the draft angles are measured against; read only by `draftAngle`.
+     * @default [0, 1, 0]
+     */
+    draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * An assembly document and meshing settings for `docToMesh`, which triangulates its top-level
@@ -384,15 +451,16 @@ export class SaveStlDto<T> {
     adjustYtoZ?: boolean | undefined = false;
     /**
      * When true, a browser download of the file is started where that is possible; the kernel
-     * itself only returns the text.
+     * itself only returns the text or the bytes.
      * @default true
      */
     tryDownload?: boolean | undefined = true;
     /**
-     * When true, the STL is written in its binary form, which is much smaller than the text form.
-     * @default true
+     * When true, the STL is written in its binary form, which is much smaller than the text form, and
+     * comes back as bytes; when false, as ASCII text.
+     * @default false
      */
-    binary?: boolean | undefined = true;
+    binary?: boolean | undefined = false;
 }
 
 /**

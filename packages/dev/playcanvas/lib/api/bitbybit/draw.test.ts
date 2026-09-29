@@ -710,6 +710,34 @@ describe("Draw unit tests", () => {
             const face = res.children[0]!.children[0]!.children[0];
             expect(face).toBeDefined();
         });
+
+        it("should color decomposed meshes drawn as a list over one surface analysis range", async () => {
+            // Arrange
+            const analyzed = (x: number, value: number): Inputs.OCCT.DecomposedMeshDto => ({
+                faceList: [{
+                    faceIndex: 0,
+                    vertexCoord: [x, 0, 0, x + 1, 0, 0, x, 1, 0],
+                    vertexCoordVec: [[x, 0, 0], [x + 1, 0, 0], [x, 1, 0]],
+                    normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    triIndexes: [0, 1, 2],
+                    numberOfTriangles: 1,
+                    centerPoint: [x, 0, 0],
+                    centerNormal: [0, 0, 1],
+                    uvs: [],
+                    analysisValues: [value, value, value],
+                }],
+                edgeList: [],
+                pointsList: [],
+            });
+            const setColors = vi.spyOn(pc.Mesh.prototype, "setColors");
+
+            // Act
+            await draw.drawAnyAsync({ entity: [analyzed(0, 0), analyzed(10, 10)], options: { drawTwoSided: false } });
+
+            // Assert
+            expect(setColors.mock.calls.map(([colors]) => Array.from(colors))).toEqual([[0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1], [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1]]);
+            setColors.mockRestore();
+        });
     });
 
     describe("Draw JSCAD meshes", () => {

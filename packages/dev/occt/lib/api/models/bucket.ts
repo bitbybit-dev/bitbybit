@@ -7,3 +7,7 @@ export * from "./corners/bucket";
 export * from "./geom/debug-info";
 export * from "./frames/bucket";
 export * from "./history/bucket";
+export * from "./analysis/bucket";
+export * from "./sections/bucket";
+export * from "./repair/bucket";
+export * from "./io/bucket";

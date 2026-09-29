@@ -8,11 +8,11 @@ import { Resolved } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
 
 /**
- * Reading and writing OpenCascade shapes in exchange formats: STEP and IGES in, STEP, STL and DXF
- * out, STEP to glTF conversion with the assembly tree, colors and names preserved, and a STEP
- * assembly structure as JSON. Files travel as text or binary data, never as paths. OpenCascade
- * treats Z as up while this library treats Y as up, so the `adjustYtoZ` and `adjustZtoY` flags swap
- * the axes on the way out and in.
+ * Reading and writing OpenCascade shapes in exchange formats: STEP, IGES, STL and BREP in; STEP, STL,
+ * BREP, OBJ, PLY, SVG and DXF out; STEP to glTF conversion with the assembly tree, colors and names
+ * preserved, and a STEP assembly structure as JSON. Files travel as text or binary data, never as
+ * paths. OpenCascade treats Z as up while this library treats Y as up, so the `adjustYtoZ` and
+ * `adjustZtoY` flags swap the axes on the way out and in.
  */
 export class OCCTIO {
     constructor(
@@ -70,17 +70,17 @@ export class OCCTIO {
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces more
-     * closely and make a bigger file. `adjustYtoZ` turns Y-up into Z-up. `fileName` names the
-     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the text instead.
-     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up and
+     * `binary` writes the smaller binary form. `fileName` names the download, `tryDownload` false
+     * skips it. `saveShapeStlAndReturn` gives the file instead.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
      * @returns Nothing; the download starts when the file is ready
      * @group io
      * @shortname save stl
      * @drawable false
      * @example
      * ```typescript
-     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true });
+     * await bitbybit.occt.io.saveShapeStl({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: true, binary: true });
      * ```
      */
     async saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
@@ -90,26 +90,27 @@ export class OCCTIO {
 
     /**
      * Triangulates a shape and writes it as STL, the mesh format 3D printers and slicers read,
-     * returning the file's text.
+     * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely and make a bigger file. `adjustYtoZ` turns the shape so Y-up becomes Z-up.
-     * `fileName` and `tryDownload` only matter where a download can start.
-     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
-     * @returns The STL file as text
+     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
+     * where a download can start.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
+     * @returns The STL file as text, or as bytes when `binary` is true
      * @group io
      * @shortname save stl return
      * @drawable false
      * @example
      * ```typescript
      * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false });
+     * const bytes = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false, binary: true });
      * ```
      */
-    async saveShapeStlAndReturn(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+    async saveShapeStlAndReturn(inputs: Inputs.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string | Uint8Array> {
         const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>;
-        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeStl", resolved);
-        this.downloadStl(text, resolved);
-        return text;
+        const stl = await this.occWorkerManager.genericCallToWorkerPromise<string | Uint8Array>("io.saveShapeStl", resolved);
+        this.downloadStl(stl, resolved);
+        return stl;
     }
 
     private downloadStep(text: string, resolved: Resolved.OCCT.SaveStepDto<Inputs.OCCT.TopoDSShapePointer>): void {
@@ -130,18 +131,268 @@ export class OCCTIO {
         }
     }
 
-    private downloadStl(text: string, resolved: Resolved.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): void {
-        if (resolved.tryDownload && document) {
-            const blob = new Blob([text], { type: "application/stl" });
-            const blobUrl = URL.createObjectURL(blob);
-
-            const fileLink = document.createElement("a");
-            fileLink.href = blobUrl;
-            fileLink.target = "_self";
-            fileLink.download = resolved.fileName;
-            fileLink.click();
-            fileLink.remove();
+    private downloadStl(stl: string | Uint8Array, resolved: Resolved.OCCT.SaveStlDto<Inputs.OCCT.TopoDSShapePointer>): void {
+        if (resolved.tryDownload) {
+            this.downloadFile(stl, resolved.fileName, "application/stl");
         }
+    }
+
+    /**
+     * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and starts
+     * a browser download of the file.
+     *
+     * `io.loadBrep` reads the file back into the same shape. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapeBrepAndReturn` gives the text instead.
+     * @param inputs - The shape, the file name and the download option
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save brep
+     * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeBrep({ shape: box, fileName: "box.brep", tryDownload: true });
+     * ```
+     */
+    async saveShapeBrep(inputs: Inputs.OCCT.SaveBrepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepDto, inputs) as Resolved.OCCT.SaveBrepDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeBrepAndReturn(resolved);
+    }
+
+    /**
+     * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and
+     * returns the file's text.
+     *
+     * `io.loadBrep` reads the text back into the same shape, placement and orientation included.
+     * `fileName` and `tryDownload` only matter where a download can start.
+     * @param inputs - The shape, the file name and the download option
+     * @returns The BREP file as text
+     * @group io
+     * @shortname save brep and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const brep = await bitbybit.occt.io.saveShapeBrepAndReturn({ shape: box, fileName: "box.brep", tryDownload: false });
+     * const copy = await bitbybit.occt.io.loadBrep({ brepData: brep });
+     * ```
+     */
+    async saveShapeBrepAndReturn(inputs: Inputs.OCCT.SaveBrepDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepDto, inputs) as Resolved.OCCT.SaveBrepDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeBrep", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "text/plain");
+        }
+        return text;
+    }
+
+    /**
+     * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
+     * browser download of the file.
+     *
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up. The
+     * file name may hold no spaces or slashes; `tryDownload` false skips the download, and
+     * `saveShapeObjAndReturn` gives the text instead.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save obj
+     * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeObj({ shape: box, fileName: "box.obj", precision: 0.01, adjustYtoZ: false, tryDownload: true });
+     * ```
+     */
+    async saveShapeObj(inputs: Inputs.OCCT.SaveObjDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveObjDto, inputs) as Resolved.OCCT.SaveObjDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeObjAndReturn(resolved);
+    }
+
+    /**
+     * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
+     * the file's text.
+     *
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
+     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
+     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns The OBJ text, with an empty material library text
+     * @group io
+     * @shortname save obj and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const files = await bitbybit.occt.io.saveShapeObjAndReturn({ shape: box, fileName: "box.obj", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * console.log(files.obj);
+     * ```
+     */
+    async saveShapeObjAndReturn(inputs: Inputs.OCCT.SaveObjDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ObjFiles> {
+        const resolved = resolveDto(Inputs.OCCT.SaveObjDto, inputs) as Resolved.OCCT.SaveObjDto<Inputs.OCCT.TopoDSShapePointer>;
+        const files = await this.occWorkerManager.genericCallToWorkerPromise<Models.OCCT.ObjFiles>("io.saveShapeObj", resolved);
+        if (resolved.tryDownload) {
+            this.downloadObj(files, resolved.fileName);
+        }
+        return files;
+    }
+
+    /**
+     * Triangulates a shape, writes it as ASCII PLY with a normal per vertex, and starts a browser
+     * download of the file.
+     *
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * `fileName` names the download and `tryDownload` false skips it; `saveShapePlyAndReturn` gives
+     * the text instead.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save ply
+     * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapePly({ shape: box, fileName: "box.ply", precision: 0.01, adjustYtoZ: false, tryDownload: true });
+     * ```
+     */
+    async saveShapePly(inputs: Inputs.OCCT.SavePlyDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SavePlyDto, inputs) as Resolved.OCCT.SavePlyDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapePlyAndReturn(resolved);
+    }
+
+    /**
+     * Triangulates a shape and writes it as ASCII PLY with a normal per vertex, a mesh format
+     * scanning tools read, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns The PLY file as text
+     * @group io
+     * @shortname save ply and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const ply = await bitbybit.occt.io.saveShapePlyAndReturn({ shape: box, fileName: "box.ply", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * ```
+     */
+    async saveShapePlyAndReturn(inputs: Inputs.OCCT.SavePlyDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SavePlyDto, inputs) as Resolved.OCCT.SavePlyDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapePly", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "text/plain");
+        }
+        return text;
+    }
+
+    /**
+     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
+     * asked, and starts a browser download of the file.
+     *
+     * The drawing shows the view from the frame's normal side, x running right along its direction.
+     * `tryDownload` false skips the download; `saveShapeSvgAndReturn` gives the text instead.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save svg
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] };
+     * await bitbybit.occt.io.saveShapeSvg({ shape: part, frame: view, drawHidden: true, precision: 0.01, fileName: "top.svg", tryDownload: true });
+     * ```
+     */
+    async saveShapeSvg(inputs: Inputs.OCCT.SaveSvgDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveSvgDto, inputs) as Resolved.OCCT.SaveSvgDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeSvgAndReturn(resolved);
+    }
+
+    /**
+     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
+     * asked, and returns the file's text.
+     *
+     * It shows the view from the frame's normal side in model units, x running right along the
+     * frame's direction and y up, so the file holds each point as x and minus y.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * @returns The SVG file as text
+     * @group io
+     * @shortname save svg and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [1, 1, 1], direction: [1, -1, 0] };
+     * const svg = await bitbybit.occt.io.saveShapeSvgAndReturn({ shape: box, frame: view, drawHidden: true, precision: 0.01, fileName: "box.svg", tryDownload: false });
+     * ```
+     */
+    async saveShapeSvgAndReturn(inputs: Inputs.OCCT.SaveSvgDto<Inputs.OCCT.TopoDSShapePointer>): Promise<string> {
+        const resolved = resolveDto(Inputs.OCCT.SaveSvgDto, inputs) as Resolved.OCCT.SaveSvgDto<Inputs.OCCT.TopoDSShapePointer>;
+        const text = await this.occWorkerManager.genericCallToWorkerPromise<string>("io.saveShapeSvg", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(text, resolved.fileName, "image/svg+xml");
+        }
+        return text;
+    }
+
+    private downloadObj(files: Models.OCCT.ObjFiles, fileName: string): void {
+        this.downloadFile(files.obj, fileName, "model/obj");
+        const library = /^mtllib (.+)$/m.exec(files.obj)?.[1]?.trim();
+        if (library !== undefined && files.mtl !== "") {
+            this.downloadFile(files.mtl, library, "model/mtl");
+        }
+    }
+
+    private downloadFile(content: string | Uint8Array, fileName: string, type: string): void {
+        if (typeof document === "undefined") {
+            return;
+        }
+        const blob = new Blob([typeof content === "string" ? content : content.slice()], { type });
+        const fileLink = document.createElement("a");
+        fileLink.href = URL.createObjectURL(blob);
+        fileLink.target = "_self";
+        fileLink.download = fileName;
+        fileLink.click();
+        fileLink.remove();
+    }
+
+    /**
+     * Reads an STL file, ASCII or binary, into a shape: one planar face per triangle, or one face
+     * that carries the whole mesh.
+     *
+     * With `asFaces` true the faces share their corners' edges in a compound that
+     * `shapeFix.sewWithReport` can join into a shell. `adjustZtoY` turns Z-up into Y-up, and a file
+     * without triangles is refused.
+     * @param inputs - The STL file, the face option and the axis adjustment
+     * @returns A compound of triangular faces, or one face that carries the mesh
+     * @group io
+     * @shortname load stl
+     * @drawable true
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.occt.io.loadStl({ stlData: stlText, asFaces: true, adjustZtoY: true });
+     * const sewn = await bitbybit.occt.shapeFix.sewWithReport({ shapes: [mesh], tolerance: 1e-6 });
+     * ```
+     */
+    async loadStl(inputs: Inputs.OCCT.LoadStlDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const resolved = resolveDto(Inputs.OCCT.LoadStlDto, inputs) as Resolved.OCCT.LoadStlDto;
+        const stlData = await this.occWorkerManager.prepareStepData(resolved.stlData);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadStl", { ...resolved, stlData });
+    }
+
+    /**
+     * Reads a BREP file, the text format that keeps a shape's exact geometry and topology, back into
+     * the shape `io.saveShapeBrep` wrote.
+     *
+     * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
+     * one cut short, is refused.
+     * @param inputs - The BREP file
+     * @returns The shape the file holds
+     * @group io
+     * @shortname load brep
+     * @drawable true
+     * @example
+     * ```typescript
+     * const brep = await bitbybit.occt.io.saveShapeBrepAndReturn({ shape: box, fileName: "box.brep", tryDownload: false });
+     * const copy = await bitbybit.occt.io.loadBrep({ brepData: brep });
+     * ```
+     */
+    async loadBrep(inputs: Inputs.OCCT.LoadBrepDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const brepData = await this.occWorkerManager.prepareStepData(inputs.brepData);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrep", { ...inputs, brepData });
     }
 
     /**
