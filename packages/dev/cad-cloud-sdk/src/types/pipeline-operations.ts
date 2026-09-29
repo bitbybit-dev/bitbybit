@@ -10353,7 +10353,8 @@ export interface OperationParams {
     /**
      * Draws the circles of a given radius that pass through a point and just touch a circle.
      *
-     * `circlesTangentToTwoWithRadius` takes a vertex and a curve other than a circle too.
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes a vertex and a curve other than a
+     * circle too.
      */
     "occt.shapes.edge.constraintTanCirclesOnCircleAndPnt": {
         /** The circle edge the new circles must touch. */
@@ -10368,7 +10369,7 @@ export interface OperationParams {
     /**
      * Draws the circles of a given radius that just touch two circles at once.
      *
-     * `circlesTangentToTwoWithRadius` draws such circles between curves other than circles too.
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes curves other than circles too.
      */
     "occt.shapes.edge.constraintTanCirclesOnTwoCircles": {
         /** The first circle edge the new circles must touch. */
@@ -10384,8 +10385,8 @@ export interface OperationParams {
      * Draws the two straight lines from a point that just touch a circle.
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
-     * adds the piece of the circle between the touching points. `linesTangentToTwo` draws such
-     * lines to curves other than circles too.
+     * adds the piece of the circle between the touching points. It is replaced by
+     * `linesTangentToTwo`, which takes curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesFromPtToCircle": {
         /** The circle edge the lines must touch. */
@@ -10407,8 +10408,8 @@ export interface OperationParams {
      * point.
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
-     * `circleRemainder` adds the piece of the circle between the touching points.
-     * `linesTangentToTwo` draws such lines to curves other than circles too.
+     * `circleRemainder` adds the piece of the circle between the touching points. It is replaced
+     * by `linesTangentToTwo`, which takes curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesFromTwoPtsToCircle": {
         /** The circle edge the lines must touch. */
@@ -10432,7 +10433,7 @@ export interface OperationParams {
      *
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
-     * shape. `linesTangentToTwo` draws such lines between curves other than circles too.
+     * shape. It is replaced by `linesTangentToTwo`, which takes curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesOnTwoCircles": {
         /** The first circle edge the lines must touch. */

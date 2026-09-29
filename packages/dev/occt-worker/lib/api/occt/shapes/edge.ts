@@ -1120,10 +1120,13 @@ export class OCCTEdge {
      * point.
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
-     * `circleRemainder` adds the piece of the circle between the touching points.
-     * `linesTangentToTwo` draws such lines to curves other than circles too.
+     * `circleRemainder` adds the piece of the circle between the touching points. It is replaced
+     * by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the two points, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` once per point, with the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane; it gives no circle piece.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from 2 pts to circle
      * @drawable true
@@ -1147,10 +1150,12 @@ export class OCCTEdge {
      * Draws the two straight lines from a point that just touch a circle.
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
-     * adds the piece of the circle between the touching points. `linesTangentToTwo` draws such
-     * lines to curves other than circles too.
+     * adds the piece of the circle between the touching points. It is replaced by
+     * `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the point, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` with the point as a vertex (`shapes.vertex.vertexFromPoint`)
+     * and a frame in the circle's plane; it gives no circle piece. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from pt to circle
      * @drawable true
@@ -1174,9 +1179,11 @@ export class OCCTEdge {
      *
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
-     * shape. `linesTangentToTwo` draws such lines between curves other than circles too.
+     * shape. It is replaced by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and which solutions and circle pieces to keep
      * @returns The tangent lines, and the circle pieces when asked for
+     * @deprecated Use `linesTangentToTwo` with the two circles and a frame in their plane; it gives no
+     * circle pieces. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines on two circles
      * @drawable true
@@ -1198,9 +1205,11 @@ export class OCCTEdge {
     /**
      * Draws the circles of a given radius that just touch two circles at once.
      *
-     * `circlesTangentToTwoWithRadius` draws such circles between curves other than circles too.
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the two circles and a frame in their plane.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on two circles
      * @drawable true
@@ -1216,9 +1225,12 @@ export class OCCTEdge {
     /**
      * Draws the circles of a given radius that pass through a point and just touch a circle.
      *
-     * `circlesTangentToTwoWithRadius` takes a vertex and a curve other than a circle too.
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes a vertex and a curve other than a
+     * circle too.
      * @param inputs - The circle edge, the point, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the circle, the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on circle and pnt
      * @drawable true

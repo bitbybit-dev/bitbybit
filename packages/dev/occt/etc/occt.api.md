@@ -10156,10 +10156,15 @@ export class OCCTEdge {
     circlesTangentToThree(inputs: Inputs_2.OCCT.CirclesTangentToThreeDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[];
     circlesTangentToTwoCenteredOn(inputs: Inputs_2.OCCT.CirclesTangentToTwoCenteredOnDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[];
     circlesTangentToTwoWithRadius(inputs: Inputs_2.OCCT.CirclesTangentToTwoWithRadiusDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[];
+    // @deprecated
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs_2.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[];
+    // @deprecated
     constraintTanCirclesOnTwoCircles(inputs: Inputs_2.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[];
+    // @deprecated
     constraintTanLinesFromPtToCircle(inputs: Inputs_2.OCCT.ConstraintTanLinesFromPtToCircleDto<TopoDS_Edge>): TopoDS_Shape[];
+    // @deprecated
     constraintTanLinesFromTwoPtsToCircle(inputs: Inputs_2.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[];
+    // @deprecated
     constraintTanLinesOnTwoCircles(inputs: Inputs_2.OCCT.ConstraintTanLinesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[];
     createCircleEdge(inputs: Inputs_2.OCCT.CircleDto): TopoDS_Edge;
     createEllipseEdge(inputs: Inputs_2.OCCT.EllipseDto): TopoDS_Edge;
