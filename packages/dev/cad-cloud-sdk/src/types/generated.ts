@@ -2504,8 +2504,11 @@ export interface components {
             outerArcLength: number;
             /** @enum {string} */
             direction: "up" | "down";
-            /** @enum {string} */
-            kind: "cyl" | "cone";
+            /**
+             * @description 'cyl' and 'cone' fold through a bend face of that surface; 'sharp' folds along a shared edge with no bend face (faceIndex -1, inner radius 0), and a 0 degree 'sharp' fold joins two coplanar panels.
+             * @enum {string}
+             */
+            kind: "cyl" | "cone" | "sharp";
             layoutApprox: boolean;
         };
         /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
@@ -3051,8 +3054,11 @@ export interface components {
             outerArcLength: number;
             /** @enum {string} */
             direction: "up" | "down";
-            /** @enum {string} */
-            kind: "cyl" | "cone";
+            /**
+             * @description 'cyl' and 'cone' fold through a bend face of that surface; 'sharp' folds along a shared edge with no bend face (faceIndex -1, inner radius 0), and a 0 degree 'sharp' fold joins two coplanar panels.
+             * @enum {string}
+             */
+            kind: "cyl" | "cone" | "sharp";
             layoutApprox: boolean;
         };
         /** @description A classified source face: stable key (index + BRepGraph uid), role, and label anchors. */
