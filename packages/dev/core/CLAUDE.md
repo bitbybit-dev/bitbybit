@@ -55,7 +55,11 @@ hundredth in the BabylonJS one. The default is calibrated as a diameter (0.1), s
 with an explicitly constructed options object asks for a line far thinner than a pixel and renders
 too faint to see, in BabylonJS as much as in Three. The paths that matter escape it because
 `defaultPolylineOptions` overrides `size` to 2, which is why this reads as a latent trap rather than
-a visible bug. Splitting the two meanings is a public-surface change and has not been taken.
+a visible bug. Splitting the two meanings is a public-surface change and has not been taken. It is
+also why a draw layer never lays a partial options object over `DrawBasicGeometryOptions`: a point,
+line or polyline hands its options to the helper, which fills the gaps from its own DTO
+(`DrawPolylinesDto` gives `size` 3), while OCCT and Manifold options are laid over their options
+class, the values `optionsOcctShape` and its siblings give.
 
 ## Handedness
 

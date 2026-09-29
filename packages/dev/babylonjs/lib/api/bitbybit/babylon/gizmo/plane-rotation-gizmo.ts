@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * One ring of a rotation gizmo, turning around a single axis; reach it through
@@ -27,8 +29,9 @@ export class BabylonGizmoPlaneRotationGizmo {
      * ```
      */
     setIsEnabled(inputs: Inputs.BabylonGizmo.SetIsEnabledPlaneRotationGizmoDto): BABYLON.IPlaneRotationGizmo {
-        inputs.planeRotationGizmo.isEnabled = inputs.isEnabled;
-        return inputs.planeRotationGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetIsEnabledPlaneRotationGizmoDto, inputs) as Resolved.BabylonGizmo.SetIsEnabledPlaneRotationGizmoDto;
+        resolved.planeRotationGizmo.isEnabled = resolved.isEnabled;
+        return resolved.planeRotationGizmo;
     }
 
     /**

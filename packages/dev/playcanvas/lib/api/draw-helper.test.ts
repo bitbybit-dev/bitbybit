@@ -36,6 +36,9 @@ describe("DrawHelper unit tests", () => {
     let mockJscadWorkerManager: JSCADWorkerManager;
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
+    let jscadWorkerCall: Mock;
+    let manifoldWorkerCall: Mock;
+    let occtWorkerCall: Mock;
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -45,6 +48,9 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
+        jscadWorkerCall = mocks.jscadWorkerCall;
+        manifoldWorkerCall = mocks.manifoldWorkerCall;
+        occtWorkerCall = mocks.occtWorkerCall;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -1110,7 +1116,7 @@ describe("DrawHelper unit tests", () => {
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
             expect(result.children.length).toBe(1);
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
 
             const meshEntity = result.children[0]!;
             const material = getMaterialFromEntity(meshEntity);
@@ -1487,7 +1493,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1689,7 +1695,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(2);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
         });
     });
 
@@ -1711,7 +1717,7 @@ describe("DrawHelper unit tests", () => {
             expect(result.children.length).toBe(1);
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(pc.Entity);
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
+            expect(manifoldWorkerCall).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
         });
 
         it("should return undefined when triVerts is empty", async () => {
@@ -2170,7 +2176,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
+            expect(jscadWorkerCall).toHaveBeenCalled();
             const [[, secondArgument]] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [[unknown, unknown]];
             expect(secondArgument).toMatchObject({
                 mesh: mockMesh
@@ -2194,7 +2200,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs);
 
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(occtWorkerCall).toHaveBeenCalledWith(
                 "shapeToMesh",
                 expect.objectContaining({
                     shape: inputs.shape
@@ -2213,7 +2219,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
 
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(manifoldWorkerCall).toHaveBeenCalledWith(
                 "decomposeManifoldOrCrossSection",
                 expect.objectContaining({
                     manifoldOrCrossSection: inputs.manifoldOrCrossSection
@@ -3027,6 +3033,182 @@ describe("DrawHelper unit tests", () => {
 
             // Act & Assert
             await expect(drawHelper.drawSolidOrPolygonMeshes(inputs)).rejects.toThrow("Failed to draw JSCAD meshes");
+        });
+    });
+
+    describe("defaults left to the draw DTOs", () => {
+        const oneTriangle = (): Inputs.OCCT.DecomposedMeshDto => ({
+            faceList: [{ vertexCoord: [0, 0, 0, 1, 0, 0, 0, 1, 0], normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1], triIndexes: [0, 1, 2], uvs: [], vertexCoordVec: [], numberOfTriangles: 1, centerPoint: [0, 0, 0], centerNormal: [0, 0, 1], faceIndex: 0 }],
+            edgeList: [],
+            pointsList: [],
+        });
+        const backFaceMaterialOf = (drawn: pc.Entity): pc.StandardMaterial | null => {
+            const backFaces = drawn.children.find((child) => child.name.includes("-backFaceSurface-"))!;
+            return getMaterialFromEntity(backFaces.children[0]!);
+        };
+        const triangleSurface = (): Inputs.Base.VerbSurface => ({
+            tessellate: () => ({ faces: [[0, 1, 2]], points: [[0, 0, 0], [1, 0, 0], [0, 1, 0]], normals: [[0, 0, 1], [0, 0, 1], [0, 0, 1]] }),
+        });
+
+        it("should draw an OCCT shape's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const drawn = await drawHelper.handleDecomposedMesh({ faceOpacity: 0.5, drawEdges: false }, oneTriangle(), {});
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw a shape the worker meshed with its back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(oneTriangle());
+            mockOccWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            const drawn = await drawHelper.drawShape({ shape: { hash: 1, type: "occ-shape" }, faceOpacity: 0.5, drawEdges: false });
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw a surface's back faces at the documented opacity of 1 when the options leave it out", () => {
+            // Arrange
+            const halfSeeThrough: Partial<Inputs.Verb.DrawSurfaceDto<pc.Entity>> = { surface: triangleSurface(), opacity: 0.5 };
+
+            // Act
+            const drawn = drawHelper.drawSurface(halfSeeThrough as Inputs.Verb.DrawSurfaceDto<pc.Entity>);
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw an OCCT shape's back faces at the documented opacity of 1 when the options hand it as undefined", async () => {
+            // Act
+            const drawn = await drawHelper.handleDecomposedMesh({ faceOpacity: 0.5, drawEdges: false, backFaceOpacity: undefined, backFaceColour: undefined, drawTwoSided: undefined }, oneTriangle(), {});
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw points with every default left out as the spelled out DTO draws them", () => {
+            // Arrange
+            const corners: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0]];
+
+            // Act
+            const leftOut = drawHelper.drawPoints({ points: corners });
+            const spelled = drawHelper.drawPoints(new Inputs.Point.DrawPointsDto<pc.Entity>(corners));
+
+            // Assert
+            expect(getMaterialFromEntity(leftOut.children[0]!)).toBe(getMaterialFromEntity(spelled.children[0]!));
+            expect(leftOut.children).toHaveLength(spelled.children.length);
+        });
+
+        it("should draw a JSCAD mesh's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const drawn = await drawHelper.drawSolidOrPolygonMesh({ mesh: jscadSolid(), opacity: 0.4 });
+
+            // Assert
+            expect(backFaceMaterialOf(drawn)!.opacity).toBe(1);
+        });
+
+        it("should draw a list of JSCAD meshes with back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue([{ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [], indices: [0, 1, 2], transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] }]);
+            mockJscadWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            const drawn = await drawHelper.drawSolidOrPolygonMeshes({ meshes: [jscadSolid()], opacity: 0.4 });
+
+            // Assert
+            expect(backFaceMaterialOf(drawn.children[0] as pc.Entity)!.opacity).toBe(1);
+        });
+    });
+
+    describe("the colours a list of polylines is drawn in", () => {
+        const segment = (x: number, color?: string): Inputs.Polyline.PolylinePropertiesDto => (color === undefined ? { points: [[x, 0, 0], [x + 1, 0, 0]] } : { points: [[x, 0, 0], [x + 1, 0, 0]], color });
+        const vertexColoursOf = (draw: () => void): number[][] => {
+            const setColors32 = vi.spyOn(pc.Mesh.prototype, "setColors32");
+            draw();
+            const vertexColours = setColors32.mock.calls[0]![0] as number[];
+            setColors32.mockRestore();
+            const rgb: number[][] = [];
+            for (let i = 0; i < vertexColours.length; i += 4) {
+                rgb.push([vertexColours[i]!, vertexColours[i + 1]!, vertexColours[i + 2]!]);
+            }
+            return rgb;
+        };
+
+        it("should leave the caller's colour list as it was when a polyline brings its own colour", () => {
+            // Arrange
+            const colours = ["#ff0000", "#00ff00"];
+
+            // Act
+            drawHelper.drawPolylinesWithColours({ polylines: [segment(0, "#0000ff"), segment(2)], colours });
+
+            // Assert
+            expect(colours).toEqual(["#ff0000", "#00ff00"]);
+        });
+
+        it("should redraw with the caller's colours after a draw in which a polyline brought its own", () => {
+            // Arrange
+            const options = { colours: ["#ff0000", "#00ff00"] };
+            drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0, "#0000ff"), segment(2)] });
+
+            // Act
+            const redrawn = vertexColoursOf(() => drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0), segment(2)] }));
+
+            // Assert
+            expect(redrawn).toEqual([[255, 0, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0]]);
+        });
+
+        it("should give every polyline without its own colour the one the strategy assigns when the list is shorter than the polylines", () => {
+            // Act
+            const drawn = vertexColoursOf(() => drawHelper.drawPolylinesWithColours({ polylines: [segment(0), segment(2), segment(4), segment(6, "#0000ff")], colours: ["#ff0000", "#00ff00"] }));
+
+            // Assert
+            expect(drawn).toEqual([[255, 0, 0], [255, 0, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 255, 0], [0, 0, 255], [0, 0, 255]]);
+        });
+    });
+
+    describe("the arrows on an OCCT shape's edges", () => {
+        class ArrowAngleWatchingDrawHelper extends DrawHelper {
+            readonly arrowAngles: number[] = [];
+
+            protected override computeArrowHeadLines(polylinePoints: Inputs.Base.Point3[], arrowSize: number, arrowAngleDeg: number): Inputs.Base.Point3[][] {
+                this.arrowAngles.push(arrowAngleDeg);
+                return super.computeArrowHeadLines(polylinePoints, arrowSize, arrowAngleDeg);
+            }
+        }
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const watchingHelper = (): ArrowAngleWatchingDrawHelper => new ArrowAngleWatchingDrawHelper(mockContext, mockSolidText, mockVector, mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager);
+
+        it("should draw arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMesh({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
+        });
+
+        it("should draw each edge's arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMeshIndividually({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
         });
     });
 });

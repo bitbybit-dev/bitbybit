@@ -60,19 +60,19 @@ export class OccHelper {
         this.enumService = new EnumService(occ);
         this.converterService = new ConverterService(occ);
         this.entitiesService = new EntitiesService(occ);
-        this.shapeGettersService = new ShapeGettersService(occ, this.enumService, this.iteratorService);
+        this.shapeGettersService = new ShapeGettersService(occ, this.enumService);
         this.geomService = new GeomService(occ, this.vecHelper, this.entitiesService);
         this.transformsService = new TransformsService(occ, this.converterService, this.entitiesService, this.vecHelper);
-        this.booleansService = new BooleansService(occ, this.shapeGettersService);
+        this.booleansService = new BooleansService(occ);
 
         this.edgesService = new EdgesService(occ, this.shapeGettersService, this.entitiesService,
-            this.iteratorService, this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
+            this.converterService, this.enumService, this.geomService, this.transformsService, this.vecHelper);
 
         this.wiresService = new WiresService(occ, this.base, this.shapesHelperService, this.shapeGettersService, this.transformsService,
             this.enumService, this.entitiesService, this.converterService, this.geomService, this.edgesService, this.vecHelper,
-            () => this.filletsService, () => this.operationsService);
+            () => this.operationsService);
 
-        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService, this.wiresService, this.booleansService);
+        this.verticesService = new VerticesService(occ, this.entitiesService, this.converterService, this.shapeGettersService);
 
         this.dimensionsService = new DimensionsService(this.base, this.transformsService,
             this.converterService, this.entitiesService, this.edgesService, this.wiresService);
@@ -80,32 +80,31 @@ export class OccHelper {
         this.meshingService = new MeshingService(occ, this.wiresService, this.base);
 
         this.facesService = new FacesService(occ, this.entitiesService, this.enumService,
-            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.transformsService, this.vecHelper, this.base,
-            () => this.filletsService);
+            this.shapeGettersService, this.converterService, this.booleansService, this.wiresService, this.base);
 
-        this.shellsService = new ShellsService(occ, this.shapeGettersService, this.converterService, this.facesService);
+        this.shellsService = new ShellsService(occ, this.converterService);
 
-        this.solidsService = new SolidsService(occ, this.shapeGettersService, this.facesService, this.enumService,
+        this.solidsService = new SolidsService(occ, this.shapeGettersService, this.enumService,
             this.entitiesService, this.converterService, this.transformsService, this.vecHelper);
 
         this.operationsService = new OperationsService(occ, this.enumService, this.entitiesService, this.converterService,
-            this.booleansService, this.shapeGettersService, this.edgesService, this.transformsService,
-            this.vecHelper, this.wiresService, this.facesService, this.solidsService, this.shellsService);
+            this.shapeGettersService, this.edgesService, this.transformsService,
+            this.vecHelper, this.wiresService, this.facesService, this.solidsService);
 
         this.filletsService = new FilletsService(occ, this.vecHelper, this.iteratorService, this.converterService, this.entitiesService,
-            this.transformsService, this.shapeGettersService, this.edgesService, this.operationsService, this.facesService);
+            this.shapeGettersService);
 
-        this.dxfService = new DxfService(this.base, this.shapeGettersService, this.edgesService, this.wiresService);
+        this.dxfService = new DxfService(occ, this.base);
     }
 
     surfaceFromFace(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Geom_Surface {
-        const face = inputs.shape;
-        const surface = this.occ.BRep_Tool_Surface(face);
-        const srf = surface.get();
-        if (!srf) {
+        const handle = this.occ.BRep_Tool_Surface(inputs.shape);
+        const surface = handle.surface();
+        handle.delete();
+        if (!surface) {
             throw new Error("Face has no surface");
         }
-        return srf;
+        return surface;
     }
 
 }

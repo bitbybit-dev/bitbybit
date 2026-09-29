@@ -23,6 +23,31 @@ export const FRAGMENT_DIRS = new Set(targets.map((t) => path.join(ROOT, t.dir)))
 const TEST_SUPPORT_DIRS = new Set(["__mocks__", "__test__"]);
 
 /**
+ * The hand-written part of the three worker packages, relative to packages/dev: the members the
+ * worker generator merges into its generated classes, and the init classes it does not generate.
+ * They run on the calling thread, so the documentation check audits them file by file and the
+ * resolved-entry check walks them as it walks the kernels.
+ */
+export const HAND_DIRS = ["occt-worker/lib/api-hand", "jscad-worker/lib/api-hand", "manifold-worker/lib/api-hand"];
+export const HAND_FILES = ["occt-worker/lib/api/bitbybit-occt.ts", "jscad-worker/lib/api/bitbybit-jscad.ts", "manifold-worker/lib/api/bitbybit-manifold.ts"];
+
+/**
+ * The packages with inputs DTOs, each with the packages whose inputs its `Inputs` namespace
+ * re-exports, its own first: a DTO name declared in two of them (the renderers' `Draw`) means the
+ * nearest one.
+ */
+export const INPUTS_CHAINS = {
+    base: ["base"],
+    occt: ["occt", "base"],
+    jscad: ["jscad", "base"],
+    manifold: ["manifold", "base"],
+    core: ["core", "occt", "jscad", "manifold", "base"],
+    babylonjs: ["babylonjs", "core", "occt", "jscad", "manifold", "base"],
+    threejs: ["threejs", "core", "occt", "jscad", "manifold", "base"],
+    playcanvas: ["playcanvas", "core", "occt", "jscad", "manifold", "base"],
+};
+
+/**
  * Every source file under `dir`, sorted: `.ts` that is not a test, a declaration file, a dependency,
  * a build output or test support. The inputs fragments are left out unless `fragments` is set - a
  * walk of the classes wants each DTO once, from the assembled file; the documentation check wants

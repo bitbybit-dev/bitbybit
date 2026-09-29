@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
@@ -33,7 +33,7 @@ describe("OCCT operations unit tests", () => {
         transforms = new OCCTTransforms(occt, occHelper);
     });
 
-    it("should get two closest points between two shapes", async () => {
+    it("should get two closest points between two shapes", () => {
 
         const sph1 = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 1);
         const sph2 = occHelper.entitiesService.bRepPrimAPIMakeSphere([3, 3, 3], [0, 1, 0], 1);
@@ -45,7 +45,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should get five closest points between a shape and a collection of points", async () => {
+    it("should get five closest points between a shape and a collection of points", () => {
         const points = [
             [0, 2, 0],
             [1, 1, 1],
@@ -65,7 +65,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should get ten closest points between two shape and a collection of points", async () => {
+    it("should get ten closest points between two shape and a collection of points", () => {
         const points = [
             [0, 2, 0],
             [1, 1, 1],
@@ -94,7 +94,32 @@ describe("OCCT operations unit tests", () => {
         );
     });
 
-    it("should loft three ellipses correctly", async () => {
+    it("should measure a loft between two equal spline sections as its cap times its height", () => {
+        // Arrange
+        const points: Inputs.Base.Point3[] = Array.from({ length: 24 }, (_, i) => {
+            const t = 2 * Math.PI * i / 24;
+            return [3 * Math.cos(t), 0, Math.sin(t) * (1 + 0.6 * Math.cos(t))];
+        });
+        const bottom = wire.interpolatePoints({ points, periodic: true, tolerance: 1e-7 });
+        const top = transforms.translate({ shape: bottom, translation: [0, 5, 0] });
+        const cap = face.createFaceFromWire({ shape: bottom, planar: true });
+
+        // Act
+        const loft = operations.loft({ shapes: [bottom, top], makeSolid: true });
+        const volume = solid.getSolidVolume({ shape: loft });
+        const centre = solid.getSolidCenterOfMass({ shape: loft });
+
+        // Assert
+        const capArea = face.getFaceArea({ shape: cap });
+        const capCentre = face.getFaceCenterOfMass({ shape: cap });
+        expect(volume).toBeCloseTo(capArea * 5, 6);
+        expect(centre[0]).toBeCloseTo(capCentre[0], 8);
+        expect(centre[1]).toBeCloseTo(2.5, 8);
+        expect(centre[2]).toBeCloseTo(capCentre[2], 8);
+        [bottom, top, cap, loft].forEach(s => s.delete());
+    });
+
+    it("should loft three ellipses correctly", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -103,7 +128,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(19.731425414345722);
+        expect(area).toBeCloseTo(19.730573533020213, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -121,7 +146,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method", async () => {
+    it("should loft three ellipses correctly by using advanced loft method", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -131,7 +156,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(19.60954299347563);
+        expect(area).toBeCloseTo(19.60871770951131, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -149,7 +174,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that is closed", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that is closed", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -160,7 +185,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(26.727187158113303);
+        expect(area).toBeCloseTo(26.72602046424945, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -178,7 +203,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that uses approxChordLength parametrisation", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that uses approxChordLength parametrisation", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -189,7 +214,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(19.731425414345722);
+        expect(area).toBeCloseTo(19.730573533020213, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -207,7 +232,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method that uses approxIsoParametric parametrisation", async () => {
+    it("should loft three ellipses correctly by using advanced loft method that uses approxIsoParametric parametrisation", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -218,7 +243,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(19.628737555434956);
+        expect(area).toBeCloseTo(19.62793439501324, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -236,7 +261,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should loft three ellipses correctly by using advanced loft method and start and end vertexes", async () => {
+    it("should loft three ellipses correctly by using advanced loft method and start and end vertexes", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 3, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -248,7 +273,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(21.996996042031732);
+        expect(area).toBeCloseTo(21.99350080665466, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -268,7 +293,7 @@ describe("OCCT operations unit tests", () => {
         );
     });
 
-    it("should loft three ellipses correctly by using advanced loft method with closed and periodic interpolation enabled", async () => {
+    it("should loft three ellipses correctly by using advanced loft method with closed and periodic interpolation enabled", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -281,7 +306,7 @@ describe("OCCT operations unit tests", () => {
         const faces = face.getFaces({ shape: res });
         const faceOfLoft = faces[0]!;
         const area = face.getFaceArea({ shape: faceOfLoft });
-        expect(area).toEqual(25.324671688146765);
+        expect(area).toBeCloseTo(25.325391299348812, 10);
         const subd = new Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>(faceOfLoft);
         subd.nrDivisionsU = 3;
         subd.nrDivisionsV = 3;
@@ -300,7 +325,7 @@ describe("OCCT operations unit tests", () => {
         ]);
     });
 
-    it("should not loft three ellipses by using advanced loft method if periodic option is enabled and closed disabled", async () => {
+    it("should not loft three ellipses by using advanced loft method if periodic option is enabled and closed disabled", () => {
         const ellipse1 = wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] });
         const ellipse2 = wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] });
         const ellipse3 = wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] });
@@ -352,6 +377,41 @@ describe("OCCT operations unit tests", () => {
         expect(wires.length).toBe(62);
     });
 
+    it("should slice a solid that lies away from the origin", () => {
+        const box = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 2, 3, [1000, 0, 500]);
+        const res = operations.slice({ shape: box, direction: [0, 1, 0], step: 0.1 });
+        expect(face.getFaces({ shape: res }).length).toBe(31);
+    });
+
+    it("should slice in a pattern of steps a solid that lies away from the origin", () => {
+        const atOrigin = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 2, 3, [0, 0, 0]);
+        const away = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 2, 3, [1000, 0, 500]);
+        const expected = face.getFaces({ shape: operations.sliceInStepPattern({ shape: atOrigin, direction: [0, 1, 0], steps: [0.1, 0.3] }) }).length;
+        const res = operations.sliceInStepPattern({ shape: away, direction: [0, 1, 0], steps: [0.1, 0.3] });
+        expect(expected).toBeGreaterThan(0);
+        expect(face.getFaces({ shape: res }).length).toBe(expected);
+    });
+
+    it("should revolve by exactly the angle given", () => {
+        const outline = wire.createPolygonWire({ points: [[1, 0, 0], [2, 0, 0], [2, 1, 0], [1, 1, 0]] });
+        const profile = face.createFaceFromWire({ shape: outline, planar: true });
+        const res = operations.revolve({ shape: profile, angle: 90, direction: [0, 1, 0], copy: false });
+        const xs = occHelper.shapeGettersService.getVertices({ shape: res }).map(v => occHelper.converterService.vertexToPoint({ shape: v })[0]);
+        expect(Math.min(...xs)).toBeGreaterThan(-1e-9);
+    });
+
+    it("should leave the list of sections a closed loft was given as it was", () => {
+        const sections = [
+            wire.createEllipseWire({ center: [0, 0, 0], radiusMajor: 1, radiusMinor: 0.5, direction: [0, 1, 0] }),
+            wire.createEllipseWire({ center: [0, 1, 0], radiusMajor: 2, radiusMinor: 1, direction: [0, 1, 0] }),
+            wire.createEllipseWire({ center: [0, 2, 0], radiusMajor: 0.5, radiusMinor: 0.3, direction: [0, 1, 0] }),
+        ];
+        const opt = new Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire>(sections);
+        opt.closed = true;
+        operations.loftAdvanced(opt);
+        expect(sections).toHaveLength(3);
+    });
+
     it("should not slice shapes when step is 0", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
         expect(() => operations.slice({ shape: box, direction: [0, 1, 1], step: 0 })).toThrow("Step needs to be positive.");
@@ -395,14 +455,44 @@ describe("OCCT operations unit tests", () => {
         expect(wires.length).toBe(62);
     });
 
-    it("should not slice in pattern if steps property is undefines", () => {
+    it("should not slice in pattern when the steps list is empty", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: undefined as unknown as number[] })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
     });
 
     it("should not slice in pattern if steps property is an empty array", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeSphere([0, 0, 0], [0, 1, 0], 3);
-        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must be provided with at elast one positive value");
+        expect(() => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 1], steps: [] })).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
+    });
+
+    it.each<[string, number[]]>([
+        ["that move back as far as they move forward", [1, -1]],
+        ["that move back further than they move forward", [1, -2]],
+        ["of which none moves", [0, 0]],
+        ["that make the first gap too long to move back from", [100, -100]],
+    ])("should refuse steps %s instead of slicing forever", (_what, steps) => {
+        // Arrange
+        const box = solid.createBox({ width: 1, length: 1, height: 5, center: [0, 0, 0] });
+
+        // Act
+        const cut = (): unknown => operations.sliceInStepPattern({ shape: box, direction: [0, 1, 0], steps });
+
+        // Assert
+        expect(cut).toThrow("Steps must add up to more than 0, or the slices never move along the shape.");
+        box.delete();
+    });
+
+    it("should slice with steps that move back less than they move forward", () => {
+        // Arrange
+        const box = solid.createBox({ width: 1, length: 1, height: 5, center: [0, 0, 0] });
+
+        // Act
+        const res = operations.sliceInStepPattern({ shape: box, direction: [0, 1, 0], steps: [2, -1] });
+
+        // Assert
+        expect(face.getFaces({ shape: res }).length).toBeGreaterThan(0);
+        box.delete();
+        res.delete();
     });
 
     it("should not slice in pattern shapes that are not solids", () => {
@@ -416,129 +506,94 @@ describe("OCCT operations unit tests", () => {
         expect(() => operations.sliceInStepPattern({ shape: starWire, direction: [0, 1, 1], steps: [0.1] })).toThrow("No solids found to slice.");
     });
 
-    it("should offset 3D wire by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 24, -20],
-            [-10, 20, -10],
-            [0, 15, 0],
-            [0, 12, 10],
-            [20, 7, 16],
-            [40, 25, 40],
-            [-20, 7, 16],
-            [-20, 7, -16]
-        ] as Inputs.Base.Point3[];
-
-        const polylineWire = wire.createPolylineWire({
-            points,
+    const offsetPoints = (source: TopoDS_Wire, distance: number, direction: Inputs.Base.Vector3, samples: number): Inputs.Base.Point3[] =>
+        Array.from({ length: samples + 1 }, (_, index) => {
+            const param = index / samples;
+            const [x, y, z] = wire.pointOnWireAtParam({ shape: source, param });
+            const [tx, ty, tz] = wire.tangentOnWireAtParam({ shape: source, param });
+            const side: Inputs.Base.Vector3 = [direction[1] * tz - direction[2] * ty, direction[2] * tx - direction[0] * tz, direction[0] * ty - direction[1] * tx];
+            const scale = distance / Math.hypot(side[0], side[1], side[2]);
+            return [x + side[0] * scale, y + side[1] * scale, z + side[2] * scale];
         });
 
-        const filletWire = occHelper.filletsService.fillet3DWire({ shape: polylineWire, radius: 5, direction: [0, 30, 0] });
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: filletWire,
-            direction: [0, 1, 0],
-            offset: 2,
-        }) as TopoDS_Wire;
+    const pointsAtFractions = (shape: TopoDS_Wire, samples: number): Inputs.Base.Point3[] =>
+        Array.from({ length: samples + 1 }, (_, index) => wire.pointOnWireAtParam({ shape, param: index / samples }));
 
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: filletWire,
-            direction: [0, 1, 0],
-            offset: -2,
-        }) as TopoDS_Wire;
+    const closeTo9 = (points: Inputs.Base.Point3[]): unknown[] => points.map(point => point.map(value => expect.closeTo(value, 9)));
 
-        const filletLength = wire.getWireLength({ shape: filletWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
+    it("should move every point of a rounded 3D polyline at right angles to it and to the direction", () => {
+        // Arrange
+        const polyline = wire.createPolylineWire({ points: [[0, 24, -20], [-10, 20, -10], [0, 15, 0], [0, 12, 10], [20, 7, 16], [40, 25, 40], [-20, 7, 16], [-20, 7, -16]] });
+        const rounded = occHelper.filletsService.fillet3DWire({ shape: polyline, radius: 5, direction: [0, 1, 0] });
 
-        expect(wireLength1).toBeCloseTo(168.790359306275);
-        expect(filletLength).toBeCloseTo(164.11239253261422);
-        expect(wireLength2).toBeCloseTo(160.25576209902425);
+        // Act
+        const outward = operations.offset3DWire({ shape: rounded, direction: [0, 1, 0], offset: 2 }) as TopoDS_Wire;
+        const inward = operations.offset3DWire({ shape: rounded, direction: [0, 1, 0], offset: -2 }) as TopoDS_Wire;
 
+        // Assert
+        expect(pointsAtFractions(outward, 40)).toEqual(closeTo9(offsetPoints(rounded, 2, [0, 1, 0], 40)));
+        expect(pointsAtFractions(inward, 40)).toEqual(closeTo9(offsetPoints(rounded, -2, [0, 1, 0], 40)));
     });
 
-    it("should offset 3D wire by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 24, -20],
-            [-10, 20, -10],
-            [0, 15, 0],
-            [0, 12, 10],
-            [20, 7, 16],
-            [40, 25, 40],
-            [-20, 7, 16],
-            [-20, 7, -16]
-        ] as Inputs.Base.Point3[];
+    it("should move every point of a smooth 3D curve at right angles to it and to the direction", () => {
+        // Arrange
+        const curve = wire.interpolatePoints({ points: [[0, 24, -20], [-10, 20, -10], [0, 15, 0], [0, 12, 10], [20, 7, 16], [40, 25, 40], [-20, 7, 16], [-20, 7, -16]], periodic: false, tolerance: 0.1 });
 
-        const interpolatedWire = wire.interpolatePoints({
-            points,
-            periodic: false,
-            tolerance: 0.1,
-        });
+        // Act
+        const offset = operations.offset3DWire({ shape: curve, direction: [0, 3, 0], offset: 2 }) as TopoDS_Wire;
 
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: interpolatedWire,
-            direction: [0, 1, 0],
-            offset: 2,
-        }) as TopoDS_Wire;
-
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: interpolatedWire,
-            direction: [0, 1, 0],
-            offset: -2,
-        }) as TopoDS_Wire;
-
-        const interpWireLength = wire.getWireLength({ shape: interpolatedWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
-
-        expect(wireLength1).toBeCloseTo(218.52116637474018);
-        expect(interpWireLength).toBeCloseTo(213.1483348902019);
-        expect(wireLength2).toBeCloseTo(208.59746753494878);
-
+        // Assert
+        expect(pointsAtFractions(offset, 40)).toEqual(closeTo9(offsetPoints(curve, 2, [0, 1, 0], 40)));
     });
 
-    it("should offset 3D combined wire from interpolation and a line by distance if given a direction of a plane normal for offset", () => {
-        const points = [
-            [0, 0, 0],
-            [0, 1, 1],
-            [2, 0.5, 1],
-            [2, 0, 2],
-        ] as Inputs.Base.Point3[];
+    it("should hand back the offset edges in order where a sharp corner keeps them apart", () => {
+        // Arrange
+        const curve = wire.interpolatePoints({ points: [[0, 0, 0], [0, 1, 1], [2, 0.5, 1], [2, 0, 2]], periodic: false, tolerance: 0.1 });
+        const joined = wire.combineEdgesAndWiresIntoAWire({ shapes: [curve, wire.createLineWire({ start: [2, 0, 2], end: [5, 0, 0] })] });
 
-        const polylineWire = wire.interpolatePoints({
-            points,
-            periodic: false,
-            tolerance: 0.1,
-        });
+        // Act
+        const offset = operations.offset3DWire({ shape: joined, direction: [0, 1, 0], offset: 0.1 });
 
-        const lineWire = wire.createLineWire({
-            start: [2, 0, 2],
-            end: [5, 0, 0],
-        });
+        // Assert
+        expect(Array.isArray(offset)).toBe(true);
+        const edges = offset as TopoDS_Edge[];
+        expect(edges).toHaveLength(2);
+        expect(occHelper.edgesService.startPointOnEdge({ shape: edges[1]! }))
+            .toEqual(closeTo9([[2 - 0.2 / Math.sqrt(13), 0, 2 - 0.3 / Math.sqrt(13)]])[0]);
+    });
 
-        const combinedWire = wire.combineEdgesAndWiresIntoAWire({
-            shapes: [polylineWire, lineWire]
-        });
+    it("should shrink a circle about the direction in its own plane, running the same way", () => {
+        // Arrange
+        const circle = wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
 
-        const offsetWireDir1 = operations.offset3DWire({
-            shape: combinedWire,
-            direction: [0, 1, 0],
-            offset: 0.1,
-        }) as TopoDS_Wire;
+        // Act
+        const offset = operations.offset3DWire({ shape: circle, direction: [0, 1, 0], offset: 1 }) as TopoDS_Wire;
 
-        const offsetWireDir2 = operations.offset3DWire({
-            shape: combinedWire,
-            direction: [0, 1, 0],
-            offset: -0.1,
-        }) as TopoDS_Wire;
+        // Assert
+        expect(wire.getWireLength({ shape: offset })).toBeCloseTo(8 * Math.PI, 12);
+        expect(pointsAtFractions(offset, 4)).toEqual(closeTo9(pointsAtFractions(circle, 4).map(([x, y, z]) => [x * 0.8, y, z * 0.8])));
+    });
 
+    it("should refuse a direction of length 0", () => {
+        // Arrange
+        const circle = wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
 
-        const interpWireLength = wire.getWireLength({ shape: combinedWire });
-        const wireLength1 = wire.getWireLength({ shape: offsetWireDir1 });
-        const wireLength2 = wire.getWireLength({ shape: offsetWireDir2 });
+        // Act
+        const act = (): unknown => operations.offset3DWire({ shape: circle, direction: [0, 0, 0], offset: 1 });
 
-        expect(wireLength1).toBeCloseTo(8.606363207743371);
-        expect(interpWireLength).toBeCloseTo(8.58583309897651);
-        expect(wireLength2).toBeCloseTo(8.592691735283145);
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property: "direction" }));
+    });
 
+    it("should fail where the wire runs along the direction, having no side to go to", () => {
+        // Arrange
+        const rise = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0]] });
+
+        // Act
+        const act = (): unknown => operations.offset3DWire({ shape: rise, direction: [0, 1, 0], offset: 1 });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.offset.failed" }));
     });
 
     it("should measure distances from points to a shape", () => {
@@ -657,6 +712,48 @@ describe("OCCT operations unit tests", () => {
     });
 
     describe("offsetAdv", () => {
+        it("should pass a failure of the wire offset on, releasing it, rather than offsetting the wire as a 3D shape", () => {
+            // Arrange
+            const circle = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const failure = new Error("the kernel could not offset the wire");
+            const makers: { isDeleted(): boolean }[] = [];
+            let offsetsAsShape = 0;
+            const wireOffset = occt.BRepOffsetAPI_MakeOffset;
+            const shapeOffset = occt.BRepOffsetAPI_MakeOffsetShape;
+            Reflect.set(occt, "BRepOffsetAPI_MakeOffset", new Proxy(wireOffset, {
+                construct(target, args): object {
+                    const maker = Reflect.construct(target, args);
+                    maker.Perform = (): never => {
+                        throw failure;
+                    };
+                    makers.push(maker);
+                    return maker;
+                },
+            }));
+            Reflect.set(occt, "BRepOffsetAPI_MakeOffsetShape", new Proxy(shapeOffset, {
+                construct(target, args): object {
+                    offsetsAsShape++;
+                    return Reflect.construct(target, args);
+                },
+            }));
+
+            // Act
+            let thrown: unknown;
+            try {
+                operations.offsetAdv({ shape: circle, distance: 0.2, tolerance: 1e-7, joinType: Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false });
+            } catch (caught) {
+                thrown = caught;
+            } finally {
+                Reflect.set(occt, "BRepOffsetAPI_MakeOffset", wireOffset);
+                Reflect.set(occt, "BRepOffsetAPI_MakeOffsetShape", shapeOffset);
+            }
+
+            // Assert
+            expect(thrown).toBe(failure);
+            expect(makers.map(maker => maker.isDeleted())).toEqual([true]);
+            expect(offsetsAsShape).toBe(0);
+        });
+
         it("should offset a square wire with arc join type", () => {
             const squareWire = wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
             const offsetRes = operations.offsetAdv({
@@ -770,6 +867,65 @@ describe("OCCT operations unit tests", () => {
         });
     });
 
+    describe("extrusions the kernel cannot build", () => {
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([
+            [[0, 0, 0], "`direction` is [0, 0, 0], and an extrusion needs a direction with some length: the shape travels along it for that length."],
+            [[0, Number.NaN, 0], "`direction` is [0, NaN, 0], and the direction of an extrusion has to be finite numbers."],
+            [[Number.POSITIVE_INFINITY, 0, 0], "`direction` is [Infinity, 0, 0], and the direction of an extrusion has to be finite numbers."],
+        ] as [Inputs.Base.Vector3, string][])("should refuse the direction %j, naming it", (direction, message) => {
+            // Arrange
+            const circle = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const refusals = [
+                refusalOf(() => operations.extrude({ shape: circle, direction })),
+                refusalOf(() => operations.extrudeShapes({ shapes: [circle], direction })),
+            ];
+
+            // Assert
+            expect(refusals).toEqual([
+                expect.objectContaining({ name: "InputError", property: "direction", message }),
+                expect.objectContaining({ name: "InputError", property: "direction", message }),
+            ]);
+        });
+
+        it("should refuse a shape that holds a solid, alone or in a compound", () => {
+            // Arrange
+            const box = solid.createBox({ width: 1, length: 1, height: 1, center: [0, 0, 0] });
+            const square = face.createSquareFace({ size: 2, center: [5, 0, 0], direction: [0, 1, 0] });
+            const mixed = occHelper.converterService.makeCompound({ shapes: [square, box] });
+
+            // Act
+            const refusals = [box, mixed].map(shape => refusalOf(() => operations.extrude({ shape, direction: [0, 1, 0] })));
+
+            // Assert
+            const refusal = expect.objectContaining({ name: "InputError", property: "shape", message: "`shape` holds a solid, which cannot be extruded; extrude its faces, a shell or a wire instead." });
+            expect(refusals).toEqual([refusal, refusal]);
+        });
+
+        it("should extrude a shell and a direction far shorter than the shape", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });
+            const cup = shell.sewFaces({ shapes: face.getFaces({ shape: box }).slice(0, 5), tolerance: 1e-7 });
+
+            // Act
+            const walls = operations.extrude({ shape: cup, direction: [0, 1e-3, 0] });
+
+            // Assert
+            expect(walls.IsNull()).toBe(false);
+            expect(face.getFaces({ shape: walls }).length).toBeGreaterThan(5);
+        });
+    });
+
     it("should extrude multiple shapes", () => {
         const squareFace = face.createSquareFace({ center: [0, 0, 3], size: 1, direction: [0, 0, 1] });
         const circleFace = face.createCircleFace({ center: [0, 0, 0], radius: 1, direction: [0, 0, 1] });
@@ -777,7 +933,9 @@ describe("OCCT operations unit tests", () => {
         const volumes = res.map(s => {
             return solid.getSolidVolume({ shape: s });
         });
-        expect(volumes).toEqual([0.9999999999999998, 3.1415926535897922]);
+        expect(volumes).toHaveLength(2);
+        expect(volumes[0]).toBeCloseTo(1, 12);
+        expect(volumes[1]).toBeCloseTo(Math.PI, 12);
         squareFace.delete();
         circleFace.delete();
         res.forEach(s => s.delete());
@@ -787,7 +945,7 @@ describe("OCCT operations unit tests", () => {
         const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
         const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 90, copy: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(24.674021577404435, 10);
+        expect(vol).toBeCloseTo(2.5 * Math.PI * Math.PI, 10);
         circleFace.delete();
         res.delete();
     });
@@ -796,7 +954,60 @@ describe("OCCT operations unit tests", () => {
         const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
         const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 360, copy: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(98.69604401089357);
+        expect(vol).toBeCloseTo(10 * Math.PI * Math.PI, 10);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it("should revolve by a negative angle the other way round", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: -90, copy: true });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(2.5 * Math.PI * Math.PI, 10);
+        expect(operations.boundingBoxCenterOfShape({ shape: res })[1]).toBeLessThan(0);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it("should refuse an angle of 0 rather than make a full turn", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const spin = (): unknown => operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle: 0, copy: true });
+
+        // Assert
+        expect(spin).toThrow("The revolve angle must not be 0, or nothing is swept.");
+        circleFace.delete();
+    });
+
+    it.each([-360, -400])("should make a full turn for an angle of %s", (angle) => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 1, 0] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, direction: [0, 0, 1], angle, copy: true });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(10 * Math.PI * Math.PI, 8);
+        circleFace.delete();
+        res.delete();
+    });
+
+    it("should revolve about the Y axis when the direction is left out", () => {
+        // Arrange
+        const circleFace = face.createCircleFace({ center: [5, 0, 0], radius: 1, direction: [0, 0, 1] });
+
+        // Act
+        const res = operations.revolve({ shape: circleFace, angle: 90 });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(2.5 * Math.PI * Math.PI, 10);
+        expect(operations.boundingBoxSizeOfShape({ shape: res })[1]).toBeCloseTo(2, 6);
         circleFace.delete();
         res.delete();
     });
@@ -805,7 +1016,7 @@ describe("OCCT operations unit tests", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, 0, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(9.998477588675755);
+        expect(vol).toBeCloseTo(10, 3);
         squareWire.delete();
         res.delete();
     });
@@ -814,7 +1025,7 @@ describe("OCCT operations unit tests", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, 5, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(9.998477588675833, 5);
+        expect(vol).toBeCloseTo(10, 3);
         
         const bbox = operations.boundingBoxOfShape({ shape: res });
         expect(bbox.min[1]).toBeCloseTo(5, 1);
@@ -828,7 +1039,7 @@ describe("OCCT operations unit tests", () => {
         const squareWire = wire.createSquareWire({ center: [0.5, -3, 0], size: 1, direction: [0, 1, 0] });
         const res = operations.rotatedExtrude({ shape: squareWire, angle: 360, height: 10, makeSolid: true });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(9.998477588675744, 5);
+        expect(vol).toBeCloseTo(10, 3);
         
         const bbox = operations.boundingBoxOfShape({ shape: res });
         expect(bbox.min[1]).toBeCloseTo(-3, 1);
@@ -912,7 +1123,7 @@ describe("OCCT operations unit tests", () => {
         const circleWire = wire.createCircleWire({ center: [0, 0, 0], radius: 0.2, direction: [0, 1, 0] });
         const res = operations.pipe({ shape: interpolatedWire, shapes: [circleWire] });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(0.5499995987174751, 10);
+        expect(vol).toBeCloseTo(0.5499178295992303, 10);
         interpolatedWire.delete();
         circleWire.delete();
         res.delete();
@@ -936,7 +1147,7 @@ describe("OCCT operations unit tests", () => {
 
         const res = operations.pipe({ shape: interpolatedWire, shapes: [circleWire1, circleWire2] });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(2.2134035565869317, 10);
+        expect(vol).toBeCloseTo(2.213470624416594, 10);
         interpolatedWire.delete();
         circleWire1.delete();
         circleWire2.delete();
@@ -957,7 +1168,8 @@ describe("OCCT operations unit tests", () => {
         });
         const res = operations.pipePolylineWireNGon({ shape: interpolatedWire, nrCorners: 6, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(0.5184607136026386);
+        const hexagonArea = 1.5 * Math.sqrt(3) * 0.2 * 0.2;
+        expect(vol).toBeCloseTo(hexagonArea * wire.getWireLength({ shape: interpolatedWire }), 4);
         interpolatedWire.delete();
         res.delete();
     });
@@ -976,7 +1188,7 @@ describe("OCCT operations unit tests", () => {
         });
         const res = operations.pipeWireCylindrical({ shape: interpolatedWire, radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toBeCloseTo(0.6269086976927102, 10);
+        expect(vol).toBeCloseTo(Math.PI * 0.2 * 0.2 * wire.getWireLength({ shape: interpolatedWire }), 5);
         interpolatedWire.delete();
         res.delete();
     });
@@ -995,7 +1207,8 @@ describe("OCCT operations unit tests", () => {
         });
         const res = operations.pipeWiresCylindrical({ shapes: [interpolatedWire], radius: 0.2, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isConstantNormal });
         const vols = res.map(s => solid.getSolidVolume({ shape: s }));
-        expect(vols).toEqual([0.626908697692709]);
+        expect(vols).toHaveLength(1);
+        expect(vols[0]).toBeCloseTo(Math.PI * 0.2 * 0.2 * wire.getWireLength({ shape: interpolatedWire }), 5);
         res.forEach(s => s.delete());
     });
 
@@ -1006,12 +1219,28 @@ describe("OCCT operations unit tests", () => {
         fRem.delete();
         const sew = shell.sewFaces({ shapes: boxFaces, tolerance: 1e-7 });
         const res = operations.makeThickSolidSimple({ shape: sew, offset: 0.3 });
-        const vol = solid.getSolidVolume({ shape: res });
-        expect(vol).toEqual(2.494285714285714);
+        expect(res.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
+        expect(face.getFaces({ shape: res })).toHaveLength(14);
+        expect(occt.ShapeIsValid(res)).toBe(true);
+        expect(solid.getSolidVolume({ shape: res })).toBeCloseTo(2.593333, 6);
         box.delete();
         sew.delete();
         boxFaces.forEach(f => f.delete());
         res.delete();
+    });
+
+    it.each([0.3, -0.3])("should thicken a face by %s into a solid with its matter inside", (offset) => {
+        // Arrange
+        const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        // Act
+        const slab = operations.makeThickSolidSimple({ shape: square, offset });
+
+        // Assert
+        const box = operations.boundingBoxOfShape({ shape: slab });
+        expect(slab.ShapeType()).toBe(occt.TopAbs_ShapeEnum.SOLID);
+        expect(solid.getSolidVolume({ shape: slab })).toBeCloseTo(1.2, 9);
+        expect([box.min[1], box.max[1]]).toEqual((offset > 0 ? [0, 0.3] : [-0.3, 0]).map(v => expect.closeTo(v, 6)));
     });
 
     describe("splitShapeWithShapes", () => {
@@ -1142,7 +1371,7 @@ describe("OCCT operations unit tests", () => {
         });
 
         it("should get bounding box center of a cylinder", () => {
-            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 2, 10, 360);
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 2, 10, 2 * Math.PI);
             const center = operations.boundingBoxCenterOfShape({ shape: cyl });
             
             expect(center[0]).toBeCloseTo(0, 5);
@@ -1265,7 +1494,7 @@ describe("OCCT operations unit tests", () => {
         });
 
         it("should get bounding sphere radius of a cylinder", () => {
-            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 360);
+            const cyl = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 3, 8, 2 * Math.PI);
             const radius = operations.boundingSphereRadiusOfShape({ shape: cyl });
             
             expect(radius).toBeCloseTo(Math.sqrt(34), 2);
@@ -1343,5 +1572,32 @@ describe("OCCT operations unit tests", () => {
         });
     });
 
+    describe("a shape with nothing in it", () => {
+        it("should refuse to find closest points on it", () => {
+            // Arrange
+            const empty = occHelper.converterService.makeCompound({ shapes: [] });
 
+            // Act
+            const act = () => operations.closestPointsOnShapeFromPoints({ shape: empty, points: [[0, 0, 0]] });
+
+            // Assert
+            expect(act).toThrow("Closest points could not be found.");
+        });
+
+        it("should refuse its bounding box, naming the input", () => {
+            // Arrange
+            const empty = occHelper.converterService.makeCompound({ shapes: [] });
+            let refusal: unknown;
+
+            // Act
+            try {
+                operations.boundingBoxOfShape({ shape: empty });
+            } catch (failure) {
+                refusal = failure;
+            }
+
+            // Assert
+            expect(refusal).toMatchObject({ name: "InputError", property: "shape", message: "`shape` has no geometry to bound, so it has no bounding box." });
+        });
+    });
 });

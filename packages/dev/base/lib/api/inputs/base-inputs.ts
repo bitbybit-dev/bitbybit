@@ -84,11 +84,17 @@ export namespace Base {
      */
     export type Mesh3 = Triangle3[];
     /**
-     * An infinite plane: an origin point, a normal vector, and a direction vector that fixes the
-     * plane's rotation about its own normal. That third field is what lets an operation place 2D
-     * geometry on the plane with a predictable orientation rather than an arbitrary one.
+     * A coordinate frame: an origin, a normal (its z axis) and a direction (its x axis, square to the
+     * normal); its y axis is the normal crossed with the direction, so the frame is right-handed. A
+     * frame places things: shapes land on it, profiles are drawn in its plane.
      */
-    export type Plane3 = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
+    export type Frame = { origin: Base.Point3, normal: Base.Vector3, direction: Base.Vector3 };
+    /**
+     * An infinite plane: an origin point, a normal vector, and a direction vector that fixes the
+     * plane's rotation about its own normal.
+     * @deprecated Use `Frame`, the same three fields; `Plane3` is removed in the next major version.
+     */
+    export type Plane3 = Frame;
     /**
      * The axis-aligned box enclosing a shape, as a min and a max corner, with the center and the
      * width, height and length filled in as a convenience. Use it to size a camera to a model, to lay

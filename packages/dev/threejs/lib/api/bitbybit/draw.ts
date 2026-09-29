@@ -4,6 +4,8 @@ import * as Inputs from "../inputs";
 import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Everything drawing can hand back: a group for geometry, the tag or tags for tags, a disposable
@@ -15,9 +17,9 @@ import { DrawHelper } from "../draw-helper";
 export type DrawnEntity = Inputs.Draw.DrawnAny<THREEJS.Group>;
 
 /**
- * Drawing anything into the scene: kernel shapes, points, lines, polylines, curves, meshes and tags
- * all go through `drawAnyAsync`, which picks the right renderer for the entity and returns the
- * drawn object. The `options` methods build the drawing options with defaults for each kind of
+ * Drawing anything into the scene: kernel shapes, points, lines, polylines, frames, curves, meshes
+ * and tags all go through `drawAnyAsync`, which picks the right renderer for the entity and returns
+ * the drawn object. The `options` methods build the drawing options with defaults for each kind of
  * entity, `createPBRMaterial` and `createTexture` make materials for the face slots, and a drawn
  * object can be redrawn in place by passing it back.
  */
@@ -28,6 +30,7 @@ export class Draw extends DrawCore {
         size: 2,
         colours: "#ff00ff",
     };
+    private defaultFrameOptions = new Inputs.Draw.DrawFrameOptions();
 
     constructor(
         public readonly drawHelper: DrawHelper,
@@ -39,8 +42,8 @@ export class Draw extends DrawCore {
 
     /**
      * Draws any entity the library produces into the scene and gives back the drawn object: kernel
-     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, curves, meshes, tags and
-     * nodes.
+     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, frames, curves, meshes, tags
+     * and nodes.
      *
      * The options are matched to the entity, with defaults when none are given; pass the previous
      * result back in the update slot to redraw in place.
@@ -59,14 +62,6 @@ export class Draw extends DrawCore {
         return await this.drawResolvedAsync(inputs) as Inputs.Draw.Drawn<E, THREEJS.Group>;
     }
 
-    /**
-     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
-     *
-     * A package that adds entity kinds overrides this rather than the public signature: two
-     * unresolved conditional types over the same `E` have no provable relation to each other, so a
-     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
-     * @ignore true
-     */
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> | undefined;
 
     /**
@@ -80,10 +75,12 @@ export class Draw extends DrawCore {
             point: (i) => this.handlePoint(i),
             jscadPath: (i) => this.handleJscadPath(i),
             polyline: (i) => this.handlePolyline(i),
+            frame: (i) => this.handleFrames(i),
             verbCurve: (i) => this.handleVerbCurve(i),
             verbSurface: (i) => this.handleVerbSurface(i),
             jscadPaths: (i) => this.handleJscadPaths(i),
             polylines: (i) => this.handlePolylines(i),
+            frames: (i) => this.handleFrames(i),
             lines: (i) => this.handleLines(i),
             points: (i) => this.handlePoints(i),
             verbCurves: (i) => this.handleVerbCurves(i),
@@ -116,6 +113,14 @@ export class Draw extends DrawCore {
         };
     }
 
+    /**
+     * Every branch of the asynchronous dispatch, typed as what it can actually produce.
+     *
+     * A package that adds entity kinds overrides this rather than the public signature: two
+     * unresolved conditional types over the same `E` have no provable relation to each other, so a
+     * narrower override of `drawAnyAsync` cannot typecheck however correct it is.
+     * @ignore true
+     */
     protected async drawResolvedAsync(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<DrawnEntity> {
         const entity = inputs.entity;
         if (entity === undefined || (Array.isArray(entity) && entity.length === 0)) {
@@ -131,10 +136,10 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+            const merged = this.occtOptions(options);
             return this.drawHelper.handleDecomposedMesh(
                 merged,
-                inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+                inputs.entity as Inputs.OCCT.DecomposedMeshDto,
                 merged
             );
         }, Inputs.Draw.drawingTypes.occt);
@@ -142,8 +147,8 @@ export class Draw extends DrawCore {
 
     private handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), async (options) => {
-            const merged = { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
-            const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+            const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
+            const merged = this.drawHelper.withSurfaceAnalysisRange(this.occtOptions(options), decomposedMeshes);
             const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
                 merged, dm, merged)));
             const container = new THREEJS.Group();
@@ -157,7 +162,7 @@ export class Draw extends DrawCore {
 
     /**
      * Draws an entity that needs no kernel work into the scene right away and gives back the drawn
-     * object: points, lines, polylines, tags and nodes.
+     * object: points, lines, polylines, frames, tags and nodes.
      *
      * Kernel shapes from OCCT, JSCAD and Manifold must go through `drawAnyAsync`, which waits for
      * the kernel to mesh them.
@@ -211,24 +216,42 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
+    }
+
+    /**
+     * Builds drawing options for frames: how long the axes are and their colors, whether the small
+     * grid in the frame's plane is drawn and in which color, the line width and whether the frame
+     * can be redrawn in place, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group options
+     * @shortname frame
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsFrame({ size: 2, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", drawPlane: true, colorPlane: "#808080", lineWidth: 2, updatable: false });
+     * const drawn = bitbybit.draw.drawAny({ entity: bitbybit.frame.world(), options });
+     * ```
+     */
+    optionsFrame(inputs: Inputs.Draw.DrawFrameOptions): Inputs.Draw.DrawFrameOptions {
+        return resolveDto(Inputs.Draw.DrawFrameOptions, inputs);
     }
 
     /**
      * Builds the full drawing options for OCCT shapes: meshing precision, face, edge and vertex
-     * colors and sizes, index labels, arrows on edges, two-sided rendering and the triangulation
-     * cache, with defaults for what is left out.
+     * colors and sizes, index labels, arrows on edges, two-sided rendering, iso curves, a surface
+     * analysis coloring the faces and the triangulation cache, with defaults for what is left out.
      * @param inputs - The options to start from
      * @returns The drawing options
      * @group options
      * @shortname occt shape
      * @example
      * ```typescript
-     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false });
+     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false, drawIsoCurves: true, isoCurvesU: 5, isoCurvesV: 5, isoCurvesColour: "#808080", surfaceAnalysis: Bit.Inputs.OCCT.surfaceAnalysisEnum.gaussian, draftDirection: [0, 1, 0] });
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
     }
 
     /**
@@ -245,18 +268,19 @@ export class Draw extends DrawCore {
      * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): THREEJS.Texture {
+        const resolved = resolveDto(Inputs.Draw.GenericTextureDto, inputs) as Resolved.Draw.GenericTextureDto;
         const loader = new THREEJS.TextureLoader();
-        const texture = loader.load(inputs.url);
+        const texture = loader.load(resolved.url);
         
-        texture.name = inputs.name;
-        texture.repeat.set(inputs.uScale, inputs.vScale);
-        texture.offset.set(inputs.uOffset, inputs.vOffset);
-        texture.rotation = inputs.wAng;
-        texture.flipY = !inputs.invertY;
+        texture.name = resolved.name;
+        texture.repeat.set(resolved.uScale, resolved.vScale);
+        texture.offset.set(resolved.uOffset, resolved.vOffset);
+        texture.rotation = resolved.wAng;
+        texture.flipY = !resolved.invertY;
         texture.wrapS = THREEJS.RepeatWrapping;
         texture.wrapT = THREEJS.RepeatWrapping;
         
-        switch (inputs.samplingMode) {
+        switch (resolved.samplingMode) {
             case Inputs.Draw.samplingModeEnum.nearest:
                 texture.minFilter = THREEJS.NearestFilter;
                 texture.magFilter = THREEJS.NearestFilter;
@@ -290,53 +314,54 @@ export class Draw extends DrawCore {
      * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): THREEJS.MeshStandardMaterial {
+        const resolved = resolveDto(Inputs.Draw.GenericPBRMaterialDto, inputs) as Resolved.Draw.GenericPBRMaterialDto;
         const mat = new THREEJS.MeshStandardMaterial({
-            name: inputs.name,
-            color: new THREEJS.Color(inputs.baseColor),
-            metalness: inputs.metallic,
-            roughness: inputs.roughness,
-            opacity: inputs.alpha,
-            transparent: inputs.alpha < 1 || inputs.alphaMode === Inputs.Draw.alphaModeEnum.blend,
-            side: inputs.doubleSided ? THREEJS.DoubleSide : THREEJS.FrontSide,
-            wireframe: inputs.wireframe,
+            name: resolved.name,
+            color: new THREEJS.Color(resolved.baseColor),
+            metalness: resolved.metallic,
+            roughness: resolved.roughness,
+            opacity: resolved.alpha,
+            transparent: resolved.alpha < 1 || resolved.alphaMode === Inputs.Draw.alphaModeEnum.blend,
+            side: resolved.doubleSided ? THREEJS.DoubleSide : THREEJS.FrontSide,
+            wireframe: resolved.wireframe,
         });
         
-        if (inputs.emissiveColor) {
-            mat.emissive = new THREEJS.Color(inputs.emissiveColor);
-            mat.emissiveIntensity = inputs.emissiveIntensity;
+        if (resolved.emissiveColor) {
+            mat.emissive = new THREEJS.Color(resolved.emissiveColor);
+            mat.emissiveIntensity = resolved.emissiveIntensity;
         }
         
-        if (inputs.zOffset !== 0 || inputs.zOffsetUnits !== 0) {
+        if (resolved.zOffset !== 0 || resolved.zOffsetUnits !== 0) {
             mat.polygonOffset = true;
-            mat.polygonOffsetFactor = inputs.zOffset;
-            mat.polygonOffsetUnits = inputs.zOffsetUnits;
+            mat.polygonOffsetFactor = resolved.zOffset;
+            mat.polygonOffsetUnits = resolved.zOffsetUnits;
         }
         
-        if (inputs.baseColorTexture) {
-            mat.map = inputs.baseColorTexture as THREEJS.Texture;
+        if (resolved.baseColorTexture) {
+            mat.map = resolved.baseColorTexture as THREEJS.Texture;
         }
-        if (inputs.metallicRoughnessTexture) {
-            mat.metalnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
-            mat.roughnessMap = inputs.metallicRoughnessTexture as THREEJS.Texture;
+        if (resolved.metallicRoughnessTexture) {
+            mat.metalnessMap = resolved.metallicRoughnessTexture as THREEJS.Texture;
+            mat.roughnessMap = resolved.metallicRoughnessTexture as THREEJS.Texture;
         }
-        if (inputs.normalTexture) {
-            mat.normalMap = inputs.normalTexture as THREEJS.Texture;
+        if (resolved.normalTexture) {
+            mat.normalMap = resolved.normalTexture as THREEJS.Texture;
         }
-        if (inputs.emissiveTexture) {
-            mat.emissiveMap = inputs.emissiveTexture as THREEJS.Texture;
+        if (resolved.emissiveTexture) {
+            mat.emissiveMap = resolved.emissiveTexture as THREEJS.Texture;
         }
-        if (inputs.occlusionTexture) {
-            mat.aoMap = inputs.occlusionTexture as THREEJS.Texture;
+        if (resolved.occlusionTexture) {
+            mat.aoMap = resolved.occlusionTexture as THREEJS.Texture;
         }
         
-        switch (inputs.alphaMode) {
+        switch (resolved.alphaMode) {
             case Inputs.Draw.alphaModeEnum.opaque:
                 mat.transparent = false;
                 mat.alphaTest = 0;
                 break;
             case Inputs.Draw.alphaModeEnum.mask:
                 mat.transparent = false;
-                mat.alphaTest = inputs.alphaCutoff;
+                mat.alphaTest = resolved.alphaCutoff;
                 break;
             case Inputs.Draw.alphaModeEnum.blend:
                 mat.transparent = true;
@@ -344,8 +369,8 @@ export class Draw extends DrawCore {
                 break;
         }
         
-        if (inputs.unlit) {
-            mat.emissive = new THREEJS.Color(inputs.baseColor);
+        if (resolved.unlit) {
+            mat.emissive = new THREEJS.Color(resolved.baseColor);
             mat.emissiveIntensity = 1;
             mat.color = new THREEJS.Color(0x000000);
         }
@@ -356,9 +381,9 @@ export class Draw extends DrawCore {
     private handleJscadMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, mesh: Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMesh({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 jscadMesh: inputs.group,
                 mesh,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMesh);
     }
@@ -366,29 +391,27 @@ export class Draw extends DrawCore {
     private handleJscadMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, meshes: (Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3)[]): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSolidOrPolygonMeshes({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 jscadMesh: inputs.group,
                 meshes,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.jscadMeshes);
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group | undefined> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldOrCrossSection({
+                ...this.manifoldOptions(options),
                 manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer,
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
-        return this.handleAsync(inputs, new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity), (options) => {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
             return this.drawHelper.drawManifoldsOrCrossSections({
+                ...this.manifoldOptions(options),
                 manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
-                ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-                ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -396,9 +419,8 @@ export class Draw extends DrawCore {
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShape({
+                ...this.occtOptions(options),
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
             });
         }, Inputs.Draw.drawingTypes.occt);
     }
@@ -406,9 +428,8 @@ export class Draw extends DrawCore {
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
         return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
             return this.drawHelper.drawShapes({
+                ...this.occtOptions(options),
                 shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-                ...new Inputs.Draw.DrawOcctShapeOptions(),
-                ...options as Inputs.Draw.DrawOcctShapeOptions
             });
         }, Inputs.Draw.drawingTypes.occtShapes);
     }
@@ -423,9 +444,9 @@ export class Draw extends DrawCore {
                 pts.push(...line);
             }
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: [{ points: pts }],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.line);
     }
@@ -433,9 +454,9 @@ export class Draw extends DrawCore {
     private handlePoint(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoint({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 pointMesh: inputs.group,
                 point: inputs.entity as Inputs.Base.Point3,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.point);
     }
@@ -461,9 +482,9 @@ export class Draw extends DrawCore {
     private handlePolyline(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, type = Inputs.Draw.drawingTypes.polyline): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylineClose({
+                ...options,
                 polylineMesh: inputs.group,
                 polyline: inputs.entity as Inputs.Polyline.PolylinePropertiesDto,
-                ...options
             });
         }, type);
     }
@@ -471,29 +492,69 @@ export class Draw extends DrawCore {
     private handleVerbCurve(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurve({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 curveMesh: inputs.group,
                 curve: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
-            });
+            } as Inputs.Verb.DrawCurveDto<THREEJS.Group>);
         }, Inputs.Draw.drawingTypes.verbCurve);
     }
 
     private handleVerbSurface(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawSurface({
+                ...this.basicOptions(options),
                 surfaceMesh: inputs.group,
                 surface: inputs.entity,
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.verbSurface);
+    }
+
+    /**
+     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
+     * frame in the list go into the same draw call, however long the list is. Whether it is one
+     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
+     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
+     */
+    private handleFrames(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group | undefined {
+        let options: Inputs.Draw.DrawOptions = inputs.options ? inputs.options : this.defaultFrameOptions;
+        if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
+            options = inputs.group.userData["options"];
+        }
+        const style = resolveDto(Inputs.Draw.DrawFrameOptions, options) as Resolved.Draw.DrawFrameOptions;
+        const entity: unknown = inputs.entity;
+        const frames: Inputs.Base.Frame[] = this.detectFrames(entity) ? entity : this.detectFrame(entity) ? [entity] : [];
+        const type = Array.isArray(entity) ? Inputs.Draw.drawingTypes.frames : Inputs.Draw.drawingTypes.frame;
+        const { polylines, colours } = this.frameMarkerLines(frames, style);
+        if (polylines.length === 0) {
+            if (style.updatable && inputs.group) {
+                inputs.group.traverse(child => {
+                    if ("geometry" in child && child.geometry instanceof THREEJS.BufferGeometry) {
+                        child.geometry.dispose();
+                    }
+                });
+                inputs.group.removeFromParent();
+            }
+            return undefined;
+        }
+        const result = this.drawHelper.drawPolylinesWithColours({
+            polylinesMesh: inputs.group,
+            polylines,
+            colours,
+            size: style.lineWidth,
+            opacity: 1,
+            updatable: style.updatable,
+            colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
+        return result;
     }
 
     private handlePolylines(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, type = Inputs.Draw.drawingTypes.polylines): THREEJS.Group {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: inputs.entity as Inputs.Base.Polyline3[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, type);
     }
@@ -512,9 +573,9 @@ export class Draw extends DrawCore {
                 });
             }
             return this.drawHelper.drawPolylinesWithColours({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 polylinesMesh: inputs.group,
                 polylines: pts.map(e => ({ points: [...e] })),
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.lines);
     }
@@ -522,9 +583,9 @@ export class Draw extends DrawCore {
     private handlePoints(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawPoints({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 pointsMesh: inputs.group,
                 points: inputs.entity as Inputs.Base.Point3[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.points);
     }
@@ -532,19 +593,19 @@ export class Draw extends DrawCore {
     private handleVerbCurves(inputs: Inputs.Draw.DrawAny<THREEJS.Group>) {
         return this.handle(inputs, this.defaultPolylineOptions, (options) => {
             return this.drawHelper.drawCurves({
+                ...options as Inputs.Draw.DrawBasicGeometryOptions,
                 curvesMesh: inputs.group,
                 curves: inputs.entity as Base.VerbCurve[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
-            });
+            } as Inputs.Verb.DrawCurvesDto<THREEJS.Group>);
         }, Inputs.Draw.drawingTypes.verbCurves);
     }
 
     private handleVerbSurfaces(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         return this.handle(inputs, this.defaultBasicOptions, (options) => {
             return this.drawHelper.drawSurfacesMultiColour({
+                ...this.basicOptions(options),
                 surfacesMesh: inputs.group,
                 surfaces: inputs.entity as Base.VerbSurface[],
-                ...options as Inputs.Draw.DrawBasicGeometryOptions
             });
         }, Inputs.Draw.drawingTypes.verbSurfaces);
     }
@@ -554,9 +615,9 @@ export class Draw extends DrawCore {
             updatable: false,
         };
         const result = this.tag.drawTag({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagVariable: inputs.group as any,
             tag: inputs.entity as Inputs.Tag.TagDto,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         const drawnTag = result as Inputs.Draw.DrawnTag;
         drawnTag.userData = { type: Inputs.Draw.drawingTypes.tag, options };
@@ -568,9 +629,9 @@ export class Draw extends DrawCore {
             updatable: false,
         };
         const result = this.tag.drawTags({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagsVariable: inputs.group as any,
             tags: inputs.entity as Inputs.Tag.TagDto[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
         const drawnTags = result as Inputs.Draw.DrawnTags;
@@ -602,6 +663,10 @@ export class Draw extends DrawCore {
                 case Inputs.Draw.drawingTypes.polylines:
                     result = this.handlePolylines(inputs);
                     break;
+                case Inputs.Draw.drawingTypes.frame:
+                case Inputs.Draw.drawingTypes.frames:
+                    result = this.handleFrames(inputs);
+                    break;
                 case Inputs.Draw.drawingTypes.jscadPath:
                     result = this.handleJscadPath(inputs);
                     break;
@@ -631,6 +696,22 @@ export class Draw extends DrawCore {
             }
         }
         return result;
+    }
+
+    /**
+     * The options a draw call was given, laid over the defaults of the options class for the kind
+     * being drawn: a partial object gets the same values the matching `options` method would give it.
+     */
+    private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
+    }
+
+    private occtOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions {
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+    }
+
+    private manifoldOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawManifoldOrCrossSectionOptions {
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
     }
 
     private handle(inputs: Inputs.Draw.DrawAny<THREEJS.Group>, defaultOptions: Inputs.Draw.DrawOptions, action: (options: Inputs.Draw.DrawOptions) => THREEJS.Group, type: Inputs.Draw.drawingTypes): THREEJS.Group {

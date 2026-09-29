@@ -4,7 +4,8 @@ import { Base } from "@bitbybit-dev/base";
 
 /**
  * A shape, a radius and optional edge or corner indexes for `fillets.filletEdges` and
- * `fillets.fillet2d`; `radiusList` pairs with `indexes` when both are given.
+ * `fillets.fillet2d`; `radiusList` gives the listed edges or corners their radii in the order the
+ * shape holds them.
  */
 export class FilletDto<T> {
     constructor(shape?: T, radius?: number, radiusList?: number[], indexes?: number[]) {
@@ -23,13 +24,14 @@ export class FilletDto<T> {
      * given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
+     * One radius per entry of `indexes`, given to the listed edges or corners in the shape's own
+     * order, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */
@@ -63,13 +65,14 @@ export class FilletShapesDto<T> {
      * given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
-     * @optional true
      */
     radius?: number | undefined = 0.1;
     /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
+     * One radius per entry of `indexes`, given to the listed corners in their order along each
+     * outline, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */
@@ -130,10 +133,11 @@ export class FilletEdgesListOneRadiusDto<T, U> {
      * The rounding radius for every edge, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.1;
+    radius?: number | undefined = 0.1;
 }
 /**
  * A shape, one of its edges and a radius profile for `fillets.filletEdgeVariableRadius`;
@@ -236,11 +240,49 @@ export class FilletEdgesSameVariableRadiusDto<T, U> {
 }
 
 /**
- * Wires, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWires`,
- * which rounds the corners of wires that do not lie in a plane.
+ * How the corners of a 3D wire are rounded, shared by `Fillet3DWireDto` and `Fillet3DWiresDto`: the
+ * radius or radii, and which corners.
  */
-export class Fillet3DWiresDto<T> {
+export abstract class Fillet3DWireSharedDto {
+    /**
+     * The rounding radius in model units, used for every selected corner unless `radiusList` is
+     * given.
+     * @default 0.1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.1
+     */
+    radius?: number | undefined = 0.1;
+    /**
+     * One radius per entry of `indexes`, in the same order; needs `indexes`.
+     * @default undefined
+     * @optional true
+     */
+    radiusList?: number[] | undefined;
+    /**
+     * Corners to round, counted from 0: corner `i` joins edge `i` to the next; a closed wire's last
+     * corner joins its last edge to its first. Omit for all.
+     * @default undefined
+     * @optional true
+     */
+    indexes?: number[] | undefined;
+    /**
+     * Not used: each corner is rounded in the plane of the two edges that meet there. It is kept
+     * so that scripts which set it keep working.
+     * @default [0, 1, 0]
+     * @deprecated Has no effect and will be removed in the next major version, with the constructors'
+     * `direction` parameter; leave it out.
+     */
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
+}
+/**
+ * Wires, a radius and optional corner indexes for `fillets.fillet3DWires`, which rounds the corners
+ * of wires whether or not they lie in a plane.
+ */
+export class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
     constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
+        super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (radius !== undefined) { this.radius = radius; }
         if (direction !== undefined) { this.direction = direction; }
@@ -252,41 +294,14 @@ export class Fillet3DWiresDto<T> {
      * @default undefined
      */
     shapes!: T[];
-    /**
-     * The rounding radius in model units, used for every selected corner unless `radiusList` is
-     * given.
-     * @default 0.1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     * @optional true
-     */
-    radius?: number | undefined = 0.1;
-    /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
-     * @default undefined
-     * @optional true
-     */
-    radiusList?: number[] | undefined;
-    /**
-     * Which corners to round, counted from 0 along each wire; leave it out to round them all.
-     * @default undefined
-     * @optional true
-     */
-    indexes?: number[] | undefined;
-    /**
-     * The direction each wire is extruded along to build the fillets; it must not be parallel to
-     * the wire and must leave room for the radius.
-     * @default [0, 1, 0]
-     */
-    direction: Base.Vector3 = [0, 1, 0];
 }
 /**
- * A wire, a radius, optional corner indexes and an extrusion direction for `fillets.fillet3DWire`,
- * which rounds the corners of a wire that does not lie in a plane.
+ * A wire, a radius and optional corner indexes for `fillets.fillet3DWire`, which rounds the corners
+ * of a wire whether or not it lies in a plane.
  */
-export class Fillet3DWireDto<T> {
+export class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
     constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[],) {
+        super();
         if (shape !== undefined) { this.shape = shape; }
         if (radius !== undefined) { this.radius = radius; }
         if (direction !== undefined) { this.direction = direction; }
@@ -298,38 +313,10 @@ export class Fillet3DWireDto<T> {
      * @default undefined
      */
     shape!: T;
-    /**
-     * The rounding radius in model units, used for every selected corner unless `radiusList` is
-     * given.
-     * @default 0.1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     * @optional true
-     */
-    radius?: number | undefined = 0.1;
-    /**
-     * One radius per entry of `indexes`, in the same order; needs `indexes`.
-     * @default undefined
-     * @optional true
-     */
-    radiusList?: number[] | undefined;
-    /**
-     * Which corners to round, counted from 0 along the wire; leave it out to round them all.
-     * @default undefined
-     * @optional true
-     */
-    indexes?: number[] | undefined;
-    /**
-     * The direction the wire is extruded along to build the fillets; it must not be parallel to the
-     * wire and must leave room for the radius.
-     * @default [0, 1, 0]
-     */
-    direction: Base.Vector3 = [0, 1, 0];
 }
 /**
- * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` pairs
- * with `indexes` when both are given.
+ * A shape, a distance and optional edge indexes for `fillets.chamferEdges`; `distanceList` gives the
+ * listed edges their distances in the order `shapes.edge.getEdges` lists them.
  */
 export class ChamferDto<T> {
     constructor(shape?: T, distance?: number, distanceList?: number[], indexes?: number[]) {
@@ -348,13 +335,14 @@ export class ChamferDto<T> {
      * `distanceList` is given.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
-     * @optional true
      * @step 0.1
      */
     distance?: number | undefined = 0.1;
     /**
-     * One distance per entry of `indexes`, in the same order; needs `indexes`.
+     * One distance per entry of `indexes`, given to the listed edges in the order `shapes.edge.getEdges`
+     * lists them, not in `indexes` order; list `indexes` ascending. Needs `indexes`.
      * @default undefined
      * @optional true
      */
@@ -425,18 +413,21 @@ export class ChamferEdgeDistAngleDto<T, U, F> {
      * How far from the edge the bevel starts on the face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance = 0.1;
+    distance?: number | undefined = 0.1;
     /**
      * The slope of the bevel away from the face, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 90
+     * @exclusiveMaximum true
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
 }
 
 /**
@@ -470,18 +461,20 @@ export class ChamferEdgeTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from the edge on `face`, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance1 = 0.1;
+    distance1?: number | undefined = 0.1;
     /**
      * How far the bevel reaches from the edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance2 = 0.2;
+    distance2?: number | undefined = 0.2;
 }
 /**
  * A shape, some of its edges, one face per edge and two distances per edge for
@@ -552,18 +545,20 @@ export class ChamferEdgesTwoDistancesDto<T, U, F> {
      * How far the bevel reaches from each edge on its paired face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance1 = 0.1;
+    distance1?: number | undefined = 0.1;
     /**
      * How far the bevel reaches from each edge on the other face, in model units.
      * @default 0.2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance2 = 0.2;
+    distance2?: number | undefined = 0.2;
 }
 /**
  * A shape, some of its edges, one face, distance and angle per edge for
@@ -635,16 +630,19 @@ export class ChamferEdgesDistAngleDto<T, U, F> {
      * How far from each edge the bevel starts on its paired face, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.01
      */
-    distance = 0.1;
+    distance?: number | undefined = 0.1;
     /**
      * The slope of the bevels away from the paired faces, in degrees; 45 gives an even chamfer.
      * @default 45
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 90
+     * @exclusiveMaximum true
      * @step 1
      */
-    angle = 45;
+    angle?: number | undefined = 45;
 }

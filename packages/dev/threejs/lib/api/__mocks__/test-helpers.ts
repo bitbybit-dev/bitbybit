@@ -19,7 +19,7 @@ import * as Inputs from "../inputs";
  * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
  * assertion that had erased it.
  */
-const partialMock = <T>(members: Partial<T>): T => members as T;
+export const partialMock = <T>(members: Partial<T>): T => members as T;
 
 /**
  * Creates a basic mock context with scene
@@ -38,39 +38,62 @@ export function createSimpleMockContext(): Context {
     return new Context();
 }
 
+export interface MockWorkerManagers {
+    mockJscadWorkerManager: JSCADWorkerManager;
+    mockManifoldWorkerManager: ManifoldWorkerManager;
+    mockOccWorkerManager: OCCTWorkerManager;
+    jscadWorkerCall: Mock;
+    manifoldWorkerCall: Mock;
+    occtWorkerCall: Mock;
+}
+
+export interface DrawHelperMocks extends MockWorkerManagers {
+    mockContext: Context;
+    mockSolidText: JSCADText;
+    mockVector: Vector;
+    mockScene: THREEJS.Scene;
+}
+
 /**
- * Creates mock worker managers for testing
+ * Creates mock worker managers for testing, with the mock behind each manager's
+ * `genericCallToWorkerPromise` alongside it, so a suite asserts on the mock itself
  */
-export function createMockWorkerManagers() {
+export function createMockWorkerManagers(): MockWorkerManagers {
+    const jscadWorkerCall = vi.fn().mockResolvedValue({
+        positions: [],
+        normals: [],
+        indices: [],
+        transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    });
     const mockJscadWorkerManager = partialMock<JSCADWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            positions: [],
-            normals: [],
-            indices: [],
-            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-        })
+        genericCallToWorkerPromise: jscadWorkerCall
     });
 
+    const manifoldWorkerCall = vi.fn().mockResolvedValue({
+        positions: [],
+        normals: [],
+        indices: []
+    });
     const mockManifoldWorkerManager = partialMock<ManifoldWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            positions: [],
-            normals: [],
-            indices: []
-        })
+        genericCallToWorkerPromise: manifoldWorkerCall
     });
 
+    const occtWorkerCall = vi.fn().mockResolvedValue({
+        faceList: [],
+        edgeList: [],
+        pointsList: []
+    });
     const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            faceList: [],
-            edgeList: [],
-            pointsList: []
-        })
+        genericCallToWorkerPromise: occtWorkerCall
     });
 
     return {
         mockJscadWorkerManager,
         mockManifoldWorkerManager,
-        mockOccWorkerManager
+        mockOccWorkerManager,
+        jscadWorkerCall,
+        manifoldWorkerCall,
+        occtWorkerCall
     };
 }
 
@@ -102,19 +125,17 @@ export function createMockVector(): Vector {
 /**
  * Creates a complete set of mocks for DrawHelper tests
  */
-export function createDrawHelperMocks() {
+export function createDrawHelperMocks(): DrawHelperMocks {
     const mockContext = createMockContext();
     const mockSolidText = createMockJSCADText();
     const mockVector = createMockVector();
-    const { mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager } = createMockWorkerManagers();
+    const workerManagers = createMockWorkerManagers();
 
     return {
         mockContext,
         mockSolidText,
         mockVector,
-        mockJscadWorkerManager,
-        mockManifoldWorkerManager,
-        mockOccWorkerManager,
+        ...workerManagers,
         mockScene: mockContext.scene
     };
 }
@@ -232,7 +253,7 @@ export function mockWindow() {
  */
 export function createMockDOMElement(): HTMLElement {
     const listeners: { [key: string]: Array<(...args: unknown[]) => void> } = {};
-    return {
+    return partialMock<HTMLElement>({
         addEventListener: vi.fn((type: string, handler: (...args: unknown[]) => void) => {
             if (!listeners[type]) {
                 listeners[type] = [];
@@ -252,14 +273,15 @@ export function createMockDOMElement(): HTMLElement {
             if (handlers) {
                 handlers.forEach(h => h(event));
             }
+            return !event.defaultPrevented;
         }),
-        getBoundingClientRect: vi.fn(() => ({
+        getBoundingClientRect: vi.fn(() => partialMock<DOMRect>({
             left: 0,
             top: 0,
             width: 1920,
             height: 1080,
         })),
-    } as unknown as HTMLElement;
+    });
 }
 
 /**

@@ -1,6 +1,8 @@
 
 import * as Inputs from "../inputs";
 import { AssetManager } from "../../asset-manager";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Files in and out of a script: assets the running application stores under a name, files fetched
@@ -208,15 +210,16 @@ export class Asset {
      * ```
      */
     download(inputs: Inputs.Asset.DownloadDto): void {
+        const resolved = resolveDto(Inputs.Asset.DownloadDto, inputs) as Resolved.Asset.DownloadDto;
         let blob: Blob;
         
-        if (typeof inputs.content === "string") {
-            blob = new Blob([inputs.content], { type: inputs.contentType });
+        if (typeof resolved.content === "string") {
+            blob = new Blob([resolved.content], { type: resolved.contentType });
         } else {
-            blob = inputs.content;
+            blob = resolved.content;
         }
         
-        this.assetManager.downloadFile(blob, inputs.fileName, inputs.extension, inputs.contentType);
+        this.assetManager.downloadFile(blob, resolved.fileName, resolved.extension, resolved.contentType);
     }
 
     /**
@@ -265,8 +268,9 @@ export class Asset {
      * ```
      */
     blobToFile(inputs: Inputs.Asset.BlobToFileDto): File {
-        const type = inputs.mimeType ?? inputs.blob.type;
-        return new File([inputs.blob], inputs.fileName, { type });
+        const resolved = resolveDto(Inputs.Asset.BlobToFileDto, inputs) as Resolved.Asset.BlobToFileDto;
+        const type = resolved.mimeType ?? resolved.blob.type;
+        return new File([resolved.blob], resolved.fileName, { type });
     }
 
     /**

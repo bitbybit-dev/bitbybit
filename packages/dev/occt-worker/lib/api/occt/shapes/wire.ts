@@ -3,6 +3,8 @@
 // Regenerate with `npm run gen:worker-api` at the repository root.
 import { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
+import { Resolved } from "@bitbybit-dev/occt";
+import { resolveDto } from "@bitbybit-dev/base";
 import { ShapeParser } from "../../../shape-parser";
 
 /**
@@ -10,10 +12,10 @@ import { ShapeParser } from "../../../shape-parser";
  * outline. Build them from points and curves (polylines, B-splines, Beziers, interpolations,
  * helices, spirals), as ready-made flat outlines (circles, rectangles, stars, beam profiles, text)
  * that lie on the ground plane unless `direction` says otherwise, or by joining and splitting
- * existing edges and wires; read them back as points, tangents, lengths and centers; map them onto
- * faces or project them onto shapes. Parameters along a wire run from 0 at its start to 1 at its
- * end and follow each edge's own parameter, not distance. A closed wire is what `shapes.face` fills
- * to make a face.
+ * existing edges and wires; read them back as points, tangents, lengths and centers; offset an open
+ * one to one side; map, wrap or project them onto faces and shapes. Parameters along a wire run from
+ * 0 at its start to 1 at its end and follow each edge's own parameter, not distance. A closed wire is
+ * what `shapes.face` fills to make a face.
  */
 export class OCCTWire {
     constructor(
@@ -354,6 +356,66 @@ export class OCCTWire {
      */
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.splitOnPoints", inputs);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as fractions from 0 at its start to 1 at its end, every
+     * edge an equal share.
+     *
+     * A piece running across a corner holds an edge on each side. Ends and repeats are skipped, so n
+     * places inside give n + 1 pieces; an edge is cut as a one-edge wire.
+     * @param inputs - The wire and the fractions to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const [first, second] = await bitbybit.occt.shapes.wire.splitWireAtParams({ shape: wire, params: [0.5] });
+     * ```
+     */
+    splitWireAtParams(inputs: Inputs.OCCT.DataOnGeometryAtParamsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.splitWireAtParams", inputs);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as lengths along it from its start, in model units.
+     *
+     * A piece running across a corner holds an edge on each side. Lengths at or past the ends and
+     * repeats are skipped, so n lengths inside give n + 1 pieces; an edge is cut as a wire of that one
+     * edge.
+     * @param inputs - The wire and the lengths to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const dashes = await bitbybit.occt.shapes.wire.splitWireAtLengths({ shape: wire, lengths: [1, 2, 3, 4] });
+     * ```
+     */
+    splitWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.splitWireAtLengths", inputs);
+    }
+
+    /**
+     * Draws the offset of an open wire or an edge on one side of it, not the loop
+     * `operations.offset` draws around it.
+     *
+     * A positive distance lies to the right of the wire's direction, seen from the side `face` looks
+     * to, or from above on the ground plane. A straight wire needs a flat `face` to give it a plane.
+     * @param inputs - The open wire or edge, an optional flat face, the distance and the corner style
+     * @returns The offset curve as a wire
+     * @group offsets
+     * @shortname offset open
+     * @drawable true
+     * @example
+     * ```typescript
+     * const alongside = await bitbybit.occt.shapes.wire.offsetOpen({ shape: path, distance: 1, joinType: Bit.Inputs.OCCT.joinTypeEnum.arc });
+     * ```
+     */
+    offsetOpen(inputs: Inputs.OCCT.OffsetOpenDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.offsetOpen", inputs);
     }
 
     /**
@@ -902,9 +964,9 @@ export class OCCTWire {
      * Places points along a wire at a repeating pattern of gaps, such as 1, 3, 1, 3, until the wire
      * runs out.
      *
-     * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
-     * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
-     * point at the next gap past the last.
+     * `lengths` holds the gaps in model units, repeated from the start, and must add up to more
+     * than 0 or it throws. `includeFirst` adds the start point, `includeLast` the end, and
+     * `tryNext` one point past the last gap.
      * @param inputs - The wire, the pattern of gaps and which end points to include
      * @returns The points along the wire, in order
      * @group extract
@@ -994,6 +1056,98 @@ export class OCCTWire {
      */
     derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<[Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.derivativesOnWireAtParam", inputs);
+    }
+
+    /**
+     * Finds a frame on a wire at a parameter, from 0 where the wire starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the wire level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the wire runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The wire, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtParam({ shape: wire, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.frameOnWireAtParam", inputs);
+    }
+
+    /**
+     * Finds a frame on a wire at a length from its start, as `frameOnWireAtParam` finds it at a
+     * parameter.
+     * @param inputs - The wire, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtLength({ shape: wire, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.frameOnWireAtLength", inputs);
+    }
+
+    /**
+     * Finds frames on a wire at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole wire from its start, so each is the frame a swept profile would ride on
+     * there.
+     * @param inputs - The wire, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtParams({ shape: wire, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesOnWireAtParams", inputs);
+    }
+
+    /**
+     * Finds frames on a wire at several lengths from its start in one pass, as
+     * `framesOnWireAtParams` finds them at parameters.
+     * @param inputs - The wire, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtLengths({ shape: wire, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesOnWireAtLengths", inputs);
+    }
+
+    /**
+     * Spreads `count` frames evenly by length along a wire, the first at its start, to place copies
+     * along a path or to carry a profile along it.
+     *
+     * On an open wire the last sits at the end; on a closed wire they go around the loop without
+     * repeating the first, unless `skipEndOnClosed` is off.
+     * @param inputs - The wire, how many frames, the kind of frame, the up vector and the closed-wire rule
+     * @returns The frames from the start onward
+     * @group frames
+     * @shortname frames along wire
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const frames = await bitbybit.occt.shapes.wire.framesAlongWire({ shape: circle, count: 10, kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1], skipEndOnClosed: true });
+     * ```
+     */
+    framesAlongWire(inputs: Inputs.OCCT.FramesAlongWireDto<Inputs.OCCT.TopoDSWirePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.framesAlongWire", inputs);
     }
 
     /**
@@ -1546,7 +1700,8 @@ export class OCCTWire {
      * ```
      */
     async textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Promise<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>> {
-        const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", inputs);
+        const resolved = resolveDto(Inputs.OCCT.TextWiresDto, inputs) as Resolved.OCCT.TextWiresDto;
+        const res: Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<Inputs.OCCT.TopoDSCompoundPointer>, Inputs.OCCT.TopoDSShapePointer> = await this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.textWiresWithData", resolved);
         if (!res.data || !res.shapes) {
             throw new Error("Text wires could not be created");
         }
@@ -1758,6 +1913,27 @@ export class OCCTWire {
     }
 
     /**
+     * Wraps flat wires drawn on the ground plane around a plane, cylinder or cone face, keeping every
+     * length, as a label wraps a can.
+     *
+     * On a cylinder of radius r, X runs around it from the face's start, 2 pi r to a turn, and Z runs
+     * along its axis. The wires follow the surface past the face's edges.
+     * @param inputs - The flat wires or edges, the face and the tolerance
+     * @returns The wrapped wires, in the same order
+     * @group place
+     * @shortname wrap wires on face
+     * @drawable true
+     * @example
+     * ```typescript
+     * const band = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 6, length: 1, center: [3, 0, 2], direction: [0, 1, 0] });
+     * const wrapped = await bitbybit.occt.shapes.wire.wrapWiresOnFace({ wires: [band], face: cylinderWall, tolerance: 1e-4 });
+     * ```
+     */
+    wrapWiresOnFace(inputs: Inputs.OCCT.WrapWiresOnFaceDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSFacePointer>): Promise<Inputs.OCCT.TopoDSWirePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.wrapWiresOnFace", inputs);
+    }
+
+    /**
      * Closes an open wire with a straight edge from its end point back to its start point.
      *
      * A wire whose ends already meet is returned as it is.
@@ -1809,5 +1985,45 @@ export class OCCTWire {
      */
     projectWires(inputs: Inputs.OCCT.ProjectWiresDto<Inputs.OCCT.TopoDSWirePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.projectWires", inputs);
+    }
+
+    /**
+     * Lays edges or wires onto the faces of a shape along the surface's normals, rather than along one
+     * direction as `project` does.
+     *
+     * The pieces join into wires, one per loop or chain, within the faces' edges. `maxDistance` drops
+     * the parts landing farther than it; a projection that misses gives an empty compound.
+     * @param inputs - The edges or wires, the shape, the fitting tolerance and the greatest distance
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project normal
+     * @drawable true
+     * @example
+     * ```typescript
+     * const onBall = await bitbybit.occt.shapes.wire.projectNormal({ wires: [circle], shape: sphere, tolerance: 1e-4, maxDistance: 0 });
+     * ```
+     */
+    projectNormal(inputs: Inputs.OCCT.ProjectNormalDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.projectNormal", inputs);
+    }
+
+    /**
+     * Casts an edge or a wire onto the faces of a shape along the lines from a point through it, like
+     * the shadow a lamp throws.
+     *
+     * The result is a compound of the wires where those lines meet the shape, near side and far side
+     * alike; lines that miss give an empty compound.
+     * @param inputs - The edge or wire, the shape and the point to cast from
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project conical
+     * @drawable true
+     * @example
+     * ```typescript
+     * const shadow = await bitbybit.occt.shapes.wire.projectConical({ wire: square, shape: floor, from: [0, 20, 0] });
+     * ```
+     */
+    projectConical(inputs: Inputs.OCCT.ProjectConicalDto<Inputs.OCCT.TopoDSWirePointer | Inputs.OCCT.TopoDSEdgePointer, Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSCompoundPointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.wire.projectConical", inputs);
     }
 }

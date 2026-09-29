@@ -16,7 +16,7 @@ export namespace JSON {
          * Any JSON-compatible value: an object, a list, a number, text, a boolean or null
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
     }
     /**
      * Feeds `json.parse` with the JSON text to turn back into a value.
@@ -30,7 +30,7 @@ export namespace JSON {
          * error
          * @default "[0, 0, 0]"
          */
-        text = "[0, 0, 0]";
+        text?: string | undefined = "[0, 0, 0]";
     }
     /**
      * Feeds `json.query` with the JSON to search and the JSONPath expression that selects values in
@@ -45,7 +45,7 @@ export namespace JSON {
          * The object or list to search; it is read, never changed
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * A JSONPath expression starting at the root `$`, such as `$.parts[*].name` or `$..radius`
          * @default undefined
@@ -67,17 +67,17 @@ export namespace JSON {
          * The object to change; it stays as it is and a changed copy comes back
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * What the property is set to; any JSON-compatible value
          * @default undefined
          */
-        value: unknown;
+        value!: unknown;
         /**
          * Name of the top-level property to set; a property that does not exist yet is added
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
     }
 
     /**
@@ -99,12 +99,12 @@ export namespace JSON {
          * Name of the property compared on every object
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
         /**
          * The value the property must equal exactly, same type included
          * @default undefined
          */
-        match: unknown;
+        match!: unknown;
     }
 
     /**
@@ -120,12 +120,12 @@ export namespace JSON {
          * The object to read; it is not changed
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * Name of the top-level property whose value comes back; a missing one gives undefined
          * @default propName
          */
-        property = "propName";
+        property?: string | undefined = "propName";
     }
 
     /**
@@ -144,23 +144,23 @@ export namespace JSON {
          * not an object throws an error
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * What the property is set to on every matched object; any JSON-compatible value
          * @default undefined
          */
-        value: unknown;
+        value!: unknown;
         /**
          * A JSONPath expression selecting the parent objects, such as `$.parts[*]`; the property is
          * set on each of them
          * @default $.pathToParent
          */
-        path = "$.pathToParent";
+        path?: string | undefined = "$.pathToParent";
         /**
          * Name of the property set on every object the path reaches
          * @default propertyName
          */
-        prop = "propertyName";
+        prop?: string | undefined = "propertyName";
     }
 
     /**
@@ -178,7 +178,7 @@ export namespace JSON {
          * The object to change; it stays as it is and a changed copy comes back
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * The values to set, one per change, in the same order as `paths` and `props`
          * @default undefined
@@ -209,7 +209,7 @@ export namespace JSON {
          * The object or list to search; it is read, never changed
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
         /**
          * A JSONPath expression starting at the root `$`; the result lists where its matches sit,
          * not their values
@@ -230,6 +230,6 @@ export namespace JSON {
          * The value to show, normally an object or a list; nothing happens when it is empty
          * @default undefined
          */
-        json: unknown;
+        json!: unknown;
     }
 }

@@ -1,5 +1,5 @@
 import {
-    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, Bnd_Box, EmbindEnumValue,
+    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue,
     BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -8,14 +8,25 @@ import { Base } from "../../api/inputs";
 import { EnumService } from "./enum.service";
 import { EntitiesService } from "./entities.service";
 import { ConverterService } from "./converter.service";
-import { BooleansService } from "./booleans.service";
 import { TransformsService } from "./transforms.service";
 import { ShapeGettersService } from "./shape-getters";
 import { EdgesService } from "./edges.service";
 import { WiresService } from "./wires.service";
 import { FacesService } from "./faces.service";
-import { ShellsService } from "./shells.service";
 import { SolidsService } from "./solids.service";
+import * as Resolved from "../../api/resolved-inputs";
+import { InputError } from "@bitbybit-dev/base";
+import { occtFailure } from "../../kernel-failures";
+import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
+import { checkedShapes } from "./input-checks";
+
+/** The most slices one call cuts, so a step too small for the shape, or for its distance from the origin, is refused rather than looped over. */
+const MOST_SLICES = 100000;
+
+/** The refusal of slicing that would cut more than `MOST_SLICES`, naming the property that set the spacing. */
+function tooManySlices(property: string): InputError {
+    return new InputError(`\`${property}\` would cut the shape into more than ${MOST_SLICES} slices; use a larger spacing.`, property);
+}
 
 export class OperationsService {
 
@@ -24,7 +35,6 @@ export class OperationsService {
         private readonly enumService: EnumService,
         private readonly entitiesService: EntitiesService,
         private readonly converterService: ConverterService,
-        private readonly booleansService: BooleansService,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly edgesService: EdgesService,
         private readonly transformsService: TransformsService,
@@ -32,13 +42,22 @@ export class OperationsService {
         private readonly wiresService: WiresService,
         private readonly facesService: FacesService,
         private readonly solidsService: SolidsService,
-        private readonly shellsService: ShellsService,
-
     ) { }
 
-    loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         if (inputs.periodic && !inputs.closed) {
             throw new Error("Cant construct periodic non closed loft.");
+        }
+        const sections = inputs.shapes.length + (inputs.startVertex ? 1 : 0) + (inputs.endVertex ? 1 : 0);
+        if (sections < 2) {
+            throw new InputError(`A loft needs at least two sections, counting a start or end point, and got ${sections}.`, "shapes");
+        }
+        if (inputs.shapes.length === 0) {
+            throw new InputError("A loft needs at least one wire or edge among its sections; a start or end point can only begin or end it.", "shapes");
+        }
+        if (inputs.periodic && inputs.shapes.length < 3) {
+            throw new InputError(`A periodic loft runs a closed curve through its sections, which needs at least three, and got ${inputs.shapes.length}.`, "shapes");
         }
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, inputs.straight, inputs.tolerance);
         const wires: TopoDS_Wire[] = [];
@@ -48,9 +67,8 @@ export class OperationsService {
             pipe.AddVertex(v);
             vertices.push(v);
         }
-        if (inputs.closed && !inputs.periodic) {
-            inputs.shapes.push(inputs.shapes[0]!);
-        } else if (inputs.closed && inputs.periodic) {
+        const shapes = inputs.closed && !inputs.periodic ? [...inputs.shapes, inputs.shapes[0]!] : inputs.shapes;
+        if (inputs.closed && inputs.periodic) {
             const pointsOnCrvs: Inputs.Base.Point3[][] = [];
             inputs.shapes.forEach((s: TopoDS_Wire | TopoDS_Edge) => {
                 if (this.enumService.getShapeTypeEnum(s) === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -68,7 +86,7 @@ export class OperationsService {
             }
         }
         if (!inputs.periodic) {
-            inputs.shapes.forEach((wire) => {
+            shapes.forEach((wire) => {
                 pipe.AddWire(wire);
             });
         }
@@ -96,13 +114,18 @@ export class OperationsService {
             pipe.SetParType(parType);
         }
         pipe.CheckCompatibility(false);
-        const pipeShape = pipe.Shape();
-        const res = this.converterService.getActualTypeOfShape(pipeShape);
-        pipeShape.delete();
+        pipe.Build();
+        const built = pipe.IsDone();
+        const pipeShape = built ? pipe.Shape() : undefined;
         pipe.delete();
         wires.forEach(w => w.delete());
         vertices.forEach(v => v.delete());
         endVertices.forEach(v => v.delete());
+        if (!pipeShape) {
+            throw occtFailure("occt.loft.failed");
+        }
+        const res = this.converterService.getActualTypeOfShape(pipeShape);
+        pipeShape.delete();
         return res;
     }
 
@@ -117,54 +140,41 @@ export class OperationsService {
     }
 
     closestPointsOnShapeFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): Inputs.Base.Point3[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, inputs.shape));
-        return pointsOnShape.map(p => p[1]);
+        return this.closestPointsOn(inputs.shape, inputs.points);
     }
 
     closestPointsOnShapesFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapesFromPointsDto<TopoDS_Shape>): Inputs.Base.Point3[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const result: Inputs.Base.Point3[] = [];
-        inputs.shapes.forEach((s) => {
-            const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, s));
-            result.push(...pointsOnShape.map(p => p[1]));
-        });
-        return result;
+        checkedShapes(inputs.shapes);
+        return inputs.shapes.flatMap(shape => this.closestPointsOn(shape, inputs.points));
     }
 
     distancesToShapeFromPoints(inputs: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto<TopoDS_Shape>): number[] {
-        const vertexes = inputs.points.map(p => this.entitiesService.makeVertex(p));
-        const pointsOnShape = vertexes.map(v => this.closestPointsBetweenTwoShapes(v, inputs.shape));
-        return pointsOnShape.map(p => {
-            return this.vecHelper.distanceBetweenPoints(p[0], p[1]);
-        });
+        const closest = this.closestPointsOn(inputs.shape, inputs.points);
+        return inputs.points.map((point, index) => this.vecHelper.distanceBetweenPoints(point, closest[index]!));
+    }
+
+    /** The point of `shape` nearest to each of `points`, found in one kernel call that prepares `shape` once. */
+    private closestPointsOn(shape: TopoDS_Shape, points: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
+        const closest = pointsFromCoordinates(this.occ.ClosestPointsOnShape(shape, coordinatesOf(points)));
+        if (closest.length !== points.length) {
+            throw new Error("Closest points could not be found.");
+        }
+        return closest;
     }
 
     boundingBoxOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): Inputs.OCCT.BoundingBoxPropsDto {
-        const bbox = new this.occ.Bnd_Box();
-        this.occ.BRepBndLib.Add(inputs.shape, bbox, false);
-        const cornerMin = bbox.CornerMin();
-        const cornerMax = bbox.CornerMax();
-        const min = [cornerMin.X(), cornerMin.Y(), cornerMin.Z()] as Inputs.Base.Point3;
-        const max = [cornerMax.X(), cornerMax.Y(), cornerMax.Z()] as Inputs.Base.Point3;
-        const center = [
-            (cornerMin.X() + cornerMax.X()) / 2,
-            (cornerMin.Y() + cornerMax.Y()) / 2,
-            (cornerMin.Z() + cornerMax.Z()) / 2
-        ] as Inputs.Base.Point3;
-        const size = [
-            cornerMax.X() - cornerMin.X(),
-            cornerMax.Y() - cornerMin.Y(),
-            cornerMax.Z() - cornerMin.Z()
-        ] as Inputs.Base.Vector3;
-        bbox.delete();
-        const result = {
+        const box = this.occ.BoundingBoxOf(inputs.shape);
+        if (box.length < 6) {
+            throw new InputError("`shape` has no geometry to bound, so it has no bounding box.", "shape");
+        }
+        const min: Inputs.Base.Point3 = [box[0]!, box[1]!, box[2]!];
+        const max: Inputs.Base.Point3 = [box[3]!, box[4]!, box[5]!];
+        return {
             min,
             max,
-            center,
-            size
+            center: [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2, (min[2] + max[2]) / 2],
+            size: [max[0] - min[0], max[1] - min[1], max[2] - min[2]],
         };
-        return result;
     }
 
     boundingBoxShapeOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): TopoDS_Shape {
@@ -196,7 +206,11 @@ export class OperationsService {
         });
     }
 
-    loft(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
+        if (inputs.shapes.length < 2) {
+            throw new InputError(`A loft needs at least two sections, and got ${inputs.shapes.length}.`, "shapes");
+        }
         const pipe = new this.occ.BRepOffsetAPI_ThruSections(inputs.makeSolid, false, 1.0e-06);
         inputs.shapes.forEach((wire) => {
             if (this.enumService.getShapeTypeEnum(wire) === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -205,19 +219,23 @@ export class OperationsService {
             pipe.AddWire(wire);
         });
         pipe.CheckCompatibility(false);
-        const pipeShape = pipe.Shape();
+        pipe.Build();
+        const built = pipe.IsDone();
+        const pipeShape = built ? pipe.Shape() : undefined;
+        pipe.delete();
+        if (!pipeShape) {
+            throw occtFailure("occt.loft.failed");
+        }
         const res = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
-        pipe.delete();
         return res;
     }
 
-    offset(inputs: Inputs.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
+    offset(inputs: Resolved.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         return this.offsetAdv({ shape: inputs.shape, face: inputs.face, distance: inputs.distance, tolerance: inputs.tolerance, joinType: Inputs.OCCT.joinTypeEnum.arc, removeIntEdges: false });
     }
 
-    offsetAdv(inputs: Inputs.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
-        const tolerance = inputs.tolerance || 0.1;
+    offsetAdv(inputs: Resolved.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape {
         if (inputs.distance === 0.0) { return inputs.shape; }
         let offset: BRepOffsetAPI_MakeOffset | BRepOffsetAPI_MakeOffsetShape;
         const joinType = this.getJoinType(inputs.joinType);
@@ -234,8 +252,8 @@ export class OperationsService {
             } else {
                 wire = inputs.shape;
             }
+            offset = new this.occ.BRepOffsetAPI_MakeOffset();
             try {
-                offset = new this.occ.BRepOffsetAPI_MakeOffset();
                 if (inputs.face) {
                     offset.Init(inputs.face, joinType, false);
                 } else {
@@ -244,18 +262,10 @@ export class OperationsService {
                 offset.AddWire(wire);
                 offset.Build();
                 offset.Perform(inputs.distance, 0.0);
-            } catch {
-                offset = new this.occ.BRepOffsetAPI_MakeOffsetShape();
-                (offset).PerformByJoin(
-                    wire,
-                    inputs.distance,
-                    tolerance,
-                    brepOffsetMode,
-                    false,
-                    false,
-                    joinType,
-                    inputs.removeIntEdges
-                );
+            } catch (thrown) {
+                offset.delete();
+                wires.forEach(w => w.delete());
+                throw thrown;
             }
         } else {
             const shapeToOffset = inputs.shape;
@@ -271,56 +281,40 @@ export class OperationsService {
                 inputs.removeIntEdges
             );
         }
-        const offsetShape = offset.Shape();
+        const offsetShape = offset.IsDone() ? offset.Shape() : undefined;
+        offset.delete();
+        wires.forEach(w => w.delete());
+        if (!offsetShape || offsetShape.IsNull()) {
+            offsetShape?.delete();
+            throw occtFailure("occt.offset.failed");
+        }
         const result = this.converterService.getActualTypeOfShape(offsetShape);
         offsetShape.delete();
-        if (offset) {
+        return result;
+    }
+
+    offset3DWire(inputs: Resolved.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
+        const [x, y, z] = inputs.direction;
+        if (x === 0 && y === 0 && z === 0) {
+            throw new InputError("`direction` must not be the zero vector: the offset is taken across it.", "direction");
+        }
+        const offset = this.occ.OffsetWire3D(inputs.shape, inputs.offset, x, y, z);
+        if (offset.IsNull()) {
             offset.delete();
+            throw occtFailure("occt.offset.failed");
         }
-        wires.forEach(w => w.delete());
-        return result;
+        if (offset.ShapeType() === this.occ.TopAbs_ShapeEnum.WIRE) {
+            const wire = this.occ.CastToWire(offset);
+            offset.delete();
+            return wire;
+        }
+        const edges = this.occ.EdgesOf(offset, true);
+        offset.delete();
+        return edges;
     }
 
-    offset3DWire(inputs: Inputs.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[] {
-        const extrusion = this.extrude({
-            shape: inputs.shape,
-            direction: inputs.direction,
-        });
-
-        const thickSolid = this.makeThickSolidSimple({
-            shape: extrusion,
-            offset: inputs.offset,
-        });
-
-        const nrOfEdges = this.shapeGettersService.getEdges({ shape: inputs.shape }).length;
-        const predictedNrOfFaces = nrOfEdges * 4 + 2;
-
-        const lastFaceIndex = predictedNrOfFaces / 2 - 1;
-        const firstFaceIndex = lastFaceIndex - nrOfEdges + 1;
-
-        const faceEdges: TopoDS_Edge[] = [];
-        this.shapeGettersService.getFaces({ shape: thickSolid }).forEach((f, index) => {
-            if (index >= firstFaceIndex && index <= lastFaceIndex) {
-                const firstEdge = this.shapeGettersService.getEdges({ shape: f })[2]!;
-                faceEdges.push(firstEdge);
-            }
-        });
-
-        let result: TopoDS_Wire | TopoDS_Edge[];
-        try {
-            result = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: faceEdges });
-            result = result.Reversed();
-            result = this.converterService.getActualTypeOfShape(result);
-        }
-        catch {
-            result = faceEdges;
-            return result;
-        }
-        return result;
-
-    }
-
-    extrudeShapes(inputs: Inputs.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+    extrudeShapes(inputs: Resolved.OCCT.ExtrudeShapesDto<TopoDS_Shape>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => {
             const extruded = this.extrude({ shape, direction: inputs.direction });
             const result = this.converterService.getActualTypeOfShape(extruded);
@@ -329,16 +323,40 @@ export class OperationsService {
         });
     }
 
-    extrude(inputs: Inputs.OCCT.ExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the prism maker and its result before the maker is released.
+     */
+    extrude(inputs: Resolved.OCCT.ExtrudeDto<TopoDS_Shape>, read?: (maker: BRepPrimAPI_MakePrism, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const direction = inputs.direction;
+        if (!direction.every(Number.isFinite)) {
+            throw new InputError(`\`direction\` is [${direction.join(", ")}], and the direction of an extrusion has to be finite numbers.`, "direction");
+        }
+        if (direction.every(component => component === 0)) {
+            throw new InputError("`direction` is [0, 0, 0], and an extrusion needs a direction with some length: the shape travels along it for that length.", "direction");
+        }
+        const solids = new this.occ.TopExp_Explorer(inputs.shape, this.occ.TopAbs_ShapeEnum.SOLID, this.occ.TopAbs_ShapeEnum.SHAPE);
+        const holdsSolid = solids.More();
+        solids.delete();
+        if (holdsSolid) {
+            throw new InputError("`shape` holds a solid, which cannot be extruded; extrude its faces, a shell or a wire instead.", "shape");
+        }
         const gpVec = new this.occ.gp_Vec(inputs.direction[0], inputs.direction[1], inputs.direction[2]);
         const prismMaker = new this.occ.BRepPrimAPI_MakePrism(inputs.shape, gpVec);
         const prismShape = prismMaker.Shape();
-        prismMaker.delete();
-        gpVec.delete();
+        try {
+            read?.(prismMaker, prismShape);
+        } catch (error) {
+            prismShape.delete();
+            throw error;
+        } finally {
+            prismMaker.delete();
+            gpVec.delete();
+        }
         return prismShape;
     }
 
-    splitShapeWithShapes(inputs: Inputs.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
+    splitShapeWithShapes(inputs: Resolved.OCCT.SplitDto<TopoDS_Shape>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         const bopalgoBuilder = new this.occ.BOPAlgo_Builder();
         bopalgoBuilder.SetNonDestructive(inputs.nonDestructive);
         bopalgoBuilder.SetFuzzyValue(inputs.localFuzzyTolerance);
@@ -360,33 +378,53 @@ export class OperationsService {
         return shapes;
     }
 
-    revolve(inputs: Inputs.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape {
-        const angle = inputs.angle || 360.0;
-        const direction = inputs.direction || [0, 0, 1];
+    /**
+     * `read`, when given, sees the revolution maker and its result before the maker is released.
+     */
+    revolve(inputs: Resolved.OCCT.RevolveDto<TopoDS_Shape>, read?: (maker: BRepPrimAPI_MakeRevol, result: TopoDS_Shape) => void): TopoDS_Shape {
+        const angle = inputs.angle;
+        if (angle === 0) {
+            throw new Error("The revolve angle must not be 0, or nothing is swept.");
+        }
+        const direction = inputs.direction;
         let result;
         const pt1 = new this.occ.gp_Pnt(0, 0, 0);
         const dir = new this.occ.gp_Dir(direction[0], direction[1], direction[2]);
         const ax1 = new this.occ.gp_Ax1(pt1, dir);
-        if (angle >= 360.0) {
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1);
-            result = makeRevol.Shape();
-            makeRevol.delete();
-        } else {
-            const makeRevol = new this.occ.BRepPrimAPI_MakeRevol(inputs.shape,
-                ax1,
-                angle * 0.0174533, inputs.copy);
-            result = makeRevol.Shape();
-            makeRevol.delete();
+        const swept = (makeRevol: BRepPrimAPI_MakeRevol): TopoDS_Shape | undefined => {
+            try {
+                const made = makeRevol.IsDone() ? makeRevol.Shape() : undefined;
+                if (made) {
+                    try {
+                        read?.(makeRevol, made);
+                    } catch (error) {
+                        made.delete();
+                        throw error;
+                    }
+                }
+                return made;
+            } finally {
+                makeRevol.delete();
+            }
+        };
+        try {
+            result = Math.abs(angle) >= 360.0
+                ? swept(new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1))
+                : swept(new this.occ.BRepPrimAPI_MakeRevol(inputs.shape, ax1, angle * Math.PI / 180, inputs.copy));
+        } finally {
+            pt1.delete();
+            dir.delete();
+            ax1.delete();
         }
-        pt1.delete();
-        dir.delete();
-        ax1.delete();
+        if (!result) {
+            throw occtFailure("occt.revolve.failed");
+        }
         const actual = this.converterService.getActualTypeOfShape(result);
         result.delete();
         return actual;
     }
 
-    rotatedExtrude(inputs: Inputs.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
+    rotatedExtrude(inputs: Resolved.OCCT.RotationExtrudeDto<TopoDS_Shape>): TopoDS_Shape {
         const bbox = this.boundingBoxOfShape({ shape: inputs.shape });
         const shapeStartY = bbox.min[1];
         const shapeEndY = shapeStartY + inputs.height;
@@ -415,9 +453,9 @@ export class OperationsService {
         for (let i = 0; i <= steps; i++) {
             const alpha = i / steps;
             aspinePoints.push([
-                20 * Math.sin(alpha * inputs.angle * 0.0174533),
+                20 * Math.sin(alpha * inputs.angle * Math.PI / 180),
                 shapeStartY + (inputs.height * alpha),
-                20 * Math.cos(alpha * inputs.angle * 0.0174533),
+                20 * Math.cos(alpha * inputs.angle * Math.PI / 180),
             ]);
         }
 
@@ -429,7 +467,7 @@ export class OperationsService {
         pipe.Add(upperPolygon, false, false);
         pipe.Build();
 
-        if (inputs.makeSolid || inputs.makeSolid === undefined) {
+        if (inputs.makeSolid) {
             pipe.MakeSolid();
         }
 
@@ -445,11 +483,16 @@ export class OperationsService {
     }
 
     pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
             pipe.Add(sh, false, false);
         });
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         pipe.MakeSolid();
         const pipeShape = pipe.Shape();
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -458,7 +501,7 @@ export class OperationsService {
         return result;
     }
 
-    pipePolylineWireNGon(inputs: Inputs.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
+    pipePolylineWireNGon(inputs: Resolved.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape {
         const wire = inputs.shape;
 
         const edge = this.shapeGettersService.getEdge({ shape: wire, index: 0 });
@@ -488,6 +531,12 @@ export class OperationsService {
 
         const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, shape, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            ngon.delete();
+            reversedNgon.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         const pipeShape = pipe.Shape();
 
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -498,7 +547,7 @@ export class OperationsService {
         return result;
     }
 
-    pipeWireCylindrical(inputs: Inputs.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
+    pipeWireCylindrical(inputs: Resolved.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
         const wire = inputs.shape;
 
         const edges = this.shapeGettersService.getEdges({ shape: wire });
@@ -518,6 +567,11 @@ export class OperationsService {
         const geomFillTrihedron = this.enumService.getGeomFillTrihedronEnumOCCTValue(inputs.trihedronEnum);
         const pipe = new this.occ.BRepOffsetAPI_MakePipe(wire, circle, geomFillTrihedron, inputs.forceApproxC1 ? true : false);
         pipe.Build();
+        if (!pipe.IsDone()) {
+            pipe.delete();
+            circle.delete();
+            throw occtFailure("occt.pipe.failed");
+        }
         const pipeShape = pipe.Shape();
 
         const result = this.converterService.getActualTypeOfShape(pipeShape);
@@ -528,32 +582,34 @@ export class OperationsService {
         return result;
     }
 
-    pipeWiresCylindrical(inputs: Inputs.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
+    pipeWiresCylindrical(inputs: Resolved.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(wire => {
             return this.pipeWireCylindrical({ shape: wire, radius: inputs.radius, makeSolid: inputs.makeSolid, trihedronEnum: inputs.trihedronEnum, forceApproxC1: inputs.forceApproxC1 });
         });
     }
 
-    makeThickSolidSimple(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
+    makeThickSolidSimple(inputs: Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
         maker.Build();
+        if (!maker.IsDone()) {
+            maker.delete();
+            throw occtFailure("occt.thickSolid.failed");
+        }
         const makerShape = maker.Shape();
-
-        const result = this.converterService.getActualTypeOfShape(makerShape);
-        let res2 = result;
-        if (inputs.offset > 0) {
-            const faces = this.shapeGettersService.getFaces({ shape: result });
-            const revFaces = faces.map(face => face.Reversed());
-            res2 = this.shellsService.sewFaces({ shapes: revFaces, tolerance: 1e-7 });
-            result.delete();
+        const outward = inputs.offset > 0 ? makerShape.Reversed() : makerShape;
+        const result = this.converterService.getActualTypeOfShape(outward);
+        if (outward !== makerShape) {
+            outward.delete();
         }
         maker.delete();
         makerShape.delete();
-        return res2;
+        return result;
     }
 
-    makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
+    makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
+        checkedShapes(inputs.shapes);
         const facesToRemove = new this.occ.TopTools_ListOfShape();
         inputs.shapes.forEach(shape => {
             facesToRemove.Append(shape);
@@ -571,6 +627,11 @@ export class OperationsService {
             inputs.selfIntersection,
             jointType,
             inputs.removeIntEdges);
+        if (!myBody.IsDone()) {
+            myBody.delete();
+            facesToRemove.delete();
+            throw occtFailure("occt.thickSolid.failed");
+        }
         const makeThick = myBody.Shape();
         const result = this.converterService.getActualTypeOfShape(makeThick);
         makeThick.delete();
@@ -598,53 +659,103 @@ export class OperationsService {
         return res;
     }
 
-    slice(inputs: Inputs.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
+    slice(inputs: Resolved.OCCT.SliceDto<TopoDS_Shape>): TopoDS_Compound {
         if (inputs.step <= 0) {
             throw new Error("Step needs to be positive.");
         }
-        const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
-        const intersections: TopoDS_Shape[] = [];
-        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist } = this.computeBounds(bbox);
-
-            const planes: TopoDS_Face[] = [];
-            for (let i = minY; i < maxY; i += inputs.step) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [0, i, 0], direction: [0, 1, 0] });
-                planes.push(pq);
+        return this.sliceAlong(inputs.shape, inputs.direction, (lowest, highest) => {
+            const levels: number[] = [];
+            if ((highest - lowest) / inputs.step > MOST_SLICES) {
+                throw tooManySlices("step");
             }
-
-            this.applySlices(transformedShape, planes, inputs.direction, intersections);
-        }
-        const res = this.converterService.makeCompound({ shapes: intersections });
-        return res;
+            for (let level = lowest; level < highest; level += inputs.step) {
+                if (levels.length === MOST_SLICES) {
+                    throw tooManySlices("step");
+                }
+                levels.push(level);
+            }
+            return levels;
+        });
     }
 
-    sliceInStepPattern(inputs: Inputs.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
-        if (!inputs.steps || inputs.steps.length === 0) {
-            throw new Error("Steps must be provided with at elast one positive value");
+    sliceInStepPattern(inputs: Resolved.OCCT.SliceInStepPatternDto<TopoDS_Shape>): TopoDS_Compound {
+        if (inputs.steps.reduce((sum, step) => sum + step, 0) <= 0) {
+            throw new Error("Steps must add up to more than 0, or the slices never move along the shape.");
         }
-        const { bbox, transformedShape } = this.createBBoxAndTransformShape(inputs.shape, inputs.direction);
-        const intersections: TopoDS_Shape[] = [];
-        if (!this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
-            const { minY, maxY, maxDist } = this.computeBounds(bbox);
-
-            const planes: TopoDS_Face[] = [];
-
+        return this.sliceAlong(inputs.shape, inputs.direction, (lowest, highest) => {
+            const levels: number[] = [];
             let index = 0;
-            for (let i = minY; i < maxY; i += inputs.steps[index]!) {
-                const pq = this.facesService.createSquareFace({ size: maxDist, center: [0, i, 0], direction: [0, 1, 0] });
-                planes.push(pq);
-                if (inputs.steps[index + 1] === undefined) {
-                    index = 0;
-                } else {
-                    index++;
+            for (let level = lowest; level < highest; level += inputs.steps[index]!) {
+                if (levels.length === MOST_SLICES) {
+                    throw tooManySlices("steps");
+                }
+                levels.push(level);
+                index = inputs.steps[index + 1] === undefined ? 0 : index + 1;
+            }
+            return levels;
+        });
+    }
+
+    /**
+     * The section faces of the solids of `shape` at the levels `levelsBetween` picks between the
+     * lowest and the highest point of the shape along `direction`, sliced by the kernel in one call
+     * per solid: one compound per solid that the planes cross, holding its faces once each, in
+     * a compound of them all. A shape too thin to slice gives an empty compound.
+     */
+    private sliceAlong(shape: TopoDS_Shape, direction: Inputs.Base.Vector3, levelsBetween: (lowest: number, highest: number) => number[]): TopoDS_Compound {
+        const { bbox, transformedShape } = this.createBBoxAndTransformShape(shape, direction);
+        try {
+            if (this.occ.Bnd_Box_IsThin(bbox, 0.0001)) {
+                return this.converterService.makeCompound({ shapes: [] });
+            }
+            const { minY, maxY, centerX, centerZ } = this.computeBounds(bbox);
+            const frames = levelsBetween(minY, maxY).flatMap(level => [centerX, level, centerZ, 0, 1, 0, 1, 0, 0]);
+            const isSolid = this.enumService.getShapeTypeEnum(transformedShape) === Inputs.OCCT.shapeTypeEnum.solid;
+            const solids = isSolid ? [transformedShape] : this.shapeGettersService.getSolids({ shape: transformedShape });
+            try {
+                if (solids.length === 0) {
+                    throw new Error("No solids found to slice.");
+                }
+                const slices = solids.flatMap(solid => this.slicesOfSolid(solid, frames, direction));
+                const result = this.converterService.makeCompound({ shapes: slices });
+                slices.forEach(slice => slice.delete());
+                return result;
+            } finally {
+                if (!isSolid) {
+                    solids.forEach(solid => solid.delete());
                 }
             }
-
-            this.applySlices(transformedShape, planes, inputs.direction, intersections);
+        } finally {
+            bbox.delete();
+            transformedShape.delete();
         }
-        const res = this.converterService.makeCompound({ shapes: intersections });
-        return res;
+    }
+
+    /**
+     * The faces where the planes of `frames` cross `solid`, gathered into one compound turned back
+     * from the Y axis onto `direction`, or nothing when no plane crosses it. A plane given twice
+     * receives the same face twice from the kernel, which is kept once.
+     */
+    private slicesOfSolid(solid: TopoDS_Shape, frames: number[], direction: Inputs.Base.Vector3): TopoDS_Shape[] {
+        const perFrame = this.occ.SliceByFrames(solid, frames, true, 1e-7);
+        const pieces = perFrame.flatMap(slice => this.occ.ChildrenOf(slice));
+        perFrame.forEach(slice => slice.delete());
+        const faces = pieces.filter((piece, index) => pieces.findIndex(other => other.IsSame(piece)) === index);
+        pieces.filter(piece => !faces.includes(piece)).forEach(piece => piece.delete());
+        if (faces.length === 0) {
+            return [];
+        }
+        const compound = this.converterService.makeCompound({ shapes: faces });
+        faces.forEach(face => face.delete());
+        const turned = this.transformsService.align({
+            shape: compound,
+            fromOrigin: [0, 0, 0],
+            fromDirection: [0, 1, 0],
+            toOrigin: [0, 0, 0],
+            toDirection: direction,
+        });
+        compound.delete();
+        return [turned];
     }
 
     private createBBoxAndTransformShape(shape: TopoDS_Shape, direction: Inputs.Base.Vector3) {
@@ -672,51 +783,9 @@ export class OperationsService {
 
         const minZ = cornerMin.Z();
         const maxZ = cornerMax.Z();
+        cornerMin.delete();
+        cornerMax.delete();
 
-        const distX = maxX - minX;
-        const distZ = maxZ - minZ;
-
-        const percentage = 1.2;
-        let maxDist = distX >= distZ ? distX : distZ;
-        maxDist *= percentage;
-        return { minY, maxY, maxDist };
-    }
-
-
-    private applySlices(transformedShape: TopoDS_Shape, planes: TopoDS_Face[], direction: Inputs.Base.Vector3, intersections: TopoDS_Shape[]) {
-        const shapesToSlice = [];
-        if (this.enumService.getShapeTypeEnum(transformedShape) === Inputs.OCCT.shapeTypeEnum.solid) {
-            shapesToSlice.push(transformedShape);
-        } else {
-            const solids = this.shapeGettersService.getSolids({ shape: transformedShape });
-            shapesToSlice.push(...solids);
-        }
-
-        if (shapesToSlice.length === 0) {
-            throw new Error("No solids found to slice.");
-        }
-
-        shapesToSlice.forEach(s => {
-            const intInputs = new Inputs.OCCT.IntersectionDto<TopoDS_Shape>();
-            intInputs.keepEdges = true;
-            intInputs.shapes = [s];
-
-            const compound = this.converterService.makeCompound({ shapes: planes });
-            intInputs.shapes.push(compound);
-
-            const ints = this.booleansService.intersection(intInputs);
-            ints.forEach(int => {
-                if (int && !int.IsNull()) {
-                    const transformedInt = this.transformsService.align({
-                        shape: int,
-                        fromOrigin: [0, 0, 0],
-                        fromDirection: [0, 1, 0],
-                        toOrigin: [0, 0, 0],
-                        toDirection: direction,
-                    });
-                    intersections.push(transformedInt);
-                }
-            });
-        });
+        return { minY, maxY, centerX: (minX + maxX) / 2, centerZ: (minZ + maxZ) / 2 };
     }
 }

@@ -1,8 +1,9 @@
-import { GeometryHelper } from "@bitbybit-dev/base";
+import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
 import { asKind, asRegion, oneOrMany } from "./entity-narrowing";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Turning flat JSCAD shapes into solids: straight extrusion along Z with an optional twist, a wall
@@ -35,12 +36,13 @@ export class JSCADExtrusions {
      * ```
      */
     extrudeLinear(inputs: Inputs.JSCAD.ExtrudeLinearDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
+        const resolved = resolveDto(Inputs.JSCAD.ExtrudeLinearDto, inputs) as Resolved.JSCAD.ExtrudeLinearDto;
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(resolved.geometry));
 
         const extrusions = this.jscad.extrusions.extrudeLinear({
-            height: inputs.height,
-            twistAngle: this.math.degToRad({ number: inputs.twistAngle }),
-            twistSteps: inputs.twistSteps
+            height: resolved.height,
+            twistAngle: this.math.degToRad({ number: resolved.twistAngle }),
+            twistSteps: resolved.twistSteps
         }, ...geometry);
 
         return extrusions;
@@ -64,9 +66,10 @@ export class JSCADExtrusions {
      * ```
      */
     extrudeRectangular(inputs: Inputs.JSCAD.ExtrudeRectangularDto): Inputs.JSCAD.JSCADEntity {
-        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(inputs.geometry));
+        const resolved = resolveDto(Inputs.JSCAD.ExtrudeRectangularDto, inputs) as Resolved.JSCAD.ExtrudeRectangularDto;
+        const geometry = asKind<Inputs.JSCAD.JSCADGeom2>(oneOrMany(resolved.geometry));
 
-        const extrusions = this.jscad.extrusions.extrudeRectangular({ height: inputs.height, size: inputs.size }, ...geometry);
+        const extrusions = this.jscad.extrusions.extrudeRectangular({ height: resolved.height, size: resolved.size }, ...geometry);
        
         return extrusions;
     }
@@ -88,10 +91,11 @@ export class JSCADExtrusions {
      * ```
      */
     extrudeRectangularPoints(inputs: Inputs.JSCAD.ExtrudeRectangularPointsDto): Inputs.JSCAD.JSCADEntity {
-        const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]);
+        const resolved = resolveDto(Inputs.JSCAD.ExtrudeRectangularPointsDto, inputs) as Resolved.JSCAD.ExtrudeRectangularPointsDto;
+        const twoDimensionalPoints = resolved.points.map(pt => [pt[0], pt[1]]);
         const duplicatePointsRemoved = this.geometryHelper.removeConsecutiveVectorDuplicates(twoDimensionalPoints);
         const path = this.jscad.geometries.path2.fromPoints({}, duplicatePointsRemoved as JSCAD.maths.vec2.Vec2[]);
-        const extrusion = this.extrudeRectangular({ height: inputs.height, size: inputs.size, geometry: path });
+        const extrusion = this.extrudeRectangular({ height: resolved.height, size: resolved.size, geometry: path });
         return extrusion;
     }
 
@@ -113,13 +117,14 @@ export class JSCADExtrusions {
      * ```
      */
     extrudeRotate(inputs: Inputs.JSCAD.ExtrudeRotateDto): Inputs.JSCAD.JSCADEntity {
-        const options = {
-            angle: this.math.degToRad({ number: inputs.angle }),
-            startAngle: this.math.degToRad({ number: inputs.startAngle }),
+        const resolved = resolveDto(Inputs.JSCAD.ExtrudeRotateDto, inputs) as Resolved.JSCAD.ExtrudeRotateDto;
+        const options: JSCAD.extrusions.ExtrudeRotateOptions = {
+            angle: this.math.degToRad({ number: resolved.angle }),
+            startAngle: this.math.degToRad({ number: resolved.startAngle }),
             overflow: "cap",
-            segments: inputs.segments
+            segments: resolved.segments
         };
-        const extrusion = this.jscad.extrusions.extrudeRotate(options as any, asRegion(inputs.polygon, "extrudeRotate"));
+        const extrusion = this.jscad.extrusions.extrudeRotate(options, asRegion(resolved.polygon, "extrudeRotate"));
         return extrusion;
     }
 

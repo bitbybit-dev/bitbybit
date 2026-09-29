@@ -31,17 +31,31 @@ npm run lint
   process per file, or a module to stand in for another. Standing one module in for another goes
   through the shared `alias` option, not `resolve.alias`: Vite never shows an alias a relative
   import, and the emscripten glue is reached as a relative path from inside the package that ships it.
-- **The shape of a DTO property is load-bearing for the declarations.** A property the service always
-  reads is required, `line!: LinePointsDto;` - the constructors assign conditionally, so that is a
-  definite-assignment assertion, not an initializer. A property a caller may omit is optional, spelled
-  with an explicit type that admits undefined, `tolerance?: number | undefined = 1e-7;`: the
-  constructors and the services treat an explicit undefined as "use the default", and under
-  exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight through
-  (`{ tolerance: inputs.tolerance }`). Write the type out - an inferred one prints differently in the
-  declarations depending on the compiler flags, and the published declarations must not move with a flag. The service applies the default itself where it reads the property
-  (`inputs.tolerance ?? 1e-7`), because only `new Dto()` runs the initializer; an object literal from a
-  script does not. Index reads inside a bounds-checked loop, after a length check, or of a regex group
-  the pattern guarantees carry a non-null assertion; everything else narrows.
+- **The shape of a DTO property is load-bearing for the declarations.** Every property is one of
+  three kinds, each with one spelling, and `check:api-docs` holds them:
+  - **required**, `line!: LinePointsDto;` - no initializer; the constructors assign conditionally,
+    so that is a definite-assignment assertion. `@default undefined` or no `@default`.
+  - **defaulted**, `tolerance?: number | undefined = 1e-7;` - the initializer is the default, and
+    `@default` repeats it exactly (`default-mismatch`, `default-needs-initializer`,
+    `default-tag-missing`). A default already makes it optional, so it never carries `@optional`.
+  - **optional**, `indexes?: number[] | undefined;` - `@default undefined` and `@optional true`;
+    left out, it stays unset and the service decides what that means.
+
+  Constructors take every parameter as optional and assign it only when it is not undefined. Write
+  the `| undefined` out: an inferred type prints differently under other compiler flags, and only
+  that spelling lets a caller pass an optional straight through (`{ tolerance: inputs.tolerance }`).
+  A class only ever returned keeps `size = 0;`, since its readers count on every property; the rule
+  (`defaulted-spelling`) asks the `?` of a class some method takes. A singular/plural pair shares its
+  common properties through an `abstract` `<Singular>SharedDto` (API_DOCS_GUIDE.md). Only `new Dto()`
+  runs an initializer, so a public method whose DTO has defaults starts with
+  `const resolved = resolveDto(Inputs.X.Dto, inputs) as Resolved.X.Dto;` and reads only `resolved`
+  (`check:resolved-entry` holds it); an internal method takes `Resolved.X.Dto`, so its callers hand
+  it a complete object (the `Resolved` mirror has every default present). Index reads inside a bounds-checked
+  loop, after a length check, or of a regex group the pattern guarantees carry a non-null assertion.
+- **Each kernel's `lib/api/dto-registry.ts` is generated; do not edit it.** Every public operation,
+  its DTO and what each property accepts; run `npm run gen:dto-meta` after changing a kernel method
+  or a DTO's types (`check:dto-meta` in `npm test` fails on a stale one). Rules across properties are
+  hand-written in `lib/api/validation` (`defineRules`, base/CLAUDE.md).
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
   `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
   files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
@@ -143,7 +157,14 @@ almost every rule here follows from that.
   object either fails structured clone or hands over a meaningless pointer.
 - **`uid` is the only correlation key**, echoed unchanged on success and failure. A request that
   produces no reply leaves its caller waiting forever, which is why the error path wraps its own
-  `postMessage` in a second try/catch.
+  `postMessage` in a second try/catch. The managers settle a call on every reply, a falsy or absent
+  result included, and reject with a `KernelCallError` (base) carrying the dotted path, the kind of
+  failure, the code and details of a failure the kernel named, and the stack apart from the message.
+- **One call shape in every worker** (`prepareKernelCall`, base): the inputs are laid over the DTO's
+  defaults and the call is cached under them. Only a miss reports what `validateInputs` finds (not
+  thrown, for now), replaces the references in the inputs by the cached objects - a new structure, the
+  posted inputs untouched - and calls the dotted path with `callByPath`. `describeKernelFailure` words a
+  failure the same way for all three kernels; when even that cannot be posted, a fixed message is.
 - **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
   `instanceof`. That is why worker-side types are plain records.
 - **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so

@@ -1,13 +1,11 @@
-using dotnet_rest;
+using DotnetRest;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register HttpClient + BitbybitClient for DI
 builder.Services.AddHttpClient<BitbybitClient>();
 
 var app = builder.Build();
 
-// Backend endpoint — calls bitbybit API with server-side API key
 app.MapPost("/api/generate", async (BitbybitClient client) =>
 {
     try
@@ -21,7 +19,6 @@ app.MapPost("/api/generate", async (BitbybitClient client) =>
     }
 });
 
-// Batch generation — creates 3 dragon cup variations in parallel
 app.MapPost("/api/generate-batch", async (BitbybitClient client) =>
 {
     try
@@ -35,7 +32,6 @@ app.MapPost("/api/generate-batch", async (BitbybitClient client) =>
     }
 });
 
-// Fetch result for an existing task
 app.MapGet("/api/task/{id}", async (string id, BitbybitClient client) =>
 {
     try
@@ -49,7 +45,6 @@ app.MapGet("/api/task/{id}", async (string id, BitbybitClient client) =>
     }
 });
 
-// Pipeline: translate → union → fillet
 app.MapPost("/api/pipeline/translate-union-fillet", async (BitbybitClient client) =>
 {
     try
@@ -63,7 +58,6 @@ app.MapPost("/api/pipeline/translate-union-fillet", async (BitbybitClient client
     }
 });
 
-// Pipeline: map cylinders at positions
 app.MapPost("/api/pipeline/map-cylinders", async (BitbybitClient client) =>
 {
     try
@@ -77,7 +71,6 @@ app.MapPost("/api/pipeline/map-cylinders", async (BitbybitClient client) =>
     }
 });
 
-// Pipeline: map spheres at different radii
 app.MapPost("/api/pipeline/map-spheres", async (BitbybitClient client) =>
 {
     try
@@ -91,7 +84,6 @@ app.MapPost("/api/pipeline/map-spheres", async (BitbybitClient client) =>
     }
 });
 
-// Pipeline: choice conditional
 app.MapPost("/api/pipeline/choice", async (BitbybitClient client) =>
 {
     try
@@ -105,7 +97,6 @@ app.MapPost("/api/pipeline/choice", async (BitbybitClient client) =>
     }
 });
 
-// Pipeline: file input (upload STEP → fillet)
 app.MapPost("/api/pipeline/file-input", async (IFormFile file, BitbybitClient client) =>
 {
     try
@@ -122,7 +113,6 @@ app.MapPost("/api/pipeline/file-input", async (IFormFile file, BitbybitClient cl
     }
 }).DisableAntiforgery();
 
-// Proxy download — fetches a remote file through the backend to avoid CORS issues with GLTFLoader
 app.MapGet("/api/proxy-download", async (string? url, IHttpClientFactory httpFactory) =>
 {
     if (string.IsNullOrEmpty(url))

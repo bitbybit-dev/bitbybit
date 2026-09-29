@@ -1,6 +1,8 @@
 import * as pc from "playcanvas";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 interface OrbitCameraInstance {
     autoRender: boolean;
@@ -89,12 +91,13 @@ export class PlayCanvasOrbitCamera {
      * ```
      */
     create(inputs: Inputs.PlayCanvasCamera.OrbitCameraDto): OrbitCameraController {
+        const resolved = resolveDto(Inputs.PlayCanvasCamera.OrbitCameraDto, inputs) as Resolved.PlayCanvasCamera.OrbitCameraDto;
         if (!this.context.app) {
             throw new Error("App not initialized. Call init() first.");
         }
 
         let cameraEntity: pc.Entity | undefined;
-        if (inputs.focusEntity) {
+        if (resolved.focusEntity) {
             cameraEntity = this.context.scene.findOne((node: pc.GraphNode) => 
                 node instanceof pc.Entity && node.camera !== undefined && node.camera !== null
             ) as pc.Entity;
@@ -111,35 +114,35 @@ export class PlayCanvasOrbitCamera {
         }
 
         const orbitCamera = this.createOrbitCameraInstance(cameraEntity, {
-            autoRender: inputs.autoRender,
-            distanceMax: inputs.distanceMax,
-            distanceMin: inputs.distanceMin,
-            pitchAngleMax: inputs.pitchAngleMax,
-            pitchAngleMin: inputs.pitchAngleMin,
-            inertiaFactor: inputs.inertiaFactor,
-            focusEntity: inputs.focusEntity || null,
-            frameOnStart: inputs.frameOnStart
+            autoRender: resolved.autoRender,
+            distanceMax: resolved.distanceMax,
+            distanceMin: resolved.distanceMin,
+            pitchAngleMax: resolved.pitchAngleMax,
+            pitchAngleMin: resolved.pitchAngleMin,
+            inertiaFactor: resolved.inertiaFactor,
+            focusEntity: resolved.focusEntity || null,
+            frameOnStart: resolved.frameOnStart
         });
 
-        const pivotVec = new pc.Vec3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
+        const pivotVec = new pc.Vec3(resolved.pivotPoint[0], resolved.pivotPoint[1], resolved.pivotPoint[2]);
         orbitCamera.pivotPoint = pivotVec;
-        orbitCamera.distance = inputs.distance;
-        orbitCamera.pitch = inputs.pitch;
-        orbitCamera.yaw = inputs.yaw;
+        orbitCamera.distance = resolved.distance;
+        orbitCamera.pitch = resolved.pitch;
+        orbitCamera.yaw = resolved.yaw;
 
-        const state = orbitCamera as any;
+        const state: OrbitCameraInstance & { _pivotPoint?: pc.Vec3 } = orbitCamera;
         if (state._pivotPoint) {
             state._pivotPoint.copy(pivotVec);
         }
 
         const mouseInput = this.createMouseInput(cameraEntity, orbitCamera, {
-            orbitSensitivity: inputs.orbitSensitivity,
-            distanceSensitivity: inputs.distanceSensitivity
+            orbitSensitivity: resolved.orbitSensitivity,
+            distanceSensitivity: resolved.distanceSensitivity
         });
 
         const touchInput = this.createTouchInput(cameraEntity, orbitCamera, {
-            orbitSensitivity: inputs.orbitSensitivity,
-            distanceSensitivity: inputs.distanceSensitivity
+            orbitSensitivity: resolved.orbitSensitivity,
+            distanceSensitivity: resolved.distanceSensitivity
         });
 
         const updateFn = (dt: number) => {
@@ -147,8 +150,8 @@ export class PlayCanvasOrbitCamera {
         };
         this.context.app.on("update", updateFn);
 
-        if (inputs.focusEntity && inputs.frameOnStart) {
-            orbitCamera.focus(inputs.focusEntity);
+        if (resolved.focusEntity && resolved.frameOnStart) {
+            orbitCamera.focus(resolved.focusEntity);
         }
 
         return {
@@ -176,8 +179,9 @@ export class PlayCanvasOrbitCamera {
      * ```
      */
     setPivotPoint(inputs: Inputs.PlayCanvasCamera.PivotPointDto): void {
-        const pivotVec = new pc.Vec3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
-        inputs.orbitCamera.orbitCamera.pivotPoint = pivotVec;
+        const resolved = resolveDto(Inputs.PlayCanvasCamera.PivotPointDto, inputs) as Resolved.PlayCanvasCamera.PivotPointDto;
+        const pivotVec = new pc.Vec3(resolved.pivotPoint[0], resolved.pivotPoint[1], resolved.pivotPoint[2]);
+        resolved.orbitCamera.orbitCamera.pivotPoint = pivotVec;
     }
 
     /**
@@ -188,7 +192,8 @@ export class PlayCanvasOrbitCamera {
      * @shortname get pivot point
      */
     getPivotPoint(inputs: Inputs.PlayCanvasCamera.PivotPointDto): Inputs.Base.Point3 {
-        const pivot = inputs.orbitCamera.orbitCamera.pivotPoint;
+        const resolved = resolveDto(Inputs.PlayCanvasCamera.PivotPointDto, inputs) as Resolved.PlayCanvasCamera.PivotPointDto;
+        const pivot = resolved.orbitCamera.orbitCamera.pivotPoint;
         return [pivot.x, pivot.y, pivot.z];
     }
 
@@ -218,7 +223,8 @@ export class PlayCanvasOrbitCamera {
      * ```
      */
     resetCamera(inputs: Inputs.PlayCanvasCamera.ResetCameraDto): void {
-        inputs.orbitCamera.orbitCamera.reset(inputs.yaw, inputs.pitch, inputs.distance);
+        const resolved = resolveDto(Inputs.PlayCanvasCamera.ResetCameraDto, inputs) as Resolved.PlayCanvasCamera.ResetCameraDto;
+        resolved.orbitCamera.orbitCamera.reset(resolved.yaw, resolved.pitch, resolved.distance);
     }
 
     private createOrbitCameraInstance(entity: pc.Entity, config: OrbitCameraConfig): OrbitCameraInstance {

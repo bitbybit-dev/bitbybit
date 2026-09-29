@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Text labels: a block of text with a color, font size, alignment, optional outline, wrapping and
@@ -26,20 +28,21 @@ export class BabylonGuiTextBlock {
      * ```
      */
     createTextBlock(inputs: Inputs.BabylonGui.CreateTextBlockDto): BABYLON.GUI.TextBlock {
-        const textBlock = new BABYLON.GUI.TextBlock(inputs.name, inputs.text);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateTextBlockDto, inputs) as Resolved.BabylonGui.CreateTextBlockDto;
+        const textBlock = new BABYLON.GUI.TextBlock(resolved.name, resolved.text);
 
-        if (inputs.width) {
-            textBlock.width = inputs.width;
+        if (resolved.width) {
+            textBlock.width = resolved.width;
         } else {
             textBlock.width = 1;
         }
-        if (inputs.height) {
-            textBlock.height = inputs.height;
+        if (resolved.height) {
+            textBlock.height = resolved.height;
         } else {
             textBlock.height = "42px";
         }
-        textBlock.fontSize = inputs.fontSize;
-        textBlock.color = inputs.color;
+        textBlock.fontSize = resolved.fontSize;
+        textBlock.color = resolved.color;
       
         return textBlock;
     }
@@ -56,29 +59,30 @@ export class BabylonGuiTextBlock {
      * ```
      */
     alignText(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.TextBlock>): BABYLON.GUI.TextBlock {
-        switch (inputs.horizontalAlignment) {
+        const resolved = resolveDto(Inputs.BabylonGui.AlignmentDto, inputs) as Resolved.BabylonGui.AlignmentDto<BABYLON.GUI.TextBlock>;
+        switch (resolved.horizontalAlignment) {
             case Inputs.BabylonGui.horizontalAlignmentEnum.left:
-                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+                resolved.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 break;
             case Inputs.BabylonGui.horizontalAlignmentEnum.right:
-                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                resolved.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 break;
             case Inputs.BabylonGui.horizontalAlignmentEnum.center:
-                inputs.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                resolved.control.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 break;
         }
-        switch (inputs.verticalAlignment) {
+        switch (resolved.verticalAlignment) {
             case Inputs.BabylonGui.verticalAlignmentEnum.top:
-                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                resolved.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
                 break;
             case Inputs.BabylonGui.verticalAlignmentEnum.bottom:
-                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                resolved.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
                 break;
             case Inputs.BabylonGui.verticalAlignmentEnum.center:
-                inputs.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                resolved.control.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
                 break;
         }
-        return inputs.control;
+        return resolved.control;
     }
 
     /**
@@ -94,9 +98,10 @@ export class BabylonGuiTextBlock {
      * ```
      */
     setTextOutline(inputs: Inputs.BabylonGui.SetTextBlockTextOutlineDto): BABYLON.GUI.TextBlock {
-        inputs.textBlock.outlineWidth = inputs.outlineWidth;
-        inputs.textBlock.outlineColor = inputs.outlineColor;
-        return inputs.textBlock;
+        const resolved = resolveDto(Inputs.BabylonGui.SetTextBlockTextOutlineDto, inputs) as Resolved.BabylonGui.SetTextBlockTextOutlineDto;
+        resolved.textBlock.outlineWidth = resolved.outlineWidth;
+        resolved.textBlock.outlineColor = resolved.outlineColor;
+        return resolved.textBlock;
     }
 
     /**
@@ -123,8 +128,9 @@ export class BabylonGuiTextBlock {
      * @shortname set resize to fit
      */
     setRsizeToFit(inputs: Inputs.BabylonGui.SetTextBlockResizeToFitDto): BABYLON.GUI.TextBlock {
-        inputs.textBlock.resizeToFit = inputs.resizeToFit;
-        return inputs.textBlock;
+        const resolved = resolveDto(Inputs.BabylonGui.SetTextBlockResizeToFitDto, inputs) as Resolved.BabylonGui.SetTextBlockResizeToFitDto;
+        resolved.textBlock.resizeToFit = resolved.resizeToFit;
+        return resolved.textBlock;
     }
 
     /**
@@ -241,6 +247,7 @@ export class BabylonGuiTextBlock {
      * @shortname text block observable selector
      */
     createTextBlockObservableSelector(inputs: Inputs.BabylonGui.TextBlockObservableSelectorDto): Inputs.BabylonGui.textBlockObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.TextBlockObservableSelectorDto, inputs) as Resolved.BabylonGui.TextBlockObservableSelectorDto;
+        return resolved.selector;
     }
 }

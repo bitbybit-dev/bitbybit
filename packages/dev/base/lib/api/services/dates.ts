@@ -1,4 +1,6 @@
 import * as Inputs from "../inputs";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Dates and times as JavaScript `Date` values: creating them, reading and setting their parts, and
@@ -121,7 +123,8 @@ export class Dates {
      * ```
      */
     createDate(inputs: Inputs.Dates.CreateDateDto): Date {
-        return new Date(inputs.year, inputs.month, inputs.day, inputs.hours, inputs.minutes, inputs.seconds, inputs.milliseconds);
+        const resolved = resolveDto(Inputs.Dates.CreateDateDto, inputs) as Resolved.Dates.CreateDateDto;
+        return new Date(resolved.year, resolved.month, resolved.day, resolved.hours, resolved.minutes, resolved.seconds, resolved.milliseconds);
     }
 
     /**
@@ -140,7 +143,8 @@ export class Dates {
      * ```
      */
     createDateUTC(inputs: Inputs.Dates.CreateDateDto): Date {
-        return new Date(Date.UTC(inputs.year, inputs.month, inputs.day, inputs.hours, inputs.minutes, inputs.seconds, inputs.milliseconds));
+        const resolved = resolveDto(Inputs.Dates.CreateDateDto, inputs) as Resolved.Dates.CreateDateDto;
+        return new Date(Date.UTC(resolved.year, resolved.month, resolved.day, resolved.hours, resolved.minutes, resolved.seconds, resolved.milliseconds));
     }
 
     /**
@@ -159,7 +163,8 @@ export class Dates {
      * ```
      */
     createFromUnixTimeStamp(inputs: Inputs.Dates.CreateFromUnixTimeStampDto): Date {
-        return new Date(inputs.unixTimeStamp);
+        const resolved = resolveDto(Inputs.Dates.CreateFromUnixTimeStampDto, inputs) as Resolved.Dates.CreateFromUnixTimeStampDto;
+        return new Date(resolved.unixTimeStamp);
     }
 
     /**
@@ -423,8 +428,9 @@ export class Dates {
      * ```
      */
     setYear(inputs: Inputs.Dates.DateYearDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setFullYear(inputs.year);
+        const resolved = resolveDto(Inputs.Dates.DateYearDto, inputs) as Resolved.Dates.DateYearDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setFullYear(resolved.year);
         return dateCopy;
     }
 
@@ -444,8 +450,9 @@ export class Dates {
      * ```
      */
     setMonth(inputs: Inputs.Dates.DateMonthDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setMonth(inputs.month);
+        const resolved = resolveDto(Inputs.Dates.DateMonthDto, inputs) as Resolved.Dates.DateMonthDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setMonth(resolved.month);
         return dateCopy;
     }
 
@@ -465,8 +472,9 @@ export class Dates {
      * ```
      */
     setDayOfMonth(inputs: Inputs.Dates.DateDayDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setDate(inputs.day);
+        const resolved = resolveDto(Inputs.Dates.DateDayDto, inputs) as Resolved.Dates.DateDayDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setDate(resolved.day);
         return dateCopy;
     }
 
@@ -486,8 +494,9 @@ export class Dates {
      * ```
      */
     setHours(inputs: Inputs.Dates.DateHoursDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setHours(inputs.hours);
+        const resolved = resolveDto(Inputs.Dates.DateHoursDto, inputs) as Resolved.Dates.DateHoursDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setHours(resolved.hours);
         return dateCopy;
     }
 
@@ -507,8 +516,9 @@ export class Dates {
      * ```
      */
     setMinutes(inputs: Inputs.Dates.DateMinutesDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setMinutes(inputs.minutes);
+        const resolved = resolveDto(Inputs.Dates.DateMinutesDto, inputs) as Resolved.Dates.DateMinutesDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setMinutes(resolved.minutes);
         return dateCopy;
     }
 
@@ -528,8 +538,9 @@ export class Dates {
      * ```
      */
     setSeconds(inputs: Inputs.Dates.DateSecondsDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setSeconds(inputs.seconds);
+        const resolved = resolveDto(Inputs.Dates.DateSecondsDto, inputs) as Resolved.Dates.DateSecondsDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setSeconds(resolved.seconds);
         return dateCopy;
     }
 
@@ -549,8 +560,9 @@ export class Dates {
      * ```
      */
     setMilliseconds(inputs: Inputs.Dates.DateMillisecondsDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setMilliseconds(inputs.milliseconds);
+        const resolved = resolveDto(Inputs.Dates.DateMillisecondsDto, inputs) as Resolved.Dates.DateMillisecondsDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setMilliseconds(resolved.milliseconds);
         return dateCopy;
     }
 
@@ -570,8 +582,9 @@ export class Dates {
      * ```
      */
     setTime(inputs: Inputs.Dates.DateTimeDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setTime(inputs.time);
+        const resolved = resolveDto(Inputs.Dates.DateTimeDto, inputs) as Resolved.Dates.DateTimeDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setTime(resolved.time);
         return dateCopy;
     }
 
@@ -591,8 +604,9 @@ export class Dates {
      * ```
      */
     setUTCYear(inputs: Inputs.Dates.DateYearDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCFullYear(inputs.year);
+        const resolved = resolveDto(Inputs.Dates.DateYearDto, inputs) as Resolved.Dates.DateYearDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCFullYear(resolved.year);
         return dateCopy;
     }
 
@@ -612,8 +626,9 @@ export class Dates {
      * ```
      */
     setUTCMonth(inputs: Inputs.Dates.DateMonthDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCMonth(inputs.month);
+        const resolved = resolveDto(Inputs.Dates.DateMonthDto, inputs) as Resolved.Dates.DateMonthDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCMonth(resolved.month);
         return dateCopy;
     }
 
@@ -633,8 +648,9 @@ export class Dates {
      * ```
      */
     setUTCDay(inputs: Inputs.Dates.DateDayDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCDate(inputs.day);
+        const resolved = resolveDto(Inputs.Dates.DateDayDto, inputs) as Resolved.Dates.DateDayDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCDate(resolved.day);
         return dateCopy;
     }
 
@@ -653,8 +669,9 @@ export class Dates {
      * ```
      */
     setUTCHours(inputs: Inputs.Dates.DateHoursDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCHours(inputs.hours);
+        const resolved = resolveDto(Inputs.Dates.DateHoursDto, inputs) as Resolved.Dates.DateHoursDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCHours(resolved.hours);
         return dateCopy;
     }
 
@@ -673,8 +690,9 @@ export class Dates {
      * ```
      */
     setUTCMinutes(inputs: Inputs.Dates.DateMinutesDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCMinutes(inputs.minutes);
+        const resolved = resolveDto(Inputs.Dates.DateMinutesDto, inputs) as Resolved.Dates.DateMinutesDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCMinutes(resolved.minutes);
         return dateCopy;
     }
 
@@ -693,8 +711,9 @@ export class Dates {
      * ```
      */
     setUTCSeconds(inputs: Inputs.Dates.DateSecondsDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCSeconds(inputs.seconds);
+        const resolved = resolveDto(Inputs.Dates.DateSecondsDto, inputs) as Resolved.Dates.DateSecondsDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCSeconds(resolved.seconds);
         return dateCopy;
     }
 
@@ -713,8 +732,9 @@ export class Dates {
      * ```
      */
     setUTCMilliseconds(inputs: Inputs.Dates.DateMillisecondsDto): Date {
-        const dateCopy = new Date(inputs.date.getTime());
-        dateCopy.setUTCMilliseconds(inputs.milliseconds);
+        const resolved = resolveDto(Inputs.Dates.DateMillisecondsDto, inputs) as Resolved.Dates.DateMillisecondsDto;
+        const dateCopy = new Date(resolved.date.getTime());
+        dateCopy.setUTCMilliseconds(resolved.milliseconds);
         return dateCopy;
     }
 

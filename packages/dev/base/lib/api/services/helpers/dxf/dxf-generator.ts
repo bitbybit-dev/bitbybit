@@ -1,4 +1,6 @@
 import * as Inputs from "../../../inputs";
+import * as Resolved from "../../../resolved-inputs";
+import { resolveDto } from "../../../kernel-calls";
 
 export class DxfGenerator {
     private entityHandle = 256;
@@ -9,18 +11,19 @@ export class DxfGenerator {
      * Generate a complete DXF file content from path-based entities
      */
     public generateDxf(dxfInputs: Inputs.IO.DxfModelDto): string {
-        this.colorFormat = dxfInputs.colorFormat || "aci";
-        this.acadVersion = dxfInputs.acadVersion || "AC1009";
+        const resolved = resolveDto(Inputs.IO.DxfModelDto, dxfInputs) as Resolved.IO.DxfModelDto;
+        this.colorFormat = resolved.colorFormat || "aci";
+        this.acadVersion = resolved.acadVersion || "AC1009";
         
         const dxfContent: string[] = [];
 
         dxfContent.push(...this.generateHeader());
 
-        dxfContent.push(...this.generateTables(dxfInputs));
+        dxfContent.push(...this.generateTables(resolved));
 
         dxfContent.push(...this.generateBlocks());
 
-        dxfContent.push(...this.generateEntities(dxfInputs));
+        dxfContent.push(...this.generateEntities(resolved));
 
         dxfContent.push("0", "EOF");
 
@@ -77,7 +80,7 @@ export class DxfGenerator {
     /**
      * Generate DXF tables section (layers, line types, etc.)
      */
-    private generateTables(dxfInputs: Inputs.IO.DxfModelDto): string[] {
+    private generateTables(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const tables: string[] = [
             "0",
             "SECTION",
@@ -371,11 +374,12 @@ export class DxfGenerator {
     /**
      * Generate layer table based on unique layers in all parts
      */
-    private generateLayerTable(dxfInputs: Inputs.IO.DxfModelDto): string[] {
+    private generateLayerTable(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const layers = new Set<string>();
 
         if (dxfInputs.dxfPathsParts) {
-            dxfInputs.dxfPathsParts.forEach(part => {
+            dxfInputs.dxfPathsParts.forEach(pathsPart => {
+                const part = resolveDto(Inputs.IO.DxfPathsPartDto, pathsPart) as Resolved.IO.DxfPathsPartDto;
                 if (part.layer) {
                     layers.add(part.layer);
                 }
@@ -426,7 +430,7 @@ export class DxfGenerator {
     /**
      * Generate DXF entities section with all path segments
      */
-    private generateEntities(dxfInputs: Inputs.IO.DxfModelDto): string[] {
+    private generateEntities(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const entities: string[] = [
             "0",
             "SECTION",
@@ -435,7 +439,8 @@ export class DxfGenerator {
         ];
 
         if (dxfInputs.dxfPathsParts) {
-            dxfInputs.dxfPathsParts.forEach(part => {
+            dxfInputs.dxfPathsParts.forEach(pathsPart => {
+                const part = resolveDto(Inputs.IO.DxfPathsPartDto, pathsPart) as Resolved.IO.DxfPathsPartDto;
                 if (part.paths) {
                     part.paths.forEach(path => {
                         if (path.segments) {
@@ -457,7 +462,7 @@ export class DxfGenerator {
      */
     private generateSegmentEntity(
         segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto,
-        part: Inputs.IO.DxfPathsPartDto
+        part: Resolved.IO.DxfPathsPartDto
     ): string[] {
         if (this.isLineSegment(segment)) {
             return this.generateLineEntity(segment, part);
@@ -511,7 +516,7 @@ export class DxfGenerator {
     /**
      * Generate a LINE entity
      */
-    private generateLineEntity(line: Inputs.IO.DxfLineSegmentDto, part: Inputs.IO.DxfPathsPartDto): string[] {
+    private generateLineEntity(line: Inputs.IO.DxfLineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
             "LINE",
@@ -519,10 +524,8 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        if (part.color !== undefined) {
-            const colorCodes = this.convertColorToDxf(part.color);
-            colorCodes.forEach(cc => entity.push(cc.code, cc.value));
-        }
+        const colorCodes = this.convertColorToDxf(part.color);
+        colorCodes.forEach(cc => entity.push(cc.code, cc.value));
 
         entity.push(
             "10",
@@ -551,7 +554,7 @@ export class DxfGenerator {
     /**
      * Generate a CIRCLE entity
      */
-    private generateCircleEntity(circle: Inputs.IO.DxfCircleSegmentDto, part: Inputs.IO.DxfPathsPartDto): string[] {
+    private generateCircleEntity(circle: Inputs.IO.DxfCircleSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
             "CIRCLE",
@@ -559,10 +562,8 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        if (part.color !== undefined) {
-            const colorCodes = this.convertColorToDxf(part.color);
-            colorCodes.forEach(cc => entity.push(cc.code, cc.value));
-        }
+        const colorCodes = this.convertColorToDxf(part.color);
+        colorCodes.forEach(cc => entity.push(cc.code, cc.value));
 
         entity.push(
             "10",
@@ -587,7 +588,7 @@ export class DxfGenerator {
     /**
      * Generate an ARC entity
      */
-    private generateArcEntity(arc: Inputs.IO.DxfArcSegmentDto, part: Inputs.IO.DxfPathsPartDto): string[] {
+    private generateArcEntity(arc: Inputs.IO.DxfArcSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
             "ARC",
@@ -599,10 +600,8 @@ export class DxfGenerator {
             entity.push("6", " ");
         }
 
-        if (part.color !== undefined) {
-            const colorCodes = this.convertColorToDxf(part.color);
-            colorCodes.forEach(cc => entity.push(cc.code, cc.value));
-        }
+        const colorCodes = this.convertColorToDxf(part.color);
+        colorCodes.forEach(cc => entity.push(cc.code, cc.value));
 
         entity.push(
             "10",
@@ -633,7 +632,8 @@ export class DxfGenerator {
     /**
      * Generate a LWPOLYLINE entity
      */
-    private generatePolylineEntity(polyline: Inputs.IO.DxfPolylineSegmentDto, part: Inputs.IO.DxfPathsPartDto): string[] {
+    private generatePolylineEntity(segment: Inputs.IO.DxfPolylineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
+        const polyline = resolveDto(Inputs.IO.DxfPolylineSegmentDto, segment) as Resolved.IO.DxfPolylineSegmentDto;
         const entity: string[] = [
             "0",
             "LWPOLYLINE",
@@ -641,10 +641,8 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        if (part.color !== undefined) {
-            const colorCodes = this.convertColorToDxf(part.color);
-            colorCodes.forEach(cc => entity.push(cc.code, cc.value));
-        }
+        const colorCodes = this.convertColorToDxf(part.color);
+        colorCodes.forEach(cc => entity.push(cc.code, cc.value));
 
         const isClosed = polyline.closed || (polyline.points.length > 2 && this.isClosedPolyline(polyline.points));
 
@@ -683,7 +681,8 @@ export class DxfGenerator {
     /**
      * Generate a SPLINE entity
      */
-    private generateSplineEntity(spline: Inputs.IO.DxfSplineSegmentDto, part: Inputs.IO.DxfPathsPartDto): string[] {
+    private generateSplineEntity(segment: Inputs.IO.DxfSplineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
+        const spline = resolveDto(Inputs.IO.DxfSplineSegmentDto, segment) as Resolved.IO.DxfSplineSegmentDto;
         const entity: string[] = [
             "0",
             "SPLINE",
@@ -691,10 +690,8 @@ export class DxfGenerator {
             part.layer || "0"
         ];
 
-        if (part.color !== undefined) {
-            const colorCodes = this.convertColorToDxf(part.color);
-            colorCodes.forEach(cc => entity.push(cc.code, cc.value));
-        }
+        const colorCodes = this.convertColorToDxf(part.color);
+        colorCodes.forEach(cc => entity.push(cc.code, cc.value));
 
         const degree = spline.degree || 3;
         const numControlPoints = spline.controlPoints.length;
@@ -766,18 +763,10 @@ export class DxfGenerator {
     }
 
     /**
-     * Convert color to DXF format
-     * Accepts hex color (#RRGGBB) or ACI color index (1-255)
-     * Returns appropriate DXF color codes based on colorFormat setting
+     * Convert a hex color (#RRGGBB) to DXF color codes, as the nearest ACI index or as true color
+     * depending on the colorFormat setting; anything else is written as ACI 7
      */
-    private convertColorToDxf(color: string): { code: string, value: string }[] {
-        if (/^\d+$/.test(color)) {
-            const colorIndex = parseInt(color, 10);
-            if (colorIndex >= 1 && colorIndex <= 255) {
-                return [{ code: "62", value: color }];
-            }
-        }
-
+    private convertColorToDxf(color: Inputs.Base.Color): { code: string, value: string }[] {
         if (color.startsWith("#")) {
             const hex = color.substring(1);
             if (hex.length === 6) {

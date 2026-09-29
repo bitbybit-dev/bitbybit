@@ -26,6 +26,8 @@ export namespace Base {
     export type TrianglePlane3 = CoreBase.TrianglePlane3;
     export type Triangle3 = CoreBase.Triangle3;
     export type Mesh3 = CoreBase.Mesh3;
+    export type Frame = CoreBase.Frame;
+    /** @deprecated Use `Frame`; `Plane3` is removed in the next major version. */
     export type Plane3 = CoreBase.Plane3;
     export type BoundingBox = CoreBase.BoundingBox;
     export type Line2 = CoreBase.Line2;

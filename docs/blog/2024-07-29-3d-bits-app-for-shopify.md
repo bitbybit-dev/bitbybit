@@ -1,13 +1,13 @@
 ---
 slug: 3d-bits-app-for-shopify
 title: "INTRODUCING: 3D Bits App for Shopify - Revolutionize Your E-commerce!"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg
+image: https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Introducing the 3D Bits App for Shopify - your gateway to revolutionizing online shopping with cutting-edge 3D technology! Create, customize, and sell stunning 3D products."
 ---
 
-![Screenshot of the 3D Bits app for Shopify demo store, showcasing interactive 3D products.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg "3D Bits app for Shopify demo store")
+![Screenshot of the 3D Bits app for Shopify demo store, showcasing interactive 3D products.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg "3D Bits app for Shopify demo store")
 
 Unlock the power of interactive 3D products on your Shopify store with **3D Bits**! We're thrilled to announce our new app that empowers you to create, customize, and sell stunning 3D products, transforming your customer’s shopping experience into an immersive and engaging journey.
 
@@ -47,13 +47,13 @@ Experience the future of e-commerce firsthand. Visit our demo store, as featured
 *   **Native Integration:**
     Customize your 3D models dynamically with Shopify product variants and line item properties using custom Liquid code, giving you complete control over your product presentations and how they interact with Shopify's backend.
 
-![A 3D product page featuring a parametric table design within an interactive 3D canvas, demonstrating the native feel of the 3D Bits app.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-product-page-looks-and-feels-native-with-3d-bits-app-small.jpeg "3D product page with table model in 3D canvas")
+![A 3D product page featuring a parametric table design within an interactive 3D canvas, demonstrating the native feel of the 3D Bits app.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-product-page-looks-and-feels-native-with-3d-bits-app-small.jpeg "3D product page with table model in 3D canvas")
 
 ### Let's Brainstorm Some Use Cases
 
 Here are a few ideas to get you started on what you can achieve with 3D Bits. Remember, these are just guidelines – the possibilities are vast! It's also important to understand that, depending on the complexity of the use case, you might find one of our Bitbybit.dev editors (Rete, Blockly, or TypeScript) more suitable than others. It's all about using the right tool for the right job.
 
-![A 3D printed laptop holder configurator, showcasing parametric design capabilities for custom manufacturing.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-laptop-holder-configurator-3d-printing.jpeg "3D printing - laptop holder configurator")
+![A 3D printed laptop holder configurator, showcasing parametric design capabilities for custom manufacturing.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-laptop-holder-configurator-3d-printing.jpeg "3D printing - laptop holder configurator")
 
 *   **3D Scanning Showcase:**
     No matter what you sell-whether it’s bikes, shoes, plants, flowers, toys, or cars-use your phone to scan your products (e.g., with Gaussian Splatting apps) and showcase them in full 3D to your customers. This allows buyers to inspect products from all angles and even interact with them in novel ways.
@@ -68,7 +68,7 @@ Here are a few ideas to get you started on what you can achieve with 3D Bits. Re
 *   **Complex and Parametric Designs (CAD):**
     If you sell mechanical parts, custom furniture, jewelry, or other complex structures, and want to offer true parametric customization, you can utilize the OpenCascade OCCT 3D geometry kernel algorithms within your Bitbybit.dev scripts. This allows you to create 3D models that are precisely driven by user-provided parameters or Shopify variant options.
 
-![Showcasing products as high-fidelity 3D Gaussian Splatting scans within a Shopify store.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-products-as-3d-gaussian-splatting-scans-small.jpeg "3D Gaussian splatting scans as products")
+![Showcasing products as high-fidelity 3D Gaussian Splatting scans within a Shopify store.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-products-as-3d-gaussian-splatting-scans-small.jpeg "3D Gaussian splatting scans as products")
 
 ### Technical Details: How It Works
 
@@ -82,13 +82,13 @@ This opens up a vast array of possibilities for creating unique and engaging 3D 
 
 **The Workflow:**
 1.  **Design on Bitbybit.dev:** First, you create or refine your 3D logic/script in one of our three coding editors on Bitbybit.dev: Rete (visual nodes), Blockly (visual blocks), or Monaco for TypeScript (code).
-    ![Available Bitbybit.dev editors: Rete, Blockly, and Monaco for TypeScript, suitable for different skill levels and project complexities.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-integrates-with-bitbybit-dev-low-code-visual-programming-editors-small.jpeg "Available editors for your scripts")
+    ![Available Bitbybit.dev editors: Rete, Blockly, and Monaco for TypeScript, suitable for different skill levels and project complexities.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-integrates-with-bitbybit-dev-low-code-visual-programming-editors-small.jpeg "Available editors for your scripts")
 2.  **Export to 3D Bits:** Then, you export the script specifically for use with the 3D Bits app on Shopify.
     *Below is an example of a Rete script for creating a 3D table. It uses the OpenCascade OCCT 3D geometry kernel for the table model and imports a `.splat` file for a 3D scanned palm tree. This script is then exported to the 3D Bits app.*
-    ![Rete editor showing a parametric design script for a table with an imported Gaussian Splat palm tree.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/rete-editor-script-that-was-later-exported-to-3d-bits-app.jpeg "Rete editor with parametric design of table")
+    ![Rete editor showing a parametric design script for a table with an imported Gaussian Splat palm tree.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/rete-editor-script-that-was-later-exported-to-3d-bits-app.jpeg "Rete editor with parametric design of table")
 3.  **Integrate in Shopify:**
     *   The **BITBYBIT RUNNER theme app extension** (installed with 3D Bits) provides a block that you can easily place anywhere on your Shopify product page using the theme editor. This block creates the 3D canvas element where your experience will render.
-        ![Example of the BITBYBIT RUNNER theme app extension block in the Shopify theme editor.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-theme-app-extension-called-bitbybit-runner-small.jpeg "BITBYBIT RUNNER theme app extension block example")
+        ![Example of the BITBYBIT RUNNER theme app extension block in the Shopify theme editor.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-theme-app-extension-called-bitbybit-runner-small.jpeg "BITBYBIT RUNNER theme app extension block example")
     *   You then paste your exported script into a dedicated product metafield.
     *   The 3D Bits app will automatically detect this script and execute it on the product page, bringing your 3D experience to life for your customers.
 
@@ -122,7 +122,7 @@ We offer a wealth of tutorials and documentation that teach you everything from 
 
 ➡️ **[Visit the Getting Started Guide For 3D Bits App](/learn/3d-bits/tutorials/videos-tutorials/set-up)**
 
-![The 3D Bits app is an integral part of the broader Bitbybit.dev platform, connecting powerful design tools with e-commerce.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-is-part-of-the-bitbybit-dev-platform-small.jpeg "3D Bits app is part of the bitbybit.dev platform")
+![The 3D Bits app is an integral part of the broader Bitbybit.dev platform, connecting powerful design tools with e-commerce.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-is-part-of-the-bitbybit-dev-platform-small.jpeg "3D Bits app is part of the bitbybit.dev platform")
 
 ### Join the 3D E-commerce Revolution!
 

@@ -6,10 +6,10 @@ import { OCCTAssemblyQuery } from "./query";
 /**
  * Assemblies as OpenCascade documents: a document holds parts, the sub-assemblies that group them
  * and the instances that place them, with names, colors and placements, the way a STEP assembly
- * does. `manager` builds documents step by step from parts and nodes, loads STEP files into them,
- * changes labels and exports to STEP and glTF; `query` reads parts, shapes, colors, placements and
- * the hierarchy back out. Every label in a document is addressed by its label id string. A document
- * stays in memory until it is deleted.
+ * does. `manager` builds documents step by step from parts and nodes, loads STEP, glTF and OBJ files
+ * into them, changes labels and exports to STEP, glTF, OBJ and PLY; `query` reads parts, shapes,
+ * colors, placements, the hierarchy and the dimensions and tolerances back out. Every label in a
+ * document is addressed by its label id string. A document stays in memory until it is deleted.
  * @example
  * ```typescript
  * const box = await bitbybit.occt.shapes.solid.createBox({ width: 10, length: 10, height: 10, center: [0, 0, 0] });

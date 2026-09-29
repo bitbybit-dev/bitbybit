@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * A stack panel lays its child controls out one after another, top to bottom or left to right, with
@@ -30,26 +32,23 @@ export class BabylonGuiStackPanel {
      * ```
      */
     createStackPanel(inputs: Inputs.BabylonGui.CreateStackPanelDto): BABYLON.GUI.StackPanel {
-        const stackPanel = new BABYLON.GUI.StackPanel(inputs.name);
-        stackPanel.isVertical = inputs.isVertical;
-        stackPanel.spacing = inputs.spacing;
+        const resolved = resolveDto(Inputs.BabylonGui.CreateStackPanelDto, inputs) as Resolved.BabylonGui.CreateStackPanelDto;
+        const stackPanel = new BABYLON.GUI.StackPanel(resolved.name);
+        stackPanel.isVertical = resolved.isVertical;
+        stackPanel.spacing = resolved.spacing;
         stackPanel.onDisposeObservable.add((s) => {
             (s as BABYLON.GUI.StackPanel).clearControls();
         });
-        if (inputs.width !== undefined) {
-            stackPanel.width = inputs.width;
+        if (resolved.width !== undefined) {
+            stackPanel.width = resolved.width;
         } else {
             stackPanel.width = 1;
         }
-        if (inputs.height !== undefined) {
-            stackPanel.height = inputs.height;
+        if (resolved.height !== undefined) {
+            stackPanel.height = resolved.height;
         }
-        if (inputs.color !== undefined) {
-            stackPanel.color = inputs.color;
-        }
-        if (inputs.background !== undefined) {
-            stackPanel.background = inputs.background;
-        }
+        stackPanel.color = resolved.color;
+        stackPanel.background = resolved.background;
         return stackPanel;
     }
 
@@ -62,8 +61,9 @@ export class BabylonGuiStackPanel {
      * @shortname set stack panel is vertical
      */
     setIsVertical(inputs: Inputs.BabylonGui.SetStackPanelIsVerticalDto): BABYLON.GUI.StackPanel {
-        inputs.stackPanel.isVertical = inputs.isVertical;
-        return inputs.stackPanel;
+        const resolved = resolveDto(Inputs.BabylonGui.SetStackPanelIsVerticalDto, inputs) as Resolved.BabylonGui.SetStackPanelIsVerticalDto;
+        resolved.stackPanel.isVertical = resolved.isVertical;
+        return resolved.stackPanel;
     }
 
     /**
@@ -74,8 +74,9 @@ export class BabylonGuiStackPanel {
      * @shortname set stack panel spacing
      */
     setSpacing(inputs: Inputs.BabylonGui.SetStackPanelSpacingDto): BABYLON.GUI.StackPanel {
-        inputs.stackPanel.spacing = inputs.spacing;
-        return inputs.stackPanel;
+        const resolved = resolveDto(Inputs.BabylonGui.SetStackPanelSpacingDto, inputs) as Resolved.BabylonGui.SetStackPanelSpacingDto;
+        resolved.stackPanel.spacing = resolved.spacing;
+        return resolved.stackPanel;
     }
 
     /**

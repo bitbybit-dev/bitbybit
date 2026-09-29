@@ -1,4 +1,6 @@
 import * as Inputs from "../inputs";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Booleans and decisions: comparing values, flipping booleans, turning lists of numbers into lists
@@ -19,7 +21,8 @@ export class Logic {
      * @drawable false
      */
     boolean(inputs: Inputs.Logic.BooleanDto): boolean {
-        return inputs.boolean;
+        const resolved = resolveDto(Inputs.Logic.BooleanDto, inputs) as Resolved.Logic.BooleanDto;
+        return resolved.boolean;
     }
 
     /**
@@ -37,9 +40,10 @@ export class Logic {
      * ```
      */
     randomBooleans(inputs: Inputs.Logic.RandomBooleansDto): boolean[] {
+        const resolved = resolveDto(Inputs.Logic.RandomBooleansDto, inputs) as Resolved.Logic.RandomBooleansDto;
         const booleans: boolean[] = [];
-        for (let i = 0; i < inputs.length; i++) {
-            booleans.push(Math.random() < inputs.trueThreshold);
+        for (let i = 0; i < resolved.length; i++) {
+            booleans.push(Math.random() < resolved.trueThreshold);
         }
         return booleans;
     }
@@ -67,17 +71,18 @@ export class Logic {
      * ```
      */
     twoThresholdRandomGradient(inputs: Inputs.Logic.TwoThresholdRandomGradientDto): boolean[] {
+        const resolved = resolveDto(Inputs.Logic.TwoThresholdRandomGradientDto, inputs) as Resolved.Logic.TwoThresholdRandomGradientDto;
         const booleans: boolean[] = [];
-        inputs.numbers.forEach(n => {
-            if (n < inputs.thresholdTotalTrue) {
+        resolved.numbers.forEach(n => {
+            if (n < resolved.thresholdTotalTrue) {
                 booleans.push(true);
-            } else if (n > inputs.thresholdTotalFalse) {
+            } else if (n > resolved.thresholdTotalFalse) {
                 booleans.push(false);
             } else {
-                const leveledNr = n - inputs.thresholdTotalTrue;
-                const step = (inputs.thresholdTotalFalse - inputs.thresholdTotalTrue) / inputs.nrLevels;
+                const leveledNr = n - resolved.thresholdTotalTrue;
+                const step = (resolved.thresholdTotalFalse - resolved.thresholdTotalTrue) / resolved.nrLevels;
                 const whichCat = Math.ceil(leveledNr / step);
-                const bound = whichCat / inputs.nrLevels;
+                const bound = whichCat / resolved.nrLevels;
                 const random = Math.random();
                 if (random > bound) {
                     booleans.push(true);
@@ -105,15 +110,16 @@ export class Logic {
      * ```
      */
     thresholdBooleanList(inputs: Inputs.Logic.ThresholdBooleanListDto): boolean[] {
+        const resolved = resolveDto(Inputs.Logic.ThresholdBooleanListDto, inputs) as Resolved.Logic.ThresholdBooleanListDto;
         const booleans: boolean[] = [];
-        inputs.numbers.forEach(n => {
-            if (n < inputs.threshold) {
+        resolved.numbers.forEach(n => {
+            if (n < resolved.threshold) {
                 booleans.push(true);
             } else {
                 booleans.push(false);
             }
         });
-        if (inputs.inverse) {
+        if (resolved.inverse) {
             return booleans.map(b => !b);
         }
         return booleans;
@@ -140,11 +146,12 @@ export class Logic {
      * ```
      */
     thresholdGapsBooleanList(inputs: Inputs.Logic.ThresholdGapsBooleanListDto): boolean[] {
+        const resolved = resolveDto(Inputs.Logic.ThresholdGapsBooleanListDto, inputs) as Resolved.Logic.ThresholdGapsBooleanListDto;
         const booleans: boolean[] = [];
 
-        inputs.numbers.forEach(n => {
+        resolved.numbers.forEach(n => {
             let foundInThresholds = false;
-            inputs.gapThresholds.forEach(t => {
+            resolved.gapThresholds.forEach(t => {
                 const min = t[0];
                 const max = t[1];
                 if (n >= min && n <= max) {
@@ -156,7 +163,7 @@ export class Logic {
                 booleans.push(false);
             }
         });
-        if (inputs.inverse) {
+        if (resolved.inverse) {
             return booleans.map(b => !b);
         }
         return booleans;
@@ -173,7 +180,8 @@ export class Logic {
      * @drawable false
      */
     not(inputs: Inputs.Logic.BooleanDto): boolean {
-        return !inputs.boolean;
+        const resolved = resolveDto(Inputs.Logic.BooleanDto, inputs) as Resolved.Logic.BooleanDto;
+        return !resolved.boolean;
     }
 
     /**
@@ -206,23 +214,24 @@ export class Logic {
      * ```
      */
     compare<T>(inputs: Inputs.Logic.ComparisonDto<T>): boolean {
-        switch (inputs.operator) {
-            case "==":
-                return inputs.first == inputs.second;
-            case "!=":
-                return inputs.first != inputs.second;
-            case "===":
-                return inputs.first === inputs.second;
-            case "!==":
-                return inputs.first !== inputs.second;
-            case "<":
-                return inputs.first < inputs.second;
-            case "<=":
-                return inputs.first <= inputs.second;
-            case ">":
-                return inputs.first > inputs.second;
-            case ">=":
-                return inputs.first >= inputs.second;
+        const resolved = resolveDto(Inputs.Logic.ComparisonDto, inputs) as Resolved.Logic.ComparisonDto<T>;
+        switch (resolved.operator) {
+            case Inputs.Logic.BooleanOperatorsEnum.equal:
+                return resolved.first == resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.notEqual:
+                return resolved.first != resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.tripleEqual:
+                return resolved.first === resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.tripleNotEqual:
+                return resolved.first !== resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.less:
+                return resolved.first < resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.lessOrEqual:
+                return resolved.first <= resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.greater:
+                return resolved.first > resolved.second;
+            case Inputs.Logic.BooleanOperatorsEnum.greaterOrEqual:
+                return resolved.first >= resolved.second;
             default:
                 return false;
         }
@@ -243,7 +252,8 @@ export class Logic {
      * ```
      */
     valueGate<T>(inputs: Inputs.Logic.ValueGateDto<T>): T | undefined {
-        return inputs.boolean ? inputs.value : undefined;
+        const resolved = resolveDto(Inputs.Logic.ValueGateDto, inputs) as Resolved.Logic.ValueGateDto<T>;
+        return resolved.boolean ? resolved.value : undefined;
     }
 
     /**

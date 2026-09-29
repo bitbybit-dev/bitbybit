@@ -6,7 +6,7 @@ import * as Inputs from "../inputs";
 describe("Color unit tests", () => {
     let color: Color;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const math = new MathBitByBit();
         color = new Color(math);
     });
@@ -152,6 +152,26 @@ describe("Color unit tests", () => {
         it("should refuse text that is not a hex colour", () => {
             expect(() => color.hexToRgb(new Inputs.Color.HexDto("not a colour")))
                 .toThrow("Invalid hex color: not a colour");
+        });
+    });
+
+    describe("hexToRgbMapped with its defaults left to the DTO", () => {
+        it("should map onto the default range of 0 to 255 when the call leaves it out", () => {
+            // Act
+            const leftOut = color.hexToRgbMapped({ color: "#ff8000" });
+            const spelled = color.hexToRgbMapped(new Inputs.Color.HexDtoMapped("#ff8000"));
+
+            // Assert
+            expect(leftOut).toEqual({ r: 255, g: 128, b: 0 });
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should map onto the default range when the call hands its ends as undefined", () => {
+            // Act
+            const handedUndefined = color.hexToRgbMapped({ color: "#ff8000", from: undefined, to: undefined });
+
+            // Assert
+            expect(handedUndefined).toEqual({ r: 255, g: 128, b: 0 });
         });
     });
 });

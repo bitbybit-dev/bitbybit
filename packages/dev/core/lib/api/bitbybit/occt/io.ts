@@ -2,6 +2,8 @@
 import * as Inputs from "../../inputs";
 import { OCCTWorkerManager, OCCTIO } from "@bitbybit-dev/occt-worker";
 import { ContextBase } from "../../context";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Reading and writing CAD files with OCCT: everything `io` offers on the kernel, plus loaders that
@@ -34,10 +36,11 @@ export class OCCTWIO extends OCCTIO {
      * ```
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.ImportStepIgesDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
-        return this.context.getFile(inputs.assetFile).then(s => {
+        const resolved = resolveDto(Inputs.OCCT.ImportStepIgesDto, inputs) as Resolved.OCCT.ImportStepIgesDto;
+        return this.context.getFile(resolved.assetFile).then(s => {
             return this.occWorkerManager.genericCallToWorkerPromise(
                 "io.loadSTEPorIGES",
-                new Inputs.OCCT.LoadStepOrIgesDto(s, inputs.assetFile.name, inputs.adjustZtoY)
+                new Inputs.OCCT.LoadStepOrIgesDto(s, resolved.assetFile.name, resolved.adjustZtoY)
             );
         });
     }
@@ -58,9 +61,10 @@ export class OCCTWIO extends OCCTIO {
      * ```
      */
     loadSTEPorIGESFromText(inputs: Inputs.OCCT.ImportStepIgesFromTextDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const resolved = resolveDto(Inputs.OCCT.ImportStepIgesFromTextDto, inputs) as Resolved.OCCT.ImportStepIgesFromTextDto;
         return this.occWorkerManager.genericCallToWorkerPromise(
             "io.loadSTEPorIGES",
-            new Inputs.OCCT.LoadStepOrIgesDto(inputs.text, `fake.${inputs.fileType}`, inputs.adjustZtoY)
+            new Inputs.OCCT.LoadStepOrIgesDto(resolved.text, `fake.${resolved.fileType}`, resolved.adjustZtoY)
         );
     }
 

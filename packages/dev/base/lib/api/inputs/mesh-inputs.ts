@@ -58,7 +58,7 @@ export namespace Mesh {
         /**
          * A triangle whose normal is shorter than this counts as having no area.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */
@@ -88,7 +88,7 @@ export namespace Mesh {
          * Distances below this, in model units, count as zero when deciding whether the triangles
          * touch.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */
@@ -118,7 +118,7 @@ export namespace Mesh {
          * Distances below this, in model units, count as zero: when deciding whether triangles
          * touch and when joining segment ends into polylines.
          * @default 1e-7
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1e-7
          */

@@ -1,6 +1,8 @@
 import { BitbybitOcctModule, TopoDS_Vertex, TopoDS_Shape, TopoDS_Compound } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Vertices in OpenCascade: the kernel's own form of a point, the corner where edges meet. Plain
@@ -29,7 +31,8 @@ export class OCCTVertex {
      * ```
      */
     vertexFromXYZ(inputs: Inputs.OCCT.XYZDto): TopoDS_Vertex {
-        return this.och.verticesService.vertexFromXYZ(inputs);
+        const resolved = resolveDto(Inputs.OCCT.XYZDto, inputs) as Resolved.OCCT.XYZDto;
+        return this.och.verticesService.vertexFromXYZ(resolved);
     }
 
     /**
@@ -45,7 +48,8 @@ export class OCCTVertex {
      * ```
      */
     vertexFromPoint(inputs: Inputs.OCCT.PointDto): TopoDS_Vertex {
-        return this.och.verticesService.vertexFromPoint(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PointDto, inputs) as Resolved.OCCT.PointDto;
+        return this.och.verticesService.vertexFromPoint(resolved);
     }
 
     /**
@@ -174,6 +178,7 @@ export class OCCTVertex {
      * ```
      */
     projectPoints(inputs: Inputs.OCCT.ProjectPointsOnShapeDto<TopoDS_Shape>): Inputs.Base.Point3[] {
-        return this.och.verticesService.projectPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ProjectPointsOnShapeDto, inputs) as Resolved.OCCT.ProjectPointsOnShapeDto<TopoDS_Shape>;
+        return this.och.verticesService.projectPoints(resolved);
     }
 }

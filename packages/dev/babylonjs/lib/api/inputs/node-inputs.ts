@@ -114,12 +114,14 @@ export namespace BabylonNode {
         node!: BABYLON.TransformNode;
         /**
          * The axis direction through the node's origin, as `[x, y, z]`
+         * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far to turn, in degrees, added to the current rotation
+         * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 
     /**
@@ -139,16 +141,19 @@ export namespace BabylonNode {
         node!: BABYLON.TransformNode;
         /**
          * A point the axis passes through
+         * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The direction of the axis, as `[x, y, z]`; not a zero vector
+         * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * How far to turn, in degrees; positive follows the right-hand rule around the axis
+         * @default 0
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 
     /**
@@ -167,20 +172,49 @@ export namespace BabylonNode {
         parent!: BABYLON.TransformNode | null;
         /**
          * Where the node sits, relative to its parent
+         * @default [0, 0, 0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The angles around X, Y and Z in degrees the node is turned by
+         * @default [0, 0, 0]
          */
-        rotation: Base.Vector3 = [0, 0, 0];
+        rotation?: Base.Vector3 | undefined = [0, 0, 0];
     }
 
+    /**
+     * How a node's axes are drawn, shared by `DrawNodeDto` and `DrawNodesDto`: the color of each
+     * axis line and its length.
+     */
+    export abstract class DrawNodeSharedDto {
+        /**
+         * Hex color of the line drawn along each node's X axis
+         * @default #ff0000
+         */
+        colorX?: string | undefined = "#ff0000";
+        /**
+         * Hex color of the line drawn along each node's Y axis
+         * @default #00ff00
+         */
+        colorY?: string | undefined = "#00ff00";
+        /**
+         * Hex color of the line drawn along each node's Z axis
+         * @default #0000ff
+         */
+        colorZ?: string | undefined = "#0000ff";
+        /**
+         * Length of each axis line, in scene units
+         * @default 2
+         */
+        size?: number | undefined = 2;
+    }
     /**
      * Feeds `babylon.node.drawNode` with the node to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodeDto {
+    export class DrawNodeDto extends DrawNodeSharedDto {
         constructor(node?: BABYLON.TransformNode, colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+            super();
             if (node !== undefined) { this.node = node; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -191,30 +225,15 @@ export namespace BabylonNode {
          * The transform node the axis lines are parented to
          */
         node!: BABYLON.TransformNode;
-        /**
-         * Hex color of the line along the node's X axis
-         */
-        colorX = "#ff0000";
-        /**
-         * Hex color of the line along the node's Y axis
-         */
-        colorY = "#00ff00";
-        /**
-         * Hex color of the line along the node's Z axis
-         */
-        colorZ = "#0000ff";
-        /**
-         * Length of each axis line, in scene units
-         */
-        size = 2;
     }
 
     /**
      * Feeds `babylon.node.drawNodes` with the nodes to draw axes for, the color of each axis and
      * their length.
      */
-    export class DrawNodesDto {
+    export class DrawNodesDto extends DrawNodeSharedDto {
         constructor(nodes?: BABYLON.TransformNode[], colorX?: string, colorY?: string, colorZ?: string, size?: number) {
+            super();
             if (nodes !== undefined) { this.nodes = nodes; }
             if (colorX !== undefined) { this.colorX = colorX; }
             if (colorY !== undefined) { this.colorY = colorY; }
@@ -225,22 +244,6 @@ export namespace BabylonNode {
          * The transform nodes, each getting its own set of axis lines
          */
         nodes!: BABYLON.TransformNode[];
-        /**
-         * Hex color of the lines along the X axes
-         */
-        colorX = "#ff0000";
-        /**
-         * Hex color of the lines along the Y axes
-         */
-        colorY = "#00ff00";
-        /**
-         * Hex color of the lines along the Z axes
-         */
-        colorZ = "#0000ff";
-        /**
-         * Length of each axis line, in scene units
-         */
-        size = 2;
     }
 
 }

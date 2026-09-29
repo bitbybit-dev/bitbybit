@@ -45,7 +45,7 @@ describe("Math unit tests", () => {
     });
 
     it("should not perform unknown two nr operation", () => {
-        const result = math.twoNrOperation({ first: 2, second: 3, operation: "unknown" as any });
+        const result = math.twoNrOperation({ first: 2, second: 3, operation: "unknown" as Inputs.Math.mathTwoNrOperatorEnum });
         expect(result).toEqual(undefined);
     });
 
@@ -145,7 +145,7 @@ describe("Math unit tests", () => {
     });
 
     it("should convert rad to deg", () => {
-        const result = math.oneNrOperation({ number: 3.14, operation: "unknown" as any });
+        const result = math.oneNrOperation({ number: 3.14, operation: "unknown" as Inputs.Math.mathOneNrOperatorEnum });
         expect(result).toEqual(undefined);
     });
 
@@ -984,6 +984,26 @@ describe("Math unit tests", () => {
                 expect(() => math.evalArithmetic(new Inputs.Math.EvalArithmeticDto("1+.")))
                     .toThrow("Invalid number");
             });
+        });
+    });
+
+    describe("remap with its defaults left to the DTO", () => {
+        it("should map onto the default target range when the call leaves it out", () => {
+            // Act
+            const leftOut = math.remap({ number: 0.25 });
+            const spelled = math.remap(new Inputs.Math.RemapNumberDto(0.25));
+
+            // Assert
+            expect(leftOut).toBe(1.25);
+            expect(leftOut).toBe(spelled);
+        });
+
+        it("should map onto the default ranges when the call hands them as undefined", () => {
+            // Act
+            const handedUndefined = math.remap({ number: 0.25, fromLow: undefined, fromHigh: undefined, toLow: undefined, toHigh: undefined });
+
+            // Assert
+            expect(handedUndefined).toBe(1.25);
         });
     });
 });

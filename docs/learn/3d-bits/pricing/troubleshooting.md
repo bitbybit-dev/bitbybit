@@ -96,6 +96,10 @@ Publishing stops rather than going live with a setup that would charge incorrect
 
 **Prices look right in Composer but not on the storefront.** You have unpublished changes. Publish.
 
+**No discounts on the Price element.** They appear only when Shopify gives this configuration a discount and prices it at exactly the total shown. Check that the discount is active and covers this product, that the code is on the shopper's cart (or the discount is automatic), and that the shopper pays in your store currency - in a converted currency the rows are usually hidden. Discounts that need other items in the cart, and customer-only discounts, show at checkout instead. [Pricing test mode](/learn/3d-bits/pricing/test-mode) shows no rows, and a subscription price usually hides them. The Price element's **Show the store's discounts** must be ticked.
+
+**The promo code chip never states a saving.** The code does not lower this configuration's price - it may be misspelled, expired, limited to other products, or waiting for a minimum spend. Other reasons the saving is not stated: the shopper pays in another currency, the store is in Pricing test mode, or the code is the third or later different code across your Price elements (only the first two are checked). A code limited to logged-in customers or B2B buyers never states a saving on the product page, because the page asks Shopify without knowing who the shopper is; after Apply the chip says the code is on the cart and any saving applies at checkout, and checkout gives the saving to a shopper who qualifies. For any other code, press Apply on the product page and, if no saving appears, check the discount's conditions in your Shopify admin.
+
 ## Still stuck?
 
 Tell us the store, the product, and what the shopper saw - see [Please reach out](/learn/3d-bits/reaching-out). Knowing your product pages helps us help you.

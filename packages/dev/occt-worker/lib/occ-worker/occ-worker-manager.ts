@@ -1,10 +1,24 @@
+import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import { OccInfo } from "./occ-info";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { uid: string, result?: unknown, error?: string };
-type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
+type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+
+/** How far the OCCT call running now has got. */
+export type OccProgress = {
+    /** The dotted path of the call. */
+    functionName: string;
+    /** How far the algorithm running inside it has got, from 0 to 1. */
+    fraction: number;
+    /** How many kernel algorithms the call has started so far; each reports from 0 to 1 again. */
+    algorithms: number;
+};
+
+/** How often the progress of a running call is read, in milliseconds. */
+const PROGRESS_INTERVAL = 100;
+type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
  * This is a manager of OpenCascade worker. Promisified API allows to deal with the worker in a more natural
@@ -14,9 +28,35 @@ type PendingCall = { promise?: Promise<unknown>, uid: string, resolve?: (value: 
 export class OCCTWorkerManager {
 
     occWorkerState$: Subject<OccInfo> = new Subject();
+    /**
+     * The progress of the call running now, read ten times a second while calls are pending, when
+     * the worker can share its progress: in a browser, only on a cross-origin isolated page.
+     */
+    occWorkerProgress$: Subject<OccProgress> = new Subject();
     errorCallback!: (err: string) => void;
     private occWorker!: Worker | OCCTWorkerMock;
     private promisesMade: PendingCall[] = [];
+    private progressWords: Int32Array | undefined;
+    private progressTimer: ReturnType<typeof setInterval> | undefined;
+    private lastProgress = "";
+
+    /** True when calls can be cancelled and report progress: the worker shared its progress words. */
+    canCancel(): boolean {
+        return this.progressWords !== undefined;
+    }
+
+    /**
+     * Asks the OCCT call running now to stop at its next check. It rejects with a `KernelCallError`
+     * of kind `cancelled` and keeps nothing it made; calls queued behind it run as usual. Returns
+     * false, and changes nothing, when the worker cannot be reached while it computes (see `canCancel`).
+     */
+    cancelCurrentCall(): boolean {
+        if (this.progressWords === undefined || this.promisesMade.length === 0) {
+            return false;
+        }
+        Atomics.store(this.progressWords, 0, 1);
+        return true;
+    }
 
     occWorkerAlreadyInitialised(): boolean {
         return this.occWorker ? true : false;
@@ -42,7 +82,17 @@ export class OCCTWorkerManager {
 
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
+        this.progressWords = undefined;
+        this.stopWatchingProgress();
         this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
+            if (typeof data === "object" && "progressWords" in data) {
+                this.progressWords = data.progressWords;
+                this.stopWatchingProgress();
+                if (this.promisesMade.length > 0) {
+                    this.watchProgress();
+                }
+                return;
+            }
             if (data === "occ-initialised") {
                 this.occWorkerState$.next({
                     state: OccStateEnum.initialised,
@@ -54,9 +104,7 @@ export class OCCTWorkerManager {
             }
             else {
                 const promise = this.promisesMade.find(made => made.uid === data.uid);
-                if (promise && data.result !== undefined && !data.error) {
-                    promise.resolve!(data.result);
-                } else if (data.error) {
+                if (data.error !== undefined) {
                     if (this.errorCallback) {
                         try {
                             this.errorCallback(data.error);
@@ -65,11 +113,14 @@ export class OCCTWorkerManager {
                         }
                     }
                     if (promise) {
-                        promise.reject!(data.error);
+                        promise.reject!(new KernelCallError(data.error, promise.functionName, data.errorKind ?? "kernel", data.stack, data.code, data.details));
                     }
+                } else if (promise) {
+                    promise.resolve!(data.result);
                 }
                 this.promisesMade = this.promisesMade.filter(i => i.uid !== data.uid);
                 if (this.promisesMade.length === 0) {
+                    this.stopWatchingProgress();
                     this.occWorkerState$.next({
                         state: OccStateEnum.loaded,
                     });
@@ -84,6 +135,39 @@ export class OCCTWorkerManager {
 
     cleanPromisesMade(): void {
         this.promisesMade = [];
+        this.stopWatchingProgress();
+    }
+
+    /** Starts reading the running call's progress, when the worker shares it and nothing reads it yet. */
+    private watchProgress(): void {
+        const words = this.progressWords;
+        if (words === undefined || this.progressTimer !== undefined) {
+            return;
+        }
+        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL);
+    }
+
+    private stopWatchingProgress(): void {
+        if (this.progressTimer !== undefined) {
+            clearInterval(this.progressTimer);
+            this.progressTimer = undefined;
+        }
+        this.lastProgress = "";
+    }
+
+    /**
+     * Publishes the running call's progress when it moved; the oldest pending call is the one running.
+     * Only the timer calls it, and the timer is stopped whenever the last pending call settles.
+     */
+    private readProgress(words: Int32Array): void {
+        const running = this.promisesMade[0]!;
+        const permille = Atomics.load(words, 1);
+        const algorithms = Atomics.load(words, 2);
+        const key = `${running.uid}:${permille}:${algorithms}`;
+        if (key !== this.lastProgress) {
+            this.lastProgress = key;
+            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms });
+        }
     }
 
     /**
@@ -92,41 +176,56 @@ export class OCCTWorkerManager {
      * and has to say what it expects. Nothing can check the answer - it crossed a postMessage - so
      * the assertion below is where an untyped wire value becomes the caller's declared type, and a
      * wrong `T` is a wrong declaration rather than a cast that failed.
+     *
+     * Inputs that cannot cross to the worker - a function, an engine material, anything structured
+     * clone refuses - reject the call at once with a `KernelCallError` of kind `input`, and the call
+     * is not left outstanding.
      */
     genericCallToWorkerPromise<T = unknown>(functionName: string, inputs: unknown): Promise<T> {
         const uid = `call${Math.random()}${Date.now()}`;
-        const obj: PendingCall = { uid };
+        const obj: PendingCall = { uid, functionName };
         const prom = new Promise((resolve, reject) => {
             obj.resolve = resolve;
             obj.reject = reject;
         });
         obj.promise = prom;
         this.promisesMade.push(obj);
+        this.watchProgress();
 
-        this.occWorker.postMessage({
-            action: {
-                functionName,
-                inputs: inputs as Record<string, unknown>,
-            },
-            uid,
-        });
+        try {
+            this.occWorker.postMessage({
+                action: {
+                    functionName,
+                    inputs: inputs as Record<string, unknown>,
+                },
+                uid,
+            });
+        } catch (error) {
+            this.promisesMade = this.promisesMade.filter(i => i.uid !== uid);
+            obj.reject!(new KernelCallError(`${functionName}: the inputs could not be sent to the worker${error instanceof Error ? `: ${error.message}` : ""}`, functionName, "input"));
+            if (this.promisesMade.length === 0) {
+                this.stopWatchingProgress();
+                this.occWorkerState$.next({
+                    state: OccStateEnum.loaded,
+                });
+            }
+        }
 
         return prom as Promise<T>;
     }
 
     /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
+     * Tells the worker a run is starting; await it before the run executes. The worker keeps its cache
+     * from one run to the next, and drops all of it here once more than its threshold of 10,000 hashes
+     * has been used - the only automatic bound on the kernel memory the cache holds.
      */
     startedTheRun(): Promise<void> {
         return this.genericCallToWorkerPromise("startedTheRun", {});
     }
 
     /**
-     * This needs to be done before every run and the promise needs to be awaited before run executes again
-     * This makes sure that cache keeps the objects and hashes from the previous run and the rest is deleted
-     * In this way it is possible to hace the cache of manageable size
+     * Drops everything the worker has cached and frees the kernel memory it held. Every reference
+     * handed out before stops resolving, so the objects a script still needs have to be made again.
      */
     cleanAllCache(): Promise<void> {
         return this.genericCallToWorkerPromise("cleanAllCache", {});

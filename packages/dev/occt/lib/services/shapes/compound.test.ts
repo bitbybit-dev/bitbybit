@@ -22,7 +22,7 @@ describe("OCCT compound unit tests", () => {
         compound = new OCCTCompound(occt, occHelper);
     });
 
-    it("should compound any shapes", async () => {
+    it("should compound any shapes", () => {
         const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
         const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [0, 0, 0], direction: [0, 0, 1] });
         const c = compound.makeCompound({ shapes: [box, cylinder] });
@@ -30,6 +30,45 @@ describe("OCCT compound unit tests", () => {
         expect(occHelper.enumService.getShapeTypeEnum(c)).toBe(Inputs.OCCT.shapeTypeEnum.compound);
         box.delete();
         cylinder.delete();
+    });
+
+    it("holds the shapes it was given, in order, rather than copies of them", () => {
+        // Arrange
+        const box = solid.createBox({ width: 2, height: 2, length: 2, center: [0, 0, 0] });
+        const cylinder = solid.createCylinder({ radius: 2, height: 2, center: [5, 0, 0], direction: [0, 0, 1] });
+
+        // Act
+        const c = compound.makeCompound({ shapes: [box, cylinder] });
+
+        // Assert
+        const held = compound.getShapesOfCompound({ shape: c });
+        expect(held.map((shape, index) => shape.IsEqual([box, cylinder][index]!))).toEqual([true, true]);
+    });
+
+    it("keeps the edges its faces share, so the faces of a box still meet along twelve edges", () => {
+        // Arrange
+        const box = solid.createBox({ width: 2, height: 3, length: 4, center: [0, 0, 0] });
+        const faces = occHelper.shapeGettersService.getFaces({ shape: box });
+
+        // Act
+        const c = compound.makeCompound({ shapes: faces });
+
+        // Assert
+        expect(occHelper.shapeGettersService.getEdges({ shape: c })).toHaveLength(12);
+    });
+
+    it("stays whole after the shapes it holds are deleted", () => {
+        // Arrange
+        const box = solid.createBox({ width: 2, height: 3, length: 4, center: [0, 0, 0] });
+        const cylinder = solid.createCylinder({ radius: 1, height: 2, center: [5, 0, 0], direction: [0, 1, 0] });
+        const c = compound.makeCompound({ shapes: [box, cylinder] });
+
+        // Act
+        box.delete();
+        cylinder.delete();
+
+        // Assert
+        expect(compound.getShapesOfCompound({ shape: c }).map(shape => solid.getSolidVolume({ shape }))).toEqual([expect.closeTo(24, 9), expect.closeTo(2 * Math.PI, 9)]);
     });
 
 });

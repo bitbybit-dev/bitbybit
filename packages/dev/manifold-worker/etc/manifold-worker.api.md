@@ -21,19 +21,17 @@ export class CacheHelper {
     addToCache(hash: string | number, object: any): string | number;
     // (undocumented)
     argCache: Record<string, any>;
+    bytesToHash(bytes: Uint8Array): number;
     cacheOp(args: any, cacheMiss: () => any): any;
     checkCache(hash: string | number): any;
     // (undocumented)
     cleanAllCache(): void;
     // (undocumented)
     cleanCacheForHash(hash: string | number): void;
-    // (undocumented)
-    cleanUpCache(): void;
     computeHash(args: any, raw?: boolean): number | string;
     // (undocumented)
-    hashesFromPreviousRun: Record<string, string | number>;
-    // (undocumented)
     isManifoldObject(obj: any): boolean;
+    itemHash(callHash: string | number, position: string | number): number;
     // (undocumented)
     manifoldObjectHashes: Set<string | number>;
     stringToHash(str: string): number;

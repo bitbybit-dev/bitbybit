@@ -23,7 +23,7 @@ export class ManifoldRefineToleranceDto<T> {
      * @maximum Infinity
      * @step 1e-7
      */
-    tolerance = 1e-6;
+    tolerance?: number | undefined = 1e-6;
 }
 /**
  * A solid and an edge length for `manifold.operations.refineToLength`.
@@ -44,7 +44,7 @@ export class ManifoldRefineLengthDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.1;
+    length?: number | undefined = 0.1;
 }
 /**
  * A solid and a count for `manifold.operations.refine`.
@@ -65,7 +65,7 @@ export class ManifoldRefineDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    number = 1;
+    number?: number | undefined = 1;
 }
 /**
  * A solid and a normal channel for `manifold.operations.smoothByNormals`.
@@ -87,7 +87,7 @@ export class ManifoldSmoothByNormalsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    normalIdx = 0;
+    normalIdx?: number | undefined = 0;
 }
 /**
  * A solid and a tolerance for `manifold.operations.simplify`.
@@ -128,11 +128,11 @@ export class ManifoldSetPropertiesDto<T> {
     /**
      * How many properties each vertex has afterwards.
      * @default 3
-     * @minimum 3
+     * @minimum 0
      * @maximum Infinity
      * @step 1
      */
-    numProp = 3;
+    numProp?: number | undefined = 3;
     /**
      * A function that receives the new property array, the vertex position and the old properties,
      * and fills the new array in place.
@@ -157,11 +157,11 @@ export class ManifoldSmoothOutDto<T> {
      * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
      * smoothed.
      * @default 60
-     * @minimum -Infinity
-     * @maximum Infinity
+     * @minimum 0
+     * @maximum 180
      * @step 1
      */
-    minSharpAngle = 60;
+    minSharpAngle?: number | undefined = 60;
     /**
      * How much the sharp edges are rounded, from 0 for a hard edge to 1 for fully smooth.
      * @default 0
@@ -169,5 +169,5 @@ export class ManifoldSmoothOutDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    minSmoothness = 0;
+    minSmoothness?: number | undefined = 0;
 }

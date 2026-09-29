@@ -20,6 +20,8 @@ The fastest way to get started is with our CLI tool. Scaffold a fully-configured
 npx @bitbybit-dev/create-app my-awesome-project
 ```
 
+The [create-app page](./create-app) has every option, the complete app templates (a product configurator, a laser-cut box generator, a sheet-metal unfold app, a STEP to glTF command line) and what every scaffold ships for AI coding agents.
+
 The CLI guides you through an interactive setup where you first choose the **app type** - a browser-based **frontend** 3D app or a **cloud** project that pairs a backend with a frontend for server-side CAD via our [CAD Cloud API](/api/cloud-api).
 
 ### Frontend Projects
@@ -70,7 +72,7 @@ For frontend projects, your browser opens with a live 3D preview at `http://loca
 
 The following diagram illustrates the architecture of our NPM packages. Each game engine-specific package (`@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`, `@bitbybit-dev/playcanvas`) connects through the `@bitbybit-dev/core` layer. This creates a streamlined, extensible structure that supports a range of integrations with various geometry kernels like OCCT, JSCAD, and Manifold.
 
-![Architecture of Bitbybit NPM packages](https://ik.imagekit.io/bitbybit/app/assets/npm-package-architecture.jpeg)
+![Architecture of Bitbybit NPM packages](https://bitbybit.dev/files/site/npm-package-architecture.jpeg)
 *Architecture of Bitbybit NPM packages*
 
 ## Available Packages

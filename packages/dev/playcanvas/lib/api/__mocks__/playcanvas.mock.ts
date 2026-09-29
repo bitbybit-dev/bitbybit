@@ -142,6 +142,11 @@ export class MockBoundingBox {
     halfExtents = new MockVec3();
     add() { }
     compute() { }
+    copy(other: MockBoundingBox) {
+        this.center.copy(other.center);
+        this.halfExtents.copy(other.halfExtents);
+        return this;
+    }
 }
 
 export class MockColor {
@@ -267,7 +272,7 @@ export class MockEntity {
         }
         // Mock implementation for other component types
         const mockComponent = { type, ...options };
-        (this as unknown as Record<string, unknown>)[type] = mockComponent;
+        Reflect.set(this, type, mockComponent);
         return mockComponent;
     }
 }
@@ -479,7 +484,7 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
     const mockNode = createMockNode();
     
     // Mock graphics device for instancing
-    const mockGraphicsDevice = {
+    const mockGraphicsDevice: unknown = {
         vram: { vb: 0, ib: 0, tex: 0, total: 0 },
         createVertexBufferImpl: vi.fn(() => ({})),
         createIndexBufferImpl: vi.fn(() => ({})),
@@ -525,7 +530,7 @@ export async function createPlayCanvasMock(): Promise<Record<string, unknown>> {
             constructor(graphicsDevice?: import("playcanvas").GraphicsDevice) {
                 // The stand-in device carries only the members the real Mesh constructor
                 // reaches for, so this is where a partial stand-in meets a full signature.
-                const mockDevice = graphicsDevice ?? (mockGraphicsDevice as unknown as import("playcanvas").GraphicsDevice);
+                const mockDevice = graphicsDevice ?? (mockGraphicsDevice as import("playcanvas").GraphicsDevice);
                 super(mockDevice);
             }
             override update() {

@@ -1,9 +1,10 @@
 import "./style.css";
 import { BitByBitBase, Inputs, initBitByBit, initBabylonJS, type InitBitByBitOptions } from "@bitbybit-dev/babylonjs";
+import { buildModel, defaultParams } from "./model";
 
-start();
+void start();
 
-async function start() {
+async function start(): Promise<void> {
     const sceneOptions = new Inputs.BabylonJSScene.InitBabylonJSDto();
     sceneOptions.canvasId = "babylon-canvas";
     sceneOptions.sceneSize = 10;
@@ -38,18 +39,8 @@ async function start() {
     });
 }
 
-async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
-    const cubeOptions = new Inputs.OCCT.CubeDto();
-    cubeOptions.size = 2.5;
-    cubeOptions.center = [0, 1.25, 0];
-
-    const cube = await bitbybit.occt.shapes.solid.createCube(cubeOptions);
-
-    const filletOptions =
-        new Inputs.OCCT.FilletDto<Inputs.OCCT.TopoDSShapePointer>();
-    filletOptions.shape = cube;
-    filletOptions.radius = 0.4;
-    const roundedCube = await bitbybit.occt.fillets.filletEdges(filletOptions);
+async function createOCCTGeometry(bitbybit: BitByBitBase, color: string): Promise<void> {
+    const roundedCube = await buildModel(bitbybit.occt, defaultParams);
 
     const drawOptions = new Inputs.Draw.DrawOcctShapeOptions();
     drawOptions.edgeWidth = 0.5;
@@ -63,7 +54,7 @@ async function createOCCTGeometry(bitbybit: BitByBitBase, color: string) {
     });
 }
 
-async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
+async function createManifoldGeometry(bitbybit: BitByBitBase, color: string): Promise<void> {
     const sphereOptions = new Inputs.Manifold.SphereDto();
     sphereOptions.radius = 1.5;
     sphereOptions.circularSegments = 32;
@@ -81,7 +72,7 @@ async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
     const translationOptions =
         new Inputs.Manifold.TranslateDto<Inputs.Manifold.ManifoldPointer>();
     translationOptions.manifold = diffedShape;
-    translationOptions.vector = [0, 1.25, -4]; // Position below OCCT
+    translationOptions.vector = [0, 1.25, -4];
     const movedShape = await bitbybit.manifold.manifold.transforms.translate(
         translationOptions
     );
@@ -94,7 +85,7 @@ async function createManifoldGeometry(bitbybit: BitByBitBase, color: string) {
     });
 }
 
-async function createJSCADGeometry(bitbybit: BitByBitBase, color: string) {
+async function createJSCADGeometry(bitbybit: BitByBitBase, color: string): Promise<void> {
     const geodesicSphereOptions = new Inputs.JSCAD.GeodesicSphereDto();
     geodesicSphereOptions.radius = 1.5;
     geodesicSphereOptions.center = [0, 1.5, 4];

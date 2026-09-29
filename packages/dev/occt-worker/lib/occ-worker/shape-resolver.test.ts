@@ -529,7 +529,7 @@ describe("Function Path Resolver Unit Tests", () => {
             
             expect(() => {
                 functionPathResolver.callFunction(root, "shapes.wire.create", {});
-            }).toThrow("Cannot resolve path \"shapes.wire.create\"");
+            }).toThrow("Cannot resolve \"shapes.wire.create\": \"shapes\" is not an object");
         });
 
         it("should throw error when function does not exist", () => {
@@ -596,6 +596,35 @@ describe("Shape Resolver edge cases", () => {
                 .toThrow("File/Blob objects cannot be passed directly to the worker");
         });
 
+        it("should build a new structure and leave the value it was given as it was", () => {
+            // Arrange
+            cacheHelper.addToCache(7, { kernel: "shape" });
+            const resolver = new ShapeResolver(cacheHelper);
+            const posted = { options: { target: { type: "occ-shape", hash: 7 } }, list: [1, { type: "occ-shape", hash: 7 }] };
+
+            // Act
+            const result = resolver.resolveShapeReferences(posted);
+
+            // Assert
+            expect(result).toEqual({ options: { target: { kernel: "shape", hash: 7 } }, list: [1, { kernel: "shape", hash: 7 }] });
+            expect(posted).toEqual({ options: { target: { type: "occ-shape", hash: 7 } }, list: [1, { type: "occ-shape", hash: 7 }] });
+            expect(result.options).not.toBe(posted.options);
+            expect(result.list).not.toBe(posted.list);
+        });
+
+        it("should resolve an entity reference to the handle the cache holds", () => {
+            // Arrange
+            const handle = { kernel: "document" };
+            cacheHelper.addToCache(9, handle);
+            const resolver = new ShapeResolver(cacheHelper);
+
+            // Act
+            const result = resolver.resolveShapeReferences({ document: { type: "occ-entity", hash: 9 } });
+
+            // Assert
+            expect(result.document).toBe(handle);
+        });
+
         it("should say which entity is missing when its hash is not in the cache", () => {
             // Arrange
             const resolver = new ShapeResolver(cacheHelper);
@@ -632,13 +661,63 @@ describe("Shape Resolver edge cases", () => {
     });
 
     describe("callFunction", () => {
+        it("should say so when the root is not an object", () => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+
+            // Act & Assert
+            expect(() => resolver.callFunction(null, "shapes.createSphere", {})).toThrow("Cannot resolve \"shapes.createSphere\": the root is not an object");
+        });
+
         it("should say so when the path names a parent that is not there", () => {
             // Arrange
             const resolver = new FunctionPathResolver();
 
             // Act & Assert
             expect(() => resolver.callFunction({ shapes: null }, "shapes.createSphere", {}))
-                .toThrow("Cannot resolve path \"shapes.createSphere\"");
+                .toThrow("Cannot resolve \"shapes.createSphere\": \"shapes\" is not an object");
+        });
+
+        it.each([
+            ["constructor", "constructor"],
+            ["shapes.__proto__.hasOwnProperty", "__proto__"],
+            ["shapes.constructor", "constructor"],
+            ["shapes.createSphere.prototype", "prototype"],
+            ["shapes..createSphere", ""],
+        ])("should refuse %j, which reaches past the methods an operation may name", (path, segment) => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+            const root = { shapes: { createSphere: (): string => "a sphere" } };
+
+            // Act & Assert
+            expect(() => resolver.callFunction(root, path, {})).toThrow(`Cannot resolve "${path}": "${segment}" is not a segment an operation path may contain`);
+        });
+
+        it("should refuse a path that walks into a method as though it held others", () => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+            const calls: unknown[] = [];
+            const root = { shapes: { createSphere: (inputs: unknown): void => { calls.push(inputs); } } };
+
+            // Act & Assert
+            expect(() => resolver.callFunction(root, "shapes.createSphere.call", { radius: 1 })).toThrow("Cannot resolve \"shapes.createSphere.call\": \"shapes.createSphere\" is not an object");
+            expect(calls).toEqual([]);
+        });
+
+        it("should hand the method the inputs it was given as its one argument", () => {
+            // Arrange
+            const resolver = new FunctionPathResolver();
+            const received: unknown[][] = [];
+            const root = { shapes: { createSphere: (...args: unknown[]): string => { received.push(args); return "a sphere"; } } };
+            const inputs = { radius: 2 };
+
+            // Act
+            const result = resolver.callFunction(root, "shapes.createSphere", inputs);
+
+            // Assert
+            expect(result).toBe("a sphere");
+            expect(received).toEqual([[inputs]]);
+            expect(received[0]?.[0]).toBe(inputs);
         });
     });
 });

@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The scale gizmo: three handles that stretch the attached mesh along X, Y or Z and a center handle
@@ -62,8 +64,9 @@ export class BabylonGizmoScaleGizmo {
      * ```
      */
     snapDistance(inputs: Inputs.BabylonGizmo.SetScaleGizmoSnapDistanceDto): BABYLON.IScaleGizmo {
-        inputs.scaleGizmo.snapDistance = inputs.snapDistance;
-        return inputs.scaleGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetScaleGizmoSnapDistanceDto, inputs) as Resolved.BabylonGizmo.SetScaleGizmoSnapDistanceDto;
+        resolved.scaleGizmo.snapDistance = resolved.snapDistance;
+        return resolved.scaleGizmo;
     }
 
     /**
@@ -75,8 +78,9 @@ export class BabylonGizmoScaleGizmo {
      * @shortname set incremental snap
      */
     setIncrementalSnap(inputs: Inputs.BabylonGizmo.SetScaleGizmoIncrementalSnapDto): BABYLON.IScaleGizmo {
-        inputs.scaleGizmo.incrementalSnap = inputs.incrementalSnap;
-        return inputs.scaleGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetScaleGizmoIncrementalSnapDto, inputs) as Resolved.BabylonGizmo.SetScaleGizmoIncrementalSnapDto;
+        resolved.scaleGizmo.incrementalSnap = resolved.incrementalSnap;
+        return resolved.scaleGizmo;
     }
 
     /**
@@ -88,8 +92,9 @@ export class BabylonGizmoScaleGizmo {
      * @shortname set sensitivity
      */
     sensitivity(inputs: Inputs.BabylonGizmo.SetScaleGizmoSensitivityDto): BABYLON.IScaleGizmo {
-        inputs.scaleGizmo.sensitivity = inputs.sensitivity;
-        return inputs.scaleGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetScaleGizmoSensitivityDto, inputs) as Resolved.BabylonGizmo.SetScaleGizmoSensitivityDto;
+        resolved.scaleGizmo.sensitivity = resolved.sensitivity;
+        return resolved.scaleGizmo;
     }
 
     /**

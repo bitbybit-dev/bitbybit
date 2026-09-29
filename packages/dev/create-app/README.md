@@ -1,163 +1,86 @@
 # @bitbybit-dev/create-app
 
-🚀 **CLI tool to scaffold Bit By Bit Developers 3D/CAD projects - browser-based frontend apps and CAD Cloud backend projects**
+**Scaffold a Bit By Bit Developers 3D/CAD project: a browser app on one of three game engines, a complete app template ready for a coding agent, or a CAD Cloud backend with its frontend.**
 
-Create stunning 3D/CAD applications with ease using our powerful geometry kernels: OCCT (OpenCascade), JSCAD, and Manifold. Or scaffold a full-stack project that connects to our [CAD Cloud API](https://learn.bitbybit.dev/api/cloud-api) for server-side model generation and file conversion.
+Every project it creates runs on the open-source [Bitbybit](https://bitbybit.dev) CAD packages (OpenCascade, JSCAD and Manifold compiled to WebAssembly, MIT licensed), ships with a headless smoke test behind a strict TypeScript configuration and the ESLint rules the Bitbybit code base is held to, and comes configured for AI coding agents: an `AGENTS.md` that explains the project, and the free [Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp) server set up for Claude Code, Cursor and VS Code, so the agent looks the API up instead of guessing it.
 
-## Quick Start
-
-### Using npm init (Recommended)
+## Quick start
 
 ```bash
-npm init @bitbybit-dev/app my-project
+npm init @bitbybit-dev/app my-project              # interactive
+npm init @bitbybit-dev/app my-project -- -T laser-cut-box
+npx @bitbybit-dev/create-app my-project --type frontend --engine threejs
 ```
 
-### Using npx
-
-```bash
-npx @bitbybit-dev/create-app my-project
-```
-
-## Usage
-
-### Interactive Mode
-
-Simply run the command without options to enter interactive mode:
-
-```bash
-npm init @bitbybit-dev/app my-project
-```
-
-You'll be prompted to select:
-- 📦 **App Type**: Frontend (browser 3D app) or Cloud (backend + frontend for CAD Cloud API)
-- 🎮 **Game Engine** (frontend): Three.js, Babylon.js, or PlayCanvas
-- ⚙️ **OCCT Architecture** (frontend): 32-bit, 64-bit, or 64-bit Multi-threaded
-- 🖥️ **Backend Template** (cloud): Hono + SDK, Hono + REST, Node.js + SDK, Node.js + REST, or .NET + REST
-
-### CLI Options
-
-```bash
-npm init @bitbybit-dev/app my-project --engine threejs --occt-architecture 32
-```
-
-Available engines:
-- `threejs` - Three.js: Lightweight and flexible 3D library
-- `babylonjs` - Babylon.js: Powerful and feature-rich game engine  
-- `playcanvas` - PlayCanvas: Fast and lightweight WebGL game engine
-
-Available OCCT architectures:
-- `32` - 32-bit (Default): Supported on all browsers
-- `64` - 64-bit: May not be supported on all browsers (requires WebAssembly Memory64)
-- `64-mt` - 64-bit Multi-threaded: Requires special server configuration (COOP/COEP headers)
-
-### OCCT Architecture Notes
-
-**32-bit (Default)**: Works on all browsers and is recommended for maximum compatibility.
-
-**64-bit**: Uses WebAssembly Memory64, which may not be available in older browsers. Use this when you need to work with larger CAD models that exceed 32-bit memory limits.
-
-**64-bit Multi-threaded**: Enables parallel processing using WebAssembly threads. Requires your server to send the following headers:
-- `Cross-Origin-Opener-Policy: same-origin`
-- `Cross-Origin-Embedder-Policy: require-corp`
-
-When you select 64-bit MT, a `vite.config.ts` is automatically created with these headers pre-configured for development.
-
-## What You Get
-
-### Frontend Projects
-
-Each scaffolded frontend project includes:
-
-- ⚡ **Vite** - Lightning fast build tool
-- 📘 **TypeScript** - Type-safe development
-- 🎨 **Bitbybit** - All geometry kernels pre-configured:
-  - **OCCT** (OpenCascade) - Professional CAD kernel
-  - **JSCAD** - Programmatic solid modeling
-  - **Manifold** - Fast mesh boolean operations
-- 🎮 **Your chosen 3D engine** - Three.js, Babylon.js, or PlayCanvas
-
-### Cloud Projects
-
-Each scaffolded cloud project includes:
-
-- 🖥️ **Your chosen backend** - Hono (Cloudflare Workers), Express 5 (Node.js), or ASP.NET Core (.NET 10)
-- 🌐 **React + Three.js frontend** - shared across all backends for visualizing CAD results
-- 🔑 **Secure API key handling** - keys stay on the server; the frontend proxies requests through your backend
-- 📘 **TypeScript SDK or raw REST** - depending on your chosen template
-- 📖 **Ready-to-run examples** - model generation, CAD pipelines, file conversion, and file uploads
-
-## After Scaffolding
-
-Navigate to your project and start developing:
+Then:
 
 ```bash
 cd my-project
 npm install
-npm run dev
+npm run dev      # the app
+npm run smoke    # builds the geometry headlessly in Node and prints a JSON summary
 ```
 
-## Project Structure
+## Three kinds of project
 
-### Frontend Projects
+| `--type` | What you get | Runs on |
+|---|---|---|
+| `frontend` | A Vite + TypeScript app on Three.js, Babylon.js or PlayCanvas with all three kernels wired up, a starter model in `src/model.ts` and a smoke that builds it in Node | your users' browsers, free |
+| `app` | A complete product on the packages, chosen with `--template` (below): its own UI, real exports, a smoke with domain assertions | the browser, free; one template adds CAD Cloud for a Pro algorithm and says so |
+| `cloud` | A backend that calls the CAD Cloud REST API with your key (Hono on Cloudflare Workers, Express on Node, or ASP.NET Core) and a React + Three.js frontend that proxies to it | CAD Cloud, metered on your key |
 
-```
-my-project/
-├── index.html
-├── package.json
-├── tsconfig.json
-├── public/
-│   └── vite.svg
-└── src/
-    ├── main.ts
-    ├── style.css
-    └── vite-env.d.ts
-```
+### App templates (`--type app --template <id>`, or `-T <id>`)
 
-### Cloud Projects
+| Template | What it does | Exports | Needs CAD Cloud? |
+|---|---|---|---|
+| `product-configurator` | A parametric planter with a form, presets, and a price computed from the solid's measured volume and surface area | STEP, STL, GLB | no |
+| `laser-cut-box` | A finger-jointed box from one sheet: thickness, kerf and finger width; the assembled box and the cutting layout | DXF, SVG, STEP | no |
+| `sheet-metal-unfold` | A channel built in the browser and unfolded on CAD Cloud, a Pro algorithm; flat pattern with bend lines and a bend table; a forty-line backend keeps the key | DXF, STEP | yes, for the unfold only |
+| `step-to-gltf-cli` | Batch STEP and IGES to GLB and STL in-process, with a JSON of facts per file; `--cloud` for serverless or volume | GLB, STL, JSON | optional |
+| `drone-assembly` | A multirotor as a real assembly: twenty-seven parts placed through sub-assemblies (four, six or eight arms change only the placements), physically based materials, spinning propellers, a bill of materials | STEP assembly, GLB | no |
 
-```
-my-cloud-project/
-├── README.md
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx
-│   │   ├── components/    # Three.js viewer, header, API key warning
-│   │   └── panels/        # Models and Pipelines UI panels
-│   ├── vite.config.ts     # Dev proxy: /api → localhost:3000
-│   └── package.json
-└── backend/
-    ├── src/
-    │   ├── index.ts           # Routes
-    │   └── bitbybit-client.ts # API calls
-    └── package.json
-```
+Every scaffold ships bitbybit.dev's favicon and logo in `public/`, linked from its page; replace them with your own. Every app template is MIT code you own. Its `README.md` explains the product, its `AGENTS.md` explains it to an agent, and its smoke pins facts about the geometry (face counts, volumes, extents, that a box's joints close) so an agent has something to iterate against. `--engine` and `--occt-architecture` do not apply to app templates: each ships its own engine (Three.js) and kernel.
 
-## Use It With an AI Agent
-
-Scaffolding is the first half; the second is writing the geometry. An agent that does not know an API invents plausible names for it, and Bitbybit has more functions across its three CAD kernels than any model holds in memory. Connect the free **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** server in the project this CLI just created, and your agent looks up the exact signature, parameter defaults, return type and examples for the `@bitbybit-dev` versions it installed, instead of guessing them.
+### Frontend options
 
 ```bash
-claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp
+npm init @bitbybit-dev/app my-project -- --type frontend --engine babylonjs --occt-architecture 32
 ```
 
-Cursor, VS Code, claude.ai, ChatGPT and the Claude API connect to the same endpoint; [`npx -y @bitbybit-dev/mcp`](https://www.npmjs.com/package/@bitbybit-dev/mcp) runs the same server locally, pinned to the versions in your new project's `package.json`. [Every configuration is here](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+- `--engine`: `threejs`, `babylonjs` or `playcanvas`
+- `--occt-architecture`: `32` (default, every browser), `64` (WebAssembly Memory64, larger models), `64-mt` (multi-threaded; needs `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy` headers, which the generated `vite.config.ts` sets for the dev server)
 
-With a [CAD Cloud](https://bitbybit.dev/cad-cloud) key, the [Bitbybit CAD Cloud MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp) goes further and lets the agent run the geometry for you - measure a STEP file, run a pipeline, convert to glTF - and hand back the results as files. For assistants that cannot speak MCP, the whole API is also published as [context files](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/prompt-contexts). The [AI section of the documentation](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro) explains all of it.
+### Cloud options
+
+```bash
+npm init @bitbybit-dev/app my-project -- --type cloud --backend hono-sdk
+```
+
+- `--backend`: `hono-sdk`, `hono-rest`, `nodejs-sdk`, `nodejs-rest` or `dotnet-rest`
+
+The generated README says what needs CAD Cloud and where to get a key; the key goes in the backend's own secret file (`.dev.vars`, `.env` or `appsettings.Development.json`), never in the frontend.
+
+## Where geometry runs
+
+The packages, in your own process, are the complete answer for everything they can do: they are free, and nothing of ours sits in the loop. [CAD Cloud](https://bitbybit.dev/cad-cloud) exists for Pro algorithms that are available nowhere else (the sheet-metal unfold, for one) and for compute you cannot provide, such as an edge function or file conversion at volume. Every template that touches the cloud explains this in its README and its `AGENTS.md`, keeps working without a key, and links to the [plans](https://bitbybit.dev/cad-cloud) and to [Bitbybit Studio](https://studio.bitbybit.dev/keys/billing), where keys are made.
+
+## Every project is agent-ready
+
+Each scaffold contains:
+
+- `AGENTS.md`, written for the agent: what the project is, the look-the-API-up rule, where geometry runs, the smoke loop, and what never to do. `CLAUDE.md` points at it.
+- `.mcp.json`, `.cursor/mcp.json` and `.vscode/mcp.json`, all pointing at `https://mcp.bitbybit.dev/mcp`, the free docs server. Open the project in Claude Code, Cursor or VS Code and the agent can `describe` any function of the version you installed. Other hosts: [every configuration](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp).
+- `tsconfig.json` and `eslint.config.js`: the strict compiler flags and the type-aware lint rules every Bitbybit project is held to, at error; `npm run typecheck` and `npm run lint` run them alone.
+- `npm run smoke`: the typecheck, the lint, then the geometry built headlessly in Node on the in-process kernel, printed as one JSON line, with assertions that fail loudly. Ask the agent for a change; it runs the smoke and reads the counts.
+
+For offline or exact-version answers, `npx -y @bitbybit-dev/mcp` runs the same server locally, pinned to the packages in the project's `node_modules`.
 
 ## Links
 
-- 🌐 **Website**: [https://bitbybit.dev](https://bitbybit.dev)
-- 📚 **Documentation**: [https://learn.bitbybit.dev](https://learn.bitbybit.dev)
-- 🤖 **Using AI with Bitbybit**: [https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)
-- 💬 **Discord Community**: [https://discord.gg/GSe3VMe](https://discord.gg/GSe3VMe)
-- 🐛 **Issues**: [https://github.com/bitbybit-dev/bitbybit/issues](https://github.com/bitbybit-dev/bitbybit/issues)
-- 📦 **Monorepo**: [https://github.com/bitbybit-dev/bitbybit](https://github.com/bitbybit-dev/bitbybit)
-
-## Support Us
-
-⭐ **The best way to support Bit By Bit Developers is with a Silver or Gold plan subscription!**
-
-[Subscribe Now](https://bitbybit.dev/auth/pick-plan)
+- [Documentation](https://learn.bitbybit.dev) and [the npm packages](https://learn.bitbybit.dev/learn/npm-packages/intro)
+- [Using AI with Bitbybit](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/intro)
+- [CAD Cloud](https://bitbybit.dev/cad-cloud) and the [REST API](https://learn.bitbybit.dev/api/cloud-api)
+- [Discord](https://discord.gg/GSe3VMe), [issues](https://github.com/bitbybit-dev/bitbybit/issues), [the monorepo](https://github.com/bitbybit-dev/bitbybit)
 
 ## License
 

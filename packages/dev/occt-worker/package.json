@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/occt-worker",
-    "version": "1.3.2",
+    "version": "1.4.0-rc.0",
     "description": "Bit By Bit Developers CAD algorithms using OpenCascade Technology kernel adapted for WebWorker",
     "homepage": "https://docs.bitbybit.dev/classes/Bit.OCCT",
     "main": "index.js",
@@ -84,6 +84,11 @@
             "types": "./dist/lib/api/occt/index.d.ts",
             "default": "./dist/lib/api/occt/index.js"
         },
+        "./lib/api/occt/analysis": {
+            "@bitbybit-dev/source": "./lib/api/occt/analysis/index.ts",
+            "types": "./dist/lib/api/occt/analysis/index.d.ts",
+            "default": "./dist/lib/api/occt/analysis/index.js"
+        },
         "./lib/api/occt/assembly": {
             "@bitbybit-dev/source": "./lib/api/occt/assembly/index.ts",
             "types": "./dist/lib/api/occt/assembly/index.d.ts",
@@ -93,6 +98,11 @@
             "@bitbybit-dev/source": "./lib/api/occt/geom/index.ts",
             "types": "./dist/lib/api/occt/geom/index.d.ts",
             "default": "./dist/lib/api/occt/geom/index.js"
+        },
+        "./lib/api/occt/select": {
+            "@bitbybit-dev/source": "./lib/api/occt/select/index.ts",
+            "types": "./dist/lib/api/occt/select/index.d.ts",
+            "default": "./dist/lib/api/occt/select/index.js"
         },
         "./lib/api/occt/shapes": {
             "@bitbybit-dev/source": "./lib/api/occt/shapes/index.ts",
@@ -118,8 +128,8 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/occt": "1.3.2",
-        "@bitbybit-dev/base": "1.3.2",
+        "@bitbybit-dev/occt": "1.4.0-rc.0",
+        "@bitbybit-dev/base": "1.4.0-rc.0",
         "rxjs": "7.8.2"
     },
     "devDependencies": {

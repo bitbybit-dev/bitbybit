@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Combining Manifold solids: fusing, cutting and intersecting two or many at once, and splitting a
@@ -114,8 +116,7 @@ export class ManifoldBooleans {
      */
     differenceTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifold1, inputs.manifold2);
+        return Manifold.difference(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -132,8 +133,7 @@ export class ManifoldBooleans {
      */
     unionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifold1, inputs.manifold2);
+        return Manifold.union(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -150,8 +150,7 @@ export class ManifoldBooleans {
      */
     intersectionTwo(inputs: Inputs.Manifold.TwoManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifold1, inputs.manifold2);
+        return Manifold.intersection(inputs.manifold1, inputs.manifold2);
     }
 
     /**
@@ -168,8 +167,7 @@ export class ManifoldBooleans {
      */
     difference(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { difference } = Manifold;
-        return difference(inputs.manifolds);
+        return Manifold.difference(inputs.manifolds);
     }
 
     /**
@@ -186,8 +184,7 @@ export class ManifoldBooleans {
      */
     union(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifolds);
+        return Manifold.union(inputs.manifolds);
     }
 
     /**
@@ -204,8 +201,7 @@ export class ManifoldBooleans {
      */
     intersection(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { intersection } = Manifold;
-        return intersection(inputs.manifolds);
+        return Manifold.intersection(inputs.manifolds);
     }
 
     /**
@@ -243,7 +239,8 @@ export class ManifoldBooleans {
      * ```
      */
     splitByPlane(inputs: Inputs.Manifold.SplitByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
-        return inputs.manifold.splitByPlane(inputs.normal, inputs.originOffset);
+        const resolved = resolveDto(Inputs.Manifold.SplitByPlaneDto, inputs) as Resolved.Manifold.SplitByPlaneDto<Manifold3D.Manifold>;
+        return resolved.manifold.splitByPlane(resolved.normal, resolved.originOffset);
     }
 
     /**
@@ -264,16 +261,17 @@ export class ManifoldBooleans {
      * ```
      */
     splitByPlaneOnOffsets(inputs: Inputs.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>): Manifold3D.Manifold[] {
+        const resolved = resolveDto(Inputs.Manifold.SplitByPlaneOnOffsetsDto, inputs) as Resolved.Manifold.SplitByPlaneOnOffsetsDto<Manifold3D.Manifold>;
         const pieces: Manifold3D.Manifold[] = [];
         const junk: Manifold3D.Manifold[] = [];
 
-        let remainder: Manifold3D.Manifold | undefined = inputs.manifold.asOriginal();
+        let remainder: Manifold3D.Manifold | undefined = resolved.manifold.asOriginal();
 
-        inputs.originOffsets.forEach((offset) => {
+        resolved.originOffsets.forEach((offset) => {
             if (!remainder) {
                 return;
             }
-            const halfs = remainder.splitByPlane(inputs.normal, offset);
+            const halfs = remainder.splitByPlane(resolved.normal, offset);
             junk.push(remainder);
             remainder = undefined;
 
@@ -312,7 +310,8 @@ export class ManifoldBooleans {
      * ```
      */
     trimByPlane(inputs: Inputs.Manifold.TrimByPlaneDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.asOriginal().trimByPlane(inputs.normal, inputs.originOffset);
+        const resolved = resolveDto(Inputs.Manifold.TrimByPlaneDto, inputs) as Resolved.Manifold.TrimByPlaneDto<Manifold3D.Manifold>;
+        return resolved.manifold.asOriginal().trimByPlane(resolved.normal, resolved.originOffset);
     }
 
 }

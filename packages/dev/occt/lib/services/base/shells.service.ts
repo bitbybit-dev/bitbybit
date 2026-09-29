@@ -1,25 +1,27 @@
 import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shell } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { ShapeGettersService } from "./shape-getters";
-import { FacesService } from "./faces.service";
 import { ConverterService } from "./converter.service";
+import * as Resolved from "../../api/resolved-inputs";
+import { massesAndCentres } from "./kernel-arrays";
+import { InputError } from "@bitbybit-dev/base";
+import { checkedShapes } from "./input-checks";
 
 export class ShellsService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly shapeGettersService: ShapeGettersService,
         private readonly converterService: ConverterService,
-        private readonly facesService: FacesService,
     ) { }
 
     getShellSurfaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shell>): number {
-        const faces = this.shapeGettersService.getFaces(inputs);
-        const faceAreas = this.facesService.getFacesAreas({ shapes: faces });
-        return faceAreas.reduce((p, c) => p + c, 0);
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.mass;
     }
 
-    sewFaces(inputs: Inputs.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
+    sewFaces(inputs: Resolved.OCCT.SewDto<TopoDS_Face>): TopoDS_Shell {
+        checkedShapes(inputs.shapes);
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, and sewing needs at least one face.", "shapes");
+        }
         const sew = new this.occ.BRepBuilderAPI_Sewing(inputs.tolerance);
         inputs.shapes.forEach(face => {
             sew.Add(face);

@@ -123,7 +123,8 @@ describe("BabylonGuiControl", () => {
             expect(clone.name).toBe("clonedControl");
         });
 
-        it("should keep the original's name where a script named nothing at all", () => {
+        it("should give the copy the documented default name where a script named nothing at all", () => {
+            // Arrange
             const inputs = new Inputs.BabylonGui.CloneControlDto(control, undefined, undefined, host);
             Object.assign(inputs, { name: undefined });
 
@@ -131,7 +132,15 @@ describe("BabylonGuiControl", () => {
             const clone = service.cloneControl(inputs);
 
             // Assert
-            expect(clone.name).toBe("label");
+            expect(clone.name).toBe("clonedControl");
+        });
+
+        it("should give the copy the documented default name where a script leaves the name out of its object", () => {
+            // Act
+            const clone = service.cloneControl({ control, host });
+
+            // Assert
+            expect(clone.name).toBe("clonedControl");
         });
     });
 

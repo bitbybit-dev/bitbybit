@@ -1,5 +1,7 @@
 import * as Inputs from "../../inputs";
 import * as Manifold3D from "manifold-3d";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Changing Manifold solids beyond booleans: wrapping them in a convex hull, slicing and projecting
@@ -48,8 +50,7 @@ export class ManifoldOperations {
      */
     hullPoints(inputs: Inputs.Manifold.HullPointsDto<(Inputs.Base.Point3 | Manifold3D.Manifold)[]>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { hull } = Manifold;
-        return hull(inputs.points);
+        return Manifold.hull(inputs.points);
     }
 
     /**
@@ -69,7 +70,8 @@ export class ManifoldOperations {
      * ```
      */
     slice(inputs: Inputs.Manifold.SliceDto<Manifold3D.Manifold>): Manifold3D.CrossSection {
-        return inputs.manifold.slice(inputs.height);
+        const resolved = resolveDto(Inputs.Manifold.SliceDto, inputs) as Resolved.Manifold.SliceDto<Manifold3D.Manifold>;
+        return resolved.manifold.slice(resolved.height);
     }
 
     /**
@@ -105,7 +107,8 @@ export class ManifoldOperations {
      * ```
      */
     setTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.setTolerance(inputs.tolerance);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldRefineToleranceDto, inputs) as Resolved.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>;
+        return resolved.manifold.setTolerance(resolved.tolerance);
     }
 
     /**
@@ -126,8 +129,7 @@ export class ManifoldOperations {
      */
     reserveIds(inputs: Inputs.Manifold.CountDto): number {
         const { Manifold } = this.manifold;
-        const { reserveIDs } = Manifold;
-        return reserveIDs(inputs.count);
+        return Manifold.reserveIDs(inputs.count);
     }
 
     /**
@@ -167,8 +169,7 @@ export class ManifoldOperations {
      */
     compose(inputs: Inputs.Manifold.ManifoldsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
         const { Manifold } = this.manifold;
-        const { union } = Manifold;
-        return union(inputs.manifolds);
+        return Manifold.union(inputs.manifolds);
     }
 
     /**
@@ -206,7 +207,8 @@ export class ManifoldOperations {
      * ```
      */
     calculateNormals(inputs: Inputs.Manifold.CalculateNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.calculateNormals(inputs.normalIdx, inputs.minSharpAngle);
+        const resolved = resolveDto(Inputs.Manifold.CalculateNormalsDto, inputs) as Resolved.Manifold.CalculateNormalsDto<Manifold3D.Manifold>;
+        return resolved.manifold.calculateNormals(resolved.normalIdx, resolved.minSharpAngle);
     }
 
     /**
@@ -226,7 +228,8 @@ export class ManifoldOperations {
      * ```
      */
     calculateCurvature(inputs: Inputs.Manifold.CalculateCurvatureDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.calculateCurvature(inputs.gaussianIdx, inputs.meanIdx);
+        const resolved = resolveDto(Inputs.Manifold.CalculateCurvatureDto, inputs) as Resolved.Manifold.CalculateCurvatureDto<Manifold3D.Manifold>;
+        return resolved.manifold.calculateCurvature(resolved.gaussianIdx, resolved.meanIdx);
     }
 
     /**
@@ -246,7 +249,8 @@ export class ManifoldOperations {
      * ```
      */
     refineToTolerance(inputs: Inputs.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.refineToTolerance(inputs.tolerance);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldRefineToleranceDto, inputs) as Resolved.Manifold.ManifoldRefineToleranceDto<Manifold3D.Manifold>;
+        return resolved.manifold.refineToTolerance(resolved.tolerance);
     }
 
     /**
@@ -266,7 +270,8 @@ export class ManifoldOperations {
      * ```
      */
     refineToLength(inputs: Inputs.Manifold.ManifoldRefineLengthDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.refineToLength(inputs.length);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldRefineLengthDto, inputs) as Resolved.Manifold.ManifoldRefineLengthDto<Manifold3D.Manifold>;
+        return resolved.manifold.refineToLength(resolved.length);
     }
 
     /**
@@ -286,7 +291,8 @@ export class ManifoldOperations {
      * ```
      */
     refine(inputs: Inputs.Manifold.ManifoldRefineDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.refine(inputs.number);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldRefineDto, inputs) as Resolved.Manifold.ManifoldRefineDto<Manifold3D.Manifold>;
+        return resolved.manifold.refine(resolved.number);
     }
 
     /**
@@ -308,7 +314,8 @@ export class ManifoldOperations {
      * ```
      */
     smoothOut(inputs: Inputs.Manifold.ManifoldSmoothOutDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.smoothOut(inputs.minSharpAngle, inputs.minSmoothness);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldSmoothOutDto, inputs) as Resolved.Manifold.ManifoldSmoothOutDto<Manifold3D.Manifold>;
+        return resolved.manifold.smoothOut(resolved.minSharpAngle, resolved.minSmoothness);
     }
 
     /**
@@ -328,7 +335,8 @@ export class ManifoldOperations {
      * ```
      */
     smoothByNormals(inputs: Inputs.Manifold.ManifoldSmoothByNormalsDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.smoothByNormals(inputs.normalIdx);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldSmoothByNormalsDto, inputs) as Resolved.Manifold.ManifoldSmoothByNormalsDto<Manifold3D.Manifold>;
+        return resolved.manifold.smoothByNormals(resolved.normalIdx);
     }
 
     /**
@@ -372,6 +380,7 @@ export class ManifoldOperations {
      * ```
      */
     setProperties(inputs: Inputs.Manifold.ManifoldSetPropertiesDto<Manifold3D.Manifold>): Manifold3D.Manifold {
-        return inputs.manifold.setProperties(inputs.numProp, inputs.propFunc);
+        const resolved = resolveDto(Inputs.Manifold.ManifoldSetPropertiesDto, inputs) as Resolved.Manifold.ManifoldSetPropertiesDto<Manifold3D.Manifold>;
+        return resolved.manifold.setProperties(resolved.numProp, resolved.propFunc);
     }
 }

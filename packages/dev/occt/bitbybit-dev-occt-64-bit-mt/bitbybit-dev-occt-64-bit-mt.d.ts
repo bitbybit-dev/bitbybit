@@ -22,7 +22,6 @@ declare namespace RuntimeExports {
         export const ignorePermissions: boolean;
         export const filesystems: any;
         export const syncFSRequests: number;
-        export const readFiles: {};
         export { ErrnoError };
         export { FSStream };
         export { FSNode };
@@ -162,6 +161,8 @@ declare namespace RuntimeExports {
         export function mkdev(path: any, mode: any, dev: any): any;
         export function symlink(oldpath: any, newpath: any): any;
         export function symlink(oldpath: any, newpath: any): any;
+        export function link(oldpath: any, newpath: any, flags: any): any;
+        export function link(oldpath: any, newpath: any, flags: any): any;
         export function rename(old_path: any, new_path: any): void;
         export function rename(old_path: any, new_path: any): void;
         export function rmdir(path: any): void;
@@ -200,8 +201,8 @@ declare namespace RuntimeExports {
         export function truncate(path: any, len: any): void;
         export function ftruncate(fd: any, len: any): void;
         export function ftruncate(fd: any, len: any): void;
-        export function utime(path: any, atime: any, mtime: any): void;
-        export function utime(path: any, atime: any, mtime: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
+        export function utime(path: any, atime: any, mtime: any, dontFollow: any): void;
         export function open(path: any, flags: any, mode?: number): any;
         export function open(path: any, flags: any, mode?: number): any;
         export function close(stream: any): void;
@@ -278,6 +279,8 @@ declare namespace RuntimeExports {
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
         export function createLazyFile(parent: any, name: any, url: any, canRead: any, canWrite: any): any;
     }
+    function getExceptionMessage(ex: any): any;
+    function decrementExceptionRefcount(ex: any): void;
     function FS_createPath(...args: any[]): any;
     function FS_createDataFile(...args: any[]): any;
     function FS_preloadFile(parent: any, name: any, url: any, canRead: any, canWrite: any, dontCreateFile: any, canOwn: any, preFinish: any): Promise<void>;
@@ -327,6 +330,15 @@ declare class FSNode {
     get write(): boolean;
     get isFolder(): any;
     get isDevice(): any;
+    addListener(cb: any, exclusive?: boolean): {
+        listeners: any;
+        entry: {
+            cb: any;
+            exclusive: boolean;
+        };
+    };
+    notifyListeners(flags: any): void;
+    exclTurn: any;
 }
 interface WasmModule {
   _BitbybitOcct_Init(): number;
@@ -541,140 +553,6 @@ export interface gp_Circ extends ClassHandle {
   Contains(_0: gp_Pnt, _1: number): boolean;
 }
 
-export interface gp_XY extends ClassHandle {
-  Added(_0: gp_XY): gp_XY;
-  Subtracted(_0: gp_XY): gp_XY;
-  Add(_0: gp_XY): void;
-  Subtract(_0: gp_XY): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Multiply(_0: number): void;
-  Multiplied(_0: number): gp_XY;
-  Modulus(): number;
-  SquareModulus(): number;
-  Dot(_0: gp_XY): number;
-  Crossed(_0: gp_XY): number;
-}
-
-export interface gp_Pnt2d extends ClassHandle {
-  Translated(_0: gp_Vec2d): gp_Pnt2d;
-  Translate(_0: gp_Vec2d): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Distance(_0: gp_Pnt2d): number;
-  SquareDistance(_0: gp_Pnt2d): number;
-  IsEqual(_0: gp_Pnt2d, _1: number): boolean;
-}
-
-export interface gp_Vec2d extends ClassHandle {
-  Added(_0: gp_Vec2d): gp_Vec2d;
-  Subtracted(_0: gp_Vec2d): gp_Vec2d;
-  Normalized(): gp_Vec2d;
-  Reversed(): gp_Vec2d;
-  Add(_0: gp_Vec2d): void;
-  Subtract(_0: gp_Vec2d): void;
-  Normalize(): void;
-  Reverse(): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Magnitude(): number;
-  SquareMagnitude(): number;
-  Angle(_0: gp_Vec2d): number;
-  Multiply(_0: number): void;
-  Multiplied(_0: number): gp_Vec2d;
-  Dot(_0: gp_Vec2d): number;
-  Crossed(_0: gp_Vec2d): number;
-}
-
-export interface gp_Dir2d extends ClassHandle {
-  Reversed(): gp_Dir2d;
-  Reverse(): void;
-  X(): number;
-  Y(): number;
-  SetX(_0: number): void;
-  SetY(_0: number): void;
-  SetCoord(_0: number, _1: number): void;
-  Angle(_0: gp_Dir2d): number;
-  Dot(_0: gp_Dir2d): number;
-  Crossed(_0: gp_Dir2d): number;
-}
-
-export interface gp_Ax2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  Direction(): gp_Dir2d;
-  Reversed(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetDirection(_0: gp_Dir2d): void;
-  Reverse(): void;
-  Angle(_0: gp_Ax2d): number;
-}
-
-export interface gp_Ax22d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  XDirection(): gp_Dir2d;
-  YDirection(): gp_Dir2d;
-  XAxis(): gp_Ax2d;
-  YAxis(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetXDirection(_0: gp_Dir2d): void;
-  SetYDirection(_0: gp_Dir2d): void;
-}
-
-export interface gp_Lin2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  Direction(): gp_Dir2d;
-  Position(): gp_Ax2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  SetDirection(_0: gp_Dir2d): void;
-  Angle(_0: gp_Lin2d): number;
-  Distance(_0: gp_Pnt2d): number;
-  Contains(_0: gp_Pnt2d, _1: number): boolean;
-}
-
-export interface gp_Circ2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  SetLocation(_0: gp_Pnt2d): void;
-  Radius(): number;
-  Area(): number;
-  SetRadius(_0: number): void;
-  Contains(_0: gp_Pnt2d, _1: number): boolean;
-  Distance(_0: gp_Pnt2d): number;
-}
-
-export interface gp_Elips2d extends ClassHandle {
-  Location(): gp_Pnt2d;
-  MajorRadius(): number;
-  MinorRadius(): number;
-  Area(): number;
-  SetMajorRadius(_0: number): void;
-  SetMinorRadius(_0: number): void;
-}
-
-export interface gp_Trsf2d extends ClassHandle {
-  TranslationPart(): gp_XY;
-  Inverted(): gp_Trsf2d;
-  Multiplied(_0: gp_Trsf2d): gp_Trsf2d;
-  SetMirror(_0: gp_Pnt2d): void;
-  SetMirrorAx2d(_0: gp_Ax2d): void;
-  SetTranslation(_0: gp_Vec2d): void;
-  SetTranslationPart(_0: gp_Vec2d): void;
-  Invert(): void;
-  Multiply(_0: gp_Trsf2d): void;
-  IsNegative(): boolean;
-  SetRotation(_0: gp_Pnt2d, _1: number): void;
-  SetScale(_0: gp_Pnt2d, _1: number): void;
-  ScaleFactor(): number;
-}
-
 export interface gp_Elips extends ClassHandle {
   Location(): gp_Pnt;
   Position(): gp_Ax2;
@@ -714,6 +592,140 @@ export interface gp_GTrsf extends ClassHandle {
   SetValue(_0: number, _1: number, _2: number): void;
   Value(_0: number, _1: number): number;
   SetVectorialPart(_0: gp_Mat): void;
+}
+
+export interface gp_XY extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Add(_0: gp_XY): void;
+  Added(_0: gp_XY): gp_XY;
+  Subtract(_0: gp_XY): void;
+  Subtracted(_0: gp_XY): gp_XY;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_XY;
+  Modulus(): number;
+  SquareModulus(): number;
+  Dot(_0: gp_XY): number;
+  Crossed(_0: gp_XY): number;
+}
+
+export interface gp_Pnt2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Distance(_0: gp_Pnt2d): number;
+  SquareDistance(_0: gp_Pnt2d): number;
+  IsEqual(_0: gp_Pnt2d, _1: number): boolean;
+  Translate(_0: gp_Vec2d): void;
+  Translated(_0: gp_Vec2d): gp_Pnt2d;
+}
+
+export interface gp_Vec2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Magnitude(): number;
+  SquareMagnitude(): number;
+  Angle(_0: gp_Vec2d): number;
+  Add(_0: gp_Vec2d): void;
+  Added(_0: gp_Vec2d): gp_Vec2d;
+  Subtract(_0: gp_Vec2d): void;
+  Subtracted(_0: gp_Vec2d): gp_Vec2d;
+  Multiply(_0: number): void;
+  Multiplied(_0: number): gp_Vec2d;
+  Dot(_0: gp_Vec2d): number;
+  Crossed(_0: gp_Vec2d): number;
+  Normalize(): void;
+  Normalized(): gp_Vec2d;
+  Reverse(): void;
+  Reversed(): gp_Vec2d;
+}
+
+export interface gp_Dir2d extends ClassHandle {
+  X(): number;
+  Y(): number;
+  SetX(_0: number): void;
+  SetY(_0: number): void;
+  SetCoord(_0: number, _1: number): void;
+  Angle(_0: gp_Dir2d): number;
+  Dot(_0: gp_Dir2d): number;
+  Crossed(_0: gp_Dir2d): number;
+  Reverse(): void;
+  Reversed(): gp_Dir2d;
+}
+
+export interface gp_Ax2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Direction(): gp_Dir2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Angle(_0: gp_Ax2d): number;
+  Reverse(): void;
+  Reversed(): gp_Ax2d;
+}
+
+export interface gp_Ax22d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  XDirection(): gp_Dir2d;
+  YDirection(): gp_Dir2d;
+  XAxis(): gp_Ax2d;
+  YAxis(): gp_Ax2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetXDirection(_0: gp_Dir2d): void;
+  SetYDirection(_0: gp_Dir2d): void;
+}
+
+export interface gp_Lin2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Direction(): gp_Dir2d;
+  Position(): gp_Ax2d;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetDirection(_0: gp_Dir2d): void;
+  Angle(_0: gp_Lin2d): number;
+  Distance(_0: gp_Pnt2d): number;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
+}
+
+export interface gp_Circ2d extends ClassHandle {
+  Location(): gp_Pnt2d;
+  Radius(): number;
+  Area(): number;
+  SetLocation(_0: gp_Pnt2d): void;
+  SetRadius(_0: number): void;
+  Contains(_0: gp_Pnt2d, _1: number): boolean;
+  Distance(_0: gp_Pnt2d): number;
+}
+
+export interface gp_Elips2d extends ClassHandle {
+  MajorRadius(): number;
+  MinorRadius(): number;
+  Location(): gp_Pnt2d;
+  Area(): number;
+  SetMajorRadius(_0: number): void;
+  SetMinorRadius(_0: number): void;
+}
+
+export interface gp_Trsf2d extends ClassHandle {
+  SetMirror(_0: gp_Pnt2d): void;
+  SetMirrorAx2d(_0: gp_Ax2d): void;
+  SetRotation(_0: gp_Pnt2d, _1: number): void;
+  SetScale(_0: gp_Pnt2d, _1: number): void;
+  SetTranslation(_0: gp_Vec2d): void;
+  SetTranslationPart(_0: gp_Vec2d): void;
+  IsNegative(): boolean;
+  ScaleFactor(): number;
+  TranslationPart(): gp_XY;
+  Invert(): void;
+  Inverted(): gp_Trsf2d;
+  Multiply(_0: gp_Trsf2d): void;
+  Multiplied(_0: gp_Trsf2d): gp_Trsf2d;
 }
 
 export interface Geom_Surface extends ClassHandle {
@@ -768,13 +780,12 @@ export interface Geom2d_TrimmedCurve extends Geom2d_Curve {
 export interface Handle_Geom_Surface extends ClassHandle {
   IsNull(): boolean;
   get(): Geom_Surface | null;
-  delete(): void;
+  surface(): Geom_Surface | null;
 }
 
 export interface Handle_Geom_Curve extends ClassHandle {
   IsNull(): boolean;
   get(): Geom_Curve | null;
-  delete(): void;
   FirstParameter(): number;
   LastParameter(): number;
   Value(_0: number): gp_Pnt;
@@ -787,7 +798,6 @@ export interface Handle_Geom_Curve extends ClassHandle {
 export interface Handle_Geom2d_Curve extends ClassHandle {
   IsNull(): boolean;
   get(): Geom2d_Curve | null;
-  delete(): void;
   Value(_0: number): gp_Pnt2d;
   FirstParameter(): number;
   LastParameter(): number;
@@ -959,6 +969,7 @@ export interface BRepAlgoAPI_Fuse extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -968,6 +979,7 @@ export interface BRepAlgoAPI_Cut extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -977,6 +989,7 @@ export interface BRepAlgoAPI_Common extends ClassHandle {
   Shape(): TopoDS_Shape;
   IsDone(): boolean;
   HasErrors(): boolean;
+  ErrorAlerts(): string;
   HasWarnings(): boolean;
   HasGenerated(): boolean;
   Build(): void;
@@ -999,6 +1012,11 @@ export interface BRepAlgoAPI_Splitter extends ClassHandle {
   SetArguments(_0: TopTools_ListOfShape): void;
   SetTools(_0: TopTools_ListOfShape): void;
 }
+
+export interface BitbybitBool_StrategyValue<T extends number> {
+  value: T;
+}
+export type BitbybitBool_Strategy = BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>|BitbybitBool_StrategyValue<number>;
 
 export interface BRepBuilderAPI_MakeVertex extends ClassHandle {
   Vertex(): TopoDS_Vertex;
@@ -1093,6 +1111,7 @@ export interface BRepFilletAPI_MakeFillet extends ClassHandle {
   IsDone(): boolean;
   Build(): void;
   AddWithLaw(_0: TColgp_Array1OfPnt2d, _1: TopoDS_Edge): void;
+  FaultyEdges(_0: TopoDS_Shape): VectorInt;
 }
 
 export interface BRepFilletAPI_MakeChamfer extends ClassHandle {
@@ -1115,6 +1134,7 @@ export interface BRepFilletAPI_MakeFillet2d extends ClassHandle {
   Shape(): TopoDS_Shape;
   NbFillet(): number;
   NbChamfer(): number;
+  CornerDone(): boolean;
 }
 
 export interface ChFi2d_FilletAlgo extends ClassHandle {
@@ -1266,6 +1286,28 @@ export interface BRepMesh_IncrementalMesh extends ClassHandle {
   IsDone(): boolean;
 }
 
+export interface MeshBuffers extends ClassHandle {
+  readonly IsValid: boolean;
+  readonly Error: string;
+  Positions(): any;
+  Normals(): any;
+  Uvs(): any;
+  Triangles(): any;
+  Faces(): any;
+  FaceCentres(): any;
+  EdgePoints(): any;
+  Edges(): any;
+  EdgeMiddles(): any;
+  Vertices(): any;
+  FaceColors(): any;
+  FaceMetadata(): any;
+  FaceTypes(): any;
+  FaceAdjacency(): any;
+  EdgeMetadata(): any;
+  EdgeTypes(): any;
+  EdgeIncidence(): any;
+}
+
 export interface STEPControl_Reader extends ClassHandle {
   NbRootsForTransfer(): number;
   TransferRoot(_0: number): boolean;
@@ -1333,7 +1375,7 @@ export interface TColgp_Array1OfDir extends ClassHandle {
   SetValue(_0: number, _1: gp_Dir): void;
 }
 
-export interface VectorDouble extends ClassHandle {
+export interface VectorDouble extends ClassHandle, Iterable<number> {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
@@ -1341,7 +1383,7 @@ export interface VectorDouble extends ClassHandle {
   set(_0: number, _1: number): boolean;
 }
 
-export interface VectorInt extends ClassHandle {
+export interface VectorInt extends ClassHandle, Iterable<number> {
   push_back(_0: number): void;
   resize(_0: number, _1: number): void;
   size(): number;
@@ -1723,12 +1765,10 @@ export interface TDF_Attribute extends ClassHandle {
 export interface Handle_TDF_Attribute extends ClassHandle {
   IsNull(): boolean;
   get(): TDF_Attribute | null;
-  delete(): void;
 }
 
 export interface Handle_TDocStd_Document extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   Main(): TDF_Label;
   get(): TDocStd_Document | null;
 }
@@ -1752,19 +1792,16 @@ export interface TDataStd_Integer extends ClassHandle {
 
 export interface Handle_XCAFDoc_ShapeTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_ShapeTool | null;
 }
 
 export interface Handle_XCAFDoc_ColorTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_ColorTool | null;
 }
 
 export interface Handle_XCAFDoc_MaterialTool extends ClassHandle {
   IsNull(): boolean;
-  delete(): void;
   get(): XCAFDoc_MaterialTool | null;
 }
 
@@ -1795,7 +1832,7 @@ export type FaceTriangulationInfo = {
   nodeCount: number
 };
 
-export interface VectorFaceTriangulationInfo extends ClassHandle {
+export interface VectorFaceTriangulationInfo extends ClassHandle, Iterable<FaceTriangulationInfo> {
   push_back(_0: FaceTriangulationInfo): void;
   resize(_0: number, _1: FaceTriangulationInfo): void;
   size(): number;
@@ -1814,7 +1851,7 @@ export type SubShapeInfo = {
   colorA: number
 };
 
-export interface VectorSubShapeInfo extends ClassHandle {
+export interface VectorSubShapeInfo extends ClassHandle, Iterable<SubShapeInfo> {
   push_back(_0: SubShapeInfo): void;
   resize(_0: number, _1: SubShapeInfo): void;
   size(): number;
@@ -1831,6 +1868,21 @@ export type PartDefinitionInfo = {
   isCompound: boolean,
   nbComponents: number
 };
+
+export interface BitbybitFrame_CurveFrameValue<T extends number> {
+  value: T;
+}
+export type BitbybitFrame_CurveFrame = BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>|BitbybitFrame_CurveFrameValue<number>;
+
+export interface BitbybitAnalysis_SurfaceQuantityValue<T extends number> {
+  value: T;
+}
+export type BitbybitAnalysis_SurfaceQuantity = BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>|BitbybitAnalysis_SurfaceQuantityValue<number>;
+
+export interface GeomFill_FillingStyleValue<T extends number> {
+  value: T;
+}
+export type GeomFill_FillingStyle = GeomFill_FillingStyleValue<number>|GeomFill_FillingStyleValue<number>|GeomFill_FillingStyleValue<number>;
 
 interface EmbindModule {
   gp_XYZ: {
@@ -1890,24 +1942,40 @@ interface EmbindModule {
     new(): gp_Circ;
     new(_0: gp_Ax2, _1: number): gp_Circ;
   };
+  gp_Elips: {
+    new(): gp_Elips;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Elips;
+  };
+  gp_Hypr: {
+    new(): gp_Hypr;
+    new(_0: gp_Ax2, _1: number, _2: number): gp_Hypr;
+  };
+  gp_Parab: {
+    new(): gp_Parab;
+    new(_0: gp_Ax2, _1: number): gp_Parab;
+  };
+  gp_GTrsf: {
+    new(): gp_GTrsf;
+    new(_0: gp_Trsf): gp_GTrsf;
+  };
   gp_XY: {
     new(): gp_XY;
     new(_0: number, _1: number): gp_XY;
   };
   gp_Pnt2d: {
     new(): gp_Pnt2d;
-    new(_0: gp_XY): gp_Pnt2d;
     new(_0: number, _1: number): gp_Pnt2d;
+    new(_0: gp_XY): gp_Pnt2d;
   };
   gp_Vec2d: {
     new(): gp_Vec2d;
-    new(_0: gp_XY): gp_Vec2d;
     new(_0: number, _1: number): gp_Vec2d;
+    new(_0: gp_XY): gp_Vec2d;
   };
   gp_Dir2d: {
     new(): gp_Dir2d;
-    new(_0: gp_Vec2d): gp_Dir2d;
     new(_0: number, _1: number): gp_Dir2d;
+    new(_0: gp_Vec2d): gp_Dir2d;
   };
   gp_Ax2d: {
     new(): gp_Ax2d;
@@ -1932,22 +2000,6 @@ interface EmbindModule {
   };
   gp_Trsf2d: {
     new(): gp_Trsf2d;
-  };
-  gp_Elips: {
-    new(): gp_Elips;
-    new(_0: gp_Ax2, _1: number, _2: number): gp_Elips;
-  };
-  gp_Hypr: {
-    new(): gp_Hypr;
-    new(_0: gp_Ax2, _1: number, _2: number): gp_Hypr;
-  };
-  gp_Parab: {
-    new(): gp_Parab;
-    new(_0: gp_Ax2, _1: number): gp_Parab;
-  };
-  gp_GTrsf: {
-    new(): gp_GTrsf;
-    new(_0: gp_Trsf): gp_GTrsf;
   };
   Geom_Surface: {};
   GeomLib_NormEstim(_0: Geom_Surface | null, _1: gp_Pnt2d, _2: number): gp_Dir;
@@ -2031,6 +2083,13 @@ interface EmbindModule {
     new(): TopLoc_Location;
     new(_0: gp_Trsf): TopLoc_Location;
   };
+  ShapeIsValid(_0: TopoDS_Shape): boolean;
+  VertexAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Vertex;
+  EdgeAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Edge;
+  WireAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Wire;
+  FaceAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Face;
+  ShellAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Shell;
+  SolidAt(_0: TopoDS_Shape, _1: boolean, _2: number): TopoDS_Solid;
   TopoDS_Iterator: {
     new(): TopoDS_Iterator;
     new(_0: TopoDS_Shape): TopoDS_Iterator;
@@ -2101,6 +2160,7 @@ interface EmbindModule {
   BRepAlgoAPI_Splitter: {
     new(): BRepAlgoAPI_Splitter;
   };
+  BitbybitBool_Strategy: {OneAfterAnother: BitbybitBool_StrategyValue<number>, InGroups: BitbybitBool_StrategyValue<number>, AllAtOnce: BitbybitBool_StrategyValue<number>};
   BRepBuilderAPI_MakeVertex: {
     new(_0: gp_Pnt): BRepBuilderAPI_MakeVertex;
   };
@@ -2176,6 +2236,7 @@ interface EmbindModule {
     new(_0: TopoDS_Wire, _1: gp_Pln): ChFi2d_FilletAlgo;
     new(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: gp_Pln): ChFi2d_FilletAlgo;
   };
+  WireCornerCount(_0: TopoDS_Wire): number;
   BRepOffsetAPI_MakeOffset: {
     new(): BRepOffsetAPI_MakeOffset;
     new(_0: TopoDS_Face): BRepOffsetAPI_MakeOffset;
@@ -2210,6 +2271,7 @@ interface EmbindModule {
   BRepOffsetAPI_MakeDraft: {
     new(_0: TopoDS_Shape, _1: gp_Dir, _2: number): BRepOffsetAPI_MakeDraft;
   };
+  OffsetWire3D(_0: TopoDS_Wire, _1: number, _2: number, _3: number, _4: number): TopoDS_Shape;
   GProp_GProps: {
     new(): GProp_GProps;
     new(_0: gp_Pnt): GProp_GProps;
@@ -2260,9 +2322,11 @@ interface EmbindModule {
     new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number): BRepMesh_IncrementalMesh;
     new(_0: TopoDS_Shape, _1: number, _2: boolean, _3: number, _4: boolean): BRepMesh_IncrementalMesh;
   };
+  MeshBuffers: {};
   GetFaceTriangulation(_0: TopoDS_Face): Poly_Triangulation;
   GetFaceLocation(_0: TopoDS_Face): TopLoc_Location;
   ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): MeshBuffers;
   STEPControl_Reader: {
     new(): STEPControl_Reader;
   };
@@ -2299,10 +2363,42 @@ interface EmbindModule {
   MakeBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: number): TopoDS_Edge;
   MakeWeightedBSplineEdgeFromPolesPeriodic(_0: VectorDouble, _1: VectorDouble, _2: number): TopoDS_Edge;
   MakeSymmetricInterpolatedBSplineEdge(_0: VectorDouble, _1: number): TopoDS_Edge;
+  ShapeCrossingsAlong(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number): VectorDouble;
   VectorInt: {
     new(): VectorInt;
   };
   MakeInterpolatedBSplineEdge(_0: VectorDouble, _1: boolean, _2: number, _3: number, _4: VectorDouble, _5: VectorInt): TopoDS_Edge;
+  ClosestPointsOnShape(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array;
+  BoundingBoxOf(_0: TopoDS_Shape): Float64Array;
+  DxfPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number): Float64Array;
+  CurvePointsAtNormalizedParameters(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+  CurvePointsAtLengths(_0: TopoDS_Shape, _1: ArrayLike<number>): Float64Array | null;
+  FacePointsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+  FaceNormalsAtUV(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array | null;
+  ClassifyPointsInSolid(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  ClassifyPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  ChildrenOf(_0: TopoDS_Shape): TopoDS_Shape[];
+  SurfacePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  VolumePropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  LinearPropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
+  VerticesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Vertex[];
+  EdgesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Edge[];
+  EdgesAlongWire(_0: TopoDS_Wire): TopoDS_Edge[];
+  WiresOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Wire[];
+  FaceWithHoles(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face;
+  FacesOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Face[];
+  FacesInsideWires(_0: TopoDS_Face, _1: TopoDS_Wire[]): TopoDS_Face[];
+  ShellsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Shell[];
+  SolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Solid[];
+  CompSolidsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_CompSolid[];
+  CompoundsOf(_0: TopoDS_Shape, _1: boolean): TopoDS_Compound[];
+  OutlinesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): TopoDS_Wire[] | null;
+  OutlinesOnPlane(_0: gp_Pnt, _1: gp_Dir, _2: gp_Dir, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: ArrayLike<number>): TopoDS_Wire[] | null;
+  ShapeToManifoldMesh(_0: TopoDS_Shape, _1: number): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } | null;
+  BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
+  BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
+  FilletWireCorners(_0: TopoDS_Wire, _1: ArrayLike<number>): { wire: TopoDS_Wire | null; failedCorners: Int32Array };
   gp_Pnt_GetCoord(_0: gp_Pnt): CoordResult;
   gp_Vec_GetCoord(_0: gp_Vec): CoordResult;
   gp_Dir_GetCoord(_0: gp_Dir): CoordResult;
@@ -2503,6 +2599,13 @@ interface EmbindModule {
   ProjectPointOnCurve(_0: gp_Pnt, _1: TopoDS_Edge): CurvePointResult;
   CreateFillet2d(_0: TopoDS_Edge, _1: TopoDS_Edge, _2: number): TopoDS_Edge;
   BitListOfShapesToCompound(_0: TopTools_ListOfShape): TopoDS_Compound;
+  RunsInParallel(): boolean;
+  SetRunsInParallel(_0: boolean): void;
+  ThreadCount(): number;
+  SetThreadCount(_0: number): void;
+  ProgressControl(): Int32Array;
+  ProgressBeginCall(): void;
+  ProgressRequestStop(): void;
   IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
   BRepBuilderAPI_MakeWire_Error(_0: BRepBuilderAPI_MakeWire): BRepBuilderAPI_WireError;
   BRepBuilderAPI_WireError: {WireDone: BRepBuilderAPI_WireErrorValue<number>, EmptyWire: BRepBuilderAPI_WireErrorValue<number>, DisconnectedWire: BRepBuilderAPI_WireErrorValue<number>, NonManifoldWire: BRepBuilderAPI_WireErrorValue<number>};
@@ -2524,6 +2627,7 @@ interface EmbindModule {
   Approx_ParametrizationType: {ChordLength: Approx_ParametrizationTypeValue<number>, Centripetal: Approx_ParametrizationTypeValue<number>, IsoParametric: Approx_ParametrizationTypeValue<number>};
   Quantity_TypeOfColor: {Quantity_TOC_RGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_sRGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_HLS: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELab: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELch: Quantity_TypeOfColorValue<number>};
   XCAFDoc_ColorType: {XCAFDoc_ColorGen: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorSurf: XCAFDoc_ColorTypeValue<number>, XCAFDoc_ColorCurv: XCAFDoc_ColorTypeValue<number>};
+  CountSubShapes(_0: TopoDS_Shape, _1: TopAbs_ShapeEnum, _2: boolean): number;
   TopAbs_ShapeEnum: {COMPOUND: TopAbs_ShapeEnumValue<number>, COMPSOLID: TopAbs_ShapeEnumValue<number>, SOLID: TopAbs_ShapeEnumValue<number>, SHELL: TopAbs_ShapeEnumValue<number>, FACE: TopAbs_ShapeEnumValue<number>, WIRE: TopAbs_ShapeEnumValue<number>, EDGE: TopAbs_ShapeEnumValue<number>, VERTEX: TopAbs_ShapeEnumValue<number>, SHAPE: TopAbs_ShapeEnumValue<number>};
   TopAbs_Orientation: {FORWARD: TopAbs_OrientationValue<number>, REVERSED: TopAbs_OrientationValue<number>, INTERNAL: TopAbs_OrientationValue<number>, EXTERNAL: TopAbs_OrientationValue<number>};
   TDF_Label: {
@@ -2563,6 +2667,8 @@ interface EmbindModule {
   TDocStd_Document: {};
   DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
   DocumentToMeshesJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
+  DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): MeshBuffers;
+  DocumentFreeShapeCount(_0: TDocStd_Document | null): number;
   TDataStd_Name: {
     GetID(): Standard_GUID;
   };
@@ -2672,6 +2778,120 @@ interface EmbindModule {
   ClassifyCornerByPoint(_0: TopoDS_Shape, _1: VectorDouble, _2: number): string;
   CornerByPointReport(_0: TopoDS_Shape, _1: VectorDouble, _2: number, _3: number, _4: number, _5: number): string;
   BuildShapesFromSegments(_0: VectorInt, _1: VectorDouble, _2: VectorDouble, _3: VectorInt, _4: VectorInt, _5: VectorInt, _6: VectorInt, _7: number, _8: boolean, _9: number): TopoDS_Compound;
+  SelectFacesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectFacesFacing(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+  SelectFacesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectFacesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+  SelectFacesBySize(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectFacesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectFacesAdjacentTo(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectFacesOfEdges(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectFacesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectFacesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+  SelectEdgesOfType(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesExtreme(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesInBox(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>): Int32Array;
+  SelectEdgesInSphere(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesNearest(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array;
+  SelectEdgesOnPlane(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: number): Int32Array;
+  SelectEdgesByLength(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectEdgesByRadius(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number): Int32Array;
+  SelectEdgesOfFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): Int32Array;
+  SelectEdgesBetween(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesTangentChain(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesConvex(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesConcave(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number): Int32Array;
+  SelectEdgesSortedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): Int32Array;
+  SelectEdgesGroupedAlong(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>, _3: number): Int32Array[];
+  BitbybitFrame_CurveFrame: {Frenet: BitbybitFrame_CurveFrameValue<number>, Perpendicular: BitbybitFrame_CurveFrameValue<number>, RotationMinimizing: BitbybitFrame_CurveFrameValue<number>};
+  FramesOnFace(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+  FramesOnFaceNearest(_0: TopoDS_Face, _1: ArrayLike<number>): Float64Array;
+  FramesOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: BitbybitFrame_CurveFrame, _4: ArrayLike<number>): Float64Array;
+  PrincipalFrame(_0: TopoDS_Shape): Float64Array;
+  OrientedBoundingBox(_0: TopoDS_Shape): Float64Array;
+  PlaceOnFrames(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Compound;
+  PlaceByMatrices(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Compound;
+  OrientShape(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
+  BooleanFuseWithHistory(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  BooleanCutWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  BooleanCommonWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+  HistoryOfFillet(_0: BRepFilletAPI_MakeFillet, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfChamfer(_0: BRepFilletAPI_MakeChamfer, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+  SectionWires(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): TopoDS_Wire[];
+  SliceByFrames(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: number): TopoDS_Compound[];
+  SplitByFrame(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Compound[];
+  SplitFaceByWires(_0: TopoDS_Shape, _1: TopoDS_Shape[]): TopoDS_Face[];
+  ClosestPointsOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; parameter: number; length: number; distance: number; edge: number }[];
+  CurvaturesOnCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): { point: [number, number, number]; tangent: [number, number, number]; normal: [number, number, number]; binormal: [number, number, number]; curvature: number; radius: number; centre: [number, number, number]; torsion: number; isStraight: boolean }[];
+  CurvatureComb(_0: TopoDS_Shape, _1: number, _2: number): { bases: Float64Array; tips: Float64Array; scale: number };
+  KinksOfCurve(_0: TopoDS_Shape, _1: number): { point: [number, number, number]; edge: number; angle: number }[];
+  ExtremesAlongCurve(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; parameter: number; length: number; height: number; isMaximum: boolean; isGlobal: boolean }[];
+  IntersectCurves(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): { point: [number, number, number]; parameterA: number; parameterB: number; edgeA: number; edgeB: number; isOverlap: boolean }[];
+  IntersectCurveWithFace(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number): { point: [number, number, number]; parameter: number; edge: number; u: number; v: number; isOverlap: boolean }[];
+  SplitCurve(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): (TopoDS_Edge | TopoDS_Wire)[];
+  ExtendCurve(_0: TopoDS_Shape, _1: number, _2: number): TopoDS_Edge;
+  BlendCurves(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number): TopoDS_Edge;
+  BitbybitAnalysis_SurfaceQuantity: {Gaussian: BitbybitAnalysis_SurfaceQuantityValue<number>, Mean: BitbybitAnalysis_SurfaceQuantityValue<number>, MaxCurvature: BitbybitAnalysis_SurfaceQuantityValue<number>, MinCurvature: BitbybitAnalysis_SurfaceQuantityValue<number>, MinRadius: BitbybitAnalysis_SurfaceQuantityValue<number>, DraftAngle: BitbybitAnalysis_SurfaceQuantityValue<number>};
+  ClosestPointsOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>): { point: [number, number, number]; u: number; v: number; distance: number; normal: [number, number, number]; isOnBoundary: boolean }[];
+  CurvaturesOnFace(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean): { point: [number, number, number]; normal: [number, number, number]; maxCurvature: number; minCurvature: number; meanCurvature: number; gaussianCurvature: number; maxDirection: [number, number, number]; minDirection: [number, number, number]; isUmbilic: boolean; isDefined: boolean }[];
+  SurfaceAnalysisAtMeshNodes(_0: TopoDS_Shape, _1: BitbybitAnalysis_SurfaceQuantity, _2: ArrayLike<number>, _3: MeshBuffers): Float64Array;
+  BestFitPlane(_0: ArrayLike<number>): { origin: [number, number, number]; normal: [number, number, number]; xDirection: [number, number, number]; maxDeviation: number };
+  IsoCurvesOnFace(_0: TopoDS_Shape, _1: boolean, _2: ArrayLike<number>): TopoDS_Edge[];
+  IsoCurvePolylines(_0: TopoDS_Shape, _1: number, _2: number, _3: number): { points: Float64Array; counts: Int32Array };
+  TightBoundingBox(_0: TopoDS_Shape): BoundingBoxResult;
+  BoundingBoxInFrame(_0: TopoDS_Shape, _1: ArrayLike<number>): BoundingBoxResult;
+  ExtremaBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): { pointA: [number, number, number]; pointB: [number, number, number]; distance: number; supportA: 'vertex' | 'edge' | 'face'; supportB: 'vertex' | 'edge' | 'face'; indexA: number; indexB: number; uA: number; vA: number; uB: number; vB: number }[];
+  AngleBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): { angle: number; pointA: [number, number, number]; pointB: [number, number, number]; directionA: [number, number, number]; directionB: [number, number, number] };
+  DihedralAngle(_0: TopoDS_Shape, _1: number, _2: number): { angle: number; isConvex: boolean; point: [number, number, number]; normalA: [number, number, number]; normalB: [number, number, number]; faceA: number; faceB: number };
+  MinCurvatureRadius(_0: TopoDS_Shape, _1: number, _2: boolean): { radius: number; point: [number, number, number]; support: 'face' | 'edge' | 'none'; index: number };
+  ValidityReport(_0: TopoDS_Shape): { isValid: boolean; faults: { type: 'vertex' | 'edge' | 'wire' | 'face' | 'shell' | 'solid' | 'compsolid' | 'compound' | 'shape'; index: number; statuses: string[] }[]; minTolerance: number; maxTolerance: number; averageTolerance: number };
+  FreeBoundaries(_0: TopoDS_Shape, _1: number): { closed: TopoDS_Compound; open: TopoDS_Compound };
+  FixShell(_0: TopoDS_Shape): TopoDS_Shape;
+  FixSolid(_0: TopoDS_Shape): TopoDS_Shape;
+  OrientClosedSolid(_0: TopoDS_Shape): TopoDS_Shape;
+  SewWithReport(_0: TopoDS_Shape[], _1: number, _2: boolean): { shape: TopoDS_Shape; freeEdges: TopoDS_Compound; freeEdgeCount: number; multipleEdgeCount: number; contiguousEdgeCount: number; degeneratedCount: number };
+  GeomFill_FillingStyle: {StretchStyle: GeomFill_FillingStyleValue<number>, CoonsStyle: GeomFill_FillingStyleValue<number>, CurvedStyle: GeomFill_FillingStyleValue<number>};
+  FaceThroughPointGrid(_0: ArrayLike<number>, _1: number, _2: number, _3: boolean, _4: boolean, _5: number, _6: number, _7: number): TopoDS_Face;
+  RuledBetween(_0: TopoDS_Shape, _1: TopoDS_Shape): TopoDS_Shape;
+  BoundaryPatch(_0: TopoDS_Shape[], _1: GeomFill_FillingStyle): TopoDS_Face;
+  FillPatch(_0: TopoDS_Shape[], _1: ArrayLike<number>, _2: TopoDS_Shape[], _3: ArrayLike<number>, _4: number, _5: number, _6: number, _7: number): TopoDS_Face;
+  ProjectNormal(_0: TopoDS_Shape[], _1: TopoDS_Shape, _2: number, _3: number): TopoDS_Compound;
+  ProjectConical(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>): TopoDS_Compound;
+  UnrollFace(_0: TopoDS_Shape, _1: number): TopoDS_Face;
+  WrapOnFace(_0: TopoDS_Shape[], _1: TopoDS_Shape, _2: number): TopoDS_Wire[];
+  DrillHoles(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): TopoDS_Shape;
+  RemoveFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
+  PushPullFaces(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
+  FeatureBoss(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
+  FeaturePocket(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
+  FeatureTaperedPrism(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number, _4: boolean, _5: number, _6: number, _7: boolean): TopoDS_Shape;
+  FeatureRevolved(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: boolean, _6: number): TopoDS_Shape;
+  FeatureRib(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
+  FeatureGroove(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
+  SweepEvolved(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: boolean): TopoDS_Shape;
+  PipeWithScaling(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: boolean): TopoDS_Shape;
+  HiddenLines(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: boolean, _4: boolean, _5: number, _6: number): { visible: TopoDS_Compound; hidden: TopoDS_Compound };
+  ReadStlFromBytes(_0: ArrayLike<number>, _1: boolean): TopoDS_Shape;
+  ReadGltfToDoc(_0: ArrayLike<number>, _1: boolean): Handle_TDocStd_Document;
+  ReadObjToDoc(_0: ArrayLike<number>): Handle_TDocStd_Document;
+  ExportDocumentToObj(_0: Handle_TDocStd_Document, _1: number, _2: EmbindString): { obj: string; mtl: string };
+  ExportDocumentToPly(_0: Handle_TDocStd_Document, _1: number): string;
+  DocumentPmiJson(_0: Handle_TDocStd_Document): string;
+  CirclesTangentToThree(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  CirclesTangentToTwoWithRadius(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number, _3: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  CirclesTangentToTwoCenteredOn(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: TopoDS_Shape, _3: number): { edge: TopoDS_Edge; center: [number, number, number]; radius: number; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  LinesTangentToTwo(_0: ArrayLike<number>, _1: TopoDS_Shape[], _2: number): { edge: TopoDS_Edge; direction: [number, number, number]; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  LinesTangentAtAngle(_0: ArrayLike<number>, _1: TopoDS_Shape, _2: TopoDS_Shape, _3: number, _4: number): { edge: TopoDS_Edge; direction: [number, number, number]; contacts: { point: [number, number, number]; parameter: number; isOnArgument: boolean }[] }[];
+  ClashesBetween(_0: TopoDS_Shape[], _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
+  FacesWithin(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
+  SelfIntersections(_0: TopoDS_Shape, _1: number): { indexA: number; indexB: number; distance: number; volume: number; pointA: [number, number, number]; pointB: [number, number, number] }[];
 }
 
 export type MainModule = WasmModule & typeof RuntimeExports & EmbindModule;

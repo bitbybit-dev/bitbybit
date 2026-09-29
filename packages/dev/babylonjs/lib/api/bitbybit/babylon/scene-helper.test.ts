@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { initBabylonJS } from "./scene-helper";
 import { BabylonJSScene } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
-import { MockMeshType } from "../../__mocks__/babylonjs.mock";
+import { MockGroundMesh, instanceOf } from "../../__mocks__/babylonjs.mock";
 
 vi.mock("@babylonjs/core", async () => {
     const { createSceneHelperMock } = await vi.importActual<typeof import("../../__mocks__/babylonjs.mock")>("../../__mocks__/babylonjs.mock");
@@ -233,8 +233,9 @@ describe("initBabylonJS unit tests", () => {
 
             // Assert
             const expectedSize = config.sceneSize * config.groundScaleFactor;
-            expect((result.ground as unknown as MockMeshType)._groundWidth).toBe(expectedSize);
-            expect((result.ground as unknown as MockMeshType)._groundHeight).toBe(expectedSize);
+            const ground = instanceOf(result.ground, MockGroundMesh);
+            expect(ground._groundWidth).toBe(expectedSize);
+            expect(ground._groundHeight).toBe(expectedSize);
 
             result.dispose();
         });
@@ -285,7 +286,7 @@ describe("initBabylonJS unit tests", () => {
             const result = initBabylonJS(config);
 
             // Assert
-            expect((result.ground as unknown as MockMeshType).receiveShadows).toBe(true);
+            expect(instanceOf(result.ground, MockGroundMesh).receiveShadows).toBe(true);
 
             result.dispose();
         });
@@ -375,6 +376,34 @@ describe("initBabylonJS unit tests", () => {
             expect(result.arcRotateCamera?.lowerRadiusLimit).toBeCloseTo(config.sceneSize * 0.1, 5);
             expect(result.arcRotateCamera?.upperRadiusLimit).toBeCloseTo(config.sceneSize * 10, 5);
             expect(result.arcRotateCamera?.maxZ).toBeCloseTo(config.sceneSize * 50, 5);
+
+            result.dispose();
+        });
+    });
+
+    describe("an options object that leaves settings out", () => {
+        it("should fill every setting it leaves out from the defaults", () => {
+            // Arrange
+            const defaults = new BabylonJSScene.InitBabylonJSDto();
+
+            // Act
+            const result = initBabylonJS({ canvasId: "test-canvas", sceneSize: 40 });
+
+            // Assert
+            expect(result.hemisphericLight.intensity).toBe(defaults.hemisphereLightIntensity);
+            expect(result.directionalLight.position.y).toBeCloseTo(30, 5);
+
+            result.dispose();
+        });
+
+        it("should fill the camera settings it leaves out and keep the far plane scaled to the scene", () => {
+            // Act
+            const result = initBabylonJS({ canvasId: "test-canvas", sceneSize: 50, enableArcRotateCamera: true, arcRotateCameraOptions: { radius: 100 } });
+
+            // Assert
+            expect(result.arcRotateCamera?.radius).toBe(100);
+            expect(result.arcRotateCamera?.wheelPrecision).toBe(new BabylonCamera.ArcRotateCameraDto().wheelPrecision);
+            expect(result.arcRotateCamera?.maxZ).toBeCloseTo(2500, 5);
 
             result.dispose();
         });

@@ -56,6 +56,10 @@ How far it can drift depends on how many lines a configuration posts, so:
 
 When you publish, 3D Bits tells you which of your markets round, and how many lines your busiest configuration posts.
 
+## Discount rows in other currencies
+
+The Price element shows Shopify's discounts under the total only when Shopify's price for the configuration is exactly the total on screen. In your store currency it normally is. In a converted currency Shopify rounds each line of the order on its own, so its price usually lands a few cents away from the configurator's total, and the rows stay hidden rather than show a figure checkout would not charge. The discounts still apply at checkout, and a promo code chip still offers its code and applies it; it just does not state the saving.
+
 ## Markets that include tax in the price
 
 If a market shows prices with tax included **based on the shopper's country**, a configured total cannot follow that. The total is worked out from your store-currency prices, so the shopper pays your gross total wherever they are, and the difference between your tax rate and theirs is absorbed rather than shown.

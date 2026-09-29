@@ -1,6 +1,8 @@
 import * as pc from "playcanvas";
 import { PlayCanvasScene, InitPlayCanvasResult, PlayCanvasOrbitCameraInstance, PlayCanvasInputHandler, PlayCanvasOrbitCameraController } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Helper function to initialize a basic PlayCanvas scene with lights, shadows, and optional ground plane.
@@ -25,7 +27,7 @@ import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
  * ```
  */
 export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): InitPlayCanvasResult {
-    const config = inputs || new PlayCanvasScene.InitPlayCanvasDto();
+    const config = resolveDto(PlayCanvasScene.InitPlayCanvasDto, inputs) as Resolved.PlayCanvasScene.InitPlayCanvasDto;
 
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
@@ -128,16 +130,12 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
 
     let orbitCamera: PlayCanvasOrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        const camOpts = config.orbitCameraOptions ?? new PlayCanvasCamera.OrbitCameraDto();
-
-        const referenceSize = 20;
-        const sizeRatio = config.sceneSize / referenceSize;
+        const camOpts = resolveDto(PlayCanvasCamera.OrbitCameraDto, config.orbitCameraOptions) as Resolved.PlayCanvasCamera.OrbitCameraDto;
 
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
         const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
         const effectiveDistanceMax = userProvidedCameraOptions ? camOpts.distanceMax : config.sceneSize * 10;
-        const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
 
         const cameraEntity = new pc.Entity("OrbitCamera");
         cameraEntity.addComponent("camera", {
@@ -162,7 +160,7 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
             pitch: camOpts.pitch,
             yaw: camOpts.yaw,
             orbitSensitivity: camOpts.orbitSensitivity,
-            distanceSensitivity: effectiveDistanceSensitivity,
+            distanceSensitivity: camOpts.distanceSensitivity,
         });
     }
 

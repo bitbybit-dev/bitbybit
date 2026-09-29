@@ -116,50 +116,51 @@ export namespace PlayCanvasScene {
         /**
          * The size of the scene in world units. This determines ground size, light positions, and shadow bounds.
          * @default 20
-         * @minimum 1
+         * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 10
          */
-        sceneSize = 20;
+        sceneSize?: number | undefined = 20;
 
         /**
          * Background color of the scene in hex format.
          * @default "#1a1c1f"
          */
-        backgroundColor = "#1a1c1f";
+        backgroundColor?: string | undefined = "#1a1c1f";
 
         /**
          * Enable shadow mapping for realistic shadows.
          * @default true
          */
-        enableShadows = true;
+        enableShadows?: boolean | undefined = true;
 
         /**
          * Enable the ground plane.
          * @default true
          */
-        enableGround = true;
+        enableGround?: boolean | undefined = true;
 
         /**
          * Center position of the ground plane [x, y, z].
          * @default [0, 0, 0]
          */
-        groundCenter: Base.Point3 = [0, 0, 0];
+        groundCenter?: Base.Point3 | undefined = [0, 0, 0];
 
         /**
          * Scale factor for the ground size relative to scene size. Values greater than 1 make the ground larger than the scene size.
          * @default 2
          * @minimum 0.5
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.5
          */
-        groundScaleFactor = 2;
+        groundScaleFactor?: number | undefined = 2;
 
         /**
          * Color of the ground plane in hex format.
          * @default "#333333"
          */
-        groundColor = "#333333";
+        groundColor?: string | undefined = "#333333";
 
         /**
          * Opacity of the ground plane (0 = fully transparent, 1 = fully opaque).
@@ -168,37 +169,37 @@ export namespace PlayCanvasScene {
          * @maximum 1
          * @step 0.1
          */
-        groundOpacity = 1;
+        groundOpacity?: number | undefined = 1;
 
         /**
          * Ambient light color. PlayCanvas uses ambient light instead of hemisphere light.
          * @default "#888888"
          */
-        ambientLightColor = "#888888";
+        ambientLightColor?: string | undefined = "#888888";
 
         /**
          * Intensity factor for ambient light (applied to RGB values).
          * @default 1
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
-        ambientLightIntensity = 1;
+        ambientLightIntensity?: number | undefined = 1;
 
         /**
          * Color of the directional light (sun light).
          * @default "#ffffff"
          */
-        directionalLightColor = "#ffffff";
+        directionalLightColor?: string | undefined = "#ffffff";
 
         /**
          * Brightness of the sun-like light that casts the shadows, 1 being full strength
          * @default 1.5
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
-        directionalLightIntensity = 1.5;
+        directionalLightIntensity?: number | undefined = 1.5;
 
         /**
          * Size of the shadow map in pixels (higher = sharper shadows but more GPU intensive).
@@ -207,13 +208,13 @@ export namespace PlayCanvasScene {
          * @maximum 8192
          * @step 256
          */
-        shadowMapSize = 2048;
+        shadowMapSize?: number | undefined = 2048;
 
         /**
          * Enable automatic creation of an orbit camera controller.
          * @default true
          */
-        enableOrbitCamera = true;
+        enableOrbitCamera?: boolean | undefined = true;
 
         /**
          * Settings for the orbit camera, the same as `playcanvas.camera.orbitCamera.create` takes;

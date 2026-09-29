@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Textures, the images a material spreads over a surface: a tiled texture from a URL with scale and
@@ -22,13 +24,14 @@ export class BabylonTexture {
      * @disposableOutput true
      */
     createSimple(inputs: Inputs.BabylonTexture.TextureSimpleDto): BABYLON.Texture {
-        const texture = new BABYLON.Texture(inputs.url, this.context.scene, undefined, inputs.invertY, this.context.getSamplingMode(inputs.samplingMode));
-        texture.uScale = inputs.uScale;
-        texture.vScale = inputs.vScale;
-        texture.wAng = inputs.wAng;
-        texture.invertZ = inputs.invertZ;
-        texture.uOffset = inputs.uOffset;
-        texture.vOffset = inputs.vOffset;
+        const resolved = resolveDto(Inputs.BabylonTexture.TextureSimpleDto, inputs) as Resolved.BabylonTexture.TextureSimpleDto;
+        const texture = new BABYLON.Texture(resolved.url, this.context.scene, undefined, resolved.invertY, this.context.getSamplingMode(resolved.samplingMode));
+        texture.uScale = resolved.uScale;
+        texture.vScale = resolved.vScale;
+        texture.wAng = resolved.wAng;
+        texture.invertZ = resolved.invertZ;
+        texture.uOffset = resolved.uOffset;
+        texture.vOffset = resolved.vOffset;
         return texture;
     }
 
@@ -42,9 +45,10 @@ export class BabylonTexture {
      * @disposableOutput true
      */
     createImage(inputs: Inputs.BabylonTexture.TextureImageDto): BABYLON.Texture {
-        const texture = new BABYLON.Texture(inputs.url, this.context.scene, undefined, inputs.invertY, this.context.getSamplingMode(inputs.samplingMode));
-        texture.name = inputs.name;
-        texture.hasAlpha = inputs.hasAlpha;
+        const resolved = resolveDto(Inputs.BabylonTexture.TextureImageDto, inputs) as Resolved.BabylonTexture.TextureImageDto;
+        const texture = new BABYLON.Texture(resolved.url, this.context.scene, undefined, resolved.invertY, this.context.getSamplingMode(resolved.samplingMode));
+        texture.name = resolved.name;
+        texture.hasAlpha = resolved.hasAlpha;
         texture.wrapU = BABYLON.Texture.CLAMP_ADDRESSMODE;
         texture.wrapV = BABYLON.Texture.CLAMP_ADDRESSMODE;
         return texture;

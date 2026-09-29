@@ -15,7 +15,7 @@ describe("OCCT draft unit tests", () => {
     let wire: OCCTWire;
 
     const hasDraft = (): boolean =>
-        typeof (occt as unknown as { BRepOffsetAPI_DraftAngle?: unknown }).BRepOffsetAPI_DraftAngle === "function";
+        typeof Reflect.get(occt, "BRepOffsetAPI_DraftAngle") === "function";
 
     const box = (): TopoDS_Shape => solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
 

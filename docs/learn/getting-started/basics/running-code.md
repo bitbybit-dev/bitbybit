@@ -27,7 +27,7 @@ The "Run" button is located in the bottom menu of the editor. Depending on your 
 
 It looks like this:
 
-![The "Run" button used to execute scripts in Bitbybit editors.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/run-button.jpeg "Button To Run The Code")
+![The "Run" button used to execute scripts in Bitbybit editors.](https://bitbybit.dev/files/site/start/general/running-code/run-button.jpeg "Button To Run The Code")
 *Button To Run The Code*
 
 ## What Happens if My Program Fails to Run?
@@ -56,7 +56,7 @@ If you're using the Monaco (TypeScript), Blockly, or Rete editors and your scrip
 
 Here's the "Swap Canvas" button:
 
-![The "Swap Canvas" button used to switch between the coding environment and the 3D view.](https://ik.imagekit.io/bitbybit/app/assets/start/general/running-code/swap-canvas-button.jpeg "Button to swap the canvas and switch between 3D and coding environments")
+![The "Swap Canvas" button used to switch between the coding environment and the 3D view.](https://bitbybit.dev/files/site/start/general/running-code/swap-canvas-button.jpeg "Button to swap the canvas and switch between 3D and coding environments")
 *Button to swap the canvas and switch between 3D and coding environments*
 
 ## What Happens if the Script Runs Correctly?

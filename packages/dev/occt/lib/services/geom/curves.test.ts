@@ -20,7 +20,7 @@ describe("OCCT edge unit tests", () => {
         geom = new OCCTGeom(occt, occHelper);
     });
 
-    it("should create circle curve", async () => {
+    it("should create circle curve", () => {
         const circle = geom.curves.geomCircleCurve({
             radius: 10,
             center: [0, 0, 0],
@@ -30,7 +30,7 @@ describe("OCCT edge unit tests", () => {
         circle.delete();
     });
 
-    it("should create 2d circle curve", async () => {
+    it("should create 2d circle curve", () => {
         const circle = geom.curves.geom2dCircle({
             radius: 10,
             center: [0, 0],
@@ -48,7 +48,7 @@ describe("OCCT edge unit tests", () => {
         circle.delete();
     });
 
-    it("should create 2d trimmed curve", async () => {
+    it("should create 2d trimmed curve", () => {
         const circle = geom.curves.geom2dCircle({
             radius: 10,
             center: [0, 0],
@@ -80,7 +80,7 @@ describe("OCCT edge unit tests", () => {
         trimmed.delete();
     });
 
-    it("should create ellipse curve", async () => {
+    it("should create ellipse curve", () => {
         const ellipse = geom.curves.geomEllipseCurve({
             radiusMajor: 10,
             radiusMinor: 5,
@@ -91,7 +91,7 @@ describe("OCCT edge unit tests", () => {
         ellipse.delete();
     });
 
-    it("should get 2d point from 2d curve on param", async () => {
+    it("should get 2d point from 2d curve on param", () => {
         const circle = geom.curves.geom2dCircle({
             radius: 10,
             center: [0, 0],
@@ -107,7 +107,7 @@ describe("OCCT edge unit tests", () => {
         circle.delete();
     });
 
-    it("should create geom 2d segment", async () => {
+    it("should create geom 2d segment", () => {
         const segment = geom.curves.geom2dSegment({
             start: [1, 0],
             end: [10, 10]

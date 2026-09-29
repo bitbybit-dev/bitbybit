@@ -12,7 +12,7 @@ import * as pc from "playcanvas";
  */
 export namespace Draw {
 
-    export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
+    export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawFrameOptions;
     /**
      * Everything a draw call will accept: points, lines, segments and polylines; Verb curves and
      * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; tags; whatever a layer
@@ -39,6 +39,7 @@ export namespace Draw {
         | Base.Line3
         | Base.Segment3
         | Base.Polyline3
+        | Base.Frame
         | Base.VerbCurve
         | Base.VerbSurface
         | Inputs.OCCT.TopoDSShapePointer
@@ -53,6 +54,7 @@ export namespace Draw {
         | Base.Line3[]
         | Base.Segment3[]
         | Base.Polyline3[]
+        | Base.Frame[]
         | Base.VerbCurve[]
         | Base.VerbSurface[]
         | Inputs.OCCT.TopoDSShapePointer[]
@@ -205,12 +207,12 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * Hex color string for face color
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
@@ -221,12 +223,12 @@ export namespace Draw {
          * Hex color string for cross section drawing
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * Width of cross section lines
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * Cross section opacity value between 0 and 1
          * @default 1
@@ -234,22 +236,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity: number = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * Compute normals for the shape
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
          * @default 1
@@ -257,7 +259,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Feeds `draw.optionsOcctShape`: everything about how an OCCT shape is drawn, from meshing
@@ -267,7 +269,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -294,6 +296,14 @@ export namespace Draw {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+            if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+            if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+            if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+            if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+            if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+            if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -302,7 +312,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * Edge opacity value between 0 and 1
          * @default 1
@@ -310,22 +320,22 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        edgeOpacity = 1;
+        edgeOpacity?: number | undefined = 1;
         /**
          * Hex color string for the edges
          * @default #ffffff
          */
-        edgeColour: Base.Color = "#ffffff";
+        edgeColour?: Base.Color | undefined = "#ffffff";
         /**
          * Hex color string for face color
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * Color of the vertices that will be drawn
          * @default #ff00ff
          */
-        vertexColour: Base.Color = "#ff00ff";
+        vertexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * An engine material for the faces, used instead of `faceColour` when given
          * @default undefined
@@ -339,7 +349,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        edgeWidth = 2;
+        edgeWidth?: number | undefined = 2;
         /**
          * The size of a vertices that will be drawn
          * @default 0.03
@@ -347,22 +357,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        vertexSize = 0.03;
+        vertexSize?: number | undefined = 0.03;
         /**
          * You can turn off drawing of edges via this property
          * @default true
          */
-        drawEdges = true;
+        drawEdges?: boolean | undefined = true;
         /**
          * You can turn off drawing of faces via this property
          * @default true
          */
-        drawFaces = true;
+        drawFaces?: boolean | undefined = true;
         /**
          * You can turn off drawing of vertexes via this property
          * @default false
          */
-        drawVertices = false;
+        drawVertices?: boolean | undefined = false;
         /**
          * Precision of the mesh that will be generated for the shape, lower number will mean more triangles
          * @default 0.01
@@ -370,12 +380,12 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        precision = 0.01;
+        precision?: number | undefined = 0.01;
         /**
          * Draw index of edges in space
          * @default false
          */
-        drawEdgeIndexes = false;
+        drawEdgeIndexes?: boolean | undefined = false;
         /**
          * Indicates the edge index height if they are drawn
          * @default 0.06
@@ -383,17 +393,17 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeIndexHeight = 0.06;
+        edgeIndexHeight?: number | undefined = 0.06;
         /**
          * Edge index color if the edges are drawn
          * @default #ff00ff
          */
-        edgeIndexColour: Base.Color = "#ff00ff";
+        edgeIndexColour?: Base.Color | undefined = "#ff00ff";
         /**
          * Draw indexes of faces in space
          * @default false
          */
-        drawFaceIndexes = false;
+        drawFaceIndexes?: boolean | undefined = false;
         /**
          * Indicates the edge index height if they are drawn
          * @default 0.06
@@ -401,22 +411,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        faceIndexHeight = 0.06;
+        faceIndexHeight?: number | undefined = 0.06;
         /**
          * Edge index color if the edges are drawn
          * @default #0000ff
          */
-        faceIndexColour: Base.Color = "#0000ff";
+        faceIndexColour?: Base.Color | undefined = "#0000ff";
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Back face opacity value between 0 and 1. Only used when drawTwoSided is true.
          * @default 1
@@ -424,7 +434,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * Size of arrow heads at the end of edges to indicate edge/wire orientation. Set to 0 to disable arrows.
          * @default 0
@@ -432,7 +442,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        edgeArrowSize = 0;
+        edgeArrowSize?: number | undefined = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
          * @default 15
@@ -440,23 +450,77 @@ export namespace Draw {
          * @maximum 90
          * @step 1
          */
-        edgeArrowAngle = 15;
+        edgeArrowAngle?: number | undefined = 15;
         /**
          * Keep the cached triangulation on the shape after meshing. When false (default) the mesh data
          * is flushed so it does not accumulate in memory across draws.
          * @default false
          */
-        keepMeshData = false;
+        keepMeshData?: boolean | undefined = false;
         /**
          * Allow re-meshing to a lower resolution triangulation than one already cached on the shape.
          * @default true
          */
-        allowQualityDecrease = true;
+        allowQualityDecrease?: boolean | undefined = true;
         /**
          * Force every face to be re-meshed to the requested precision regardless of cached triangulation.
          * @default false
          */
-        forceFaceDeflection = false;
+        forceFaceDeflection?: boolean | undefined = false;
+        /**
+         * When true, each face's iso curves are drawn with the shape, as its edges are: at `edgeWidth`
+         * and `edgeOpacity`, in `isoCurvesColour`.
+         * @default false
+         */
+        drawIsoCurves?: boolean | undefined = false;
+        /**
+         * How many iso curves of constant u each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its u range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesU?: number | undefined = 5;
+        /**
+         * How many iso curves of constant v each face gets with `drawIsoCurves`, at values spread evenly
+         * inside its v range and trimmed to the face.
+         * @default 5
+         * @minimum 0
+         * @maximum 1000
+         * @step 1
+         */
+        isoCurvesV?: number | undefined = 5;
+        /**
+         * The color of the iso curves as a hex string.
+         * @default #808080
+         */
+        isoCurvesColour?: Base.Color | undefined = "#808080";
+        /**
+         * The surface analysis coloring the faces instead of `faceColour` and `faceMaterial`, from blue at
+         * `analysisMin` through green to red at `analysisMax`; vertices without a value keep `faceColour`.
+         * @default none
+         */
+        surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum | undefined = Inputs.OCCT.surfaceAnalysisEnum.none;
+        /**
+         * The pull direction the draft angles are measured against; read only by `draftAngle`.
+         * @default [0, 1, 0]
+         */
+        draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
+        /**
+         * The analysis value drawn blue, and anything below it; left out, the lowest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMin?: number | undefined;
+        /**
+         * The analysis value drawn red, and anything above it; left out, the highest finite value
+         * found.
+         * @default undefined
+         * @optional true
+         */
+        analysisMax?: number | undefined;
     }
 
     /**
@@ -480,13 +544,13 @@ export namespace Draw {
          * Basic geometry colors to use for lines, points, polylines, surfaces, jscad meshes.
          * @default #ff0000
          */
-        colours: string | string[] = "#ff0000";
+        colours?: string | string[] | undefined = "#ff0000";
         /**
          * How colors are spread over more entities than colors: first color for all, the last color
          * for the remainder, colors repeating, or colors bouncing back and forth
          * @default lastColorRemainder
          */
-        colorMapStrategy: Base.colorMapStrategyEnum = Base.colorMapStrategyEnum.lastColorRemainder;
+        colorMapStrategy?: Base.colorMapStrategyEnum | undefined = Base.colorMapStrategyEnum.lastColorRemainder;
         /**
          * Size affect how big the drawn points are and how wide lines are.
          * @default 0.1
@@ -494,7 +558,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 0.1;
+        size?: number | undefined = 0.1;
         /**
          * Opacity of the point 0 to 1
          * @default 1
@@ -502,27 +566,27 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        opacity = 1;
+        opacity?: number | undefined = 1;
         /**
          * If geometry needs to be updated later
          * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * When true, the entity is drawn but not shown until it is made visible
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
         /**
          * Draw two-sided faces with different colors for front and back. This helps visualize face orientation. Only applies to surfaces.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * Hex color string for back face color (negative side of the face). Only used when drawTwoSided is true and drawing surfaces.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * Back face opacity value between 0 and 1. Only used when drawTwoSided is true and drawing surfaces.
          * @default 1
@@ -530,7 +594,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
         /**
          * Size of the arrow head at the end of lines and polylines. Set to 0 to disable arrows.
          * @default 0
@@ -538,7 +602,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.01
          */
-        arrowSize = 0;
+        arrowSize?: number | undefined = 0;
         /**
          * Angle of the arrow head in degrees. Controls how wide the arrow head spreads.
          * @default 15
@@ -546,7 +610,7 @@ export namespace Draw {
          * @maximum 90
          * @step 1
          */
-        arrowAngle = 15;
+        arrowAngle?: number | undefined = 15;
     }
 
     /**
@@ -595,7 +659,7 @@ export namespace Draw {
          * Name identifier for the texture
          * @default Texture
          */
-        name = "Texture";
+        name?: string | undefined = "Texture";
         /**
          * Horizontal (U) scale/tiling of the texture
          * @default 1
@@ -603,7 +667,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        uScale = 1;
+        uScale?: number | undefined = 1;
         /**
          * Vertical (V) scale/tiling of the texture
          * @default 1
@@ -611,7 +675,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        vScale = 1;
+        vScale?: number | undefined = 1;
         /**
          * Horizontal (U) offset of the texture
          * @default 0
@@ -619,7 +683,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        uOffset = 0;
+        uOffset?: number | undefined = 0;
         /**
          * Vertical (V) offset of the texture
          * @default 0
@@ -627,7 +691,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        vOffset = 0;
+        vOffset?: number | undefined = 0;
         /**
          * Rotation angle of the texture in radians around the W axis
          * @default 0
@@ -635,22 +699,22 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        wAng = 0;
+        wAng?: number | undefined = 0;
         /**
          * Invert the texture on the Y axis
          * @default false
          */
-        invertY = false;
+        invertY?: boolean | undefined = false;
         /**
          * Invert the texture on the Z axis
          * @default false
          */
-        invertZ = false;
+        invertZ?: boolean | undefined = false;
         /**
          * Texture sampling/filtering mode
          * @default nearest
          */
-        samplingMode: samplingModeEnum = samplingModeEnum.nearest;
+        samplingMode?: samplingModeEnum | undefined = samplingModeEnum.nearest;
     }
 
     /**
@@ -713,12 +777,12 @@ export namespace Draw {
          * Name identifier for the material
          * @default PBRMaterial
          */
-        name = "PBRMaterial";
+        name?: string | undefined = "PBRMaterial";
         /**
          * Base/albedo color of the material in hex format
          * @default #0000ff
          */
-        baseColor: Base.Color = "#0000ff";
+        baseColor?: Base.Color | undefined = "#0000ff";
         /**
          * Metallic factor (0 = dielectric, 1 = metallic)
          * @default 0.5
@@ -726,7 +790,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        metallic = 0.5;
+        metallic?: number | undefined = 0.5;
         /**
          * Roughness factor (0 = smooth/mirror, 1 = rough/diffuse)
          * @default 0.5
@@ -734,7 +798,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        roughness = 0.5;
+        roughness?: number | undefined = 0.5;
         /**
          * Overall opacity/transparency of the material (0 = fully transparent, 1 = fully opaque)
          * @default 1
@@ -742,7 +806,7 @@ export namespace Draw {
          * @maximum 1
          * @step 0.1
          */
-        alpha = 1;
+        alpha?: number | undefined = 1;
         /**
          * Emissive color - the color the material appears to emit (glow)
          * @default #000000
@@ -755,7 +819,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        emissiveIntensity = 1;
+        emissiveIntensity?: number | undefined = 1;
         /**
          * Z-buffer depth offset factor to help with z-fighting on coplanar surfaces
          * @default 0
@@ -763,7 +827,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 0.1
          */
-        zOffset = 0;
+        zOffset?: number | undefined = 0;
         /**
          * Z-buffer depth offset units for fine-tuned z-fighting control
          * @default 0
@@ -771,7 +835,7 @@ export namespace Draw {
          * @maximum Infinity
          * @step 1
          */
-        zOffsetUnits = 0;
+        zOffsetUnits?: number | undefined = 0;
         /**
          * Texture to use for base/albedo color
          * @default undefined
@@ -806,7 +870,7 @@ export namespace Draw {
          * Alpha/transparency mode: opaque, mask (cutout), or blend (translucent)
          * @default opaque
          */
-        alphaMode: alphaModeEnum = alphaModeEnum.opaque;
+        alphaMode?: alphaModeEnum | undefined = alphaModeEnum.opaque;
         /**
          * Alpha threshold for mask mode (pixels below this are fully transparent)
          * @default 0.5
@@ -814,24 +878,87 @@ export namespace Draw {
          * @maximum 1
          * @step 0.05
          */
-        alphaCutoff = 0.5;
+        alphaCutoff?: number | undefined = 0.5;
         /**
          * Render both sides of faces (equivalent to disabling backFaceCulling)
          * @default false
          */
-        doubleSided = false;
+        doubleSided?: boolean | undefined = false;
         /**
          * Render material as wireframe
          * @default false
          */
-        wireframe = false;
+        wireframe?: boolean | undefined = false;
         /**
          * Disable lighting calculations and render flat/unlit
          * @default false
          */
-        unlit = false;
+        unlit?: boolean | undefined = false;
     }
 
+    /**
+     * Feeds `draw.optionsFrame`: how a frame is drawn, as its three axes in their own colors and a
+     * small grid in its plane that marks it as a plane.
+     */
+    export class DrawFrameOptions {
+        constructor(size?: number, colorX?: Base.Color, colorY?: Base.Color, colorZ?: Base.Color, drawPlane?: boolean, colorPlane?: Base.Color, lineWidth?: number, updatable?: boolean) {
+            if (size !== undefined) { this.size = size; }
+            if (colorX !== undefined) { this.colorX = colorX; }
+            if (colorY !== undefined) { this.colorY = colorY; }
+            if (colorZ !== undefined) { this.colorZ = colorZ; }
+            if (drawPlane !== undefined) { this.drawPlane = drawPlane; }
+            if (colorPlane !== undefined) { this.colorPlane = colorPlane; }
+            if (lineWidth !== undefined) { this.lineWidth = lineWidth; }
+            if (updatable !== undefined) { this.updatable = updatable; }
+        }
+        /**
+         * Length of each axis, in model units; the grid in the plane is as wide, centered on the origin.
+         * @default 1
+         * @minimum 0
+         * @exclusiveMinimum true
+         * @maximum Infinity
+         * @step 0.1
+         */
+        size?: number | undefined = 1;
+        /**
+         * Color of the X axis, which runs along the frame's direction.
+         * @default #ff0000
+         */
+        colorX?: Base.Color | undefined = "#ff0000";
+        /**
+         * Color of the Y axis.
+         * @default #00ff00
+         */
+        colorY?: Base.Color | undefined = "#00ff00";
+        /**
+         * Color of the Z axis, which runs along the frame's normal.
+         * @default #0000ff
+         */
+        colorZ?: Base.Color | undefined = "#0000ff";
+        /**
+         * Whether to draw the small grid in the frame's plane around its origin.
+         * @default true
+         */
+        drawPlane?: boolean | undefined = true;
+        /**
+         * Color of the grid in the frame's plane.
+         * @default #808080
+         */
+        colorPlane?: Base.Color | undefined = "#808080";
+        /**
+         * How wide the lines are, on the scale the simple drawing options use for a line's `size`.
+         * @default 2
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        lineWidth?: number | undefined = 2;
+        /**
+         * Whether the drawn frame can be redrawn in place by passing it back.
+         * @default false
+         */
+        updatable?: boolean | undefined = false;
+    }
     /**
      * The kind of geometry a draw call detected, in singular and plural forms - point, line, node,
      * polyline, Verb curve and surface, JSCAD mesh, and so on. Written onto a drawn object so that
@@ -852,6 +979,8 @@ export namespace Draw {
         nodes = "nodes",
         polyline = "polyline",
         polylines = "polylines",
+        frame = "frame",
+        frames = "frames",
         verbCurve = "verbCurve",
         verbCurves = "verbCurves",
         verbSurface = "verbSurface",

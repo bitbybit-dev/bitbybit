@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { createSurfaceMock, createSurfaceMock2, mockOCCTBoxDecomposedMesh, mockJSCADBoxDecomposedMesh } from "../__mocks__/test-data";
 import { Tag } from "@bitbybit-dev/core";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -9,7 +9,7 @@ import { Draw } from "./draw";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker/lib";
 import { Group, InstancedMesh, Mesh, MeshBasicMaterial, MeshPhongMaterial, Scene } from "three";
-import { flatOf } from "../__mocks__/test-helpers";
+import { flatOf, partialMock } from "../__mocks__/test-helpers";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import * as THREE from "three";
 import * as Inputs from "../inputs";
@@ -26,6 +26,7 @@ const jscadSolid = (color?: Inputs.JSCAD.JSCADColor): Inputs.JSCAD.JSCADGeom3 =>
         ? { polygons: [], transforms: IDENTITY_TRANSFORM }
         : { polygons: [], transforms: IDENTITY_TRANSFORM, color };
 const manifoldShape = (hash: number): Inputs.Manifold.ManifoldPointer => ({ hash, type: "manifold-shape" });
+const verbCurve = (points: Inputs.Base.Point3[]) => ({ _data: { controlPoints: [], knots: [], degree: 1 }, tessellate: () => points });
 
 
 describe("Draw unit tests", () => {
@@ -37,7 +38,7 @@ describe("Draw unit tests", () => {
     let vector: Vector;
     let solidText: JSCADText;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const context = new Context();
         jscadWorkerManager = new JSCADWorkerManager();
         occtWorkerManager = new OCCTWorkerManager();
@@ -280,8 +281,8 @@ describe("Draw unit tests", () => {
             expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.line);
         });
 
-        it("should draw a line via draw any without options", async () => {
-            const res = await draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } });
+        it("should draw a line via draw any without options", () => {
+            const res = draw.drawAny({ entity: { start: [1, -3, 3], end: [0, -3, 4] } });
             expect(res.name).toContain("polylines");
             expect(res.children.length).toBe(1);
             expect(res.children[0] instanceof LineSegments2).toBe(true);
@@ -712,6 +713,37 @@ describe("Draw unit tests", () => {
 
             expect(material.color.getHexString()).toEqual("ff00ff");
         });
+
+        it("should color decomposed meshes drawn as a list over one surface analysis range", async () => {
+            // Arrange
+            const analyzed = (x: number, value: number): Inputs.OCCT.DecomposedMeshDto => ({
+                faceList: [{
+                    faceIndex: 0,
+                    vertexCoord: [x, 0, 0, x + 1, 0, 0, x, 1, 0],
+                    vertexCoordVec: [[x, 0, 0], [x + 1, 0, 0], [x, 1, 0]],
+                    normalCoord: [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                    triIndexes: [0, 1, 2],
+                    numberOfTriangles: 1,
+                    centerPoint: [x, 0, 0],
+                    centerNormal: [0, 0, 1],
+                    uvs: [],
+                    analysisValues: [value, value, value],
+                }],
+                edgeList: [],
+                pointsList: [],
+            });
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: [analyzed(0, 0), analyzed(10, 10)], options: { drawTwoSided: false } });
+
+            // Assert
+            const colors = res.children.map(shape => {
+                const faces: Mesh[] = [];
+                shape.traverse(child => { if (child instanceof Mesh && !(child instanceof LineSegments2)) { faces.push(child); } });
+                return flatOf(faces[0]!.geometry.getAttribute("color"));
+            });
+            expect(colors).toEqual([[0, 0, 1, 0, 0, 1, 0, 0, 1], [1, 0, 0, 1, 0, 0, 1, 0, 0]]);
+        });
     });
 
     describe("Draw JSCAD meshes", () => {
@@ -825,7 +857,8 @@ describe("Draw unit tests", () => {
     describe("Draw edge cases and undefined handling", () => {
 
         it("should return undefined for undefined entity via drawAnyAsync", async () => {
-            const res = await draw.drawAnyAsync({ entity: undefined } as unknown as Inputs.Draw.DrawAny<THREE.Group>);
+            const inputs: unknown = { entity: undefined };
+            const res = await draw.drawAnyAsync(inputs as Inputs.Draw.DrawAny<THREE.Group>);
             expect(res).toBeUndefined();
         });
 
@@ -835,7 +868,8 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined for undefined entity via drawAny", () => {
-            const res = draw.drawAny({ entity: { unknownType: true } as unknown as Inputs.Draw.Entity });
+            const unrecognisedEntity: unknown = { unknownType: true };
+            const res = draw.drawAny({ entity: unrecognisedEntity as Inputs.Draw.Entity });
             expect(res).toBeUndefined();
         });
     });
@@ -1422,9 +1456,9 @@ describe("Draw unit tests", () => {
         });
 
         it("should return undefined when group userData type is unknown", () => {
-            const mockGroup = {
+            const mockGroup = partialMock<THREE.Group>({
                 userData: { type: "unknownType" },
-            } as unknown as THREE.Group;
+            });
             const res = draw.drawAny({ entity: [1, 2, 3], group: mockGroup });
             expect(res).toBeUndefined();
         });
@@ -1564,7 +1598,7 @@ describe("Draw unit tests", () => {
 
         it("should apply textures when provided", () => {
             // Arrange
-            const mockTexture = {} as unknown as THREE.Texture;
+            const mockTexture = partialMock<THREE.Texture>({});
             const inputs = new Inputs.Draw.GenericPBRMaterialDto();
             inputs.baseColorTexture = mockTexture;
             inputs.metallicRoughnessTexture = mockTexture;
@@ -1801,4 +1835,373 @@ describe("Draw unit tests", () => {
         });
     });
 
+    describe("the options a shape is drawn with", () => {
+        it("should mesh an OCCT shape at the default precision when the options hand it undefined", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            await draw.drawAnyAsync({ entity: { type: "occ-shape", hash: 12314455 }, options: { precision: undefined, faceColour: "#00ff00" } });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ precision: 0.01, faceColour: "#00ff00" }));
+        });
+
+        it("should draw the manifold it is given even when the options it is redrawn with name another", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+            manifoldWorkerManager.genericCallToWorkerPromise = callWorker;
+            const group = new Group();
+            group.userData["options"] = { manifoldOrCrossSection: manifoldShape(1), faceColour: "#00ff00" };
+
+            // Act
+            await draw.drawAnyAsync({ entity: manifoldShape(2), group });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.objectContaining({ manifoldOrCrossSection: manifoldShape(2) }));
+        });
+    });
+
+    describe("what the draw layer leaves to the helpers' own defaults", () => {
+        it("should draw the OCCT shape it is given even when the options it is redrawn with name another", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue(mockOCCTBoxDecomposedMesh());
+            occtWorkerManager.genericCallToWorkerPromise = callWorker;
+            const previous: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 1 };
+            const current: Inputs.OCCT.TopoDSShapePointer = { type: "occ-shape", hash: 2 };
+            const group = new Group();
+            group.userData["options"] = { shape: previous, faceColour: "#00ff00" };
+
+            // Act
+            await draw.drawAnyAsync({ entity: current, group });
+
+            // Assert
+            expect(callWorker).toHaveBeenCalledWith("shapeToMesh", expect.objectContaining({ shape: current, faceColour: "#00ff00" }));
+        });
+
+        it("should draw a point whose options leave out the size as a sphere of the point default 0.1", async () => {
+            // Act
+            const res = await draw.drawAnyAsync({ entity: [1, 2, 3], options: { colours: "#ff0000" } });
+
+            // Assert
+            const sphere = res.children[0] as InstancedMesh;
+            expect((sphere.geometry as THREE.SphereGeometry).parameters.radius).toBe(0.05);
+        });
+
+        it("should leave a polyline's width to the line DTO rather than the point diameter when its options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+
+            // Act
+            await draw.drawAnyAsync({ entity: { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] }, options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+
+        it("should leave a verb curve's width to the curve DTO rather than the point diameter when its options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawCurve");
+
+            // Act
+            await draw.drawAnyAsync({ entity: verbCurve([[0, 0, 0], [1, 0, 0], [1, 1, 0]]), options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+
+        it("should leave verb curves' width to the curves DTO rather than the point diameter when their options leave the size out", async () => {
+            // Arrange
+            const spy = vi.spyOn(draw.drawHelper, "drawCurves");
+
+            // Act
+            await draw.drawAnyAsync({ entity: [verbCurve([[0, 0, 0], [1, 0, 0]]), verbCurve([[0, 1, 0], [1, 1, 0]])], options: { colours: "#ff0000" } });
+
+            // Assert
+            const handed = spy.mock.calls[0]![0];
+            expect(handed.colours).toBe("#ff0000");
+            expect(handed.size).toBeUndefined();
+            spy.mockRestore();
+        });
+    });
+
+    describe("the entity a draw call is handed wins over what its options carry", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("should draw a point at the entity, not at a point its options carry", () => {
+            // Arrange
+            const drawPoint = vi.spyOn(draw.drawHelper, "drawPoint");
+            const options = { colours: "#ff0000", point: [9, 9, 9] };
+
+            // Act
+            draw.drawAny({ entity: [1, 2, 3], options });
+
+            // Assert
+            expect(drawPoint).toHaveBeenCalledWith(expect.objectContaining({ point: [1, 2, 3], colours: "#ff0000" }));
+        });
+
+        it("should redraw a point into the group it is handed, not the one its stored options name", () => {
+            // Arrange
+            const drawPoint = vi.spyOn(draw.drawHelper, "drawPoint").mockReturnValue(new Group());
+            const current = new Group();
+            current.userData = { type: Inputs.Draw.drawingTypes.point, options: { colours: "#00ff00", point: [9, 9, 9], pointMesh: new Group() } };
+
+            // Act
+            draw.drawAny({ entity: [1, 2, 3], group: current });
+
+            // Assert
+            expect(drawPoint).toHaveBeenCalledWith(expect.objectContaining({ point: [1, 2, 3], pointMesh: current, colours: "#00ff00" }));
+        });
+
+        it("should draw points at the entity, not at points their options carry", () => {
+            // Arrange
+            const drawPoints = vi.spyOn(draw.drawHelper, "drawPoints");
+            const options = { colours: "#ff0000", points: [[9, 9, 9]] };
+
+            // Act
+            draw.drawAny({ entity: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], options });
+
+            // Assert
+            expect(drawPoints).toHaveBeenCalledWith(expect.objectContaining({ points: [[1, 2, 3], [4, 5, 6], [7, 8, 9]] }));
+        });
+
+        it("should draw a line through the entity, not through polylines its options carry", () => {
+            // Arrange
+            const drawPolylinesWithColours = vi.spyOn(draw.drawHelper, "drawPolylinesWithColours");
+            const options = { colours: "#ff0000", polylines: [{ points: [[9, 9, 9], [8, 8, 8]] }] };
+
+            // Act
+            draw.drawAny({ entity: { start: [0, 0, 0], end: [1, 0, 0] }, options });
+
+            // Assert
+            expect(drawPolylinesWithColours).toHaveBeenCalledWith(expect.objectContaining({ polylines: [{ points: [[0, 0, 0], [1, 0, 0]] }] }));
+        });
+
+        it("should draw a polyline through the entity, not through a polyline its options carry", () => {
+            // Arrange
+            const drawPolylineClose = vi.spyOn(draw.drawHelper, "drawPolylineClose");
+            const entity: Inputs.Base.Polyline3 = { points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] };
+            const options = { colours: "#ff0000", polyline: { points: [[9, 9, 9], [8, 8, 8]] } };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawPolylineClose).toHaveBeenCalledWith(expect.objectContaining({ polyline: entity }));
+        });
+
+        it("should draw the JSCAD mesh it is handed, not a mesh its options carry", async () => {
+            // Arrange
+            const drawSolidOrPolygonMesh = vi.spyOn(draw.drawHelper, "drawSolidOrPolygonMesh").mockResolvedValue(new Group());
+            const entity = jscadSolid();
+            const options = { colours: "#ff0000", mesh: jscadSolid([1, 0, 0]) };
+
+            // Act
+            await draw.drawAnyAsync({ entity, options });
+
+            // Assert
+            expect(drawSolidOrPolygonMesh).toHaveBeenCalledWith(expect.objectContaining({ mesh: entity }));
+        });
+
+        it("should draw the verb curve it is handed, not a curve its options carry", () => {
+            // Arrange
+            const drawCurve = vi.spyOn(draw.drawHelper, "drawCurve");
+            const entity = verbCurve([[0, 0, 0], [1, 0, 0]]);
+            const options = { colours: "#ff0000", curve: verbCurve([[9, 9, 9], [8, 8, 8]]) };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawCurve).toHaveBeenCalledWith(expect.objectContaining({ curve: entity }));
+        });
+
+        it("should draw the verb surface it is handed, not a surface its options carry", () => {
+            // Arrange
+            const drawSurface = vi.spyOn(draw.drawHelper, "drawSurface");
+            const entity = createSurfaceMock();
+            const options = { colours: "#ff0000", surface: createSurfaceMock2() };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawSurface).toHaveBeenCalledWith(expect.objectContaining({ surface: entity }));
+        });
+
+        it("should draw the tag it is handed, not a tag its options carry", () => {
+            // Arrange
+            const drawTag = vi.spyOn(tag, "drawTag").mockImplementation(inputs => inputs.tag);
+            const entity: Inputs.Tag.TagDto = { text: "current", position: [0, 0, 0], colour: "#ffffff", size: 1, adaptDepth: false };
+            const options = { colours: "#ff0000", tag: { text: "stale", position: [9, 9, 9] } };
+
+            // Act
+            draw.drawAny({ entity, options });
+
+            // Assert
+            expect(drawTag).toHaveBeenCalledWith(expect.objectContaining({ tag: entity }));
+        });
+    });
+
+    describe("Draw frame tests", () => {
+        const world: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const raised: Inputs.Base.Frame = { origin: [0, 0, 5], normal: [0, 0, 1], direction: [1, 0, 0] };
+
+        it("should draw a frame as one set of segments: its three axes and the grid in its plane", () => {
+            // Act
+            const res = draw.drawAny({ entity: world });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(res.children).toHaveLength(1);
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(13);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 18)).toEqual([0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1]);
+        });
+
+        it("should draw a whole list of frames as one set of segments", () => {
+            // Act
+            const res = draw.drawAny({ entity: [world, raised] });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frames);
+            expect(res.children).toHaveLength(1);
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(26);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(78, 84)).toEqual([0, 0, 5, 1, 0, 5]);
+        });
+
+        it("should draw only the axes, as long as asked, when the plane is left out", () => {
+            // Act
+            const res = draw.drawAny({ entity: world, options: draw.optionsFrame({ size: 2, drawPlane: false }) });
+
+            // Assert
+            const segments = res.children[0]! as LineSegments2;
+            expect(segments.geometry.attributes["instanceStart"]!.count).toBe(3);
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 6)).toEqual([0, 0, 0, 2, 0, 0]);
+        });
+
+        it("should redraw frames in place when they are updatable", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: [world], options });
+
+            // Act
+            const res2 = draw.drawAny({ entity: [raised], options, group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res.children).toHaveLength(1);
+            const segments = res2.children[0]! as LineSegments2;
+            expect(flatOf(segments.geometry.attributes["instanceStart"]!).slice(0, 6)).toEqual([0, 0, 5, 1, 0, 5]);
+        });
+
+        const segmentsOf = (drawn: THREE.Group): LineSegments2 => drawn.children[0]! as LineSegments2;
+        const segmentColor = (drawn: THREE.Group, segment: number): number[] => flatOf(segmentsOf(drawn).geometry.attributes["instanceColorStart"]!).slice(segment * 6, segment * 6 + 3);
+        const expectColor = (received: number[], hex: string): void => {
+            const color = new THREE.Color(hex);
+            [color.r, color.g, color.b].forEach((value, i) => expect(received[i]).toBeCloseTo(value, 6));
+        };
+        const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+
+        it("should color the axes red, green and blue and the grid gray, at the frame's line width", () => {
+            // Act
+            const res = draw.drawAny({ entity: world, options: draw.optionsFrame({ lineWidth: 6 }) });
+
+            // Assert
+            expectColor(segmentColor(res, 0), "#ff0000");
+            expectColor(segmentColor(res, 1), "#00ff00");
+            expectColor(segmentColor(res, 2), "#0000ff");
+            expectColor(segmentColor(res, 3), "#808080");
+            expectColor(segmentColor(res, 12), "#808080");
+            expect(segmentsOf(res).material.linewidth).toBe(2);
+        });
+
+        it.each([
+            { first: world, second: [world, raised], segments: 26, type: Inputs.Draw.drawingTypes.frames },
+            { first: [world, raised], second: raised, segments: 13, type: Inputs.Draw.drawingTypes.frame },
+        ])("should redraw with a $type, reading whether it is one frame or a list from the entity", ({ first, second, segments, type }) => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: first, options });
+
+            // Act
+            const res2 = draw.drawAny({ entity: second, options, group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(segmentsOf(res2).geometry.attributes["instanceStart"]!.count).toBe(segments);
+            expect(res2.userData["type"]).toBe(type);
+        });
+
+        it("should redraw updatable frames in place when their count changes, with the new colors", () => {
+            // Arrange
+            const res = draw.drawAny({ entity: [world], options: draw.optionsFrame({ updatable: true }) });
+
+            // Act
+            const res2 = draw.drawAny({ entity: [world, raised, world], options: draw.optionsFrame({ updatable: true, colorX: "#ffff00" }), group: res });
+
+            // Assert
+            expect(res2).toBe(res);
+            expect(res2.children).toHaveLength(1);
+            expect(segmentsOf(res2).geometry.attributes["instanceStart"]!.count).toBe(39);
+            expectColor(segmentColor(res2, 0), "#ffff00");
+            expectColor(segmentColor(res2, 13), "#ffff00");
+            expectColor(segmentColor(res2, 14), "#00ff00");
+        });
+
+        it("should draw nothing for frames that cannot be squared", () => {
+            // Act
+            const res = draw.drawAny({ entity: [flat, flat] });
+
+            // Assert
+            expect(res).toBeUndefined();
+        });
+
+        it("should take an updatable drawing out of the scene when it is redrawn with frames that cannot be squared", () => {
+            // Arrange
+            const options = draw.optionsFrame({ updatable: true });
+            const res = draw.drawAny({ entity: world, options });
+            const scene = res.parent;
+
+            // Act
+            const res2 = draw.drawAny({ entity: flat, options, group: res });
+
+            // Assert
+            expect(scene).not.toBeNull();
+            expect(res2).toBeUndefined();
+            expect(res.parent).toBeNull();
+            expect(scene!.children).not.toContain(res);
+        });
+
+        it("should draw a frame through drawAnyAsync as drawAny does", async () => {
+            // Act
+            const res = await draw.drawAnyAsync({ entity: world });
+
+            // Assert
+            expect(res.userData["type"]).toBe(Inputs.Draw.drawingTypes.frame);
+            expect(segmentsOf(res).geometry.attributes["instanceStart"]!.count).toBe(13);
+        });
+
+        it("should keep what the frame options are given and fill the rest from the defaults", () => {
+            // Act
+            const result = draw.optionsFrame({ colorPlane: "#ffffff" });
+
+            // Assert
+            expect(result).toEqual({ ...new Inputs.Draw.DrawFrameOptions(), colorPlane: "#ffffff" });
+        });
+    });
 });

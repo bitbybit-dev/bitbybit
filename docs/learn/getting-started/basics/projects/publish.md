@@ -34,13 +34,13 @@ When you're working in one of our editors (TypeScript, Blockly, or Rete) and fee
 1.  **Open Project Management:**
     While in an editor, click on the button located in the top-left corner. This button usually displays the name of your current script and has a settings icon.
 
-    ![The button in the editor's top-left corner, typically showing the script name and a settings icon, used to open the project management panel.](https://ik.imagekit.io/bitbybit/app/assets/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
+    ![The button in the editor's top-left corner, typically showing the script name and a settings icon, used to open the project management panel.](https://bitbybit.dev/files/site/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
     *Button to open project management panel*
 
 2.  **Find the "Publish Project" Button:**
     In the project management panel that opens, locate and click the **"Publish Project"** button.
 
-    ![The project management panel showing the "Publish Project" button.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/publish-project-button.jpeg "Publish Project button")
+    ![The project management panel showing the "Publish Project" button.](https://bitbybit.dev/files/site/start/general/projects/publish-project-button.jpeg "Publish Project button")
     *Button to publish your project*
 
 3.  **Choose Visibility Options & Publish:**
@@ -49,7 +49,7 @@ When you're working in one of our editors (TypeScript, Blockly, or Rete) and fee
 
     The dialog will look something like this:
 
-    ![The "Publish Project" dialog showing visibility options (e.g., Public, Silver Community, Gold Community) and an "Apply Updates" button.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/publish-project-form.jpeg "The form to publish your project")
+    ![The "Publish Project" dialog showing visibility options (e.g., Public, Silver Community, Gold Community) and an "Apply Updates" button.](https://bitbybit.dev/files/site/start/general/projects/publish-project-form.jpeg "The form to publish your project")
     *The form to publish your project*
 
     Make your desired visibility choice and then click the **"Apply Updates"** button.

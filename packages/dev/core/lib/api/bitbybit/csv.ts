@@ -1,4 +1,6 @@
 import * as Inputs from "../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Reading and writing CSV, the plain-text table format with one row per line and a separator
@@ -27,9 +29,10 @@ export class CSVBitByBit {
      * ```
      */
     parseToArray(inputs: Inputs.CSV.ParseToArrayDto): string[][] {
-        const rowSeparator = this.convertEscapeSequences(inputs.rowSeparator || "\n");
-        const columnSeparator = this.convertEscapeSequences(inputs.columnSeparator || ",");
-        const csvData = this.convertEscapeSequences(inputs.csv);
+        const resolved = resolveDto(Inputs.CSV.ParseToArrayDto, inputs) as Resolved.CSV.ParseToArrayDto;
+        const rowSeparator = this.convertEscapeSequences(resolved.rowSeparator || "\n");
+        const columnSeparator = this.convertEscapeSequences(resolved.columnSeparator || ",");
+        const csvData = this.convertEscapeSequences(resolved.csv);
         const lines = csvData.split(rowSeparator);
         const result: string[][] = [];
         
@@ -62,23 +65,24 @@ export class CSVBitByBit {
      * ```
      */
     parseToJson<T = Record<string, string | number>>(inputs: Inputs.CSV.ParseToJsonDto): T[] {
+        const resolved = resolveDto(Inputs.CSV.ParseToJsonDto, inputs) as Resolved.CSV.ParseToJsonDto;
         const array = this.parseToArray({
-            csv: inputs.csv,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator
+            csv: resolved.csv,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator
         });
         
         if (array.length === 0) return [];
         
-        const headerRow = inputs.headerRow ?? 0;
-        const dataStartRow = inputs.dataStartRow ?? 1;
+        const headerRow = resolved.headerRow;
+        const dataStartRow = resolved.dataStartRow;
         
         if (headerRow >= array.length) {
             throw new Error(`Header row ${headerRow} is out of bounds (total rows: ${array.length})`);
         }
         
         const headers = array[headerRow]!;
-        const numberColumnsSet = new Set(inputs.numberColumns || []);
+        const numberColumnsSet = new Set(resolved.numberColumns || []);
         const result: T[] = [];
         
         for (let i = dataStartRow; i < array.length; i++) {
@@ -118,23 +122,24 @@ export class CSVBitByBit {
      * ```
      */
     parseToJsonWithHeaders<T = Record<string, string | number>>(inputs: Inputs.CSV.ParseToJsonWithHeadersDto): T[] {
+        const resolved = resolveDto(Inputs.CSV.ParseToJsonWithHeadersDto, inputs) as Resolved.CSV.ParseToJsonWithHeadersDto;
         const array = this.parseToArray({
-            csv: inputs.csv,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator
+            csv: resolved.csv,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator
         });
         
         if (array.length === 0) return [];
         
-        const dataStartRow = inputs.dataStartRow ?? 0;
-        const numberColumnsSet = new Set(inputs.numberColumns || []);
+        const dataStartRow = resolved.dataStartRow;
+        const numberColumnsSet = new Set(resolved.numberColumns || []);
         const result: T[] = [];
         
         for (let i = dataStartRow; i < array.length; i++) {
             const row = array[i]!;
             const obj: Record<string, string | number> = {};
             
-            inputs.headers.forEach((header, index) => {
+            resolved.headers.forEach((header, index) => {
                 const value = row[index] || "";
                 if (numberColumnsSet.has(header)) {
                     const num = parseFloat(value);
@@ -167,19 +172,20 @@ export class CSVBitByBit {
      * ```
      */
     queryColumn(inputs: Inputs.CSV.QueryColumnDto): (string | number)[] {
-        const numberColumns = inputs.asNumber ? [inputs.column] : undefined;
+        const resolved = resolveDto(Inputs.CSV.QueryColumnDto, inputs) as Resolved.CSV.QueryColumnDto;
+        const numberColumns = resolved.asNumber ? [resolved.column] : undefined;
         
         const jsonData = this.parseToJson({
-            csv: inputs.csv,
-            headerRow: inputs.headerRow,
-            dataStartRow: inputs.dataStartRow,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator,
+            csv: resolved.csv,
+            headerRow: resolved.headerRow,
+            dataStartRow: resolved.dataStartRow,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator,
             numberColumns: numberColumns
         });
         
         return jsonData.map(row => {
-            const value = row[inputs.column];
+            const value = row[resolved.column];
             return value !== undefined ? value : "";
         });
     }
@@ -202,24 +208,25 @@ export class CSVBitByBit {
      * ```
      */
     queryRowsByValue<T = Record<string, string | number>>(inputs: Inputs.CSV.QueryRowsByValueDto): T[] {
+        const resolved = resolveDto(Inputs.CSV.QueryRowsByValueDto, inputs) as Resolved.CSV.QueryRowsByValueDto;
         const jsonData = this.parseToJson<T>({
-            csv: inputs.csv,
-            headerRow: inputs.headerRow,
-            dataStartRow: inputs.dataStartRow,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator,
-            numberColumns: inputs.numberColumns
+            csv: resolved.csv,
+            headerRow: resolved.headerRow,
+            dataStartRow: resolved.dataStartRow,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator,
+            numberColumns: resolved.numberColumns
         });
         
-        const isNumberColumn = inputs.numberColumns?.includes(inputs.column);
-        const compareValue = isNumberColumn ? parseFloat(inputs.value) : inputs.value;
+        const isNumberColumn = resolved.numberColumns?.includes(resolved.column);
+        const compareValue = isNumberColumn ? parseFloat(resolved.value) : resolved.value;
         
         return jsonData.filter(row => {
-            const rowValue = (row as Record<string, unknown>)[inputs.column];
+            const rowValue = (row as Record<string, unknown>)[resolved.column];
             if (isNumberColumn) {
                 return rowValue === compareValue;
             }
-            return rowValue === inputs.value;
+            return rowValue === resolved.value;
         });
     }
 
@@ -239,10 +246,11 @@ export class CSVBitByBit {
      * ```
      */
     arrayToCsv(inputs: Inputs.CSV.ArrayToCsvDto): string {
-        const columnSeparator = this.convertEscapeSequences(inputs.columnSeparator || ",");
-        const rowSeparator = this.convertEscapeSequences(inputs.rowSeparator || "\n");
+        const resolved = resolveDto(Inputs.CSV.ArrayToCsvDto, inputs) as Resolved.CSV.ArrayToCsvDto;
+        const columnSeparator = this.convertEscapeSequences(resolved.columnSeparator || ",");
+        const rowSeparator = this.convertEscapeSequences(resolved.rowSeparator || "\n");
         
-        return inputs.array.map(row => 
+        return resolved.array.map(row => 
             row.map(cell => this.escapeCsvCell(cell as unknown, columnSeparator)).join(columnSeparator)
         ).join(rowSeparator);
     }
@@ -264,23 +272,24 @@ export class CSVBitByBit {
      * ```
      */
     jsonToCsv<T = Record<string, unknown>>(inputs: Inputs.CSV.JsonToCsvDto<T>): string {
-        const columnSeparator = this.convertEscapeSequences(inputs.columnSeparator || ",");
-        const rowSeparator = this.convertEscapeSequences(inputs.rowSeparator || "\n");
+        const resolved = resolveDto(Inputs.CSV.JsonToCsvDto, inputs) as Resolved.CSV.JsonToCsvDto<T>;
+        const columnSeparator = this.convertEscapeSequences(resolved.columnSeparator || ",");
+        const rowSeparator = this.convertEscapeSequences(resolved.rowSeparator || "\n");
         
-        if (!inputs.json || inputs.json.length === 0) {
-            return inputs.includeHeaders ? inputs.headers.join(columnSeparator) : "";
+        if (!resolved.json || resolved.json.length === 0) {
+            return resolved.includeHeaders ? resolved.headers.join(columnSeparator) : "";
         }
         
         const lines: string[] = [];
         
-        if (inputs.includeHeaders) {
-            lines.push(inputs.headers.map(h => this.escapeCsvCell(h, columnSeparator)).join(columnSeparator));
+        if (resolved.includeHeaders) {
+            lines.push(resolved.headers.map(h => this.escapeCsvCell(h, columnSeparator)).join(columnSeparator));
         }
         
-        inputs.json.forEach(obj => {
-            const row = inputs.headers.map(header => {
+        resolved.json.forEach(obj => {
+            const row = resolved.headers.map(header => {
                 const value = (obj as Record<string, unknown>)[header];
-                return this.escapeCsvCell(value !== undefined && value !== null ? String(value) : "", columnSeparator);
+                return this.escapeCsvCell(value, columnSeparator);
             });
             lines.push(row.join(columnSeparator));
         });
@@ -304,16 +313,17 @@ export class CSVBitByBit {
      * ```
      */
     jsonToCsvAuto<T = Record<string, unknown>>(inputs: Inputs.CSV.JsonToCsvAutoDto<T>): string {
-        if (!inputs.json || inputs.json.length === 0) return "";
+        const resolved = resolveDto(Inputs.CSV.JsonToCsvAutoDto, inputs) as Resolved.CSV.JsonToCsvAutoDto<T>;
+        if (!resolved.json || resolved.json.length === 0) return "";
         
-        const headers = Object.keys(inputs.json[0]!);
+        const headers = Object.keys(resolved.json[0]!);
         
         return this.jsonToCsv({
-            json: inputs.json,
+            json: resolved.json,
             headers: headers,
-            includeHeaders: inputs.includeHeaders ?? true,
-            columnSeparator: inputs.columnSeparator,
-            rowSeparator: inputs.rowSeparator
+            includeHeaders: resolved.includeHeaders,
+            columnSeparator: resolved.columnSeparator,
+            rowSeparator: resolved.rowSeparator
         });
     }
 
@@ -333,13 +343,14 @@ export class CSVBitByBit {
      * ```
      */
     getHeaders(inputs: Inputs.CSV.GetHeadersDto): string[] {
+        const resolved = resolveDto(Inputs.CSV.GetHeadersDto, inputs) as Resolved.CSV.GetHeadersDto;
         const array = this.parseToArray({
-            csv: inputs.csv,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator
+            csv: resolved.csv,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator
         });
         
-        const headerRow = inputs.headerRow ?? 0;
+        const headerRow = resolved.headerRow;
         
         if (headerRow >= array.length) {
             throw new Error(`Header row ${headerRow} is out of bounds (total rows: ${array.length})`);
@@ -364,13 +375,14 @@ export class CSVBitByBit {
      * ```
      */
     getRowCount(inputs: Inputs.CSV.GetRowCountDto): number {
+        const resolved = resolveDto(Inputs.CSV.GetRowCountDto, inputs) as Resolved.CSV.GetRowCountDto;
         const array = this.parseToArray({
-            csv: inputs.csv,
-            rowSeparator: inputs.rowSeparator,
-            columnSeparator: inputs.columnSeparator
+            csv: resolved.csv,
+            rowSeparator: resolved.rowSeparator,
+            columnSeparator: resolved.columnSeparator
         });
         
-        const dataStartRow = inputs.dataStartRow ?? (inputs.hasHeaders ? 1 : 0);
+        const dataStartRow = resolved.dataStartRow ?? (resolved.hasHeaders ? 1 : 0);
         return Math.max(0, array.length - dataStartRow);
     }
 
@@ -390,7 +402,8 @@ export class CSVBitByBit {
      * ```
      */
     getColumnCount(inputs: Inputs.CSV.ParseToArrayDto): number {
-        const array = this.parseToArray(inputs);
+        const resolved = resolveDto(Inputs.CSV.ParseToArrayDto, inputs) as Resolved.CSV.ParseToArrayDto;
+        const array = this.parseToArray(resolved);
         return array.length > 0 ? array[0]!.length : 0;
     }
 
@@ -423,7 +436,11 @@ export class CSVBitByBit {
         return result;
     }
     private escapeCsvCell(cell: unknown, separator: string): string {
-        const cellStr = cell !== undefined && cell !== null ? String(cell) : "";
+        let cellStr = "";
+        if (cell !== undefined && cell !== null) {
+            const printable: { toString(): string } = cell;
+            cellStr = String(printable);
+        }
         if (cellStr.includes(separator) || cellStr.includes("\"") || cellStr.includes("\n") || cellStr.includes("\r")) {
             return "\"" + cellStr.replace(/"/g, "\"\"") + "\"";
         }

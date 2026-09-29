@@ -98,7 +98,7 @@ export namespace ThreeJSCamera {
          * The point the camera looks at and circles around
          * @default [0, 0, 0]
          */
-        pivotPoint: Base.Point3 = [0, 0, 0];
+        pivotPoint?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * How far from the pivot the camera starts, in scene units
          * @default 20
@@ -106,7 +106,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 1
          */
-        distance = 20;
+        distance?: number | undefined = 20;
         /**
          * How far above or below the pivot the camera starts, in degrees; 0 is level, positive is
          * above looking down
@@ -115,15 +115,15 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        pitch = 30;
+        pitch?: number | undefined = 30;
         /**
          * How far around the vertical axis the camera starts, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
-        yaw = 45;
+        yaw?: number | undefined = 45;
         /**
          * The closest the camera may zoom to the pivot, in scene units
          * @default 0.1
@@ -131,7 +131,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 0.1
          */
-        distanceMin = 0.1;
+        distanceMin?: number | undefined = 0.1;
         /**
          * The farthest the camera may zoom from the pivot, in scene units
          * @default 1000
@@ -139,7 +139,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 1
          */
-        distanceMax = 1000;
+        distanceMax?: number | undefined = 1000;
         /**
          * The lowest the camera may tilt, in degrees; -90 looks straight up from below
          * @default -90
@@ -147,7 +147,7 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        pitchAngleMin = -90;
+        pitchAngleMin?: number | undefined = -90;
         /**
          * The highest the camera may tilt, in degrees; 90 looks straight down from above
          * @default 90
@@ -155,31 +155,31 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        pitchAngleMax = 90;
+        pitchAngleMax?: number | undefined = 90;
         /**
          * How far a pointer drag turns the camera; higher turns faster
          * @default 0.3
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
-        orbitSensitivity = 0.3;
+        orbitSensitivity?: number | undefined = 0.3;
         /**
          * How far a wheel step zooms the camera; higher zooms faster
          * @default 0.15
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.01
          */
-        distanceSensitivity = 0.15;
+        distanceSensitivity?: number | undefined = 0.15;
         /**
          * How far a pan drag moves the pivot; higher pans faster
          * @default 1
          * @minimum 0
-         * @maximum 10
+         * @maximum Infinity
          * @step 0.1
          */
-        panSensitivity = 1;
+        panSensitivity?: number | undefined = 1;
         /**
          * How much the camera keeps gliding after a drag, from 0 for none to 1 for most
          * @default 0.1
@@ -187,22 +187,22 @@ export namespace ThreeJSCamera {
          * @maximum 1
          * @step 0.1
          */
-        inertiaFactor = 0.1;
+        inertiaFactor?: number | undefined = 0.1;
         /**
          * When true, the scene is rendered again whenever the camera moves
          * @default true
          */
-        autoRender = true;
+        autoRender?: boolean | undefined = true;
         /**
          * When true and a focus object is given, the camera starts framed on it
          * @default true
          */
-        frameOnStart = true;
+        frameOnStart?: boolean | undefined = true;
         /**
          * When true, camera moves ease in and out instead of stopping dead
          * @default true
          */
-        enableDamping = true;
+        enableDamping?: boolean | undefined = true;
         /**
          * How quickly damped moves settle; lower is smoother but slower
          * @default 0.1
@@ -210,7 +210,7 @@ export namespace ThreeJSCamera {
          * @maximum 1
          * @step 0.01
          */
-        dampingFactor = 0.1;
+        dampingFactor?: number | undefined = 0.1;
         /**
          * An object to frame the camera on at the start, when given
          * @optional true
@@ -254,7 +254,7 @@ export namespace ThreeJSCamera {
          * The point to move the camera to
          * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
     }
 
     /**
@@ -275,7 +275,7 @@ export namespace ThreeJSCamera {
          * The point the camera looks at and circles around
          * @default [0, 0, 0]
          */
-        pivotPoint: Base.Point3 = [0, 0, 0];
+        pivotPoint?: Base.Point3 | undefined = [0, 0, 0];
     }
 
     /**
@@ -303,10 +303,10 @@ export namespace ThreeJSCamera {
          * much room
          * @default 1.5
          * @minimum 1
-         * @maximum 5
+         * @maximum Infinity
          * @step 0.1
          */
-        padding = 1.5;
+        padding?: number | undefined = 1.5;
     }
 
     /**
@@ -328,11 +328,11 @@ export namespace ThreeJSCamera {
         /**
          * How far around the vertical axis, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
-        yaw = 45;
+        yaw?: number | undefined = 45;
         /**
          * How far above or below the pivot, in degrees; positive is above looking down
          * @default 30
@@ -340,7 +340,7 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        pitch = 30;
+        pitch?: number | undefined = 30;
         /**
          * How far from the pivot, in scene units
          * @default 20
@@ -348,7 +348,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 1
          */
-        distance = 20;
+        distance?: number | undefined = 20;
     }
 
     /**
@@ -387,7 +387,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 0.1
          */
-        min = 0.1;
+        min?: number | undefined = 0.1;
         /**
          * The farthest the camera may zoom from the pivot, in scene units
          * @default 1000
@@ -395,7 +395,7 @@ export namespace ThreeJSCamera {
          * @maximum Infinity
          * @step 1
          */
-        max = 1000;
+        max?: number | undefined = 1000;
     }
 
     /**
@@ -420,7 +420,7 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        min = -90;
+        min?: number | undefined = -90;
         /**
          * The highest the camera may tilt, in degrees; 90 looks straight down
          * @default 90
@@ -428,6 +428,6 @@ export namespace ThreeJSCamera {
          * @maximum 90
          * @step 1
          */
-        max = 90;
+        max?: number | undefined = 90;
     }
 }

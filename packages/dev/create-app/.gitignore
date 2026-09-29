@@ -20,3 +20,6 @@ npm-debug.log*
 
 # Coverage
 coverage/
+
+# Scaffolds kept by scripts/smoke.mjs --keep and scripts/smoke-local.mjs --keep, to run by hand
+.local/

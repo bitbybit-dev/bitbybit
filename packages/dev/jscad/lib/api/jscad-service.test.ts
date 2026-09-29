@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type * as Modeling from "@jscad/modeling";
 import { expectSolid, getJscad } from "./__test__/kernel";
 import type { Jscad } from "./jscad-service";
@@ -17,6 +17,8 @@ const TRANSLATE_X_MATRIX: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 1, 0, 0,
 const IDENTITY: Inputs.Base.TransformMatrixes = [IDENTITY_MATRIX];
 const TRANSLATE_X: Inputs.Base.TransformMatrixes = [TRANSLATE_X_MATRIX];
 
+
+const loose = <T>(value: unknown): T => value as T;
 
 const meshData = (positions: number[], indices: number[]): Inputs.JSCAD.JSCADMeshData => ({
     positions,
@@ -120,7 +122,7 @@ describe("Jscad", () => {
 
         it("should return nothing for a mesh with no polygons", () => {
             // Arrange
-            const inputs = new Inputs.JSCAD.MeshDto({ polygons: [] } as unknown as Inputs.JSCAD.JSCADEntity);
+            const inputs = new Inputs.JSCAD.MeshDto(loose<Inputs.JSCAD.JSCADEntity>({ polygons: [] }));
 
             // Act
             const polygons = jscad.toPolygonPoints(inputs);
@@ -158,7 +160,7 @@ describe("Jscad", () => {
 
     describe("transformSolid, in each shape it accepts", () => {
         it("should apply a single matrix given on its own", () => {
-            const inputs = new Inputs.JSCAD.TransformSolidDto(cube, TRANSLATE_X_MATRIX as unknown as Inputs.Base.TransformMatrixes);
+            const inputs = new Inputs.JSCAD.TransformSolidDto(cube, loose<Inputs.Base.TransformMatrixes>(TRANSLATE_X_MATRIX));
 
             // Act
             const moved = jscad.transformSolid(inputs);
@@ -179,7 +181,7 @@ describe("Jscad", () => {
 
         it("should flatten a list of lists of matrices", () => {
             // Arrange
-            const nested = [[TRANSLATE_X_MATRIX], [TRANSLATE_X_MATRIX]] as unknown as Inputs.Base.TransformMatrixes;
+            const nested = loose<Inputs.Base.TransformMatrixes>([[TRANSLATE_X_MATRIX], [TRANSLATE_X_MATRIX]]);
             const inputs = new Inputs.JSCAD.TransformSolidDto(cube, nested);
 
             // Act
@@ -298,6 +300,21 @@ describe("Jscad", () => {
 
             // Assert
             expect(mesh.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+        });
+
+        it("should read the polygons of a flat shape's extrusion through the method that library carries", () => {
+            // Arrange
+            const triangle: Inputs.JSCAD.JSCADPoly3 = { vertices: [[0, 0, 0], [1, 0, 0], [0, 1, 0]] };
+            const extruded = Object.assign(jscad.path.createEmpty(), { toPolygons: () => [triangle] });
+            const extrude = vi.spyOn(jscad.extrusions, "extrudeLinear").mockReturnValueOnce(extruded);
+            const circle = jscad.polygon.circle(new Inputs.JSCAD.CircleDto([0, 0], 1, 16));
+
+            // Act
+            const mesh = jscad.shapeToMesh({ mesh: circle });
+
+            // Assert
+            expect(mesh.positions).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            extrude.mockRestore();
         });
     });
 

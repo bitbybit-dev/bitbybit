@@ -21,10 +21,11 @@
  * info is a review candidate, printed by --report and never baselined.
  */
 import ts from "typescript";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { targets } from "./inputs.config.mjs";
-import { ROOT, sourceFiles, parse, isPublic, nameOf, classesUnder } from "./lib/surface.mjs";
+import { ROOT, HAND_DIRS, HAND_FILES, INPUTS_CHAINS, sourceFiles, parse, isPublic, nameOf, classesUnder } from "./lib/surface.mjs";
 
 const BASELINE = path.join(ROOT, "scripts/api-docs-baseline.json");
 const DEV = "packages/dev";
@@ -35,7 +36,6 @@ const flag = (name) => args.includes(name);
 const option = (name) => { const i = args.indexOf(name); return i > -1 ? args[i + 1] : undefined; };
 const update = flag("--update");
 const report = flag("--report");
-if (update && (report || args.length > 1)) { console.error("--update takes no other flag"); process.exit(2); }
 
 /* ------------------------------------------------------------------------- the surface */
 
@@ -53,9 +53,8 @@ const ROOTS = [
 ];
 // Facade fields that are infrastructure or deprecated, not API to document.
 const SKIP_FIELDS = { context: "the engine context, not API", occtWorkerManager: "infrastructure", jscadWorkerManager: "infrastructure", manifoldWorkerManager: "infrastructure", verb: "deprecated, leaves with the next major" };
-// Hand-written worker members: audited file by file; a `// replaces` member without a doc inherits the kernel's.
-const HAND_DIRS = ["occt-worker/lib/api-hand", "jscad-worker/lib/api-hand", "manifold-worker/lib/api-hand"];
-const HAND_FILES = ["occt-worker/lib/api/bitbybit-occt.ts", "jscad-worker/lib/api/bitbybit-jscad.ts", "manifold-worker/lib/api/bitbybit-manifold.ts"];
+// Hand-written worker members (HAND_DIRS, HAND_FILES): audited file by file; a `// replaces` member
+// without a doc inherits the kernel's.
 // DTO sources: the fragments and the hand-written inputs files; never the assembled namespaces.
 const INPUTS_PACKAGES = ["base", "occt", "jscad", "manifold", "core", "babylonjs", "threejs", "playcanvas"];
 const ASSEMBLED = new Set(targets.map((t) => path.join(ROOT, t.out)));
@@ -76,7 +75,7 @@ function typeNames(type) {
 
 /* ----------------------------------------------------------------------- reading a doc */
 
-function docOf(node) {
+export function docOf(node) {
     const blocks = ts.getJSDocCommentsAndTags(node).filter(ts.isJSDoc);
     const block = blocks[blocks.length - 1];
     if (!block) return null;
@@ -97,8 +96,8 @@ const stem = (w) => w.replace(/(ies)$/, "y").replace(/(es|s)$/, "").replace(/(in
 const nameTokens = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_.]/g, " ").toLowerCase().split(/\s+/).filter(Boolean).map(stem);
 const proseTokens = (text) => words(text).map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, "")).filter((w) => w && !STOP.has(w) && !VENDOR.has(w)).map(stem);
 
-const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws"]);
-const BOOLEAN_TAGS = new Set(["drawable", "optional", "ignore", "disposableOutput"]);
+const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws"]);
+const BOOLEAN_TAGS = new Set(["drawable", "optional", "ignore", "disposableOutput", "exclusiveMinimum", "exclusiveMaximum"]);
 const NUMERIC_TAGS = new Set(["minimum", "maximum", "step"]);
 
 // Words that must not appear in a library doc, each with the reason a reader would not know.
@@ -126,17 +125,21 @@ const SEVERITY = {
     "missing-returns": "warn", "missing-param": "warn", "unknown-tag": "warn", "code-in-description": "warn",
     "example-unfenced": "warn", "example-syntax": "warn", "wrapped-list-marker": "warn",
     "stray-tag": "error", "unsafe-description": "error", "multiple-doc-blocks": "error", "forbidden-words": "error", "version-string": "error",
-    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error",
+    "default-mismatch": "error", "optional-mismatch": "error", "ctor-param-mismatch": "error", "ctor-param-required": "error", "ctor-param-property": "error",
+    "default-needs-initializer": "error", "default-tag-missing": "error", "required-spelling": "error", "optional-spelling": "error", "optional-with-default": "error",
+    "defaulted-spelling": "error",
+    "exclusive-without-bound": "error",
+    "pair-parity": "warn",
     "missing-example": "info", "duplicate-description": "info", "sibling-echo": "info", "url-in-method-doc": "info", "thin-returns": "info", "doubled-word": "info",
 };
 const BUDGET = { M: [8, 60], C: [15, 120], D: [8, 40], P: [3, 30] };
 
-const findings = [];
+export const findings = [];
 const add = (rule, item, message) => findings.push({ rule, severity: SEVERITY[rule], kind: item.kind, file: rel(item.file), line: item.line, path: item.path, message });
 
 /* ------------------------------------------------------------------------ the rules */
 
-function checkProse(item, text, where) {
+export function checkProse(item, text, where) {
     if (/@/.test(text)) add("unsafe-description", item, `${where} contains "@" - a tooltip generator cuts the text there; write the name in prose`);
     if (/—/.test(text)) add("unsafe-description", item, `${where} contains an em dash; use a regular hyphen`);
     if (/<[a-zA-Z][^>]*>/.test(text)) add("unsafe-description", item, `${where} contains an HTML tag; docs are markdown rendered to text`);
@@ -164,7 +167,7 @@ function checkProse(item, text, where) {
     if (VERSION_RE.test(text)) add("version-string", item, `${where} carries the package version ${VERSION}`);
 }
 
-function checkDescription(item, doc) {
+export function checkDescription(item, doc) {
     const text = doc.description;
     const [min, max] = BUDGET[item.kind];
     const n = words(text).length;
@@ -182,7 +185,7 @@ function checkDescription(item, doc) {
     }
 }
 
-function checkTags(item, doc) {
+export function checkTags(item, doc) {
     for (const tag of doc.tags) {
         if (tag.name === "return") add("stray-tag", item, "@return - the tag is @returns");
         else if (tag.name === "min" || tag.name === "max") add("stray-tag", item, `@${tag.name} - the generators read @minimum and @maximum`);
@@ -208,7 +211,7 @@ function checkTags(item, doc) {
     if (item.blocks > 1) add("multiple-doc-blocks", item, `${item.blocks} JSDoc blocks above one member; consumers read different ones`);
 }
 
-function checkMethod(item) {
+export function checkMethod(item) {
     const doc = item.doc;
     if (!doc) { if (!item.inherits) add("missing-doc", item, "no JSDoc"); return; }
     checkDescription(item, doc);
@@ -222,7 +225,7 @@ function checkMethod(item) {
     if (!doc.tags.some((t) => t.name === "example") && item.dtoProps > 1) add("missing-example", item, `takes ${item.dtoProps} properties and has no @example`);
 }
 
-function checkClass(item) {
+export function checkClass(item) {
     if (!item.doc) { add("missing-class-doc", item, "no JSDoc on the class"); return; }
     checkDescription(item, item.doc);
     checkTags(item, item.doc);
@@ -232,7 +235,7 @@ function checkClass(item) {
  * A `@default` the way the component generators read it: booleans, numbers, JSON for a list or an
  * object, `undefined`, and otherwise the text itself (quotes stripped, so `"abc"` and `abc` agree).
  */
-function parseDefaultTag(text) {
+export function parseDefaultTag(text) {
     if (text === "true") return true;
     if (text === "false") return false;
     if (text === "undefined") return undefined;
@@ -243,23 +246,59 @@ function parseDefaultTag(text) {
     return text.replace(/^"(.*)"$/, "$1");
 }
 
-/** The enum members of every inputs file, by enum name, so an initializer `Enum.member` can be read as its value. */
+const FRAGMENT_NAMESPACES = new Map(targets.map((t) => [path.join(ROOT, t.dir), t.namespace]));
+
+/**
+ * The namespace a declaration sits in: the nearest enclosing `namespace`, or for a declaration at the
+ * top of an inputs fragment the namespace the fragment is assembled into.
+ */
+export function namespaceOf(node, sf) {
+    for (let parent = node.parent; parent; parent = parent.parent) if (ts.isModuleDeclaration(parent)) return parent.name.text;
+    return FRAGMENT_NAMESPACES.get(path.dirname(sf.fileName));
+}
+
+/** The package a file of packages/dev belongs to. */
+const packageOf = (file) => path.relative(path.join(ROOT, DEV), file).split(path.sep)[0];
+
+/**
+ * The enum members of every inputs file, by enum name and by `Namespace.enum`, so an initializer
+ * `Enum.member` or `Namespace.Enum.member` can be read as its value.
+ */
 const enumMembers = new Map();
-function collectEnums(sf) {
+export function collectEnums(sf) {
     const visit = (node) => {
         if (ts.isEnumDeclaration(node)) {
-            const members = new Map();
-            for (const m of node.members) members.set(nameOf(m) ?? m.name.getText(sf), m.initializer && (ts.isStringLiteral(m.initializer) || ts.isNumericLiteral(m.initializer)) ? evaluateInitializer(m.initializer, sf) : nameOf(m));
+            const members = enumValues(node, sf);
             enumMembers.set(node.name.text, members);
+            const namespace = namespaceOf(node, sf);
+            if (namespace) enumMembers.set(`${namespace}.${node.name.text}`, members);
         }
         ts.forEachChild(node, visit);
     };
     visit(sf);
 }
 
-const UNREADABLE = Symbol("unreadable");
+/**
+ * Each member of an enum with its value as TypeScript numbers it: a literal initializer is its value,
+ * and a member without one is the previous member's number plus one, 0 for the first. A value that
+ * cannot be read - a computed initializer, or a member after one - is UNREADABLE.
+ */
+export function enumValues(node, sf) {
+    const members = new Map();
+    let next = 0;
+    for (const m of node.members) {
+        const name = nameOf(m) ?? (ts.isStringLiteral(m.name) ? m.name.text : m.name.getText(sf));
+        const read = m.initializer ? evaluateInitializer(m.initializer, sf) : next;
+        const value = typeof read === "string" || typeof read === "number" ? read : UNREADABLE;
+        members.set(name, value);
+        next = typeof value === "number" ? value + 1 : UNREADABLE;
+    }
+    return members;
+}
+
+export const UNREADABLE = Symbol("unreadable");
 /** The value a property initializer denotes, or UNREADABLE when it is not a literal the rule can compare. */
-function evaluateInitializer(node, sf) {
+export function evaluateInitializer(node, sf) {
     if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
     if (ts.isNumericLiteral(node)) return Number(node.text);
     if (node.kind === ts.SyntaxKind.TrueKeyword) return true;
@@ -289,12 +328,30 @@ function evaluateInitializer(node, sf) {
         }
         return out;
     }
-    if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression)) {
-        const members = enumMembers.get(node.expression.text);
-        if (members && members.has(node.name.text)) return { enumName: node.expression.text, member: node.name.text, value: members.get(node.name.text) };
+    if (ts.isPropertyAccessExpression(node)) {
+        const members = enumOf(node.expression, sf);
+        if (members && members.has(node.name.text)) return { enumName: node.expression.getText(sf), member: node.name.text, value: members.get(node.name.text) };
         return UNREADABLE;
     }
     return UNREADABLE;
+}
+
+/**
+ * The members of the enum an expression names: `Enum` by its name, in the namespace the expression
+ * sits in first; `Namespace.Enum` (however deeply qualified) by the enum's own name in that
+ * namespace first.
+ */
+function enumOf(expression, sf) {
+    if (ts.isIdentifier(expression)) {
+        const namespace = namespaceOf(expression, sf);
+        return (namespace && enumMembers.get(`${namespace}.${expression.text}`)) || enumMembers.get(expression.text);
+    }
+    if (ts.isPropertyAccessExpression(expression) && ts.isIdentifier(expression.name)) {
+        const qualifier = expression.expression;
+        const namespace = ts.isIdentifier(qualifier) ? qualifier.text : ts.isPropertyAccessExpression(qualifier) ? qualifier.name.text : undefined;
+        return (namespace && enumMembers.get(`${namespace}.${expression.name.text}`)) || enumMembers.get(expression.name.text);
+    }
+    return undefined;
 }
 
 const canonical = (value) => JSON.stringify(value, (_, v) => (typeof v === "number" && !Number.isFinite(v) ? String(v) : v));
@@ -304,7 +361,7 @@ const canonical = (value) => JSON.stringify(value, (_, v) => (typeof v === "numb
  * the node editors read the second. They must agree, and an enum member agrees with its name or its
  * value.
  */
-function checkDefaultAgreement(item) {
+export function checkDefaultAgreement(item) {
     const tag = item.doc?.tags.find((t) => t.name === "default");
     if (!tag || !item.initializer) return;
     let declared = parseDefaultTag(tag.text);
@@ -328,7 +385,7 @@ function checkDefaultAgreement(item) {
  * control, so it needs no `@optional`; one with none must say `@optional true` or the node gates
  * on it while a script may omit it.
  */
-function checkOptionalAgreement(item) {
+export function checkOptionalAgreement(item) {
     const optionalTag = item.doc?.tags.some((t) => t.name === "optional" && t.text === "true") ?? false;
     const defaultTag = item.doc?.tags.find((t) => t.name === "default");
     const hasDefaultValue = defaultTag !== undefined && defaultTag.text !== "undefined";
@@ -336,11 +393,98 @@ function checkOptionalAgreement(item) {
     if (item.optional && !optionalTag && !hasDefaultValue) add("optional-mismatch", item, "spelled with `?` but has neither @optional true nor a @default value, so a node gates on it while a script may omit it");
 }
 
-/** Every constructor parameter names the property it fills, spelled the same; a typo or a stray parameter is a public signature nobody can call by name. */
-function checkConstructor(item) {
+/**
+ * A DTO property is one of three kinds, and each has one spelling:
+ *
+ *   required    `x!: T;`                  no initializer; a caller must pass it
+ *   defaulted   `x?: T | undefined = d;`  the initializer is the default, and `@default` repeats it
+ *   optional    `x?: T | undefined;`      `@optional true`; left unset, it stays unset
+ *
+ * `new Dto()` runs the initializer and nothing else sets a default, so a `@default` value without
+ * one is a default that exists only in the documentation. `| undefined` is written out because an
+ * inferred type prints differently under different compiler flags, and because under
+ * exactOptionalPropertyTypes only that spelling lets a caller pass an optional value straight on.
+ * A defaulted property spelled without `?` is still required in an object literal; that spelling is
+ * ratcheted down rather than forbidden. It is counted only on a class some method takes - as a
+ * parameter, or held by one it takes - because a class that is only ever returned carries its
+ * initializers as placeholders, and a result's fields are always there. A constant tag
+ * (`type = "arc" as const`) is not a default either.
+ */
+/** Whether a type is a union with `undefined` as one of its own members, parentheses aside; not one nested in a type argument. */
+export function unionHoldsUndefined(type) {
+    let t = type;
+    while (t && ts.isParenthesizedTypeNode(t)) t = t.type;
+    return !!t && ts.isUnionTypeNode(t) && t.types.some((member) => member.kind === ts.SyntaxKind.UndefinedKeyword);
+}
+
+export function checkSpelling(item) {
+    if (!item.declaration) return;
+    const optionalTag = item.doc?.tags.some((t) => t.name === "optional" && t.text === "true") ?? false;
+    const defaultTag = item.doc?.tags.find((t) => t.name === "default");
+    if (defaultTag !== undefined && defaultTag.text !== "undefined" && !item.initializer) add("default-needs-initializer", item, `@default ${defaultTag.text} but no initializer, so \`new ${item.className}()\` leaves it unset`);
+    if (item.initializer && defaultTag === undefined) add("default-tag-missing", item, `initialized to ${item.initializer.getText(item.sf)} but no @default says so`);
+    if (!item.initializer && !item.optional && !item.definite) add("required-spelling", item, "neither initialized nor optional, so it is required: spell it `name!: T;`");
+    if (item.optional && !unionHoldsUndefined(item.typeNode)) add("optional-spelling", item, "spelled with `?` but its type does not say `| undefined`");
+    if (item.initializer && optionalTag) add("optional-with-default", item, "@optional true on a property with a default; a default already makes it optional");
+    for (const [flag, bound] of [["exclusiveMinimum", "minimum"], ["exclusiveMaximum", "maximum"]]) {
+        const tag = item.doc?.tags.find((t) => t.name === flag && t.text === "true");
+        const limit = item.doc?.tags.find((t) => t.name === bound);
+        if (tag && (!limit || !Number.isFinite(Number(limit.text)))) add("exclusive-without-bound", item, `@${flag} needs a finite @${bound} beside it to make exclusive`);
+    }
+    const constantTag = item.initializer && ts.isAsExpression(item.initializer) && item.initializer.type.getText(item.sf) === "const";
+    if (item.initializer && !item.optional && !constantTag && takenClasses.has(item.className)) add("defaulted-spelling", item, "has a default but is not spelled with `?`, so an object literal must still pass it");
+}
+
+/**
+ * A singular DTO and its plural - `XDto` beside `XsDto`, `XShapesDto` or `XCentersDto`, or a name
+ * of several words with both its first and its last plural (`FrameOnCurveAtParamDto` beside
+ * `FramesOnCurveAtParamsDto`), in the same file - that keep separate classes still describe the same setting under the same name, so a
+ * property both have - declared or inherited - agrees on its type, its default and its bounds. Where
+ * the two share their common properties through an abstract parent there is nothing to compare:
+ * each property is declared once. A difference is reported on the plural's declaration of it.
+ */
+export function checkPairParity() {
+    const facts = (p) => {
+        const tag = (name) => p.doc?.tags.find((t) => t.name === name)?.text ?? "";
+        return { type: p.type.replace(/\s+/g, ""), default: tag("default"), minimum: tag("minimum"), maximum: tag("maximum"), step: tag("step"), optional: tag("optional") };
+    };
+    const propsOf = (d) => {
+        const all = new Map();
+        for (const owner of [d, ...ancestorsOf(d)]) {
+            for (const p of props.filter((x) => x.dto === owner)) if (!all.has(p.name)) all.set(p.name, p);
+        }
+        return all;
+    };
+    for (const single of dtos) {
+        const match = /^(.+)Dto$/.exec(single.name);
+        if (!match) continue;
+        const words = match[1].match(/[A-Z][a-z0-9]*/g) ?? [];
+        const plurals = [`${match[1]}sDto`, `${match[1]}esDto`, `${match[1]}ShapesDto`, `${match[1]}CentersDto`];
+        if (words.length > 1) plurals.push(`${words[0]}s${words.slice(1, -1).join("")}${words[words.length - 1]}sDto`);
+        for (const plural of dtos.filter((d) => d.file === single.file && plurals.includes(d.name))) {
+            const singleProps = propsOf(single);
+            for (const [name, p] of propsOf(plural)) {
+                const other = singleProps.get(name);
+                if (!other || other === p) continue;
+                const a = facts(other), b = facts(p);
+                const differing = Object.keys(a).filter((k) => a[k] !== b[k]);
+                const as = p.className === plural.name ? "" : `as ${plural.name}.${name}, `;
+                if (differing.length) add("pair-parity", p, `${as}differs from ${single.name}.${name} in ${differing.join(", ")}`);
+            }
+        }
+    }
+}
+
+/**
+ * Every constructor parameter names the property it fills, spelled the same; a typo or a stray
+ * parameter is a public signature nobody can call by name. A parameter property (`constructor(public
+ * x?: number)`) is refused: it declares a property the spelling, default and constructor rules never
+ * see, so a DTO declares each property in its body and assigns it.
+ */
+export function checkConstructor(item) {
     const ctor = item.node.members.find(ts.isConstructorDeclaration);
     if (!ctor) return;
-    const propertyNames = new Set(item.node.members.filter(ts.isPropertyDeclaration).map((m) => nameOf(m)).filter(Boolean));
+    const propertyNames = new Set([...item.node.members.filter(ts.isPropertyDeclaration).map((m) => nameOf(m)).filter(Boolean), ...inheritedPropNames(item)]);
     const assigned = new Map();
     const passedToParent = new Set();
     const visit = (node) => {
@@ -354,8 +498,12 @@ function checkConstructor(item) {
     };
     if (ctor.body) visit(ctor.body);
     for (const param of ctor.parameters) {
-        if (ts.getCombinedModifierFlags(param) & ts.ModifierFlags.ParameterPropertyModifier) continue;
         const name = param.name.getText(item.sf);
+        if (ts.getCombinedModifierFlags(param) & ts.ModifierFlags.ParameterPropertyModifier) {
+            add("ctor-param-property", item, `constructor parameter "${name}" declares a property, which the spelling, default and constructor rules do not see; declare it in the class body and assign it`);
+            continue;
+        }
+        if (!param.questionToken && !param.initializer && !param.dotDotDotToken) add("ctor-param-required", item, `constructor parameter "${name}" is required, so \`new ${item.name}()\` - the DTO with its defaults - does not type-check`);
         if (passedToParent.has(name)) continue;
         const target = assigned.get(name);
         if (target === undefined) add("ctor-param-mismatch", item, `constructor parameter "${name}" is never stored on the instance`);
@@ -364,9 +512,10 @@ function checkConstructor(item) {
     }
 }
 
-function checkProperty(item) {
+export function checkProperty(item) {
     checkOptionalAgreement(item);
     checkDefaultAgreement(item);
+    checkSpelling(item);
     if (!item.doc) { add("missing-doc", item, "no JSDoc"); return; }
     checkDescription(item, item.doc);
     checkTags(item, item.doc);
@@ -374,12 +523,12 @@ function checkProperty(item) {
 
 /* ------------------------------------------------------------------------ collecting */
 
-const methods = [];
+export const methods = [];
 const classes = [];
-const dtos = [];
-const props = [];
+export const dtos = [];
+export const props = [];
 const seen = new Set();
-const dtoPropCount = new Map();
+export const dtoPropCount = new Map();
 
 const stack = new Set();
 
@@ -405,8 +554,10 @@ function collectClass(entry, className, pathPrefix, resolveClass) {
             const mkey = `${rel(file)}#${className}.${name}`;
             if (audit && !seen.has(mkey)) {
                 seen.add(mkey);
-                const dtoName = member.parameters[0]?.type?.getText(sf).replace(/<.*$/, "").split(".").pop();
-                methods.push({ kind: "M", file, line: lineOf(member, sf), path: full, name, className, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", dtoName, blocks: leadingBlocks(member, sf) });
+                const dtoPath = member.parameters[0]?.type?.getText(sf).replace(/<.*$/, "").split(".");
+                const dtoName = dtoPath?.pop();
+                const dtoNamespace = dtoPath?.filter((segment) => segment !== "Inputs").pop();
+                methods.push({ kind: "M", file, line: lineOf(member, sf), path: full, name, className, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", dtoName, dtoNamespace, blocks: leadingBlocks(member, sf) });
             }
         } else if (ts.isPropertyDeclaration(member)) {
             if (SKIP_FIELDS[name]) continue;
@@ -421,25 +572,32 @@ function collectClass(entry, className, pathPrefix, resolveClass) {
     stack.delete(className);
 }
 
-for (const root of ROOTS) {
-    const map = classesUnder(root.classDirs.map((dir) => path.join(ROOT, DEV, dir)));
-    const entry = map.get(root.root);
-    if (!entry) { console.error(`root class ${root.root} not found under ${root.classDirs.join(", ")}`); process.exit(2); }
-    collectClass(entry, root.root, "", (name) => map.get(name));
-}
+/** The key a DTO's property count is held under: its file and its name, since a name repeats across packages. */
+export const dtoKey = (d) => `${d.file}#${d.name}`;
 
-for (const file of [...HAND_DIRS.flatMap((d) => sourceFiles(path.join(ROOT, DEV, d))), ...HAND_FILES.map((f) => path.join(ROOT, DEV, f))]) {
-    if (!existsSync(file)) continue;
-    const sf = parse(file);
+/** Every exported DTO class of an inputs file and its properties, and how many properties a method taking it passes. */
+export function collectDtos(sf) {
+    const file = sf.fileName;
     const visit = (node) => {
-        if (ts.isClassDeclaration(node) && node.name) {
-            for (const member of node.members) {
-                if (!ts.isMethodDeclaration(member) || !isPublic(member) || !nameOf(member)) continue;
-                const doc = docOf(member);
-                const leading = (ts.getLeadingCommentRanges(sf.text, member.getFullStart()) || []).map((r) => sf.text.substring(r.pos, r.end));
-                const inherits = !doc && leading.some((c) => /^\/\/ replaces /.test(c));
-                if (doc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
-                methods.push({ kind: "M", file, line: lineOf(member, sf), path: `${node.name.text}.${nameOf(member)}`, name: nameOf(member), className: node.name.text, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", inherits, blocks: leadingBlocks(member, sf) });
+        if (ts.isClassDeclaration(node) && node.name && ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) {
+            const className = node.name.text;
+            const doc = docOf(node);
+            if (!doc?.tags.some((t) => t.name === "deprecated")) {
+                const dto = { kind: "D", file, line: lineOf(node, sf), path: className, name: className, namespace: namespaceOf(node, sf), doc, blocks: leadingBlocks(node, sf), node, sf };
+                dtos.push(dto);
+                const ctor = node.members.find(ts.isConstructorDeclaration);
+                const parameterProperties = ctor ? ctor.parameters.filter((p) => ts.getCombinedModifierFlags(p) & ts.ModifierFlags.ParameterPropertyModifier) : [];
+                const own = [];
+                for (const member of [...node.members, ...parameterProperties]) {
+                    const name = nameOf(member);
+                    if (!name || !isPublic(member) || !(ts.isPropertyDeclaration(member) || ts.isParameter(member))) continue;
+                    const pdoc = docOf(member);
+                    if (pdoc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
+                    own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", typeNode: member.type, blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, definite: ts.isPropertyDeclaration(member) && !!member.exclamationToken, declaration: ts.isPropertyDeclaration(member), sf });
+                }
+                for (const p of own) p.dto = dto;
+                props.push(...own);
+                dtoPropCount.set(dtoKey(dto), own.filter((p) => !/shape|Pointer|manifold|entity/i.test(p.type)).length);
             }
         }
         ts.forEachChild(node, visit);
@@ -447,121 +605,250 @@ for (const file of [...HAND_DIRS.flatMap((d) => sourceFiles(path.join(ROOT, DEV,
     visit(sf);
 }
 
-const inputsFiles = INPUTS_PACKAGES.flatMap((pkg) => sourceFiles(path.join(ROOT, DEV, pkg, "lib/api/inputs"), { fragments: true })).filter((file) => !ASSEMBLED.has(file) && !isVerb(file) && !isGenerated(parse(file).text));
-for (const file of inputsFiles) collectEnums(parse(file));
-for (const file of inputsFiles) {
-    {
+/**
+ * The class each DTO extends, and the property names a DTO inherits through it. A singular and a
+ * plural DTO share their common properties through an abstract parent; the subclass constructors
+ * fill those too.
+ */
+export const parentOf = new Map();
+const ownPropNames = (d) => props.filter((p) => p.dto === d).map((p) => p.name);
+export function inheritedPropNames(d, seenDtos = new Set()) {
+    const parent = parentOf.get(d);
+    if (!parent || seenDtos.has(parent)) return [];
+    seenDtos.add(parent);
+    return [...ownPropNames(parent), ...inheritedPropNames(parent, seenDtos)];
+}
+const ancestorsOf = (d, seenDtos = new Set()) => {
+    const parent = parentOf.get(d);
+    if (!parent || seenDtos.has(parent)) return [];
+    seenDtos.add(parent);
+    return [parent, ...ancestorsOf(parent, seenDtos)];
+};
+
+/**
+ * The DTO a subclass's `extends` names. The name is matched in the namespace the qualifier names, or
+ * for an unqualified name in the subclass's own namespace; among those, the nearest wins: the same
+ * file, as TypeScript scopes an unqualified `extends`, then the same directory, then the same
+ * package, then anywhere. Two candidates at the nearest distance are an error, since which one the
+ * subclass extends cannot be told from here; none is no parent.
+ */
+export function findParent(d, written) {
+    const segments = written.split(".");
+    const name = segments.pop();
+    const qualifier = segments.pop();
+    const namespace = qualifier ?? d.namespace;
+    const candidates = dtos.filter((x) => x !== d && x.name === name && x.namespace === namespace);
+    const tiers = [(x) => x.file === d.file, (x) => path.dirname(x.file) === path.dirname(d.file), (x) => packageOf(x.file) === packageOf(d.file), () => true];
+    for (const tier of tiers) {
+        const found = candidates.filter(tier);
+        if (found.length > 1) throw new Error(`${rel(d.file)}: ${d.name} extends ${written}, which names ${found.length} classes as near as each other (${found.map((x) => rel(x.file)).join(", ")})`);
+        if (found.length === 1) return found[0];
+    }
+    return undefined;
+}
+
+/**
+ * How many properties a method's DTO passes: the DTO its first parameter names, by namespace where
+ * the type says one, the nearest along the method's package's inputs chain.
+ */
+export function dtoPropsOf(method) {
+    if (!method.dtoName) return 0;
+    const candidates = dtos.filter((d) => d.name === method.dtoName && (!method.dtoNamespace || d.namespace === method.dtoNamespace));
+    for (const pkg of INPUTS_CHAINS[packageOf(method.file)] ?? []) {
+        const found = candidates.find((d) => packageOf(d.file) === pkg);
+        if (found) return dtoPropCount.get(dtoKey(found)) ?? 0;
+    }
+    return candidates.length === 1 ? dtoPropCount.get(dtoKey(candidates[0])) ?? 0 : 0;
+}
+
+/** The class names some method or function takes: named in a parameter type, or held by a property of one that is. */
+export const takenClasses = new Set();
+
+/**
+ * Reads the inputs files - their enums, their DTO classes and properties, each DTO's parent - and
+ * the library files, for the DTO classes some method takes.
+ */
+export function collectInputs(inputsSourceFiles, libSourceFiles) {
+    for (const sf of inputsSourceFiles) collectEnums(sf);
+    for (const sf of inputsSourceFiles) collectDtos(sf);
+    for (const d of dtos) {
+        const heritage = (d.node.heritageClauses || []).find((c) => c.token === ts.SyntaxKind.ExtendsKeyword);
+        if (!heritage) continue;
+        const parent = findParent(d, heritage.types[0].expression.getText(d.sf));
+        if (parent) parentOf.set(d, parent);
+    }
+    for (const d of dtos) {
+        const ancestors = ancestorsOf(d);
+        if (ancestors.length) dtoPropCount.set(dtoKey(d), (dtoPropCount.get(dtoKey(d)) ?? 0) + props.filter((p) => ancestors.includes(p.dto) && !/shape|Pointer|manifold|entity/i.test(p.type)).length);
+    }
+    const propTypes = new Map(dtos.map((d) => [d.name, []]));
+    for (const p of props) propTypes.get(p.className).push(p.type);
+    const aliasTypes = new Map();
+    for (const sf of inputsSourceFiles) {
+        const visit = (node) => {
+            if (ts.isTypeAliasDeclaration(node)) aliasTypes.set(node.name.text, [...(aliasTypes.get(node.name.text) ?? []), node.type.getText(sf)]);
+            ts.forEachChild(node, visit);
+        };
+        visit(sf);
+    }
+    const classesIn = (text, seenAliases = new Set()) => {
+        const found = [];
+        for (const m of text.matchAll(/\b([A-Z]\w*)\b/g)) {
+            if (propTypes.has(m[1])) found.push(m[1]);
+            else if (aliasTypes.has(m[1]) && !seenAliases.has(m[1])) {
+                seenAliases.add(m[1]);
+                for (const aliased of aliasTypes.get(m[1])) found.push(...classesIn(aliased, seenAliases));
+            }
+        }
+        return found;
+    };
+    for (const sf of libSourceFiles) {
+        const visit = (node) => {
+            if (ts.isParameter(node) && node.type) for (const name of classesIn(node.type.getText(sf))) takenClasses.add(name);
+            ts.forEachChild(node, visit);
+        };
+        visit(sf);
+    }
+    const queue = [...takenClasses];
+    while (queue.length) {
+        const name = queue.pop();
+        for (const text of propTypes.get(name) ?? []) {
+            for (const held of classesIn(text)) if (!takenClasses.has(held)) { takenClasses.add(held); queue.push(held); }
+        }
+        for (const d of dtos.filter((x) => x.name === name)) {
+            const parent = parentOf.get(d);
+            if (parent && !takenClasses.has(parent.name)) { takenClasses.add(parent.name); queue.push(parent.name); }
+        }
+    }
+}
+
+/** Every rule over the DTO classes and their properties, in the order the findings are reported. */
+export function checkDtos() {
+    for (const d of dtos) { checkClass(d); checkConstructor(d); }
+    checkPairParity();
+    for (const p of props) checkProperty(p);
+}
+
+/* ---------------------------------------------------------------------------- the run */
+
+function main() {
+    if (update && (report || args.length > 1)) { console.error("--update takes no other flag"); process.exit(2); }
+
+    for (const root of ROOTS) {
+        const map = classesUnder(root.classDirs.map((dir) => path.join(ROOT, DEV, dir)));
+        const entry = map.get(root.root);
+        if (!entry) { console.error(`root class ${root.root} not found under ${root.classDirs.join(", ")}`); process.exit(2); }
+        collectClass(entry, root.root, "", (name) => map.get(name));
+    }
+
+    for (const file of [...HAND_DIRS.flatMap((d) => sourceFiles(path.join(ROOT, DEV, d))), ...HAND_FILES.map((f) => path.join(ROOT, DEV, f))]) {
+        if (!existsSync(file)) continue;
         const sf = parse(file);
         const visit = (node) => {
-            if (ts.isClassDeclaration(node) && node.name && ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) {
-                const className = node.name.text;
-                const doc = docOf(node);
-                if (!doc?.tags.some((t) => t.name === "deprecated")) {
-                    dtos.push({ kind: "D", file, line: lineOf(node, sf), path: className, name: className, doc, blocks: leadingBlocks(node, sf), node, sf });
-                    const ctor = node.members.find(ts.isConstructorDeclaration);
-                    const parameterProperties = ctor ? ctor.parameters.filter((p) => ts.getCombinedModifierFlags(p) & ts.ModifierFlags.ParameterPropertyModifier) : [];
-                    const own = [];
-                    for (const member of [...node.members, ...parameterProperties]) {
-                        const name = nameOf(member);
-                        if (!name || !isPublic(member) || !(ts.isPropertyDeclaration(member) || ts.isParameter(member))) continue;
-                        const pdoc = docOf(member);
-                        if (pdoc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
-                        own.push({ kind: "P", file, line: lineOf(member, sf), path: `${className}.${name}`, name, className, doc: pdoc, type: member.type?.getText(sf) ?? "", blocks: leadingBlocks(member, sf), initializer: ts.isPropertyDeclaration(member) ? member.initializer : undefined, optional: !!member.questionToken, sf });
-                    }
-                    props.push(...own);
-                    dtoPropCount.set(className, own.filter((p) => !/shape|Pointer|manifold|entity/i.test(p.type)).length);
+            if (ts.isClassDeclaration(node) && node.name) {
+                for (const member of node.members) {
+                    if (!ts.isMethodDeclaration(member) || !isPublic(member) || !nameOf(member)) continue;
+                    const doc = docOf(member);
+                    const leading = (ts.getLeadingCommentRanges(sf.text, member.getFullStart()) || []).map((r) => sf.text.substring(r.pos, r.end));
+                    const inherits = !doc && leading.some((c) => /^\/\/ replaces /.test(c));
+                    if (doc?.tags.some((t) => t.name === "ignore" && t.text === "true")) continue;
+                    methods.push({ kind: "M", file, line: lineOf(member, sf), path: `${node.name.text}.${nameOf(member)}`, name: nameOf(member), className: node.name.text, doc, params: member.parameters.map((p) => p.name.getText(sf)), returns: member.type?.getText(sf) ?? "", inherits, blocks: leadingBlocks(member, sf) });
                 }
             }
             ts.forEachChild(node, visit);
         };
         visit(sf);
     }
-}
 
-for (const m of methods) m.dtoProps = m.dtoName ? dtoPropCount.get(m.dtoName) ?? 0 : 0;
-for (const m of methods) checkMethod(m);
-for (const c of classes) checkClass(c);
-for (const d of dtos) { checkClass(d); checkConstructor(d); }
-for (const p of props) checkProperty(p);
+    const inputsFiles = INPUTS_PACKAGES.flatMap((pkg) => sourceFiles(path.join(ROOT, DEV, pkg, "lib/api/inputs"), { fragments: true })).filter((file) => !ASSEMBLED.has(file) && !isVerb(file) && !isGenerated(parse(file).text));
+    const libFiles = [...INPUTS_PACKAGES, "occt-worker", "jscad-worker", "manifold-worker"].flatMap((pkg) => sourceFiles(path.join(ROOT, DEV, pkg, "lib"))).filter((f) => !f.includes("/api/inputs") && !f.includes("/resolved-inputs") && !isVerb(f));
+    collectInputs(inputsFiles.map(parse), libFiles.map(parse));
 
-// Review candidates: the same sentence on two members of one class, and a property description that
-// names a sibling property but not its own.
-const byClass = new Map();
-for (const item of [...methods, ...props]) {
-    if (!item.doc) continue;
-    const key = `${item.className}\u0000${item.doc.description.toLowerCase().replace(/\s+/g, " ")}`;
-    if (!byClass.has(key)) byClass.set(key, []);
-    byClass.get(key).push(item);
-}
-for (const items of byClass.values()) if (items.length > 1) for (const item of items) add("duplicate-description", item, `the same description as ${items.filter((o) => o !== item).map((o) => o.name).join(", ")}`);
-const propsByClass = new Map();
-for (const p of props) { if (!propsByClass.has(p.className)) propsByClass.set(p.className, []); propsByClass.get(p.className).push(p); }
-for (const p of props) {
-    if (!p.doc) continue;
-    const own = new Set(nameTokens(p.name));
-    const head = proseTokens(firstParagraph(p.doc.description).split(" ").slice(0, 4).join(" "));
-    for (const sibling of propsByClass.get(p.className)) {
-        if (sibling === p) continue;
-        const theirs = nameTokens(sibling.name).filter((t) => !own.has(t) && t.length > 3);
-        if (theirs.some((t) => head.includes(t)) && !head.some((t) => own.has(t))) { add("sibling-echo", p, `starts with a word from "${sibling.name}" and none from its own name`); break; }
+    for (const m of methods) m.dtoProps = dtoPropsOf(m);
+    for (const m of methods) checkMethod(m);
+    for (const c of classes) checkClass(c);
+    checkDtos();
+
+    // Review candidates: the same sentence on two members of one class, and a property description that
+    // names a sibling property but not its own.
+    const byClass = new Map();
+    for (const item of [...methods, ...props]) {
+        if (!item.doc) continue;
+        const key = `${item.className}\u0000${item.doc.description.toLowerCase().replace(/\s+/g, " ")}`;
+        if (!byClass.has(key)) byClass.set(key, []);
+        byClass.get(key).push(item);
     }
-}
+    for (const items of byClass.values()) if (items.length > 1) for (const item of items) add("duplicate-description", item, `the same description as ${items.filter((o) => o !== item).map((o) => o.name).join(", ")}`);
+    const propsByClass = new Map();
+    for (const p of props) { if (!propsByClass.has(p.className)) propsByClass.set(p.className, []); propsByClass.get(p.className).push(p); }
+    for (const p of props) {
+        if (!p.doc) continue;
+        const own = new Set(nameTokens(p.name));
+        const head = proseTokens(firstParagraph(p.doc.description).split(" ").slice(0, 4).join(" "));
+        for (const sibling of propsByClass.get(p.className)) {
+            if (sibling === p) continue;
+            const theirs = nameTokens(sibling.name).filter((t) => !own.has(t) && t.length > 3);
+            if (theirs.some((t) => head.includes(t)) && !head.some((t) => own.has(t))) { add("sibling-echo", p, `starts with a word from "${sibling.name}" and none from its own name`); break; }
+        }
+    }
 
-/* ------------------------------------------------------------------------- reporting */
+    /* ------------------------------------------------------------------------- reporting */
 
-const counted = findings.filter((f) => f.severity !== "info");
-const current = {};
-for (const f of counted) {
-    current[f.file] ??= {};
-    current[f.file][f.rule] = (current[f.file][f.rule] ?? 0) + 1;
-}
-const sortedCurrent = Object.fromEntries(Object.keys(current).sort().map((file) => [file, Object.fromEntries(Object.keys(current[file]).sort().map((r) => [r, current[file][r]]))]));
+    const counted = findings.filter((f) => f.severity !== "info");
+    const current = {};
+    for (const f of counted) {
+        current[f.file] ??= {};
+        current[f.file][f.rule] = (current[f.file][f.rule] ?? 0) + 1;
+    }
+    const sortedCurrent = Object.fromEntries(Object.keys(current).sort().map((file) => [file, Object.fromEntries(Object.keys(current[file]).sort().map((r) => [r, current[file][r]]))]));
 
-if (update) {
-    writeFileSync(BASELINE, JSON.stringify({ note: "Findings of scripts/check-api-docs.mjs per file and rule; a count may only fall. Rewrite with `npm run api-docs:update`.", files: sortedCurrent }, null, 2) + "\n");
-    console.log(`baseline written: ${counted.length} findings in ${Object.keys(sortedCurrent).length} files`);
-    process.exit(0);
-}
+    if (update) {
+        writeFileSync(BASELINE, JSON.stringify({ note: "Findings of scripts/check-api-docs.mjs per file and rule; a count may only fall. Rewrite with `npm run api-docs:update`.", files: sortedCurrent }, null, 2) + "\n");
+        console.log(`baseline written: ${counted.length} findings in ${Object.keys(sortedCurrent).length} files`);
+        process.exit(0);
+    }
 
-const totals = (items) => {
-    const t = {};
-    for (const f of items) t[f.rule] = (t[f.rule] ?? 0) + 1;
-    return t;
-};
+    const totals = (items) => {
+        const t = {};
+        for (const f of items) t[f.rule] = (t[f.rule] ?? 0) + 1;
+        return t;
+    };
 
-if (report) {
-    const rule = option("--rule"), pkg = option("--package"), prefix = option("--path"), info = flag("--info");
-    let list = findings.filter((f) => (!rule || f.rule === rule) && (!pkg || f.file.startsWith(`${DEV}/${pkg}/`)) && (!prefix || f.file.startsWith(prefix)) && (info || f.severity !== "info" || rule));
-    list = list.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.rule.localeCompare(b.rule));
-    const withExample = methods.filter((m) => m.doc?.tags.some((t) => t.name === "example")).length;
-    if (flag("--json")) {
-        const surface = { methods: methods.length, classes: classes.length, dtos: dtos.length, props: props.length, exampleCoverage: withExample };
-        process.stdout.write(JSON.stringify({ surface, totals: totals(findings), findings: list }, null, 2) + "\n");
+    if (report) {
+        const rule = option("--rule"), pkg = option("--package"), prefix = option("--path"), info = flag("--info");
+        let list = findings.filter((f) => (!rule || f.rule === rule) && (!pkg || f.file.startsWith(`${DEV}/${pkg}/`)) && (!prefix || f.file.startsWith(prefix)) && (info || f.severity !== "info" || rule));
+        list = list.sort((a, b) => a.file.localeCompare(b.file) || a.line - b.line || a.rule.localeCompare(b.rule));
+        const withExample = methods.filter((m) => m.doc?.tags.some((t) => t.name === "example")).length;
+        if (flag("--json")) {
+            const surface = { methods: methods.length, classes: classes.length, dtos: dtos.length, props: props.length, exampleCoverage: withExample };
+            process.stdout.write(JSON.stringify({ surface, totals: totals(findings), findings: list }, null, 2) + "\n");
+        } else {
+            for (const f of list) process.stdout.write(`${f.file}:${f.line}  ${f.kind}  ${f.path}  ${f.rule}  ${f.message}\n`);
+            process.stdout.write(`\n${list.length} finding(s) listed; surface: ${methods.length} methods, ${classes.length} API classes, ${dtos.length} DTOs, ${props.length} properties; ${withExample} methods carry @example\n`);
+        }
     } else {
-        for (const f of list) process.stdout.write(`${f.file}:${f.line}  ${f.kind}  ${f.path}  ${f.rule}  ${f.message}\n`);
-        process.stdout.write(`\n${list.length} finding(s) listed; surface: ${methods.length} methods, ${classes.length} API classes, ${dtos.length} DTOs, ${props.length} properties; ${withExample} methods carry @example\n`);
-    }
-} else {
+        const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")).files : {};
+        const problems = [];
+        const files = new Set([...Object.keys(baseline), ...Object.keys(current)]);
+        for (const file of [...files].sort()) {
+            const rules = new Set([...Object.keys(baseline[file] ?? {}), ...Object.keys(current[file] ?? {})]);
+            for (const rule of [...rules].sort()) {
+                const was = baseline[file]?.[rule] ?? 0, now = current[file]?.[rule] ?? 0;
+                if (now > was) problems.push(`${file}: ${rule} rose from ${was} to ${now}`);
+                else if (now < was) problems.push(`${file}: ${rule} fell from ${was} to ${now} - record it with \`npm run api-docs:update\``);
+            }
+        }
 
-const baseline = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")).files : {};
-const problems = [];
-const files = new Set([...Object.keys(baseline), ...Object.keys(current)]);
-for (const file of [...files].sort()) {
-    const rules = new Set([...Object.keys(baseline[file] ?? {}), ...Object.keys(current[file] ?? {})]);
-    for (const rule of [...rules].sort()) {
-        const was = baseline[file]?.[rule] ?? 0, now = current[file]?.[rule] ?? 0;
-        if (now > was) problems.push(`${file}: ${rule} rose from ${was} to ${now}`);
-        else if (now < was) problems.push(`${file}: ${rule} fell from ${was} to ${now} - record it with \`npm run api-docs:update\``);
+        const perPackage = {};
+        for (const f of counted) { const p = f.file.split("/")[2]; perPackage[p] ??= { total: 0 }; perPackage[p].total++; perPackage[p][f.rule] = (perPackage[p][f.rule] ?? 0) + 1; }
+        console.log(`api docs: ${methods.length} methods, ${classes.length} API classes, ${dtos.length} DTOs, ${props.length} properties audited; ${counted.length} findings held by the baseline (${findings.length - counted.length} review candidates, see --report --info)`);
+        for (const [pkg, t] of Object.entries(perPackage).sort()) console.log(`  ${pkg.padEnd(16)} ${String(t.total).padStart(5)}  ${Object.entries(t).filter(([k]) => k !== "total").sort().map(([k, v]) => `${k} ${v}`).join(", ")}`);
+        if (problems.length) {
+            console.error(`\napi docs baseline does not match the code:\n  ${problems.join("\n  ")}`);
+            process.exit(1);
+        }
+        console.log("api docs baseline matches the code");
     }
 }
 
-const perPackage = {};
-for (const f of counted) { const p = f.file.split("/")[2]; perPackage[p] ??= { total: 0 }; perPackage[p].total++; perPackage[p][f.rule] = (perPackage[p][f.rule] ?? 0) + 1; }
-console.log(`api docs: ${methods.length} methods, ${classes.length} API classes, ${dtos.length} DTOs, ${props.length} properties audited; ${counted.length} findings held by the baseline (${findings.length - counted.length} review candidates, see --report --info)`);
-for (const [pkg, t] of Object.entries(perPackage).sort()) console.log(`  ${pkg.padEnd(16)} ${String(t.total).padStart(5)}  ${Object.entries(t).filter(([k]) => k !== "total").sort().map(([k, v]) => `${k} ${v}`).join(", ")}`);
-if (problems.length) {
-    console.error(`\napi docs baseline does not match the code:\n  ${problems.join("\n  ")}`);
-    process.exit(1);
-}
-console.log("api docs baseline matches the code");
-}
+if (process.argv[1] && realpathSync(process.argv[1]) === fileURLToPath(import.meta.url)) main();

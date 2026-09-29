@@ -18,31 +18,31 @@ namespace Asset {
     class AssetFileByUrlDto {
         constructor(assetFile?: string, rootUrl?: string, hidden?: boolean);
         assetFile: string;
-        hidden: boolean;
+        hidden?: boolean | undefined;
         rootUrl: string;
     }
     class AssetFileDto {
         constructor(assetFile?: File, hidden?: boolean);
         assetFile: File;
-        hidden: boolean;
+        hidden?: boolean | undefined;
     }
     class AssetGlbDataDto {
         constructor(glbData?: Uint8Array, fileName?: string, hidden?: boolean);
-        fileName: string;
+        fileName?: string | undefined;
         glbData: Uint8Array;
-        hidden: boolean;
+        hidden?: boolean | undefined;
     }
     class BlobToFileDto {
         constructor(blob?: Blob, fileName?: string, mimeType?: string);
         blob: Blob;
-        fileName: string;
+        fileName?: string | undefined;
         mimeType?: string | undefined;
     }
     class DownloadDto {
         constructor(fileName?: string, content?: string | Blob, extension?: string, contentType?: string);
         content: string | Blob;
-        contentType: string;
-        extension: string;
+        contentType?: string | undefined;
+        extension?: string | undefined;
         fileName: string;
     }
     class FetchDto {
@@ -68,6 +68,36 @@ namespace Asset {
 }
 
 // @public
+namespace Asset_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_3" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type ArrayBufferToUint8ArrayDto = Inputs_3.Asset.ArrayBufferToUint8ArrayDto;
+    // Warning: (ae-forgotten-export) The symbol "WithDefaults" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type AssetFileByUrlDto = WithDefaults<Inputs_3.Asset.AssetFileByUrlDto, "hidden">;
+    // (undocumented)
+    type AssetFileDto = WithDefaults<Inputs_3.Asset.AssetFileDto, "hidden">;
+    // (undocumented)
+    type AssetGlbDataDto = WithDefaults<Inputs_3.Asset.AssetGlbDataDto, "fileName" | "hidden">;
+    // (undocumented)
+    type BlobToFileDto = WithDefaults<Inputs_3.Asset.BlobToFileDto, "fileName">;
+    // (undocumented)
+    type DownloadDto = WithDefaults<Inputs_3.Asset.DownloadDto, "extension" | "contentType">;
+    // (undocumented)
+    type FetchDto = Inputs_3.Asset.FetchDto;
+    // (undocumented)
+    type FileDto = Inputs_3.Asset.FileDto;
+    // (undocumented)
+    type FilesDto = Inputs_3.Asset.FilesDto;
+    // (undocumented)
+    type GetAssetDto = Inputs_3.Asset.GetAssetDto;
+    // (undocumented)
+    type Uint8ArrayToArrayBufferDto = Inputs_3.Asset.Uint8ArrayToArrayBufferDto;
+}
+
+// @public
 namespace Base_3 {
     // (undocumented)
     type Axis2 = Base_2.Axis2;
@@ -88,6 +118,8 @@ namespace Base_3 {
     // (undocumented)
     type ColorRGBA = Base_2.ColorRGBA;
     // (undocumented)
+    type Frame = Base_2.Frame;
+    // (undocumented)
     type horizontalAlignEnum = Base_2.horizontalAlignEnum;
     // (undocumented)
     type Line2 = Base_2.Line2;
@@ -97,7 +129,7 @@ namespace Base_3 {
     type Material = Base_2.Material;
     // (undocumented)
     type Mesh3 = Base_2.Mesh3;
-    // (undocumented)
+    // @deprecated (undocumented)
     type Plane3 = Base_2.Plane3;
     // (undocumented)
     type Point2 = Base_2.Point2;
@@ -159,31 +191,35 @@ namespace Base_3 {
 // @public
 export class BitByBitBase {
     constructor();
-    // Warning: (ae-forgotten-export) The symbol "Asset_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Asset_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    asset: Asset_2;
-    // Warning: (ae-forgotten-export) The symbol "Color_2" needs to be exported by the entry point index.d.ts
+    asset: Asset_3;
+    // Warning: (ae-forgotten-export) The symbol "Color_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    color: Color_2;
+    color: Color_3;
     // (undocumented)
     context: Context;
     // Warning: (ae-forgotten-export) The symbol "CSVBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     csv: CSVBitByBit;
-    // Warning: (ae-forgotten-export) The symbol "Dates_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Dates_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    dates: Dates_2;
+    dates: Dates_3;
     // (undocumented)
     draw: Draw;
-    init(scene: THREEJS.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker): void;
-    // Warning: (ae-forgotten-export) The symbol "JSCAD_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Frame_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    jscad: JSCAD_2;
+    frame: Frame_3;
+    init(scene: THREEJS.Scene, occt?: Worker, jscad?: Worker, manifold?: Worker): void;
+    // Warning: (ae-forgotten-export) The symbol "JSCAD_3" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    jscad: JSCAD_3;
     // Warning: (ae-forgotten-export) The symbol "JSCADWorkerManager" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -192,18 +228,18 @@ export class BitByBitBase {
     //
     // (undocumented)
     json: JSONBitByBit;
-    // Warning: (ae-forgotten-export) The symbol "Line_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Line_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    line: Line_2;
-    // Warning: (ae-forgotten-export) The symbol "Lists_2" needs to be exported by the entry point index.d.ts
+    line: Line_3;
+    // Warning: (ae-forgotten-export) The symbol "Lists_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    lists: Lists_2;
-    // Warning: (ae-forgotten-export) The symbol "Logic_2" needs to be exported by the entry point index.d.ts
+    lists: Lists_3;
+    // Warning: (ae-forgotten-export) The symbol "Logic_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    logic: Logic_2;
+    logic: Logic_3;
     // Warning: (ae-forgotten-export) The symbol "ManifoldBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -221,48 +257,48 @@ export class BitByBitBase {
     // (undocumented)
     mesh: MeshBitByBit;
     // Warning: (ae-forgotten-export) The symbol "OCCTW" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "OCCT_3" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    occt: OCCTW & OCCT_3;
+    occt: OCCTW & OCCT_4;
     // Warning: (ae-forgotten-export) The symbol "OCCTWorkerManager" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     occtWorkerManager: OCCTWorkerManager;
-    // Warning: (ae-forgotten-export) The symbol "Point_3" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Point_4" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    point: Point_3;
-    // Warning: (ae-forgotten-export) The symbol "Polyline_2" needs to be exported by the entry point index.d.ts
+    point: Point_4;
+    // Warning: (ae-forgotten-export) The symbol "Polyline_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    polyline: Polyline_2;
-    // Warning: (ae-forgotten-export) The symbol "Tag_2" needs to be exported by the entry point index.d.ts
+    polyline: Polyline_3;
+    // Warning: (ae-forgotten-export) The symbol "Tag_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    tag: Tag_2;
+    tag: Tag_3;
     // Warning: (ae-forgotten-export) The symbol "TextBitByBit" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     text: TextBitByBit;
     // (undocumented)
     three: ThreeJS;
-    // Warning: (ae-forgotten-export) The symbol "Time_2" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Time_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    time: Time_2;
-    // Warning: (ae-forgotten-export) The symbol "Transforms_2" needs to be exported by the entry point index.d.ts
+    time: Time_3;
+    // Warning: (ae-forgotten-export) The symbol "Transforms_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    transforms: Transforms_2;
-    // Warning: (ae-forgotten-export) The symbol "Vector_2" needs to be exported by the entry point index.d.ts
+    transforms: Transforms_3;
+    // Warning: (ae-forgotten-export) The symbol "Vector_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    vector: Vector_2;
-    // Warning: (ae-forgotten-export) The symbol "Verb_2" needs to be exported by the entry point index.d.ts
+    vector: Vector_3;
+    // Warning: (ae-forgotten-export) The symbol "Verb_3" needs to be exported by the entry point index.d.ts
     //
     // @deprecated
-    verb: Verb_2;
+    verb: Verb_3;
 }
 
 // @public
@@ -270,34 +306,34 @@ namespace Color {
     class HexDto {
         // Warning: (ae-forgotten-export) The symbol "Base" needs to be exported by the entry point index.d.ts
         constructor(color?: Base.Color);
-        color: Base.Color;
+        color?: Base.Color | undefined;
     }
     class HexDtoMapped {
         constructor(color?: Base.Color, from?: number, to?: number);
-        color: Base.Color;
-        from: number;
-        to: number;
+        color?: Base.Color | undefined;
+        from?: number | undefined;
+        to?: number | undefined;
     }
     class InvertHexDto {
         constructor(color?: Base.Color);
-        blackAndWhite: boolean;
-        color: Base.Color;
+        blackAndWhite?: boolean | undefined;
+        color?: Base.Color | undefined;
     }
     class Rgb1Dto {
         constructor(colorRgb?: Base.ColorRGB);
-        colorRgb: Base.ColorRGB;
+        colorRgb?: Base.ColorRGB | undefined;
     }
     class Rgb255Dto {
         constructor(colorRgb?: Base.ColorRGB);
-        colorRgb: Base.ColorRGB;
+        colorRgb?: Base.ColorRGB | undefined;
     }
     class Rgba1Dto {
         constructor(colorRgba?: Base.ColorRGBA);
-        colorRgba: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
     class Rgba255Dto {
         constructor(colorRgba?: Base.ColorRGBA);
-        colorRgba: Base.ColorRGBA;
+        colorRgba?: Base.ColorRGBA | undefined;
     }
     class RgbaAttomic1Dto {
         constructor(r?: number, g?: number, b?: number, a?: number);
@@ -315,23 +351,23 @@ namespace Color {
     }
     class RgbAttomic1Dto {
         constructor(r?: number, g?: number, b?: number);
-        b: number;
-        g: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        r?: number | undefined;
     }
     class RgbAttomic255Dto {
         constructor(r?: number, g?: number, b?: number);
-        b: number;
-        g: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        r?: number | undefined;
     }
     class RGBMinMaxDto {
         constructor(r?: number, g?: number, b?: number, min?: number, max?: number);
-        b: number;
-        g: number;
-        max: number;
-        min: number;
-        r: number;
+        b?: number | undefined;
+        g?: number | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        r?: number | undefined;
     }
     class RGBObjectDto {
         constructor(rgb?: Base.ColorRGB);
@@ -339,10 +375,44 @@ namespace Color {
     }
     class RGBObjectMaxDto {
         constructor(rgb?: Base.ColorRGB, max?: number);
-        max: number;
-        min: number;
+        max?: number | undefined;
+        min?: number | undefined;
         rgb: Base.ColorRGB;
     }
+}
+
+// @public
+namespace Color_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_7" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type HexDto = WithDefaults<Inputs_7.Color.HexDto, "color">;
+    // (undocumented)
+    type HexDtoMapped = WithDefaults<Inputs_7.Color.HexDtoMapped, "color" | "from" | "to">;
+    // (undocumented)
+    type InvertHexDto = WithDefaults<Inputs_7.Color.InvertHexDto, "color" | "blackAndWhite">;
+    // (undocumented)
+    type Rgb1Dto = WithDefaults<Inputs_7.Color.Rgb1Dto, "colorRgb">;
+    // (undocumented)
+    type Rgb255Dto = WithDefaults<Inputs_7.Color.Rgb255Dto, "colorRgb">;
+    // (undocumented)
+    type Rgba1Dto = WithDefaults<Inputs_7.Color.Rgba1Dto, "colorRgba">;
+    // (undocumented)
+    type Rgba255Dto = WithDefaults<Inputs_7.Color.Rgba255Dto, "colorRgba">;
+    // (undocumented)
+    type RgbaAttomic1Dto = WithDefaults<Inputs_7.Color.RgbaAttomic1Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbaAttomic255Dto = WithDefaults<Inputs_7.Color.RgbaAttomic255Dto, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type RgbAttomic1Dto = WithDefaults<Inputs_7.Color.RgbAttomic1Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RgbAttomic255Dto = WithDefaults<Inputs_7.Color.RgbAttomic255Dto, "r" | "g" | "b">;
+    // (undocumented)
+    type RGBMinMaxDto = WithDefaults<Inputs_7.Color.RGBMinMaxDto, "r" | "g" | "b" | "min" | "max">;
+    // (undocumented)
+    type RGBObjectDto = Inputs_7.Color.RGBObjectDto;
+    // (undocumented)
+    type RGBObjectMaxDto = WithDefaults<Inputs_7.Color.RGBObjectMaxDto, "min" | "max">;
 }
 
 // Warning: (ae-forgotten-export) The symbol "ContextBase" needs to be exported by the entry point index.d.ts
@@ -386,21 +456,21 @@ export function createWorkersFromUrls(workerUrls: {
 namespace CSV {
     class ArrayToCsvDto {
         constructor(array?: (string | number | boolean | null | undefined)[][], rowSeparator?: string, columnSeparator?: string);
-        array: (string | number | boolean | null | undefined)[][];
+        array?: (string | number | boolean | null | undefined)[][] | undefined;
         columnSeparator?: string | undefined;
         rowSeparator?: string | undefined;
     }
     class GetHeadersDto {
         constructor(csv?: string, headerRow?: number, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         headerRow?: number | undefined;
         rowSeparator?: string | undefined;
     }
     class GetRowCountDto {
         constructor(csv?: string, hasHeaders?: boolean, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         hasHeaders?: boolean | undefined;
         rowSeparator?: string | undefined;
@@ -409,27 +479,27 @@ namespace CSV {
         constructor(json?: T[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
         includeHeaders?: boolean | undefined;
-        json: T[];
+        json?: T[] | undefined;
         rowSeparator?: string | undefined;
     }
     class JsonToCsvDto<T = Record<string, unknown>> {
         constructor(json?: T[], headers?: string[], includeHeaders?: boolean, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        headers: string[];
+        headers?: string[] | undefined;
         includeHeaders?: boolean | undefined;
-        json: T[];
+        json?: T[] | undefined;
         rowSeparator?: string | undefined;
     }
     class ParseToArrayDto {
         constructor(csv?: string, rowSeparator?: string, columnSeparator?: string);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         rowSeparator?: string | undefined;
     }
     class ParseToJsonDto {
         constructor(csv?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         numberColumns?: string[] | undefined;
@@ -438,55 +508,79 @@ namespace CSV {
     class ParseToJsonWithHeadersDto {
         constructor(csv?: string, headers?: string[], dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
-        headers: string[];
+        headers?: string[] | undefined;
         numberColumns?: string[] | undefined;
         rowSeparator?: string | undefined;
     }
     class QueryColumnDto {
         constructor(csv?: string, column?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, asNumber?: boolean);
         asNumber?: boolean | undefined;
-        column: string;
+        column?: string | undefined;
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         rowSeparator?: string | undefined;
     }
     class QueryRowsByValueDto {
         constructor(csv?: string, column?: string, value?: string, headerRow?: number, dataStartRow?: number, rowSeparator?: string, columnSeparator?: string, numberColumns?: string[]);
-        column: string;
+        column?: string | undefined;
         columnSeparator?: string | undefined;
-        csv: string;
+        csv?: string | undefined;
         dataStartRow?: number | undefined;
         headerRow?: number | undefined;
         numberColumns?: string[] | undefined;
         rowSeparator?: string | undefined;
-        value: string;
+        value?: string | undefined;
     }
+}
+
+// @public
+namespace CSV_2 {
+    // (undocumented)
+    type ArrayToCsvDto = WithDefaults<Inputs_3.CSV.ArrayToCsvDto, "array" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type GetHeadersDto = WithDefaults<Inputs_3.CSV.GetHeadersDto, "csv" | "headerRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type GetRowCountDto = WithDefaults<Inputs_3.CSV.GetRowCountDto, "csv" | "hasHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type JsonToCsvAutoDto<T = Record<string, unknown>> = WithDefaults<Inputs_3.CSV.JsonToCsvAutoDto<T>, "json" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type JsonToCsvDto<T = Record<string, unknown>> = WithDefaults<Inputs_3.CSV.JsonToCsvDto<T>, "json" | "headers" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToArrayDto = WithDefaults<Inputs_3.CSV.ParseToArrayDto, "csv" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToJsonDto = WithDefaults<Inputs_3.CSV.ParseToJsonDto, "csv" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type ParseToJsonWithHeadersDto = WithDefaults<Inputs_3.CSV.ParseToJsonWithHeadersDto, "csv" | "headers" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    // (undocumented)
+    type QueryColumnDto = WithDefaults<Inputs_3.CSV.QueryColumnDto, "csv" | "column" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator" | "asNumber">;
+    // (undocumented)
+    type QueryRowsByValueDto = WithDefaults<Inputs_3.CSV.QueryRowsByValueDto, "csv" | "column" | "value" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
 }
 
 // @public
 namespace Dates {
     class CreateDateDto {
         constructor(year?: number, month?: number, day?: number, hours?: number, minutes?: number, seconds?: number, milliseconds?: number);
-        day: number;
-        hours: number;
-        milliseconds: number;
-        minutes: number;
-        month: number;
-        seconds: number;
-        year: number;
+        day?: number | undefined;
+        hours?: number | undefined;
+        milliseconds?: number | undefined;
+        minutes?: number | undefined;
+        month?: number | undefined;
+        seconds?: number | undefined;
+        year?: number | undefined;
     }
     class CreateFromUnixTimeStampDto {
         constructor(unixTimeStamp?: number);
-        unixTimeStamp: number;
+        unixTimeStamp?: number | undefined;
     }
     class DateDayDto {
         constructor(date?: Date, day?: number);
         date: Date;
-        day: number;
+        day?: number | undefined;
     }
     class DateDto {
         constructor(date?: Date);
@@ -495,27 +589,27 @@ namespace Dates {
     class DateHoursDto {
         constructor(date?: Date, hours?: number);
         date: Date;
-        hours: number;
+        hours?: number | undefined;
     }
     class DateMillisecondsDto {
         constructor(date?: Date, milliseconds?: number);
         date: Date;
-        milliseconds: number;
+        milliseconds?: number | undefined;
     }
     class DateMinutesDto {
         constructor(date?: Date, minutes?: number);
         date: Date;
-        minutes: number;
+        minutes?: number | undefined;
     }
     class DateMonthDto {
         constructor(date?: Date, month?: number);
         date: Date;
-        month: number;
+        month?: number | undefined;
     }
     class DateSecondsDto {
         constructor(date?: Date, seconds?: number);
         date: Date;
-        seconds: number;
+        seconds?: number | undefined;
     }
     class DateStringDto {
         constructor(dateString?: string);
@@ -524,20 +618,48 @@ namespace Dates {
     class DateTimeDto {
         constructor(date?: Date, time?: number);
         date: Date;
-        time: number;
+        time?: number | undefined;
     }
     class DateYearDto {
         constructor(date?: Date, year?: number);
         date: Date;
-        year: number;
+        year?: number | undefined;
     }
+}
+
+// @public
+namespace Dates_2 {
+    // (undocumented)
+    type CreateDateDto = WithDefaults<Inputs_7.Dates.CreateDateDto, "year" | "month" | "day" | "hours" | "minutes" | "seconds" | "milliseconds">;
+    // (undocumented)
+    type CreateFromUnixTimeStampDto = WithDefaults<Inputs_7.Dates.CreateFromUnixTimeStampDto, "unixTimeStamp">;
+    // (undocumented)
+    type DateDayDto = WithDefaults<Inputs_7.Dates.DateDayDto, "day">;
+    // (undocumented)
+    type DateDto = Inputs_7.Dates.DateDto;
+    // (undocumented)
+    type DateHoursDto = WithDefaults<Inputs_7.Dates.DateHoursDto, "hours">;
+    // (undocumented)
+    type DateMillisecondsDto = WithDefaults<Inputs_7.Dates.DateMillisecondsDto, "milliseconds">;
+    // (undocumented)
+    type DateMinutesDto = WithDefaults<Inputs_7.Dates.DateMinutesDto, "minutes">;
+    // (undocumented)
+    type DateMonthDto = WithDefaults<Inputs_7.Dates.DateMonthDto, "month">;
+    // (undocumented)
+    type DateSecondsDto = WithDefaults<Inputs_7.Dates.DateSecondsDto, "seconds">;
+    // (undocumented)
+    type DateStringDto = Inputs_7.Dates.DateStringDto;
+    // (undocumented)
+    type DateTimeDto = WithDefaults<Inputs_7.Dates.DateTimeDto, "time">;
+    // (undocumented)
+    type DateYearDto = WithDefaults<Inputs_7.Dates.DateYearDto, "year">;
 }
 
 // Warning: (ae-forgotten-export) The symbol "DrawCore" needs to be exported by the entry point index.d.ts
 //
 // @public
 export class Draw extends DrawCore {
-    constructor(drawHelper: DrawHelper, context: Context, tag: Tag_2);
+    constructor(drawHelper: DrawHelper, context: Context, tag: Tag_3);
     // (undocumented)
     readonly context: Context;
     createPBRMaterial(inputs: Inputs_2.Draw.GenericPBRMaterialDto): THREEJS.MeshStandardMaterial;
@@ -547,12 +669,12 @@ export class Draw extends DrawCore {
     // (undocumented)
     readonly drawHelper: DrawHelper;
     protected drawResolved(inputs: Inputs_2.Draw.DrawAny<THREEJS.Group>): DrawnEntity;
-    // (undocumented)
     protected drawResolvedAsync(inputs: Inputs_2.Draw.DrawAny<THREEJS.Group>): Promise<DrawnEntity>;
+    optionsFrame(inputs: Inputs_2.Draw.DrawFrameOptions): Inputs_2.Draw.DrawFrameOptions;
     optionsOcctShape(inputs: Inputs_2.Draw.DrawOcctShapeOptions): Inputs_2.Draw.DrawOcctShapeOptions;
     optionsSimple(inputs: Inputs_2.Draw.DrawBasicGeometryOptions): Inputs_2.Draw.DrawBasicGeometryOptions;
     // (undocumented)
-    readonly tag: Tag_2;
+    readonly tag: Tag_3;
 }
 
 // @public
@@ -579,19 +701,34 @@ namespace Draw_2 {
     }
     class DrawBasicGeometryOptions {
         constructor(colours?: string | string[], size?: number, opacity?: number, updatable?: boolean, hidden?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, colorMapStrategy?: Base_3.colorMapStrategyEnum, arrowSize?: number, arrowAngle?: number);
-        arrowAngle: number;
-        arrowSize: number;
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        colorMapStrategy: Base_3.colorMapStrategyEnum;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
-        opacity: number;
-        size: number;
-        updatable: boolean;
+        arrowAngle?: number | undefined;
+        arrowSize?: number | undefined;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        colorMapStrategy?: Base_3.colorMapStrategyEnum | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
+        opacity?: number | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
+    }
+    class DrawFrameOptions {
+        constructor(size?: number, colorX?: Base_3.Color, colorY?: Base_3.Color, colorZ?: Base_3.Color, drawPlane?: boolean, colorPlane?: Base_3.Color, lineWidth?: number, updatable?: boolean);
+        colorPlane?: Base_3.Color | undefined;
+        colorX?: Base_3.Color | undefined;
+        colorY?: Base_3.Color | undefined;
+        colorZ?: Base_3.Color | undefined;
+        drawPlane?: boolean | undefined;
+        lineWidth?: number | undefined;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     enum drawingTypes {
+        // (undocumented)
+        frame = "frame",
+        // (undocumented)
+        frames = "frames",
         // (undocumented)
         jscadMesh = "jscadMesh",
         // (undocumented)
@@ -637,16 +774,16 @@ namespace Draw_2 {
     }
     class DrawManifoldOrCrossSectionOptions {
         constructor(faceOpacity?: number, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, crossSectionColour?: Base_3.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number);
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base_3.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base_3.Color;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base_3.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base_3.Color | undefined;
         faceMaterial?: Base_3.Material | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
     }
     type Drawn<E, T> = E extends readonly unknown[] ? ([E[number]] extends [never] ? undefined : E[number] extends Inputs_2.Tag.TagDto ? DrawnTags : T) : E extends Inputs_2.Tag.TagDto ? DrawnTag : T;
     type DrawnAny<T> = T | DrawnTag | DrawnTags | undefined;
@@ -665,71 +802,79 @@ namespace Draw_2 {
         userData?: DrawnTagMeta | undefined;
     };
     class DrawOcctShapeOptions {
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base_3.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeArrowAngle: number;
-        edgeArrowSize: number;
-        edgeColour: Base_3.Color;
-        edgeIndexColour: Base_3.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base_3.Color;
-        faceIndexColour: Base_3.Color;
-        faceIndexHeight: number;
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base_3.Color, faceMaterial?: Base_3.Material, faceColour?: Base_3.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base_3.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base_3.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base_3.Color, drawTwoSided?: boolean, backFaceColour?: Base_3.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base_3.Color, surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum, draftDirection?: Base_3.Vector3, analysisMin?: number, analysisMax?: number);
+        allowQualityDecrease?: boolean | undefined;
+        analysisMax?: number | undefined;
+        analysisMin?: number | undefined;
+        backFaceColour?: Base_3.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        draftDirection?: Base_3.Vector3 | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawIsoCurves?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeArrowAngle?: number | undefined;
+        edgeArrowSize?: number | undefined;
+        edgeColour?: Base_3.Color | undefined;
+        edgeIndexColour?: Base_3.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base_3.Color | undefined;
+        faceIndexColour?: Base_3.Color | undefined;
+        faceIndexHeight?: number | undefined;
         faceMaterial?: Base_3.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
-        vertexColour: Base_3.Color;
-        vertexSize: number;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        isoCurvesColour?: Base_3.Color | undefined;
+        isoCurvesU?: number | undefined;
+        isoCurvesV?: number | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
+        surfaceAnalysis?: Inputs_2.OCCT.surfaceAnalysisEnum | undefined;
+        vertexColour?: Base_3.Color | undefined;
+        vertexSize?: number | undefined;
     }
     // (undocumented)
-    type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions;
-    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[];
+    type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawFrameOptions;
+    type Entity = number[] | Base_3.Point3 | Base_3.Line3 | Base_3.Segment3 | Base_3.Polyline3 | Base_3.Frame | Base_3.VerbCurve | Base_3.VerbSurface | Inputs_2.OCCT.TopoDSShapePointer | Inputs_2.OCCT.DecomposedMeshDto | Inputs_2.Manifold.ManifoldPointer | Inputs_2.Manifold.CrossSectionPointer | Inputs_2.JSCAD.JSCADEntity | Inputs_2.Tag.TagDto | CustomGeometryDrawable | number[][] | Base_3.Point3[] | Base_3.Line3[] | Base_3.Segment3[] | Base_3.Polyline3[] | Base_3.Frame[] | Base_3.VerbCurve[] | Base_3.VerbSurface[] | Inputs_2.OCCT.TopoDSShapePointer[] | Inputs_2.OCCT.DecomposedMeshDto[] | Inputs_2.Manifold.ManifoldPointer[] | Inputs_2.Manifold.CrossSectionPointer[] | Inputs_2.JSCAD.JSCADEntity[] | Inputs_2.Tag.TagDto[];
     class GenericPBRMaterialDto {
         constructor(name?: string, baseColor?: Base_3.Color, metallic?: number, roughness?: number, alpha?: number, emissiveColor?: Base_3.Color, emissiveIntensity?: number, zOffset?: number, zOffsetUnits?: number, baseColorTexture?: Base_3.Texture, metallicRoughnessTexture?: Base_3.Texture, normalTexture?: Base_3.Texture, emissiveTexture?: Base_3.Texture, occlusionTexture?: Base_3.Texture, alphaMode?: alphaModeEnum, alphaCutoff?: number, doubleSided?: boolean, wireframe?: boolean, unlit?: boolean);
-        alpha: number;
-        alphaCutoff: number;
-        alphaMode: alphaModeEnum;
-        baseColor: Base_3.Color;
+        alpha?: number | undefined;
+        alphaCutoff?: number | undefined;
+        alphaMode?: alphaModeEnum | undefined;
+        baseColor?: Base_3.Color | undefined;
         baseColorTexture?: Base_3.Texture | undefined;
-        doubleSided: boolean;
+        doubleSided?: boolean | undefined;
         emissiveColor?: Base_3.Color | undefined;
-        emissiveIntensity: number;
+        emissiveIntensity?: number | undefined;
         emissiveTexture?: Base_3.Texture | undefined;
-        metallic: number;
+        metallic?: number | undefined;
         metallicRoughnessTexture?: Base_3.Texture | undefined;
-        name: string;
+        name?: string | undefined;
         normalTexture?: Base_3.Texture | undefined;
         occlusionTexture?: Base_3.Texture | undefined;
-        roughness: number;
-        unlit: boolean;
-        wireframe: boolean;
-        zOffset: number;
-        zOffsetUnits: number;
+        roughness?: number | undefined;
+        unlit?: boolean | undefined;
+        wireframe?: boolean | undefined;
+        zOffset?: number | undefined;
+        zOffsetUnits?: number | undefined;
     }
     class GenericTextureDto {
         constructor(url?: string, name?: string, uScale?: number, vScale?: number, uOffset?: number, vOffset?: number, wAng?: number, invertY?: boolean, invertZ?: boolean, samplingMode?: samplingModeEnum);
-        invertY: boolean;
-        invertZ: boolean;
-        name: string;
-        samplingMode: samplingModeEnum;
-        uOffset: number;
+        invertY?: boolean | undefined;
+        invertZ?: boolean | undefined;
+        name?: string | undefined;
+        samplingMode?: samplingModeEnum | undefined;
+        uOffset?: number | undefined;
         url: string;
-        uScale: number;
-        vOffset: number;
-        vScale: number;
-        wAng: number;
+        uScale?: number | undefined;
+        vOffset?: number | undefined;
+        vScale?: number | undefined;
+        wAng?: number | undefined;
     }
     enum samplingModeEnum {
         // (undocumented)
@@ -741,18 +886,37 @@ namespace Draw_2 {
     }
 }
 
+// @public
+namespace Draw_3 {
+    // (undocumented)
+    type DrawAny<U, E extends Inputs_2.Draw.Entity = Inputs_2.Draw.Entity> = Inputs_2.Draw.DrawAny<U, E>;
+    // (undocumented)
+    type DrawBasicGeometryOptions = WithDefaults<Inputs_2.Draw.DrawBasicGeometryOptions, "colours" | "colorMapStrategy" | "size" | "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "arrowSize" | "arrowAngle">;
+    // (undocumented)
+    type DrawFrameOptions = WithDefaults<Inputs_2.Draw.DrawFrameOptions, "size" | "colorX" | "colorY" | "colorZ" | "drawPlane" | "colorPlane" | "lineWidth" | "updatable">;
+    // (undocumented)
+    type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs_2.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawOcctShapeOptions = WithDefaults<Inputs_2.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type GenericPBRMaterialDto = WithDefaults<Inputs_2.Draw.GenericPBRMaterialDto, "name" | "baseColor" | "metallic" | "roughness" | "alpha" | "emissiveColor" | "emissiveIntensity" | "zOffset" | "zOffsetUnits" | "alphaMode" | "alphaCutoff" | "doubleSided" | "wireframe" | "unlit">;
+    // (undocumented)
+    type GenericTextureDto = WithDefaults<Inputs_2.Draw.GenericTextureDto, "name" | "uScale" | "vScale" | "uOffset" | "vOffset" | "wAng" | "invertY" | "invertZ" | "samplingMode">;
+}
+
 // Warning: (ae-forgotten-export) The symbol "DrawHelperCore" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export class DrawHelper extends DrawHelperCore {
     // Warning: (ae-forgotten-export) The symbol "JSCADText" needs to be exported by the entry point index.d.ts
-    constructor(context: Context, solidText: JSCADText, vector: Vector_2, jscadWorkerManager: JSCADWorkerManager, manifoldWorkerManager: ManifoldWorkerManager, occWorkerManager: OCCTWorkerManager);
+    constructor(context: Context, solidText: JSCADText, vector: Vector_3, jscadWorkerManager: JSCADWorkerManager, manifoldWorkerManager: ManifoldWorkerManager, occWorkerManager: OCCTWorkerManager);
     // (undocumented)
     createOrUpdateSurfacesMesh(meshDataConverted: {
         positions: number[];
         indices: number[];
         normals: number[];
         uvs?: number[] | undefined;
+        colors?: number[] | undefined;
     }[], group: THREEJS.Group | undefined, updatable: boolean, material: THREEJS.MeshPhysicalMaterial, addToScene: boolean, hidden: boolean): THREEJS.Group;
     dispose(): void;
     // (undocumented)
@@ -767,20 +931,20 @@ export class DrawHelper extends DrawHelperCore {
     drawPoint(inputs: Inputs_2.Point.DrawPointDto<THREEJS.Group>): THREEJS.Group;
     // (undocumented)
     drawPoints(inputs: Inputs_2.Point.DrawPointsDto<THREEJS.Group> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
     }): THREEJS.Group;
     // (undocumented)
     drawPolyline(mesh: THREEJS.Group | undefined, pointsToDraw: Inputs_2.Base.Point3[], updatable: boolean, size: number, opacity: number, colours: string | string[], arrowSize?: number, arrowAngle?: number): THREEJS.Group;
     // (undocumented)
     drawPolylineClose(inputs: Inputs_2.Polyline.DrawPolylineDto<THREEJS.Group> & {
-        arrowSize?: number;
-        arrowAngle?: number;
+        arrowSize?: number | undefined;
+        arrowAngle?: number | undefined;
     }): THREEJS.Group;
     // (undocumented)
     drawPolylinesWithColours(inputs: Inputs_2.Polyline.DrawPolylinesDto<THREEJS.Group> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
-        arrowSize?: number;
-        arrowAngle?: number;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
+        arrowSize?: number | undefined;
+        arrowAngle?: number | undefined;
     }): THREEJS.Group<THREEJS.Object3DEventMap>;
     // (undocumented)
     drawShape(inputs: Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group>;
@@ -794,7 +958,7 @@ export class DrawHelper extends DrawHelperCore {
     drawSurface(inputs: Inputs_2.Verb.DrawSurfaceDto<THREEJS.Group>): THREEJS.Group;
     // (undocumented)
     drawSurfacesMultiColour(inputs: Inputs_2.Verb.DrawSurfacesColoursDto<THREEJS.Group> & {
-        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum;
+        colorMapStrategy?: Inputs_2.Base.colorMapStrategyEnum | undefined;
     }): THREEJS.Group;
     // (undocumented)
     handleDecomposedMesh(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<THREEJS.Group<THREEJS.Object3DEventMap>>;
@@ -804,11 +968,209 @@ export class DrawHelper extends DrawHelperCore {
     // (undocumented)
     updatePointsInstances(group: THREEJS.Group, positions: Inputs_2.Base.Point3[]): void;
     // (undocumented)
-    readonly vector: Vector_2;
+    readonly vector: Vector_3;
 }
 
 // @public
 export type DrawnEntity = Inputs_2.Draw.DrawnAny<THREEJS.Group>;
+
+// @public
+namespace Frame {
+    class BestFitDto {
+        constructor(points?: Base.Point3[]);
+        points: Base.Point3[];
+    }
+    class ChildFrameDto extends ChildFrameSharedDto {
+        constructor(child?: Base.Frame, parent?: Base.Frame);
+        child: Base.Frame;
+    }
+    class ChildFramesDto extends ChildFrameSharedDto {
+        constructor(children?: Base.Frame[], parent?: Base.Frame);
+        children: Base.Frame[];
+    }
+    abstract class ChildFrameSharedDto {
+        parent: Base.Frame;
+    }
+    class CreateFrameDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3, direction?: Base.Vector3);
+        direction?: Base.Vector3 | undefined;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    enum frameAxisEnum {
+        // (undocumented)
+        x = "x",
+        // (undocumented)
+        y = "y",
+        // (undocumented)
+        z = "z"
+    }
+    class FrameDto {
+        constructor(frame?: Base.Frame);
+        frame: Base.Frame;
+    }
+    class FramePointDto {
+        constructor(frame?: Base.Frame, point?: Base.Point3);
+        frame: Base.Frame;
+        point: Base.Point3;
+    }
+    class FramePointsDto {
+        constructor(frame?: Base.Frame, points?: Base.Point3[]);
+        frame: Base.Frame;
+        points: Base.Point3[];
+    }
+    class FramesDto {
+        constructor(frames?: Base.Frame[]);
+        frames: Base.Frame[];
+    }
+    class FrameVectorDto {
+        constructor(frame?: Base.Frame, vector?: Base.Vector3);
+        frame: Base.Frame;
+        vector: Base.Vector3;
+    }
+    class FromToDto {
+        constructor(to?: Base.Frame, from?: Base.Frame);
+        from?: Base.Frame | undefined;
+        to: Base.Frame;
+    }
+    class GridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, spacingX?: number, spacingY?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        spacingX?: number | undefined;
+        spacingY?: number | undefined;
+    }
+    class HexGridDto {
+        constructor(frame?: Base.Frame, countX?: number, countY?: number, radius?: number, centered?: boolean);
+        centered?: boolean | undefined;
+        countX?: number | undefined;
+        countY?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+    }
+    class OffsetDto extends OffsetSharedDto {
+        constructor(frame?: Base.Frame, distance?: number);
+        frame: Base.Frame;
+    }
+    class OffsetFramesDto extends OffsetSharedDto {
+        constructor(frames?: Base.Frame[], distance?: number);
+        frames: Base.Frame[];
+    }
+    abstract class OffsetSharedDto {
+        distance?: number | undefined;
+    }
+    class OriginDto {
+        constructor(origin?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+    }
+    class PointAndNormalDto {
+        constructor(origin?: Base.Point3, normal?: Base.Vector3);
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+    }
+    class PolarDto {
+        constructor(frame?: Base.Frame, count?: number, radius?: number, angle?: number, startAngle?: number, rotate?: boolean);
+        angle?: number | undefined;
+        count?: number | undefined;
+        frame?: Base.Frame | undefined;
+        radius?: number | undefined;
+        rotate?: boolean | undefined;
+        startAngle?: number | undefined;
+    }
+    class RotateDto extends RotateSharedDto {
+        constructor(frame?: Base.Frame, axis?: frameAxisEnum, angle?: number);
+        frame: Base.Frame;
+    }
+    class RotateFramesDto extends RotateSharedDto {
+        constructor(frames?: Base.Frame[], axis?: frameAxisEnum, angle?: number);
+        frames: Base.Frame[];
+    }
+    abstract class RotateSharedDto {
+        angle?: number | undefined;
+        axis?: frameAxisEnum | undefined;
+    }
+    class ThreePointsDto {
+        constructor(origin?: Base.Point3, xPoint?: Base.Point3, planePoint?: Base.Point3);
+        origin?: Base.Point3 | undefined;
+        planePoint?: Base.Point3 | undefined;
+        xPoint?: Base.Point3 | undefined;
+    }
+    class TransformationDto {
+        constructor(transformation?: Base.TransformMatrixes);
+        transformation: Base.TransformMatrixes;
+    }
+    class TranslateDto extends TranslateSharedDto {
+        constructor(frame?: Base.Frame, translation?: Base.Vector3);
+        frame: Base.Frame;
+    }
+    class TranslateFramesDto extends TranslateSharedDto {
+        constructor(frames?: Base.Frame[], translation?: Base.Vector3);
+        frames: Base.Frame[];
+    }
+    abstract class TranslateSharedDto {
+        translation?: Base.Vector3 | undefined;
+    }
+}
+
+// @public
+namespace Frame_2 {
+    // (undocumented)
+    type BestFitDto = Inputs_7.Frame.BestFitDto;
+    // (undocumented)
+    type ChildFrameDto = Inputs_7.Frame.ChildFrameDto;
+    // (undocumented)
+    type ChildFramesDto = Inputs_7.Frame.ChildFramesDto;
+    // (undocumented)
+    type ChildFrameSharedDto = Inputs_7.Frame.ChildFrameSharedDto;
+    // (undocumented)
+    type CreateFrameDto = WithDefaults<Inputs_7.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
+    // (undocumented)
+    type FrameDto = Inputs_7.Frame.FrameDto;
+    // (undocumented)
+    type FramePointDto = Inputs_7.Frame.FramePointDto;
+    // (undocumented)
+    type FramePointsDto = Inputs_7.Frame.FramePointsDto;
+    // (undocumented)
+    type FramesDto = Inputs_7.Frame.FramesDto;
+    // (undocumented)
+    type FrameVectorDto = Inputs_7.Frame.FrameVectorDto;
+    // (undocumented)
+    type FromToDto = Inputs_7.Frame.FromToDto;
+    // (undocumented)
+    type GridDto = WithDefaults<Inputs_7.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
+    // (undocumented)
+    type HexGridDto = WithDefaults<Inputs_7.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
+    // (undocumented)
+    type OffsetDto = WithDefaults<Inputs_7.Frame.OffsetDto, "distance">;
+    // (undocumented)
+    type OffsetFramesDto = WithDefaults<Inputs_7.Frame.OffsetFramesDto, "distance">;
+    // (undocumented)
+    type OffsetSharedDto = WithDefaults<Inputs_7.Frame.OffsetSharedDto, "distance">;
+    // (undocumented)
+    type OriginDto = WithDefaults<Inputs_7.Frame.OriginDto, "origin">;
+    // (undocumented)
+    type PointAndNormalDto = WithDefaults<Inputs_7.Frame.PointAndNormalDto, "origin" | "normal">;
+    // (undocumented)
+    type PolarDto = WithDefaults<Inputs_7.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
+    // (undocumented)
+    type RotateDto = WithDefaults<Inputs_7.Frame.RotateDto, "axis" | "angle">;
+    // (undocumented)
+    type RotateFramesDto = WithDefaults<Inputs_7.Frame.RotateFramesDto, "axis" | "angle">;
+    // (undocumented)
+    type RotateSharedDto = WithDefaults<Inputs_7.Frame.RotateSharedDto, "axis" | "angle">;
+    // (undocumented)
+    type ThreePointsDto = WithDefaults<Inputs_7.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
+    // (undocumented)
+    type TransformationDto = Inputs_7.Frame.TransformationDto;
+    // (undocumented)
+    type TranslateDto = WithDefaults<Inputs_7.Frame.TranslateDto, "translation">;
+    // (undocumented)
+    type TranslateFramesDto = WithDefaults<Inputs_7.Frame.TranslateFramesDto, "translation">;
+    // (undocumented)
+    type TranslateSharedDto = WithDefaults<Inputs_7.Frame.TranslateSharedDto, "translation">;
+}
 
 // @public
 export function initBitByBit(scene: Scene, bitbybit: BitByBitBase, options: InitBitByBitOptions): Promise<InitKernelsResult & {
@@ -869,6 +1231,7 @@ declare namespace Inputs {
         Verb,
         Color,
         Dates,
+        Frame,
         IO,
         Line,
         Lists,
@@ -922,8 +1285,8 @@ namespace IO {
     }
     class DxfPathsPartDto {
         constructor(layer?: string, color?: Base.Color, paths?: DxfPathDto[]);
-        color: Base.Color;
-        layer: string;
+        color?: Base.Color | undefined;
+        layer?: string | undefined;
         paths: DxfPathDto[];
     }
     class DxfPolylineSegmentDto {
@@ -938,6 +1301,26 @@ namespace IO {
         controlPoints: Base.Point2[];
         degree?: number | undefined;
     }
+}
+
+// @public
+namespace IO_2 {
+    // (undocumented)
+    type DxfArcSegmentDto = Inputs_7.IO.DxfArcSegmentDto;
+    // (undocumented)
+    type DxfCircleSegmentDto = Inputs_7.IO.DxfCircleSegmentDto;
+    // (undocumented)
+    type DxfLineSegmentDto = Inputs_7.IO.DxfLineSegmentDto;
+    // (undocumented)
+    type DxfModelDto = WithDefaults<Inputs_7.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    // (undocumented)
+    type DxfPathDto = Inputs_7.IO.DxfPathDto;
+    // (undocumented)
+    type DxfPathsPartDto = WithDefaults<Inputs_7.IO.DxfPathsPartDto, "layer" | "color">;
+    // (undocumented)
+    type DxfPolylineSegmentDto = WithDefaults<Inputs_7.IO.DxfPolylineSegmentDto, "closed">;
+    // (undocumented)
+    type DxfSplineSegmentDto = WithDefaults<Inputs_7.IO.DxfSplineSegmentDto, "degree" | "closed">;
 }
 
 // @public
@@ -958,90 +1341,88 @@ namespace JSCAD {
     }
     class CircleDto {
         constructor(center?: Base.Point2, radius?: number, segments?: number);
-        center: Base.Point2;
-        radius: number;
-        segments: number;
+        center?: Base.Point2 | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     class ColorizeDto {
         constructor(geometry?: JSCADEntity, color?: string);
-        color: string;
+        color?: string | undefined;
         geometry: JSCADEntity | JSCADEntity[];
     }
     class CubeCentersDto {
         constructor(centers?: Base.Point3[], size?: number);
         centers: Base.Point3[];
-        size: number;
+        size?: number | undefined;
     }
     class CubeDto {
         constructor(center?: Base.Point3, size?: number);
-        center: Base.Point3;
-        size: number;
+        center?: Base.Point3 | undefined;
+        size?: number | undefined;
     }
-    class CuboidCentersDto {
+    class CuboidCentersDto extends CuboidSharedDto {
         constructor(centers?: Base.Point3[], width?: number, length?: number, height?: number);
         centers: Base.Point3[];
-        height: number;
-        length: number;
-        width: number;
     }
-    class CuboidDto {
+    class CuboidDto extends CuboidSharedDto {
         constructor(center?: Base.Point3, width?: number, length?: number, height?: number);
-        center: Base.Point3;
-        height: number;
-        length: number;
-        width: number;
+        center?: Base.Point3 | undefined;
+    }
+    abstract class CuboidSharedDto {
+        height?: number | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
     class CurveDto {
         constructor(curve?: any);
         curve: any;
     }
-    class CylidnerCentersDto {
+    class CylidnerCentersDto extends CylinderSharedDto {
         constructor(centers?: Base.Point3[], height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        radius: number;
-        segments: number;
     }
     class CylidnerCentersEllipticDto {
         constructor(centers?: Base.Point3[], height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
         centers: Base.Point3[];
-        endRadius: Base.Point2;
-        height: number;
-        segments: number;
-        startRadius: Base.Point2;
+        endRadius?: Base.Point2 | undefined;
+        height?: number | undefined;
+        segments?: number | undefined;
+        startRadius?: Base.Point2 | undefined;
     }
-    class CylidnerDto {
+    class CylidnerDto extends CylinderSharedDto {
         constructor(center?: Base.Point3, height?: number, radius?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        radius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
     }
     class CylidnerEllipticDto {
         constructor(center?: Base.Point3, height?: number, startRadius?: Base.Point2, endRadius?: Base.Point2, segments?: number);
-        center: Base.Point3;
-        endRadius: Base.Vector2;
-        height: number;
-        segments: number;
-        startRadius: Base.Vector2;
+        center?: Base.Point3 | undefined;
+        endRadius?: Base.Vector2 | undefined;
+        height?: number | undefined;
+        segments?: number | undefined;
+        startRadius?: Base.Vector2 | undefined;
+    }
+    abstract class CylinderSharedDto {
+        height?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     class CylinderTextDto {
         constructor(text?: string, extrusionHeight?: number, extrusionSize?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        extrusionHeight: number;
-        extrusionSize: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        extrusionHeight?: number | undefined;
+        extrusionSize?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     class DownloadGeometryDto {
         constructor(geometry?: JSCADEntity | JSCADEntity[], fileName?: string, options?: Record<string, unknown>);
-        fileName: string;
+        fileName?: string | undefined;
         geometry: JSCADEntity | JSCADEntity[];
         options?: Record<string, unknown> | undefined;
     }
@@ -1057,103 +1438,110 @@ namespace JSCAD {
     }
     class DrawPathDto<T> {
         constructor(path?: JSCADEntity, colour?: string, opacity?: number, width?: number, updatable?: boolean, pathMesh?: T);
-        colour: string;
-        opacity: number;
+        colour?: string | undefined;
+        opacity?: number | undefined;
         path: JSCADEntity;
         pathMesh?: T | undefined;
-        updatable: boolean;
-        width: number;
+        updatable?: boolean | undefined;
+        width?: number | undefined;
     }
     class DrawSolidMeshDto<T> {
         constructor(mesh?: JSCADEntity, opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         mesh: JSCADEntity;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class DrawSolidMeshesDto<T> {
         constructor(meshes?: JSCADEntity[], opacity?: number, colours?: string | string[], updatable?: boolean, hidden?: boolean, jscadMesh?: T, drawTwoSided?: boolean, backFaceColour?: string, backFaceOpacity?: number);
-        backFaceColour: string;
-        backFaceOpacity: number;
-        colours: string | string[];
-        drawTwoSided: boolean;
-        hidden: boolean;
+        backFaceColour?: string | undefined;
+        backFaceOpacity?: number | undefined;
+        colours?: string | string[] | undefined;
+        drawTwoSided?: boolean | undefined;
+        hidden?: boolean | undefined;
         jscadMesh?: T | undefined;
         meshes?: JSCADEntity[] | undefined;
-        opacity: number;
-        updatable: boolean;
+        opacity?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class EllipseDto {
         constructor(center?: Base.Point2, radius?: Base.Point2, segments?: number);
-        center: Base.Point2;
-        radius: Base.Point2;
-        segments: number;
+        center?: Base.Point2 | undefined;
+        radius?: Base.Point2 | undefined;
+        segments?: number | undefined;
     }
-    class EllipsoidCentersDto {
+    class EllipsoidCentersDto extends EllipsoidSharedDto {
         constructor(centers?: Base.Point3[], radius?: Base.Point3, segments?: number);
         centers: Base.Point3[];
-        radius: Base.Point3;
-        segments: number;
     }
-    class EllipsoidDto {
+    class EllipsoidDto extends EllipsoidSharedDto {
         constructor(center?: Base.Point3, radius?: Base.Point3, segments?: number);
-        center: Base.Point3;
-        radius: Base.Point3;
-        segments: number;
+        center?: Base.Point3 | undefined;
+    }
+    abstract class EllipsoidSharedDto {
+        radius?: Base.Point3 | undefined;
+        segments?: number | undefined;
+    }
+    class ExpandDto {
+        constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
+        corners?: solidCornerTypeEnum | undefined;
+        delta?: number | undefined;
+        geometry: JSCADEntity;
+        segments?: number | undefined;
     }
     class ExpansionDto {
         constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number);
-        corners: solidCornerTypeEnum;
-        delta: number;
+        corners?: solidCornerTypeEnum | undefined;
+        delta?: number | undefined;
         geometry: JSCADEntity;
-        segments: number;
+        segments?: number | undefined;
     }
     class ExtrudeLinearDto {
         constructor(geometry?: JSCADEntity, height?: number, twistAngle?: number, twistSteps?: number);
         geometry: JSCADEntity;
-        height: number;
-        twistAngle: number;
-        twistSteps: number;
+        height?: number | undefined;
+        twistAngle?: number | undefined;
+        twistSteps?: number | undefined;
     }
-    class ExtrudeRectangularDto {
+    class ExtrudeRectangularDto extends ExtrudeRectangularSharedDto {
         constructor(geometry?: JSCADEntity, height?: number, size?: number);
         geometry: JSCADEntity;
-        height: number;
-        size: number;
     }
-    class ExtrudeRectangularPointsDto {
+    class ExtrudeRectangularPointsDto extends ExtrudeRectangularSharedDto {
         constructor(points?: Base.Point3[], height?: number, size?: number);
-        height: number;
         points: Base.Point3[];
-        size: number;
+    }
+    abstract class ExtrudeRectangularSharedDto {
+        height?: number | undefined;
+        size?: number | undefined;
     }
     class ExtrudeRotateDto {
         constructor(polygon?: JSCADEntity, angle?: number, startAngle?: number, segments?: number);
-        angle: number;
+        angle?: number | undefined;
         polygon: JSCADEntity;
-        segments: number;
-        startAngle: number;
+        segments?: number | undefined;
+        startAngle?: number | undefined;
     }
     class FromPolygonPoints {
         constructor(polygonPoints?: Base.Point3[][]);
         polygonPoints: Base.Point3[][];
     }
-    class GeodesicSphereCentersDto {
+    class GeodesicSphereCentersDto extends GeodesicSphereSharedDto {
         constructor(centers?: Base.Point3[], radius?: number, frequency?: number);
         centers: Base.Point3[];
-        frequency: number;
-        radius: number;
     }
-    class GeodesicSphereDto {
+    class GeodesicSphereDto extends GeodesicSphereSharedDto {
         constructor(center?: Base.Point3, radius?: number, frequency?: number);
-        center: Base.Point3;
-        frequency: number;
-        radius: number;
+        center?: Base.Point3 | undefined;
+    }
+    abstract class GeodesicSphereSharedDto {
+        frequency?: number | undefined;
+        radius?: number | undefined;
     }
     class HullDto {
         constructor(meshes?: JSCADEntity[]);
@@ -1228,14 +1616,14 @@ namespace JSCAD {
     }
     class PathAppendArcDto {
         constructor(path?: JSCADEntity, endPoint?: Base.Point2, xAxisRotation?: number, clockwise?: boolean, large?: boolean, segments?: number, radiusX?: number, radiusY?: number);
-        clockwise: boolean;
-        endPoint: Base.Point2;
-        large: boolean;
+        clockwise?: boolean | undefined;
+        endPoint?: Base.Point2 | undefined;
+        large?: boolean | undefined;
         path: JSCADEntity;
-        radiusX: number;
-        radiusY: number;
-        segments: number;
-        xAxisRotation: number;
+        radiusX?: number | undefined;
+        radiusY?: number | undefined;
+        segments?: number | undefined;
+        xAxisRotation?: number | undefined;
     }
     class PathAppendPointsDto {
         constructor(points?: Base.Point2[], path?: JSCADEntity);
@@ -1253,12 +1641,12 @@ namespace JSCAD {
     }
     class PathFromPointsDto {
         constructor(points?: Base.Point2[], closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         points: Base.Point2[];
     }
     class PathFromPolylineDto {
         constructor(polyline?: PolylinePropertiesDto, closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         polyline: PolylinePropertiesDto;
     }
     class PathsFromPointsDto {
@@ -1266,8 +1654,8 @@ namespace JSCAD {
         pointsLists: Base.Point3[][] | Base.Point2[][];
     }
     class PointsDto {
-        constructor(points?: Base.Point3[]);
-        points: Base.Point3[];
+        constructor(points?: (Base.Point2 | Base.Point3)[]);
+        points: (Base.Point2 | Base.Point3)[];
     }
     class PolylineDto {
         constructor(polyline?: PolylinePropertiesDto);
@@ -1281,51 +1669,46 @@ namespace JSCAD {
     }
     class RectangleDto {
         constructor(center?: Base.Point2, width?: number, length?: number);
-        center: Base.Point2;
-        length: number;
-        width: number;
+        center?: Base.Point2 | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
-    class RoundedCuboidCentersDto {
+    class RoundedCuboidCentersDto extends RoundedCuboidSharedDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
     }
-    class RoundedCuboidDto {
+    class RoundedCuboidDto extends RoundedCuboidSharedDto {
         constructor(center?: Base.Point3, roundRadius?: number, width?: number, length?: number, height?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
+        center?: Base.Point3 | undefined;
     }
-    class RoundedCylidnerCentersDto {
+    abstract class RoundedCuboidSharedDto {
+        height?: number | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
+    }
+    class RoundedCylidnerCentersDto extends RoundedCylinderSharedDto {
         constructor(centers?: Base.Point3[], roundRadius?: number, height?: number, radius?: number, segments?: number);
         centers: Base.Point3[];
-        height: number;
-        radius: number;
-        roundRadius: number;
-        segments: number;
     }
-    class RoundedCylidnerDto {
+    class RoundedCylidnerDto extends RoundedCylinderSharedDto {
         constructor(center?: Base.Point3, roundRadius?: number, height?: number, radius?: number, segments?: number);
-        center: Base.Point3;
-        height: number;
-        radius: number;
-        roundRadius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
+    }
+    abstract class RoundedCylinderSharedDto {
+        height?: number | undefined;
+        radius?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
     }
     class RoundedRectangleDto {
         constructor(center?: Base.Point2, roundRadius?: number, segments?: number, width?: number, length?: number);
-        center: Base.Point2;
-        length: number;
-        roundRadius: number;
-        segments: number;
-        width: number;
+        center?: Base.Point2 | undefined;
+        length?: number | undefined;
+        roundRadius?: number | undefined;
+        segments?: number | undefined;
+        width?: number | undefined;
     }
     enum solidCornerTypeEnum {
         chamfer = "chamfer",
@@ -1336,67 +1719,67 @@ namespace JSCAD {
         constructor(mesh?: JSCADEntity);
         mesh: JSCADEntity;
     }
-    class SphereCentersDto {
+    class SphereCentersDto extends SphereSharedDto {
         constructor(centers?: Base.Point3[], radius?: number, segments?: number);
         centers: Base.Point3[];
-        radius: number;
-        segments: number;
     }
-    class SphereDto {
+    class SphereDto extends SphereSharedDto {
         constructor(center?: Base.Point3, radius?: number, segments?: number);
-        center: Base.Point3;
-        radius: number;
-        segments: number;
+        center?: Base.Point3 | undefined;
+    }
+    abstract class SphereSharedDto {
+        radius?: number | undefined;
+        segments?: number | undefined;
     }
     class SphereTextDto {
         constructor(text?: string, radius?: number, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        radius: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        radius?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     class SquareDto {
         constructor(center?: Base.Point2, size?: number);
-        center: Base.Point2;
-        size: number;
+        center?: Base.Point2 | undefined;
+        size?: number | undefined;
     }
     class StarDto {
         constructor(center?: Base.Point2, vertices?: number, density?: number, outerRadius?: number, innerRadius?: number, startAngle?: number);
-        center: Base.Point2;
-        density: number;
-        innerRadius: number;
-        outerRadius: number;
-        startAngle: number;
-        vertices: number;
+        center?: Base.Point2 | undefined;
+        density?: number | undefined;
+        innerRadius?: number | undefined;
+        outerRadius?: number | undefined;
+        startAngle?: number | undefined;
+        vertices?: number | undefined;
     }
     class TextDto {
         constructor(text?: string, segments?: number, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: jscadTextAlignEnum, extrudeOffset?: number);
-        align: jscadTextAlignEnum;
-        extrudeOffset: number;
-        height: number;
-        letterSpacing: number;
-        lineSpacing: number;
-        segments: number;
-        text: string;
-        xOffset: number;
-        yOffset: number;
+        align?: jscadTextAlignEnum | undefined;
+        extrudeOffset?: number | undefined;
+        height?: number | undefined;
+        letterSpacing?: number | undefined;
+        lineSpacing?: number | undefined;
+        segments?: number | undefined;
+        text?: string | undefined;
+        xOffset?: number | undefined;
+        yOffset?: number | undefined;
     }
     class TorusDto {
         constructor(center?: Base.Point3, innerRadius?: number, outerRadius?: number, innerSegments?: number, outerSegments?: number, innerRotation?: number, outerRotation?: number, startAngle?: number);
-        center: Base.Point3;
-        innerRadius: number;
-        innerRotation: number;
-        innerSegments: number;
-        outerRadius: number;
-        outerRotation: number;
-        outerSegments: number;
-        startAngle: number;
+        center?: Base.Point3 | undefined;
+        innerRadius?: number | undefined;
+        innerRotation?: number | undefined;
+        innerSegments?: number | undefined;
+        outerRadius?: number | undefined;
+        outerRotation?: number | undefined;
+        outerSegments?: number | undefined;
+        startAngle?: number | undefined;
     }
     class TransformSolidDto {
         constructor(mesh?: JSCADEntity, transformation?: Base.TransformMatrixes);
@@ -1411,17 +1794,165 @@ namespace JSCAD {
 }
 
 // @public
+namespace JSCAD_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_4" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type BooleanObjectsDto = Inputs_4.JSCAD.BooleanObjectsDto;
+    // (undocumented)
+    type BooleanObjectsFromDto = Inputs_4.JSCAD.BooleanObjectsFromDto;
+    // (undocumented)
+    type BooleanTwoObjectsDto = Inputs_4.JSCAD.BooleanTwoObjectsDto;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_4.JSCAD.CircleDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type ColorizeDto = WithDefaults<Inputs_4.JSCAD.ColorizeDto, "color">;
+    // (undocumented)
+    type CubeCentersDto = WithDefaults<Inputs_4.JSCAD.CubeCentersDto, "size">;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_4.JSCAD.CubeDto, "center" | "size">;
+    // (undocumented)
+    type CuboidCentersDto = WithDefaults<Inputs_4.JSCAD.CuboidCentersDto, "width" | "length" | "height">;
+    // (undocumented)
+    type CuboidDto = WithDefaults<Inputs_4.JSCAD.CuboidDto, "center" | "width" | "length" | "height">;
+    // (undocumented)
+    type CuboidSharedDto = WithDefaults<Inputs_4.JSCAD.CuboidSharedDto, "width" | "length" | "height">;
+    // (undocumented)
+    type CurveDto = Inputs_4.JSCAD.CurveDto;
+    // (undocumented)
+    type CylidnerCentersDto = WithDefaults<Inputs_4.JSCAD.CylidnerCentersDto, "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerCentersEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerCentersEllipticDto, "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylidnerDto = WithDefaults<Inputs_4.JSCAD.CylidnerDto, "center" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylidnerEllipticDto = WithDefaults<Inputs_4.JSCAD.CylidnerEllipticDto, "center" | "height" | "startRadius" | "endRadius" | "segments">;
+    // (undocumented)
+    type CylinderSharedDto = WithDefaults<Inputs_4.JSCAD.CylinderSharedDto, "height" | "radius" | "segments">;
+    // (undocumented)
+    type CylinderTextDto = WithDefaults<Inputs_4.JSCAD.CylinderTextDto, "text" | "extrusionHeight" | "extrusionSize" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type DownloadGeometryDto = WithDefaults<Inputs_4.JSCAD.DownloadGeometryDto, "fileName">;
+    // (undocumented)
+    type DownloadSolidDto = Inputs_4.JSCAD.DownloadSolidDto;
+    // (undocumented)
+    type DownloadSolidsDto = Inputs_4.JSCAD.DownloadSolidsDto;
+    // (undocumented)
+    type DrawPathDto<T> = WithDefaults<Inputs_4.JSCAD.DrawPathDto<T>, "colour" | "opacity" | "width" | "updatable">;
+    // (undocumented)
+    type DrawSolidMeshDto<T> = WithDefaults<Inputs_4.JSCAD.DrawSolidMeshDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSolidMeshesDto<T> = WithDefaults<Inputs_4.JSCAD.DrawSolidMeshesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type EllipseDto = WithDefaults<Inputs_4.JSCAD.EllipseDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidCentersDto = WithDefaults<Inputs_4.JSCAD.EllipsoidCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidDto = WithDefaults<Inputs_4.JSCAD.EllipsoidDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type EllipsoidSharedDto = WithDefaults<Inputs_4.JSCAD.EllipsoidSharedDto, "radius" | "segments">;
+    // (undocumented)
+    type ExpandDto = WithDefaults<Inputs_4.JSCAD.ExpandDto, "delta" | "corners" | "segments">;
+    // (undocumented)
+    type ExpansionDto = WithDefaults<Inputs_4.JSCAD.ExpansionDto, "delta" | "corners" | "segments">;
+    // (undocumented)
+    type ExtrudeLinearDto = WithDefaults<Inputs_4.JSCAD.ExtrudeLinearDto, "height" | "twistAngle" | "twistSteps">;
+    // (undocumented)
+    type ExtrudeRectangularDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRectangularPointsDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularPointsDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRectangularSharedDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRectangularSharedDto, "height" | "size">;
+    // (undocumented)
+    type ExtrudeRotateDto = WithDefaults<Inputs_4.JSCAD.ExtrudeRotateDto, "angle" | "startAngle" | "segments">;
+    // (undocumented)
+    type FromPolygonPoints = Inputs_4.JSCAD.FromPolygonPoints;
+    // (undocumented)
+    type GeodesicSphereCentersDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereCentersDto, "radius" | "frequency">;
+    // (undocumented)
+    type GeodesicSphereDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereDto, "center" | "radius" | "frequency">;
+    // (undocumented)
+    type GeodesicSphereSharedDto = WithDefaults<Inputs_4.JSCAD.GeodesicSphereSharedDto, "radius" | "frequency">;
+    // (undocumented)
+    type HullDto = Inputs_4.JSCAD.HullDto;
+    // (undocumented)
+    type MeshDto = Inputs_4.JSCAD.MeshDto;
+    // (undocumented)
+    type MeshesDto = Inputs_4.JSCAD.MeshesDto;
+    // (undocumented)
+    type MinkowskiSumDto = Inputs_4.JSCAD.MinkowskiSumDto;
+    // (undocumented)
+    type PathAppendArcDto = WithDefaults<Inputs_4.JSCAD.PathAppendArcDto, "endPoint" | "xAxisRotation" | "clockwise" | "large" | "segments" | "radiusX" | "radiusY">;
+    // (undocumented)
+    type PathAppendPointsDto = Inputs_4.JSCAD.PathAppendPointsDto;
+    // (undocumented)
+    type PathAppendPolylineDto = Inputs_4.JSCAD.PathAppendPolylineDto;
+    // (undocumented)
+    type PathDto = Inputs_4.JSCAD.PathDto;
+    // (undocumented)
+    type PathFromPointsDto = WithDefaults<Inputs_4.JSCAD.PathFromPointsDto, "closed">;
+    // (undocumented)
+    type PathFromPolylineDto = WithDefaults<Inputs_4.JSCAD.PathFromPolylineDto, "closed">;
+    // (undocumented)
+    type PathsFromPointsDto = Inputs_4.JSCAD.PathsFromPointsDto;
+    // (undocumented)
+    type PointsDto = Inputs_4.JSCAD.PointsDto;
+    // (undocumented)
+    type PolylineDto = Inputs_4.JSCAD.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs_4.JSCAD.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_4.JSCAD.RectangleDto, "center" | "width" | "length">;
+    // (undocumented)
+    type RoundedCuboidCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidCentersDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCuboidDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidDto, "center" | "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCuboidSharedDto = WithDefaults<Inputs_4.JSCAD.RoundedCuboidSharedDto, "roundRadius" | "width" | "length" | "height" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerCentersDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerCentersDto, "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedCylidnerDto = WithDefaults<Inputs_4.JSCAD.RoundedCylidnerDto, "center" | "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedCylinderSharedDto = WithDefaults<Inputs_4.JSCAD.RoundedCylinderSharedDto, "roundRadius" | "height" | "radius" | "segments">;
+    // (undocumented)
+    type RoundedRectangleDto = WithDefaults<Inputs_4.JSCAD.RoundedRectangleDto, "center" | "roundRadius" | "segments" | "width" | "length">;
+    // (undocumented)
+    type SolidDto = Inputs_4.JSCAD.SolidDto;
+    // (undocumented)
+    type SphereCentersDto = WithDefaults<Inputs_4.JSCAD.SphereCentersDto, "radius" | "segments">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_4.JSCAD.SphereDto, "center" | "radius" | "segments">;
+    // (undocumented)
+    type SphereSharedDto = WithDefaults<Inputs_4.JSCAD.SphereSharedDto, "radius" | "segments">;
+    // (undocumented)
+    type SphereTextDto = WithDefaults<Inputs_4.JSCAD.SphereTextDto, "text" | "radius" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_4.JSCAD.SquareDto, "center" | "size">;
+    // (undocumented)
+    type StarDto = WithDefaults<Inputs_4.JSCAD.StarDto, "center" | "vertices" | "density" | "outerRadius" | "innerRadius" | "startAngle">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs_4.JSCAD.TextDto, "text" | "segments" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset">;
+    // (undocumented)
+    type TorusDto = WithDefaults<Inputs_4.JSCAD.TorusDto, "center" | "innerRadius" | "outerRadius" | "innerSegments" | "outerSegments" | "innerRotation" | "outerRotation" | "startAngle">;
+    // (undocumented)
+    type TransformSolidDto = Inputs_4.JSCAD.TransformSolidDto;
+    // (undocumented)
+    type TransformSolidsDto = Inputs_4.JSCAD.TransformSolidsDto;
+}
+
+// @public
 namespace JSON_2 {
     class GetJsonFromArrayByFirstPropMatchDto {
         constructor(jsonArray?: unknown[], property?: string, match?: unknown);
         jsonArray: unknown[];
         match: unknown;
-        property: string;
+        property?: string | undefined;
     }
     class GetValueOnPropDto {
         constructor(json?: unknown, property?: string);
         json: unknown;
-        property: string;
+        property?: string | undefined;
     }
     class JsonDto {
         constructor(json?: unknown);
@@ -1429,7 +1960,7 @@ namespace JSON_2 {
     }
     class ParseDto {
         constructor(text?: string);
-        text: string;
+        text?: string | undefined;
     }
     class PathsDto {
         constructor(json?: unknown, query?: string);
@@ -1444,14 +1975,14 @@ namespace JSON_2 {
     class SetValueDto {
         constructor(json?: unknown, value?: unknown, path?: string, prop?: string);
         json: unknown;
-        path: string;
-        prop: string;
+        path?: string | undefined;
+        prop?: string | undefined;
         value: unknown;
     }
     class SetValueOnPropDto {
         constructor(json?: unknown, value?: unknown, property?: string);
         json: unknown;
-        property: string;
+        property?: string | undefined;
         value: unknown;
     }
     class SetValuesOnPathsDto {
@@ -1465,6 +1996,30 @@ namespace JSON_2 {
         constructor(json?: unknown);
         json: unknown;
     }
+}
+
+// @public
+namespace JSON_3 {
+    // (undocumented)
+    type GetJsonFromArrayByFirstPropMatchDto = WithDefaults<Inputs_3.JSON.GetJsonFromArrayByFirstPropMatchDto, "property">;
+    // (undocumented)
+    type GetValueOnPropDto = WithDefaults<Inputs_3.JSON.GetValueOnPropDto, "property">;
+    // (undocumented)
+    type JsonDto = Inputs_3.JSON.JsonDto;
+    // (undocumented)
+    type ParseDto = WithDefaults<Inputs_3.JSON.ParseDto, "text">;
+    // (undocumented)
+    type PathsDto = Inputs_3.JSON.PathsDto;
+    // (undocumented)
+    type QueryDto = Inputs_3.JSON.QueryDto;
+    // (undocumented)
+    type SetValueDto = WithDefaults<Inputs_3.JSON.SetValueDto, "path" | "prop">;
+    // (undocumented)
+    type SetValueOnPropDto = WithDefaults<Inputs_3.JSON.SetValueOnPropDto, "property">;
+    // (undocumented)
+    type SetValuesOnPathsDto = Inputs_3.JSON.SetValuesOnPathsDto;
+    // (undocumented)
+    type StringifyDto = Inputs_3.JSON.StringifyDto;
 }
 
 // @public
@@ -1547,18 +2102,50 @@ namespace Line {
 }
 
 // @public
+namespace Line_2 {
+    // (undocumented)
+    type DrawLineDto<T> = WithDefaults<Inputs_7.Line.DrawLineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawLinesDto<T> = WithDefaults<Inputs_7.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type LineDto = Inputs_7.Line.LineDto;
+    // (undocumented)
+    type LineLineIntersectionDto = WithDefaults<Inputs_7.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    // (undocumented)
+    type LinePointsDto = Inputs_7.Line.LinePointsDto;
+    // (undocumented)
+    type LinesDto = Inputs_7.Line.LinesDto;
+    // (undocumented)
+    type LineStartEndPointsDto = Inputs_7.Line.LineStartEndPointsDto;
+    // (undocumented)
+    type PointOnLineDto = WithDefaults<Inputs_7.Line.PointOnLineDto, "param">;
+    // (undocumented)
+    type PointsLinesDto = Inputs_7.Line.PointsLinesDto;
+    // (undocumented)
+    type SegmentDto = Inputs_7.Line.SegmentDto;
+    // (undocumented)
+    type SegmentsDto = Inputs_7.Line.SegmentsDto;
+    // (undocumented)
+    type TransformLineDto = Inputs_7.Line.TransformLineDto;
+    // (undocumented)
+    type TransformLinesDto = Inputs_7.Line.TransformLinesDto;
+    // (undocumented)
+    type TransformsLinesDto = Inputs_7.Line.TransformsLinesDto;
+}
+
+// @public
 namespace Lists {
     class AddItemAtIndexDto<T> {
         constructor(list?: T[], item?: T, index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         item: T;
         list: T[];
     }
     class AddItemAtIndexesDto<T> {
         constructor(list?: T[], item?: T, indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
-        indexes: number[];
+        indexes?: number[] | undefined;
         item: T;
         list: T[];
     }
@@ -1573,12 +2160,12 @@ namespace Lists {
         clone?: boolean | undefined;
         item: T;
         list: T[];
-        position: firstLastEnum;
+        position?: firstLastEnum | undefined;
     }
     class AddItemsAtIndexesDto<T> {
         constructor(list?: T[], items?: T[], indexes?: number[], clone?: boolean);
         clone?: boolean | undefined;
-        indexes: number[];
+        indexes?: number[] | undefined;
         items: T[];
         list: T[];
     }
@@ -1596,7 +2183,7 @@ namespace Lists {
     class GetByPatternDto<T> {
         constructor(list?: T[], pattern?: boolean[]);
         list: T[];
-        pattern: boolean[];
+        pattern?: boolean[] | undefined;
     }
     class GetLongestListLength<T> {
         constructor(lists?: T[]);
@@ -1606,14 +2193,14 @@ namespace Lists {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        nth: number;
-        offset: number;
+        nth?: number | undefined;
+        offset?: number | undefined;
     }
     class GroupListDto<T> {
         constructor(list?: T[], nrElements?: number, keepRemainder?: boolean);
-        keepRemainder: boolean;
+        keepRemainder?: boolean | undefined;
         list: T[];
-        nrElements: number;
+        nrElements?: number | undefined;
     }
     class IncludesDto<T> {
         constructor(list?: T[], item?: T);
@@ -1637,24 +2224,24 @@ namespace Lists {
     class ListItemDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         list: T[];
     }
     class MergeElementsOfLists<T> {
         constructor(lists?: T[], level?: number);
-        level: number;
+        level?: number | undefined;
         lists: T[];
     }
     class MultiplyItemDto<T> {
         constructor(item?: T, times?: number);
         item: T;
-        times: number;
+        times?: number | undefined;
     }
     class RandomThresholdDto<T> {
         constructor(list?: T[], threshold?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        threshold: number;
+        threshold?: number | undefined;
     }
     class RemoveDuplicatesDto<T> {
         constructor(list?: T[], clone?: boolean);
@@ -1665,12 +2252,12 @@ namespace Lists {
         constructor(list?: T[], clone?: boolean, tolerance?: number);
         clone?: boolean | undefined;
         list: T[];
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class RemoveItemAtIndexDto<T> {
         constructor(list?: T[], index?: number, clone?: boolean);
         clone?: boolean | undefined;
-        index: number;
+        index?: number | undefined;
         list: T[];
     }
     class RemoveItemsAtIndexesDto<T> {
@@ -1683,42 +2270,100 @@ namespace Lists {
         constructor(list?: T[], nth?: number, offset?: number, clone?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        nth: number;
-        offset: number;
+        nth?: number | undefined;
+        offset?: number | undefined;
     }
     class RepeatInPatternDto<T> {
         constructor(list?: T[]);
         clone?: boolean | undefined;
-        lengthLimit: number;
+        lengthLimit?: number | undefined;
         list: T[];
     }
     class SortDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        orderAsc: boolean;
+        orderAsc?: boolean | undefined;
     }
     class SortJsonDto<T> {
         constructor(list?: T[], clone?: boolean, orderAsc?: boolean);
         clone?: boolean | undefined;
         list: T[];
-        orderAsc: boolean;
-        property: string;
+        orderAsc?: boolean | undefined;
+        property?: string | undefined;
     }
     class SubListDto<T> {
         constructor(list?: T[], indexStart?: number, indexEnd?: number, clone?: boolean);
         clone?: boolean | undefined;
-        indexEnd: number;
-        indexStart: number;
+        indexEnd?: number | undefined;
+        indexStart?: number | undefined;
         list: T[];
     }
+}
+
+// @public
+namespace Lists_2 {
+    // (undocumented)
+    type AddItemAtIndexDto<T> = WithDefaults<Inputs_7.Lists.AddItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type AddItemAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.AddItemAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type AddItemDto<T> = WithDefaults<Inputs_7.Lists.AddItemDto<T>, "clone">;
+    // (undocumented)
+    type AddItemFirstLastDto<T> = WithDefaults<Inputs_7.Lists.AddItemFirstLastDto<T>, "position" | "clone">;
+    // (undocumented)
+    type AddItemsAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.AddItemsAtIndexesDto<T>, "indexes" | "clone">;
+    // (undocumented)
+    type ConcatenateDto<T> = WithDefaults<Inputs_7.Lists.ConcatenateDto<T>, "clone">;
+    // (undocumented)
+    type GetByPatternDto<T> = WithDefaults<Inputs_7.Lists.GetByPatternDto<T>, "pattern">;
+    // (undocumented)
+    type GetLongestListLength<T> = Inputs_7.Lists.GetLongestListLength<T>;
+    // (undocumented)
+    type GetNthItemDto<T> = WithDefaults<Inputs_7.Lists.GetNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type GroupListDto<T> = WithDefaults<Inputs_7.Lists.GroupListDto<T>, "nrElements" | "keepRemainder">;
+    // (undocumented)
+    type IncludesDto<T> = Inputs_7.Lists.IncludesDto<T>;
+    // (undocumented)
+    type InterleaveDto<T> = WithDefaults<Inputs_7.Lists.InterleaveDto<T>, "clone">;
+    // (undocumented)
+    type ListCloneDto<T> = WithDefaults<Inputs_7.Lists.ListCloneDto<T>, "clone">;
+    // (undocumented)
+    type ListDto<T> = Inputs_7.Lists.ListDto<T>;
+    // (undocumented)
+    type ListItemDto<T> = WithDefaults<Inputs_7.Lists.ListItemDto<T>, "index" | "clone">;
+    // (undocumented)
+    type MergeElementsOfLists<T> = WithDefaults<Inputs_7.Lists.MergeElementsOfLists<T>, "level">;
+    // (undocumented)
+    type MultiplyItemDto<T> = WithDefaults<Inputs_7.Lists.MultiplyItemDto<T>, "times">;
+    // (undocumented)
+    type RandomThresholdDto<T> = WithDefaults<Inputs_7.Lists.RandomThresholdDto<T>, "threshold" | "clone">;
+    // (undocumented)
+    type RemoveDuplicatesDto<T> = WithDefaults<Inputs_7.Lists.RemoveDuplicatesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveDuplicatesToleranceDto<T> = WithDefaults<Inputs_7.Lists.RemoveDuplicatesToleranceDto<T>, "tolerance" | "clone">;
+    // (undocumented)
+    type RemoveItemAtIndexDto<T> = WithDefaults<Inputs_7.Lists.RemoveItemAtIndexDto<T>, "index" | "clone">;
+    // (undocumented)
+    type RemoveItemsAtIndexesDto<T> = WithDefaults<Inputs_7.Lists.RemoveItemsAtIndexesDto<T>, "clone">;
+    // (undocumented)
+    type RemoveNthItemDto<T> = WithDefaults<Inputs_7.Lists.RemoveNthItemDto<T>, "nth" | "offset" | "clone">;
+    // (undocumented)
+    type RepeatInPatternDto<T> = WithDefaults<Inputs_7.Lists.RepeatInPatternDto<T>, "clone" | "lengthLimit">;
+    // (undocumented)
+    type SortDto<T> = WithDefaults<Inputs_7.Lists.SortDto<T>, "clone" | "orderAsc">;
+    // (undocumented)
+    type SortJsonDto<T> = WithDefaults<Inputs_7.Lists.SortJsonDto<T>, "clone" | "orderAsc" | "property">;
+    // (undocumented)
+    type SubListDto<T> = WithDefaults<Inputs_7.Lists.SubListDto<T>, "indexStart" | "indexEnd" | "clone">;
 }
 
 // @public
 namespace Logic {
     class BooleanDto {
         constructor(boolean?: boolean);
-        boolean: boolean;
+        boolean?: boolean | undefined;
     }
     class BooleanListDto {
         constructor(booleans?: boolean[]);
@@ -1745,29 +2390,29 @@ namespace Logic {
     class ComparisonDto<T> {
         constructor(first?: T, second?: T, operator?: BooleanOperatorsEnum);
         first: T;
-        operator: BooleanOperatorsEnum;
+        operator?: BooleanOperatorsEnum | undefined;
         second: T;
     }
     class RandomBooleansDto {
         constructor(length?: number);
-        length: number;
-        trueThreshold: number;
+        length?: number | undefined;
+        trueThreshold?: number | undefined;
     }
     class ThresholdBooleanListDto {
-        inverse: boolean;
+        inverse?: boolean | undefined;
         numbers: number[];
-        threshold: number;
+        threshold?: number | undefined;
     }
     class ThresholdGapsBooleanListDto {
         gapThresholds: Base.Vector2[];
-        inverse: boolean;
+        inverse?: boolean | undefined;
         numbers: number[];
     }
     class TwoThresholdRandomGradientDto {
-        nrLevels: number;
+        nrLevels?: number | undefined;
         numbers: number[];
-        thresholdTotalFalse: number;
-        thresholdTotalTrue: number;
+        thresholdTotalFalse?: number | undefined;
+        thresholdTotalTrue?: number | undefined;
     }
     class TwoValueGateDto<T, U> {
         constructor(value1?: T, value2?: U);
@@ -1776,29 +2421,51 @@ namespace Logic {
     }
     class ValueGateDto<T> {
         constructor(value?: T, boolean?: boolean);
-        boolean: boolean;
+        boolean?: boolean | undefined;
         value: T;
     }
+}
+
+// @public
+namespace Logic_2 {
+    // (undocumented)
+    type BooleanDto = WithDefaults<Inputs_7.Logic.BooleanDto, "boolean">;
+    // (undocumented)
+    type BooleanListDto = Inputs_7.Logic.BooleanListDto;
+    // (undocumented)
+    type ComparisonDto<T> = WithDefaults<Inputs_7.Logic.ComparisonDto<T>, "operator">;
+    // (undocumented)
+    type RandomBooleansDto = WithDefaults<Inputs_7.Logic.RandomBooleansDto, "length" | "trueThreshold">;
+    // (undocumented)
+    type ThresholdBooleanListDto = WithDefaults<Inputs_7.Logic.ThresholdBooleanListDto, "threshold" | "inverse">;
+    // (undocumented)
+    type ThresholdGapsBooleanListDto = WithDefaults<Inputs_7.Logic.ThresholdGapsBooleanListDto, "inverse">;
+    // (undocumented)
+    type TwoThresholdRandomGradientDto = WithDefaults<Inputs_7.Logic.TwoThresholdRandomGradientDto, "thresholdTotalTrue" | "thresholdTotalFalse" | "nrLevels">;
+    // (undocumented)
+    type TwoValueGateDto<T, U> = Inputs_7.Logic.TwoValueGateDto<T, U>;
+    // (undocumented)
+    type ValueGateDto<T> = WithDefaults<Inputs_7.Logic.ValueGateDto<T>, "boolean">;
 }
 
 // @public
 namespace Manifold {
     class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
-        gaussianIdx: number;
+        gaussianIdx?: number | undefined;
         manifold: T;
-        meanIdx: number;
+        meanIdx?: number | undefined;
     }
     class CalculateNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number, minSharpAngle?: number);
         manifold: T;
-        minSharpAngle: number;
-        normalIdx: number;
+        minSharpAngle?: number | undefined;
+        normalIdx?: number | undefined;
     }
     class CircleDto {
         constructor(radius?: number, circularSegments?: number);
-        circularSegments: number;
-        radius: number;
+        circularSegments?: number | undefined;
+        radius?: number | undefined;
     }
     class ComposeDto<T> {
         constructor(polygons?: T);
@@ -1810,7 +2477,7 @@ namespace Manifold {
     }
     class CreateContourSectionDto {
         constructor(polygons?: Base.Vector2[][], fillRule?: fillRuleEnum);
-        fillRule: fillRuleEnum;
+        fillRule?: fillRuleEnum | undefined;
         polygons: Base.Vector2[][];
     }
     class CreateFromMeshDto {
@@ -1850,16 +2517,16 @@ namespace Manifold {
     }
     class CubeDto {
         constructor(center?: boolean, size?: number);
-        center: boolean;
-        size: number;
+        center?: boolean | undefined;
+        size?: number | undefined;
     }
     class CylinderDto {
         constructor(height?: number, radiusLow?: number, radiusHigh?: number, circularSegments?: number, center?: boolean);
-        center: boolean;
-        circularSegments: number;
-        height: number;
-        radiusHigh: number;
-        radiusLow: number;
+        center?: boolean | undefined;
+        circularSegments?: number | undefined;
+        height?: number | undefined;
+        radiusHigh?: number | undefined;
+        radiusLow?: number | undefined;
     }
     class DecomposedManifoldMeshDto {
         faceID?: Uint32Array | undefined;
@@ -1885,41 +2552,41 @@ namespace Manifold {
     }
     class DrawManifoldOrCrossSectionDto<T, M> {
         constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldOrCrossSection?: T | undefined;
     }
     class DrawManifoldsOrCrossSectionsDto<T, M> {
         constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        computeNormals: boolean;
-        crossSectionColour: Base.Color;
-        crossSectionOpacity: number;
-        crossSectionWidth: number;
-        drawTwoSided: boolean;
-        faceColour: Base.Color;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        computeNormals?: boolean | undefined;
+        crossSectionColour?: Base.Color | undefined;
+        crossSectionOpacity?: number | undefined;
+        crossSectionWidth?: number | undefined;
+        drawTwoSided?: boolean | undefined;
+        faceColour?: Base.Color | undefined;
         faceMaterial?: M | undefined;
-        faceOpacity: number;
+        faceOpacity?: number | undefined;
         manifoldsOrCrossSections?: T[] | undefined;
     }
     class ExtrudeDto<T> {
         constructor(crossSection?: T);
-        center: boolean;
+        center?: boolean | undefined;
         crossSection: T;
-        height: number;
-        nDivisions: number;
-        scaleTopX: number;
-        scaleTopY: number;
-        twistDegrees: number;
+        height?: number | undefined;
+        nDivisions?: number | undefined;
+        scaleTopX?: number | undefined;
+        scaleTopY?: number | undefined;
+        twistDegrees?: number | undefined;
     }
     enum fillRuleEnum {
         // (undocumented)
@@ -1964,17 +2631,17 @@ namespace Manifold {
     class ManifoldRefineDto<T> {
         constructor(manifold?: T, number?: number);
         manifold: T;
-        number: number;
+        number?: number | undefined;
     }
     class ManifoldRefineLengthDto<T> {
         constructor(manifold?: T, length?: number);
-        length: number;
+        length?: number | undefined;
         manifold: T;
     }
     class ManifoldRefineToleranceDto<T> {
         constructor(manifold?: T, tolerance?: number);
         manifold: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class ManifoldsDto<T> {
         constructor(manifolds?: T[]);
@@ -1983,7 +2650,7 @@ namespace Manifold {
     class ManifoldSetPropertiesDto<T> {
         constructor(manifold?: T, numProp?: number, propFunc?: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void);
         manifold: T;
-        numProp: number;
+        numProp?: number | undefined;
         propFunc: (newProp: number[], position: Base.Vector3, oldProp: number[]) => void;
     }
     class ManifoldSimplifyDto<T> {
@@ -1995,18 +2662,18 @@ namespace Manifold {
         constructor(manifold1?: T, manifold2?: T, searchLength?: number);
         manifold1: T;
         manifold2: T;
-        searchLength: number;
+        searchLength?: number | undefined;
     }
     class ManifoldSmoothByNormalsDto<T> {
         constructor(manifold?: T, normalIdx?: number);
         manifold: T;
-        normalIdx: number;
+        normalIdx?: number | undefined;
     }
     class ManifoldSmoothOutDto<T> {
         constructor(manifold?: T, minSharpAngle?: number, minSmoothness?: number);
         manifold: T;
-        minSharpAngle: number;
-        minSmoothness: number;
+        minSharpAngle?: number | undefined;
+        minSmoothness?: number | undefined;
     }
     class ManifoldsOrCrossSectionsDto<T> {
         constructor(manifoldsOrCrossSections?: T[]);
@@ -2033,7 +2700,7 @@ namespace Manifold {
     }
     class MeshHalfEdgeIndexDto<T> {
         constructor(mesh?: T, halfEdgeIndex?: number);
-        halfEdgeIndex: number;
+        halfEdgeIndex?: number | undefined;
         mesh: T;
     }
     type MeshPointer = {
@@ -2043,41 +2710,41 @@ namespace Manifold {
     class MeshTriangleIndexDto<T> {
         constructor(mesh?: T, triangleIndex?: number);
         mesh: T;
-        triangleIndex: number;
+        triangleIndex?: number | undefined;
     }
     class MeshTriangleRunIndexDto<T> {
         constructor(mesh?: T, triangleRunIndex?: number);
         mesh: T;
-        triangleRunIndex: number;
+        triangleRunIndex?: number | undefined;
     }
     class MeshVertexIndexDto<T> {
         constructor(mesh?: T, vertexIndex?: number);
         mesh: T;
-        vertexIndex: number;
+        vertexIndex?: number | undefined;
     }
     class MirrorCrossSectionDto<T> {
         constructor(crossSection?: T, normal?: Base.Vector2);
         crossSection: T;
-        normal: Base.Vector2;
+        normal?: Base.Vector2 | undefined;
     }
     class MirrorDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3);
         manifold: T;
-        normal: Base.Vector3;
+        normal?: Base.Vector3 | undefined;
     }
     class OffsetDto<T> {
         constructor(crossSection?: T, delta?: number, joinType?: manifoldJoinTypeEnum, miterLimit?: number, circularSegments?: number);
-        circularSegments: number;
+        circularSegments?: number | undefined;
         crossSection: T;
-        delta: number;
-        joinType: manifoldJoinTypeEnum;
-        miterLimit: number;
+        delta?: number | undefined;
+        joinType?: manifoldJoinTypeEnum | undefined;
+        miterLimit?: number | undefined;
     }
     class RayCastDto<T> {
         constructor(manifold?: T, origin?: Base.Point3, endpoint?: Base.Point3);
-        endpoint: Base.Point3;
+        endpoint?: Base.Point3 | undefined;
         manifold: T;
-        origin: Base.Point3;
+        origin?: Base.Point3 | undefined;
     }
     type RayHit = {
         faceID: number;
@@ -2087,21 +2754,21 @@ namespace Manifold {
     };
     class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
-        center: boolean;
-        height: number;
-        length: number;
+        center?: boolean | undefined;
+        height?: number | undefined;
+        length?: number | undefined;
     }
     class RevolveDto<T> {
         constructor(crossSection?: T, revolveDegrees?: number, matchProfile?: boolean, circularSegments?: number);
-        circularSegments: number;
+        circularSegments?: number | undefined;
         crossSection: T;
-        matchProfile: boolean;
-        revolveDegrees: number;
+        matchProfile?: boolean | undefined;
+        revolveDegrees?: number | undefined;
     }
     class RotateCrossSectionDto<T> {
         constructor(crossSection?: T, degrees?: number);
         crossSection: T;
-        degrees: number;
+        degrees?: number | undefined;
     }
     class RotateDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3);
@@ -2111,56 +2778,56 @@ namespace Manifold {
     class RotateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number);
         manifold: T;
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     class Scale2DCrossSectionDto<T> {
         constructor(crossSection?: T, vector?: Base.Vector2);
         crossSection: T;
-        vector: Base.Vector2;
+        vector?: Base.Vector2 | undefined;
     }
     class Scale3DDto<T> {
         constructor(manifold?: T, vector?: Base.Vector3);
         manifold: T;
-        vector: Base.Vector3;
+        vector?: Base.Vector3 | undefined;
     }
     class ScaleCrossSectionDto<T> {
         constructor(crossSection?: T, factor?: number);
         crossSection: T;
-        factor: number;
+        factor?: number | undefined;
     }
     class ScaleDto<T> {
         constructor(manifold?: T, factor?: number);
-        factor: number;
+        factor?: number | undefined;
         manifold: T;
     }
     class SimplifyDto<T> {
         constructor(crossSection?: T, epsilon?: number);
         crossSection: T;
-        epsilon: number;
+        epsilon?: number | undefined;
     }
     class SliceDto<T> {
         constructor(manifold?: T);
-        height: number;
+        height?: number | undefined;
         manifold: T;
     }
     class SphereDto {
         constructor(radius?: number, circularSegments?: number);
-        circularSegments: number;
-        radius: number;
+        circularSegments?: number | undefined;
+        radius?: number | undefined;
     }
     class SplitByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number);
         manifold: T;
-        normal: Base.Vector3;
-        originOffset: number;
+        normal?: Base.Vector3 | undefined;
+        originOffset?: number | undefined;
     }
     class SplitByPlaneOnOffsetsDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffsets?: number[]);
         manifold: T;
-        normal: Base.Vector3;
-        originOffsets: number[];
+        normal?: Base.Vector3 | undefined;
+        originOffsets?: number[] | undefined;
     }
     class SplitManifoldsDto<T> {
         constructor(manifoldToSplit?: T, manifoldCutter?: T);
@@ -2169,8 +2836,8 @@ namespace Manifold {
     }
     class SquareDto {
         constructor(center?: boolean, size?: number);
-        center: boolean;
-        size: number;
+        center?: boolean | undefined;
+        size?: number | undefined;
     }
     class TransformCrossSectionDto<T> {
         constructor(crossSection?: T, transform?: Base.TransformMatrix3x3);
@@ -2205,21 +2872,21 @@ namespace Manifold {
     class TranslateXYCrossSectionDto<T> {
         constructor(crossSection?: T, x?: number, y?: number);
         crossSection: T;
-        x: number;
-        y: number;
+        x?: number | undefined;
+        y?: number | undefined;
     }
     class TranslateXYZDto<T> {
         constructor(manifold?: T, x?: number, y?: number, z?: number);
         manifold: T;
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     class TrimByPlaneDto<T> {
         constructor(manifold?: T, normal?: Base.Vector3, originOffset?: number);
         manifold: T;
-        normal: Base.Vector3;
-        originOffset: number;
+        normal?: Base.Vector3 | undefined;
+        originOffset?: number | undefined;
     }
     class TwoCrossSectionsDto<T> {
         constructor(crossSection1?: T, crossSection2?: T);
@@ -2234,30 +2901,182 @@ namespace Manifold {
 }
 
 // @public
+namespace Manifold_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_5" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type CalculateCurvatureDto<T> = WithDefaults<Inputs_5.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
+    // (undocumented)
+    type CalculateNormalsDto<T> = WithDefaults<Inputs_5.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_5.Manifold.CircleDto, "radius" | "circularSegments">;
+    // (undocumented)
+    type ComposeDto<T> = Inputs_5.Manifold.ComposeDto<T>;
+    // (undocumented)
+    type CountDto = Inputs_5.Manifold.CountDto;
+    // (undocumented)
+    type CreateContourSectionDto = WithDefaults<Inputs_5.Manifold.CreateContourSectionDto, "fillRule">;
+    // (undocumented)
+    type CreateFromMeshDto = Inputs_5.Manifold.CreateFromMeshDto;
+    // (undocumented)
+    type CrossSectionDto<T> = Inputs_5.Manifold.CrossSectionDto<T>;
+    // (undocumented)
+    type CrossSectionFromPolygonPointsDto = WithDefaults<Inputs_5.Manifold.CrossSectionFromPolygonPointsDto, "fillRule" | "removeDuplicates" | "tolerance">;
+    // (undocumented)
+    type CrossSectionFromPolygonsPointsDto = WithDefaults<Inputs_5.Manifold.CrossSectionFromPolygonsPointsDto, "fillRule" | "removeDuplicates" | "tolerance">;
+    // (undocumented)
+    type CrossSectionsDto<T> = Inputs_5.Manifold.CrossSectionsDto<T>;
+    // (undocumented)
+    type CrossSectionWarpDto<T> = Inputs_5.Manifold.CrossSectionWarpDto<T>;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_5.Manifold.CubeDto, "center" | "size">;
+    // (undocumented)
+    type CylinderDto = WithDefaults<Inputs_5.Manifold.CylinderDto, "height" | "radiusLow" | "radiusHigh" | "circularSegments" | "center">;
+    // (undocumented)
+    type DecomposedManifoldMeshDto = Inputs_5.Manifold.DecomposedManifoldMeshDto;
+    // (undocumented)
+    type DecomposeManifoldOrCrossSectionDto<T> = Inputs_5.Manifold.DecomposeManifoldOrCrossSectionDto<T>;
+    // (undocumented)
+    type DecomposeManifoldsOrCrossSectionsDto<T> = Inputs_5.Manifold.DecomposeManifoldsOrCrossSectionsDto<T>;
+    // (undocumented)
+    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs_5.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs_5.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type ExtrudeDto<T> = WithDefaults<Inputs_5.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
+    // (undocumented)
+    type FromPolygonPointsDto = Inputs_5.Manifold.FromPolygonPointsDto;
+    // (undocumented)
+    type HullPointsDto<T> = Inputs_5.Manifold.HullPointsDto<T>;
+    // (undocumented)
+    type ManifoldDto<T> = Inputs_5.Manifold.ManifoldDto<T>;
+    // (undocumented)
+    type ManifoldOrCrossSectionDto<T> = Inputs_5.Manifold.ManifoldOrCrossSectionDto<T>;
+    // (undocumented)
+    type ManifoldRefineDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineDto<T>, "number">;
+    // (undocumented)
+    type ManifoldRefineLengthDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineLengthDto<T>, "length">;
+    // (undocumented)
+    type ManifoldRefineToleranceDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldRefineToleranceDto<T>, "tolerance">;
+    // (undocumented)
+    type ManifoldsDto<T> = Inputs_5.Manifold.ManifoldsDto<T>;
+    // (undocumented)
+    type ManifoldSetPropertiesDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSetPropertiesDto<T>, "numProp">;
+    // (undocumented)
+    type ManifoldSimplifyDto<T> = Inputs_5.Manifold.ManifoldSimplifyDto<T>;
+    // (undocumented)
+    type ManifoldsMinGapDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldsMinGapDto<T>, "searchLength">;
+    // (undocumented)
+    type ManifoldSmoothByNormalsDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSmoothByNormalsDto<T>, "normalIdx">;
+    // (undocumented)
+    type ManifoldSmoothOutDto<T> = WithDefaults<Inputs_5.Manifold.ManifoldSmoothOutDto<T>, "minSharpAngle" | "minSmoothness">;
+    // (undocumented)
+    type ManifoldsOrCrossSectionsDto<T> = Inputs_5.Manifold.ManifoldsOrCrossSectionsDto<T>;
+    // (undocumented)
+    type ManifoldsToMeshesDto<T> = Inputs_5.Manifold.ManifoldsToMeshesDto<T>;
+    // (undocumented)
+    type ManifoldToMeshDto<T> = Inputs_5.Manifold.ManifoldToMeshDto<T>;
+    // (undocumented)
+    type ManifoldWarpDto<T> = Inputs_5.Manifold.ManifoldWarpDto<T>;
+    // (undocumented)
+    type MeshDto<T> = Inputs_5.Manifold.MeshDto<T>;
+    // (undocumented)
+    type MeshHalfEdgeIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshHalfEdgeIndexDto<T>, "halfEdgeIndex">;
+    // (undocumented)
+    type MeshTriangleIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshTriangleIndexDto<T>, "triangleIndex">;
+    // (undocumented)
+    type MeshTriangleRunIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshTriangleRunIndexDto<T>, "triangleRunIndex">;
+    // (undocumented)
+    type MeshVertexIndexDto<T> = WithDefaults<Inputs_5.Manifold.MeshVertexIndexDto<T>, "vertexIndex">;
+    // (undocumented)
+    type MirrorCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.MirrorCrossSectionDto<T>, "normal">;
+    // (undocumented)
+    type MirrorDto<T> = WithDefaults<Inputs_5.Manifold.MirrorDto<T>, "normal">;
+    // (undocumented)
+    type OffsetDto<T> = WithDefaults<Inputs_5.Manifold.OffsetDto<T>, "delta" | "joinType" | "miterLimit" | "circularSegments">;
+    // (undocumented)
+    type RayCastDto<T> = WithDefaults<Inputs_5.Manifold.RayCastDto<T>, "origin" | "endpoint">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_5.Manifold.RectangleDto, "length" | "height" | "center">;
+    // (undocumented)
+    type RevolveDto<T> = WithDefaults<Inputs_5.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
+    // (undocumented)
+    type RotateCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.RotateCrossSectionDto<T>, "degrees">;
+    // (undocumented)
+    type RotateDto<T> = Inputs_5.Manifold.RotateDto<T>;
+    // (undocumented)
+    type RotateXYZDto<T> = WithDefaults<Inputs_5.Manifold.RotateXYZDto<T>, "x" | "y" | "z">;
+    // (undocumented)
+    type Scale2DCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.Scale2DCrossSectionDto<T>, "vector">;
+    // (undocumented)
+    type Scale3DDto<T> = WithDefaults<Inputs_5.Manifold.Scale3DDto<T>, "vector">;
+    // (undocumented)
+    type ScaleCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.ScaleCrossSectionDto<T>, "factor">;
+    // (undocumented)
+    type ScaleDto<T> = WithDefaults<Inputs_5.Manifold.ScaleDto<T>, "factor">;
+    // (undocumented)
+    type SimplifyDto<T> = WithDefaults<Inputs_5.Manifold.SimplifyDto<T>, "epsilon">;
+    // (undocumented)
+    type SliceDto<T> = WithDefaults<Inputs_5.Manifold.SliceDto<T>, "height">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_5.Manifold.SphereDto, "radius" | "circularSegments">;
+    // (undocumented)
+    type SplitByPlaneDto<T> = WithDefaults<Inputs_5.Manifold.SplitByPlaneDto<T>, "normal" | "originOffset">;
+    // (undocumented)
+    type SplitByPlaneOnOffsetsDto<T> = WithDefaults<Inputs_5.Manifold.SplitByPlaneOnOffsetsDto<T>, "normal" | "originOffsets">;
+    // (undocumented)
+    type SplitManifoldsDto<T> = Inputs_5.Manifold.SplitManifoldsDto<T>;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_5.Manifold.SquareDto, "center" | "size">;
+    // (undocumented)
+    type TransformCrossSectionDto<T> = Inputs_5.Manifold.TransformCrossSectionDto<T>;
+    // (undocumented)
+    type TransformDto<T> = Inputs_5.Manifold.TransformDto<T>;
+    // (undocumented)
+    type TransformsDto<T> = Inputs_5.Manifold.TransformsDto<T>;
+    // (undocumented)
+    type TranslateByVectorsDto<T> = Inputs_5.Manifold.TranslateByVectorsDto<T>;
+    // (undocumented)
+    type TranslateCrossSectionDto<T> = Inputs_5.Manifold.TranslateCrossSectionDto<T>;
+    // (undocumented)
+    type TranslateDto<T> = Inputs_5.Manifold.TranslateDto<T>;
+    // (undocumented)
+    type TranslateXYCrossSectionDto<T> = WithDefaults<Inputs_5.Manifold.TranslateXYCrossSectionDto<T>, "x" | "y">;
+    // (undocumented)
+    type TranslateXYZDto<T> = WithDefaults<Inputs_5.Manifold.TranslateXYZDto<T>, "x" | "y" | "z">;
+    // (undocumented)
+    type TrimByPlaneDto<T> = WithDefaults<Inputs_5.Manifold.TrimByPlaneDto<T>, "normal" | "originOffset">;
+    // (undocumented)
+    type TwoCrossSectionsDto<T> = Inputs_5.Manifold.TwoCrossSectionsDto<T>;
+    // (undocumented)
+    type TwoManifoldsDto<T> = Inputs_5.Manifold.TwoManifoldsDto<T>;
+}
+
+// @public
 namespace Math_2 {
     class ActionOnOneNumberDto {
         constructor(number?: number, operation?: mathOneNrOperatorEnum);
-        number: number;
-        operation: mathOneNrOperatorEnum;
+        number?: number | undefined;
+        operation?: mathOneNrOperatorEnum | undefined;
     }
     class ActionOnTwoNumbersDto {
         constructor(first?: number, second?: number, operation?: mathTwoNrOperatorEnum);
-        first: number;
-        operation: mathTwoNrOperatorEnum;
-        second: number;
+        first?: number | undefined;
+        operation?: mathTwoNrOperatorEnum | undefined;
+        second?: number | undefined;
     }
     class ClampDto {
         constructor(number?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        number: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        number?: number | undefined;
     }
     class EaseDto {
         constructor(x?: number);
-        ease: easeEnum;
-        max: number;
-        min: number;
-        x: number;
+        ease?: easeEnum | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        x?: number | undefined;
     }
     enum easeEnum {
         // (undocumented)
@@ -2323,19 +3142,19 @@ namespace Math_2 {
     }
     class EvalArithmeticDto {
         constructor(expression?: string);
-        expression: string;
+        expression?: string | undefined;
     }
     class InverseLerpDto {
         constructor(start?: number, end?: number, value?: number);
-        end: number;
-        start: number;
-        value: number;
+        end?: number | undefined;
+        start?: number | undefined;
+        value?: number | undefined;
     }
     class LerpDto {
         constructor(start?: number, end?: number, t?: number);
-        end: number;
-        start: number;
-        t: number;
+        end?: number | undefined;
+        start?: number | undefined;
+        t?: number | undefined;
     }
     enum mathOneNrOperatorEnum {
         // (undocumented)
@@ -2393,64 +3212,104 @@ namespace Math_2 {
     }
     class ModulusDto {
         constructor(number?: number, modulus?: number);
-        modulus: number;
-        number: number;
+        modulus?: number | undefined;
+        number?: number | undefined;
     }
     class MoveTowardsDto {
         constructor(current?: number, target?: number, maxDelta?: number);
-        current: number;
-        maxDelta: number;
-        target: number;
+        current?: number | undefined;
+        maxDelta?: number | undefined;
+        target?: number | undefined;
     }
     class NumberDto {
         constructor(number?: number);
-        number: number;
+        number?: number | undefined;
     }
     class PingPongDto {
         constructor(t?: number, length?: number);
-        length: number;
-        t: number;
+        length?: number | undefined;
+        t?: number | undefined;
     }
     class RandomNumberDto {
         constructor(low?: number, high?: number);
-        high: number;
-        low: number;
+        high?: number | undefined;
+        low?: number | undefined;
     }
     class RandomNumbersDto {
         constructor(low?: number, high?: number, count?: number);
-        count: number;
-        high: number;
-        low: number;
+        count?: number | undefined;
+        high?: number | undefined;
+        low?: number | undefined;
     }
     class RemapNumberDto {
         constructor(number?: number, fromLow?: number, fromHigh?: number, toLow?: number, toHigh?: number);
-        fromHigh: number;
-        fromLow: number;
-        number: number;
-        toHigh: number;
-        toLow: number;
+        fromHigh?: number | undefined;
+        fromLow?: number | undefined;
+        number?: number | undefined;
+        toHigh?: number | undefined;
+        toLow?: number | undefined;
     }
     class RoundToDecimalsDto {
         constructor(number?: number, decimalPlaces?: number);
-        decimalPlaces: number;
-        number: number;
+        decimalPlaces?: number | undefined;
+        number?: number | undefined;
     }
     class ToFixedDto {
         constructor(number?: number, decimalPlaces?: number);
-        decimalPlaces: number;
+        decimalPlaces?: number | undefined;
         number: number;
     }
     class TwoNumbersDto {
         constructor(first?: number, second?: number);
-        first: number;
-        second: number;
+        first?: number | undefined;
+        second?: number | undefined;
     }
     class WrapDto {
         constructor(number?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        number: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        number?: number | undefined;
     }
+}
+
+// @public
+namespace Math_3 {
+    // (undocumented)
+    type ActionOnOneNumberDto = WithDefaults<Inputs_7.Math.ActionOnOneNumberDto, "number" | "operation">;
+    // (undocumented)
+    type ActionOnTwoNumbersDto = WithDefaults<Inputs_7.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
+    // (undocumented)
+    type ClampDto = WithDefaults<Inputs_7.Math.ClampDto, "number" | "min" | "max">;
+    // (undocumented)
+    type EaseDto = WithDefaults<Inputs_7.Math.EaseDto, "x" | "min" | "max" | "ease">;
+    // (undocumented)
+    type EvalArithmeticDto = WithDefaults<Inputs_7.Math.EvalArithmeticDto, "expression">;
+    // (undocumented)
+    type InverseLerpDto = WithDefaults<Inputs_7.Math.InverseLerpDto, "start" | "end" | "value">;
+    // (undocumented)
+    type LerpDto = WithDefaults<Inputs_7.Math.LerpDto, "start" | "end" | "t">;
+    // (undocumented)
+    type ModulusDto = WithDefaults<Inputs_7.Math.ModulusDto, "number" | "modulus">;
+    // (undocumented)
+    type MoveTowardsDto = WithDefaults<Inputs_7.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    // (undocumented)
+    type NumberDto = WithDefaults<Inputs_7.Math.NumberDto, "number">;
+    // (undocumented)
+    type PingPongDto = WithDefaults<Inputs_7.Math.PingPongDto, "t" | "length">;
+    // (undocumented)
+    type RandomNumberDto = WithDefaults<Inputs_7.Math.RandomNumberDto, "low" | "high">;
+    // (undocumented)
+    type RandomNumbersDto = WithDefaults<Inputs_7.Math.RandomNumbersDto, "low" | "high" | "count">;
+    // (undocumented)
+    type RemapNumberDto = WithDefaults<Inputs_7.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
+    // (undocumented)
+    type RoundToDecimalsDto = WithDefaults<Inputs_7.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    // (undocumented)
+    type ToFixedDto = WithDefaults<Inputs_7.Math.ToFixedDto, "decimalPlaces">;
+    // (undocumented)
+    type TwoNumbersDto = WithDefaults<Inputs_7.Math.TwoNumbersDto, "first" | "second">;
+    // (undocumented)
+    type WrapDto = WithDefaults<Inputs_7.Math.WrapDto, "number" | "min" | "max">;
 }
 
 // @public
@@ -2484,44 +3343,58 @@ namespace Mesh {
 }
 
 // @public
+namespace Mesh_2 {
+    // (undocumented)
+    type MeshMeshToleranceDto = WithDefaults<Inputs_7.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type SignedDistanceFromPlaneToPointDto = Inputs_7.Mesh.SignedDistanceFromPlaneToPointDto;
+    // (undocumented)
+    type TriangleDto = Inputs_7.Mesh.TriangleDto;
+    // (undocumented)
+    type TriangleToleranceDto = WithDefaults<Inputs_7.Mesh.TriangleToleranceDto, "tolerance">;
+    // (undocumented)
+    type TriangleTriangleToleranceDto = WithDefaults<Inputs_7.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+}
+
+// @public
 namespace OCCT {
     class AlignAndTranslateDto<T> {
         constructor(shape?: T, direction?: Base.Vector3, center?: Base.Vector3);
-        center: Base.Vector3;
-        direction: Base.Vector3;
+        center?: Base.Vector3 | undefined;
+        direction?: Base.Vector3 | undefined;
         shape: T;
     }
     class AlignAndTranslateShapesDto<T> {
         constructor(shapes?: T[], directions?: Base.Vector3[], centers?: Base.Vector3[]);
-        centers: Base.Vector3[];
-        directions: Base.Vector3[];
+        centers?: Base.Vector3[] | undefined;
+        directions?: Base.Vector3[] | undefined;
         shapes: T[];
     }
     class AlignDto<T> {
         constructor(shape?: T, fromOrigin?: Base.Point3, fromDirection?: Base.Vector3, toOrigin?: Base.Point3, toDirection?: Base.Vector3);
-        fromDirection: Base.Vector3;
-        fromOrigin: Base.Point3;
+        fromDirection?: Base.Vector3 | undefined;
+        fromOrigin?: Base.Point3 | undefined;
         shape: T;
-        toDirection: Base.Vector3;
-        toOrigin: Base.Point3;
+        toDirection?: Base.Vector3 | undefined;
+        toOrigin?: Base.Point3 | undefined;
     }
     class AlignNormAndAxisDto<T> {
         constructor(shape?: T, fromOrigin?: Base.Point3, fromNorm?: Base.Vector3, fromAx?: Base.Vector3, toOrigin?: Base.Point3, toNorm?: Base.Vector3, toAx?: Base.Vector3);
-        fromAx: Base.Vector3;
-        fromNorm: Base.Vector3;
-        fromOrigin: Base.Point3;
+        fromAx?: Base.Vector3 | undefined;
+        fromNorm?: Base.Vector3 | undefined;
+        fromOrigin?: Base.Point3 | undefined;
         shape: T;
-        toAx: Base.Vector3;
-        toNorm: Base.Vector3;
-        toOrigin: Base.Point3;
+        toAx?: Base.Vector3 | undefined;
+        toNorm?: Base.Vector3 | undefined;
+        toOrigin?: Base.Point3 | undefined;
     }
     class AlignShapesDto<T> {
         constructor(shapes?: T[], fromOrigins?: Base.Vector3[], fromDirections?: Base.Vector3[], toOrigins?: Base.Vector3[], toDirections?: Base.Vector3[]);
-        fromDirections: Base.Vector3[];
-        fromOrigins: Base.Point3[];
+        fromDirections?: Base.Vector3[] | undefined;
+        fromOrigins?: Base.Point3[] | undefined;
         shapes: T[];
-        toDirections: Base.Vector3[];
-        toOrigins: Base.Point3[];
+        toDirections?: Base.Vector3[] | undefined;
+        toOrigins?: Base.Point3[] | undefined;
     }
     enum approxParametrizationTypeEnum {
         // (undocumented)
@@ -2533,54 +3406,54 @@ namespace OCCT {
     }
     class ArcEdgeCirclePointAngleDto<T> {
         constructor(circle?: T, alphaAngle?: number, sense?: boolean);
-        alphaAngle: number;
+        alphaAngle?: number | undefined;
         circle: T;
         point: Base.Point3;
-        sense: boolean;
+        sense?: boolean | undefined;
     }
     class ArcEdgeCircleTwoAnglesDto<T> {
         constructor(circle?: T, alphaAngle1?: number, alphaAngle2?: number, sense?: boolean);
-        alphaAngle1: number;
-        alphaAngle2: number;
+        alphaAngle1?: number | undefined;
+        alphaAngle2?: number | undefined;
         circle: T;
-        sense: boolean;
+        sense?: boolean | undefined;
     }
     class ArcEdgeCircleTwoPointsDto<T> {
         constructor(circle?: T, start?: Base.Point3, end?: Base.Point3, sense?: boolean);
         circle: T;
-        end: Base.Point3;
-        sense: boolean;
-        start: Base.Point3;
+        end?: Base.Point3 | undefined;
+        sense?: boolean | undefined;
+        start?: Base.Point3 | undefined;
     }
     class ArcEdgeThreePointsDto {
         constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3);
-        end: Base.Point3;
-        middle: Base.Point3;
-        start: Base.Point3;
+        end?: Base.Point3 | undefined;
+        middle?: Base.Point3 | undefined;
+        start?: Base.Point3 | undefined;
     }
     class ArcEdgeTwoPointsTangentDto {
         constructor(start?: Base.Point3, tangentVec?: Base.Vector3, end?: Base.Point3);
-        end: Base.Point3;
-        start: Base.Point3;
-        tangentVec: Base.Vector3;
+        end?: Base.Point3 | undefined;
+        start?: Base.Point3 | undefined;
+        tangentVec?: Base.Vector3 | undefined;
     }
     class BasicShapeRepairDto<T> {
         constructor(shape?: T, precision?: number, maxTolerance?: number, minTolerance?: number);
-        maxTolerance: number;
-        minTolerance: number;
-        precision: number;
+        maxTolerance?: number | undefined;
+        minTolerance?: number | undefined;
+        precision?: number | undefined;
         shape: T;
     }
     class BezierDto {
         constructor(points?: Base.Point3[], closed?: boolean, degree?: number, periodic?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         degree?: number | undefined;
         periodic?: boolean | undefined;
         points: Base.Point3[];
     }
     class BezierWeightsDto {
         constructor(points?: Base.Point3[], weights?: number[], closed?: boolean, periodic?: boolean, degree?: number);
-        closed: boolean;
+        closed?: boolean | undefined;
         degree?: number | undefined;
         periodic?: boolean | undefined;
         points: Base.Point3[];
@@ -2589,11 +3462,36 @@ namespace OCCT {
     class BezierWiresDto {
         constructor(bezierWires?: BezierDto[], returnCompound?: boolean);
         bezierWires: BezierDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
+    }
+    class BlendBetweenEdgesDto<T> {
+        constructor(from?: T, to?: T, matchCurvature?: boolean, bulge?: number);
+        bulge?: number | undefined;
+        from: T;
+        matchCurvature?: boolean | undefined;
+        to: T;
+    }
+    enum booleanStrategyEnum {
+        // (undocumented)
+        allAtOnce = "allAtOnce",
+        // (undocumented)
+        inGroups = "inGroups",
+        // (undocumented)
+        oneAfterAnother = "oneAfterAnother"
+    }
+    class BoundaryPatchDto<T> {
+        constructor(edges?: T[], style?: fillingStyleEnum);
+        edges: T[];
+        style?: fillingStyleEnum | undefined;
     }
     class BoundingBoxDto {
         constructor(bbox?: BoundingBoxPropsDto);
         bbox?: BoundingBoxPropsDto | undefined;
+    }
+    class BoundingBoxInFrameDto<T> {
+        constructor(shape?: T, frame?: Base.Frame);
+        frame: Base.Frame;
+        shape: T;
     }
     class BoundingBoxPropsDto {
         constructor(min?: Base.Point3, max?: Base.Point3, center?: Base.Point3, size?: Base.Vector3);
@@ -2609,18 +3507,18 @@ namespace OCCT {
     }
     class BoxDto {
         constructor(width?: number, length?: number, height?: number, center?: Base.Point3, originOnCenter?: boolean);
-        center: Base.Point3;
-        height: number;
-        length: number;
+        center?: Base.Point3 | undefined;
+        height?: number | undefined;
+        length?: number | undefined;
         originOnCenter?: boolean | undefined;
-        width: number;
+        width?: number | undefined;
     }
     class BoxFromCornerDto {
         constructor(width?: number, length?: number, height?: number, corner?: Base.Point3);
-        corner: Base.Point3;
-        height: number;
-        length: number;
-        width: number;
+        corner?: Base.Point3 | undefined;
+        height?: number | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
     }
     enum brepGraphNodeKindEnum {
         // (undocumented)
@@ -2647,8 +3545,8 @@ namespace OCCT {
     }
     class BRepGraphReconstructDto<T> {
         constructor(shape?: T, kind?: brepGraphNodeKindEnum, index?: number);
-        index: number;
-        kind: brepGraphNodeKindEnum;
+        index?: number | undefined;
+        kind?: brepGraphNodeKindEnum | undefined;
         shape: T;
     }
     enum bRepOffsetModeEnum {
@@ -2661,7 +3559,7 @@ namespace OCCT {
     }
     class BSplineDto {
         constructor(points?: Base.Point3[], closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         points: Base.Point3[];
     }
     // (undocumented)
@@ -2673,7 +3571,7 @@ namespace OCCT {
     class BSplinesDto {
         constructor(bSplines?: BSplineDto[], returnCompound?: boolean);
         bSplines: BSplineDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
     }
     class BuildAssemblyDocumentDto<T, D> {
         // Warning: (ae-forgotten-export) The symbol "Models" needs to be exported by the entry point index.d.ts
@@ -2684,19 +3582,19 @@ namespace OCCT {
     }
     class Chamfer2dVertexDto<T> {
         constructor(shape?: T, distance?: number, angle?: number, indexes?: number[]);
-        angle: number;
-        distance: number;
+        angle?: number | undefined;
+        distance?: number | undefined;
         indexes?: number[] | undefined;
         shape: T;
     }
     class ChamferCornerByPointDto<T> {
         constructor(shape?: T, points?: Base.Point3[], distance?: number, angle?: number, snapTolerance?: number, mode?: cornerModeEnum);
-        angle: number;
-        distance: number;
-        mode: cornerModeEnum;
-        points: Base.Point3[];
+        angle?: number | undefined;
+        distance?: number | undefined;
+        mode?: cornerModeEnum | undefined;
+        points?: Base.Point3[] | undefined;
         shape: T;
-        snapTolerance: number;
+        snapTolerance?: number | undefined;
     }
     class ChamferDto<T> {
         constructor(shape?: T, distance?: number, distanceList?: number[], indexes?: number[]);
@@ -2707,16 +3605,16 @@ namespace OCCT {
     }
     class ChamferEdgeDistAngleDto<T, U, F> {
         constructor(shape?: T, edge?: U, face?: F, distance?: number, angle?: number);
-        angle: number;
-        distance: number;
+        angle?: number | undefined;
+        distance?: number | undefined;
         edge: U;
         face: F;
         shape: T;
     }
     class ChamferEdgesDistAngleDto<T, U, F> {
         constructor(shape?: T, edges?: U[], faces?: F[], distance?: number, angle?: number);
-        angle: number;
-        distance: number;
+        angle?: number | undefined;
+        distance?: number | undefined;
         edges: U[];
         faces: F[];
         shape: T;
@@ -2737,8 +3635,8 @@ namespace OCCT {
     }
     class ChamferEdgesTwoDistancesDto<T, U, F> {
         constructor(shape?: T, edges?: U[], faces?: F[], distance1?: number, distance2?: number);
-        distance1: number;
-        distance2: number;
+        distance1?: number | undefined;
+        distance2?: number | undefined;
         edges: U[];
         faces: F[];
         shape: T;
@@ -2753,35 +3651,35 @@ namespace OCCT {
     }
     class ChamferEdgeTwoDistancesDto<T, U, F> {
         constructor(shape?: T, edge?: U, face?: F, distance1?: number, distance2?: number);
-        distance1: number;
-        distance2: number;
+        distance1?: number | undefined;
+        distance2?: number | undefined;
         edge: U;
         face: F;
         shape: T;
     }
     class ChristmasTreeDto {
         constructor(height?: number, innerDist?: number, outerDist?: number, nrSkirts?: number, trunkHeight?: number, trunkWidth?: number, half?: boolean, rotation?: number, origin?: Base.Point3, direction?: Base.Vector3);
-        direction: Base.Vector3;
-        half: boolean;
-        height: number;
-        innerDist: number;
-        nrSkirts: number;
-        origin: Base.Point3;
-        outerDist: number;
-        rotation: number;
-        trunkHeight: number;
-        trunkWidth: number;
+        direction?: Base.Vector3 | undefined;
+        half?: boolean | undefined;
+        height?: number | undefined;
+        innerDist?: number | undefined;
+        nrSkirts?: number | undefined;
+        origin?: Base.Point3 | undefined;
+        outerDist?: number | undefined;
+        rotation?: number | undefined;
+        trunkHeight?: number | undefined;
+        trunkWidth?: number | undefined;
     }
     class ChristmasTreeSolidDto extends ChristmasTreeDto {
         constructor(height?: number, innerDist?: number, outerDist?: number, nrSkirts?: number, trunkHeight?: number, trunkWidth?: number, half?: boolean, rotation?: number, origin?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class CircleDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        radius: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        radius?: number | undefined;
     }
     enum circleInclusionEnum {
         // (undocumented)
@@ -2791,11 +3689,39 @@ namespace OCCT {
         // (undocumented)
         none = "none"
     }
+    class CirclesTangentToThreeDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, tolerance?: number, onArgumentsOnly?: boolean);
+        frame: Base.Frame;
+        onArgumentsOnly?: boolean | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
+    }
+    class CirclesTangentToTwoCenteredOnDto<T> {
+        constructor(shapes?: T[], centerOn?: T, frame?: Base.Frame, tolerance?: number, onArgumentsOnly?: boolean);
+        centerOn: T;
+        frame: Base.Frame;
+        onArgumentsOnly?: boolean | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
+    }
+    class CirclesTangentToTwoWithRadiusDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, radius?: number, tolerance?: number, onArgumentsOnly?: boolean);
+        frame: Base.Frame;
+        onArgumentsOnly?: boolean | undefined;
+        radius?: number | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
+    }
+    class ClashesBetweenShapesDto<T> {
+        constructor(shapes?: T[], clearance?: number);
+        clearance?: number | undefined;
+        shapes: T[];
+    }
     class ClassifyCornerByPointDto<T> {
         constructor(shape?: T, points?: Base.Point3[], snapTolerance?: number);
-        points: Base.Point3[];
+        points?: Base.Point3[] | undefined;
         shape: T;
-        snapTolerance: number;
+        snapTolerance?: number | undefined;
     }
     class ClosestPointsBetweenTwoShapesDto<T> {
         constructor(shape1?: T, shape2?: T);
@@ -2824,8 +3750,8 @@ namespace OCCT {
         constructor(parts?: Models.OCCT.AssemblyPartDef<T>[], nodes?: Models.OCCT.AssemblyNodeDef[], removals?: string[], partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[], clearDocument?: boolean, loadedParts?: Models.OCCT.AssemblyLoadedPartDef[]);
         clearDocument?: boolean | undefined;
         loadedParts?: Models.OCCT.AssemblyLoadedPartDef[] | undefined;
-        nodes: Models.OCCT.AssemblyNodeDef[];
-        parts: Models.OCCT.AssemblyPartDef<T>[];
+        nodes?: Models.OCCT.AssemblyNodeDef[] | undefined;
+        parts?: Models.OCCT.AssemblyPartDef<T>[] | undefined;
         partUpdates?: Models.OCCT.AssemblyPartUpdateDef<T>[] | undefined;
         removals?: string[] | undefined;
     }
@@ -2836,9 +3762,9 @@ namespace OCCT {
     }
     class ComposeTransformDto {
         constructor(translation?: Base.Vector3, rotation?: Base.Vector3, scale?: number);
-        rotation: Base.Vector3;
-        scale: number;
-        translation: Base.Vector3;
+        rotation?: Base.Vector3 | undefined;
+        scale?: number | undefined;
+        translation?: Base.Vector3 | undefined;
     }
     class CompoundShapesDto<T> {
         constructor(shapes?: T[]);
@@ -2846,114 +3772,132 @@ namespace OCCT {
     }
     class ConeDto {
         constructor(radius1?: number, radius2?: number, height?: number, angle?: number, center?: Base.Point3, direction?: Base.Vector3);
-        angle: number;
-        center: Base.Point3;
-        direction: Base.Point3;
-        height: number;
-        radius1: number;
-        radius2: number;
+        angle?: number | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Point3 | undefined;
+        height?: number | undefined;
+        radius1?: number | undefined;
+        radius2?: number | undefined;
     }
     class ConstraintTanCirclesOnCircleAndPntDto<T> {
         constructor(circle?: T, point?: Base.Point3, tolerance?: number, radius?: number);
         circle: T;
         point: Base.Point3;
-        radius: number;
-        tolerance: number;
+        radius?: number | undefined;
+        tolerance?: number | undefined;
     }
     class ConstraintTanCirclesOnTwoCirclesDto<T> {
         constructor(circle1?: T, circle2?: T, tolerance?: number, radius?: number);
         circle1: T;
         circle2: T;
-        radius: number;
-        tolerance: number;
+        radius?: number | undefined;
+        tolerance?: number | undefined;
     }
     class ConstraintTanLinesFromPtToCircleDto<T> {
         constructor(circle?: T, point?: Base.Point3, tolerance?: number, positionResult?: positionResultEnum, circleRemainder?: circleInclusionEnum);
         circle: T;
-        circleRemainder: circleInclusionEnum;
+        circleRemainder?: circleInclusionEnum | undefined;
         point: Base.Point3;
-        positionResult: positionResultEnum;
-        tolerance: number;
+        positionResult?: positionResultEnum | undefined;
+        tolerance?: number | undefined;
     }
     class ConstraintTanLinesFromTwoPtsToCircleDto<T> {
         constructor(circle?: T, point1?: Base.Point3, point2?: Base.Point3, tolerance?: number, positionResult?: positionResultEnum, circleRemainder?: circleInclusionEnum);
         circle: T;
-        circleRemainder: circleInclusionEnum;
+        circleRemainder?: circleInclusionEnum | undefined;
         point1: Base.Point3;
         point2: Base.Point3;
-        positionResult: positionResultEnum;
-        tolerance: number;
+        positionResult?: positionResultEnum | undefined;
+        tolerance?: number | undefined;
     }
     class ConstraintTanLinesOnTwoCirclesDto<T> {
         constructor(circle1?: T, circle2?: T, tolerance?: number, positionResult?: positionResultEnum, circleRemainders?: twoCircleInclusionEnum);
         circle1: T;
         circle2: T;
-        circleRemainders: twoCircleInclusionEnum;
-        positionResult: positionResultEnum;
-        tolerance: number;
+        circleRemainders?: twoCircleInclusionEnum | undefined;
+        positionResult?: positionResultEnum | undefined;
+        tolerance?: number | undefined;
+    }
+    enum continuityEnum {
+        // (undocumented)
+        curvature = "curvature",
+        // (undocumented)
+        position = "position",
+        // (undocumented)
+        tangent = "tangent"
     }
     class ConvertStepToGltfAdvancedDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
-        adjustZtoY: boolean;
-        controlSurfaceDeflection: boolean;
-        embedTextures: boolean;
-        faceCountThreshold: number;
-        forceUVExport: boolean;
-        internalVerticesMode: boolean;
-        mergeFaces: boolean;
-        meshAngle: number;
-        meshDeflection: number;
-        meshNameFormat: gltfNameFormatEnum;
-        meshParallel: boolean;
-        meshRelative: boolean;
-        nodeNameFormat: gltfNameFormatEnum;
-        parallelWrite: boolean;
-        readColors: boolean;
-        readLayers: boolean;
-        readMaterials: boolean;
-        readNames: boolean;
-        readProps: boolean;
-        scale: number;
-        splitIndices16: boolean;
+        adjustZtoY?: boolean | undefined;
+        controlSurfaceDeflection?: boolean | undefined;
+        embedTextures?: boolean | undefined;
+        faceCountThreshold?: number | undefined;
+        forceUVExport?: boolean | undefined;
+        internalVerticesMode?: boolean | undefined;
+        mergeFaces?: boolean | undefined;
+        meshAngle?: number | undefined;
+        meshDeflection?: number | undefined;
+        meshNameFormat?: gltfNameFormatEnum | undefined;
+        meshParallel?: boolean | undefined;
+        meshRelative?: boolean | undefined;
+        nodeNameFormat?: gltfNameFormatEnum | undefined;
+        parallelWrite?: boolean | undefined;
+        readColors?: boolean | undefined;
+        readLayers?: boolean | undefined;
+        readMaterials?: boolean | undefined;
+        readNames?: boolean | undefined;
+        readProps?: boolean | undefined;
+        scale?: number | undefined;
+        splitIndices16?: boolean | undefined;
         stepData: string | ArrayBuffer | Uint8Array | File | Blob;
-        transformFormat: gltfTransformFormatEnum;
+        transformFormat?: gltfTransformFormatEnum | undefined;
     }
     class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdvancedDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
-        dracoCompressionLevel: number;
-        dracoQuantizeColorBits: number;
-        dracoQuantizeGenericBits: number;
-        dracoQuantizeNormalBits: number;
-        dracoQuantizePositionBits: number;
-        dracoQuantizeTexcoordBits: number;
-        dracoUnifiedQuantization: boolean;
-        useDraco: boolean;
+        dracoCompressionLevel?: number | undefined;
+        dracoQuantizeColorBits?: number | undefined;
+        dracoQuantizeGenericBits?: number | undefined;
+        dracoQuantizeNormalBits?: number | undefined;
+        dracoQuantizePositionBits?: number | undefined;
+        dracoQuantizeTexcoordBits?: number | undefined;
+        dracoUnifiedQuantization?: boolean | undefined;
+        useDraco?: boolean | undefined;
     }
     class ConvertStepToGltfDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
-        controlSurfaceDeflection: boolean;
-        internalVerticesMode: boolean;
-        meshAngle: number;
-        meshPrecision: number;
-        meshRelative: boolean;
+        controlSurfaceDeflection?: boolean | undefined;
+        internalVerticesMode?: boolean | undefined;
+        meshAngle?: number | undefined;
+        meshPrecision?: number | undefined;
+        meshRelative?: boolean | undefined;
         stepData: string | ArrayBuffer | Uint8Array | File | Blob;
     }
     class ConvertStepToGltfWithDracoDto extends ConvertStepToGltfDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
-        dracoCompressionLevel: number;
-        dracoQuantizeColorBits: number;
-        dracoQuantizeGenericBits: number;
-        dracoQuantizeNormalBits: number;
-        dracoQuantizePositionBits: number;
-        dracoQuantizeTexcoordBits: number;
-        dracoUnifiedQuantization: boolean;
-        useDraco: boolean;
+        dracoCompressionLevel?: number | undefined;
+        dracoQuantizeColorBits?: number | undefined;
+        dracoQuantizeGenericBits?: number | undefined;
+        dracoQuantizeNormalBits?: number | undefined;
+        dracoQuantizePositionBits?: number | undefined;
+        dracoQuantizeTexcoordBits?: number | undefined;
+        dracoUnifiedQuantization?: boolean | undefined;
+        useDraco?: boolean | undefined;
     }
     enum cornerModeEnum {
         // (undocumented)
         auto = "auto",
         // (undocumented)
         planarOnly = "planarOnly"
+    }
+    class CounterboredHolesDto<T> extends HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number, counterboreDiameter?: number, counterboreDepth?: number);
+        counterboreDepth?: number | undefined;
+        counterboreDiameter?: number | undefined;
+    }
+    class CountersunkHolesDto<T> extends HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number, countersinkDiameter?: number, countersinkAngle?: number);
+        countersinkAngle?: number | undefined;
+        countersinkDiameter?: number | undefined;
     }
     class CreateAssemblyNodeDto {
         constructor(id?: string, name?: string, parentId?: string, colorRgba?: Base.ColorRGBA, matrix?: Base.TransformMatrix | Base.TransformMatrixes);
@@ -2975,7 +3919,7 @@ namespace OCCT {
         colorRgba?: Base.ColorRGBA | undefined;
         id: string;
         name?: string | undefined;
-        sourceDocumentIndex: number;
+        sourceDocumentIndex?: number | undefined;
         sourceLabel?: string | undefined;
     }
     class CreateInstanceNodeDto {
@@ -2999,73 +3943,122 @@ namespace OCCT {
     }
     class CubeDto {
         constructor(size?: number, center?: Base.Point3, originOnCenter?: boolean);
-        center: Base.Point3;
+        center?: Base.Point3 | undefined;
         originOnCenter?: boolean | undefined;
-        size: number;
+        size?: number | undefined;
+    }
+    class CurvatureCombDto<T> {
+        constructor(shape?: T, samples?: number, scale?: number);
+        samples?: number | undefined;
+        scale?: number | undefined;
+        shape: T;
     }
     class CurveAndSurfaceDto<T, U> {
         constructor(curve?: T, surface?: U);
         curve: T;
         surface: U;
     }
+    class CurveExtremesAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3);
+        direction?: Base.Vector3 | undefined;
+        shape: T;
+    }
+    enum curveFrameEnum {
+        // (undocumented)
+        frenet = "frenet",
+        // (undocumented)
+        perpendicular = "perpendicular",
+        // (undocumented)
+        rotationMinimizing = "rotationMinimizing"
+    }
+    class CurveKinksDto<T> {
+        constructor(shape?: T, angle?: number);
+        angle?: number | undefined;
+        shape: T;
+    }
     class CurveSeamByLengthDto<T> {
         constructor(shape?: T, length?: number);
-        length: number;
+        length?: number | undefined;
         shape: T;
     }
     class CurveSeamByParameterDto<T> {
         constructor(shape?: T, parameter?: number);
-        parameter: number;
+        parameter?: number | undefined;
         shape: T;
+    }
+    enum curveTypeEnum {
+        // (undocumented)
+        bezier = "bezier",
+        // (undocumented)
+        bspline = "bspline",
+        // (undocumented)
+        circle = "circle",
+        // (undocumented)
+        ellipse = "ellipse",
+        // (undocumented)
+        hyperbola = "hyperbola",
+        // (undocumented)
+        line = "line",
+        // (undocumented)
+        offset = "offset",
+        // (undocumented)
+        other = "other",
+        // (undocumented)
+        parabola = "parabola"
     }
     class CylinderDto {
         constructor(radius?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number, originOnCenter?: boolean);
         angle?: number | undefined;
-        center: Base.Point3;
+        center?: Base.Point3 | undefined;
         direction?: Base.Vector3 | undefined;
-        height: number;
+        height?: number | undefined;
         originOnCenter?: boolean | undefined;
-        radius: number;
+        radius?: number | undefined;
     }
     class CylindersOnLinesDto {
         constructor(radius?: number, lines?: Base.Line3[]);
         lines: Base.Line3[];
-        radius: number;
+        radius?: number | undefined;
     }
     class DataOnGeometryAtLengthDto<T> {
-        constructor(shape: T, length?: number);
-        length: number;
+        constructor(shape?: T, length?: number);
+        length?: number | undefined;
         shape: T;
     }
     class DataOnGeometryAtLengthsDto<T> {
-        constructor(shape: T, lengths?: number[]);
+        constructor(shape?: T, lengths?: number[]);
         lengths: number[];
         shape: T;
     }
     class DataOnGeometryAtParamDto<T> {
-        constructor(shape: T, param?: number);
-        param: number;
+        constructor(shape?: T, param?: number);
+        param?: number | undefined;
+        shape: T;
+    }
+    class DataOnGeometryAtParamsDto<T> {
+        constructor(shape?: T, params?: number[]);
+        params: number[];
         shape: T;
     }
     class DataOnGeometryesAtLengthDto<T> {
-        constructor(shapes: T[], length?: number);
-        length: number;
+        constructor(shapes?: T[], length?: number);
+        length?: number | undefined;
         shapes: T[];
     }
     class DataOnGeometryesAtParamDto<T> {
-        constructor(shapes: T[], param?: number);
-        param: number;
+        constructor(shapes?: T[], param?: number);
+        param?: number | undefined;
         shapes: T[];
     }
     class DataOnUVDto<T> {
         constructor(shape?: T, paramU?: number, paramV?: number);
-        paramU: number;
-        paramV: number;
+        paramU?: number | undefined;
+        paramV?: number | undefined;
         shape: T;
     }
     class DataOnUVsDto<T> {
         constructor(shape?: T, paramsUV?: [number, number][]);
-        paramsUV: [number, number][];
+        paramsUV?: [number, number][] | undefined;
         shape: T;
     }
     class DecomposedEdgeDto {
@@ -3081,6 +4074,7 @@ namespace OCCT {
     }
     class DecomposedFaceDto {
         adjacentFaces?: number[] | undefined;
+        analysisValues?: number[] | undefined;
         area?: number | undefined;
         centerNormal: Base.Vector3;
         centerOfMass?: Base.Point3 | undefined;
@@ -3096,6 +4090,11 @@ namespace OCCT {
         vertexCoord: number[];
         vertexCoordVec: Base.Vector3[];
     }
+    class DecomposedManifoldMeshDto {
+        numProp: number;
+        triVerts: Uint32Array;
+        vertProperties: Float32Array;
+    }
     class DecomposedMeshDto {
         constructor(faceList?: DecomposedFaceDto[], edgeList?: DecomposedEdgeDto[]);
         colorGroups?: {
@@ -3103,13 +4102,21 @@ namespace OCCT {
         } | undefined;
         edgeList: DecomposedEdgeDto[];
         faceList: DecomposedFaceDto[];
+        isoCurveList?: Base.Point3[][] | undefined;
         pointsList: Base.Point3[];
     }
     class DifferenceDto<T> {
-        constructor(shape?: T, shapes?: T[], keepEdges?: boolean);
-        keepEdges: boolean;
+        constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
+        keepEdges?: boolean | undefined;
         shape: T;
         shapes: T[];
+        strategy?: booleanStrategyEnum | undefined;
+    }
+    class DihedralAngleDto<T> {
+        constructor(shape?: T, index?: number, param?: number);
+        index?: number | undefined;
+        param?: number | undefined;
+        shape: T;
     }
     enum dimensionEndTypeEnum {
         // (undocumented)
@@ -3125,39 +4132,38 @@ namespace OCCT {
         // (undocumented)
         outside = "outside"
     }
-    class DivideDto<T> {
+    class DivideDto<T> extends DivideSharedDto {
         constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
+        shape: T;
+    }
+    class DivideShapesDto<T> extends DivideSharedDto {
+        constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
+        shapes: T[];
+    }
+    abstract class DivideSharedDto {
         nrOfDivisions?: number | undefined;
         removeEndPoint?: boolean | undefined;
         removeStartPoint?: boolean | undefined;
-        shape: T;
-    }
-    class DivideShapesDto<T> {
-        constructor(shapes: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean);
-        nrOfDivisions: number;
-        removeEndPoint: boolean;
-        removeStartPoint: boolean;
-        shapes: T[];
     }
     class DocToMeshDto<U> {
         constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        adjustYtoZ: boolean;
+        adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         computeMetadata?: boolean | undefined;
         document: U;
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
-        precision: number;
+        precision?: number | undefined;
     }
     class DocToMeshesDto<U> {
         constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        adjustYtoZ: boolean;
+        adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         computeMetadata?: boolean | undefined;
         document: U;
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
-        precision: number;
+        precision?: number | undefined;
     }
     class DocumentLabelQueryDto<T> {
         constructor(document?: T, label?: string);
@@ -3170,69 +4176,55 @@ namespace OCCT {
     }
     class DraftAngleDto<T, U> {
         constructor(shape?: T, faces?: U[], direction?: Base.Vector3, angle?: number, neutralPlaneOrigin?: Base.Point3, neutralPlaneDirection?: Base.Vector3, flag?: boolean);
-        angle: number;
-        direction: Base.Vector3;
+        angle?: number | undefined;
+        direction?: Base.Vector3 | undefined;
         faces: U[];
-        flag: boolean;
-        neutralPlaneDirection: Base.Vector3;
-        neutralPlaneOrigin: Base.Point3;
+        flag?: boolean | undefined;
+        neutralPlaneDirection?: Base.Vector3 | undefined;
+        neutralPlaneOrigin?: Base.Point3 | undefined;
         shape: T;
     }
-    class DrawShapeDto<T> {
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
-        faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+    class DrawShapeDto<T> extends DrawShapeSharedDto {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number);
         shape?: T | undefined;
-        vertexColour: string;
-        vertexSize: number;
     }
-    class DrawShapesDto<T> {
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        allowQualityDecrease: boolean;
-        backFaceColour: Base.Color;
-        backFaceOpacity: number;
-        drawEdgeIndexes: boolean;
-        drawEdges: boolean;
-        drawFaceIndexes: boolean;
-        drawFaces: boolean;
-        drawTwoSided: boolean;
-        drawVertices: boolean;
-        edgeColour: Base.Color;
-        edgeIndexColour: Base.Color;
-        edgeIndexHeight: number;
-        edgeOpacity: number;
-        edgeWidth: number;
-        faceColour: Base.Color;
-        faceIndexColour: Base.Color;
-        faceIndexHeight: number;
-        faceMaterial?: Base.Material | undefined;
-        faceOpacity: number;
-        forceFaceDeflection: boolean;
-        keepMeshData: boolean;
-        precision: number;
+    class DrawShapesDto<T> extends DrawShapeSharedDto {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number);
         shapes: T[];
-        vertexColour: string;
-        vertexSize: number;
+    }
+    abstract class DrawShapeSharedDto {
+        allowQualityDecrease?: boolean | undefined;
+        analysisMax?: number | undefined;
+        analysisMin?: number | undefined;
+        backFaceColour?: Base.Color | undefined;
+        backFaceOpacity?: number | undefined;
+        draftDirection?: Base.Vector3 | undefined;
+        drawEdgeIndexes?: boolean | undefined;
+        drawEdges?: boolean | undefined;
+        drawFaceIndexes?: boolean | undefined;
+        drawFaces?: boolean | undefined;
+        drawIsoCurves?: boolean | undefined;
+        drawTwoSided?: boolean | undefined;
+        drawVertices?: boolean | undefined;
+        edgeColour?: Base.Color | undefined;
+        edgeIndexColour?: Base.Color | undefined;
+        edgeIndexHeight?: number | undefined;
+        edgeOpacity?: number | undefined;
+        edgeWidth?: number | undefined;
+        faceColour?: Base.Color | undefined;
+        faceIndexColour?: Base.Color | undefined;
+        faceIndexHeight?: number | undefined;
+        faceMaterial?: Base.Material | undefined;
+        faceOpacity?: number | undefined;
+        forceFaceDeflection?: boolean | undefined;
+        isoCurvesColour?: Base.Color | undefined;
+        isoCurvesU?: number | undefined;
+        isoCurvesV?: number | undefined;
+        keepMeshData?: boolean | undefined;
+        precision?: number | undefined;
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined;
+        vertexColour?: string | undefined;
+        vertexSize?: number | undefined;
     }
     enum dxfAcadVersionEnum {
         // (undocumented)
@@ -3248,70 +4240,90 @@ namespace OCCT {
     }
     class DxfPathsPartsListDto {
         constructor(pathsParts?: IO.DxfPathsPartDto[], colorFormat?: dxfColorFormatEnum, acadVersion?: dxfAcadVersionEnum, tryDownload?: boolean);
-        acadVersion: dxfAcadVersionEnum;
-        colorFormat: dxfColorFormatEnum;
+        acadVersion?: dxfAcadVersionEnum | undefined;
+        colorFormat?: dxfColorFormatEnum | undefined;
         fileName?: string | undefined;
         pathsParts: IO.DxfPathsPartDto[];
         tryDownload?: boolean | undefined;
     }
     class DxfPathsWithLayerDto {
         constructor(paths?: IO.DxfPathDto[], layer?: string, color?: Base.Color);
-        color: Base.Color;
-        layer: string;
+        color?: Base.Color | undefined;
+        layer?: string | undefined;
         paths: IO.DxfPathDto[];
     }
     class EdgeIndexDto<T> {
         constructor(shape?: T, index?: number);
-        index: number;
+        index?: number | undefined;
         shape: T;
     }
     class EdgesToPointsDto<T> {
         constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
-        angularDeflection: number;
-        curvatureDeflection: number;
-        minimumLength: number;
-        minimumOfPoints: number;
+        angularDeflection?: number | undefined;
+        curvatureDeflection?: number | undefined;
+        minimumLength?: number | undefined;
+        minimumOfPoints?: number | undefined;
         shape: T;
-        uTolerance: number;
+        uTolerance?: number | undefined;
     }
     class EllipseDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, radiusMinor?: number, radiusMajor?: number);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        radiusMajor: number;
-        radiusMinor: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        radiusMajor?: number | undefined;
+        radiusMinor?: number | undefined;
     }
     class ExportDocumentToGltfDto<T> {
         constructor(document?: T, meshDeflection?: number, meshAngle?: number, mergeFaces?: boolean, forceUVExport?: boolean, fileName?: string, tryDownload?: boolean);
-        controlSurfaceDeflection: boolean;
+        controlSurfaceDeflection?: boolean | undefined;
         document: T;
-        fileName: string;
-        forceUVExport: boolean;
-        internalVerticesMode: boolean;
-        mergeFaces: boolean;
-        meshAngle: number;
-        meshDeflection: number;
-        tryDownload: boolean;
+        fileName?: string | undefined;
+        forceUVExport?: boolean | undefined;
+        internalVerticesMode?: boolean | undefined;
+        mergeFaces?: boolean | undefined;
+        meshAngle?: number | undefined;
+        meshDeflection?: number | undefined;
+        tryDownload?: boolean | undefined;
     }
     class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto<T> {
         constructor(document?: T, meshDeflection?: number, meshAngle?: number, mergeFaces?: boolean, forceUVExport?: boolean, fileName?: string, tryDownload?: boolean);
-        dracoCompressionLevel: number;
-        dracoQuantizeColorBits: number;
-        dracoQuantizeGenericBits: number;
-        dracoQuantizeNormalBits: number;
-        dracoQuantizePositionBits: number;
-        dracoQuantizeTexcoordBits: number;
-        dracoUnifiedQuantization: boolean;
-        useDraco: boolean;
+        dracoCompressionLevel?: number | undefined;
+        dracoQuantizeColorBits?: number | undefined;
+        dracoQuantizeGenericBits?: number | undefined;
+        dracoQuantizeNormalBits?: number | undefined;
+        dracoQuantizePositionBits?: number | undefined;
+        dracoQuantizeTexcoordBits?: number | undefined;
+        dracoUnifiedQuantization?: boolean | undefined;
+        useDraco?: boolean | undefined;
+    }
+    class ExportDocumentToObjDto<T> {
+        constructor(document?: T, meshDeflection?: number, fileName?: string, tryDownload?: boolean);
+        document: T;
+        fileName?: string | undefined;
+        meshDeflection?: number | undefined;
+        tryDownload?: boolean | undefined;
+    }
+    class ExportDocumentToPlyDto<T> {
+        constructor(document?: T, meshDeflection?: number, fileName?: string, tryDownload?: boolean);
+        document: T;
+        fileName?: string | undefined;
+        meshDeflection?: number | undefined;
+        tryDownload?: boolean | undefined;
     }
     class ExportDocumentToStepDto<T> {
         constructor(document?: T, fileName?: string, author?: string, organization?: string, compress?: boolean, tryDownload?: boolean);
-        author: string;
-        compress: boolean;
+        author?: string | undefined;
+        compress?: boolean | undefined;
         document: T;
-        fileName: string;
-        organization: string;
-        tryDownload: boolean;
+        fileName?: string | undefined;
+        organization?: string | undefined;
+        tryDownload?: boolean | undefined;
+    }
+    class ExtendEdgeDto<T> {
+        constructor(shape?: T, atStart?: number, atEnd?: number);
+        atEnd?: number | undefined;
+        atStart?: number | undefined;
+        shape: T;
     }
     class ExtrudedSolidDto {
         constructor(extrusionLengthFront?: number, extrusionLengthBack?: number, center?: Base.Point3, direction?: Base.Vector3);
@@ -3322,81 +4334,90 @@ namespace OCCT {
     }
     class ExtrudeDto<T> {
         constructor(shape?: T, direction?: Base.Vector3);
-        direction: Base.Vector3;
+        direction?: Base.Vector3 | undefined;
         shape: T;
     }
     class ExtrudeShapesDto<T> {
         constructor(shapes?: T[], direction?: Base.Vector3);
-        direction: Base.Vector3;
+        direction?: Base.Vector3 | undefined;
         shapes: T[];
     }
     class FaceFromMultipleCircleTanWireCollectionsDto<T> {
         constructor(listsOfCircles?: T[][], combination?: combinationCirclesForFaceEnum, unify?: boolean, tolerance?: number);
-        combination: combinationCirclesForFaceEnum;
+        combination?: combinationCirclesForFaceEnum | undefined;
         listsOfCircles: T[][];
-        tolerance: number;
-        unify: boolean;
+        tolerance?: number | undefined;
+        unify?: boolean | undefined;
     }
     class FaceFromMultipleCircleTanWiresDto<T> {
         constructor(circles?: T[], combination?: combinationCirclesForFaceEnum, unify?: boolean, tolerance?: number);
         circles: T[];
-        combination: combinationCirclesForFaceEnum;
-        tolerance: number;
-        unify: boolean;
+        combination?: combinationCirclesForFaceEnum | undefined;
+        tolerance?: number | undefined;
+        unify?: boolean | undefined;
+    }
+    class FaceFromPointGridDto {
+        constructor(points?: Base.Point3[][], interpolate?: boolean, periodic?: boolean, degreeMin?: number, degreeMax?: number, tolerance?: number);
+        degreeMax?: number | undefined;
+        degreeMin?: number | undefined;
+        interpolate?: boolean | undefined;
+        periodic?: boolean | undefined;
+        points: Base.Point3[][];
+        tolerance?: number | undefined;
     }
     class FaceFromSurfaceAndWireDto<T, U> {
         constructor(surface?: T, wire?: U, inside?: boolean);
-        inside: boolean;
+        inside?: boolean | undefined;
         surface: T;
         wire: U;
     }
     class FaceFromWireDto<T> {
         constructor(shape?: T, planar?: boolean);
-        planar: boolean;
+        planar?: boolean | undefined;
         shape: T;
     }
     class FaceFromWireOnFaceDto<T, U> {
         constructor(wire?: T, face?: U, inside?: boolean);
         face: U;
-        inside: boolean;
+        inside?: boolean | undefined;
         wire: T;
     }
     class FaceFromWiresDto<T> {
         constructor(shapes?: T[], planar?: boolean);
-        planar: boolean;
+        planar?: boolean | undefined;
         shapes: T[];
     }
     class FaceFromWiresOnFaceDto<T, U> {
         constructor(wires?: T[], face?: U, inside?: boolean);
         face: U;
-        inside: boolean;
+        inside?: boolean | undefined;
         wires: T[];
     }
     class FaceLinearSubdivisionDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number, nrPoints?: number, shiftHalfStep?: boolean, removeStartPoint?: boolean, removeEndPoint?: boolean);
-        isU: boolean;
-        nrPoints: number;
-        param: number;
-        removeEndPoint: boolean;
-        removeStartPoint: boolean;
+        isU?: boolean | undefined;
+        nrPoints?: number | undefined;
+        param?: number | undefined;
+        removeEndPoint?: boolean | undefined;
+        removeStartPoint?: boolean | undefined;
         shape: T;
-        shiftHalfStep: boolean;
+        shiftHalfStep?: boolean | undefined;
     }
     class FacesFromWiresDto<T> {
         constructor(shapes?: T[], planar?: boolean);
-        planar: boolean;
+        planar?: boolean | undefined;
         shapes: T[];
     }
     class FacesFromWiresOnFaceDto<T, U> {
         constructor(wires?: T[], face?: U, inside?: boolean);
         face: U;
-        inside: boolean;
+        inside?: boolean | undefined;
         wires: T[];
     }
     class FaceSubdivideToHexagonHolesDto<T> {
         constructor(shape?: T, nrHexagonsU?: number, nrHexagonsV?: number, flatU?: boolean, holesToFaces?: boolean, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number);
         filletPattern?: number[] | undefined;
-        flatU: boolean;
+        flatU?: boolean | undefined;
         holesToFaces?: boolean | undefined;
         inclusionPattern?: boolean[] | undefined;
         nrHexagonsU?: number | undefined;
@@ -3414,7 +4435,7 @@ namespace OCCT {
         extendVBottom?: boolean | undefined;
         extendVUp?: boolean | undefined;
         filletPattern?: number[] | undefined;
-        flatU: boolean;
+        flatU?: boolean | undefined;
         inclusionPattern?: boolean[] | undefined;
         nrHexagonsU?: number | undefined;
         nrHexagonsV?: number | undefined;
@@ -3427,12 +4448,12 @@ namespace OCCT {
     class FaceSubdivideToRectangleHolesDto<T> {
         constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], holesToFaces?: boolean, offsetFromBorderU?: number, offsetFromBorderV?: number);
         filletPattern?: number[] | undefined;
-        holesToFaces: boolean;
+        holesToFaces?: boolean | undefined;
         inclusionPattern?: boolean[] | undefined;
-        nrRectanglesU: number;
-        nrRectanglesV: number;
-        offsetFromBorderU: number;
-        offsetFromBorderV: number;
+        nrRectanglesU?: number | undefined;
+        nrRectanglesV?: number | undefined;
+        offsetFromBorderU?: number | undefined;
+        offsetFromBorderV?: number | undefined;
         scalePatternU?: number[] | undefined;
         scalePatternV?: number[] | undefined;
         shape: T;
@@ -3441,52 +4462,67 @@ namespace OCCT {
         constructor(shape?: T, nrRectanglesU?: number, nrRectanglesV?: number, scalePatternU?: number[], scalePatternV?: number[], filletPattern?: number[], inclusionPattern?: boolean[], offsetFromBorderU?: number, offsetFromBorderV?: number);
         filletPattern?: number[] | undefined;
         inclusionPattern?: boolean[] | undefined;
-        nrRectanglesU: number;
-        nrRectanglesV: number;
-        offsetFromBorderU: number;
-        offsetFromBorderV: number;
+        nrRectanglesU?: number | undefined;
+        nrRectanglesV?: number | undefined;
+        offsetFromBorderU?: number | undefined;
+        offsetFromBorderV?: number | undefined;
         scalePatternU?: number[] | undefined;
         scalePatternV?: number[] | undefined;
         shape: T;
     }
     class FaceSubdivisionControlledDto<T> {
         constructor(shape?: T, nrDivisionsU?: number, nrDivisionsV?: number, shiftHalfStepNthU?: number, shiftHalfStepUOffsetN?: number, removeStartEdgeNthU?: number, removeStartEdgeUOffsetN?: number, removeEndEdgeNthU?: number, removeEndEdgeUOffsetN?: number, shiftHalfStepNthV?: number, shiftHalfStepVOffsetN?: number, removeStartEdgeNthV?: number, removeStartEdgeVOffsetN?: number, removeEndEdgeNthV?: number, removeEndEdgeVOffsetN?: number);
-        nrDivisionsU: number;
-        nrDivisionsV: number;
-        removeEndEdgeNthU: number;
-        removeEndEdgeNthV: number;
-        removeEndEdgeUOffsetN: number;
-        removeEndEdgeVOffsetN: number;
-        removeStartEdgeNthU: number;
-        removeStartEdgeNthV: number;
-        removeStartEdgeUOffsetN: number;
-        removeStartEdgeVOffsetN: number;
+        nrDivisionsU?: number | undefined;
+        nrDivisionsV?: number | undefined;
+        removeEndEdgeNthU?: number | undefined;
+        removeEndEdgeNthV?: number | undefined;
+        removeEndEdgeUOffsetN?: number | undefined;
+        removeEndEdgeVOffsetN?: number | undefined;
+        removeStartEdgeNthU?: number | undefined;
+        removeStartEdgeNthV?: number | undefined;
+        removeStartEdgeUOffsetN?: number | undefined;
+        removeStartEdgeVOffsetN?: number | undefined;
         shape: T;
-        shiftHalfStepNthU: number;
-        shiftHalfStepNthV: number;
-        shiftHalfStepUOffsetN: number;
-        shiftHalfStepVOffsetN: number;
+        shiftHalfStepNthU?: number | undefined;
+        shiftHalfStepNthV?: number | undefined;
+        shiftHalfStepUOffsetN?: number | undefined;
+        shiftHalfStepVOffsetN?: number | undefined;
     }
     class FaceSubdivisionDto<T> {
         constructor(shape?: T, nrDivisionsU?: number, nrDivisionsV?: number, shiftHalfStepU?: boolean, removeStartEdgeU?: boolean, removeEndEdgeU?: boolean, shiftHalfStepV?: boolean, removeStartEdgeV?: boolean, removeEndEdgeV?: boolean);
-        nrDivisionsU: number;
-        nrDivisionsV: number;
-        removeEndEdgeU: boolean;
-        removeEndEdgeV: boolean;
-        removeStartEdgeU: boolean;
-        removeStartEdgeV: boolean;
+        nrDivisionsU?: number | undefined;
+        nrDivisionsV?: number | undefined;
+        removeEndEdgeU?: boolean | undefined;
+        removeEndEdgeV?: boolean | undefined;
+        removeStartEdgeU?: boolean | undefined;
+        removeStartEdgeV?: boolean | undefined;
         shape: T;
-        shiftHalfStepU: boolean;
-        shiftHalfStepV: boolean;
+        shiftHalfStepU?: boolean | undefined;
+        shiftHalfStepV?: boolean | undefined;
     }
     class FaceSubdivisionToWiresDto<T> {
         constructor(shape?: T, nrDivisions?: number, isU?: boolean, shiftHalfStep?: boolean, removeStart?: boolean, removeEnd?: boolean);
-        isU: boolean;
-        nrDivisions: number;
-        removeEnd: boolean;
-        removeStart: boolean;
+        isU?: boolean | undefined;
+        nrDivisions?: number | undefined;
+        removeEnd?: boolean | undefined;
+        removeStart?: boolean | undefined;
         shape: T;
-        shiftHalfStep: boolean;
+        shiftHalfStep?: boolean | undefined;
+    }
+    class FacesWithinDto<T> {
+        constructor(shapeA?: T, shapeB?: T, clearance?: number, precision?: number);
+        clearance?: number | undefined;
+        precision?: number | undefined;
+        shapeA: T;
+        shapeB: T;
+    }
+    enum featureExtentEnum {
+        // (undocumented)
+        length = "length",
+        // (undocumented)
+        throughAll = "throughAll",
+        // (undocumented)
+        untilFace = "untilFace"
     }
     enum fileTypeEnum {
         // (undocumented)
@@ -3494,30 +4530,29 @@ namespace OCCT {
         // (undocumented)
         step = "step"
     }
-    class Fillet3DWireDto<T> {
+    class Fillet3DWireDto<T> extends Fillet3DWireSharedDto {
         constructor(shape?: T, radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
-        direction: Base.Vector3;
-        indexes?: number[] | undefined;
-        radius?: number | undefined;
-        radiusList?: number[] | undefined;
         shape: T;
     }
-    class Fillet3DWiresDto<T> {
+    class Fillet3DWiresDto<T> extends Fillet3DWireSharedDto {
         constructor(shapes?: T[], radius?: number, direction?: Base.Vector3, radiusList?: number[], indexes?: number[]);
-        direction: Base.Vector3;
+        shapes: T[];
+    }
+    abstract class Fillet3DWireSharedDto {
+        // @deprecated
+        direction?: Base.Vector3 | undefined;
         indexes?: number[] | undefined;
         radius?: number | undefined;
         radiusList?: number[] | undefined;
-        shapes: T[];
     }
     class FilletCornerByPointDto<T> {
         constructor(shape?: T, points?: Base.Point3[], radius?: number, taperFactor?: number, snapTolerance?: number, mode?: cornerModeEnum);
-        mode: cornerModeEnum;
-        points: Base.Point3[];
-        radius: number;
+        mode?: cornerModeEnum | undefined;
+        points?: Base.Point3[] | undefined;
+        radius?: number | undefined;
         shape: T;
-        snapTolerance: number;
-        taperFactor: number;
+        snapTolerance?: number | undefined;
+        taperFactor?: number | undefined;
     }
     class FilletDto<T> {
         constructor(shape?: T, radius?: number, radiusList?: number[], indexes?: number[]);
@@ -3535,7 +4570,7 @@ namespace OCCT {
     class FilletEdgesListOneRadiusDto<T, U> {
         constructor(shape?: T, edges?: U[], radius?: number);
         edges: U[];
-        radius: number;
+        radius?: number | undefined;
         shape: T;
     }
     class FilletEdgesSameVariableRadiusDto<T, U> {
@@ -3570,68 +4605,87 @@ namespace OCCT {
         constructor(edge1?: T, edge2?: T, planeOrigin?: Base.Point3, planeDirection?: Base.Vector3, radius?: number, solution?: number);
         edge1: T;
         edge2: T;
-        planeDirection: Base.Vector3;
-        planeOrigin: Base.Point3;
-        radius: number;
+        planeDirection?: Base.Vector3 | undefined;
+        planeOrigin?: Base.Point3 | undefined;
+        radius?: number | undefined;
         solution?: number | undefined;
+    }
+    enum fillingStyleEnum {
+        // (undocumented)
+        coons = "coons",
+        // (undocumented)
+        curved = "curved",
+        // (undocumented)
+        stretch = "stretch"
+    }
+    class FillPatchDto<T, U> {
+        constructor(edges?: T[], continuities?: continuityEnum[], supports?: (U | undefined)[], points?: Base.Point3[], degree?: number, pointsOnCurves?: number, iterations?: number, tolerance?: number);
+        continuities?: continuityEnum[] | undefined;
+        degree?: number | undefined;
+        edges: T[];
+        iterations?: number | undefined;
+        points?: Base.Point3[] | undefined;
+        pointsOnCurves?: number | undefined;
+        supports?: (U | undefined)[] | undefined;
+        tolerance?: number | undefined;
     }
     class FilterFacePointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[], tolerance?: number, useBndBox?: boolean, gapTolerance?: number, keepIn?: boolean, keepOn?: boolean, keepOut?: boolean, keepUnknown?: boolean);
-        gapTolerance: number;
-        keepIn: boolean;
-        keepOn: boolean;
-        keepOut: boolean;
-        keepUnknown: boolean;
+        gapTolerance?: number | undefined;
+        keepIn?: boolean | undefined;
+        keepOn?: boolean | undefined;
+        keepOut?: boolean | undefined;
+        keepUnknown?: boolean | undefined;
         points: Base.Point3[];
         shape: T;
-        tolerance: number;
-        useBndBox: boolean;
+        tolerance?: number | undefined;
+        useBndBox?: boolean | undefined;
     }
     class FilterFacesPointsDto<T> {
         constructor(shapes?: T[], points?: Base.Point3[], tolerance?: number, useBndBox?: boolean, gapTolerance?: number, keepIn?: boolean, keepOn?: boolean, keepOut?: boolean, keepUnknown?: boolean, flatPointsArray?: boolean);
-        flatPointsArray: boolean;
-        gapTolerance: number;
-        keepIn: boolean;
-        keepOn: boolean;
-        keepOut: boolean;
-        keepUnknown: boolean;
+        flatPointsArray?: boolean | undefined;
+        gapTolerance?: number | undefined;
+        keepIn?: boolean | undefined;
+        keepOn?: boolean | undefined;
+        keepOut?: boolean | undefined;
+        keepUnknown?: boolean | undefined;
         points: Base.Point3[];
         shapes: T[];
-        tolerance: number;
-        useBndBox: boolean;
+        tolerance?: number | undefined;
+        useBndBox?: boolean | undefined;
     }
     class FilterSolidPointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[], tolerance?: number, keepIn?: boolean, keepOn?: boolean, keepOut?: boolean, keepUnknown?: boolean);
-        keepIn: boolean;
-        keepOn: boolean;
-        keepOut: boolean;
-        keepUnknown: boolean;
+        keepIn?: boolean | undefined;
+        keepOn?: boolean | undefined;
+        keepOut?: boolean | undefined;
+        keepUnknown?: boolean | undefined;
         points: Base.Point3[];
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class FixSmallEdgesInWireDto<T> {
         constructor(shape?: T, lockvtx?: boolean, precsmall?: number);
-        lockvtx: boolean;
-        precsmall: number;
+        lockvtx?: boolean | undefined;
+        precsmall?: number | undefined;
         shape: T;
     }
     class FlatSpiralWireDto {
         constructor(startRadius?: number, endRadius?: number, numTurns?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number);
-        center: Base.Point3;
-        clockwise: boolean;
-        direction: Base.Vector3;
-        endRadius: number;
-        numTurns: number;
-        startRadius: number;
-        tolerance: number;
+        center?: Base.Point3 | undefined;
+        clockwise?: boolean | undefined;
+        direction?: Base.Vector3 | undefined;
+        endRadius?: number | undefined;
+        numTurns?: number | undefined;
+        startRadius?: number | undefined;
+        tolerance?: number | undefined;
     }
     class FlipFaceUVDto<T> {
         constructor(shape?: T, swapUV?: boolean, reverseU?: boolean, reverseV?: boolean);
-        reverseU: boolean;
-        reverseV: boolean;
+        reverseU?: boolean | undefined;
+        reverseV?: boolean | undefined;
         shape: T;
-        swapUV: boolean;
+        swapUV?: boolean | undefined;
     }
     enum fourSidesStrictEnum {
         // (undocumented)
@@ -3642,6 +4696,46 @@ namespace OCCT {
         outside = "outside",
         // (undocumented)
         outsideInside = "outsideInside"
+    }
+    class FrameNearestPointDto<T> {
+        constructor(shape?: T, point?: Base.Point3);
+        point?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class FrameOnCurveAtLengthDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, length?: number, kind?: curveFrameEnum, up?: Base.Vector3);
+        length?: number | undefined;
+        shape: T;
+    }
+    class FrameOnCurveAtParamDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, param?: number, kind?: curveFrameEnum, up?: Base.Vector3);
+        param?: number | undefined;
+        shape: T;
+    }
+    abstract class FrameOnCurveSharedDto {
+        kind?: curveFrameEnum | undefined;
+        up?: Base.Vector3 | undefined;
+    }
+    class FramesAlongWireDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, count?: number, kind?: curveFrameEnum, up?: Base.Vector3, skipEndOnClosed?: boolean);
+        count?: number | undefined;
+        shape: T;
+        skipEndOnClosed?: boolean | undefined;
+    }
+    class FramesNearestPointsDto<T> {
+        constructor(shape?: T, points?: Base.Point3[]);
+        points: Base.Point3[];
+        shape: T;
+    }
+    class FramesOnCurveAtLengthsDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, lengths?: number[], kind?: curveFrameEnum, up?: Base.Vector3);
+        lengths: number[];
+        shape: T;
+    }
+    class FramesOnCurveAtParamsDto<T> extends FrameOnCurveSharedDto {
+        constructor(shape?: T, params?: number[], kind?: curveFrameEnum, up?: Base.Vector3);
+        params: number[];
+        shape: T;
     }
     enum gccEntPositionEnum {
         // (undocumented)
@@ -3657,10 +4751,10 @@ namespace OCCT {
     }
     class Geom2dCircleDto {
         constructor(center?: Base.Point2, direction?: Base.Vector2, radius?: number, sense?: boolean);
-        center: Base.Point2;
-        direction: Base.Vector2;
-        radius: number;
-        sense: boolean;
+        center?: Base.Point2 | undefined;
+        direction?: Base.Vector2 | undefined;
+        radius?: number | undefined;
+        sense?: boolean | undefined;
     }
     type Geom2dCurvePointer = {
         hash: number;
@@ -3668,24 +4762,24 @@ namespace OCCT {
     };
     class Geom2dEllipseDto {
         constructor(center?: Base.Point2, direction?: Base.Vector2, radiusMinor?: number, radiusMajor?: number, sense?: boolean);
-        center: Base.Point2;
-        direction: Base.Vector2;
-        radiusMajor: number;
-        radiusMinor: number;
-        sense: boolean;
+        center?: Base.Point2 | undefined;
+        direction?: Base.Vector2 | undefined;
+        radiusMajor?: number | undefined;
+        radiusMinor?: number | undefined;
+        sense?: boolean | undefined;
     }
     class Geom2dSegmentDto {
         constructor(start?: Base.Point2, end?: Base.Point2);
-        end: Base.Point2;
-        start: Base.Point2;
+        end?: Base.Point2 | undefined;
+        start?: Base.Point2 | undefined;
     }
     class Geom2dTrimmedCurveDto<T> {
         constructor(shape?: T, u1?: number, u2?: number, sense?: boolean, adjustPeriodic?: boolean);
-        adjustPeriodic: boolean;
-        sense: boolean;
+        adjustPeriodic?: boolean | undefined;
+        sense?: boolean | undefined;
         shape: T;
-        u1: number;
-        u2: number;
+        u1?: number | undefined;
+        u2?: number | undefined;
     }
     type GeomCurvePointer = {
         hash: number;
@@ -3693,9 +4787,9 @@ namespace OCCT {
     };
     class GeomCylindricalSurfaceDto {
         constructor(radius?: number, center?: Base.Point3, direction?: Base.Vector3);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        radius: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        radius?: number | undefined;
     }
     enum geomFillTrihedronEnum {
         // (undocumented)
@@ -3739,51 +4833,51 @@ namespace OCCT {
     }
     class HBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3);
-        alignment: Base.basicAlignmentEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        flangeThickness: number;
-        height: number;
-        rotation: number;
-        webThickness: number;
-        width: number;
+        alignment?: Base.basicAlignmentEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        flangeThickness?: number | undefined;
+        height?: number | undefined;
+        rotation?: number | undefined;
+        webThickness?: number | undefined;
+        width?: number | undefined;
     }
     class HBeamProfileSolidDto extends HBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class Heart2DDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, rotation?: number, sizeApprox?: number);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        rotation: number;
-        sizeApprox: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        rotation?: number | undefined;
+        sizeApprox?: number | undefined;
     }
     class HeartSolidDto extends Heart2DDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, rotation?: number, sizeApprox?: number, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class HelixWireByTurnsDto {
         constructor(radius?: number, pitch?: number, numTurns?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number);
-        center: Base.Point3;
-        clockwise: boolean;
-        direction: Base.Vector3;
-        numTurns: number;
-        pitch: number;
-        radius: number;
-        tolerance: number;
+        center?: Base.Point3 | undefined;
+        clockwise?: boolean | undefined;
+        direction?: Base.Vector3 | undefined;
+        numTurns?: number | undefined;
+        pitch?: number | undefined;
+        radius?: number | undefined;
+        tolerance?: number | undefined;
     }
     class HelixWireDto {
         constructor(radius?: number, pitch?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number);
-        center: Base.Point3;
-        clockwise: boolean;
-        direction: Base.Vector3;
-        height: number;
-        pitch: number;
-        radius: number;
-        tolerance: number;
+        center?: Base.Point3 | undefined;
+        clockwise?: boolean | undefined;
+        direction?: Base.Vector3 | undefined;
+        height?: number | undefined;
+        pitch?: number | undefined;
+        radius?: number | undefined;
+        tolerance?: number | undefined;
     }
     class HexagonsInGridDto {
         constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, flatTop?: boolean, extendTop?: boolean, extendBottom?: boolean, extendLeft?: boolean, extendRight?: boolean, scalePatternWidth?: number[], scalePatternHeight?: number[], filletPattern?: number[], inclusionPattern?: boolean[]);
@@ -3801,56 +4895,86 @@ namespace OCCT {
         scalePatternWidth?: number[] | undefined;
         width?: number | undefined;
     }
+    class HiddenLinesDto<T> {
+        constructor(shape?: T, frame?: Base.Frame, exact?: boolean, smoothEdges?: boolean, hiddenEdges?: boolean, focus?: number, precision?: number);
+        exact?: boolean | undefined;
+        focus?: number | undefined;
+        frame: Base.Frame;
+        hiddenEdges?: boolean | undefined;
+        precision?: number | undefined;
+        shape: T;
+        smoothEdges?: boolean | undefined;
+    }
+    class HolesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], diameter?: number, depth?: number, tipAngle?: number);
+        depth?: number | undefined;
+        diameter?: number | undefined;
+        frames: Base.Frame[];
+        shape: T;
+        tipAngle?: number | undefined;
+    }
     class IBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3);
-        alignment: Base.basicAlignmentEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        flangeThickness: number;
-        height: number;
-        rotation: number;
-        webThickness: number;
-        width: number;
+        alignment?: Base.basicAlignmentEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        flangeThickness?: number | undefined;
+        height?: number | undefined;
+        rotation?: number | undefined;
+        webThickness?: number | undefined;
+        width?: number | undefined;
     }
     class IBeamProfileSolidDto extends IBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class ImportStepIgesDto {
         constructor(assetFile?: File, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
+        adjustZtoY?: boolean | undefined;
         assetFile: File;
     }
     class ImportStepIgesFromTextDto {
         constructor(text?: string, fileType?: fileTypeEnum, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
-        fileType: fileTypeEnum;
+        adjustZtoY?: boolean | undefined;
+        fileType?: fileTypeEnum | undefined;
         text: string;
     }
     class InterpolateSymmetricDto {
         constructor(points?: Base.Point3[], tolerance?: number);
         points: Base.Point3[];
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class InterpolateWiresDto {
         constructor(interpolations?: InterpolationDto[], returnCompound?: boolean);
         interpolations: InterpolationDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
     }
     class InterpolationDto {
         constructor(points?: Base.Point3[], periodic?: boolean, tolerance?: number, parametrization?: bSplineParametrizationEnum, startTangent?: Base.Vector3, endTangent?: Base.Vector3, tangents?: (Base.Vector3 | undefined)[]);
         endTangent?: Base.Vector3 | undefined;
         parametrization?: bSplineParametrizationEnum | undefined;
-        periodic: boolean;
+        periodic?: boolean | undefined;
         points: Base.Point3[];
         startTangent?: Base.Vector3 | undefined;
         tangents?: (Base.Vector3 | undefined)[] | undefined;
-        tolerance: number;
+        tolerance?: number | undefined;
+    }
+    class IntersectCurvesDto<T> {
+        constructor(shapeA?: T, shapeB?: T, tolerance?: number);
+        shapeA: T;
+        shapeB: T;
+        tolerance?: number | undefined;
+    }
+    class IntersectCurveWithFaceDto<T, U> {
+        constructor(shape?: T, face?: U, tolerance?: number);
+        face: U;
+        shape: T;
+        tolerance?: number | undefined;
     }
     class IntersectionDto<T> {
         constructor(shapes?: T[], keepEdges?: boolean);
-        keepEdges: boolean;
+        keepEdges?: boolean | undefined;
         shapes: T[];
     }
     class InvertTransformDto {
@@ -3871,8 +4995,8 @@ namespace OCCT {
     }
     class LineDto {
         constructor(start?: Base.Point3, end?: Base.Point3);
-        end: Base.Point3;
-        start: Base.Point3;
+        end?: Base.Point3 | undefined;
+        start?: Base.Point3 | undefined;
     }
     class LinesBaseDto {
         constructor(lines?: Base.Line3[]);
@@ -3881,89 +5005,123 @@ namespace OCCT {
     class LinesDto {
         constructor(lines?: LineDto[], returnCompound?: boolean);
         lines: LineDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
+    }
+    class LinesTangentAtAngleDto<T> {
+        constructor(shape?: T, reference?: T, frame?: Base.Frame, angle?: number, angularTolerance?: number, onArgumentsOnly?: boolean);
+        angle?: number | undefined;
+        angularTolerance?: number | undefined;
+        frame: Base.Frame;
+        onArgumentsOnly?: boolean | undefined;
+        reference: T;
+        shape: T;
+    }
+    class LinesTangentToTwoDto<T> {
+        constructor(shapes?: T[], frame?: Base.Frame, angularTolerance?: number, onArgumentsOnly?: boolean);
+        angularTolerance?: number | undefined;
+        frame: Base.Frame;
+        onArgumentsOnly?: boolean | undefined;
+        shapes: T[];
     }
     class LineWithExtensionsDto {
         constructor(start?: Base.Point3, end?: Base.Point3, extensionStart?: number, extensionEnd?: number);
-        end: Base.Point3;
-        extensionEnd: number;
-        extensionStart: number;
-        start: Base.Point3;
+        end?: Base.Point3 | undefined;
+        extensionEnd?: number | undefined;
+        extensionStart?: number | undefined;
+        start?: Base.Point3 | undefined;
+    }
+    class LoadBrepDto {
+        constructor(brepData?: string | File | Blob);
+        brepData: string | File | Blob;
+    }
+    class LoadGltfToDocDto {
+        constructor(gltfData?: string | ArrayBuffer | Uint8Array | File | Blob);
+        gltfData: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
+    class LoadObjToDocDto {
+        constructor(objData?: string | ArrayBuffer | Uint8Array | File | Blob);
+        objData: string | ArrayBuffer | Uint8Array | File | Blob;
     }
     class LoadStepOrIgesDto {
         constructor(filetext?: string | ArrayBuffer, fileName?: string, adjustZtoY?: boolean);
-        adjustZtoY: boolean;
-        fileName: string;
+        adjustZtoY?: boolean | undefined;
+        fileName?: string | undefined;
         filetext: string | ArrayBuffer;
     }
     class LoadStepToDocDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
         stepData: string | ArrayBuffer | Uint8Array | File | Blob;
     }
+    class LoadStlDto {
+        constructor(stlData?: string | ArrayBuffer | Uint8Array | File | Blob, asFaces?: boolean, adjustZtoY?: boolean);
+        adjustZtoY?: boolean | undefined;
+        asFaces?: boolean | undefined;
+        stlData: string | ArrayBuffer | Uint8Array | File | Blob;
+    }
     class LoadSVGDto {
         constructor(svg?: string, faceStrategy?: svgFaceStrategyEnum, makeRibbons?: boolean, includeInvisible?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, alignment?: Base.basicAlignmentEnum, direction?: Base.Vector3, center?: Base.Point3);
-        alignment: Base.basicAlignmentEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        faceStrategy: svgFaceStrategyEnum;
-        flipY: boolean;
-        includeInvisible: boolean;
-        joinSegments: boolean;
-        makeRibbons: boolean;
-        scale: number;
-        svg: string;
-        tolerance: number;
+        alignment?: Base.basicAlignmentEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        faceStrategy?: svgFaceStrategyEnum | undefined;
+        flipY?: boolean | undefined;
+        includeInvisible?: boolean | undefined;
+        joinSegments?: boolean | undefined;
+        makeRibbons?: boolean | undefined;
+        scale?: number | undefined;
+        svg?: string | undefined;
+        tolerance?: number | undefined;
     }
     class LoftAdvancedDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean, closed?: boolean, periodic?: boolean, straight?: boolean, nrPeriodicSections?: number, useSmoothing?: boolean, maxUDegree?: number, tolerance?: number, parType?: approxParametrizationTypeEnum, startVertex?: Base.Point3, endVertex?: Base.Point3);
-        closed: boolean;
+        closed?: boolean | undefined;
         endVertex?: Base.Point3 | undefined;
-        makeSolid: boolean;
-        maxUDegree: number;
-        nrPeriodicSections: number;
-        parType: approxParametrizationTypeEnum;
-        periodic: boolean;
+        makeSolid?: boolean | undefined;
+        maxUDegree?: number | undefined;
+        nrPeriodicSections?: number | undefined;
+        parType?: approxParametrizationTypeEnum | undefined;
+        periodic?: boolean | undefined;
         shapes: T[];
         startVertex?: Base.Point3 | undefined;
-        straight: boolean;
-        tolerance: number;
-        useSmoothing: boolean;
+        straight?: boolean | undefined;
+        tolerance?: number | undefined;
+        useSmoothing?: boolean | undefined;
     }
     class LoftDto<T> {
         constructor(shapes?: T[], makeSolid?: boolean);
-        makeSolid: boolean;
+        makeSolid?: boolean | undefined;
         shapes: T[];
     }
     class LPolygonDto {
         constructor(widthFirst?: number, lengthFirst?: number, widthSecond?: number, lengthSecond?: number, align?: directionEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3);
-        align: directionEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        lengthFirst: number;
-        lengthSecond: number;
-        rotation: number;
-        widthFirst: number;
-        widthSecond: number;
+        align?: directionEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        lengthFirst?: number | undefined;
+        lengthSecond?: number | undefined;
+        rotation?: number | undefined;
+        widthFirst?: number | undefined;
+        widthSecond?: number | undefined;
     }
     class LPolygonSolidDto extends LPolygonDto {
         constructor(widthFirst?: number, lengthFirst?: number, widthSecond?: number, lengthSecond?: number, align?: directionEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class MakeDraftDto<T> {
         constructor(shape?: T, direction?: Base.Vector3, angle?: number, lengthMax?: number, internal?: boolean);
-        angle: number;
-        direction: Base.Vector3;
-        internal: boolean;
-        lengthMax: number;
+        angle?: number | undefined;
+        direction?: Base.Vector3 | undefined;
+        internal?: boolean | undefined;
+        lengthMax?: number | undefined;
         shape: T;
     }
     class MakeDraftToShapeDto<T> {
         constructor(shape?: T, direction?: Base.Vector3, angle?: number, stopShape?: T, keepOut?: boolean, internal?: boolean);
-        angle: number;
-        direction: Base.Vector3;
-        internal: boolean;
-        keepOut: boolean;
+        angle?: number | undefined;
+        direction?: Base.Vector3 | undefined;
+        internal?: boolean | undefined;
+        keepOut?: boolean | undefined;
         shape: T;
         stopShape: T;
     }
@@ -3985,47 +5143,53 @@ namespace OCCT {
         shape1: T;
         shape2: T;
     }
+    class MinCurvatureRadiusDto<T> {
+        constructor(shape?: T, samples?: number, concaveOnly?: boolean);
+        concaveOnly?: boolean | undefined;
+        samples?: number | undefined;
+        shape: T;
+    }
     class MirrorAboutPointDto<T> {
         constructor(shape?: T, point?: Base.Point3);
-        point: Base.Point3;
+        point?: Base.Point3 | undefined;
         shape: T;
     }
     class MirrorAlongNormalDto<T> {
         constructor(shape?: T, origin?: Base.Point3, normal?: Base.Vector3);
-        normal: Base.Vector3;
-        origin: Base.Point3;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
         shape: T;
     }
     class MirrorAlongNormalShapesDto<T> {
         constructor(shapes?: T[], origins?: Base.Point3[], normals?: Base.Vector3[]);
-        normals: Base.Vector3[];
-        origins: Base.Point3[];
+        normals?: Base.Vector3[] | undefined;
+        origins?: Base.Point3[] | undefined;
         shapes: T[];
     }
     class MirrorAxisToMatrixDto {
         constructor(origin?: Base.Point3, direction?: Base.Vector3);
-        direction: Base.Vector3;
-        origin: Base.Point3;
+        direction?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
     }
     class MirrorDto<T> {
         constructor(shape?: T, origin?: Base.Point3, direction?: Base.Vector3);
-        direction: Base.Vector3;
-        origin: Base.Point3;
+        direction?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
         shape: T;
     }
     class MirrorPlaneToMatrixDto {
         constructor(origin?: Base.Point3, normal?: Base.Vector3);
-        normal: Base.Vector3;
-        origin: Base.Point3;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
     }
     class MirrorPointToMatrixDto {
         constructor(point?: Base.Point3);
-        point: Base.Point3;
+        point?: Base.Point3 | undefined;
     }
     class MirrorShapesDto<T> {
         constructor(shapes?: T[], origins?: Base.Point3[], directions?: Base.Vector3[]);
-        directions: Base.Vector3[];
-        origins: Base.Point3[];
+        directions?: Base.Vector3[] | undefined;
+        origins?: Base.Point3[] | undefined;
         shapes: T[];
     }
     class MultiplyTransformsDto {
@@ -4034,59 +5198,72 @@ namespace OCCT {
     }
     class NGonSolidDto extends NGonWireDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, nrCorners?: number, radius?: number, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class NGonWireDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, nrCorners?: number, radius?: number);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        nrCorners: number;
-        radius: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        nrCorners?: number | undefined;
+        radius?: number | undefined;
     }
     class NormalizeFaceParametrizationDto<T> {
         constructor(shape?: T, normalizeU?: boolean, normalizeV?: boolean, samples?: number, tolerance?: number);
-        normalizeU: boolean;
-        normalizeV: boolean;
-        samples: number;
+        normalizeU?: boolean | undefined;
+        normalizeV?: boolean | undefined;
+        samples?: number | undefined;
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class Offset3DWireDto<T> {
         constructor(shape?: T, offset?: number, direction?: Base.Vector3);
-        direction: Base.Vector3;
-        offset: number;
+        direction?: Base.Vector3 | undefined;
+        offset?: number | undefined;
         shape: T;
     }
     class OffsetAdvancedDto<T, U> {
         constructor(shape?: T, face?: U, distance?: number, tolerance?: number, joinType?: joinTypeEnum, removeIntEdges?: boolean);
-        distance: number;
+        distance?: number | undefined;
         face?: U | undefined;
-        joinType: joinTypeEnum;
-        removeIntEdges: boolean;
+        joinType?: joinTypeEnum | undefined;
+        removeIntEdges?: boolean | undefined;
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class OffsetDto<T, U> {
         constructor(shape?: T, face?: U, distance?: number, tolerance?: number);
-        distance: number;
+        distance?: number | undefined;
         face?: U | undefined;
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
+    }
+    class OffsetOpenDto<T, U> {
+        constructor(shape?: T, face?: U, distance?: number, joinType?: joinTypeEnum);
+        distance?: number | undefined;
+        face?: U | undefined;
+        joinType?: joinTypeEnum | undefined;
+        shape: T;
+    }
+    class OrientDto<T> {
+        constructor(shape?: T, to?: Base.Frame, from?: Base.Frame);
+        from?: Base.Frame | undefined;
+        shape: T;
+        to: Base.Frame;
     }
     class ParallelogramDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number);
-        angle: number;
-        aroundCenter: boolean;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        height: number;
-        width: number;
+        angle?: number | undefined;
+        aroundCenter?: boolean | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        height?: number | undefined;
+        width?: number | undefined;
     }
     class ParallelogramSolidDto extends ParallelogramDto {
         constructor(center?: Base.Point3, direction?: Base.Vector3, aroundCenter?: boolean, width?: number, height?: number, angle?: number, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class ParseStepAssemblyToJsonDto {
         constructor(stepData?: string | ArrayBuffer | Uint8Array | File | Blob);
@@ -4095,13 +5272,13 @@ namespace OCCT {
     class PathArcSegment {
         constructor(to?: Base.Point2, center?: Base.Point2, rx?: number, ry?: number, xAxisRotation?: number, startAngle?: number, deltaAngle?: number);
         center: Base.Point2;
-        deltaAngle: number;
-        rx: number;
-        ry: number;
-        startAngle: number;
+        deltaAngle?: number | undefined;
+        rx?: number | undefined;
+        ry?: number | undefined;
+        startAngle?: number | undefined;
         to: Base.Point2;
         type: "arc";
-        xAxisRotation: number;
+        xAxisRotation?: number | undefined;
     }
     class PathCubicSegment {
         constructor(c1?: Base.Point2, c2?: Base.Point2, to?: Base.Point2);
@@ -4117,9 +5294,9 @@ namespace OCCT {
     }
     class PathPlacementDto {
         constructor(scale?: number, flipY?: boolean, origin?: Base.Point3);
-        flipY: boolean;
-        origin: Base.Point3;
-        scale: number;
+        flipY?: boolean | undefined;
+        origin?: Base.Point3 | undefined;
+        scale?: number | undefined;
     }
     class PathQuadraticSegment {
         constructor(c?: Base.Point2, to?: Base.Point2);
@@ -4130,7 +5307,7 @@ namespace OCCT {
     type PathSegment = PathLineSegment | PathQuadraticSegment | PathCubicSegment | PathArcSegment;
     class PathSubpath {
         constructor(start?: Base.Point2, segments?: PathSegment[], closed?: boolean);
-        closed: boolean;
+        closed?: boolean | undefined;
         segments: PathSegment[];
         start: Base.Point2;
     }
@@ -4149,36 +5326,55 @@ namespace OCCT {
         labelRotation?: number | undefined;
         labelSize?: number | undefined;
         offsetFromStart?: number | undefined;
-        startPoint: Base.Point3;
+        startPoint?: Base.Point3 | undefined;
     }
     class PipePolygonWireNGonDto<T> {
         constructor(shape?: T, radius?: number, nrCorners?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean);
-        forceApproxC1: boolean;
-        makeSolid: boolean;
-        nrCorners: number;
-        radius: number;
+        forceApproxC1?: boolean | undefined;
+        makeSolid?: boolean | undefined;
+        nrCorners?: number | undefined;
+        radius?: number | undefined;
         shape: T;
-        trihedronEnum: geomFillTrihedronEnum;
+        trihedronEnum?: geomFillTrihedronEnum | undefined;
     }
     class PipeWireCylindricalDto<T> {
         constructor(shape?: T, radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean);
-        forceApproxC1: boolean;
-        makeSolid: boolean;
-        radius: number;
+        forceApproxC1?: boolean | undefined;
+        makeSolid?: boolean | undefined;
+        radius?: number | undefined;
         shape: T;
-        trihedronEnum: geomFillTrihedronEnum;
+        trihedronEnum?: geomFillTrihedronEnum | undefined;
     }
     class PipeWiresCylindricalDto<T> {
         constructor(shapes?: T[], radius?: number, makeSolid?: boolean, trihedronEnum?: geomFillTrihedronEnum, forceApproxC1?: boolean);
-        forceApproxC1: boolean;
-        makeSolid: boolean;
-        radius: number;
+        forceApproxC1?: boolean | undefined;
+        makeSolid?: boolean | undefined;
+        radius?: number | undefined;
         shapes: T[];
-        trihedronEnum: geomFillTrihedronEnum;
+        trihedronEnum?: geomFillTrihedronEnum | undefined;
+    }
+    class PipeWithScalingDto<T, U> {
+        constructor(spine?: T, profile?: U, params?: number[], scales?: number[], makeSolid?: boolean);
+        makeSolid?: boolean | undefined;
+        params?: number[] | undefined;
+        profile: U;
+        scales?: number[] | undefined;
+        spine: T;
+    }
+    class PlaceByMatricesDto<T> {
+        constructor(shape?: T, matrices?: Base.TransformMatrixes[]);
+        matrices: Base.TransformMatrixes[];
+        shape: T;
+    }
+    class PlaceOnFramesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], from?: Base.Frame);
+        frames: Base.Frame[];
+        from?: Base.Frame | undefined;
+        shape: T;
     }
     class PointDto {
         constructor(point?: Base.Point3);
-        point: Base.Point3;
+        point?: Base.Point3 | undefined;
     }
     enum pointProjectionTypeEnum {
         // (undocumented)
@@ -4195,20 +5391,20 @@ namespace OCCT {
         points: Base.Point3[];
     }
     class PointsOnWireAtEqualLengthDto<T> {
-        constructor(shape: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
-        includeFirst: boolean;
-        includeLast: boolean;
-        length: number;
+        constructor(shape?: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
+        includeFirst?: boolean | undefined;
+        includeLast?: boolean | undefined;
+        length?: number | undefined;
         shape: T;
-        tryNext: boolean;
+        tryNext?: boolean | undefined;
     }
     class PointsOnWireAtPatternOfLengthsDto<T> {
-        constructor(shape: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
-        includeFirst: boolean;
-        includeLast: boolean;
+        constructor(shape?: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean);
+        includeFirst?: boolean | undefined;
+        includeLast?: boolean | undefined;
         lengths: number[];
         shape: T;
-        tryNext: boolean;
+        tryNext?: boolean | undefined;
     }
     class PolygonDto {
         constructor(points?: Base.Point3[]);
@@ -4217,7 +5413,7 @@ namespace OCCT {
     class PolygonsDto {
         constructor(polygons?: PolygonDto[], returnCompound?: boolean);
         polygons: PolygonDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
     }
     class PolylineBaseDto {
         constructor(polyline?: Base.Polyline3);
@@ -4234,7 +5430,7 @@ namespace OCCT {
     class PolylinesDto {
         constructor(polylines?: PolylineDto[], returnCompound?: boolean);
         polylines: PolylineDto[];
-        returnCompound: boolean;
+        returnCompound?: boolean | undefined;
     }
     enum positionResultEnum {
         // (undocumented)
@@ -4244,150 +5440,239 @@ namespace OCCT {
         // (undocumented)
         keepSide2 = "keepSide2"
     }
-    class ProjectPointsOnShapeDto<T> {
-        constructor(points?: Base.Point3[], shape?: T, direction?: Base.Vector3, projectionType?: pointProjectionTypeEnum);
-        direction: Base.Vector3;
-        points: Base.Point3[];
-        projectionType: pointProjectionTypeEnum;
+    class PrismFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, direction?: Base.Vector3, extent?: featureExtentEnum, length?: number, untilFaceIndex?: number);
+        direction?: Base.Vector3 | undefined;
+        extent?: featureExtentEnum | undefined;
+        length?: number | undefined;
+        profile: U;
         shape: T;
+        sketchFaceIndex?: number | undefined;
+        untilFaceIndex?: number | undefined;
     }
-    class ProjectWireDto<T, U> {
-        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
-        direction: Base.Vector3;
+    class ProjectConicalDto<T, U> {
+        constructor(wire?: T, shape?: U, from?: Base.Point3);
+        from?: Base.Point3 | undefined;
         shape: U;
         wire: T;
     }
-    class ProjectWiresDto<T, U> {
-        constructor(wires?: T[], shape?: U, direction?: Base.Vector3);
-        direction: Base.Vector3;
+    class ProjectNormalDto<T, U> {
+        constructor(wires?: T[], shape?: U, tolerance?: number, maxDistance?: number);
+        maxDistance?: number | undefined;
         shape: U;
+        tolerance?: number | undefined;
         wires: T[];
+    }
+    class ProjectPointsOnShapeDto<T> {
+        constructor(points?: Base.Point3[], shape?: T, direction?: Base.Vector3, projectionType?: pointProjectionTypeEnum);
+        direction?: Base.Vector3 | undefined;
+        points: Base.Point3[];
+        projectionType?: pointProjectionTypeEnum | undefined;
+        shape: T;
+    }
+    class ProjectWireDto<T, U> extends ProjectWireSharedDto<U> {
+        constructor(wire?: T, shape?: U, direction?: Base.Vector3);
+        wire: T;
+    }
+    class ProjectWiresDto<T, U> extends ProjectWireSharedDto<U> {
+        constructor(wires?: T[], shape?: U, direction?: Base.Vector3);
+        wires: T[];
+    }
+    abstract class ProjectWireSharedDto<U> {
+        direction?: Base.Vector3 | undefined;
+        shape: U;
+    }
+    class PushPullFacesDto<T> {
+        constructor(shape?: T, indexes?: number[], distance?: number, distances?: number[]);
+        distance?: number | undefined;
+        distances?: number[] | undefined;
+        indexes: number[];
+        shape: T;
     }
     class QuaternionToMatrixDto {
         constructor(quaternion?: [number, number, number, number]);
-        quaternion: [number, number, number, number];
+        quaternion?: [number, number, number, number] | undefined;
     }
     class RebuildCurveDegreeDto<T> {
         constructor(shape?: T, degree?: number, tolerance?: number);
-        degree: number;
+        degree?: number | undefined;
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class RebuildFaceDegreeDto<T> {
         constructor(shape?: T, uDegree?: number, vDegree?: number, tolerance?: number, keepTrim?: boolean);
-        keepTrim: boolean;
+        keepTrim?: boolean | undefined;
         shape: T;
-        tolerance: number;
-        uDegree: number;
-        vDegree: number;
+        tolerance?: number | undefined;
+        uDegree?: number | undefined;
+        vDegree?: number | undefined;
     }
     class RectangleDto {
         constructor(width?: number, length?: number, center?: Base.Point3, direction?: Base.Vector3);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        length: number;
-        width: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        length?: number | undefined;
+        width?: number | undefined;
+    }
+    class RemoveFacesDto<T> {
+        constructor(shape?: T, indexes?: number[]);
+        indexes: number[];
+        shape: T;
+    }
+    class RevolvedFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, axisOrigin?: Base.Point3, axisDirection?: Base.Vector3, angle?: number);
+        angle?: number | undefined;
+        axisDirection?: Base.Vector3 | undefined;
+        axisOrigin?: Base.Point3 | undefined;
+        profile: U;
+        shape: T;
+        sketchFaceIndex?: number | undefined;
     }
     class RevolveDto<T> {
         constructor(shape?: T, angle?: number, direction?: Base.Vector3, copy?: boolean);
-        angle: number;
-        copy: boolean;
-        direction: Base.Vector3;
+        angle?: number | undefined;
+        copy?: boolean | undefined;
+        direction?: Base.Vector3 | undefined;
         shape: T;
+    }
+    class RibFeatureDto<T, U> {
+        constructor(shape?: T, wire?: U, frame?: Base.Frame, thickness?: number, otherSideThickness?: number);
+        frame: Base.Frame;
+        otherSideThickness?: number | undefined;
+        shape: T;
+        thickness?: number | undefined;
+        wire: U;
     }
     class RotateAroundCenterDto<T> {
         constructor(shape?: T, angle?: number, center?: Base.Point3, axis?: Base.Vector3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
         shape: T;
     }
     class RotateAroundCenterShapesDto<T> {
         constructor(shapes?: T[], angles?: number[], centers?: Base.Point3[], axes?: Base.Vector3[]);
-        angles: number[];
-        axes: Base.Vector3[];
-        centers: Base.Point3[];
+        angles?: number[] | undefined;
+        axes?: Base.Vector3[] | undefined;
+        centers?: Base.Point3[] | undefined;
         shapes: T[];
     }
     class RotateByQuaternionDto<T> {
         constructor(shape?: T, quaternion?: [number, number, number, number]);
-        quaternion: [number, number, number, number];
+        quaternion?: [number, number, number, number] | undefined;
         shape: T;
     }
     class RotateDto<T> {
         constructor(shape?: T, axis?: Base.Vector3, angle?: number);
-        angle: number;
-        axis: Base.Vector3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
         shape: T;
     }
     class RotateShapesDto<T> {
         constructor(shapes?: T[], axes?: Base.Vector3[], angles?: number[]);
-        angles: number[];
-        axes: Base.Vector3[];
+        angles?: number[] | undefined;
+        axes?: Base.Vector3[] | undefined;
         shapes: T[];
     }
     class RotationAxisAngleToMatrixDto {
         constructor(axis?: Base.Vector3, angle?: number, center?: Base.Point3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
     }
     class RotationExtrudeDto<T> {
         constructor(shape?: T, height?: number, angle?: number, makeSolid?: boolean);
-        angle: number;
-        height: number;
-        makeSolid: boolean;
+        angle?: number | undefined;
+        height?: number | undefined;
+        makeSolid?: boolean | undefined;
         shape: T;
+    }
+    class SaveBrepDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean);
+        fileName?: string | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
+    }
+    class SaveObjDto<T> {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean);
+        adjustYtoZ?: boolean | undefined;
+        fileName?: string | undefined;
+        precision?: number | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
+    }
+    class SavePlyDto<T> {
+        constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean);
+        adjustYtoZ?: boolean | undefined;
+        fileName?: string | undefined;
+        precision?: number | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
     }
     class SaveStepDto<T> {
         constructor(shape?: T, fileName?: string, adjustYtoZ?: boolean, tryDownload?: boolean);
-        adjustYtoZ: boolean;
-        fileName: string;
+        adjustYtoZ?: boolean | undefined;
+        fileName?: string | undefined;
         fromRightHanded?: boolean | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
     }
     class SaveStlDto<T> {
         constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean, binary?: boolean);
-        adjustYtoZ: boolean;
+        adjustYtoZ?: boolean | undefined;
         binary?: boolean | undefined;
-        fileName: string;
-        precision: number;
+        fileName?: string | undefined;
+        precision?: number | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
+    }
+    class SaveSvgDto<T> {
+        constructor(shape?: T, frame?: Base.Frame, drawHidden?: boolean, precision?: number, fileName?: string, tryDownload?: boolean);
+        drawHidden?: boolean | undefined;
+        fileName?: string | undefined;
+        frame: Base.Frame;
+        precision?: number | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
     }
     class Scale3DDto<T> {
         constructor(shape?: T, scale?: Base.Vector3, center?: Base.Point3);
-        center: Base.Point3;
-        scale: Base.Vector3;
+        center?: Base.Point3 | undefined;
+        scale?: Base.Vector3 | undefined;
         shape: T;
     }
     class Scale3DShapesDto<T> {
         constructor(shapes?: T[], scales?: Base.Vector3[], centers?: Base.Point3[]);
-        centers: Base.Point3[];
-        scales: Base.Vector3[];
+        centers?: Base.Point3[] | undefined;
+        scales?: Base.Vector3[] | undefined;
         shapes: T[];
     }
     class ScaleDto<T> {
         constructor(shape?: T, factor?: number);
-        factor: number;
+        factor?: number | undefined;
         shape: T;
     }
     class ScaleFromCenterDto<T> {
         constructor(shape?: T, factor?: number, center?: Base.Point3);
-        center: Base.Point3;
-        factor: number;
+        center?: Base.Point3 | undefined;
+        factor?: number | undefined;
         shape: T;
     }
     class ScaleShapesDto<T> {
         constructor(shapes?: T[], factors?: number[]);
-        factors: number[];
+        factors?: number[] | undefined;
         shapes: T[];
     }
     class ScaleUniformToMatrixDto {
         constructor(factor?: number, center?: Base.Point3);
-        center: Base.Point3;
-        factor: number;
+        center?: Base.Point3 | undefined;
+        factor?: number | undefined;
+    }
+    class SectionWiresDto<T> {
+        constructor(shapeA?: T, shapeB?: T, tolerance?: number);
+        shapeA: T;
+        shapeB: T;
+        tolerance?: number | undefined;
     }
     class SegmentBaseDto {
         constructor(segment?: Base.Segment3);
@@ -4397,25 +5682,134 @@ namespace OCCT {
         constructor(segments?: Base.Segment3[]);
         segments: Base.Segment3[];
     }
+    class SelectBetweenDto<T> {
+        constructor(shape?: T, indexes?: number[], otherIndexes?: number[]);
+        indexes: number[];
+        otherIndexes: number[];
+        shape: T;
+    }
+    class SelectByDirectionDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, angle?: number, indexes?: number[]);
+        angle?: number | undefined;
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+    }
+    class SelectConvexityDto<T> {
+        constructor(shape?: T, tangentAngle?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        tangentAngle?: number | undefined;
+    }
+    class SelectEdgesOfTypeDto<T> {
+        constructor(shape?: T, type?: curveTypeEnum, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        type?: curveTypeEnum | undefined;
+    }
+    class SelectExtremeDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectFacesOfTypeDto<T> {
+        constructor(shape?: T, type?: surfaceTypeEnum, indexes?: number[]);
+        indexes?: number[] | undefined;
+        shape: T;
+        type?: surfaceTypeEnum | undefined;
+    }
+    class SelectFromIndexesDto<T> {
+        constructor(shape?: T, indexes?: number[]);
+        indexes: number[];
+        shape: T;
+    }
+    class SelectGroupAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectInBoxDto<T> {
+        constructor(shape?: T, corner?: Base.Point3, oppositeCorner?: Base.Point3, indexes?: number[]);
+        corner?: Base.Point3 | undefined;
+        indexes?: number[] | undefined;
+        oppositeCorner?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class SelectInRangeDto<T> {
+        constructor(shape?: T, min?: number, max?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        shape: T;
+    }
+    class SelectInSphereDto<T> {
+        constructor(shape?: T, center?: Base.Point3, radius?: number, indexes?: number[]);
+        center?: Base.Point3 | undefined;
+        indexes?: number[] | undefined;
+        radius?: number | undefined;
+        shape: T;
+    }
+    class SelectNearestDto<T> {
+        constructor(shape?: T, point?: Base.Point3, count?: number, indexes?: number[]);
+        count?: number | undefined;
+        indexes?: number[] | undefined;
+        point?: Base.Point3 | undefined;
+        shape: T;
+    }
+    class SelectOnPlaneDto<T> {
+        constructor(shape?: T, origin?: Base.Point3, normal?: Base.Vector3, tolerance?: number, indexes?: number[]);
+        indexes?: number[] | undefined;
+        normal?: Base.Vector3 | undefined;
+        origin?: Base.Point3 | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
+    class SelectSortAlongDto<T> {
+        constructor(shape?: T, direction?: Base.Vector3, indexes?: number[]);
+        direction?: Base.Vector3 | undefined;
+        indexes?: number[] | undefined;
+        shape: T;
+    }
+    class SelectTangentChainDto<T> {
+        constructor(shape?: T, indexes?: number[], angle?: number);
+        angle?: number | undefined;
+        indexes: number[];
+        shape: T;
+    }
+    class SelfIntersectionsDto<T> {
+        constructor(shape?: T, precision?: number);
+        precision?: number | undefined;
+        shape: T;
+    }
     class SetDocLabelColorDto<T> {
         constructor(document?: T, label?: string, r?: number, g?: number, b?: number, a?: number);
-        a: number;
-        b: number;
+        a?: number | undefined;
+        b?: number | undefined;
         document: T;
-        g: number;
+        g?: number | undefined;
         label: string;
-        r: number;
+        r?: number | undefined;
     }
     class SetDocLabelNameDto<T> {
         constructor(document?: T, label?: string, name?: string);
         document: T;
         label: string;
-        name: string;
+        name?: string | undefined;
     }
     class SewDto<T> {
         constructor(shapes?: T[], tolerance?: number);
         shapes: T[];
-        tolerance: number;
+        tolerance?: number | undefined;
+    }
+    class SewWithReportDto<T> {
+        constructor(shapes?: T[], tolerance?: number, nonManifold?: boolean);
+        nonManifold?: boolean | undefined;
+        shapes: T[];
+        tolerance?: number | undefined;
     }
     class ShapeDto<T> {
         constructor(shape?: T);
@@ -4423,24 +5817,24 @@ namespace OCCT {
     }
     class ShapeFacesToPolygonPointsDto<T> {
         constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, reversedPoints?: boolean);
-        adjustYtoZ: boolean;
-        precision: number;
-        reversedPoints: boolean;
+        adjustYtoZ?: boolean | undefined;
+        precision?: number | undefined;
+        reversedPoints?: boolean | undefined;
         shape: T;
     }
     class ShapeFromPathDto {
         constructor(subpaths?: PathSubpath[], makeFaces?: boolean, joinSegments?: boolean, tolerance?: number, scale?: number, flipY?: boolean, origin?: Base.Point3);
-        flipY: boolean;
-        joinSegments: boolean;
-        makeFaces: boolean;
-        origin: Base.Point3;
-        scale: number;
+        flipY?: boolean | undefined;
+        joinSegments?: boolean | undefined;
+        makeFaces?: boolean | undefined;
+        origin?: Base.Point3 | undefined;
+        scale?: number | undefined;
         subpaths: PathSubpath[];
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class ShapeIndexDto<T> {
         constructor(shape?: T, index?: number);
-        index: number;
+        index?: number | undefined;
         shape: T;
     }
     class ShapesDto<T> {
@@ -4453,33 +5847,46 @@ namespace OCCT {
         shapes: U[];
     }
     class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        adjustYtoZ: boolean;
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3);
+        adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         computeMetadata?: boolean | undefined;
+        draftDirection?: Base.Vector3 | undefined;
         forceFaceDeflection?: boolean | undefined;
+        isoCurvesU?: number | undefined;
+        isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
-        precision: number;
+        precision?: number | undefined;
         shapes: T[];
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined;
     }
     class ShapeToDxfPathsDto<T> {
         constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
-        angularDeflection: number;
-        curvatureDeflection: number;
-        minimumLength: number;
-        minimumOfPoints: number;
+        angularDeflection?: number | undefined;
+        curvatureDeflection?: number | undefined;
+        minimumLength?: number | undefined;
+        minimumOfPoints?: number | undefined;
         shape: T;
-        uTolerance: number;
+        uTolerance?: number | undefined;
+    }
+    class ShapeToManifoldMeshDto<T> {
+        constructor(shape?: T, precision?: number);
+        precision?: number | undefined;
+        shape: T;
     }
     class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
-        adjustYtoZ: boolean;
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3);
+        adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
         computeMetadata?: boolean | undefined;
+        draftDirection?: Base.Vector3 | undefined;
         forceFaceDeflection?: boolean | undefined;
+        isoCurvesU?: number | undefined;
+        isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
-        precision: number;
+        precision?: number | undefined;
         shape: T;
+        surfaceAnalysis?: surfaceAnalysisEnum | undefined;
     }
     interface ShapeTransformInfo {
         // (undocumented)
@@ -4520,29 +5927,29 @@ namespace OCCT {
     class ShapeWithToleranceDto<T> {
         constructor(shape?: T, tolerance?: number);
         shape: T;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class SimpleAngularDimensionDto {
         constructor(direction1?: Base.Point3, direction2?: Base.Point3, center?: Base.Point3, radius?: number, offsetFromCenter?: number, extraSize?: number, radians?: boolean, labelSuffix?: string, labelSize?: number, labelOffset?: number, endType?: dimensionEndTypeEnum, arrowSize?: number, arrowAngle?: number, arrowsFlipped?: boolean, labelRotation?: number, labelFlipHorizontal?: boolean, labelFlipVertical?: boolean, labelOverwrite?: string, removeTrailingZeros?: boolean);
         arrowAngle?: number | undefined;
         arrowsFlipped?: boolean | undefined;
         arrowSize?: number | undefined;
-        center: Base.Point3;
-        decimalPlaces: number;
-        direction1: Base.Point3;
-        direction2: Base.Point3;
+        center?: Base.Point3 | undefined;
+        decimalPlaces?: number | undefined;
+        direction1?: Base.Point3 | undefined;
+        direction2?: Base.Point3 | undefined;
         endType?: dimensionEndTypeEnum | undefined;
-        extraSize: number;
+        extraSize?: number | undefined;
         labelFlipHorizontal?: boolean | undefined;
         labelFlipVertical?: boolean | undefined;
-        labelOffset: number;
+        labelOffset?: number | undefined;
         labelOverwrite?: string | undefined;
         labelRotation?: number | undefined;
-        labelSize: number;
-        labelSuffix: string;
-        offsetFromCenter: number;
-        radians: boolean;
-        radius: number;
+        labelSize?: number | undefined;
+        labelSuffix?: string | undefined;
+        offsetFromCenter?: number | undefined;
+        radians?: boolean | undefined;
+        radius?: number | undefined;
         removeTrailingZeros?: boolean | undefined;
     }
     class SimpleLinearLengthDimensionDto {
@@ -4566,29 +5973,46 @@ namespace OCCT {
         removeTrailingZeros?: boolean | undefined;
         start: Base.Point3;
     }
+    class SliceByFramesDto<T> {
+        constructor(shape?: T, frames?: Base.Frame[], makeFaces?: boolean, tolerance?: number);
+        frames: Base.Frame[];
+        makeFaces?: boolean | undefined;
+        shape: T;
+        tolerance?: number | undefined;
+    }
     class SliceDto<T> {
         constructor(shape?: T, step?: number, direction?: Base.Vector3);
-        direction: Base.Vector3;
+        direction?: Base.Vector3 | undefined;
         shape: T;
-        step: number;
+        step?: number | undefined;
     }
     class SliceInStepPatternDto<T> {
         constructor(shape?: T, steps?: number[], direction?: Base.Vector3);
-        direction: Base.Vector3;
+        direction?: Base.Vector3 | undefined;
         shape: T;
-        steps: number[];
+        steps?: number[] | undefined;
     }
     class SphereDto {
         constructor(radius?: number, center?: Base.Point3);
-        center: Base.Point3;
-        radius: number;
+        center?: Base.Point3 | undefined;
+        radius?: number | undefined;
+    }
+    class SplitByFrameDto<T> {
+        constructor(shape?: T, frame?: Base.Frame);
+        frame: Base.Frame;
+        shape: T;
     }
     class SplitDto<T> {
         constructor(shape?: T, shapes?: T[]);
-        localFuzzyTolerance: number;
-        nonDestructive: boolean;
+        localFuzzyTolerance?: number | undefined;
+        nonDestructive?: boolean | undefined;
         shape: T;
         shapes: T[];
+    }
+    class SplitFaceByWiresDto<T, U> {
+        constructor(shape?: T, wires?: U[]);
+        shape: T;
+        wires: U[];
     }
     class SplitWireOnPointsDto<T> {
         constructor(shape?: T, points?: Base.Point3[]);
@@ -4597,24 +6021,64 @@ namespace OCCT {
     }
     class SquareDto {
         constructor(size?: number, center?: Base.Point3, direction?: Base.Vector3);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        size: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        size?: number | undefined;
     }
     class StarDto {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean);
-        center: Base.Point3;
-        direction: Base.Vector3;
-        half: boolean;
-        innerRadius: number;
-        numRays: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        half?: boolean | undefined;
+        innerRadius?: number | undefined;
+        numRays?: number | undefined;
         offsetOuterEdges?: number | undefined;
-        outerRadius: number;
+        outerRadius?: number | undefined;
     }
     class StarSolidDto extends StarDto {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base.Point3, direction?: Base.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
+    }
+    enum surfaceAnalysisEnum {
+        // (undocumented)
+        draftAngle = "draftAngle",
+        // (undocumented)
+        gaussian = "gaussian",
+        // (undocumented)
+        maxCurvature = "maxCurvature",
+        // (undocumented)
+        mean = "mean",
+        // (undocumented)
+        minCurvature = "minCurvature",
+        // (undocumented)
+        minRadius = "minRadius",
+        // (undocumented)
+        none = "none"
+    }
+    enum surfaceTypeEnum {
+        // (undocumented)
+        bezier = "bezier",
+        // (undocumented)
+        bspline = "bspline",
+        // (undocumented)
+        cone = "cone",
+        // (undocumented)
+        cylinder = "cylinder",
+        // (undocumented)
+        extrusion = "extrusion",
+        // (undocumented)
+        offset = "offset",
+        // (undocumented)
+        other = "other",
+        // (undocumented)
+        plane = "plane",
+        // (undocumented)
+        revolution = "revolution",
+        // (undocumented)
+        sphere = "sphere",
+        // (undocumented)
+        torus = "torus"
     }
     enum svgFaceStrategyEnum {
         // (undocumented)
@@ -4645,32 +6109,48 @@ namespace OCCT {
         stroke?: string | undefined;
         strokeWidth?: number | undefined;
     }
+    class SweepEvolvedDto<T, U> {
+        constructor(spine?: T, profile?: U, makeSolid?: boolean);
+        makeSolid?: boolean | undefined;
+        profile: U;
+        spine: T;
+    }
     class TaperedHelixWireDto {
         constructor(startRadius?: number, endRadius?: number, pitch?: number, height?: number, center?: Base.Point3, direction?: Base.Vector3, clockwise?: boolean, tolerance?: number);
-        center: Base.Point3;
-        clockwise: boolean;
-        direction: Base.Vector3;
-        endRadius: number;
-        height: number;
-        pitch: number;
-        startRadius: number;
-        tolerance: number;
+        center?: Base.Point3 | undefined;
+        clockwise?: boolean | undefined;
+        direction?: Base.Vector3 | undefined;
+        endRadius?: number | undefined;
+        height?: number | undefined;
+        pitch?: number | undefined;
+        startRadius?: number | undefined;
+        tolerance?: number | undefined;
+    }
+    class TaperedPrismFeatureDto<T, U> {
+        constructor(shape?: T, profile?: U, sketchFaceIndex?: number, angle?: number, extent?: featureExtentEnum, length?: number, untilFaceIndex?: number);
+        angle?: number | undefined;
+        extent?: featureExtentEnum | undefined;
+        length?: number | undefined;
+        profile: U;
+        shape: T;
+        sketchFaceIndex?: number | undefined;
+        untilFaceIndex?: number | undefined;
     }
     class TBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3);
-        alignment: Base.basicAlignmentEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        flangeThickness: number;
-        height: number;
-        rotation: number;
-        webThickness: number;
-        width: number;
+        alignment?: Base.basicAlignmentEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        flangeThickness?: number | undefined;
+        height?: number | undefined;
+        rotation?: number | undefined;
+        webThickness?: number | undefined;
+        width?: number | undefined;
     }
     class TBeamProfileSolidDto extends TBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     type TDocStdDocumentPointer = {
         hash: number;
@@ -4679,7 +6159,7 @@ namespace OCCT {
     class TextWiresDto {
         constructor(text?: string, xOffset?: number, yOffset?: number, height?: number, lineSpacing?: number, letterSpacing?: number, align?: Base.horizontalAlignEnum, extrudeOffset?: number, centerOnOrigin?: boolean);
         align?: Base.horizontalAlignEnum | undefined;
-        centerOnOrigin: boolean;
+        centerOnOrigin?: boolean | undefined;
         extrudeOffset?: number | undefined;
         height?: number | undefined;
         letterSpacing?: number | undefined;
@@ -4690,18 +6170,18 @@ namespace OCCT {
     }
     class ThickSolidByJoinDto<T> {
         constructor(shape?: T, shapes?: T[], offset?: number, tolerance?: number, intersection?: boolean, selfIntersection?: boolean, joinType?: joinTypeEnum, removeIntEdges?: boolean);
-        intersection: boolean;
-        joinType: joinTypeEnum;
-        offset: number;
-        removeIntEdges: boolean;
-        selfIntersection: boolean;
+        intersection?: boolean | undefined;
+        joinType?: joinTypeEnum | undefined;
+        offset?: number | undefined;
+        removeIntEdges?: boolean | undefined;
+        selfIntersection?: boolean | undefined;
         shape: T;
         shapes: T[];
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class ThisckSolidSimpleDto<T> {
         constructor(shape?: T, offset?: number);
-        offset: number;
+        offset?: number | undefined;
         shape: T;
     }
     enum topAbsOrientationEnum {
@@ -4760,10 +6240,10 @@ namespace OCCT {
     class TorusDto {
         constructor(majorRadius?: number, minorRadius?: number, center?: Base.Point3, direction?: Base.Vector3, angle?: number);
         angle?: number | undefined;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        majorRadius: number;
-        minorRadius: number;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        majorRadius?: number | undefined;
+        minorRadius?: number | undefined;
     }
     class TransformByMatrixDto<T> {
         constructor(shape?: T, transformation?: Base.TransformMatrix | Base.TransformMatrixes);
@@ -4772,11 +6252,11 @@ namespace OCCT {
     }
     class TransformDto<T> {
         constructor(shape?: T, translation?: Base.Vector3, rotationAxis?: Base.Vector3, rotationAngle?: number, scaleFactor?: number);
-        rotationAngle: number;
-        rotationAxis: Base.Vector3;
-        scaleFactor: number;
+        rotationAngle?: number | undefined;
+        rotationAxis?: Base.Vector3 | undefined;
+        scaleFactor?: number | undefined;
         shape: T;
-        translation: Base.Vector3;
+        translation?: Base.Vector3 | undefined;
     }
     class TransformShapesByMatrixDto<T> {
         constructor(shapes?: T[], transformation?: Base.TransformMatrix | Base.TransformMatrixes);
@@ -4785,25 +6265,25 @@ namespace OCCT {
     }
     class TransformShapesDto<T> {
         constructor(shapes?: T[], translations?: Base.Vector3[], rotationAxes?: Base.Vector3[], rotationAngles?: number[], scaleFactors?: number[]);
-        rotationAngles: number[];
-        rotationAxes: Base.Vector3[];
-        scaleFactors: number[];
+        rotationAngles?: number[] | undefined;
+        rotationAxes?: Base.Vector3[] | undefined;
+        scaleFactors?: number[] | undefined;
         shapes: T[];
-        translations: Base.Vector3[];
+        translations?: Base.Vector3[] | undefined;
     }
     class TranslateDto<T> {
         constructor(shape?: T, translation?: Base.Vector3);
         shape: T;
-        translation: Base.Vector3;
+        translation?: Base.Vector3 | undefined;
     }
     class TranslateShapesDto<T> {
         constructor(shapes?: T[], translations?: Base.Vector3[]);
         shapes: T[];
-        translations: Base.Vector3[];
+        translations?: Base.Vector3[] | undefined;
     }
     class TranslationToMatrixDto {
         constructor(translation?: Base.Vector3);
-        translation: Base.Vector3;
+        translation?: Base.Vector3 | undefined;
     }
     class TriangleBaseDto {
         constructor(triangle?: Base.Triangle3);
@@ -4820,6 +6300,11 @@ namespace OCCT {
         outside = "outside",
         // (undocumented)
         outsideInside = "outsideInside"
+    }
+    class TwoShapesDto<T> {
+        constructor(shapeA?: T, shapeB?: T);
+        shapeA: T;
+        shapeB: T;
     }
     enum twoSidesStrictEnum {
         // (undocumented)
@@ -4839,37 +6324,43 @@ namespace OCCT {
     }
     class UBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3);
-        alignment: Base.basicAlignmentEnum;
-        center: Base.Point3;
-        direction: Base.Vector3;
-        flangeThickness: number;
-        flangeWidth: number;
-        height: number;
-        rotation: number;
-        webThickness: number;
-        width: number;
+        alignment?: Base.basicAlignmentEnum | undefined;
+        center?: Base.Point3 | undefined;
+        direction?: Base.Vector3 | undefined;
+        flangeThickness?: number | undefined;
+        flangeWidth?: number | undefined;
+        height?: number | undefined;
+        rotation?: number | undefined;
+        webThickness?: number | undefined;
+        width?: number | undefined;
     }
     class UBeamProfileSolidDto extends UBeamProfileDto {
         constructor(width?: number, height?: number, webThickness?: number, flangeThickness?: number, flangeWidth?: number, alignment?: Base.basicAlignmentEnum, rotation?: number, center?: Base.Point3, direction?: Base.Vector3, extrusionLengthFront?: number, extrusionLengthBack?: number);
-        extrusionLengthBack: number;
-        extrusionLengthFront: number;
+        extrusionLengthBack?: number | undefined;
+        extrusionLengthFront?: number | undefined;
     }
     class UnifySameDomainDto<T> {
         constructor(shape?: T, unifyEdges?: boolean, unifyFaces?: boolean, concatBSplines?: boolean);
-        concatBSplines: boolean;
+        concatBSplines?: boolean | undefined;
         shape: T;
-        unifyEdges: boolean;
-        unifyFaces: boolean;
+        unifyEdges?: boolean | undefined;
+        unifyFaces?: boolean | undefined;
     }
     class UnionDto<T> {
-        constructor(shapes?: T[], keepEdges?: boolean);
-        keepEdges: boolean;
+        constructor(shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
+        keepEdges?: boolean | undefined;
         shapes: T[];
+        strategy?: booleanStrategyEnum | undefined;
+    }
+    class UnrollFaceDto<T> {
+        constructor(shape?: T, tolerance?: number);
+        shape: T;
+        tolerance?: number | undefined;
     }
     class WireAlongParamDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number);
-        isU: boolean;
-        param: number;
+        isU?: boolean | undefined;
+        param?: number | undefined;
         shape: T;
     }
     enum wireFromPointsTypeEnum {
@@ -4882,9 +6373,9 @@ namespace OCCT {
         constructor(circle1?: T, circle2?: T, keepLines?: twoSidesStrictEnum, circleRemainders?: fourSidesStrictEnum, tolerance?: number);
         circle1: T;
         circle2: T;
-        circleRemainders: fourSidesStrictEnum;
-        keepLines: twoSidesStrictEnum;
-        tolerance: number;
+        circleRemainders?: fourSidesStrictEnum | undefined;
+        keepLines?: twoSidesStrictEnum | undefined;
+        tolerance?: number | undefined;
     }
     class WireOnFaceDto<T, U> {
         constructor(wire?: T, face?: U);
@@ -4893,7 +6384,7 @@ namespace OCCT {
     }
     class WiresAlongParamsDto<T> {
         constructor(shape?: T, isU?: boolean, params?: number[]);
-        isU: boolean;
+        isU?: boolean | undefined;
         params: number[];
         shape: T;
     }
@@ -4920,28 +6411,788 @@ namespace OCCT {
     }
     class WiresToPointsDto<T> {
         constructor(shape?: T, angularDeflection?: number, curvatureDeflection?: number, minimumOfPoints?: number, uTolerance?: number, minimumLength?: number);
-        angularDeflection: number;
-        curvatureDeflection: number;
-        minimumLength: number;
-        minimumOfPoints: number;
+        angularDeflection?: number | undefined;
+        curvatureDeflection?: number | undefined;
+        minimumLength?: number | undefined;
+        minimumOfPoints?: number | undefined;
         shape: T;
-        uTolerance: number;
+        uTolerance?: number | undefined;
+    }
+    class WrapWiresOnFaceDto<T, U> {
+        constructor(wires?: T[], face?: U, tolerance?: number);
+        face: U;
+        tolerance?: number | undefined;
+        wires: T[];
     }
     class XYZDto {
         constructor(x?: number, y?: number, z?: number);
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     class ZigZagBetweenTwoWiresDto<T> {
         constructor(wire1?: T, wire2?: T, nrZigZags?: number, inverse?: boolean, divideByEqualDistance?: boolean, zigZagsPerEdge?: boolean);
-        divideByEqualDistance: boolean;
-        inverse: boolean;
-        nrZigZags: number;
+        divideByEqualDistance?: boolean | undefined;
+        inverse?: boolean | undefined;
+        nrZigZags?: number | undefined;
         wire1: T;
         wire2: T;
-        zigZagsPerEdge: boolean;
+        zigZagsPerEdge?: boolean | undefined;
     }
+}
+
+// @public
+namespace OCCT_3 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_6" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type AlignAndTranslateDto<T> = WithDefaults<Inputs_6.OCCT.AlignAndTranslateDto<T>, "direction" | "center">;
+    // (undocumented)
+    type AlignAndTranslateShapesDto<T> = WithDefaults<Inputs_6.OCCT.AlignAndTranslateShapesDto<T>, "directions" | "centers">;
+    // (undocumented)
+    type AlignDto<T> = WithDefaults<Inputs_6.OCCT.AlignDto<T>, "fromOrigin" | "fromDirection" | "toOrigin" | "toDirection">;
+    // (undocumented)
+    type AlignNormAndAxisDto<T> = WithDefaults<Inputs_6.OCCT.AlignNormAndAxisDto<T>, "fromOrigin" | "fromNorm" | "fromAx" | "toOrigin" | "toNorm" | "toAx">;
+    // (undocumented)
+    type AlignShapesDto<T> = WithDefaults<Inputs_6.OCCT.AlignShapesDto<T>, "fromOrigins" | "fromDirections" | "toOrigins" | "toDirections">;
+    // (undocumented)
+    type ArcEdgeCirclePointAngleDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCirclePointAngleDto<T>, "alphaAngle" | "sense">;
+    // (undocumented)
+    type ArcEdgeCircleTwoAnglesDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCircleTwoAnglesDto<T>, "alphaAngle1" | "alphaAngle2" | "sense">;
+    // (undocumented)
+    type ArcEdgeCircleTwoPointsDto<T> = WithDefaults<Inputs_6.OCCT.ArcEdgeCircleTwoPointsDto<T>, "start" | "end" | "sense">;
+    // (undocumented)
+    type ArcEdgeThreePointsDto = WithDefaults<Inputs_6.OCCT.ArcEdgeThreePointsDto, "start" | "middle" | "end">;
+    // (undocumented)
+    type ArcEdgeTwoPointsTangentDto = WithDefaults<Inputs_6.OCCT.ArcEdgeTwoPointsTangentDto, "start" | "tangentVec" | "end">;
+    // (undocumented)
+    type BasicShapeRepairDto<T> = WithDefaults<Inputs_6.OCCT.BasicShapeRepairDto<T>, "precision" | "maxTolerance" | "minTolerance">;
+    // (undocumented)
+    type BezierDto = WithDefaults<Inputs_6.OCCT.BezierDto, "closed" | "periodic">;
+    // (undocumented)
+    type BezierWeightsDto = WithDefaults<Inputs_6.OCCT.BezierWeightsDto, "closed" | "periodic">;
+    // (undocumented)
+    type BezierWiresDto = WithDefaults<Inputs_6.OCCT.BezierWiresDto, "returnCompound">;
+    // (undocumented)
+    type BlendBetweenEdgesDto<T> = WithDefaults<Inputs_6.OCCT.BlendBetweenEdgesDto<T>, "matchCurvature" | "bulge">;
+    // (undocumented)
+    type BoundaryPatchDto<T> = WithDefaults<Inputs_6.OCCT.BoundaryPatchDto<T>, "style">;
+    // (undocumented)
+    type BoundingBoxDto = Inputs_6.OCCT.BoundingBoxDto;
+    // (undocumented)
+    type BoundingBoxInFrameDto<T> = Inputs_6.OCCT.BoundingBoxInFrameDto<T>;
+    // (undocumented)
+    type BoundingBoxPropsDto = WithDefaults<Inputs_6.OCCT.BoundingBoxPropsDto, "min" | "max" | "center" | "size">;
+    // (undocumented)
+    type BoundingSpherePropsDto = WithDefaults<Inputs_6.OCCT.BoundingSpherePropsDto, "center" | "radius">;
+    // (undocumented)
+    type BoxDto = WithDefaults<Inputs_6.OCCT.BoxDto, "width" | "length" | "height" | "center" | "originOnCenter">;
+    // (undocumented)
+    type BoxFromCornerDto = WithDefaults<Inputs_6.OCCT.BoxFromCornerDto, "width" | "length" | "height" | "corner">;
+    // (undocumented)
+    type BRepGraphNodeOfShapeDto<T> = Inputs_6.OCCT.BRepGraphNodeOfShapeDto<T>;
+    // (undocumented)
+    type BRepGraphReconstructDto<T> = WithDefaults<Inputs_6.OCCT.BRepGraphReconstructDto<T>, "kind" | "index">;
+    // (undocumented)
+    type BSplineDto = WithDefaults<Inputs_6.OCCT.BSplineDto, "closed">;
+    // (undocumented)
+    type BSplinesDto = WithDefaults<Inputs_6.OCCT.BSplinesDto, "returnCompound">;
+    // (undocumented)
+    type BuildAssemblyDocumentDto<T, D> = Inputs_6.OCCT.BuildAssemblyDocumentDto<T, D>;
+    // (undocumented)
+    type Chamfer2dVertexDto<T> = WithDefaults<Inputs_6.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
+    // (undocumented)
+    type ChamferDto<T> = WithDefaults<Inputs_6.OCCT.ChamferDto<T>, "distance">;
+    // (undocumented)
+    type ChamferEdgeDistAngleDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgeDistAngleDto<T, U, F>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferEdgesDistAngleDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgesDistAngleDto<T, U, F>, "distance" | "angle">;
+    // (undocumented)
+    type ChamferEdgesDistsAnglesDto<T, U, F> = Inputs_6.OCCT.ChamferEdgesDistsAnglesDto<T, U, F>;
+    // (undocumented)
+    type ChamferEdgesListDto<T, U> = Inputs_6.OCCT.ChamferEdgesListDto<T, U>;
+    // (undocumented)
+    type ChamferEdgesTwoDistancesDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgesTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    // (undocumented)
+    type ChamferEdgesTwoDistancesListsDto<T, U, F> = Inputs_6.OCCT.ChamferEdgesTwoDistancesListsDto<T, U, F>;
+    // (undocumented)
+    type ChamferEdgeTwoDistancesDto<T, U, F> = WithDefaults<Inputs_6.OCCT.ChamferEdgeTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    // (undocumented)
+    type ChristmasTreeDto = WithDefaults<Inputs_6.OCCT.ChristmasTreeDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction">;
+    // (undocumented)
+    type ChristmasTreeSolidDto = WithDefaults<Inputs_6.OCCT.ChristmasTreeSolidDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type CircleDto = WithDefaults<Inputs_6.OCCT.CircleDto, "radius" | "center" | "direction">;
+    // (undocumented)
+    type CirclesTangentToThreeDto<T> = WithDefaults<Inputs_6.OCCT.CirclesTangentToThreeDto<T>, "tolerance" | "onArgumentsOnly">;
+    // (undocumented)
+    type CirclesTangentToTwoCenteredOnDto<T> = WithDefaults<Inputs_6.OCCT.CirclesTangentToTwoCenteredOnDto<T>, "tolerance" | "onArgumentsOnly">;
+    // (undocumented)
+    type CirclesTangentToTwoWithRadiusDto<T> = WithDefaults<Inputs_6.OCCT.CirclesTangentToTwoWithRadiusDto<T>, "radius" | "tolerance" | "onArgumentsOnly">;
+    // (undocumented)
+    type ClashesBetweenShapesDto<T> = WithDefaults<Inputs_6.OCCT.ClashesBetweenShapesDto<T>, "clearance">;
+    // (undocumented)
+    type ClassifyCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.ClassifyCornerByPointDto<T>, "points" | "snapTolerance">;
+    // (undocumented)
+    type ClosestPointsBetweenTwoShapesDto<T> = Inputs_6.OCCT.ClosestPointsBetweenTwoShapesDto<T>;
+    // (undocumented)
+    type ClosestPointsOnShapeFromPointsDto<T> = Inputs_6.OCCT.ClosestPointsOnShapeFromPointsDto<T>;
+    // (undocumented)
+    type ClosestPointsOnShapesFromPointsDto<T> = Inputs_6.OCCT.ClosestPointsOnShapesFromPointsDto<T>;
+    // (undocumented)
+    type CombineAssemblyStructureDto<T> = WithDefaults<Inputs_6.OCCT.CombineAssemblyStructureDto<T>, "parts" | "nodes" | "clearDocument">;
+    // (undocumented)
+    type CompareShapesDto<T> = Inputs_6.OCCT.CompareShapesDto<T>;
+    // (undocumented)
+    type ComposeTransformDto = WithDefaults<Inputs_6.OCCT.ComposeTransformDto, "translation" | "rotation" | "scale">;
+    // (undocumented)
+    type CompoundShapesDto<T> = Inputs_6.OCCT.CompoundShapesDto<T>;
+    // (undocumented)
+    type ConeDto = WithDefaults<Inputs_6.OCCT.ConeDto, "radius1" | "radius2" | "height" | "angle" | "center" | "direction">;
+    // (undocumented)
+    type ConstraintTanCirclesOnCircleAndPntDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanCirclesOnCircleAndPntDto<T>, "tolerance" | "radius">;
+    // (undocumented)
+    type ConstraintTanCirclesOnTwoCirclesDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanCirclesOnTwoCirclesDto<T>, "tolerance" | "radius">;
+    // (undocumented)
+    type ConstraintTanLinesFromPtToCircleDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesFromPtToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    // (undocumented)
+    type ConstraintTanLinesFromTwoPtsToCircleDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    // (undocumented)
+    type ConstraintTanLinesOnTwoCirclesDto<T> = WithDefaults<Inputs_6.OCCT.ConstraintTanLinesOnTwoCirclesDto<T>, "tolerance" | "positionResult" | "circleRemainders">;
+    // (undocumented)
+    type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale">;
+    // (undocumented)
+    type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type ConvertStepToGltfDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection">;
+    // (undocumented)
+    type ConvertStepToGltfWithDracoDto = WithDefaults<Inputs_6.OCCT.ConvertStepToGltfWithDracoDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type CounterboredHolesDto<T> = WithDefaults<Inputs_6.OCCT.CounterboredHolesDto<T>, "diameter" | "depth" | "tipAngle" | "counterboreDiameter" | "counterboreDepth">;
+    // (undocumented)
+    type CountersunkHolesDto<T> = WithDefaults<Inputs_6.OCCT.CountersunkHolesDto<T>, "diameter" | "depth" | "tipAngle" | "countersinkDiameter" | "countersinkAngle">;
+    // (undocumented)
+    type CreateAssemblyNodeDto = WithDefaults<Inputs_6.OCCT.CreateAssemblyNodeDto, "colorRgba">;
+    // (undocumented)
+    type CreateAssemblyPartDto<T> = Inputs_6.OCCT.CreateAssemblyPartDto<T>;
+    // (undocumented)
+    type CreateImportedPartDto = WithDefaults<Inputs_6.OCCT.CreateImportedPartDto, "sourceDocumentIndex">;
+    // (undocumented)
+    type CreateInstanceNodeDto = WithDefaults<Inputs_6.OCCT.CreateInstanceNodeDto, "translation" | "rotation" | "scale">;
+    // (undocumented)
+    type CreatePartUpdateDto<T> = Inputs_6.OCCT.CreatePartUpdateDto<T>;
+    // (undocumented)
+    type CubeDto = WithDefaults<Inputs_6.OCCT.CubeDto, "size" | "center" | "originOnCenter">;
+    // (undocumented)
+    type CurvatureCombDto<T> = WithDefaults<Inputs_6.OCCT.CurvatureCombDto<T>, "samples" | "scale">;
+    // (undocumented)
+    type CurveAndSurfaceDto<T, U> = Inputs_6.OCCT.CurveAndSurfaceDto<T, U>;
+    // (undocumented)
+    type CurveExtremesAlongDto<T> = WithDefaults<Inputs_6.OCCT.CurveExtremesAlongDto<T>, "direction">;
+    // (undocumented)
+    type CurveKinksDto<T> = WithDefaults<Inputs_6.OCCT.CurveKinksDto<T>, "angle">;
+    // (undocumented)
+    type CurveSeamByLengthDto<T> = WithDefaults<Inputs_6.OCCT.CurveSeamByLengthDto<T>, "length">;
+    // (undocumented)
+    type CurveSeamByParameterDto<T> = WithDefaults<Inputs_6.OCCT.CurveSeamByParameterDto<T>, "parameter">;
+    // (undocumented)
+    type CylinderDto = WithDefaults<Inputs_6.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
+    // (undocumented)
+    type CylindersOnLinesDto = WithDefaults<Inputs_6.OCCT.CylindersOnLinesDto, "radius">;
+    // (undocumented)
+    type DataOnGeometryAtLengthDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryAtLengthDto<T>, "length">;
+    // (undocumented)
+    type DataOnGeometryAtLengthsDto<T> = Inputs_6.OCCT.DataOnGeometryAtLengthsDto<T>;
+    // (undocumented)
+    type DataOnGeometryAtParamDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryAtParamDto<T>, "param">;
+    // (undocumented)
+    type DataOnGeometryAtParamsDto<T> = Inputs_6.OCCT.DataOnGeometryAtParamsDto<T>;
+    // (undocumented)
+    type DataOnGeometryesAtLengthDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryesAtLengthDto<T>, "length">;
+    // (undocumented)
+    type DataOnGeometryesAtParamDto<T> = WithDefaults<Inputs_6.OCCT.DataOnGeometryesAtParamDto<T>, "param">;
+    // (undocumented)
+    type DataOnUVDto<T> = WithDefaults<Inputs_6.OCCT.DataOnUVDto<T>, "paramU" | "paramV">;
+    // (undocumented)
+    type DataOnUVsDto<T> = WithDefaults<Inputs_6.OCCT.DataOnUVsDto<T>, "paramsUV">;
+    // (undocumented)
+    type DecomposedEdgeDto = Inputs_6.OCCT.DecomposedEdgeDto;
+    // (undocumented)
+    type DecomposedFaceDto = Inputs_6.OCCT.DecomposedFaceDto;
+    // (undocumented)
+    type DecomposedManifoldMeshDto = Inputs_6.OCCT.DecomposedManifoldMeshDto;
+    // (undocumented)
+    type DecomposedMeshDto = Inputs_6.OCCT.DecomposedMeshDto;
+    // (undocumented)
+    type DifferenceDto<T> = WithDefaults<Inputs_6.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
+    // (undocumented)
+    type DihedralAngleDto<T> = WithDefaults<Inputs_6.OCCT.DihedralAngleDto<T>, "index" | "param">;
+    // (undocumented)
+    type DivideDto<T> = WithDefaults<Inputs_6.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type DivideShapesDto<T> = WithDefaults<Inputs_6.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type DivideSharedDto = WithDefaults<Inputs_6.OCCT.DivideSharedDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type DocToMeshDto<U> = WithDefaults<Inputs_6.OCCT.DocToMeshDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DocToMeshesDto<U> = WithDefaults<Inputs_6.OCCT.DocToMeshesDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    // (undocumented)
+    type DocumentLabelQueryDto<T> = Inputs_6.OCCT.DocumentLabelQueryDto<T>;
+    // (undocumented)
+    type DocumentQueryDto<T> = Inputs_6.OCCT.DocumentQueryDto<T>;
+    // (undocumented)
+    type DraftAngleDto<T, U> = WithDefaults<Inputs_6.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    // (undocumented)
+    type DrawShapeDto<T> = WithDefaults<Inputs_6.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type DrawShapesDto<T> = WithDefaults<Inputs_6.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type DrawShapeSharedDto = WithDefaults<Inputs_6.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type DxfPathsPartsListDto = WithDefaults<Inputs_6.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type DxfPathsWithLayerDto = WithDefaults<Inputs_6.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
+    // (undocumented)
+    type EdgeIndexDto<T> = WithDefaults<Inputs_6.OCCT.EdgeIndexDto<T>, "index">;
+    // (undocumented)
+    type EdgesToPointsDto<T> = WithDefaults<Inputs_6.OCCT.EdgesToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type EllipseDto = WithDefaults<Inputs_6.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
+    // (undocumented)
+    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    // (undocumented)
+    type ExportDocumentToObjDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToObjDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type ExportDocumentToPlyDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToPlyDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type ExportDocumentToStepDto<T> = WithDefaults<Inputs_6.OCCT.ExportDocumentToStepDto<T>, "fileName" | "author" | "organization" | "compress" | "tryDownload">;
+    // (undocumented)
+    type ExtendEdgeDto<T> = WithDefaults<Inputs_6.OCCT.ExtendEdgeDto<T>, "atStart" | "atEnd">;
+    // (undocumented)
+    type ExtrudedSolidDto = WithDefaults<Inputs_6.OCCT.ExtrudedSolidDto, "extrusionLengthFront" | "extrusionLengthBack" | "center" | "direction">;
+    // (undocumented)
+    type ExtrudeDto<T> = WithDefaults<Inputs_6.OCCT.ExtrudeDto<T>, "direction">;
+    // (undocumented)
+    type ExtrudeShapesDto<T> = WithDefaults<Inputs_6.OCCT.ExtrudeShapesDto<T>, "direction">;
+    // (undocumented)
+    type FaceFromMultipleCircleTanWireCollectionsDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<T>, "combination" | "unify" | "tolerance">;
+    // (undocumented)
+    type FaceFromMultipleCircleTanWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromMultipleCircleTanWiresDto<T>, "combination" | "unify" | "tolerance">;
+    // (undocumented)
+    type FaceFromPointGridDto = WithDefaults<Inputs_6.OCCT.FaceFromPointGridDto, "interpolate" | "periodic" | "degreeMin" | "degreeMax" | "tolerance">;
+    // (undocumented)
+    type FaceFromSurfaceAndWireDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromSurfaceAndWireDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceFromWireDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromWireDto<T>, "planar">;
+    // (undocumented)
+    type FaceFromWireOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromWireOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceFromWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceFromWiresDto<T>, "planar">;
+    // (undocumented)
+    type FaceFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FaceFromWiresOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceLinearSubdivisionDto<T> = WithDefaults<Inputs_6.OCCT.FaceLinearSubdivisionDto<T>, "isU" | "param" | "nrPoints" | "shiftHalfStep" | "removeStartPoint" | "removeEndPoint">;
+    // (undocumented)
+    type FacesFromWiresDto<T> = WithDefaults<Inputs_6.OCCT.FacesFromWiresDto<T>, "planar">;
+    // (undocumented)
+    type FacesFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.FacesFromWiresOnFaceDto<T, U>, "inside">;
+    // (undocumented)
+    type FaceSubdivideToHexagonHolesDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToHexagonHolesDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivideToHexagonWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToHexagonWiresDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "offsetFromBorderU" | "offsetFromBorderV" | "extendUUp" | "extendUBottom" | "extendVUp" | "extendVBottom">;
+    // (undocumented)
+    type FaceSubdivideToRectangleHolesDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToRectangleHolesDto<T>, "nrRectanglesU" | "nrRectanglesV" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivideToRectangleWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivideToRectangleWiresDto<T>, "nrRectanglesU" | "nrRectanglesV" | "offsetFromBorderU" | "offsetFromBorderV">;
+    // (undocumented)
+    type FaceSubdivisionControlledDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionControlledDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepNthU" | "shiftHalfStepUOffsetN" | "removeStartEdgeNthU" | "removeStartEdgeUOffsetN" | "removeEndEdgeNthU" | "removeEndEdgeUOffsetN" | "shiftHalfStepNthV" | "shiftHalfStepVOffsetN" | "removeStartEdgeNthV" | "removeStartEdgeVOffsetN" | "removeEndEdgeNthV" | "removeEndEdgeVOffsetN">;
+    // (undocumented)
+    type FaceSubdivisionDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
+    // (undocumented)
+    type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_6.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    // (undocumented)
+    type FacesWithinDto<T> = WithDefaults<Inputs_6.OCCT.FacesWithinDto<T>, "clearance" | "precision">;
+    // (undocumented)
+    type Fillet3DWireDto<T> = WithDefaults<Inputs_6.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
+    // (undocumented)
+    type Fillet3DWiresDto<T> = WithDefaults<Inputs_6.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
+    // (undocumented)
+    type Fillet3DWireSharedDto = WithDefaults<Inputs_6.OCCT.Fillet3DWireSharedDto, "radius" | "direction">;
+    // (undocumented)
+    type FilletCornerByPointDto<T> = WithDefaults<Inputs_6.OCCT.FilletCornerByPointDto<T>, "points" | "radius" | "taperFactor" | "snapTolerance" | "mode">;
+    // (undocumented)
+    type FilletDto<T> = WithDefaults<Inputs_6.OCCT.FilletDto<T>, "radius">;
+    // (undocumented)
+    type FilletEdgesListDto<T, U> = Inputs_6.OCCT.FilletEdgesListDto<T, U>;
+    // (undocumented)
+    type FilletEdgesListOneRadiusDto<T, U> = WithDefaults<Inputs_6.OCCT.FilletEdgesListOneRadiusDto<T, U>, "radius">;
+    // (undocumented)
+    type FilletEdgesSameVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgesSameVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletEdgesVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgesVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletEdgeVariableRadiusDto<T, U> = Inputs_6.OCCT.FilletEdgeVariableRadiusDto<T, U>;
+    // (undocumented)
+    type FilletShapesDto<T> = WithDefaults<Inputs_6.OCCT.FilletShapesDto<T>, "radius">;
+    // (undocumented)
+    type FilletTwoEdgesInPlaneDto<T> = WithDefaults<Inputs_6.OCCT.FilletTwoEdgesInPlaneDto<T>, "planeOrigin" | "planeDirection" | "radius" | "solution">;
+    // (undocumented)
+    type FillPatchDto<T, U> = WithDefaults<Inputs_6.OCCT.FillPatchDto<T, U>, "degree" | "pointsOnCurves" | "iterations" | "tolerance">;
+    // (undocumented)
+    type FilterFacePointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterFacePointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    // (undocumented)
+    type FilterFacesPointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterFacesPointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown" | "flatPointsArray">;
+    // (undocumented)
+    type FilterSolidPointsDto<T> = WithDefaults<Inputs_6.OCCT.FilterSolidPointsDto<T>, "tolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    // (undocumented)
+    type FixSmallEdgesInWireDto<T> = WithDefaults<Inputs_6.OCCT.FixSmallEdgesInWireDto<T>, "lockvtx" | "precsmall">;
+    // (undocumented)
+    type FlatSpiralWireDto = WithDefaults<Inputs_6.OCCT.FlatSpiralWireDto, "startRadius" | "endRadius" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type FlipFaceUVDto<T> = WithDefaults<Inputs_6.OCCT.FlipFaceUVDto<T>, "swapUV" | "reverseU" | "reverseV">;
+    // (undocumented)
+    type FrameNearestPointDto<T> = WithDefaults<Inputs_6.OCCT.FrameNearestPointDto<T>, "point">;
+    // (undocumented)
+    type FrameOnCurveAtLengthDto<T> = WithDefaults<Inputs_6.OCCT.FrameOnCurveAtLengthDto<T>, "length" | "kind" | "up">;
+    // (undocumented)
+    type FrameOnCurveAtParamDto<T> = WithDefaults<Inputs_6.OCCT.FrameOnCurveAtParamDto<T>, "param" | "kind" | "up">;
+    // (undocumented)
+    type FrameOnCurveSharedDto = WithDefaults<Inputs_6.OCCT.FrameOnCurveSharedDto, "kind" | "up">;
+    // (undocumented)
+    type FramesAlongWireDto<T> = WithDefaults<Inputs_6.OCCT.FramesAlongWireDto<T>, "count" | "skipEndOnClosed" | "kind" | "up">;
+    // (undocumented)
+    type FramesNearestPointsDto<T> = Inputs_6.OCCT.FramesNearestPointsDto<T>;
+    // (undocumented)
+    type FramesOnCurveAtLengthsDto<T> = WithDefaults<Inputs_6.OCCT.FramesOnCurveAtLengthsDto<T>, "kind" | "up">;
+    // (undocumented)
+    type FramesOnCurveAtParamsDto<T> = WithDefaults<Inputs_6.OCCT.FramesOnCurveAtParamsDto<T>, "kind" | "up">;
+    // (undocumented)
+    type Geom2dCircleDto = WithDefaults<Inputs_6.OCCT.Geom2dCircleDto, "center" | "direction" | "radius" | "sense">;
+    // (undocumented)
+    type Geom2dEllipseDto = WithDefaults<Inputs_6.OCCT.Geom2dEllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor" | "sense">;
+    // (undocumented)
+    type Geom2dSegmentDto = WithDefaults<Inputs_6.OCCT.Geom2dSegmentDto, "start" | "end">;
+    // (undocumented)
+    type Geom2dTrimmedCurveDto<T> = WithDefaults<Inputs_6.OCCT.Geom2dTrimmedCurveDto<T>, "u1" | "u2" | "sense" | "adjustPeriodic">;
+    // (undocumented)
+    type GeomCylindricalSurfaceDto = WithDefaults<Inputs_6.OCCT.GeomCylindricalSurfaceDto, "radius" | "center" | "direction">;
+    // (undocumented)
+    type HBeamProfileDto = WithDefaults<Inputs_6.OCCT.HBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type HBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.HBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type Heart2DDto = WithDefaults<Inputs_6.OCCT.Heart2DDto, "center" | "direction" | "rotation" | "sizeApprox">;
+    // (undocumented)
+    type HeartSolidDto = WithDefaults<Inputs_6.OCCT.HeartSolidDto, "center" | "direction" | "rotation" | "sizeApprox" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type HelixWireByTurnsDto = WithDefaults<Inputs_6.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type HelixWireDto = WithDefaults<Inputs_6.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type HexagonsInGridDto = WithDefaults<Inputs_6.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
+    // (undocumented)
+    type HiddenLinesDto<T> = WithDefaults<Inputs_6.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision">;
+    // (undocumented)
+    type HolesDto<T> = WithDefaults<Inputs_6.OCCT.HolesDto<T>, "diameter" | "depth" | "tipAngle">;
+    // (undocumented)
+    type IBeamProfileDto = WithDefaults<Inputs_6.OCCT.IBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type IBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type ImportStepIgesDto = WithDefaults<Inputs_6.OCCT.ImportStepIgesDto, "adjustZtoY">;
+    // (undocumented)
+    type ImportStepIgesFromTextDto = WithDefaults<Inputs_6.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY">;
+    // (undocumented)
+    type InterpolateSymmetricDto = WithDefaults<Inputs_6.OCCT.InterpolateSymmetricDto, "tolerance">;
+    // (undocumented)
+    type InterpolateWiresDto = WithDefaults<Inputs_6.OCCT.InterpolateWiresDto, "returnCompound">;
+    // (undocumented)
+    type InterpolationDto = WithDefaults<Inputs_6.OCCT.InterpolationDto, "periodic" | "tolerance" | "parametrization">;
+    // (undocumented)
+    type IntersectCurvesDto<T> = WithDefaults<Inputs_6.OCCT.IntersectCurvesDto<T>, "tolerance">;
+    // (undocumented)
+    type IntersectCurveWithFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.IntersectCurveWithFaceDto<T, U>, "tolerance">;
+    // (undocumented)
+    type IntersectionDto<T> = WithDefaults<Inputs_6.OCCT.IntersectionDto<T>, "keepEdges">;
+    // (undocumented)
+    type InvertTransformDto = Inputs_6.OCCT.InvertTransformDto;
+    // (undocumented)
+    type LineBaseDto = Inputs_6.OCCT.LineBaseDto;
+    // (undocumented)
+    type LineDto = WithDefaults<Inputs_6.OCCT.LineDto, "start" | "end">;
+    // (undocumented)
+    type LinesBaseDto = Inputs_6.OCCT.LinesBaseDto;
+    // (undocumented)
+    type LinesDto = WithDefaults<Inputs_6.OCCT.LinesDto, "returnCompound">;
+    // (undocumented)
+    type LinesTangentAtAngleDto<T> = WithDefaults<Inputs_6.OCCT.LinesTangentAtAngleDto<T>, "angle" | "angularTolerance" | "onArgumentsOnly">;
+    // (undocumented)
+    type LinesTangentToTwoDto<T> = WithDefaults<Inputs_6.OCCT.LinesTangentToTwoDto<T>, "angularTolerance" | "onArgumentsOnly">;
+    // (undocumented)
+    type LineWithExtensionsDto = WithDefaults<Inputs_6.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
+    // (undocumented)
+    type LoadBrepDto = Inputs_6.OCCT.LoadBrepDto;
+    // (undocumented)
+    type LoadGltfToDocDto = Inputs_6.OCCT.LoadGltfToDocDto;
+    // (undocumented)
+    type LoadObjToDocDto = Inputs_6.OCCT.LoadObjToDocDto;
+    // (undocumented)
+    type LoadStepOrIgesDto = WithDefaults<Inputs_6.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY">;
+    // (undocumented)
+    type LoadStepToDocDto = Inputs_6.OCCT.LoadStepToDocDto;
+    // (undocumented)
+    type LoadStlDto = WithDefaults<Inputs_6.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
+    // (undocumented)
+    type LoadSVGDto = WithDefaults<Inputs_6.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
+    // (undocumented)
+    type LoftAdvancedDto<T> = WithDefaults<Inputs_6.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
+    // (undocumented)
+    type LoftDto<T> = WithDefaults<Inputs_6.OCCT.LoftDto<T>, "makeSolid">;
+    // (undocumented)
+    type LPolygonDto = WithDefaults<Inputs_6.OCCT.LPolygonDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type LPolygonSolidDto = WithDefaults<Inputs_6.OCCT.LPolygonSolidDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type MakeDraftDto<T> = WithDefaults<Inputs_6.OCCT.MakeDraftDto<T>, "direction" | "angle" | "lengthMax" | "internal">;
+    // (undocumented)
+    type MakeDraftToShapeDto<T> = WithDefaults<Inputs_6.OCCT.MakeDraftToShapeDto<T>, "direction" | "angle" | "keepOut" | "internal">;
+    // (undocumented)
+    type MeshBaseDto = Inputs_6.OCCT.MeshBaseDto;
+    // (undocumented)
+    type MeshMeshesIntersectionOfShapesDto<T> = WithDefaults<Inputs_6.OCCT.MeshMeshesIntersectionOfShapesDto<T>, "precision">;
+    // (undocumented)
+    type MeshMeshIntersectionTwoShapesDto<T> = WithDefaults<Inputs_6.OCCT.MeshMeshIntersectionTwoShapesDto<T>, "precision1" | "precision2">;
+    // (undocumented)
+    type MinCurvatureRadiusDto<T> = WithDefaults<Inputs_6.OCCT.MinCurvatureRadiusDto<T>, "samples" | "concaveOnly">;
+    // (undocumented)
+    type MirrorAboutPointDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAboutPointDto<T>, "point">;
+    // (undocumented)
+    type MirrorAlongNormalDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAlongNormalDto<T>, "origin" | "normal">;
+    // (undocumented)
+    type MirrorAlongNormalShapesDto<T> = WithDefaults<Inputs_6.OCCT.MirrorAlongNormalShapesDto<T>, "origins" | "normals">;
+    // (undocumented)
+    type MirrorAxisToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorAxisToMatrixDto, "origin" | "direction">;
+    // (undocumented)
+    type MirrorDto<T> = WithDefaults<Inputs_6.OCCT.MirrorDto<T>, "origin" | "direction">;
+    // (undocumented)
+    type MirrorPlaneToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorPlaneToMatrixDto, "origin" | "normal">;
+    // (undocumented)
+    type MirrorPointToMatrixDto = WithDefaults<Inputs_6.OCCT.MirrorPointToMatrixDto, "point">;
+    // (undocumented)
+    type MirrorShapesDto<T> = WithDefaults<Inputs_6.OCCT.MirrorShapesDto<T>, "origins" | "directions">;
+    // (undocumented)
+    type MultiplyTransformsDto = Inputs_6.OCCT.MultiplyTransformsDto;
+    // (undocumented)
+    type NGonSolidDto = WithDefaults<Inputs_6.OCCT.NGonSolidDto, "center" | "direction" | "nrCorners" | "radius" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type NGonWireDto = WithDefaults<Inputs_6.OCCT.NGonWireDto, "center" | "direction" | "nrCorners" | "radius">;
+    // (undocumented)
+    type NormalizeFaceParametrizationDto<T> = WithDefaults<Inputs_6.OCCT.NormalizeFaceParametrizationDto<T>, "normalizeU" | "normalizeV" | "samples" | "tolerance">;
+    // (undocumented)
+    type Offset3DWireDto<T> = WithDefaults<Inputs_6.OCCT.Offset3DWireDto<T>, "offset" | "direction">;
+    // (undocumented)
+    type OffsetAdvancedDto<T, U> = WithDefaults<Inputs_6.OCCT.OffsetAdvancedDto<T, U>, "distance" | "tolerance" | "joinType" | "removeIntEdges">;
+    // (undocumented)
+    type OffsetDto<T, U> = WithDefaults<Inputs_6.OCCT.OffsetDto<T, U>, "distance" | "tolerance">;
+    // (undocumented)
+    type OffsetOpenDto<T, U> = WithDefaults<Inputs_6.OCCT.OffsetOpenDto<T, U>, "distance" | "joinType">;
+    // (undocumented)
+    type OrientDto<T> = Inputs_6.OCCT.OrientDto<T>;
+    // (undocumented)
+    type ParallelogramDto = WithDefaults<Inputs_6.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
+    // (undocumented)
+    type ParallelogramSolidDto = WithDefaults<Inputs_6.OCCT.ParallelogramSolidDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type ParseStepAssemblyToJsonDto = Inputs_6.OCCT.ParseStepAssemblyToJsonDto;
+    // (undocumented)
+    type PathArcSegment = WithDefaults<Inputs_6.OCCT.PathArcSegment, "type" | "rx" | "ry" | "xAxisRotation" | "startAngle" | "deltaAngle">;
+    // (undocumented)
+    type PathCubicSegment = WithDefaults<Inputs_6.OCCT.PathCubicSegment, "type">;
+    // (undocumented)
+    type PathLineSegment = WithDefaults<Inputs_6.OCCT.PathLineSegment, "type">;
+    // (undocumented)
+    type PathPlacementDto = WithDefaults<Inputs_6.OCCT.PathPlacementDto, "scale" | "flipY" | "origin">;
+    // (undocumented)
+    type PathQuadraticSegment = WithDefaults<Inputs_6.OCCT.PathQuadraticSegment, "type">;
+    // (undocumented)
+    type PathSubpath = WithDefaults<Inputs_6.OCCT.PathSubpath, "closed">;
+    // (undocumented)
+    type PinWithLabelDto = WithDefaults<Inputs_6.OCCT.PinWithLabelDto, "startPoint" | "endPoint" | "direction" | "offsetFromStart" | "label" | "labelOffset" | "labelSize" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical">;
+    // (undocumented)
+    type PipePolygonWireNGonDto<T> = WithDefaults<Inputs_6.OCCT.PipePolygonWireNGonDto<T>, "radius" | "nrCorners" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PipeWireCylindricalDto<T> = WithDefaults<Inputs_6.OCCT.PipeWireCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PipeWiresCylindricalDto<T> = WithDefaults<Inputs_6.OCCT.PipeWiresCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    // (undocumented)
+    type PipeWithScalingDto<T, U> = WithDefaults<Inputs_6.OCCT.PipeWithScalingDto<T, U>, "params" | "scales" | "makeSolid">;
+    // (undocumented)
+    type PlaceByMatricesDto<T> = Inputs_6.OCCT.PlaceByMatricesDto<T>;
+    // (undocumented)
+    type PlaceOnFramesDto<T> = Inputs_6.OCCT.PlaceOnFramesDto<T>;
+    // (undocumented)
+    type PointDto = WithDefaults<Inputs_6.OCCT.PointDto, "point">;
+    // (undocumented)
+    type PointsDto = Inputs_6.OCCT.PointsDto;
+    // (undocumented)
+    type PointsOnWireAtEqualLengthDto<T> = WithDefaults<Inputs_6.OCCT.PointsOnWireAtEqualLengthDto<T>, "length" | "tryNext" | "includeFirst" | "includeLast">;
+    // (undocumented)
+    type PointsOnWireAtPatternOfLengthsDto<T> = WithDefaults<Inputs_6.OCCT.PointsOnWireAtPatternOfLengthsDto<T>, "tryNext" | "includeFirst" | "includeLast">;
+    // (undocumented)
+    type PolygonDto = Inputs_6.OCCT.PolygonDto;
+    // (undocumented)
+    type PolygonsDto = WithDefaults<Inputs_6.OCCT.PolygonsDto, "returnCompound">;
+    // (undocumented)
+    type PolylineBaseDto = Inputs_6.OCCT.PolylineBaseDto;
+    // (undocumented)
+    type PolylineDto = Inputs_6.OCCT.PolylineDto;
+    // (undocumented)
+    type PolylinesBaseDto = Inputs_6.OCCT.PolylinesBaseDto;
+    // (undocumented)
+    type PolylinesDto = WithDefaults<Inputs_6.OCCT.PolylinesDto, "returnCompound">;
+    // (undocumented)
+    type PrismFeatureDto<T, U> = WithDefaults<Inputs_6.OCCT.PrismFeatureDto<T, U>, "sketchFaceIndex" | "direction" | "extent" | "length" | "untilFaceIndex">;
+    // (undocumented)
+    type ProjectConicalDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectConicalDto<T, U>, "from">;
+    // (undocumented)
+    type ProjectNormalDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectNormalDto<T, U>, "tolerance" | "maxDistance">;
+    // (undocumented)
+    type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_6.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    // (undocumented)
+    type ProjectWireDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectWireDto<T, U>, "direction">;
+    // (undocumented)
+    type ProjectWiresDto<T, U> = WithDefaults<Inputs_6.OCCT.ProjectWiresDto<T, U>, "direction">;
+    // (undocumented)
+    type ProjectWireSharedDto<U> = WithDefaults<Inputs_6.OCCT.ProjectWireSharedDto<U>, "direction">;
+    // (undocumented)
+    type PushPullFacesDto<T> = WithDefaults<Inputs_6.OCCT.PushPullFacesDto<T>, "distance">;
+    // (undocumented)
+    type QuaternionToMatrixDto = WithDefaults<Inputs_6.OCCT.QuaternionToMatrixDto, "quaternion">;
+    // (undocumented)
+    type RebuildCurveDegreeDto<T> = WithDefaults<Inputs_6.OCCT.RebuildCurveDegreeDto<T>, "degree" | "tolerance">;
+    // (undocumented)
+    type RebuildFaceDegreeDto<T> = WithDefaults<Inputs_6.OCCT.RebuildFaceDegreeDto<T>, "uDegree" | "vDegree" | "tolerance" | "keepTrim">;
+    // (undocumented)
+    type RectangleDto = WithDefaults<Inputs_6.OCCT.RectangleDto, "width" | "length" | "center" | "direction">;
+    // (undocumented)
+    type RemoveFacesDto<T> = Inputs_6.OCCT.RemoveFacesDto<T>;
+    // (undocumented)
+    type RevolvedFeatureDto<T, U> = WithDefaults<Inputs_6.OCCT.RevolvedFeatureDto<T, U>, "sketchFaceIndex" | "axisOrigin" | "axisDirection" | "angle">;
+    // (undocumented)
+    type RevolveDto<T> = WithDefaults<Inputs_6.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
+    // (undocumented)
+    type RibFeatureDto<T, U> = WithDefaults<Inputs_6.OCCT.RibFeatureDto<T, U>, "thickness" | "otherSideThickness">;
+    // (undocumented)
+    type RotateAroundCenterDto<T> = WithDefaults<Inputs_6.OCCT.RotateAroundCenterDto<T>, "angle" | "center" | "axis">;
+    // (undocumented)
+    type RotateAroundCenterShapesDto<T> = WithDefaults<Inputs_6.OCCT.RotateAroundCenterShapesDto<T>, "angles" | "centers" | "axes">;
+    // (undocumented)
+    type RotateByQuaternionDto<T> = WithDefaults<Inputs_6.OCCT.RotateByQuaternionDto<T>, "quaternion">;
+    // (undocumented)
+    type RotateDto<T> = WithDefaults<Inputs_6.OCCT.RotateDto<T>, "axis" | "angle">;
+    // (undocumented)
+    type RotateShapesDto<T> = WithDefaults<Inputs_6.OCCT.RotateShapesDto<T>, "axes" | "angles">;
+    // (undocumented)
+    type RotationAxisAngleToMatrixDto = WithDefaults<Inputs_6.OCCT.RotationAxisAngleToMatrixDto, "axis" | "angle" | "center">;
+    // (undocumented)
+    type RotationExtrudeDto<T> = WithDefaults<Inputs_6.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
+    // (undocumented)
+    type SaveBrepDto<T> = WithDefaults<Inputs_6.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload">;
+    // (undocumented)
+    type SaveObjDto<T> = WithDefaults<Inputs_6.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
+    // (undocumented)
+    type SavePlyDto<T> = WithDefaults<Inputs_6.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
+    // (undocumented)
+    type SaveStepDto<T> = WithDefaults<Inputs_6.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload">;
+    // (undocumented)
+    type SaveStlDto<T> = WithDefaults<Inputs_6.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
+    // (undocumented)
+    type SaveSvgDto<T> = WithDefaults<Inputs_6.OCCT.SaveSvgDto<T>, "drawHidden" | "precision" | "fileName" | "tryDownload">;
+    // (undocumented)
+    type Scale3DDto<T> = WithDefaults<Inputs_6.OCCT.Scale3DDto<T>, "scale" | "center">;
+    // (undocumented)
+    type Scale3DShapesDto<T> = WithDefaults<Inputs_6.OCCT.Scale3DShapesDto<T>, "scales" | "centers">;
+    // (undocumented)
+    type ScaleDto<T> = WithDefaults<Inputs_6.OCCT.ScaleDto<T>, "factor">;
+    // (undocumented)
+    type ScaleFromCenterDto<T> = WithDefaults<Inputs_6.OCCT.ScaleFromCenterDto<T>, "factor" | "center">;
+    // (undocumented)
+    type ScaleShapesDto<T> = WithDefaults<Inputs_6.OCCT.ScaleShapesDto<T>, "factors">;
+    // (undocumented)
+    type ScaleUniformToMatrixDto = WithDefaults<Inputs_6.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    // (undocumented)
+    type SectionWiresDto<T> = WithDefaults<Inputs_6.OCCT.SectionWiresDto<T>, "tolerance">;
+    // (undocumented)
+    type SegmentBaseDto = Inputs_6.OCCT.SegmentBaseDto;
+    // (undocumented)
+    type SegmentsBaseDto = Inputs_6.OCCT.SegmentsBaseDto;
+    // (undocumented)
+    type SelectBetweenDto<T> = Inputs_6.OCCT.SelectBetweenDto<T>;
+    // (undocumented)
+    type SelectByDirectionDto<T> = WithDefaults<Inputs_6.OCCT.SelectByDirectionDto<T>, "direction" | "angle">;
+    // (undocumented)
+    type SelectConvexityDto<T> = WithDefaults<Inputs_6.OCCT.SelectConvexityDto<T>, "tangentAngle">;
+    // (undocumented)
+    type SelectEdgesOfTypeDto<T> = WithDefaults<Inputs_6.OCCT.SelectEdgesOfTypeDto<T>, "type">;
+    // (undocumented)
+    type SelectExtremeDto<T> = WithDefaults<Inputs_6.OCCT.SelectExtremeDto<T>, "direction" | "tolerance">;
+    // (undocumented)
+    type SelectFacesOfTypeDto<T> = WithDefaults<Inputs_6.OCCT.SelectFacesOfTypeDto<T>, "type">;
+    // (undocumented)
+    type SelectFromIndexesDto<T> = Inputs_6.OCCT.SelectFromIndexesDto<T>;
+    // (undocumented)
+    type SelectGroupAlongDto<T> = WithDefaults<Inputs_6.OCCT.SelectGroupAlongDto<T>, "direction" | "tolerance">;
+    // (undocumented)
+    type SelectInBoxDto<T> = WithDefaults<Inputs_6.OCCT.SelectInBoxDto<T>, "corner" | "oppositeCorner">;
+    // (undocumented)
+    type SelectInRangeDto<T> = WithDefaults<Inputs_6.OCCT.SelectInRangeDto<T>, "min" | "max">;
+    // (undocumented)
+    type SelectInSphereDto<T> = WithDefaults<Inputs_6.OCCT.SelectInSphereDto<T>, "center" | "radius">;
+    // (undocumented)
+    type SelectNearestDto<T> = WithDefaults<Inputs_6.OCCT.SelectNearestDto<T>, "point" | "count">;
+    // (undocumented)
+    type SelectOnPlaneDto<T> = WithDefaults<Inputs_6.OCCT.SelectOnPlaneDto<T>, "origin" | "normal" | "tolerance">;
+    // (undocumented)
+    type SelectSortAlongDto<T> = WithDefaults<Inputs_6.OCCT.SelectSortAlongDto<T>, "direction">;
+    // (undocumented)
+    type SelectTangentChainDto<T> = WithDefaults<Inputs_6.OCCT.SelectTangentChainDto<T>, "angle">;
+    // (undocumented)
+    type SelfIntersectionsDto<T> = WithDefaults<Inputs_6.OCCT.SelfIntersectionsDto<T>, "precision">;
+    // (undocumented)
+    type SetDocLabelColorDto<T> = WithDefaults<Inputs_6.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
+    // (undocumented)
+    type SetDocLabelNameDto<T> = WithDefaults<Inputs_6.OCCT.SetDocLabelNameDto<T>, "name">;
+    // (undocumented)
+    type SewDto<T> = WithDefaults<Inputs_6.OCCT.SewDto<T>, "tolerance">;
+    // (undocumented)
+    type SewWithReportDto<T> = WithDefaults<Inputs_6.OCCT.SewWithReportDto<T>, "tolerance" | "nonManifold">;
+    // (undocumented)
+    type ShapeDto<T> = Inputs_6.OCCT.ShapeDto<T>;
+    // (undocumented)
+    type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs_6.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "adjustYtoZ" | "reversedPoints">;
+    // (undocumented)
+    type ShapeFromPathDto = WithDefaults<Inputs_6.OCCT.ShapeFromPathDto, "makeFaces" | "joinSegments" | "tolerance" | "scale" | "flipY" | "origin">;
+    // (undocumented)
+    type ShapeIndexDto<T> = WithDefaults<Inputs_6.OCCT.ShapeIndexDto<T>, "index">;
+    // (undocumented)
+    type ShapesDto<T> = Inputs_6.OCCT.ShapesDto<T>;
+    // (undocumented)
+    type ShapeShapesDto<T, U> = Inputs_6.OCCT.ShapeShapesDto<T, U>;
+    // (undocumented)
+    type ShapesToMeshesDto<T> = WithDefaults<Inputs_6.OCCT.ShapesToMeshesDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_6.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_6.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
+    // (undocumented)
+    type ShapeToMeshDto<T> = WithDefaults<Inputs_6.OCCT.ShapeToMeshDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    // (undocumented)
+    type ShapeTransformQueryDto<T> = Inputs_6.OCCT.ShapeTransformQueryDto<T>;
+    // (undocumented)
+    type ShapeWithToleranceDto<T> = WithDefaults<Inputs_6.OCCT.ShapeWithToleranceDto<T>, "tolerance">;
+    // (undocumented)
+    type SimpleAngularDimensionDto = WithDefaults<Inputs_6.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    // (undocumented)
+    type SimpleLinearLengthDimensionDto = WithDefaults<Inputs_6.OCCT.SimpleLinearLengthDimensionDto, "offsetFromPoints" | "crossingSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "labelRotation" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    // (undocumented)
+    type SliceByFramesDto<T> = WithDefaults<Inputs_6.OCCT.SliceByFramesDto<T>, "makeFaces" | "tolerance">;
+    // (undocumented)
+    type SliceDto<T> = WithDefaults<Inputs_6.OCCT.SliceDto<T>, "step" | "direction">;
+    // (undocumented)
+    type SliceInStepPatternDto<T> = WithDefaults<Inputs_6.OCCT.SliceInStepPatternDto<T>, "steps" | "direction">;
+    // (undocumented)
+    type SphereDto = WithDefaults<Inputs_6.OCCT.SphereDto, "radius" | "center">;
+    // (undocumented)
+    type SplitByFrameDto<T> = Inputs_6.OCCT.SplitByFrameDto<T>;
+    // (undocumented)
+    type SplitDto<T> = WithDefaults<Inputs_6.OCCT.SplitDto<T>, "localFuzzyTolerance" | "nonDestructive">;
+    // (undocumented)
+    type SplitFaceByWiresDto<T, U> = Inputs_6.OCCT.SplitFaceByWiresDto<T, U>;
+    // (undocumented)
+    type SplitWireOnPointsDto<T> = Inputs_6.OCCT.SplitWireOnPointsDto<T>;
+    // (undocumented)
+    type SquareDto = WithDefaults<Inputs_6.OCCT.SquareDto, "size" | "center" | "direction">;
+    // (undocumented)
+    type StarDto = WithDefaults<Inputs_6.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
+    // (undocumented)
+    type StarSolidDto = WithDefaults<Inputs_6.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type SVGResult<T> = Inputs_6.OCCT.SVGResult<T>;
+    // (undocumented)
+    type SVGShape<T> = Inputs_6.OCCT.SVGShape<T>;
+    // (undocumented)
+    type SweepEvolvedDto<T, U> = WithDefaults<Inputs_6.OCCT.SweepEvolvedDto<T, U>, "makeSolid">;
+    // (undocumented)
+    type TaperedHelixWireDto = WithDefaults<Inputs_6.OCCT.TaperedHelixWireDto, "startRadius" | "endRadius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    // (undocumented)
+    type TaperedPrismFeatureDto<T, U> = WithDefaults<Inputs_6.OCCT.TaperedPrismFeatureDto<T, U>, "sketchFaceIndex" | "angle" | "extent" | "length" | "untilFaceIndex">;
+    // (undocumented)
+    type TBeamProfileDto = WithDefaults<Inputs_6.OCCT.TBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type TBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.TBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type TextWiresDto = WithDefaults<Inputs_6.OCCT.TextWiresDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+    // (undocumented)
+    type ThickSolidByJoinDto<T> = WithDefaults<Inputs_6.OCCT.ThickSolidByJoinDto<T>, "offset" | "tolerance" | "intersection" | "selfIntersection" | "joinType" | "removeIntEdges">;
+    // (undocumented)
+    type ThisckSolidSimpleDto<T> = WithDefaults<Inputs_6.OCCT.ThisckSolidSimpleDto<T>, "offset">;
+    // (undocumented)
+    type TorusDto = WithDefaults<Inputs_6.OCCT.TorusDto, "majorRadius" | "minorRadius" | "center" | "direction" | "angle">;
+    // (undocumented)
+    type TransformByMatrixDto<T> = Inputs_6.OCCT.TransformByMatrixDto<T>;
+    // (undocumented)
+    type TransformDto<T> = WithDefaults<Inputs_6.OCCT.TransformDto<T>, "translation" | "rotationAxis" | "rotationAngle" | "scaleFactor">;
+    // (undocumented)
+    type TransformShapesByMatrixDto<T> = Inputs_6.OCCT.TransformShapesByMatrixDto<T>;
+    // (undocumented)
+    type TransformShapesDto<T> = WithDefaults<Inputs_6.OCCT.TransformShapesDto<T>, "translations" | "rotationAxes" | "rotationAngles" | "scaleFactors">;
+    // (undocumented)
+    type TranslateDto<T> = WithDefaults<Inputs_6.OCCT.TranslateDto<T>, "translation">;
+    // (undocumented)
+    type TranslateShapesDto<T> = WithDefaults<Inputs_6.OCCT.TranslateShapesDto<T>, "translations">;
+    // (undocumented)
+    type TranslationToMatrixDto = WithDefaults<Inputs_6.OCCT.TranslationToMatrixDto, "translation">;
+    // (undocumented)
+    type TriangleBaseDto = Inputs_6.OCCT.TriangleBaseDto;
+    // (undocumented)
+    type TwoShapesDto<T> = Inputs_6.OCCT.TwoShapesDto<T>;
+    // (undocumented)
+    type UBeamProfileDto = WithDefaults<Inputs_6.OCCT.UBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction">;
+    // (undocumented)
+    type UBeamProfileSolidDto = WithDefaults<Inputs_6.OCCT.UBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    // (undocumented)
+    type UnifySameDomainDto<T> = WithDefaults<Inputs_6.OCCT.UnifySameDomainDto<T>, "unifyEdges" | "unifyFaces" | "concatBSplines">;
+    // (undocumented)
+    type UnionDto<T> = WithDefaults<Inputs_6.OCCT.UnionDto<T>, "keepEdges" | "strategy">;
+    // (undocumented)
+    type UnrollFaceDto<T> = WithDefaults<Inputs_6.OCCT.UnrollFaceDto<T>, "tolerance">;
+    // (undocumented)
+    type WireAlongParamDto<T> = WithDefaults<Inputs_6.OCCT.WireAlongParamDto<T>, "isU" | "param">;
+    // (undocumented)
+    type WireFromTwoCirclesTanDto<T> = WithDefaults<Inputs_6.OCCT.WireFromTwoCirclesTanDto<T>, "keepLines" | "circleRemainders" | "tolerance">;
+    // (undocumented)
+    type WireOnFaceDto<T, U> = Inputs_6.OCCT.WireOnFaceDto<T, U>;
+    // (undocumented)
+    type WiresAlongParamsDto<T> = WithDefaults<Inputs_6.OCCT.WiresAlongParamsDto<T>, "isU">;
+    // (undocumented)
+    type WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_6.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<T>, "wireType" | "closed" | "tolerance">;
+    // (undocumented)
+    type WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_6.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T>, "nrOfDivisions" | "divideByEqualDistance" | "wireType" | "closed" | "tolerance">;
+    // (undocumented)
+    type WiresOnFaceDto<T, U> = Inputs_6.OCCT.WiresOnFaceDto<T, U>;
+    // (undocumented)
+    type WiresToPointsDto<T> = WithDefaults<Inputs_6.OCCT.WiresToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    // (undocumented)
+    type WrapWiresOnFaceDto<T, U> = WithDefaults<Inputs_6.OCCT.WrapWiresOnFaceDto<T, U>, "tolerance">;
+    // (undocumented)
+    type XYZDto = WithDefaults<Inputs_6.OCCT.XYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type ZigZagBetweenTwoWiresDto<T> = WithDefaults<Inputs_6.OCCT.ZigZagBetweenTwoWiresDto<T>, "nrZigZags" | "inverse" | "divideByEqualDistance" | "zigZagsPerEdge">;
 }
 
 // @public
@@ -5015,29 +7266,29 @@ namespace Point_2 {
     }
     class DrawPointDto<T> {
         constructor(point?: Base.Point3, opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         point: Base.Point3;
         pointMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class DrawPointsDto<T> {
         constructor(points?: Base.Point3[], opacity?: number, size?: number, colours?: string | string[], updatable?: boolean, pointsMesh?: T);
-        colours: string | string[];
-        opacity: number;
+        colours?: string | string[] | undefined;
+        opacity?: number | undefined;
         points: Base.Point3[];
         pointsMesh?: T | undefined;
-        size: number;
-        updatable: boolean;
+        size?: number | undefined;
+        updatable?: boolean | undefined;
     }
     class HexGridCentersDto {
         constructor(nrHexagonsX?: number, nrHexagonsY?: number, radiusHexagon?: number, orientOnCenter?: boolean, pointsOnGround?: boolean);
-        nrHexagonsX: number;
-        nrHexagonsY: number;
-        orientOnCenter: boolean;
-        pointsOnGround: boolean;
-        radiusHexagon: number;
+        nrHexagonsX?: number | undefined;
+        nrHexagonsY?: number | undefined;
+        orientOnCenter?: boolean | undefined;
+        pointsOnGround?: boolean | undefined;
+        radiusHexagon?: number | undefined;
     }
     class HexGridScaledToFitDto {
         constructor(width?: number, height?: number, nrHexagonsInHeight?: number, nrHexagonsInWidth?: number, centerGrid?: boolean, pointsOnGround?: boolean);
@@ -5074,41 +7325,41 @@ namespace Point_2 {
     }
     class PointXYDto {
         constructor(x?: number, y?: number);
-        x: number;
-        y: number;
+        x?: number | undefined;
+        y?: number | undefined;
     }
     class PointXYZDto {
         constructor(x?: number, y?: number, z?: number);
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     class RemoveConsecutiveDuplicatesDto {
         constructor(points?: Base.Point3[], tolerance?: number, checkFirstAndLast?: boolean);
-        checkFirstAndLast: boolean;
+        checkFirstAndLast?: boolean | undefined;
         points: Base.Point3[];
         tolerance?: number | undefined;
     }
     class RotatePointsCenterAxisDto {
         constructor(points?: Base.Point3[], angle?: number, axis?: Base.Vector3, center?: Base.Point3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
         points: Base.Point3[];
     }
     class ScalePointsCenterXYZDto {
         constructor(points?: Base.Point3[], center?: Base.Point3, scaleXyz?: Base.Vector3);
-        center: Base.Point3;
+        center?: Base.Point3 | undefined;
         points: Base.Point3[];
-        scaleXyz: Base.Vector3;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     class SpiralDto {
         constructor(radius?: number, numberPoints?: number, widening?: number, factor?: number, phi?: number);
-        factor: number;
-        numberPoints: number;
-        phi: number;
-        radius: number;
-        widening: number;
+        factor?: number | undefined;
+        numberPoints?: number | undefined;
+        phi?: number | undefined;
+        radius?: number | undefined;
+        widening?: number | undefined;
     }
     class StartEndPointsDto {
         constructor(startPoint?: Base.Point3, endPoint?: Base.Point3);
@@ -5132,14 +7383,14 @@ namespace Point_2 {
         point1: Base.Point3;
         point2: Base.Point3;
         point3: Base.Point3;
-        reverseNormal: boolean;
+        reverseNormal?: boolean | undefined;
     }
     class ThreePointsToleranceDto {
         constructor(start?: Base.Point3, center?: Base.Point3, end?: Base.Point3, tolerance?: number);
         center: Base.Point3;
         end: Base.Point3;
         start: Base.Point3;
-        tolerance: number;
+        tolerance?: number | undefined;
     }
     class TransformPointDto {
         constructor(point?: Base.Point3, transformation?: Base.TransformMatrixes);
@@ -5169,9 +7420,9 @@ namespace Point_2 {
     class TranslateXYZPointsDto {
         constructor(points?: Base.Point3[], x?: number, y?: number, z?: number);
         points: Base.Point3[];
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
     class TwoPointsDto {
         constructor(point1?: Base.Point3, point2?: Base.Point3);
@@ -5184,6 +7435,66 @@ namespace Point_2 {
         point2: Base.Point3;
         tolerance?: number | undefined;
     }
+}
+
+// @public
+namespace Point_3 {
+    // (undocumented)
+    type ClosestPointFromPointsDto = Inputs_7.Point.ClosestPointFromPointsDto;
+    // (undocumented)
+    type DrawPointDto<T> = WithDefaults<Inputs_7.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type DrawPointsDto<T> = WithDefaults<Inputs_7.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    // (undocumented)
+    type HexGridCentersDto = WithDefaults<Inputs_7.Point.HexGridCentersDto, "nrHexagonsY" | "nrHexagonsX" | "radiusHexagon" | "orientOnCenter" | "pointsOnGround">;
+    // (undocumented)
+    type HexGridScaledToFitDto = WithDefaults<Inputs_7.Point.HexGridScaledToFitDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight" | "centerGrid" | "pointsOnGround">;
+    // (undocumented)
+    type MultiplyPointDto = Inputs_7.Point.MultiplyPointDto;
+    // (undocumented)
+    type PointDto = Inputs_7.Point.PointDto;
+    // (undocumented)
+    type PointsDto = Inputs_7.Point.PointsDto;
+    // (undocumented)
+    type PointsMaxFilletsHalfLineDto = WithDefaults<Inputs_7.Point.PointsMaxFilletsHalfLineDto, "checkLastWithFirst" | "tolerance">;
+    // (undocumented)
+    type PointXYDto = WithDefaults<Inputs_7.Point.PointXYDto, "x" | "y">;
+    // (undocumented)
+    type PointXYZDto = WithDefaults<Inputs_7.Point.PointXYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicatesDto = WithDefaults<Inputs_7.Point.RemoveConsecutiveDuplicatesDto, "tolerance" | "checkFirstAndLast">;
+    // (undocumented)
+    type RotatePointsCenterAxisDto = WithDefaults<Inputs_7.Point.RotatePointsCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type ScalePointsCenterXYZDto = WithDefaults<Inputs_7.Point.ScalePointsCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type SpiralDto = WithDefaults<Inputs_7.Point.SpiralDto, "phi" | "numberPoints" | "widening" | "radius" | "factor">;
+    // (undocumented)
+    type StartEndPointsDto = Inputs_7.Point.StartEndPointsDto;
+    // (undocumented)
+    type StartEndPointsListDto = Inputs_7.Point.StartEndPointsListDto;
+    // (undocumented)
+    type StretchPointsDirFromCenterDto = WithDefaults<Inputs_7.Point.StretchPointsDirFromCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type ThreePointsNormalDto = WithDefaults<Inputs_7.Point.ThreePointsNormalDto, "reverseNormal">;
+    // (undocumented)
+    type ThreePointsToleranceDto = WithDefaults<Inputs_7.Point.ThreePointsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPointDto = Inputs_7.Point.TransformPointDto;
+    // (undocumented)
+    type TransformPointsDto = Inputs_7.Point.TransformPointsDto;
+    // (undocumented)
+    type TransformsForPointsDto = Inputs_7.Point.TransformsForPointsDto;
+    // (undocumented)
+    type TranslatePointsDto = Inputs_7.Point.TranslatePointsDto;
+    // (undocumented)
+    type TranslatePointsWithVectorsDto = Inputs_7.Point.TranslatePointsWithVectorsDto;
+    // (undocumented)
+    type TranslateXYZPointsDto = WithDefaults<Inputs_7.Point.TranslateXYZPointsDto, "x" | "y" | "z">;
+    // (undocumented)
+    type TwoPointsDto = Inputs_7.Point.TwoPointsDto;
+    // (undocumented)
+    type TwoPointsToleranceDto = WithDefaults<Inputs_7.Point.TwoPointsToleranceDto, "tolerance">;
 }
 
 // @public
@@ -5249,101 +7560,166 @@ namespace Polyline {
 }
 
 // @public
+namespace Polyline_2 {
+    // (undocumented)
+    type DrawPolylineDto<T> = WithDefaults<Inputs_7.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawPolylinesDto<T> = WithDefaults<Inputs_7.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type PolylineCreateDto = WithDefaults<Inputs_7.Polyline.PolylineCreateDto, "isClosed">;
+    // (undocumented)
+    type PolylineDto = Inputs_7.Polyline.PolylineDto;
+    // (undocumented)
+    type PolylinePropertiesDto = WithDefaults<Inputs_7.Polyline.PolylinePropertiesDto, "isClosed">;
+    // (undocumented)
+    type PolylinesDto = Inputs_7.Polyline.PolylinesDto;
+    // (undocumented)
+    type PolylineToleranceDto = WithDefaults<Inputs_7.Polyline.PolylineToleranceDto, "tolerance">;
+    // (undocumented)
+    type SegmentsToleranceDto = WithDefaults<Inputs_7.Polyline.SegmentsToleranceDto, "tolerance">;
+    // (undocumented)
+    type TransformPolylineDto = Inputs_7.Polyline.TransformPolylineDto;
+    // (undocumented)
+    type TwoPolylinesToleranceDto = WithDefaults<Inputs_7.Polyline.TwoPolylinesToleranceDto, "tolerance">;
+}
+
+declare namespace Resolved {
+    export {
+        Asset_2 as Asset,
+        CSV_2 as CSV,
+        JSON_3 as JSON,
+        JSCAD_2 as JSCAD,
+        Manifold_2 as Manifold,
+        OCCT_3 as OCCT,
+        Tag_2 as Tag,
+        Time_2 as Time,
+        Verb_2 as Verb,
+        Color_2 as Color,
+        Dates_2 as Dates,
+        Frame_2 as Frame,
+        IO_2 as IO,
+        Line_2 as Line,
+        Lists_2 as Lists,
+        Logic_2 as Logic,
+        Math_3 as Math,
+        Mesh_2 as Mesh,
+        Point_3 as Point,
+        Polyline_2 as Polyline,
+        Text_4 as Text,
+        Transforms_2 as Transforms,
+        Vector_2 as Vector,
+        Draw_3 as Draw,
+        ThreeJSCamera_3 as ThreeJSCamera,
+        ThreeJSScene_2 as ThreeJSScene
+    }
+}
+
+// @public
 namespace Tag {
     class DrawTagDto {
         constructor(tag?: TagDto, updatable?: boolean, tagVariable?: TagDto);
         tag: TagDto;
         tagVariable?: TagDto | undefined;
-        updatable: boolean;
+        updatable?: boolean | undefined;
     }
     class DrawTagsDto {
         constructor(tags?: TagDto[], updatable?: boolean, tagsVariable?: TagDto[]);
         tags: TagDto[];
         tagsVariable?: TagDto[] | undefined;
-        updatable: boolean;
+        updatable?: boolean | undefined;
     }
     class TagDto {
         constructor(text?: string, position?: Base_2.Point3, colour?: string, size?: number, adaptDepth?: boolean, needsUpdate?: boolean, id?: string);
-        adaptDepth: boolean;
-        colour: string;
+        adaptDepth?: boolean | undefined;
+        colour?: string | undefined;
         id?: string | undefined;
         needsUpdate?: boolean | undefined;
-        position: Base_2.Point3;
-        size: number;
+        position?: Base_2.Point3 | undefined;
+        size?: number | undefined;
         text: string;
     }
+}
+
+// @public
+namespace Tag_2 {
+    // (undocumented)
+    type DrawTagDto = WithDefaults<Inputs_3.Tag.DrawTagDto, "updatable">;
+    // (undocumented)
+    type DrawTagsDto = WithDefaults<Inputs_3.Tag.DrawTagsDto, "updatable">;
+    // (undocumented)
+    type TagDto = WithDefaults<Inputs_3.Tag.TagDto, "position" | "colour" | "size" | "adaptDepth">;
 }
 
 // @public
 namespace Text_3 {
     class TextConcatDto {
         constructor(texts?: string[]);
-        texts: string[];
+        texts?: string[] | undefined;
     }
     class TextDto {
         constructor(text?: string);
-        text: string;
+        text?: string | undefined;
     }
     class TextFormatDto {
         constructor(text?: string, values?: string[]);
-        text: string;
-        values: string[];
+        text?: string | undefined;
+        values?: string[] | undefined;
     }
     class TextIndexDto {
         constructor(text?: string, index?: number);
-        index: number;
-        text: string;
+        index?: number | undefined;
+        text?: string | undefined;
     }
     class TextJoinDto {
         constructor(list?: string[], separator?: string);
         list: string[];
-        separator: string;
+        separator?: string | undefined;
     }
     class TextPadDto {
         constructor(text?: string, length?: number, padString?: string);
-        length: number;
-        padString: string;
-        text: string;
+        length?: number | undefined;
+        padString?: string | undefined;
+        text?: string | undefined;
     }
     class TextRegexDto {
         constructor(text?: string, pattern?: string, flags?: string);
-        flags: string;
-        pattern: string;
-        text: string;
+        flags?: string | undefined;
+        pattern?: string | undefined;
+        text?: string | undefined;
     }
     class TextRegexReplaceDto {
         constructor(text?: string, pattern?: string, flags?: string, replaceWith?: string);
-        flags: string;
-        pattern: string;
-        replaceWith: string;
-        text: string;
+        flags?: string | undefined;
+        pattern?: string | undefined;
+        replaceWith?: string | undefined;
+        text?: string | undefined;
     }
     class TextRepeatDto {
         constructor(text?: string, count?: number);
-        count: number;
-        text: string;
+        count?: number | undefined;
+        text?: string | undefined;
     }
     class TextReplaceDto {
         constructor(text?: string, search?: string, replaceWith?: string);
-        replaceWith: string;
-        search: string;
-        text: string;
+        replaceWith?: string | undefined;
+        search?: string | undefined;
+        text?: string | undefined;
     }
     class TextSearchDto {
         constructor(text?: string, search?: string);
-        search: string;
-        text: string;
+        search?: string | undefined;
+        text?: string | undefined;
     }
     class TextSplitDto {
         constructor(text?: string, separator?: string);
-        separator: string;
-        text: string;
+        separator?: string | undefined;
+        text?: string | undefined;
     }
     class TextSubstringDto {
         constructor(text?: string, start?: number, end?: number);
         end?: number | undefined;
-        start: number;
-        text: string;
+        start?: number | undefined;
+        text?: string | undefined;
     }
     class ToStringDto<T> {
         constructor(item?: T);
@@ -5355,7 +7731,7 @@ namespace Text_3 {
     }
     class VectorCharDto {
         constructor(char?: string, xOffset?: number, yOffset?: number, height?: number, extrudeOffset?: number);
-        char: string;
+        char?: string | undefined;
         extrudeOffset?: number | undefined;
         height?: number | undefined;
         xOffset?: number | undefined;
@@ -5373,6 +7749,44 @@ namespace Text_3 {
         xOffset?: number | undefined;
         yOffset?: number | undefined;
     }
+}
+
+// @public
+namespace Text_4 {
+    // (undocumented)
+    type TextConcatDto = WithDefaults<Inputs_7.Text.TextConcatDto, "texts">;
+    // (undocumented)
+    type TextDto = WithDefaults<Inputs_7.Text.TextDto, "text">;
+    // (undocumented)
+    type TextFormatDto = WithDefaults<Inputs_7.Text.TextFormatDto, "text" | "values">;
+    // (undocumented)
+    type TextIndexDto = WithDefaults<Inputs_7.Text.TextIndexDto, "text" | "index">;
+    // (undocumented)
+    type TextJoinDto = WithDefaults<Inputs_7.Text.TextJoinDto, "separator">;
+    // (undocumented)
+    type TextPadDto = WithDefaults<Inputs_7.Text.TextPadDto, "text" | "length" | "padString">;
+    // (undocumented)
+    type TextRegexDto = WithDefaults<Inputs_7.Text.TextRegexDto, "text" | "pattern" | "flags">;
+    // (undocumented)
+    type TextRegexReplaceDto = WithDefaults<Inputs_7.Text.TextRegexReplaceDto, "text" | "pattern" | "flags" | "replaceWith">;
+    // (undocumented)
+    type TextRepeatDto = WithDefaults<Inputs_7.Text.TextRepeatDto, "text" | "count">;
+    // (undocumented)
+    type TextReplaceDto = WithDefaults<Inputs_7.Text.TextReplaceDto, "text" | "search" | "replaceWith">;
+    // (undocumented)
+    type TextSearchDto = WithDefaults<Inputs_7.Text.TextSearchDto, "text" | "search">;
+    // (undocumented)
+    type TextSplitDto = WithDefaults<Inputs_7.Text.TextSplitDto, "text" | "separator">;
+    // (undocumented)
+    type TextSubstringDto = WithDefaults<Inputs_7.Text.TextSubstringDto, "text" | "start">;
+    // (undocumented)
+    type ToStringDto<T> = Inputs_7.Text.ToStringDto<T>;
+    // (undocumented)
+    type ToStringEachDto<T> = Inputs_7.Text.ToStringEachDto<T>;
+    // (undocumented)
+    type VectorCharDto = WithDefaults<Inputs_7.Text.VectorCharDto, "char" | "xOffset" | "yOffset" | "height" | "extrudeOffset">;
+    // (undocumented)
+    type VectorTextDto = WithDefaults<Inputs_7.Text.VectorTextDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
 }
 
 // @public
@@ -5399,7 +7813,7 @@ namespace ThreeJSCamera_2 {
         constructor(orbitCamera?: OrbitCameraController, object?: THREEJS.Object3D, padding?: number);
         object: THREEJS.Object3D;
         orbitCamera: OrbitCameraController;
-        padding: number;
+        padding?: number | undefined;
     }
     class OrbitCameraControllerDto {
         constructor(orbitCamera?: OrbitCameraController);
@@ -5407,54 +7821,76 @@ namespace ThreeJSCamera_2 {
     }
     class OrbitCameraDto {
         constructor(distance?: number, pitch?: number, yaw?: number, distanceMin?: number, distanceMax?: number, pitchAngleMin?: number, pitchAngleMax?: number, orbitSensitivity?: number, distanceSensitivity?: number, panSensitivity?: number, inertiaFactor?: number, autoRender?: boolean, frameOnStart?: boolean, enableDamping?: boolean, dampingFactor?: number);
-        autoRender: boolean;
-        dampingFactor: number;
-        distance: number;
-        distanceMax: number;
-        distanceMin: number;
-        distanceSensitivity: number;
+        autoRender?: boolean | undefined;
+        dampingFactor?: number | undefined;
+        distance?: number | undefined;
+        distanceMax?: number | undefined;
+        distanceMin?: number | undefined;
+        distanceSensitivity?: number | undefined;
         domElement?: HTMLElement | undefined;
-        enableDamping: boolean;
+        enableDamping?: boolean | undefined;
         focusObject?: THREEJS.Object3D | undefined;
-        frameOnStart: boolean;
-        inertiaFactor: number;
-        orbitSensitivity: number;
-        panSensitivity: number;
-        pitch: number;
-        pitchAngleMax: number;
-        pitchAngleMin: number;
-        pivotPoint: Base_3.Point3;
-        yaw: number;
+        frameOnStart?: boolean | undefined;
+        inertiaFactor?: number | undefined;
+        orbitSensitivity?: number | undefined;
+        panSensitivity?: number | undefined;
+        pitch?: number | undefined;
+        pitchAngleMax?: number | undefined;
+        pitchAngleMin?: number | undefined;
+        pivotPoint?: Base_3.Point3 | undefined;
+        yaw?: number | undefined;
     }
     class PivotPointDto {
         constructor(orbitCamera?: OrbitCameraController, pivotPoint?: Base_3.Point3);
         orbitCamera: OrbitCameraController;
-        pivotPoint: Base_3.Point3;
+        pivotPoint?: Base_3.Point3 | undefined;
     }
     class PositionDto {
         constructor(camera?: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera, position?: Base_3.Point3);
         camera: THREEJS.PerspectiveCamera | THREEJS.OrthographicCamera;
-        position: Base_3.Point3;
+        position?: Base_3.Point3 | undefined;
     }
     class ResetCameraDto {
         constructor(orbitCamera?: OrbitCameraController, yaw?: number, pitch?: number, distance?: number);
-        distance: number;
+        distance?: number | undefined;
         orbitCamera: OrbitCameraController;
-        pitch: number;
-        yaw: number;
+        pitch?: number | undefined;
+        yaw?: number | undefined;
     }
     class SetDistanceLimitsDto {
         constructor(orbitCamera?: OrbitCameraController, min?: number, max?: number);
-        max: number;
-        min: number;
+        max?: number | undefined;
+        min?: number | undefined;
         orbitCamera: OrbitCameraController;
     }
     class SetPitchLimitsDto {
         constructor(orbitCamera?: OrbitCameraController, min?: number, max?: number);
-        max: number;
-        min: number;
+        max?: number | undefined;
+        min?: number | undefined;
         orbitCamera: OrbitCameraController;
     }
+}
+
+// @public
+namespace ThreeJSCamera_3 {
+    // (undocumented)
+    type CameraDto = Inputs_2.ThreeJSCamera.CameraDto;
+    // (undocumented)
+    type FocusObjectDto = WithDefaults<Inputs_2.ThreeJSCamera.FocusObjectDto, "padding">;
+    // (undocumented)
+    type OrbitCameraControllerDto = Inputs_2.ThreeJSCamera.OrbitCameraControllerDto;
+    // (undocumented)
+    type OrbitCameraDto = WithDefaults<Inputs_2.ThreeJSCamera.OrbitCameraDto, "pivotPoint" | "distance" | "pitch" | "yaw" | "distanceMin" | "distanceMax" | "pitchAngleMin" | "pitchAngleMax" | "orbitSensitivity" | "distanceSensitivity" | "panSensitivity" | "inertiaFactor" | "autoRender" | "frameOnStart" | "enableDamping" | "dampingFactor">;
+    // (undocumented)
+    type PivotPointDto = WithDefaults<Inputs_2.ThreeJSCamera.PivotPointDto, "pivotPoint">;
+    // (undocumented)
+    type PositionDto = WithDefaults<Inputs_2.ThreeJSCamera.PositionDto, "position">;
+    // (undocumented)
+    type ResetCameraDto = WithDefaults<Inputs_2.ThreeJSCamera.ResetCameraDto, "yaw" | "pitch" | "distance">;
+    // (undocumented)
+    type SetDistanceLimitsDto = WithDefaults<Inputs_2.ThreeJSCamera.SetDistanceLimitsDto, "min" | "max">;
+    // (undocumented)
+    type SetPitchLimitsDto = WithDefaults<Inputs_2.ThreeJSCamera.SetPitchLimitsDto, "min" | "max">;
 }
 
 // @public
@@ -5477,24 +7913,30 @@ export class ThreeJSOrbitCamera {
 namespace ThreeJSScene {
     class InitThreeJSDto {
         constructor(canvasId?: string, sceneSize?: number, backgroundColor?: string, enableShadows?: boolean, enableGround?: boolean, groundCenter?: Base_3.Point3, groundScaleFactor?: number, groundColor?: string, groundOpacity?: number, hemisphereLightSkyColor?: string, hemisphereLightGroundColor?: string, hemisphereLightIntensity?: number, directionalLightColor?: string, directionalLightIntensity?: number, shadowMapSize?: number);
-        backgroundColor: string;
+        backgroundColor?: string | undefined;
         canvasId?: string | undefined;
-        directionalLightColor: string;
-        directionalLightIntensity: number;
-        enableGround: boolean;
-        enableOrbitCamera: boolean;
-        enableShadows: boolean;
-        groundCenter: Base_3.Point3;
-        groundColor: string;
-        groundOpacity: number;
-        groundScaleFactor: number;
-        hemisphereLightGroundColor: string;
-        hemisphereLightIntensity: number;
-        hemisphereLightSkyColor: string;
+        directionalLightColor?: string | undefined;
+        directionalLightIntensity?: number | undefined;
+        enableGround?: boolean | undefined;
+        enableOrbitCamera?: boolean | undefined;
+        enableShadows?: boolean | undefined;
+        groundCenter?: Base_3.Point3 | undefined;
+        groundColor?: string | undefined;
+        groundOpacity?: number | undefined;
+        groundScaleFactor?: number | undefined;
+        hemisphereLightGroundColor?: string | undefined;
+        hemisphereLightIntensity?: number | undefined;
+        hemisphereLightSkyColor?: string | undefined;
         orbitCameraOptions?: ThreeJSCamera_2.OrbitCameraDto | undefined;
-        sceneSize: number;
-        shadowMapSize: number;
+        sceneSize?: number | undefined;
+        shadowMapSize?: number | undefined;
     }
+}
+
+// @public
+namespace ThreeJSScene_2 {
+    // (undocumented)
+    type InitThreeJSDto = WithDefaults<Inputs_2.ThreeJSScene.InitThreeJSDto, "sceneSize" | "backgroundColor" | "enableShadows" | "enableGround" | "groundCenter" | "groundScaleFactor" | "groundColor" | "groundOpacity" | "hemisphereLightSkyColor" | "hemisphereLightGroundColor" | "hemisphereLightIntensity" | "directionalLightColor" | "directionalLightIntensity" | "shadowMapSize" | "enableOrbitCamera">;
 }
 
 // @public
@@ -5507,33 +7949,39 @@ namespace Time {
 }
 
 // @public
+namespace Time_2 {
+    // (undocumented)
+    type PostFromIframe = Inputs_3.Time.PostFromIframe;
+}
+
+// @public
 namespace Transforms {
     class RotationCenterAxisDto {
         constructor(angle?: number, axis?: Base.Vector3, center?: Base.Point3);
-        angle: number;
-        axis: Base.Vector3;
-        center: Base.Point3;
+        angle?: number | undefined;
+        axis?: Base.Vector3 | undefined;
+        center?: Base.Point3 | undefined;
     }
     class RotationCenterDto {
         constructor(angle?: number, center?: Base.Point3);
-        angle: number;
-        center: Base.Point3;
+        angle?: number | undefined;
+        center?: Base.Point3 | undefined;
     }
     class RotationCenterYawPitchRollDto {
         constructor(yaw?: number, pitch?: number, roll?: number, center?: Base.Point3);
-        center: Base.Point3;
-        pitch: number;
-        roll: number;
-        yaw: number;
+        center?: Base.Point3 | undefined;
+        pitch?: number | undefined;
+        roll?: number | undefined;
+        yaw?: number | undefined;
     }
     class ScaleCenterXYZDto {
         constructor(center?: Base.Point3, scaleXyz?: Base.Vector3);
-        center: Base.Point3;
-        scaleXyz: Base.Vector3;
+        center?: Base.Point3 | undefined;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     class ScaleXYZDto {
         constructor(scaleXyz?: Base.Vector3);
-        scaleXyz: Base.Vector3;
+        scaleXyz?: Base.Vector3 | undefined;
     }
     class StretchDirCenterDto {
         constructor(scale?: number, center?: Base.Point3, direction?: Base.Vector3);
@@ -5547,17 +7995,41 @@ namespace Transforms {
     }
     class TranslationXYZDto {
         constructor(translation?: Base.Vector3);
-        translation: Base.Vector3;
+        translation?: Base.Vector3 | undefined;
     }
     class UniformScaleDto {
         constructor(scale?: number);
-        scale: number;
+        scale?: number | undefined;
     }
     class UniformScaleFromCenterDto {
         constructor(scale?: number, center?: Base.Point3);
-        center: Base.Point3;
-        scale: number;
+        center?: Base.Point3 | undefined;
+        scale?: number | undefined;
     }
+}
+
+// @public
+namespace Transforms_2 {
+    // (undocumented)
+    type RotationCenterAxisDto = WithDefaults<Inputs_7.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
+    // (undocumented)
+    type RotationCenterDto = WithDefaults<Inputs_7.Transforms.RotationCenterDto, "angle" | "center">;
+    // (undocumented)
+    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_7.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
+    // (undocumented)
+    type ScaleCenterXYZDto = WithDefaults<Inputs_7.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
+    // (undocumented)
+    type ScaleXYZDto = WithDefaults<Inputs_7.Transforms.ScaleXYZDto, "scaleXyz">;
+    // (undocumented)
+    type StretchDirCenterDto = WithDefaults<Inputs_7.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    // (undocumented)
+    type TranslationsXYZDto = Inputs_7.Transforms.TranslationsXYZDto;
+    // (undocumented)
+    type TranslationXYZDto = WithDefaults<Inputs_7.Transforms.TranslationXYZDto, "translation">;
+    // (undocumented)
+    type UniformScaleDto = WithDefaults<Inputs_7.Transforms.UniformScaleDto, "scale">;
+    // (undocumented)
+    type UniformScaleFromCenterDto = WithDefaults<Inputs_7.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }
 
 // @public
@@ -5565,49 +8037,49 @@ namespace Vector {
     class FractionTwoVectorsDto {
         constructor(fraction?: number, first?: Base.Vector3, second?: Base.Vector3);
         first: Base.Vector3;
-        fraction: number;
+        fraction?: number | undefined;
         second: Base.Vector3;
     }
     class RangeMaxDto {
         constructor(max?: number);
-        max: number;
+        max?: number | undefined;
     }
     class RayPointDto {
         constructor(point?: Base.Point3, distance?: number, vector?: number[]);
-        distance: number;
+        distance?: number | undefined;
         point: Base.Point3;
         vector: number[];
     }
     class RemoveAllDuplicateVectorsDto {
         constructor(vectors?: number[][], tolerance?: number);
-        tolerance: number;
+        tolerance?: number | undefined;
         vectors: number[][];
     }
     class RemoveConsecutiveDuplicateVectorsDto {
         constructor(vectors?: number[][], checkFirstAndLast?: boolean, tolerance?: number);
-        checkFirstAndLast: boolean;
-        tolerance: number;
+        checkFirstAndLast?: boolean | undefined;
+        tolerance?: number | undefined;
         vectors: number[][];
     }
     class SpanDto {
         constructor(step?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        step: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        step?: number | undefined;
     }
     class SpanEaseItemsDto {
         constructor(nrItems?: number, min?: number, max?: number, ease?: Math_2.easeEnum);
-        ease: Math_2.easeEnum;
-        intervals: boolean;
-        max: number;
-        min: number;
-        nrItems: number;
+        ease?: Math_2.easeEnum | undefined;
+        intervals?: boolean | undefined;
+        max?: number | undefined;
+        min?: number | undefined;
+        nrItems?: number | undefined;
     }
     class SpanLinearItemsDto {
         constructor(nrItems?: number, min?: number, max?: number);
-        max: number;
-        min: number;
-        nrItems: number;
+        max?: number | undefined;
+        min?: number | undefined;
+        nrItems?: number | undefined;
     }
     class TwoVectorsDto {
         constructor(first?: number[], second?: number[]);
@@ -5634,7 +8106,7 @@ namespace Vector {
     }
     class VectorScalarDto {
         constructor(scalar?: number, vector?: number[]);
-        scalar: number;
+        scalar?: number | undefined;
         vector: number[];
     }
     class VectorsDto {
@@ -5643,7 +8115,7 @@ namespace Vector {
     }
     class VectorsTheSameDto {
         constructor(vec1?: number[], vec2?: number[], tolerance?: number);
-        tolerance: number;
+        tolerance?: number | undefined;
         vec1: number[];
         vec2: number[];
     }
@@ -5653,15 +8125,57 @@ namespace Vector {
     }
     class VectorXYDto {
         constructor(x?: number, y?: number);
-        x: number;
-        y: number;
+        x?: number | undefined;
+        y?: number | undefined;
     }
     class VectorXYZDto {
         constructor(x?: number, y?: number, z?: number);
-        x: number;
-        y: number;
-        z: number;
+        x?: number | undefined;
+        y?: number | undefined;
+        z?: number | undefined;
     }
+}
+
+// @public
+namespace Vector_2 {
+    // (undocumented)
+    type FractionTwoVectorsDto = WithDefaults<Inputs_7.Vector.FractionTwoVectorsDto, "fraction">;
+    // (undocumented)
+    type RangeMaxDto = WithDefaults<Inputs_7.Vector.RangeMaxDto, "max">;
+    // (undocumented)
+    type RayPointDto = WithDefaults<Inputs_7.Vector.RayPointDto, "distance">;
+    // (undocumented)
+    type RemoveAllDuplicateVectorsDto = WithDefaults<Inputs_7.Vector.RemoveAllDuplicateVectorsDto, "tolerance">;
+    // (undocumented)
+    type RemoveConsecutiveDuplicateVectorsDto = WithDefaults<Inputs_7.Vector.RemoveConsecutiveDuplicateVectorsDto, "checkFirstAndLast" | "tolerance">;
+    // (undocumented)
+    type SpanDto = WithDefaults<Inputs_7.Vector.SpanDto, "step" | "min" | "max">;
+    // (undocumented)
+    type SpanEaseItemsDto = WithDefaults<Inputs_7.Vector.SpanEaseItemsDto, "nrItems" | "min" | "max" | "ease" | "intervals">;
+    // (undocumented)
+    type SpanLinearItemsDto = WithDefaults<Inputs_7.Vector.SpanLinearItemsDto, "nrItems" | "min" | "max">;
+    // (undocumented)
+    type TwoVectorsDto = Inputs_7.Vector.TwoVectorsDto;
+    // (undocumented)
+    type TwoVectorsReferenceDto = Inputs_7.Vector.TwoVectorsReferenceDto;
+    // (undocumented)
+    type Vector3Dto = Inputs_7.Vector.Vector3Dto;
+    // (undocumented)
+    type VectorBoolDto = Inputs_7.Vector.VectorBoolDto;
+    // (undocumented)
+    type VectorDto = Inputs_7.Vector.VectorDto;
+    // (undocumented)
+    type VectorScalarDto = WithDefaults<Inputs_7.Vector.VectorScalarDto, "scalar">;
+    // (undocumented)
+    type VectorsDto = Inputs_7.Vector.VectorsDto;
+    // (undocumented)
+    type VectorsTheSameDto = WithDefaults<Inputs_7.Vector.VectorsTheSameDto, "tolerance">;
+    // (undocumented)
+    type VectorStringDto = Inputs_7.Vector.VectorStringDto;
+    // (undocumented)
+    type VectorXYDto = WithDefaults<Inputs_7.Vector.VectorXYDto, "x" | "y">;
+    // (undocumented)
+    type VectorXYZDto = WithDefaults<Inputs_7.Vector.VectorXYZDto, "x" | "y" | "z">;
 }
 
 // @public
@@ -6080,6 +8594,132 @@ namespace Verb {
         profile: any;
         rail: any;
     }
+}
+
+// @public
+namespace Verb_2 {
+    // (undocumented)
+    type ArcDto = Inputs_3.Verb.ArcDto;
+    // (undocumented)
+    type ArcParametersDto = Inputs_3.Verb.ArcParametersDto;
+    // (undocumented)
+    type BezierCurveDto = Inputs_3.Verb.BezierCurveDto;
+    // (undocumented)
+    type CircleDto = Inputs_3.Verb.CircleDto;
+    // (undocumented)
+    type CircleParametersDto = Inputs_3.Verb.CircleParametersDto;
+    // (undocumented)
+    type ClosestPointDto = Inputs_3.Verb.ClosestPointDto;
+    // (undocumented)
+    type ClosestPointsDto = Inputs_3.Verb.ClosestPointsDto;
+    // (undocumented)
+    type ConeAndCylinderParametersDto = WithDefaults<Inputs_3.Verb.ConeAndCylinderParametersDto, "axis" | "xAxis" | "base" | "height" | "radius">;
+    // (undocumented)
+    type ConeDto = Inputs_3.Verb.ConeDto;
+    // (undocumented)
+    type CornersDto = Inputs_3.Verb.CornersDto;
+    // (undocumented)
+    type CurveCurveDto = Inputs_3.Verb.CurveCurveDto;
+    // (undocumented)
+    type CurveCurveIntersectionsDto = Inputs_3.Verb.CurveCurveIntersectionsDto;
+    // (undocumented)
+    type CurveDerivativesDto = Inputs_3.Verb.CurveDerivativesDto;
+    // (undocumented)
+    type CurveDivideLengthDto = Inputs_3.Verb.CurveDivideLengthDto;
+    // (undocumented)
+    type CurveDto = Inputs_3.Verb.CurveDto;
+    // (undocumented)
+    type CurveLengthToleranceDto = Inputs_3.Verb.CurveLengthToleranceDto;
+    // (undocumented)
+    type CurveNurbsDataDto = Inputs_3.Verb.CurveNurbsDataDto;
+    // (undocumented)
+    type CurveParameterDto = Inputs_3.Verb.CurveParameterDto;
+    // (undocumented)
+    type CurvePathDataDto = Inputs_3.Verb.CurvePathDataDto;
+    // (undocumented)
+    type CurvesDivideLengthDto = Inputs_3.Verb.CurvesDivideLengthDto;
+    // (undocumented)
+    type CurvesDto = Inputs_3.Verb.CurvesDto;
+    // (undocumented)
+    type CurvesParameterDto = Inputs_3.Verb.CurvesParameterDto;
+    // (undocumented)
+    type CurvesSubdivisionsDto = Inputs_3.Verb.CurvesSubdivisionsDto;
+    // (undocumented)
+    type CurvesTransformDto = Inputs_3.Verb.CurvesTransformDto;
+    // (undocumented)
+    type CurveSubdivisionsDto = Inputs_3.Verb.CurveSubdivisionsDto;
+    // (undocumented)
+    type CurveSurfaceDto = Inputs_3.Verb.CurveSurfaceDto;
+    // (undocumented)
+    type CurveSurfaceIntersectionsDto = Inputs_3.Verb.CurveSurfaceIntersectionsDto;
+    // (undocumented)
+    type CurveToleranceDto = Inputs_3.Verb.CurveToleranceDto;
+    // (undocumented)
+    type CurveTransformDto = Inputs_3.Verb.CurveTransformDto;
+    // (undocumented)
+    type CylinderDto = Inputs_3.Verb.CylinderDto;
+    // (undocumented)
+    type DerivativesDto = Inputs_3.Verb.DerivativesDto;
+    // (undocumented)
+    type DrawCurveDto<T> = WithDefaults<Inputs_3.Verb.DrawCurveDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawCurvesDto<T> = WithDefaults<Inputs_3.Verb.DrawCurvesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    // (undocumented)
+    type DrawSurfaceDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfaceDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSurfacesColoursDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfacesColoursDto<T>, "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type DrawSurfacesDto<T> = WithDefaults<Inputs_3.Verb.DrawSurfacesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    // (undocumented)
+    type EllipseArcParametersDto = Inputs_3.Verb.EllipseArcParametersDto;
+    // (undocumented)
+    type EllipseDto = Inputs_3.Verb.EllipseDto;
+    // (undocumented)
+    type EllipseParametersDto = Inputs_3.Verb.EllipseParametersDto;
+    // (undocumented)
+    type ExtrusionDto = Inputs_3.Verb.ExtrusionDto;
+    // (undocumented)
+    type ExtrusionParametersDto = Inputs_3.Verb.ExtrusionParametersDto;
+    // (undocumented)
+    type IsocurvesParametersDto = Inputs_3.Verb.IsocurvesParametersDto;
+    // (undocumented)
+    type IsocurveSubdivisionDto = WithDefaults<Inputs_3.Verb.IsocurveSubdivisionDto, "useV" | "includeLast" | "includeFirst">;
+    // (undocumented)
+    type KnotsControlPointsWeightsDto = Inputs_3.Verb.KnotsControlPointsWeightsDto;
+    // (undocumented)
+    type LineDto = Inputs_3.Verb.LineDto;
+    // (undocumented)
+    type LinesDto = Inputs_3.Verb.LinesDto;
+    // (undocumented)
+    type LoftCurvesDto = Inputs_3.Verb.LoftCurvesDto;
+    // (undocumented)
+    type PolylineDto = Inputs_3.Verb.PolylineDto;
+    // (undocumented)
+    type PolylinesDto = Inputs_3.Verb.PolylinesDto;
+    // (undocumented)
+    type RevolutionDto = Inputs_3.Verb.RevolutionDto;
+    // (undocumented)
+    type RevolutionParametersDto = Inputs_3.Verb.RevolutionParametersDto;
+    // (undocumented)
+    type SphereDto = Inputs_3.Verb.SphereDto;
+    // (undocumented)
+    type SphericalParametersDto = Inputs_3.Verb.SphericalParametersDto;
+    // (undocumented)
+    type SurfaceDto = Inputs_3.Verb.SurfaceDto;
+    // (undocumented)
+    type SurfaceLocationDto = Inputs_3.Verb.SurfaceLocationDto;
+    // (undocumented)
+    type SurfaceParamDto = Inputs_3.Verb.SurfaceParamDto;
+    // (undocumented)
+    type SurfaceParameterDto = Inputs_3.Verb.SurfaceParameterDto;
+    // (undocumented)
+    type SurfaceSurfaceDto = Inputs_3.Verb.SurfaceSurfaceDto;
+    // (undocumented)
+    type SurfaceTransformDto = Inputs_3.Verb.SurfaceTransformDto;
+    // (undocumented)
+    type SweepDto = Inputs_3.Verb.SweepDto;
+    // (undocumented)
+    type SweepParametersDto = Inputs_3.Verb.SweepParametersDto;
 }
 
 // @public

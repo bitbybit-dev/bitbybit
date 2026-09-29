@@ -1,5 +1,7 @@
 import * as Inputs from "../inputs/jscad-inputs";
 import * as JSCAD from "@jscad/modeling";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Giving JSCAD geometry a color of its own. A colored entity is always drawn in that color, ahead
@@ -28,8 +30,9 @@ export class JSCADColors {
      * ```
      */
     colorize(inputs: Inputs.JSCAD.ColorizeDto): Inputs.JSCAD.JSCADEntity | Inputs.JSCAD.JSCADEntity[] {
-        const geometry = inputs.geometry;
-        const color = inputs.color;
+        const resolved = resolveDto(Inputs.JSCAD.ColorizeDto, inputs) as Resolved.JSCAD.ColorizeDto;
+        const geometry = resolved.geometry;
+        const color = resolved.color;
         return this.jscad.colors.colorize(this.jscad.colors.hexToRgb(color), geometry);
     }
 

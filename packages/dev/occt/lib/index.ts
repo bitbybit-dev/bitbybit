@@ -3,3 +3,5 @@ export * from "./services";
 export * from "./occ-helper";
 export * from "./occ-service";
 export * from "./shape-parser";
+export * from "./kernel-exception";
+export * from "./kernel-failures";

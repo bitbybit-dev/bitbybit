@@ -3,6 +3,8 @@ import { Base } from "../inputs/base-inputs";
 import * as Inputs from "../inputs";
 import { MathBitByBit } from "./math";
 import { Vector } from "./vector";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Builds transformation matrices for moving, rotating, scaling and stretching geometry. A
@@ -35,13 +37,14 @@ export class Transforms {
      * ```
      */
     rotationCenterAxis(inputs: Inputs.Transforms.RotationCenterAxisDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.RotationCenterAxisDto, inputs) as Resolved.Transforms.RotationCenterAxisDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
             this.rotationAxis(
-                inputs.axis,
-                this.math.degToRad({ number: inputs.angle })
+                resolved.axis,
+                this.math.degToRad({ number: resolved.angle })
             ),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -63,10 +66,11 @@ export class Transforms {
      * ```
      */
     rotationCenterX(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.RotationCenterDto, inputs) as Resolved.Transforms.RotationCenterDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.rotationX(this.math.degToRad({ number: inputs.angle })),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
+            this.rotationX(this.math.degToRad({ number: resolved.angle })),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -88,10 +92,11 @@ export class Transforms {
      * ```
      */
     rotationCenterY(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.RotationCenterDto, inputs) as Resolved.Transforms.RotationCenterDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.rotationY(this.math.degToRad({ number: inputs.angle })),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
+            this.rotationY(this.math.degToRad({ number: resolved.angle })),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -113,10 +118,11 @@ export class Transforms {
      * ```
      */
     rotationCenterZ(inputs: Inputs.Transforms.RotationCenterDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.RotationCenterDto, inputs) as Resolved.Transforms.RotationCenterDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.rotationZ(this.math.degToRad({ number: inputs.angle })),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
+            this.rotationZ(this.math.degToRad({ number: resolved.angle })),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -138,13 +144,14 @@ export class Transforms {
      * ```
      */
     rotationCenterYawPitchRoll(inputs: Inputs.Transforms.RotationCenterYawPitchRollDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.RotationCenterYawPitchRollDto, inputs) as Resolved.Transforms.RotationCenterYawPitchRollDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
             this.rotationYawPitchRoll(
-                this.math.degToRad({ number: inputs.yaw }),
-                this.math.degToRad({ number: inputs.pitch }),
-                this.math.degToRad({ number: inputs.roll })),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+                this.math.degToRad({ number: resolved.yaw }),
+                this.math.degToRad({ number: resolved.pitch }),
+                this.math.degToRad({ number: resolved.roll })),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -166,10 +173,11 @@ export class Transforms {
      * ```
      */
     scaleCenterXYZ(inputs: Inputs.Transforms.ScaleCenterXYZDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.ScaleCenterXYZDto, inputs) as Resolved.Transforms.ScaleCenterXYZDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2]),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
+            this.scaling(resolved.scaleXyz[0], resolved.scaleXyz[1], resolved.scaleXyz[2]),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -188,7 +196,8 @@ export class Transforms {
      * ```
      */
     scaleXYZ(inputs: Inputs.Transforms.ScaleXYZDto): Base.TransformMatrixes {
-        return [this.scaling(inputs.scaleXyz[0], inputs.scaleXyz[1], inputs.scaleXyz[2])] as Base.TransformMatrixes;
+        const resolved = resolveDto(Inputs.Transforms.ScaleXYZDto, inputs) as Resolved.Transforms.ScaleXYZDto;
+        return [this.scaling(resolved.scaleXyz[0], resolved.scaleXyz[1], resolved.scaleXyz[2])] as Base.TransformMatrixes;
     }
 
     /**
@@ -210,7 +219,8 @@ export class Transforms {
      * ```
      */
     stretchDirFromCenter(inputs: Inputs.Transforms.StretchDirCenterDto): Base.TransformMatrixes {
-        const { center = [0, 0, 0], direction = [0, 0, 1], scale = 2 } = inputs;
+        const resolved = resolveDto(Inputs.Transforms.StretchDirCenterDto, inputs) as Resolved.Transforms.StretchDirCenterDto;
+        const { center, direction, scale } = resolved;
         return [
             this.translation(-center[0], -center[1], -center[2]),
             this.stretchDirection(direction, scale),
@@ -233,7 +243,8 @@ export class Transforms {
      * ```
      */
     uniformScale(inputs: Inputs.Transforms.UniformScaleDto): Base.TransformMatrixes {
-        return [this.scaling(inputs.scale, inputs.scale, inputs.scale)] as Base.TransformMatrixes;
+        const resolved = resolveDto(Inputs.Transforms.UniformScaleDto, inputs) as Resolved.Transforms.UniformScaleDto;
+        return [this.scaling(resolved.scale, resolved.scale, resolved.scale)] as Base.TransformMatrixes;
     }
 
     /**
@@ -254,10 +265,11 @@ export class Transforms {
      * ```
      */
     uniformScaleFromCenter(inputs: Inputs.Transforms.UniformScaleFromCenterDto): Base.TransformMatrixes {
+        const resolved = resolveDto(Inputs.Transforms.UniformScaleFromCenterDto, inputs) as Resolved.Transforms.UniformScaleFromCenterDto;
         return [
-            this.translation(-inputs.center[0], -inputs.center[1], -inputs.center[2]),
-            this.scaling(inputs.scale, inputs.scale, inputs.scale),
-            this.translation(inputs.center[0], inputs.center[1], inputs.center[2]),
+            this.translation(-resolved.center[0], -resolved.center[1], -resolved.center[2]),
+            this.scaling(resolved.scale, resolved.scale, resolved.scale),
+            this.translation(resolved.center[0], resolved.center[1], resolved.center[2]),
         ] as Base.TransformMatrixes;
     }
 
@@ -276,7 +288,8 @@ export class Transforms {
      * ```
      */
     translationXYZ(inputs: Inputs.Transforms.TranslationXYZDto): Base.TransformMatrixes {
-        return [this.translation(inputs.translation[0], inputs.translation[1], inputs.translation[2])] as Base.TransformMatrixes;
+        const resolved = resolveDto(Inputs.Transforms.TranslationXYZDto, inputs) as Resolved.Transforms.TranslationXYZDto;
+        return [this.translation(resolved.translation[0], resolved.translation[1], resolved.translation[2])] as Base.TransformMatrixes;
     }
 
     /**

@@ -72,7 +72,7 @@ export class TrimByPlaneDto<T> {
      * does not matter.
      * @default [1,0,0]
      */
-    normal: Base.Vector3 = [1, 0, 0];
+    normal?: Base.Vector3 | undefined = [1, 0, 0];
     /**
      * How far the plane sits from the origin along the normal, in model units.
      * @default 0
@@ -80,7 +80,7 @@ export class TrimByPlaneDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    originOffset = 0;
+    originOffset?: number | undefined = 0;
 }
 /**
  * A solid and a plane for `manifold.booleans.splitByPlane`, which keeps both pieces.
@@ -100,7 +100,7 @@ export class SplitByPlaneDto<T> {
      * length does not matter.
      * @default [1,0,0]
      */
-    normal: Base.Vector3 = [1, 0, 0];
+    normal?: Base.Vector3 | undefined = [1, 0, 0];
     /**
      * How far the plane sits from the origin along the normal, in model units.
      * @default 0
@@ -108,7 +108,7 @@ export class SplitByPlaneDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    originOffset = 0;
+    originOffset?: number | undefined = 0;
 }
 /**
  * A solid, a plane normal and several distances for `manifold.booleans.splitByPlaneOnOffsets`,
@@ -128,11 +128,11 @@ export class SplitByPlaneOnOffsetsDto<T> {
      * The normal shared by every cutting plane; its length does not matter.
      * @default [1,0,0]
      */
-    normal: Base.Vector3 = [1, 0, 0];
+    normal?: Base.Vector3 | undefined = [1, 0, 0];
     /**
      * How far each plane sits from the origin along the normal, in model units, in increasing
      * order.
      * @default [0]
      */
-    originOffsets = [0];
+    originOffsets?: number[] | undefined = [0];
 }

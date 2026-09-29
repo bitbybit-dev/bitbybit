@@ -24,7 +24,7 @@ export class WireAlongParamDto<T> {
      * When true the wire sits at a fixed U and runs across the V range; when false the roles swap.
      * @default true
      */
-    isU = true;
+    isU?: boolean | undefined = true;
     /**
      * Where the wire sits, as a fraction from 0 to 1 of the fixed direction's range.
      * @default 0.5
@@ -32,7 +32,7 @@ export class WireAlongParamDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
 }
 
 /**
@@ -57,7 +57,7 @@ export class WiresAlongParamsDto<T> {
      * When true each wire sits at a fixed U and runs across the V range; when false the roles swap.
      * @default true
      */
-    isU = true;
+    isU?: boolean | undefined = true;
     /**
      * Where the wires sit, as fractions from 0 to 1 of the fixed direction's range, one wire each.
      * @default undefined
@@ -89,7 +89,7 @@ export class DataOnUVDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    paramU = 0.5;
+    paramU?: number | undefined = 0.5;
     /**
      * The V position as a fraction from 0 to 1 of the face's V range.
      * @default 0.5
@@ -97,7 +97,7 @@ export class DataOnUVDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    paramV = 0.5;
+    paramV?: number | undefined = 0.5;
 }
 /**
  * A face and several UV positions for `shapes.face.pointsOnUVs` and `normalsOnUVs`.
@@ -120,7 +120,7 @@ export class DataOnUVsDto<T> {
      * each.
      * @default [[0.5, 0.5]]
      */
-    paramsUV: [number, number][] = [[0.5, 0.5]];
+    paramsUV?: [number, number][] | undefined = [[0.5, 0.5]];
 }
 /**
  * Corner points for `shapes.wire.createPolygonWire`, `shapes.face.createPolygonFace` and
@@ -152,8 +152,9 @@ export class PolygonsDto {
     polygons!: PolygonDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }
 /**
  * Points for `shapes.wire.createPolylineWire`, an open chain of straight edges through them.
@@ -293,6 +294,7 @@ export class PolylinesDto {
     polylines!: PolylineDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }

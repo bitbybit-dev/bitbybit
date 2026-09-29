@@ -36,6 +36,9 @@
     },
     "references": [
         {
+            "path": "../base/tsconfig.bitbybit.json"
+        },
+        {
             "path": "../manifold/tsconfig.bitbybit.json"
         }
     ]

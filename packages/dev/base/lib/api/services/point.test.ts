@@ -10,6 +10,7 @@ import { Lists } from "./lists";
 
 describe("Point unit tests", () => {
     const uh = new UnitTestHelper();
+    const loose = <T>(value: unknown): T => value as T;
 
     let geometryHelper: GeometryHelper;
     let math: MathBitByBit;
@@ -109,7 +110,7 @@ describe("Point unit tests", () => {
 
             it("should handle empty arrays", () => {
                 const pts: Inputs.Base.Point3[] = [];
-                const transformations: any[] = [];
+                const transformations: Inputs.Base.TransformMatrixes[] = [];
                 const result = point.transformsForPoints({ points: pts, transformation: transformations });
                 expect(result).toEqual([]);
             });
@@ -649,11 +650,11 @@ describe("Point unit tests", () => {
             });
 
             it("should throw error for invalid point formats", () => {
-                const p1: any = [0, 0];
+                const p1 = loose<Inputs.Base.Point3>([0, 0]);
                 const p2: Inputs.Base.Point3 = [1, 1, 1];
                 const p3: Inputs.Base.Point3 = [2, 2, 2];
                 expect(() => point.normalFromThreePoints({ point1: p1, point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
-                expect(() => point.normalFromThreePoints({ point1: null as any, point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
+                expect(() => point.normalFromThreePoints({ point1: loose<Inputs.Base.Point3>(null), point2: p2, point3: p3, reverseNormal: false })).toThrow("All points must be arrays of 3 numbers [x, y, z]");
             });
         });
 
@@ -1937,6 +1938,39 @@ describe("Point unit tests", () => {
 
             // Assert
             expect(grid.centers).toHaveLength(100);
+        });
+    });
+
+    describe("spiral with its defaults left to the DTO", () => {
+        it("should give the points the spelled out DTO gives when every default is left out", () => {
+            // Act
+            const leftOut = point.spiral({});
+            const spelled = point.spiral(new Inputs.Point.SpiralDto());
+
+            // Assert
+            expect(leftOut).toHaveLength(200);
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should give the points the spelled out DTO gives when every default is handed as undefined", () => {
+            // Act
+            const handedUndefined = point.spiral({ phi: undefined, numberPoints: undefined, widening: undefined, radius: undefined, factor: undefined });
+            const spelled = point.spiral(new Inputs.Point.SpiralDto());
+
+            // Assert
+            expect(handedUndefined).toEqual(spelled);
+        });
+    });
+
+    describe("the size a drawn point takes by default", () => {
+        it("should give one point the 0.1 diameter a list of points gives each of its points", () => {
+            // Act
+            const single = new Inputs.Point.DrawPointDto().size;
+            const listed = new Inputs.Point.DrawPointsDto().size;
+
+            // Assert
+            expect(single).toBe(0.1);
+            expect(single).toBe(listed);
         });
     });
 });

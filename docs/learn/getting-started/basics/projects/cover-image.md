@@ -35,12 +35,12 @@ Once you have your screenshot, save it as an image file (e.g., `.png` or `.jpg`)
 
 1.  **Open Project Management:** If you are in one of our editors (TypeScript, Blockly, or Rete), click on the button located in the top-left corner. This button usually displays the name of your current script and has a settings icon.
 
-    ![The button in the editor's top-left corner, typically showing the script name and a settings icon, used to open the project management panel.](https://ik.imagekit.io/bitbybit/app/assets/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
+    ![The button in the editor's top-left corner, typically showing the script name and a settings icon, used to open the project management panel.](https://bitbybit.dev/files/site/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
     *Button to open project management panel*
 
 2.  **Locate Upload Buttons:** Once the project management panel opens, you'll see placeholders for project and script photos. Next to these, you'll find **"Upload Image"** buttons, each with a camera icon.
 
-    ![The project management panel showing placeholders for project and script cover images, with "Upload Image" buttons next to them.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/upload-cover-photo.jpeg "Buttons to upload cover photos")
+    ![The project management panel showing placeholders for project and script cover images, with "Upload Image" buttons next to them.](https://bitbybit.dev/files/site/start/general/projects/upload-cover-photo.jpeg "Buttons to upload cover photos")
     *The buttons to upload the cover photo for the project and current script*
 
 3.  **Select, Crop, and Upload:**

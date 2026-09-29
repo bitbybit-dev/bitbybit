@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -19,43 +19,44 @@ describe("OCCT enum service unit tests", () => {
         occHelper = new OccHelper(vec, s, occt);
     });
 
-    it("should get gcc position unqualified", async () => {
+    it("should get gcc position unqualified", () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.unqualified);
         expect(res).toEqual(occt.GccEnt_Position.unqualified);
     });
 
-    it("should get gcc position enclosed", async () => {
+    it("should get gcc position enclosed", () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.enclosed);
         expect(res).toEqual(occt.GccEnt_Position.enclosed);
     });
 
-    it("should get gcc position enclosing", async () => {
+    it("should get gcc position enclosing", () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.enclosing);
         expect(res).toEqual(occt.GccEnt_Position.enclosing);
     });
 
-    it("should get gcc position outside", async () => {
+    it("should get gcc position outside", () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.outside);
         expect(res).toEqual(occt.GccEnt_Position.outside);
     });
 
-    it("should get gcc position noqualifier", async () => {
+    it("should get gcc position noqualifier", () => {
         const res = enumService.getGccEntPositionFromEnum(Inputs.OCCT.gccEntPositionEnum.noqualifier);
         expect(res).toEqual(occt.GccEnt_Position.noqualifier);
     });
 
-    it("should get gcc position noqualifier if unrecognized value is forcefully passed", async () => {
-        const res = enumService.getGccEntPositionFromEnum("whatever" as any);
+    it("should get gcc position noqualifier if unrecognized value is forcefully passed", () => {
+        const res = enumService.getGccEntPositionFromEnum("whatever" as Inputs.OCCT.gccEntPositionEnum);
         expect(res).toEqual(occt.GccEnt_Position.noqualifier);
     });
 
-    it("should get top abs state enum as unknown if unrecognized value is forcefully passed", async () => {
-        const res = enumService.getTopAbsStateEnum("whatever" as any);
+    it("should get top abs state enum as unknown if unrecognized value is forcefully passed", () => {
+        const unrecognized: unknown = "whatever";
+        const res = enumService.getTopAbsStateEnum(unrecognized as EmbindEnumValue);
         expect(res).toEqual(Inputs.OCCT.topAbsStateEnum.unknown);
     });
 
-    it("should convert four sides strict enum to two circle inclusion enum and return none if unrecognized value is forcefully passed", async () => {
-        const res = enumService.convertFourSidesStrictEnumToTwoCircleInclusionEnum("whatever" as any);
+    it("should convert four sides strict enum to two circle inclusion enum and return none if unrecognized value is forcefully passed", () => {
+        const res = enumService.convertFourSidesStrictEnumToTwoCircleInclusionEnum("whatever" as Inputs.OCCT.fourSidesStrictEnum);
         expect(res).toEqual(Inputs.OCCT.twoCircleInclusionEnum.none);
     });
 
@@ -100,15 +101,15 @@ describe("OCCT enum service unit tests", () => {
         });
 
         it("should return solid for a solid shape", () => {
-            const box = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
+            const box = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [0, 0, 0] });
             const res = enumService.getShapeTypeEnum(box);
             expect(res).toEqual(Inputs.OCCT.shapeTypeEnum.solid);
             box.delete();
         });
 
         it("should return compound for a compound shape", () => {
-            const box1 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] });
-            const box2 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, center: [5, 0, 0] });
+            const box1 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [0, 0, 0] });
+            const box2 = occHelper.solidsService.createBox({ width: 1, height: 1, length: 1, originOnCenter: true, center: [5, 0, 0] });
             const compound = occHelper.converterService.makeCompound({ shapes: [box1, box2] });
             const res = enumService.getShapeTypeEnum(compound);
             expect(res).toEqual(Inputs.OCCT.shapeTypeEnum.compound);
@@ -170,7 +171,7 @@ describe("OCCT enum service unit tests", () => {
         });
 
         it("should return GeomFill_IsConstantNormal as default for unrecognized value", () => {
-            const res = enumService.getGeomFillTrihedronEnumOCCTValue("whatever" as any);
+            const res = enumService.getGeomFillTrihedronEnumOCCTValue("whatever" as Inputs.OCCT.geomFillTrihedronEnum);
             expect(res).toEqual(occt.GeomFill_Trihedron.IsConstantNormal);
         });
     });

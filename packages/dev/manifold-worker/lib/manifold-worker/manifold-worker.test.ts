@@ -1,20 +1,31 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
 import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
 
-const { FakeCacheHelper, latest, kernelCalls } = vi.hoisted(() => {
+const { FakeCacheHelper, latest, kernelCalls, failure } = vi.hoisted(() => {
     class FakeCacheHelper {
         usedHashes: Record<string, string | number> = {};
         entries = new Map<string | number, unknown>();
         added: [string | number, unknown][] = [];
         cleanedHashes: (string | number)[] = [];
         cleanAllCacheCalls = 0;
+        stored = new Map<string, unknown>();
 
         checkCache(hash: string | number): unknown {
             return this.entries.has(hash) ? this.entries.get(hash) : null;
         }
 
-        cacheOp(_action: unknown, cacheMiss: () => unknown): unknown {
-            return cacheMiss();
+        ops: unknown[] = [];
+
+        cacheOp(action: unknown, cacheMiss: () => unknown): unknown {
+            this.ops.push(structuredClone(action));
+            const key = JSON.stringify(action);
+            if (this.stored.has(key)) {
+                return this.stored.get(key);
+            }
+            const result = cacheMiss();
+            this.stored.set(key, result);
+            return result;
         }
 
         cleanCacheForHash(hash: string | number): void {
@@ -41,7 +52,8 @@ const { FakeCacheHelper, latest, kernelCalls } = vi.hoisted(() => {
     }
     const latest = { cache: new FakeCacheHelper() };
     const kernelCalls: { path: string; inputs: unknown }[] = [];
-    return { FakeCacheHelper, latest, kernelCalls };
+    const failure: { value: unknown } = { value: undefined };
+    return { FakeCacheHelper, latest, kernelCalls, failure };
 });
 
 vi.mock("./cache-helper", () => ({
@@ -67,20 +79,36 @@ vi.mock("@bitbybit-dev/manifold", () => {
         plugins = kernel.hasPlugins ? { dependencies: kernel.dependencies } : undefined;
         manifold = {
             manifoldToMesh: call("manifold.manifoldToMesh"),
-            shapes: { cube: call("manifold.shapes.cube") },
+            shapes: { cube: call("manifold.shapes.cube"), sphere: call("manifold.shapes.sphere"), fail: (): unknown => { throw failure.value; } },
             booleans: { subtract: call("manifold.booleans.subtract") },
         };
+        measure = {
+            unit: 10,
+            scaled(this: { unit: number }, inputs: { size: number }): number {
+                return this.unit * inputs.size;
+            },
+        };
+        boom = (): unknown => { throw failure.value; };
         decomposeManifoldOrCrossSection = call("decomposeManifoldOrCrossSection");
         decomposeManifoldsOrCrossSections = call("decomposeManifoldsOrCrossSections");
         toPolygonPoints = call("toPolygonPoints");
     }
-    return { ManifoldService };
+    class SphereDto {
+        radius = 1;
+        circularSegments = 32;
+    }
+    const constraints = { radius: { kind: "number" }, circularSegments: { kind: "number", required: true } };
+    return { ManifoldService, manifoldDtoRegistry: { "manifold.shapes.sphere": { dto: SphereDto, constraints }, "manifold.shapes.fail": { dto: SphereDto, constraints } } };
 });
 
 const cacheOf = () => latest.cache;
 const A_KERNEL = { Manifold: {} };
 const CACHED_HASH = "cached";
 const MISSING_HASH = "missing";
+const REFERENCE = { type: "manifold-shape", hash: CACHED_HASH };
+const CACHED_SHAPE = { hash: CACHED_HASH, kernel: "shape" };
+
+type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; details?: unknown; stack?: string };
 
 describe("the worker message loop", () => {
     let messages: unknown[];
@@ -90,8 +118,7 @@ describe("the worker message loop", () => {
         onMessageInput({ action, uid } as DataInput, (message: unknown) => messages.push(message));
     };
 
-    const answer = (): { uid?: string; result?: unknown; error?: string } =>
-        messages[1] as { uid?: string; result?: unknown; error?: string };
+    const answer = (): Answer => messages[1] as Answer;
 
     beforeEach(() => {
         messages = [];
@@ -100,12 +127,15 @@ describe("the worker message loop", () => {
         answers.clear();
         kernel.hasPlugins = true;
         kernel.dependencies = {};
+        failure.value = new Error("the kernel refused");
         vi.stubGlobal("postMessage", (message: unknown) => posted.push(message));
+        setInputIssueSink(() => undefined);
         initializationComplete(A_KERNEL, undefined, true);
-        cacheOf().entries.set(CACHED_HASH, { hash: CACHED_HASH, kernel: "shape" });
+        cacheOf().entries.set(CACHED_HASH, CACHED_SHAPE);
     });
 
     afterEach(() => {
+        setInputIssueSink();
         vi.unstubAllGlobals();
     });
 
@@ -178,6 +208,103 @@ describe("the worker message loop", () => {
             // Assert
             expect(kernelCalls).toEqual([{ path: "toPolygonPoints", inputs: { size: 1 } }]);
         });
+
+        it("should call the kernel method with the object that holds it as this", () => {
+            // Act
+            run({ functionName: "measure.scaled", inputs: { size: 3 } });
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: 30 });
+        });
+
+        it("should answer a call the cache holds without looking up the shapes it refers to", () => {
+            // Arrange
+            run({ functionName: "manifold.shapes.sphere", inputs: { around: REFERENCE } }, "uid-1");
+            cacheOf().entries.delete(CACHED_HASH);
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { around: REFERENCE } }, "uid-2");
+
+            // Assert
+            expect(messages[3]).toEqual({ uid: "uid-2", result: { hash: "manifold.shapes.sphere-result", type: "manifold-shape" } });
+            expect(kernelCalls).toHaveLength(1);
+        });
+
+        it("should run a call whose issues reach a sink that throws", () => {
+            // Arrange
+            const refusing = vi.fn((): void => {
+                throw new Error("the sink refused");
+            });
+            setInputIssueSink(refusing);
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big" } });
+
+            // Assert
+            expect(refusing).toHaveBeenCalledTimes(1);
+            expect(answer()).toEqual({ uid: "uid-1", result: { hash: "manifold.shapes.sphere-result", type: "manifold-shape" } });
+        });
+
+        it("should answer a call the cache already holds without running the kernel again", () => {
+            // Arrange
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 2 } }, "uid-1");
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 2 } }, "uid-2");
+
+            // Assert
+            expect(kernelCalls).toEqual([{ path: "manifold.shapes.sphere", inputs: { radius: 2, circularSegments: 32 } }]);
+            expect(messages[3]).toEqual({ uid: "uid-2", result: { hash: "manifold.shapes.sphere-result", type: "manifold-shape" } });
+        });
+    });
+
+    describe("the paths a call may name", () => {
+        it("should refuse a path that reaches for the constructor", () => {
+            // Act
+            run({ functionName: "constructor", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "Manifold computation failed while executing function 'constructor': Cannot resolve \"constructor\": \"constructor\" is not a segment an operation path may contain.",
+                errorKind: "kernel",
+                stack: expect.stringContaining("is not a segment an operation path may contain"),
+            });
+        });
+
+        it("should refuse a path that walks through an object's prototype", () => {
+            // Act
+            run({ functionName: "manifold.__proto__.hasOwnProperty", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'manifold.__proto__.hasOwnProperty': Cannot resolve \"manifold.__proto__.hasOwnProperty\": \"__proto__\" is not a segment an operation path may contain.");
+        });
+
+        it("should refuse a path with an empty segment", () => {
+            // Act
+            run({ functionName: "manifold..shapes.cube", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'manifold..shapes.cube': Cannot resolve \"manifold..shapes.cube\": \"\" is not a segment an operation path may contain.");
+        });
+
+        it("should refuse a path that walks into a method as though it held others", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube.call", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'manifold.shapes.cube.call': Cannot resolve \"manifold.shapes.cube.call\": \"manifold.shapes.cube\" is not an object.");
+            expect(kernelCalls).toEqual([]);
+        });
+
+        it("should refuse a path whose last segment is not a method", () => {
+            // Act
+            run({ functionName: "measure.unit", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'measure.unit': \"measure.unit\" is not a function.");
+        });
     });
 
     describe("the shape of the answer", () => {
@@ -234,6 +361,146 @@ describe("the worker message loop", () => {
         });
     });
 
+    describe("what a call is given that the operation would reject", () => {
+        let reports: InputIssueReport[];
+
+        beforeEach(() => {
+            reports = [];
+            setInputIssueSink((report) => reports.push(report));
+        });
+
+        afterEach(() => {
+            setInputIssueSink();
+        });
+
+        it("should report a property of the wrong kind and a name the operation does not know, and still run", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big", radious: 2 } });
+
+            // Assert
+            expect(reports).toEqual([
+                { kernel: "Manifold", path: "manifold.shapes.sphere", issue: { property: "radius", code: "type", message: "must be a number" } },
+                { kernel: "Manifold", path: "manifold.shapes.sphere", issue: { property: "radious", code: "unknown-property", message: "is not an input of this operation and is ignored" } },
+            ]);
+            expect(kernelCalls).toEqual([{ path: "manifold.shapes.sphere", inputs: { radius: "big", circularSegments: 32, radious: 2 } }]);
+        });
+
+        it("should check the inputs with the defaults laid under them, so a required property the DTO defaults is not missing", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: {} });
+
+            // Assert
+            expect(reports).toEqual([]);
+        });
+
+        it("should report a name the operation does not know even when the call passed it as undefined", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 2, radious: undefined } });
+
+            // Assert
+            expect(reports).toEqual([
+                { kernel: "Manifold", path: "manifold.shapes.sphere", issue: { property: "radious", code: "unknown-property", message: "is not an input of this operation and is ignored" } },
+            ]);
+        });
+
+        it("should not check again a call the cache already holds", () => {
+            // Arrange
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big" } }, "uid-1");
+            const afterTheHit: InputIssueReport[] = [];
+            setInputIssueSink((report) => afterTheHit.push(report));
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big" } }, "uid-2");
+
+            // Assert
+            expect(reports).toEqual([{ kernel: "Manifold", path: "manifold.shapes.sphere", issue: { property: "radius", code: "type", message: "must be a number" } }]);
+            expect(afterTheHit).toEqual([]);
+        });
+
+        it("should check a call that misses the cache even when an earlier one was reported", () => {
+            // Arrange
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "big" } }, "uid-1");
+            const afterTheMiss: InputIssueReport[] = [];
+            setInputIssueSink((report) => afterTheMiss.push(report));
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: "bigger" } }, "uid-2");
+
+            // Assert
+            expect(afterTheMiss).toEqual([{ kernel: "Manifold", path: "manifold.shapes.sphere", issue: { property: "radius", code: "type", message: "must be a number" } }]);
+        });
+
+        it("should report nothing for an operation the registry does not list", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { anything: "goes" } });
+
+            // Assert
+            expect(reports).toEqual([]);
+        });
+    });
+
+    describe("the defaults of the DTO an operation takes", () => {
+        it("should give a property the call left out its default", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 3 } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ radius: 3, circularSegments: 32 });
+        });
+
+        it("should give a property the call passed as undefined its default", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: undefined } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ radius: 1, circularSegments: 32 });
+        });
+
+        it("should cache a call that leaves defaults out under the same inputs as one that spells them", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: {} }, "uid-1");
+            run({ functionName: "manifold.shapes.sphere", inputs: { circularSegments: 32, radius: 1 } }, "uid-2");
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify(cacheOf().ops[1]));
+        });
+
+        it("should pass the inputs of an operation the registry does not list through as they are", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { size: 2 } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ size: 2 });
+        });
+
+        it("should cache a call under its inputs with every default spelled out", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 3 } });
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify({ functionName: "manifold.shapes.sphere", inputs: { radius: 3, circularSegments: 32 } }));
+        });
+
+        it("should cache a call that passes a property as undefined under the fully spelled inputs", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: undefined, circularSegments: 32 } });
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify({ functionName: "manifold.shapes.sphere", inputs: { radius: 1, circularSegments: 32 } }));
+        });
+
+        it("should run the kernel once for a call that leaves defaults out and one that spells them", () => {
+            // Arrange
+            run({ functionName: "manifold.shapes.sphere", inputs: { radius: 1, circularSegments: 32 } }, "uid-1");
+
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { circularSegments: undefined } }, "uid-2");
+
+            // Assert
+            expect(kernelCalls).toHaveLength(1);
+        });
+    });
+
     describe("resolving hashed shapes against the cache", () => {
         it("should replace a hashed input with the shape the cache holds", () => {
             // Act
@@ -284,6 +551,73 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(kernelCalls[0]?.inputs).toEqual({ shapes: [[{ hash: CACHED_HASH, kernel: "shape" }]] });
+        });
+
+        it("should replace a hashed shape nested inside an object", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { options: { target: { type: "manifold-shape", hash: CACHED_HASH } } } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ options: { target: { hash: CACHED_HASH, kernel: "shape" } } });
+        });
+
+        it("should replace a hashed shape nested in a list inside an object inside a list", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { groups: [{ items: [5, REFERENCE] }] } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ groups: [{ items: [5, CACHED_SHAPE] }] });
+        });
+
+        it("should replace a reference whose hash is a number", () => {
+            // Arrange
+            cacheOf().entries.set(42, { hash: 42, kernel: "numbered" });
+
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { shape: { type: "manifold-shape", hash: 42 } } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ shape: { hash: 42, kernel: "numbered" } });
+        });
+
+        it("should leave a reference nested deep in the posted inputs as it was", () => {
+            // Arrange
+            const inputs = { groups: [{ items: [5, { type: "manifold-shape", hash: CACHED_HASH }] }] };
+
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs });
+
+            // Assert
+            expect(inputs).toEqual({ groups: [{ items: [5, { type: "manifold-shape", hash: CACHED_HASH }] }] });
+        });
+
+        it("should cache a call to a listed operation under its references and defaults, not the shapes they stand for", () => {
+            // Act
+            run({ functionName: "manifold.shapes.sphere", inputs: { around: REFERENCE } });
+
+            // Assert
+            expect(JSON.stringify(cacheOf().ops[0])).toBe(JSON.stringify({ functionName: "manifold.shapes.sphere", inputs: { radius: 1, circularSegments: 32, around: REFERENCE } }));
+            expect(kernelCalls[0]?.inputs).toEqual({ radius: 1, circularSegments: 32, around: CACHED_SHAPE });
+        });
+
+        it("should replace a hashed shape that is not the first item of its list", () => {
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs: { items: [5, { type: "manifold-shape", hash: CACHED_HASH }] } });
+
+            // Assert
+            expect(kernelCalls[0]?.inputs).toEqual({ items: [5, { hash: CACHED_HASH, kernel: "shape" }] });
+        });
+
+        it("should leave the posted inputs as they were and cache the call under them", () => {
+            // Arrange
+            const inputs = { shape: { type: "manifold-shape", hash: CACHED_HASH } };
+
+            // Act
+            run({ functionName: "manifold.shapes.cube", inputs });
+
+            // Assert
+            expect(inputs).toEqual({ shape: { type: "manifold-shape", hash: CACHED_HASH } });
+            expect(cacheOf().ops[0]).toEqual({ functionName: "manifold.shapes.cube", inputs: { shape: { type: "manifold-shape", hash: CACHED_HASH } } });
         });
 
         it("should fail the call when one shape in a list of lists is no longer cached", () => {
@@ -353,24 +687,20 @@ describe("the worker message loop", () => {
         });
     });
 
-    describe("manifoldToMesh", () => {
-        it("should decompose the shape the cache holds", () => {
+    describe("the inputs a reserved command was posted", () => {
+        it.each([
+            ["manifoldToMeshPointer", { manifold: { hash: CACHED_HASH }, normalIdx: 3 }],
+        ])("should leave the inputs %s was posted as they were and hand the kernel a new object", (functionName, inputs) => {
             // Arrange
-            answers.set("decomposeManifoldOrCrossSection", { vertices: [] });
+            const posted = structuredClone(inputs);
 
             // Act
-            run({ functionName: "manifoldToMesh", inputs: { manifold: { hash: CACHED_HASH } } });
+            run({ functionName, inputs });
 
             // Assert
-            expect(answer().result).toEqual({ vertices: [] });
-        });
-
-        it("should fail the call when the shape is no longer cached", () => {
-            // Act
-            run({ functionName: "manifoldToMesh", inputs: { manifold: { hash: MISSING_HASH } } });
-
-            // Assert
-            expect(answer().error).toContain(`Manifold with hash ${MISSING_HASH} not found in cache`);
+            expect(inputs).toEqual(posted);
+            expect(kernelCalls[0]?.inputs).not.toBe(inputs);
+            expect(kernelCalls[0]?.inputs).toMatchObject({ normalIdx: posted.normalIdx });
         });
     });
 
@@ -397,35 +727,6 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(answer().error).toContain(`Manifold with hash ${MISSING_HASH} not found in cache`);
-        });
-    });
-
-    describe("manifoldsToMeshes", () => {
-        it("should decompose every shape the cache holds", () => {
-            // Arrange
-            answers.set("decomposeManifoldsOrCrossSections", [{ vertices: [] }]);
-
-            // Act
-            run({ functionName: "manifoldsToMeshes", inputs: { manifolds: [{ hash: CACHED_HASH }] } });
-
-            // Assert
-            expect(answer().result).toEqual([{ vertices: [] }]);
-        });
-
-        it("should fail the call when one shape is no longer cached", () => {
-            // Act
-            run({ functionName: "manifoldsToMeshes", inputs: { manifolds: [{ hash: MISSING_HASH }] } });
-
-            // Assert
-            expect(answer().error).toContain(`Manifold with hash ${MISSING_HASH} not found in cache`);
-        });
-
-        it("should fail the call when it names no shapes at all", () => {
-            // Act
-            run({ functionName: "manifoldsToMeshes", inputs: { manifolds: [] } });
-
-            // Assert
-            expect(answer().error).toContain("No manifolds detected");
         });
     });
 
@@ -466,6 +767,17 @@ describe("the worker message loop", () => {
             expect(cacheOf().cleanAllCacheCalls).toBe(0);
         });
 
+        it("should keep the cache when it holds exactly as many hashes as the threshold", () => {
+            // Arrange
+            cacheOf().usedHashes = Object.fromEntries(Array.from({ length: 10000 }, (_, index) => [index, index]));
+
+            // Act
+            run({ functionName: "startedTheRun", inputs: {} });
+
+            // Assert
+            expect(cacheOf().cleanAllCacheCalls).toBe(0);
+        });
+
         it("should drop the whole cache once it has outgrown the run", () => {
             // Arrange
             cacheOf().usedHashes = Object.fromEntries(Array.from({ length: 10001 }, (_, index) => [index, index]));
@@ -495,7 +807,7 @@ describe("the worker message loop", () => {
             run({ functionName: "manifold.shapes.nothingLikeThis", inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("While executing function - manifold.shapes.nothingLikeThis");
+            expect(answer().error).toContain("Manifold computation failed while executing function 'manifold.shapes.nothingLikeThis'");
         });
 
         it("should repeat the inputs it was given", () => {
@@ -528,6 +840,123 @@ describe("the worker message loop", () => {
 
             // Assert
             expect(answer().error).toContain("Manifold computation failed");
+        });
+
+        it("should describe a kernel failure with the inputs as the call posted them, not with the defaults laid under them", () => {
+            // Act
+            run({ functionName: "manifold.shapes.fail", inputs: { radius: 2 } });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'manifold.shapes.fail': the kernel refused. Input values were: {radius: 2}.");
+            expect(answer().errorKind).toBe("kernel");
+        });
+
+        it("should send the stack apart from the message", () => {
+            // Arrange
+            const refused = new Error("the kernel refused");
+            failure.value = refused;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "Manifold computation failed while executing function 'boom': the kernel refused.",
+                errorKind: "kernel",
+                stack: refused.stack,
+            });
+        });
+
+        it("should send the code of a failure the kernel named beside its message", () => {
+            // Arrange
+            const refused = new KernelOperationError("manifold.boolean.failed", "The union could not be computed.", { shapes: [1] });
+            failure.value = refused;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "Manifold computation failed while executing function 'boom': The union could not be computed.",
+                errorKind: "kernel",
+                code: "manifold.boolean.failed",
+                details: { shapes: [1] },
+                stack: refused.stack,
+            });
+        });
+
+        it("should describe an input error by the path and its own message, as a failure of the inputs", () => {
+            // Arrange
+            const refused = new InputError("radius must be positive", "radius");
+            failure.value = refused;
+
+            // Act
+            run({ functionName: "boom", inputs: { radius: -1 } });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: "boom: radius must be positive",
+                errorKind: "input",
+                stack: refused.stack,
+            });
+        });
+
+        it("should describe bytes and buffers by their size rather than write them out", () => {
+            // Act
+            run({ functionName: "boom", inputs: { data: new Float32Array([7, 8, 9]), buffer: new ArrayBuffer(4) } });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'boom': the kernel refused. Input values were: {data: [Float32Array length=3], buffer: [ArrayBuffer byteLength=4]}.");
+        });
+
+        it("should describe a thrown value that has no text form and that JSON cannot write", () => {
+            // Arrange
+            const bare: Record<string, unknown> = Object.create(null);
+            bare["self"] = bare;
+            failure.value = bare;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(answer().error).toBe("Manifold computation failed while executing function 'boom': [object Object].");
+        });
+
+        it("should still answer, with a fixed message, when the failure cannot be sent back", () => {
+            // Arrange
+            const sent: unknown[] = [];
+            const post = (message: unknown): void => {
+                if (typeof message === "object" && message !== null && "stack" in message) {
+                    throw new Error("the channel refused");
+                }
+                sent.push(message);
+            };
+
+            // Act
+            onMessageInput({ action: { functionName: "boom", inputs: {} }, uid: "uid-9" }, post);
+
+            // Assert
+            expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "Manifold computation failed, and the failure could not be reported.", errorKind: "kernel" }]);
+        });
+
+        it("should describe a failure of a reserved command the same way", () => {
+            // Act
+            run({ functionName: "manifoldToMeshPointer", inputs: { manifold: { hash: MISSING_HASH } } });
+
+            // Assert
+            expect(answer()).toEqual({
+                uid: "uid-1",
+                result: undefined,
+                error: `Manifold computation failed while executing function 'manifoldToMeshPointer': Manifold with hash ${MISSING_HASH} not found in cache. The cache may have been cleaned. Please regenerate the manifold. Input values were: {manifold: {"hash":"${MISSING_HASH}"}}.`,
+                errorKind: "kernel",
+                stack: expect.stringContaining("not found in cache"),
+            });
         });
     });
 });

@@ -6,12 +6,12 @@ description: Scaffold a working 3D CAD project in one command with the @bitbybit
   CLI - Vite, TypeScript and the OCCT, JSCAD and Manifold kernels wired up for Three.js,
   BabylonJS or PlayCanvas, plus full-stack CAD Cloud templates.
 tags: [threejs, babylonjs, playcanvas]
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp
+image: https://bitbybit.dev/files/site/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp
 ---
 
 import Version from '@site/src/components/Version';
 
-![Bitbybit Create App CLI in Terminal](https://ik.imagekit.io/bitbybit/app/assets/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp "Bitbybit Create App CLI in Terminal")
+![Bitbybit Create App CLI in Terminal](https://bitbybit.dev/files/site/blog/create-bitbybit-app-cli/create-bitbybit-app-cli.webp "Bitbybit Create App CLI in Terminal")
 
 TLDR
 ```bash

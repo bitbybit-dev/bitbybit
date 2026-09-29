@@ -20,11 +20,10 @@ export namespace BabylonIO {
          * Name of the downloaded glb file, without the extension
          * @default bitbybit-scene
          */
-        fileName = "bitbybit-scene";
+        fileName?: string | undefined = "bitbybit-scene";
         /**
          * When true, the skybox and ground meshes this library adds are left out of the file
          * @default false
-         * @optional true
          */
         discardSkyboxAndGrid?: boolean | undefined = false;
     }
@@ -46,13 +45,11 @@ export namespace BabylonIO {
         /**
          * When true, the skybox and ground meshes this library adds are left out of the file
          * @default false
-         * @optional true
          */
         discardSkyboxAndGrid?: boolean | undefined = false;
         /**
          * When true, the mesh geometry is compressed with Draco, which makes the file smaller and slower to open
          * @default false
-         * @optional true
          */
         compressWithDraco?: boolean | undefined = false;
     }
@@ -67,7 +64,7 @@ export namespace BabylonIO {
          * Name of the downloaded file; `.babylon` is added when missing
          * @default bitbybit-scene
          */
-        fileName = "bitbybit-scene";
+        fileName?: string | undefined = "bitbybit-scene";
     }
     /**
      * Feeds `babylon.io.exportMeshToStl` with the mesh to write, with its visible children, and the
@@ -86,7 +83,7 @@ export namespace BabylonIO {
          * Name of the downloaded STL file
          * @default bitbybit-mesh
          */
-        fileName = "bitbybit-mesh";
+        fileName?: string | undefined = "bitbybit-mesh";
     }
     /**
      * Feeds `babylon.io.exportMeshesToStl` with the meshes to write into one file and the file
@@ -105,6 +102,6 @@ export namespace BabylonIO {
          * Name of the downloaded STL file
          * @default bitbybit-mesh
          */
-        fileName = "bitbybit-mesh";
+        fileName?: string | undefined = "bitbybit-mesh";
     }
 }

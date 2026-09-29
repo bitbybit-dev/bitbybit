@@ -36,7 +36,7 @@ export class CalculateNormalsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    normalIdx = 0;
+    normalIdx?: number | undefined = 0;
     /**
      * Edges bent more than this, in degrees, get separate normals on each side and stay crisp; at 0
      * every triangle keeps its own normal.
@@ -45,7 +45,7 @@ export class CalculateNormalsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minSharpAngle = 0;
+    minSharpAngle?: number | undefined = 0;
 }
 /**
  * A solid and two channels for `manifold.operations.calculateCurvature`.
@@ -66,7 +66,7 @@ export class CalculateCurvatureDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    gaussianIdx: number = 0;
+    gaussianIdx?: number | undefined = 0;
     /**
      * The property channel that receives the mean curvature, the sum of the two principal
      * curvatures; below 0 skips it.
@@ -75,7 +75,7 @@ export class CalculateCurvatureDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    meanIdx: number = 1;
+    meanIdx?: number | undefined = 1;
 }
 /**
  * A count for `manifold.operations.reserveIds`, which reserves that many mesh ids.
@@ -113,7 +113,7 @@ export class ManifoldsMinGapDto<T> {
      * @maximum Infinity
      * @step 10
      */
-    searchLength = 100;
+    searchLength?: number | undefined = 100;
 }
 /**
  * A solid and a ray segment for `manifold.evaluate.rayCast`.
@@ -132,12 +132,12 @@ export class RayCastDto<T> {
      * Where the ray segment starts.
      * @default [0,0,0]
      */
-    origin: Base.Point3 = [0, 0, 0];
+    origin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * Where the ray segment ends; nothing beyond it is hit.
      * @default [0,0,10]
      */
-    endpoint: Base.Point3 = [0, 0, 10];
+    endpoint?: Base.Point3 | undefined = [0, 0, 10];
 }
 /**
  * One place a ray segment crosses the surface of a solid, as `manifold.evaluate.rayCast` reports

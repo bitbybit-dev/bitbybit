@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The surface GUI controls are drawn on: a full-screen layer over the canvas, or a texture wrapped
@@ -29,8 +31,9 @@ export class BabylonGuiAdvancedDynamicTexture {
      * ```
      */
     createFullScreenUI(inputs: Inputs.BabylonGui.CreateFullScreenUIDto): BABYLON.GUI.AdvancedDynamicTexture {
+        const resolved = resolveDto(Inputs.BabylonGui.CreateFullScreenUIDto, inputs) as Resolved.BabylonGui.CreateFullScreenUIDto;
         const sampling = BABYLON.Texture.BILINEAR_SAMPLINGMODE;
-        const texture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(inputs.name, inputs.foreground, this.context.scene, sampling, inputs.adaptiveScaling);
+        const texture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(resolved.name, resolved.foreground, this.context.scene, sampling, resolved.adaptiveScaling);
         return texture;
     }
 
@@ -52,8 +55,9 @@ export class BabylonGuiAdvancedDynamicTexture {
      * ```
      */
     createForMesh(inputs: Inputs.BabylonGui.CreateForMeshDto): BABYLON.GUI.AdvancedDynamicTexture {
-        const sampling = this.context.getSamplingMode(inputs.sampling);
-        const texture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(inputs.mesh, inputs.width, inputs.height, inputs.supportPointerMove, inputs.onlyAlphaTesting, inputs.invertY, undefined, sampling);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateForMeshDto, inputs) as Resolved.BabylonGui.CreateForMeshDto;
+        const sampling = this.context.getSamplingMode(resolved.sampling);
+        const texture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(resolved.mesh, resolved.width, resolved.height, resolved.supportPointerMove, resolved.onlyAlphaTesting, resolved.invertY, undefined, sampling);
         return texture;
     }
 

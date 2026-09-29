@@ -40,6 +40,12 @@ jobs:
         env:
           BITBYBIT_MCP_NETWORK: "1"
       - run: pnpm --filter @bitbybit-dev/create-app run build && pnpm --filter @bitbybit-dev/create-app run test
+      # The app templates scaffolded, installed from the registry, then switched to the packages this
+      # run just built, and smoked: a breaking change in packages/dev/* fails here, the night before
+      # it would be published, rather than in a user's first install. Once per night is enough, and
+      # it installs from the registry for every template, so it runs on one Node only.
+      - if: matrix.node == 22
+        run: pnpm --filter @bitbybit-dev/create-app run smoke:local -- --only app
 
       - name: Test report
         if: always()

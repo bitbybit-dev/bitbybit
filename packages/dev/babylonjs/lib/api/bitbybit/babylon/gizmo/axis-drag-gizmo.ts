@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * One arrow of a position gizmo, dragging along a single axis; reach it through
@@ -28,8 +30,9 @@ export class BabylonGizmoAxisDragGizmo {
      * ```
      */
     setIsEnabled(inputs: Inputs.BabylonGizmo.SetIsEnabledAxisDragGizmoDto): BABYLON.IAxisDragGizmo {
-        inputs.axisDragGizmo.isEnabled = inputs.isEnabled;
-        return inputs.axisDragGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetIsEnabledAxisDragGizmoDto, inputs) as Resolved.BabylonGizmo.SetIsEnabledAxisDragGizmoDto;
+        resolved.axisDragGizmo.isEnabled = resolved.isEnabled;
+        return resolved.axisDragGizmo;
     }
 
     /**

@@ -131,8 +131,8 @@ export class BabylonWebXRSimple {
         text.text = "Exit VR";
         text.color = "white";
         text.fontSize = "48px";
-        button.onPointerClickObservable.add(async () => {
-            await xr.baseExperience.exitXRAsync();
+        button.onPointerClickObservable.add(() => {
+            void xr.baseExperience.exitXRAsync();
         });
         near.addButton(button);
         button.content = text;

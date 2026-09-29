@@ -48,7 +48,7 @@ Type is set by **role**, not by component. There are five, and every piece of te
 - **Headings** covers section titles and Text elements set to the heading variant. Nothing else.
 - **Body** covers Text elements set to the body variant, which is what you get if you do not pick one.
 - **Captions** covers the caption variant, image captions, option descriptions and status lines. Captions take the theme's muted text colour, which is why the tab offers only a size for them.
-- **Price** covers the total in a Price element. The label beside it and the breakdown rows underneath follow Labels.
+- **Price** covers the total in a Price element, and the price after discounts beside it. The label beside it, the breakdown rows and the discounts underneath follow Labels, and so does the promo code chip. A total that a discount lowers is struck through in the muted text colour; discount amounts, discount tags and the percent saved take the theme's success colour, and the chip takes its tint from your accent colour.
 
 ## Headers on their own
 
@@ -153,11 +153,11 @@ Far more than the labels:
 - Section, accordion and tab **titles**, and a section's description.
 - **Text** and **message** elements, and an image's **alt text** and **caption**.
 - A **Link** element's text and its destination, so a French shopper can be sent to the French page, and the whole markup of a **Custom HTML** element.
-- The Price element's label, the quantity label, the Parts list label and its empty text, the add to cart button's label and its success and failure text, the validation summary title, the Download PDF label, and a confirmation's heading and message.
+- The Price element's label and its promo code wording (the code itself stays as it is), the quantity label, the Parts list label and its empty text, the add to cart button's label and its success and failure text, the validation summary title, the Download PDF label, and a confirmation's heading and message.
 - **Formula labels**, and **part labels** with their unit labels.
 - **Point of interest names**, so a guided tour reads in the shopper's language too.
 - The whole **customer PDF**: file name, section titles, options table column headers, your own text blocks, image shot labels and the footer.
-- The panel's **built-in wording** - "No file chosen", "Added to cart", "Copy link", "Final price is confirmed at checkout", the camera controls' "Zoom in", "View from the top" and the rest of them, plus the PDF's built-in labels once you have a document.
+- The panel's **built-in wording** - "No file chosen", "Added to cart", "Copy link", "Final price is confirmed at checkout", "Total after discounts", "You save \{amount\}", "Checking discounts…", the promo code chip's "Apply", "Copy code \{code\}" (the copy button's label, read out and shown on hover) and "Save \{amount\} with \{code\}", the camera controls' "Zoom in", "View from the top" and the rest of them, plus the PDF's built-in labels once you have a document.
 
 The order document is the exception: its built-in labels follow the shopper's language like everything else, but the section titles and text you wrote on it stay in your language, because it is a document for your workshop rather than for the shopper.
 

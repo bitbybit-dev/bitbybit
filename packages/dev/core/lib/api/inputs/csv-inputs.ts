@@ -20,7 +20,7 @@ export namespace CSV {
          * The whole CSV text, rows separated by `rowSeparator`
          * @default name,age\nJohn,30
          */
-        csv = "name,age\nJohn,30";
+        csv?: string | undefined = "name,age\nJohn,30";
         /**
          * The text between rows, normally a line break; `\n` written as two characters is read as
          * one
@@ -52,7 +52,7 @@ export namespace CSV {
          * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
-        csv = "name,age\nJohn,30\nJane,25";
+        csv?: string | undefined = "name,age\nJohn,30\nJane,25";
         /**
          * Index of the row whose cells become the object keys, counting from 0 and skipping blank
          * lines
@@ -108,13 +108,13 @@ export namespace CSV {
          * The whole CSV text, normally without a header line
          * @default John,30\nJane,25
          */
-        csv = "John,30\nJane,25";
+        csv?: string | undefined = "John,30\nJane,25";
         /**
          * The object keys, one per column in column order; a row with more cells than keys loses
          * the extra cells
          * @default ["name", "age"]
          */
-        headers: string[] = ["name", "age"];
+        headers?: string[] | undefined = ["name", "age"];
         /**
          * Index of the first row turned into an object, counting from 0; set it to 1 to skip a
          * header line the text does have
@@ -162,12 +162,12 @@ export namespace CSV {
          * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
-        csv = "name,age\nJohn,30\nJane,25";
+        csv?: string | undefined = "name,age\nJohn,30\nJane,25";
         /**
          * Header name of the column whose values are listed
          * @default name
          */
-        column = "name";
+        column?: string | undefined = "name";
         /**
          * Index of the row whose cells are the header names, counting from 0
          * @default 0
@@ -222,18 +222,18 @@ export namespace CSV {
          * The whole CSV text, headers included
          * @default name,age\nJohn,30\nJane,25
          */
-        csv = "name,age\nJohn,30\nJane,25";
+        csv?: string | undefined = "name,age\nJohn,30\nJane,25";
         /**
          * Header name of the column that is compared with `value`
          * @default age
          */
-        column = "age";
+        column?: string | undefined = "age";
         /**
          * The text a row's cell must equal to be kept; compared as a number when the column is in
          * `numberColumns`
          * @default 30
          */
-        value = "30";
+        value?: string | undefined = "30";
         /**
          * Index of the row whose cells are the header names, counting from 0
          * @default 0
@@ -285,7 +285,7 @@ export namespace CSV {
          * undefined as empty cells
          * @default [["name", "age"], ["John", "30"]]
          */
-        array: (string | number | boolean | null | undefined)[][] = [["name", "age"], ["John", "30"]];
+        array?: (string | number | boolean | null | undefined)[][] | undefined = [["name", "age"], ["John", "30"]];
         /**
          * The text put between rows, normally a line break; `\n` written as two characters is used
          * as one
@@ -315,12 +315,12 @@ export namespace CSV {
          * The objects, one row each, in order; a property an object lacks becomes an empty cell
          * @default [{"name": "John", "age": "30"}]
          */
-        json: T[] = [{ "name": "John", "age": "30" }] as T[];
+        json?: T[] | undefined = [{ "name": "John", "age": "30" }] as T[];
         /**
          * The property names written as columns, in this order; properties not listed are left out
          * @default ["name", "age"]
          */
-        headers: string[] = ["name", "age"];
+        headers?: string[] | undefined = ["name", "age"];
         /**
          * When true, the first line holds the header names
          * @default true
@@ -355,7 +355,7 @@ export namespace CSV {
          * order
          * @default [{"name": "John", "age": "30"}]
          */
-        json: T[] = [{ "name": "John", "age": "30" }] as T[];
+        json?: T[] | undefined = [{ "name": "John", "age": "30" }] as T[];
         /**
          * When true, the first line holds the header names
          * @default true
@@ -389,7 +389,7 @@ export namespace CSV {
          * The whole CSV text, headers included
          * @default name,age\nJohn,30
          */
-        csv = "name,age\nJohn,30";
+        csv?: string | undefined = "name,age\nJohn,30";
         /**
          * Index of the row whose cells are the header names, counting from 0 and skipping blank
          * lines
@@ -429,7 +429,7 @@ export namespace CSV {
          * The whole CSV text; blank lines are not counted
          * @default name,age\nJohn,30\nJane,25
          */
-        csv = "name,age\nJohn,30\nJane,25";
+        csv?: string | undefined = "name,age\nJohn,30\nJane,25";
         /**
          * When true, the first row is a header line and is not counted; ignored when `dataStartRow`
          * is set

@@ -1,11 +1,29 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, ClassHandle, TopoDS_Edge } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTShapeFix } from "./shape-fix";
 import { OCCTEdge } from "./shapes/edge";
 import { OCCTWire } from "./shapes/wire";
+
+function tracked(occt: BitbybitOcctModule, names: string[], act: () => unknown): ClassHandle[] {
+    const created: ClassHandle[] = [];
+    const originals = names.map(name => [name, Reflect.get(occt, name)] as const);
+    originals.forEach(([name, original]) => Reflect.set(occt, name, new Proxy(original, {
+        construct(target, args): object {
+            const made: ClassHandle = Reflect.construct(target, args);
+            created.push(made);
+            return made;
+        },
+    })));
+    try {
+        act();
+    } finally {
+        originals.forEach(([name, original]) => Reflect.set(occt, name, original));
+    }
+    return created;
+}
 
 
 describe("OCCT shape fix unit tests", () => {
@@ -32,7 +50,7 @@ describe("OCCT shape fix unit tests", () => {
         shapeFix = new OCCTShapeFix(occt, occHelper);
     });
 
-    it("should do a basic shape fix", async () => {
+    it("should do a basic shape fix", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [0, 0, 1] });
         const edge2 = edge.line({ start: [0, 0, 1], end: [0, 0, 1.000000000001] });
         const edge3 = edge.line({ start: [0, 0, 1.000000000001], end: [0, 0, 3] });
@@ -53,7 +71,7 @@ describe("OCCT shape fix unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should fix small edge on a wire", async () => {
+    it("should fix small edge on a wire", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [0, 0, 1] });
         const edge2 = edge.line({ start: [0, 0, 1], end: [0, 0, 1.000000000001] });
         const edge3 = edge.line({ start: [0, 0, 1.000000000001], end: [0, 0, 3] });
@@ -75,7 +93,21 @@ describe("OCCT shape fix unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should fix small edge on a wire with lockvtx set to true", async () => {
+    it("should delete the wire fixer it uses to fix small edges", () => {
+        // Arrange
+        const wire1 = wire.combineEdgesAndWiresIntoAWire({
+            shapes: [edge.line({ start: [0, 0, 0], end: [0, 0, 1] }), edge.line({ start: [0, 0, 1], end: [0, 0, 3] })],
+        });
+
+        // Act
+        const created = tracked(occt, ["ShapeFix_Wire"], () => shapeFix.fixSmallEdgeOnWire({ shape: wire1, lockvtx: false, precsmall: 1e-7 }));
+
+        // Assert
+        expect(created).toHaveLength(1);
+        expect(created.filter(made => !made.isDeleted())).toEqual([]);
+    });
+
+    it("should fix small edge on a wire with lockvtx set to true", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [0, 0, 1] });
         const edge2 = edge.line({ start: [0, 0, 1], end: [0, 0, 1.000000000001] });
         const edge3 = edge.line({ start: [0, 0, 1.000000000001], end: [0, 0, 3] });
@@ -98,7 +130,7 @@ describe("OCCT shape fix unit tests", () => {
 
     });
 
-    it("should not fix large enough edge on a wire", async () => {
+    it("should not fix large enough edge on a wire", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [0, 0, 1] });
         const edge2 = edge.line({ start: [0, 0, 1], end: [0, 0, 1.0000001] });
         const edge3 = edge.line({ start: [0, 0, 1.0000001], end: [0, 0, 3] });
@@ -120,7 +152,7 @@ describe("OCCT shape fix unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should fix edge orientations along wire when edges have inconsistent directions", async () => {
+    it("should fix edge orientations along wire when edges have inconsistent directions", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
         const edge2 = edge.line({ start: [2, 0, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
@@ -154,7 +186,7 @@ describe("OCCT shape fix unit tests", () => {
         fixedEdges.forEach(e => e.delete());
     });
 
-    it("should preserve wire when edges already have correct orientations", async () => {
+    it("should preserve wire when edges already have correct orientations", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
         const edge2 = edge.line({ start: [1, 0, 0], end: [2, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
@@ -187,7 +219,7 @@ describe("OCCT shape fix unit tests", () => {
         fixedEdges.forEach(e => e.delete());
     });
 
-    it("should fix edge orientations in a closed wire", async () => {
+    it("should fix edge orientations in a closed wire", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
         const edge2 = edge.line({ start: [0.5, 1, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [0.5, 1, 0], end: [0, 0, 0] });
@@ -224,7 +256,7 @@ describe("OCCT shape fix unit tests", () => {
         fixedEdges.forEach(e => e.delete());
     });
 
-    it("should fix edge orientations with arc edges", async () => {
+    it("should fix edge orientations with arc edges", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
         const arcEdge = edge.arcThroughThreePoints({ start: [2, 0, 0], middle: [1.5, 0.5, 0], end: [1, 0, 0] });
         const edge3 = edge.line({ start: [2, 0, 0], end: [3, 0, 0] });
@@ -253,7 +285,7 @@ describe("OCCT shape fix unit tests", () => {
         fixedEdges.forEach(e => e.delete());
     });
 
-    it("should handle a single edge wire", async () => {
+    it("should handle a single edge wire", () => {
         const edge1 = edge.line({ start: [0, 0, 0], end: [1, 0, 0] });
 
         const wire1 = wire.combineEdgesAndWiresIntoAWire({

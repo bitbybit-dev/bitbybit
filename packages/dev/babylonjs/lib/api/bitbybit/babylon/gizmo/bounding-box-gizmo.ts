@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The bounding box gizmo: a frame around the attached mesh with corner boxes that scale it and
@@ -23,8 +25,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set rotation sphere size
      */
     setRotationSphereSize(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoRotationSphereSizeDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.rotationSphereSize = inputs.rotationSphereSize;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoRotationSphereSizeDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoRotationSphereSizeDto;
+        resolved.boundingBoxGizmo.rotationSphereSize = resolved.rotationSphereSize;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -41,8 +44,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * ```
      */
     setFixedDragMeshScreenSize(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.fixedDragMeshScreenSize = inputs.fixedDragMeshScreenSize;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDto;
+        resolved.boundingBoxGizmo.fixedDragMeshScreenSize = resolved.fixedDragMeshScreenSize;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -54,8 +58,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set fixed drag mesh bounds size
      */
     setFixedDragMeshBoundsSize(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.fixedDragMeshBoundsSize = inputs.fixedDragMeshBoundsSize;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshBoundsSizeDto;
+        resolved.boundingBoxGizmo.fixedDragMeshBoundsSize = resolved.fixedDragMeshBoundsSize;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -67,8 +72,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set fixed drag mesh screen size dist factor
      */
     setFixedDragMeshScreenSizeDistanceFactor(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.fixedDragMeshScreenSizeDistanceFactor = inputs.fixedDragMeshScreenSizeDistanceFactor;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoFixedDragMeshScreenSizeDistanceFactorDto;
+        resolved.boundingBoxGizmo.fixedDragMeshScreenSizeDistanceFactor = resolved.fixedDragMeshScreenSizeDistanceFactor;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -80,8 +86,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set scaling snap dist.
      */
     setScalingSnapDistance(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoScalingSnapDistanceDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.scalingSnapDistance = inputs.scalingSnapDistance;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoScalingSnapDistanceDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoScalingSnapDistanceDto;
+        resolved.boundingBoxGizmo.scalingSnapDistance = resolved.scalingSnapDistance;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -93,8 +100,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set rotation snap dist.
      */
     setRotationSnapDistance(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoRotationSnapDistanceDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.rotationSnapDistance = inputs.rotationSnapDistance;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoRotationSnapDistanceDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoRotationSnapDistanceDto;
+        resolved.boundingBoxGizmo.rotationSnapDistance = resolved.rotationSnapDistance;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -105,8 +113,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set scale box size
      */
     setScaleBoxSize(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoScaleBoxSizeDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.scaleBoxSize = inputs.scaleBoxSize;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoScaleBoxSizeDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoScaleBoxSizeDto;
+        resolved.boundingBoxGizmo.scaleBoxSize = resolved.scaleBoxSize;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -119,8 +128,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set incremental snap
      */
     setIncrementalSnap(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoIncrementalSnapDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.incrementalSnap = inputs.incrementalSnap;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoIncrementalSnapDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoIncrementalSnapDto;
+        resolved.boundingBoxGizmo.incrementalSnap = resolved.incrementalSnap;
+        return resolved.boundingBoxGizmo;
     }
 
     /**
@@ -162,8 +172,9 @@ export class BabylonGizmoBoundingBoxGizmo {
      * @shortname set scale drag speed
      */
     setScaleDragSpeed(inputs: Inputs.BabylonGizmo.SetBoundingBoxGizmoScaleDragSpeedDto): BABYLON.BoundingBoxGizmo {
-        inputs.boundingBoxGizmo.scaleDragSpeed = inputs.scaleDragSpeed;
-        return inputs.boundingBoxGizmo;
+        const resolved = resolveDto(Inputs.BabylonGizmo.SetBoundingBoxGizmoScaleDragSpeedDto, inputs) as Resolved.BabylonGizmo.SetBoundingBoxGizmoScaleDragSpeedDto;
+        resolved.boundingBoxGizmo.scaleDragSpeed = resolved.scaleDragSpeed;
+        return resolved.boundingBoxGizmo;
     }
 
     /**

@@ -1,14 +1,29 @@
-import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
+import { framesOnCurve, numbersOfFrames } from "../base/frames";
+import { checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
+import { RADIANS_PER_DEGREE, checkedShapeCount, tangentEdges } from "../base/curve-analysis";
+
+/** The edge to cut or lengthen, refused as an input error when it is a wire or another shape. */
+const checkedEdge = (occ: BitbybitOcctModule, shape: unknown, property: string): TopoDS_Shape => {
+    const edge = checkedShape(shape, property);
+    if (edge.ShapeType() !== occ.TopAbs_ShapeEnum.EDGE) {
+        throw new InputError(`\`${property}\` is not an edge; a wire is cut by \`shapes.wire.splitWireAtParams\` and its siblings.`, property);
+    }
+    return edge;
+};
 
 /**
  * Edges in OpenCascade: single curves between two vertices, straight, circular, elliptical or
- * free-form. Build them from points and lines, as arcs, circles and ellipses, or as tangent
- * constructions against circles; read them back as points, lengths, tangents and centers; and pick
- * edges out of any shape. Edges join end to end into wires, which `shapes.wire` handles. Parameters
- * along an edge run from 0 at its start to 1 at its end; angles are in degrees.
+ * free-form. Build them from points and lines, as arcs, circles and ellipses, or as lines and circles
+ * tangent to other curves in a plane; cut, lengthen and blend them; read them back as points,
+ * lengths, tangents and centers; and pick edges out of any shape. Edges join end to end into wires,
+ * which `shapes.wire` handles. Parameters along an edge run from 0 at its start to 1 at its end;
+ * angles are in degrees.
  */
 export class OCCTEdge {
 
@@ -34,7 +49,8 @@ export class OCCTEdge {
      * ```
      */
     rebuildEdgeDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.occ.RebuildEdgeDegree(inputs.shape, inputs.degree, inputs.tolerance);
+        const resolved = resolveDto(Inputs.OCCT.RebuildCurveDegreeDto, inputs) as Resolved.OCCT.RebuildCurveDegreeDto<TopoDS_Edge>;
+        return this.occ.RebuildEdgeDegree(resolved.shape, resolved.degree, resolved.tolerance);
     }
 
     /**
@@ -53,7 +69,8 @@ export class OCCTEdge {
      * ```
      */
     moveEdgeSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.occ.MoveSeamByParameter(inputs.shape, inputs.parameter);
+        const resolved = resolveDto(Inputs.OCCT.CurveSeamByParameterDto, inputs) as Resolved.OCCT.CurveSeamByParameterDto<TopoDS_Edge>;
+        return this.occ.MoveSeamByParameter(resolved.shape, resolved.parameter);
     }
 
     /**
@@ -72,7 +89,8 @@ export class OCCTEdge {
      * ```
      */
     moveEdgeSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.occ.MoveSeamByLength(inputs.shape, inputs.length);
+        const resolved = resolveDto(Inputs.OCCT.CurveSeamByLengthDto, inputs) as Resolved.OCCT.CurveSeamByLengthDto<TopoDS_Edge>;
+        return this.occ.MoveSeamByLength(resolved.shape, resolved.length);
     }
 
     /**
@@ -261,7 +279,8 @@ export class OCCTEdge {
      * ```
      */
     line(inputs: Inputs.OCCT.LineDto): TopoDS_Edge {
-        return this.och.edgesService.lineEdge(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LineDto, inputs) as Resolved.OCCT.LineDto;
+        return this.och.edgesService.lineEdge(resolved);
     }
 
     /**
@@ -278,7 +297,8 @@ export class OCCTEdge {
      * ```
      */
     arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto): TopoDS_Edge {
-        return this.och.edgesService.arcThroughThreePoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ArcEdgeThreePointsDto, inputs) as Resolved.OCCT.ArcEdgeThreePointsDto;
+        return this.och.edgesService.arcThroughThreePoints(resolved);
     }
 
     /**
@@ -297,7 +317,8 @@ export class OCCTEdge {
      * ```
      */
     arcThroughTwoPointsAndTangent(inputs: Inputs.OCCT.ArcEdgeTwoPointsTangentDto): TopoDS_Edge {
-        return this.och.edgesService.arcThroughTwoPointsAndTangent(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ArcEdgeTwoPointsTangentDto, inputs) as Resolved.OCCT.ArcEdgeTwoPointsTangentDto;
+        return this.och.edgesService.arcThroughTwoPointsAndTangent(resolved);
     }
 
     /**
@@ -315,7 +336,8 @@ export class OCCTEdge {
      * ```
      */
     arcFromCircleAndTwoPoints(inputs: Inputs.OCCT.ArcEdgeCircleTwoPointsDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.och.edgesService.arcFromCircleAndTwoPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ArcEdgeCircleTwoPointsDto, inputs) as Resolved.OCCT.ArcEdgeCircleTwoPointsDto<TopoDS_Edge>;
+        return this.och.edgesService.arcFromCircleAndTwoPoints(resolved);
     }
 
     /**
@@ -334,7 +356,8 @@ export class OCCTEdge {
      * ```
      */
     arcFromCircleAndTwoAngles(inputs: Inputs.OCCT.ArcEdgeCircleTwoAnglesDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.och.edgesService.arcFromCircleAndTwoAngles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ArcEdgeCircleTwoAnglesDto, inputs) as Resolved.OCCT.ArcEdgeCircleTwoAnglesDto<TopoDS_Edge>;
+        return this.och.edgesService.arcFromCircleAndTwoAngles(resolved);
     }
 
     /**
@@ -353,7 +376,8 @@ export class OCCTEdge {
      * ```
      */
     arcFromCirclePointAndAngle(inputs: Inputs.OCCT.ArcEdgeCirclePointAngleDto<TopoDS_Edge>): TopoDS_Edge {
-        return this.och.edgesService.arcFromCirclePointAndAngle(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ArcEdgeCirclePointAngleDto, inputs) as Resolved.OCCT.ArcEdgeCirclePointAngleDto<TopoDS_Edge>;
+        return this.och.edgesService.arcFromCirclePointAndAngle(resolved);
     }
 
     /**
@@ -369,7 +393,8 @@ export class OCCTEdge {
      * ```
      */
     createCircleEdge(inputs: Inputs.OCCT.CircleDto): TopoDS_Edge {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -387,7 +412,8 @@ export class OCCTEdge {
      * ```
      */
     createEllipseEdge(inputs: Inputs.OCCT.EllipseDto): TopoDS_Edge {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.edge);
+        const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.edge);
     }
 
     /**
@@ -444,7 +470,8 @@ export class OCCTEdge {
      * ```
      */
     getEdge(inputs: Inputs.OCCT.EdgeIndexDto<TopoDS_Shape>): TopoDS_Edge {
-        return this.och.shapeGettersService.getEdge(inputs);
+        const resolved = resolveDto(Inputs.OCCT.EdgeIndexDto, inputs) as Resolved.OCCT.EdgeIndexDto<TopoDS_Shape>;
+        return this.och.shapeGettersService.getEdge(resolved);
     }
 
     /**
@@ -686,7 +713,8 @@ export class OCCTEdge {
      * ```
      */
     pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Inputs.Base.Point3 {
-        return this.och.edgesService.pointOnEdgeAtParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>;
+        return this.och.edgesService.pointOnEdgeAtParam(resolved);
     }
 
     /**
@@ -702,7 +730,9 @@ export class OCCTEdge {
      * ```
      */
     pointsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        return inputs.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtParam({ shape, param: inputs.param }));
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtParam({ shape, param: resolved.param }));
     }
 
     /**
@@ -729,7 +759,8 @@ export class OCCTEdge {
      * ```
      */
     edgesToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.edgesService.edgesToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.EdgesToPointsDto, inputs) as Resolved.OCCT.EdgesToPointsDto<TopoDS_Shape>;
+        return this.och.edgesService.edgesToPoints(resolved);
     }
 
     /**
@@ -766,7 +797,8 @@ export class OCCTEdge {
      * ```
      */
     tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Inputs.Base.Vector3 {
-        return this.och.edgesService.tangentOnEdgeAtParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>;
+        return this.och.edgesService.tangentOnEdgeAtParam(resolved);
     }
 
     /**
@@ -782,7 +814,9 @@ export class OCCTEdge {
      * ```
      */
     tangentsOnEdgesAtParam(inputs: Inputs.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        return inputs.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtParam({ shape, param: inputs.param }));
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryesAtParamDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtParam({ shape, param: resolved.param }));
     }
 
     /**
@@ -799,7 +833,8 @@ export class OCCTEdge {
      * ```
      */
     pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Inputs.Base.Point3 {
-        return this.och.edgesService.pointOnEdgeAtLength(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>;
+        return this.och.edgesService.pointOnEdgeAtLength(resolved);
     }
 
     /**
@@ -815,7 +850,9 @@ export class OCCTEdge {
      * ```
      */
     pointsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        return inputs.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtLength({ shape, length: inputs.length }));
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map((shape) => this.och.edgesService.pointOnEdgeAtLength({ shape, length: resolved.length }));
     }
 
     /**
@@ -832,7 +869,8 @@ export class OCCTEdge {
      * ```
      */
     tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3 {
-        return this.och.edgesService.tangentOnEdgeAtLength(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>;
+        return this.och.edgesService.tangentOnEdgeAtLength(resolved);
     }
 
     /**
@@ -848,7 +886,84 @@ export class OCCTEdge {
      * ```
      */
     tangentsOnEdgesAtLength(inputs: Inputs.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>): Inputs.Base.Vector3[] {
-        return inputs.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtLength({ shape, length: inputs.length }));
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryesAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryesAtLengthDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map((shape) => this.och.edgesService.tangentOnEdgeAtLength({ shape, length: resolved.length }));
+    }
+
+    /**
+     * Finds a frame on an edge at a parameter, from 0 where the edge starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the edge level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the edge runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The edge, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtParam({ shape: edge, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<TopoDS_Edge>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtParamDto, inputs) as Resolved.OCCT.FrameOnCurveAtParamDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.param], false, resolved.kind, resolved.up, "param")[0]!;
+    }
+
+    /**
+     * Finds a frame on an edge at a length from its start, as `frameOnEdgeAtParam` finds it at a
+     * parameter.
+     * @param inputs - The edge, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtLength({ shape: edge, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<TopoDS_Edge>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtLengthDto, inputs) as Resolved.OCCT.FrameOnCurveAtLengthDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.length], true, resolved.kind, resolved.up, "length")[0]!;
+    }
+
+    /**
+     * Finds frames on an edge at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole edge from its start, so each is the frame a swept profile would ride
+     * on there.
+     * @param inputs - The edge, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on edge at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtParams({ shape: edge, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<TopoDS_Edge>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtParamsDto, inputs) as Resolved.OCCT.FramesOnCurveAtParamsDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.params, false, resolved.kind, resolved.up, "params");
+    }
+
+    /**
+     * Finds frames on an edge at several lengths from its start in one pass, as
+     * `framesOnEdgeAtParams` finds them at parameters.
+     * @param inputs - The edge, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on edge at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtLengths({ shape: edge, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Edge>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtLengthsDto, inputs) as Resolved.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Edge>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.lengths, true, resolved.kind, resolved.up, "lengths");
     }
 
     /**
@@ -880,6 +995,7 @@ export class OCCTEdge {
      * ```
      */
     startPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => this.och.edgesService.startPointOnEdge({ shape }));
     }
 
@@ -912,6 +1028,7 @@ export class OCCTEdge {
      * ```
      */
     endPointsOnEdges(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(shape => this.och.edgesService.endPointOnEdge({ shape }));
     }
 
@@ -932,7 +1049,8 @@ export class OCCTEdge {
      * ```
      */
     divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        return this.och.edgesService.divideEdgeByParamsToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DivideDto, inputs) as Resolved.OCCT.DivideDto<TopoDS_Edge>;
+        return this.och.edgesService.divideEdgeByParamsToPoints(resolved);
     }
 
     /**
@@ -948,7 +1066,9 @@ export class OCCTEdge {
      * ```
      */
     divideEdgesByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
-        return inputs.shapes.map(shape => this.divideEdgeByParamsToPoints({ shape, nrOfDivisions: inputs.nrOfDivisions, removeEndPoint: inputs.removeEndPoint, removeStartPoint: inputs.removeStartPoint }));
+        const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map(shape => this.divideEdgeByParamsToPoints({ shape, nrOfDivisions: resolved.nrOfDivisions, removeEndPoint: resolved.removeEndPoint, removeStartPoint: resolved.removeStartPoint }));
     }
 
     /**
@@ -967,7 +1087,8 @@ export class OCCTEdge {
      * ```
      */
     divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        return this.och.edgesService.divideEdgeByEqualDistanceToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DivideDto, inputs) as Resolved.OCCT.DivideDto<TopoDS_Edge>;
+        return this.och.edgesService.divideEdgeByEqualDistanceToPoints(resolved);
     }
 
     /**
@@ -984,7 +1105,102 @@ export class OCCTEdge {
      * ```
      */
     divideEdgesByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Edge>): Inputs.Base.Point3[][] {
-        return inputs.shapes.map(shape => this.divideEdgeByEqualDistanceToPoints({ shape, nrOfDivisions: inputs.nrOfDivisions, removeEndPoint: inputs.removeEndPoint, removeStartPoint: inputs.removeStartPoint }));
+        const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map(shape => this.divideEdgeByEqualDistanceToPoints({ shape, nrOfDivisions: resolved.nrOfDivisions, removeEndPoint: resolved.removeEndPoint, removeStartPoint: resolved.removeStartPoint }));
+    }
+
+    /**
+     * Cuts an edge into pieces at places given as fractions from 0 at its start to 1 at its end.
+     *
+     * The pieces keep the edge's curve and direction, so the pieces of an arc are arcs. Fractions
+     * follow the parameter, not the length; ends and repeats are skipped, so n places inside the edge
+     * give n + 1 pieces.
+     * @param inputs - The edge and the fractions to cut at
+     * @returns The pieces, in order from the start
+     * @group edit
+     * @shortname split edge at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const [firstHalf, secondHalf] = await bitbybit.occt.shapes.edge.splitEdgeAtParams({ shape: arc, params: [0.5] });
+     * ```
+     */
+    splitEdgeAtParams(inputs: Inputs.OCCT.DataOnGeometryAtParamsDto<TopoDS_Edge>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamsDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamsDto<TopoDS_Edge>;
+        const edge = checkedEdge(this.occ, resolved.shape, "shape");
+        return this.occ.SplitCurve(edge, checkedNumberList(resolved.params, "params", { atLeast: 0, atMost: 1 }), false);
+    }
+
+    /**
+     * Cuts an edge into pieces at places given as lengths along it from its start, in model units.
+     *
+     * Each piece runs along the edge's own curve and keeps its direction. Lengths at or past the
+     * ends and repeats are skipped, so n lengths inside the edge give n + 1 pieces.
+     * @param inputs - The edge and the lengths to cut at
+     * @returns The pieces, in order from the start
+     * @group edit
+     * @shortname split edge at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const pieces = await bitbybit.occt.shapes.edge.splitEdgeAtLengths({ shape: edge, lengths: [2, 5] });
+     * ```
+     */
+    splitEdgeAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Edge>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthsDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Edge>;
+        const edge = checkedEdge(this.occ, resolved.shape, "shape");
+        return this.occ.SplitCurve(edge, checkedNumberList(resolved.lengths, "lengths", { atLeast: 0 }), true);
+    }
+
+    /**
+     * Lengthens an edge before its start and past its end, carrying its curve on the way it runs.
+     *
+     * A line stays a line and an arc an arc, up to a full circle. Other curves become B-splines
+     * ending that far along the end's tangent, bending smoothly across the join; one still turning
+     * there gains a little more.
+     * @param inputs - The edge and the lengths to add at its start and its end
+     * @returns A new, longer edge running the same way
+     * @group edit
+     * @shortname extend edge
+     * @drawable true
+     * @example
+     * ```typescript
+     * const longer = await bitbybit.occt.shapes.edge.extendEdge({ shape: edge, atStart: 0, atEnd: 2 });
+     * ```
+     */
+    extendEdge(inputs: Inputs.OCCT.ExtendEdgeDto<TopoDS_Edge>): TopoDS_Edge {
+        const resolved = resolveDto(Inputs.OCCT.ExtendEdgeDto, inputs) as Resolved.OCCT.ExtendEdgeDto<TopoDS_Edge>;
+        const edge = checkedShape(resolved.shape);
+        const atStart = checkedNumber(resolved.atStart, "atStart", 0);
+        const atEnd = checkedNumber(resolved.atEnd, "atEnd", 0);
+        return this.occ.ExtendCurve(edge, atStart, atEnd);
+    }
+
+    /**
+     * Bridges the gap from the end of one edge to the start of another with a smooth Bezier edge
+     * that leaves and arrives along their tangents.
+     *
+     * With `matchCurvature` it also bends as each edge bends at its end. `bulge` sets how long it
+     * holds each tangent; edges whose ends already meet are refused.
+     * @param inputs - The edge to leave, the edge to reach and how the blend joins them
+     * @returns The blend edge
+     * @group edit
+     * @shortname blend between edges
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bridge = await bitbybit.occt.shapes.edge.blendBetweenEdges({ from: first, to: second, matchCurvature: true, bulge: 1 });
+     * const path = await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [first, bridge, second] });
+     * ```
+     */
+    blendBetweenEdges(inputs: Inputs.OCCT.BlendBetweenEdgesDto<TopoDS_Edge>): TopoDS_Edge {
+        const resolved = resolveDto(Inputs.OCCT.BlendBetweenEdgesDto, inputs) as Resolved.OCCT.BlendBetweenEdgesDto<TopoDS_Edge>;
+        const from = checkedShape(resolved.from, "from");
+        const to = checkedShape(resolved.to, "to");
+        const continuity = checkedFlag(resolved.matchCurvature, "matchCurvature") ? 2 : 1;
+        const bulge = checkedWithin(resolved.bulge, "bulge", { above: 0 });
+        return this.occ.BlendCurves(from, to, continuity, bulge);
     }
 
     /**
@@ -992,9 +1208,13 @@ export class OCCTEdge {
      * point.
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
-     * `circleRemainder` adds the piece of the circle between the touching points.
+     * `circleRemainder` adds the piece of the circle between the touching points. It is replaced
+     * by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the two points, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` once per point, with the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane; it gives no circle piece.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from 2 pts to circle
      * @drawable true
@@ -1011,16 +1231,20 @@ export class OCCTEdge {
      * ```
      */
     constraintTanLinesFromTwoPtsToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
-        return this.och.edgesService.constraintTanLinesFromTwoPtsToCircle(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto, inputs) as Resolved.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>;
+        return this.och.edgesService.constraintTanLinesFromTwoPtsToCircle(resolved);
     }
 
     /**
      * Draws the two straight lines from a point that just touch a circle.
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
-     * adds the piece of the circle between the touching points.
+     * adds the piece of the circle between the touching points. It is replaced by
+     * `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the point, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` with the point as a vertex (`shapes.vertex.vertexFromPoint`)
+     * and a frame in the circle's plane; it gives no circle piece. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from pt to circle
      * @drawable true
@@ -1036,7 +1260,8 @@ export class OCCTEdge {
      * ```
      */
     constraintTanLinesFromPtToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromPtToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
-        return this.och.edgesService.constraintTanLinesFromPtToCircle(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConstraintTanLinesFromPtToCircleDto, inputs) as Resolved.OCCT.ConstraintTanLinesFromPtToCircleDto<TopoDS_Edge>;
+        return this.och.edgesService.constraintTanLinesFromPtToCircle(resolved);
     }
 
     /**
@@ -1044,9 +1269,11 @@ export class OCCTEdge {
      *
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
-     * shape.
+     * shape. It is replaced by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and which solutions and circle pieces to keep
      * @returns The tangent lines, and the circle pieces when asked for
+     * @deprecated Use `linesTangentToTwo` with the two circles and a frame in their plane; it gives no
+     * circle pieces. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines on two circles
      * @drawable true
@@ -1062,13 +1289,18 @@ export class OCCTEdge {
      * ```
      */
     constraintTanLinesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanLinesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
-        return this.och.edgesService.constraintTanLinesOnTwoCircles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConstraintTanLinesOnTwoCirclesDto, inputs) as Resolved.OCCT.ConstraintTanLinesOnTwoCirclesDto<TopoDS_Edge>;
+        return this.och.edgesService.constraintTanLinesOnTwoCircles(resolved);
     }
 
     /**
      * Draws the circles of a given radius that just touch two circles at once.
+     *
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the two circles and a frame in their plane.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on two circles
      * @drawable true
@@ -1078,13 +1310,19 @@ export class OCCTEdge {
      * ```
      */
     constraintTanCirclesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
-        return this.och.edgesService.constraintTanCirclesOnTwoCircles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto, inputs) as Resolved.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>;
+        return this.och.edgesService.constraintTanCirclesOnTwoCircles(resolved);
     }
 
     /**
      * Draws the circles of a given radius that pass through a point and just touch a circle.
+     *
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes a vertex and a curve other than a
+     * circle too.
      * @param inputs - The circle edge, the point, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the circle, the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on circle and pnt
      * @drawable true
@@ -1094,7 +1332,169 @@ export class OCCTEdge {
      * ```
      */
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[] {
-        return this.och.edgesService.constraintTanCirclesOnCircleAndPnt(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto, inputs) as Resolved.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>;
+        return this.och.edgesService.constraintTanCirclesOnCircleAndPnt(resolved);
+    }
+
+    /**
+     * Draws every circle that touches three edges, or passes through the vertices among them, in the
+     * plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the edges is left out.
+     * @param inputs - The three edges or vertices, the plane, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to three
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.circlesTangentToThree({
+     *     shapes: [sideA, sideB, sideC],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: true,
+     * });
+     * ```
+     */
+    circlesTangentToThree(inputs: Inputs.OCCT.CirclesTangentToThreeDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.CirclesTangentToThreeDto, inputs) as Resolved.OCCT.CirclesTangentToThreeDto<TopoDS_Edge | TopoDS_Vertex>;
+        const shapes = checkedShapeCount(checkedShapes(resolved.shapes), 3, "shapes", "edges or vertices");
+        const frame = checkedFrame(resolved.frame, "frame");
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
+        return tangentEdges(this.occ.CirclesTangentToThree(numbersOfFrames([frame]), shapes, tolerance), onArgumentsOnly);
+    }
+
+    /**
+     * Draws every circle of a given radius that touches two edges, or passes through the vertices
+     * among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the given edges is
+     * left out.
+     * @param inputs - The two edges or vertices, the plane, the radius, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to two with radius
+     * @drawable true
+     * @example
+     * ```typescript
+     * const fillets = await bitbybit.occt.shapes.edge.circlesTangentToTwoWithRadius({
+     *     shapes: [wall, floor],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     radius: 2,
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: true,
+     * });
+     * ```
+     */
+    circlesTangentToTwoWithRadius(inputs: Inputs.OCCT.CirclesTangentToTwoWithRadiusDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.CirclesTangentToTwoWithRadiusDto, inputs) as Resolved.OCCT.CirclesTangentToTwoWithRadiusDto<TopoDS_Edge | TopoDS_Vertex>;
+        const shapes = checkedShapeCount(checkedShapes(resolved.shapes), 2, "shapes", "edges or vertices");
+        const frame = checkedFrame(resolved.frame, "frame");
+        const radius = checkedWithin(resolved.radius, "radius", { above: 0 });
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
+        return tangentEdges(this.occ.CirclesTangentToTwoWithRadius(numbersOfFrames([frame]), shapes, radius, tolerance), onArgumentsOnly);
+    }
+
+    /**
+     * Draws every circle centered on an edge that touches two other edges, or passes through the
+     * vertices among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles, the edge of centers too,
+     * unless `onArgumentsOnly` is set, which also keeps each center within `centerOn`. Other curves
+     * are touched within their ends.
+     * @param inputs - The two edges or vertices, the edge of centers, the plane, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to two centered on
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.circlesTangentToTwoCenteredOn({
+     *     shapes: [top, bottom],
+     *     centerOn: axis,
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    circlesTangentToTwoCenteredOn(inputs: Inputs.OCCT.CirclesTangentToTwoCenteredOnDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.CirclesTangentToTwoCenteredOnDto, inputs) as Resolved.OCCT.CirclesTangentToTwoCenteredOnDto<TopoDS_Edge | TopoDS_Vertex>;
+        const shapes = checkedShapeCount(checkedShapes(resolved.shapes), 2, "shapes", "edges or vertices");
+        const centerOn = checkedShape(resolved.centerOn, "centerOn");
+        const frame = checkedFrame(resolved.frame, "frame");
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
+        return tangentEdges(this.occ.CirclesTangentToTwoCenteredOn(numbersOfFrames([frame]), shapes, centerOn, tolerance), onArgumentsOnly);
+    }
+
+    /**
+     * Draws every straight line that touches two curved edges, or touches one and passes through a
+     * vertex, in the plane of a frame.
+     *
+     * Each line runs from the first shape to the second, like a belt between two wheels. Arcs count
+     * as whole circles unless `onArgumentsOnly` is set; straight edges and two vertices are refused.
+     * @param inputs - The two shapes, the plane, the angular tolerance and whether the lines must touch the edges themselves
+     * @returns One line per solution, from contact to contact
+     * @group constraint
+     * @shortname lines tangent to two
+     * @drawable true
+     * @example
+     * ```typescript
+     * const belt = await bitbybit.occt.shapes.edge.linesTangentToTwo({
+     *     shapes: [wheelA, wheelB],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     angularTolerance: 1e-6,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    linesTangentToTwo(inputs: Inputs.OCCT.LinesTangentToTwoDto<TopoDS_Edge | TopoDS_Vertex>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.LinesTangentToTwoDto, inputs) as Resolved.OCCT.LinesTangentToTwoDto<TopoDS_Edge | TopoDS_Vertex>;
+        const shapes = checkedShapeCount(checkedShapes(resolved.shapes), 2, "shapes", "edges, or an edge and a vertex");
+        const frame = checkedFrame(resolved.frame, "frame");
+        const angularTolerance = checkedWithin(resolved.angularTolerance, "angularTolerance", { above: 0 });
+        const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
+        return tangentEdges(this.occ.LinesTangentToTwo(numbersOfFrames([frame]), shapes, angularTolerance), onArgumentsOnly);
+    }
+
+    /**
+     * Draws every straight line that touches a curved edge at an angle to a straight reference edge,
+     * in the plane of a frame.
+     *
+     * The angle, in degrees, turns counterclockwise about the frame's normal. Each line runs from its
+     * touch to the reference's line; a parallel one is centered on its touch, as long as the
+     * reference.
+     * @param inputs - The curve, the reference, the plane, the angle in degrees, the tolerance and whether the lines must touch the edges themselves
+     * @returns One line per solution, from the touch to the reference
+     * @group constraint
+     * @shortname lines tangent at angle
+     * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.linesTangentAtAngle({
+     *     shape: arc,
+     *     reference: baseLine,
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     angle: 30,
+     *     angularTolerance: 1e-6,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    linesTangentAtAngle(inputs: Inputs.OCCT.LinesTangentAtAngleDto<TopoDS_Edge>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.LinesTangentAtAngleDto, inputs) as Resolved.OCCT.LinesTangentAtAngleDto<TopoDS_Edge>;
+        const curve = checkedShape(resolved.shape);
+        const reference = checkedShape(resolved.reference, "reference");
+        const frame = checkedFrame(resolved.frame, "frame");
+        const angle = checkedNumber(resolved.angle, "angle");
+        const angularTolerance = checkedWithin(resolved.angularTolerance, "angularTolerance", { above: 0 });
+        const onArgumentsOnly = checkedFlag(resolved.onArgumentsOnly, "onArgumentsOnly");
+        return tangentEdges(this.occ.LinesTangentAtAngle(numbersOfFrames([frame]), curve, reference, angle * RADIANS_PER_DEGREE, angularTolerance), onArgumentsOnly);
     }
 
     /**
@@ -1139,6 +1539,7 @@ export class OCCTEdge {
      * @returns The closed B-spline edge
      */
     createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Edge {
-        return this.och.edgesService.createSymmetricPeriodicBSplineEdge(inputs);
+        const resolved = resolveDto(Inputs.OCCT.InterpolationDto, inputs) as Resolved.OCCT.InterpolationDto;
+        return this.och.edgesService.createSymmetricPeriodicBSplineEdge(resolved);
     }
 }

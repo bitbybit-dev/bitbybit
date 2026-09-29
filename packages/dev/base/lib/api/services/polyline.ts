@@ -3,6 +3,8 @@ import * as Inputs from "../inputs";
 import { Point } from "./point";
 import { Vector } from "./vector";
 import { Line } from "./line";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Polylines: chains of straight segments through a list of points, held as plain objects of the
@@ -126,9 +128,10 @@ export class Polyline {
      * ```
      */
     create(inputs: Inputs.Polyline.PolylineCreateDto): Inputs.Polyline.PolylinePropertiesDto {
+        const resolved = resolveDto(Inputs.Polyline.PolylineCreateDto, inputs) as Resolved.Polyline.PolylineCreateDto;
         return {
-            points: inputs.points,
-            isClosed: inputs.isClosed ?? false,
+            points: resolved.points,
+            isClosed: resolved.isClosed,
         };
     }
 
@@ -216,7 +219,8 @@ export class Polyline {
      * ```
      */
     polylineSelfIntersection(inputs: Inputs.Polyline.PolylineToleranceDto): Inputs.Base.Point3[] {
-        const { polyline, tolerance } = inputs;
+        const resolved = resolveDto(Inputs.Polyline.PolylineToleranceDto, inputs) as Resolved.Polyline.PolylineToleranceDto;
+        const { polyline, tolerance } = resolved;
         const lines = this.polylineToLines({ polyline });
         const numSegments = lines.length;
 
@@ -225,7 +229,6 @@ export class Polyline {
         }
 
         const selfIntersectionPoints: Inputs.Base.Point3[] = [];
-        const defaultTolerance = tolerance ?? 1e-6;
 
         for (let i = 0; i < numSegments; i++) {
             for (let j = i + 1; j < numSegments; j++) {
@@ -242,7 +245,7 @@ export class Polyline {
                     line1: lines[i]!,
                     line2: lines[j]!,
                     checkSegmentsOnly: true,
-                    tolerance: defaultTolerance,
+                    tolerance,
                 });
 
                 if (intersection) {
@@ -251,7 +254,7 @@ export class Polyline {
                         if (this.point.twoPointsAlmostEqual({
                             point1: intersection,
                             point2: existingPoint,
-                            tolerance: defaultTolerance
+                            tolerance
                         })) {
                             foundClose = true;
                             break;
@@ -288,12 +291,12 @@ export class Polyline {
      * ```
      */
     twoPolylineIntersection(inputs: Inputs.Polyline.TwoPolylinesToleranceDto): Inputs.Base.Point3[] {
-        const { polyline1, polyline2, tolerance } = inputs;
+        const resolved = resolveDto(Inputs.Polyline.TwoPolylinesToleranceDto, inputs) as Resolved.Polyline.TwoPolylinesToleranceDto;
+        const { polyline1, polyline2, tolerance } = resolved;
         const lines1 = this.polylineToLines({ polyline: polyline1 });
         const lines2 = this.polylineToLines({ polyline: polyline2 });
 
         const intersectionPoints: Inputs.Base.Point3[] = [];
-        const defaultTolerance = tolerance ?? 1e-6;
 
         for (const seg1 of lines1) {
             for (const seg2 of lines2) {
@@ -301,7 +304,7 @@ export class Polyline {
                     line1: seg1,
                     line2: seg2,
                     checkSegmentsOnly: true,
-                    tolerance: defaultTolerance,
+                    tolerance,
                 });
 
                 if (intersection) {
@@ -310,7 +313,7 @@ export class Polyline {
                         if (this.point.twoPointsAlmostEqual({
                             point1: intersection,
                             point2: existingPoint,
-                            tolerance: defaultTolerance
+                            tolerance
                         })) {
                             foundClose = true;
                             break;
@@ -347,8 +350,9 @@ export class Polyline {
      * ```
      */
     sortSegmentsIntoPolylines(inputs: Inputs.Polyline.SegmentsToleranceDto): Inputs.Base.Polyline3[] {
-        const tolerance = inputs.tolerance ?? 1e-5;
-        const segments = inputs.segments;
+        const resolved = resolveDto(Inputs.Polyline.SegmentsToleranceDto, inputs) as Resolved.Polyline.SegmentsToleranceDto;
+        const tolerance = resolved.tolerance;
+        const segments = resolved.segments;
         if (!segments || segments.length === 0) {
             return [];
         }
@@ -534,10 +538,11 @@ export class Polyline {
     maxFilletsHalfLine(
         inputs: Inputs.Polyline.PolylineToleranceDto
     ): number[] {
+        const resolved = resolveDto(Inputs.Polyline.PolylineToleranceDto, inputs) as Resolved.Polyline.PolylineToleranceDto;
         return this.point.maxFilletsHalfLine({
-            points: inputs.polyline.points,
-            checkLastWithFirst: inputs.polyline.isClosed,
-            tolerance: inputs.tolerance,
+            points: resolved.polyline.points,
+            checkLastWithFirst: resolved.polyline.isClosed,
+            tolerance: resolved.tolerance,
         });
     }
 
@@ -562,7 +567,8 @@ export class Polyline {
     safestFilletRadius(
         inputs: Inputs.Polyline.PolylineToleranceDto
     ): number {
-        const allMaxRadii = this.maxFilletsHalfLine(inputs);
+        const resolved = resolveDto(Inputs.Polyline.PolylineToleranceDto, inputs) as Resolved.Polyline.PolylineToleranceDto;
+        const allMaxRadii = this.maxFilletsHalfLine(resolved);
 
         if (allMaxRadii.length === 0) {
             return 0;

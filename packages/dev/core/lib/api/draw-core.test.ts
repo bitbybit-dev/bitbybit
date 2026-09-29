@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { DrawCore, DrawableKind } from "./draw-core";
+import { DrawCore, DrawableKind, FrameMarkerLines, FrameMarkerStyle } from "./draw-core";
 import * as Inputs from "./inputs";
 
 class ProbeCore extends DrawCore {
@@ -8,6 +8,7 @@ class ProbeCore extends DrawCore {
     resolve(entity: unknown, phase: "sync" | "async", handled: string[]): string | undefined {
         return this.resolveDrawableKind(entity, phase, (k) => handled.includes(k));
     }
+    markers(frames: Inputs.Base.Frame[], style: FrameMarkerStyle): FrameMarkerLines { return this.frameMarkerLines(frames, style); }
 }
 
 describe("DrawCore entity detection", () => {
@@ -61,6 +62,7 @@ describe("DrawCore entity detection", () => {
             ["detectNodes", e => core.detectNodes(e)],
             ["detectVerbCurves", e => core.detectVerbCurves(e)],
             ["detectVerbSurfaces", e => core.detectVerbSurfaces(e)],
+            ["detectFrames", e => core.detectFrames(e)],
         ];
 
         plural.forEach(([name, detect]) => {
@@ -100,6 +102,114 @@ describe("DrawCore entity detection", () => {
     });
 });
 
+describe("a frame is drawn as a frame", () => {
+    let probe: ProbeCore;
+    const frame: Inputs.Base.Frame = { origin: [1, 2, 3], normal: [0, 1, 0], direction: [0, 0, 1] };
+
+    beforeEach(() => {
+        probe = new ProbeCore();
+    });
+
+    it("should detect an origin, a normal and a direction of three numbers each", () => {
+        expect(probe.detectFrame(frame)).toBe(true);
+    });
+
+    it.each([
+        ["without a direction", { origin: [0, 0, 0], normal: [0, 0, 1] }],
+        ["with a two-number origin", { origin: [0, 0], normal: [0, 0, 1], direction: [1, 0, 0] }],
+        ["with a NaN in its normal", { origin: [0, 0, 0], normal: [0, Number.NaN, 1], direction: [1, 0, 0] }],
+        ["given as a list", [[0, 0, 0], [0, 0, 1], [1, 0, 0]]],
+        ["missing", undefined],
+    ])("should not detect an object %s", (_name, entity) => {
+        expect(probe.detectFrame(entity)).toBe(false);
+    });
+
+    it("should detect a list of frames only when every entry is one", () => {
+        expect(probe.detectFrames([frame, frame])).toBe(true);
+        expect(probe.detectFrames([frame, { origin: [0, 0, 0] }])).toBe(false);
+    });
+
+    it("should resolve a frame and a list of frames among every kind, from the synchronous call", () => {
+        const every = probe.kinds().map(k => k.kind);
+        expect(probe.resolve(frame, "sync", every)).toBe("frame");
+        expect(probe.resolve([frame, frame], "sync", every)).toBe("frames");
+        expect(probe.resolve(frame, "async", every)).toBeUndefined();
+    });
+});
+
+describe("the lines a frame is drawn with", () => {
+    let probe: ProbeCore;
+    const style: FrameMarkerStyle = { size: 2, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", drawPlane: true, colorPlane: "#808080" };
+    const world: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+
+    const expectPoints = (received: Inputs.Base.Point3[], expected: Inputs.Base.Point3[]): void => {
+        expect(received).toHaveLength(expected.length);
+        received.forEach((point, i) => point.forEach((value, j) => expect(value).toBeCloseTo(expected[i]![j]!, 9)));
+    };
+
+    beforeEach(() => {
+        probe = new ProbeCore();
+    });
+
+    it("should draw the three axes from the origin, size long, in their own colors", () => {
+        const { polylines, colours } = probe.markers([world], style);
+        expectPoints(polylines[0]!.points, [[0, 0, 0], [2, 0, 0]]);
+        expectPoints(polylines[1]!.points, [[0, 0, 0], [0, 2, 0]]);
+        expectPoints(polylines[2]!.points, [[0, 0, 0], [0, 0, 2]]);
+        expect(colours.slice(0, 3)).toEqual(["#ff0000", "#00ff00", "#0000ff"]);
+    });
+
+    it("should draw a grid as wide as an axis is long, centered on the origin in the frame's plane, four cells a side, its middle lines stopping at the origin", () => {
+        const { polylines, colours } = probe.markers([world], style);
+        expect(polylines).toHaveLength(10);
+        expect(colours.slice(3)).toEqual(Array(7).fill("#808080"));
+        expectPoints(polylines[3]!.points, [[-1, -1, 0], [1, -1, 0], [1, 1, 0], [-1, 1, 0], [-1, -1, 0]]);
+        expectPoints(polylines[4]!.points, [[-0.5, -1, 0], [-0.5, 1, 0]]);
+        expectPoints(polylines[5]!.points, [[-1, -0.5, 0], [1, -0.5, 0]]);
+        expectPoints(polylines[6]!.points, [[0.5, -1, 0], [0.5, 1, 0]]);
+        expectPoints(polylines[7]!.points, [[-1, 0.5, 0], [1, 0.5, 0]]);
+        expectPoints(polylines[8]!.points, [[-1, 0, 0], [0, 0, 0]]);
+        expectPoints(polylines[9]!.points, [[0, -1, 0], [0, 0, 0]]);
+    });
+
+    it("should draw only the axes when the plane is left out", () => {
+        const { polylines, colours } = probe.markers([world], { ...style, drawPlane: false });
+        expect(polylines).toHaveLength(3);
+        expect(colours).toEqual(["#ff0000", "#00ff00", "#0000ff"]);
+    });
+
+    it("should follow the frame's own origin and axes, squaring a rough direction first", () => {
+        const { polylines } = probe.markers([{ origin: [1, 2, 3], normal: [0, 5, 0], direction: [0, 1, 1] }], style);
+        expectPoints(polylines[0]!.points, [[1, 2, 3], [1, 2, 5]]);
+        expectPoints(polylines[1]!.points, [[1, 2, 3], [3, 2, 3]]);
+        expectPoints(polylines[2]!.points, [[1, 2, 3], [1, 4, 3]]);
+    });
+
+    it("should gather every frame of a list into one set of lines, in order, skipping a frame that cannot be squared", () => {
+        const second: Inputs.Base.Frame = { origin: [5, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
+        const broken: Inputs.Base.Frame = { origin: [9, 9, 9], normal: [0, 0, 0], direction: [1, 0, 0] };
+        const { polylines, colours } = probe.markers([world, broken, second], style);
+        expect(polylines).toHaveLength(20);
+        expect(colours).toHaveLength(20);
+        expectPoints(polylines[10]!.points, [[5, 0, 0], [7, 0, 0]]);
+        expect(colours[10]).toBe("#ff0000");
+    });
+
+    it("should give no lines at all when no frame of the list can be squared", () => {
+        const flat: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 0], direction: [1, 0, 0] };
+        const alongNormal: Inputs.Base.Frame = { origin: [1, 0, 0], normal: [0, 0, 1], direction: [0, 0, 2] };
+        const { polylines, colours } = probe.markers([flat, alongNormal], style);
+        expect(polylines).toEqual([]);
+        expect(colours).toEqual([]);
+    });
+
+    it("should color every line of a list by its frame's axis, whatever the list's length", () => {
+        const { colours } = probe.markers([world, world, world], { ...style, colorX: "#111111", colorY: "#222222", colorZ: "#333333", colorPlane: "#444444" });
+        const oneFrame = ["#111111", "#222222", "#333333", ...Array(7).fill("#444444")];
+        expect(colours).toEqual([...oneFrame, ...oneFrame, ...oneFrame]);
+    });
+});
+
 describe("the order a draw call tries kinds in", () => {
     let probe: ProbeCore;
 
@@ -111,8 +221,8 @@ describe("the order a draw call tries kinds in", () => {
         expect(probe.kinds().map(k => k.kind)).toEqual([
             "jscadMesh", "occtShape", "occtShapes", "jscadMeshes",
             "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh",
-            "line", "point", "jscadPath", "polyline", "node", "verbCurve", "verbSurface",
-            "jscadPaths", "polylines", "lines", "points", "nodes",
+            "line", "point", "jscadPath", "polyline", "frame", "node", "verbCurve", "verbSurface",
+            "jscadPaths", "polylines", "frames", "lines", "points", "nodes",
             "verbCurves", "verbSurfaces", "tag", "tags",
         ]);
     });

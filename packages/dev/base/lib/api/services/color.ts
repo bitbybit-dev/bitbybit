@@ -1,5 +1,7 @@
 import * as Inputs from "../inputs";
 import { MathBitByBit } from "./math";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Colors in the two forms the library uses: a hex text such as `#ff5733`, and an object `{ r, g, b
@@ -23,7 +25,8 @@ export class Color {
      * @drawable false
      */
     hexColor(inputs: Inputs.Color.HexDto): Inputs.Base.Color {
-        return inputs.color;
+        const resolved = resolveDto(Inputs.Color.HexDto, inputs) as Resolved.Color.HexDto;
+        return resolved.color;
     }
 
     /**
@@ -38,7 +41,8 @@ export class Color {
      * @drawable false
      */
     rgb255Color(inputs: Inputs.Color.Rgb255Dto): Inputs.Base.ColorRGB {
-        return inputs.colorRgb;
+        const resolved = resolveDto(Inputs.Color.Rgb255Dto, inputs) as Resolved.Color.Rgb255Dto;
+        return resolved.colorRgb;
     }
 
     /**
@@ -53,7 +57,8 @@ export class Color {
      * @drawable false
      */
     rgb1Color(inputs: Inputs.Color.Rgb1Dto): Inputs.Base.ColorRGB {
-        return inputs.colorRgb;
+        const resolved = resolveDto(Inputs.Color.Rgb1Dto, inputs) as Resolved.Color.Rgb1Dto;
+        return resolved.colorRgb;
     }
 
     /**
@@ -68,7 +73,8 @@ export class Color {
      * @drawable false
      */
     rgba255Color(inputs: Inputs.Color.Rgba255Dto): Inputs.Base.ColorRGBA {
-        return inputs.colorRgba;
+        const resolved = resolveDto(Inputs.Color.Rgba255Dto, inputs) as Resolved.Color.Rgba255Dto;
+        return resolved.colorRgba;
     }
 
     /**
@@ -83,7 +89,8 @@ export class Color {
      * @drawable false
      */
     rgba1Color(inputs: Inputs.Color.Rgba1Dto): Inputs.Base.ColorRGBA {
-        return inputs.colorRgba;
+        const resolved = resolveDto(Inputs.Color.Rgba1Dto, inputs) as Resolved.Color.Rgba1Dto;
+        return resolved.colorRgba;
     }
 
     /**
@@ -101,7 +108,8 @@ export class Color {
      * ```
      */
     rgbAtomic255Color(inputs: Inputs.Color.RgbAttomic255Dto): Inputs.Base.ColorRGB {
-        return { ...inputs };
+        const resolved = resolveDto(Inputs.Color.RgbAttomic255Dto, inputs) as Resolved.Color.RgbAttomic255Dto;
+        return { ...resolved };
     }
 
     /**
@@ -119,7 +127,8 @@ export class Color {
      * ```
      */
     rgbAtomic1Color(inputs: Inputs.Color.RgbAttomic1Dto): Inputs.Base.ColorRGB {
-        return { ...inputs };
+        const resolved = resolveDto(Inputs.Color.RgbAttomic1Dto, inputs) as Resolved.Color.RgbAttomic1Dto;
+        return { ...resolved };
     }
 
     /**
@@ -138,9 +147,10 @@ export class Color {
      * ```
      */
     hexToRgb(inputs: Inputs.Color.HexDto): Inputs.Base.ColorRGB {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(inputs.color);
+        const resolved = resolveDto(Inputs.Color.HexDto, inputs) as Resolved.Color.HexDto;
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(resolved.color);
         if (!result) {
-            throw new Error(`Invalid hex color: ${inputs.color}`);
+            throw new Error(`Invalid hex color: ${resolved.color}`);
         }
         return {
             r: parseInt(result[1]!, 16),
@@ -166,14 +176,15 @@ export class Color {
      * ```
      */
     rgbToHex(inputs: Inputs.Color.RGBMinMaxDto): Inputs.Base.Color {
-        let r = inputs.r;
-        let g = inputs.g;
-        let b = inputs.b;
+        const resolved = resolveDto(Inputs.Color.RGBMinMaxDto, inputs) as Resolved.Color.RGBMinMaxDto;
+        let r = resolved.r;
+        let g = resolved.g;
+        let b = resolved.b;
 
-        if (inputs.max !== 255) {
-            r = Math.round(this.math.remap({ number: r, fromLow: inputs.min, fromHigh: inputs.max, toLow: 0, toHigh: 255 }));
-            g = Math.round(this.math.remap({ number: g, fromLow: inputs.min, fromHigh: inputs.max, toLow: 0, toHigh: 255 }));
-            b = Math.round(this.math.remap({ number: b, fromLow: inputs.min, fromHigh: inputs.max, toLow: 0, toHigh: 255 }));
+        if (resolved.max !== 255) {
+            r = Math.round(this.math.remap({ number: r, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
+            g = Math.round(this.math.remap({ number: g, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
+            b = Math.round(this.math.remap({ number: b, fromLow: resolved.min, fromHigh: resolved.max, toLow: 0, toHigh: 255 }));
         }
 
         const s = `#${Number(0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).substring(1, 7)}`;
@@ -199,7 +210,8 @@ export class Color {
      * ```
      */
     rgbObjToHex(inputs: Inputs.Color.RGBObjectMaxDto): Inputs.Base.Color {
-        return this.rgbToHex({ r: inputs.rgb.r, g: inputs.rgb.g, b: inputs.rgb.b, min: inputs.min, max: inputs.max });
+        const resolved = resolveDto(Inputs.Color.RGBObjectMaxDto, inputs) as Resolved.Color.RGBObjectMaxDto;
+        return this.rgbToHex({ r: resolved.rgb.r, g: resolved.rgb.g, b: resolved.rgb.b, min: resolved.min, max: resolved.max });
     }
 
     /**
@@ -218,11 +230,12 @@ export class Color {
      * ```
      */
     hexToRgbMapped(inputs: Inputs.Color.HexDtoMapped): Inputs.Base.ColorRGB {
-        const rgb = this.hexToRgb(inputs);
+        const resolved = resolveDto(Inputs.Color.HexDtoMapped, inputs) as Resolved.Color.HexDtoMapped;
+        const rgb = this.hexToRgb(resolved);
         return {
-            r: this.math.remap({ number: rgb.r, fromLow: 0, fromHigh: 255, toLow: inputs.from, toHigh: inputs.to }),
-            g: this.math.remap({ number: rgb.g, fromLow: 0, fromHigh: 255, toLow: inputs.from, toHigh: inputs.to }),
-            b: this.math.remap({ number: rgb.b, fromLow: 0, fromHigh: 255, toLow: inputs.from, toHigh: inputs.to }),
+            r: this.math.remap({ number: rgb.r, fromLow: 0, fromHigh: 255, toLow: resolved.from, toHigh: resolved.to }),
+            g: this.math.remap({ number: rgb.g, fromLow: 0, fromHigh: 255, toLow: resolved.from, toHigh: resolved.to }),
+            b: this.math.remap({ number: rgb.b, fromLow: 0, fromHigh: 255, toLow: resolved.from, toHigh: resolved.to }),
         };
     }
 
@@ -241,7 +254,8 @@ export class Color {
      * ```
      */
     getRedParam(inputs: Inputs.Color.HexDtoMapped): number {
-        const rgb = this.hexToRgbMapped(inputs);
+        const resolved = resolveDto(Inputs.Color.HexDtoMapped, inputs) as Resolved.Color.HexDtoMapped;
+        const rgb = this.hexToRgbMapped(resolved);
         return rgb.r;
     }
 
@@ -260,7 +274,8 @@ export class Color {
      * ```
      */
     getGreenParam(inputs: Inputs.Color.HexDtoMapped): number {
-        const rgb = this.hexToRgbMapped(inputs);
+        const resolved = resolveDto(Inputs.Color.HexDtoMapped, inputs) as Resolved.Color.HexDtoMapped;
+        const rgb = this.hexToRgbMapped(resolved);
         return rgb.g;
     }
 
@@ -279,7 +294,8 @@ export class Color {
      * ```
      */
     getBlueParam(inputs: Inputs.Color.HexDtoMapped): number {
-        const rgb = this.hexToRgbMapped(inputs);
+        const resolved = resolveDto(Inputs.Color.HexDtoMapped, inputs) as Resolved.Color.HexDtoMapped;
+        const rgb = this.hexToRgbMapped(resolved);
         return rgb.b;
     }
 
@@ -342,8 +358,9 @@ export class Color {
      * ```
      */
     invert(inputs: Inputs.Color.InvertHexDto): Inputs.Base.Color {
-        const { r, g, b } = this.hexToRgbMapped({ color: inputs.color, from: 0, to: 255 });
-        if (inputs.blackAndWhite) {
+        const resolved = resolveDto(Inputs.Color.InvertHexDto, inputs) as Resolved.Color.InvertHexDto;
+        const { r, g, b } = this.hexToRgbMapped({ color: resolved.color, from: 0, to: 255 });
+        if (resolved.blackAndWhite) {
             return (r * 0.299 + g * 0.587 + b * 0.114) > 186
                 ? "#000000"
                 : "#ffffff";

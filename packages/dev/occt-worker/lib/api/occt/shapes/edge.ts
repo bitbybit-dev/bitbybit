@@ -6,10 +6,11 @@ import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 /**
  * Edges in OpenCascade: single curves between two vertices, straight, circular, elliptical or
- * free-form. Build them from points and lines, as arcs, circles and ellipses, or as tangent
- * constructions against circles; read them back as points, lengths, tangents and centers; and pick
- * edges out of any shape. Edges join end to end into wires, which `shapes.wire` handles. Parameters
- * along an edge run from 0 at its start to 1 at its end; angles are in degrees.
+ * free-form. Build them from points and lines, as arcs, circles and ellipses, or as lines and circles
+ * tangent to other curves in a plane; cut, lengthen and blend them; read them back as points,
+ * lengths, tangents and centers; and pick edges out of any shape. Edges join end to end into wires,
+ * which `shapes.wire` handles. Parameters along an edge run from 0 at its start to 1 at its end;
+ * angles are in degrees.
  */
 export class OCCTEdge {
     constructor(
@@ -828,6 +829,77 @@ export class OCCTEdge {
     }
 
     /**
+     * Finds a frame on an edge at a parameter, from 0 where the edge starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the edge level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the edge runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The edge, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtParam({ shape: edge, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.frameOnEdgeAtParam", inputs);
+    }
+
+    /**
+     * Finds a frame on an edge at a length from its start, as `frameOnEdgeAtParam` finds it at a
+     * parameter.
+     * @param inputs - The edge, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on edge at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.edge.frameOnEdgeAtLength({ shape: edge, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnEdgeAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Frame> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.frameOnEdgeAtLength", inputs);
+    }
+
+    /**
+     * Finds frames on an edge at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole edge from its start, so each is the frame a swept profile would ride
+     * on there.
+     * @param inputs - The edge, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on edge at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtParams({ shape: edge, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.framesOnEdgeAtParams", inputs);
+    }
+
+    /**
+     * Finds frames on an edge at several lengths from its start in one pass, as
+     * `framesOnEdgeAtParams` finds them at parameters.
+     * @param inputs - The edge, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on edge at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.edge.framesOnEdgeAtLengths({ shape: edge, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnEdgeAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.Base.Frame[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.framesOnEdgeAtLengths", inputs);
+    }
+
+    /**
      * Reads the point where an edge starts, in the edge's own direction.
      * @param inputs - The edge
      * @returns The start point
@@ -964,13 +1036,97 @@ export class OCCTEdge {
     }
 
     /**
+     * Cuts an edge into pieces at places given as fractions from 0 at its start to 1 at its end.
+     *
+     * The pieces keep the edge's curve and direction, so the pieces of an arc are arcs. Fractions
+     * follow the parameter, not the length; ends and repeats are skipped, so n places inside the edge
+     * give n + 1 pieces.
+     * @param inputs - The edge and the fractions to cut at
+     * @returns The pieces, in order from the start
+     * @group edit
+     * @shortname split edge at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const [firstHalf, secondHalf] = await bitbybit.occt.shapes.edge.splitEdgeAtParams({ shape: arc, params: [0.5] });
+     * ```
+     */
+    splitEdgeAtParams(inputs: Inputs.OCCT.DataOnGeometryAtParamsDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.splitEdgeAtParams", inputs);
+    }
+
+    /**
+     * Cuts an edge into pieces at places given as lengths along it from its start, in model units.
+     *
+     * Each piece runs along the edge's own curve and keeps its direction. Lengths at or past the
+     * ends and repeats are skipped, so n lengths inside the edge give n + 1 pieces.
+     * @param inputs - The edge and the lengths to cut at
+     * @returns The pieces, in order from the start
+     * @group edit
+     * @shortname split edge at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const pieces = await bitbybit.occt.shapes.edge.splitEdgeAtLengths({ shape: edge, lengths: [2, 5] });
+     * ```
+     */
+    splitEdgeAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.splitEdgeAtLengths", inputs);
+    }
+
+    /**
+     * Lengthens an edge before its start and past its end, carrying its curve on the way it runs.
+     *
+     * A line stays a line and an arc an arc, up to a full circle. Other curves become B-splines
+     * ending that far along the end's tangent, bending smoothly across the join; one still turning
+     * there gains a little more.
+     * @param inputs - The edge and the lengths to add at its start and its end
+     * @returns A new, longer edge running the same way
+     * @group edit
+     * @shortname extend edge
+     * @drawable true
+     * @example
+     * ```typescript
+     * const longer = await bitbybit.occt.shapes.edge.extendEdge({ shape: edge, atStart: 0, atEnd: 2 });
+     * ```
+     */
+    extendEdge(inputs: Inputs.OCCT.ExtendEdgeDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.extendEdge", inputs);
+    }
+
+    /**
+     * Bridges the gap from the end of one edge to the start of another with a smooth Bezier edge
+     * that leaves and arrives along their tangents.
+     *
+     * With `matchCurvature` it also bends as each edge bends at its end. `bulge` sets how long it
+     * holds each tangent; edges whose ends already meet are refused.
+     * @param inputs - The edge to leave, the edge to reach and how the blend joins them
+     * @returns The blend edge
+     * @group edit
+     * @shortname blend between edges
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bridge = await bitbybit.occt.shapes.edge.blendBetweenEdges({ from: first, to: second, matchCurvature: true, bulge: 1 });
+     * const path = await bitbybit.occt.shapes.wire.combineEdgesAndWiresIntoAWire({ shapes: [first, bridge, second] });
+     * ```
+     */
+    blendBetweenEdges(inputs: Inputs.OCCT.BlendBetweenEdgesDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.blendBetweenEdges", inputs);
+    }
+
+    /**
      * Draws the straight lines from two points that just touch a circle, one tangent line from each
      * point.
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
-     * `circleRemainder` adds the piece of the circle between the touching points.
+     * `circleRemainder` adds the piece of the circle between the touching points. It is replaced
+     * by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the two points, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` once per point, with the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane; it gives no circle piece.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from 2 pts to circle
      * @drawable true
@@ -994,9 +1150,12 @@ export class OCCTEdge {
      * Draws the two straight lines from a point that just touch a circle.
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
-     * adds the piece of the circle between the touching points.
+     * adds the piece of the circle between the touching points. It is replaced by
+     * `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The circle edge, the point, the tolerance and which solutions to keep
      * @returns The tangent lines, and the circle piece when asked for
+     * @deprecated Use `linesTangentToTwo` with the point as a vertex (`shapes.vertex.vertexFromPoint`)
+     * and a frame in the circle's plane; it gives no circle piece. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines from pt to circle
      * @drawable true
@@ -1020,9 +1179,11 @@ export class OCCTEdge {
      *
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
-     * shape.
+     * shape. It is replaced by `linesTangentToTwo`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and which solutions and circle pieces to keep
      * @returns The tangent lines, and the circle pieces when asked for
+     * @deprecated Use `linesTangentToTwo` with the two circles and a frame in their plane; it gives no
+     * circle pieces. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan lines on two circles
      * @drawable true
@@ -1043,8 +1204,12 @@ export class OCCTEdge {
 
     /**
      * Draws the circles of a given radius that just touch two circles at once.
+     *
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes curves other than circles too.
      * @param inputs - The two circle edges, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the two circles and a frame in their plane.
+     * It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on two circles
      * @drawable true
@@ -1059,8 +1224,13 @@ export class OCCTEdge {
 
     /**
      * Draws the circles of a given radius that pass through a point and just touch a circle.
+     *
+     * It is replaced by `circlesTangentToTwoWithRadius`, which takes a vertex and a curve other than a
+     * circle too.
      * @param inputs - The circle edge, the point, the tolerance and the radius of the new circles
      * @returns The tangent circles
+     * @deprecated Use `circlesTangentToTwoWithRadius` with the circle, the point as a vertex
+     * (`shapes.vertex.vertexFromPoint`) and a frame in the circle's plane. It is removed in a future major version and works until then.
      * @group constraint
      * @shortname tan circles on circle and pnt
      * @drawable true
@@ -1071,6 +1241,138 @@ export class OCCTEdge {
      */
     constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSShapePointer[]> {
         return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.constraintTanCirclesOnCircleAndPnt", inputs);
+    }
+
+    /**
+     * Draws every circle that touches three edges, or passes through the vertices among them, in the
+     * plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the edges is left out.
+     * @param inputs - The three edges or vertices, the plane, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to three
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.circlesTangentToThree({
+     *     shapes: [sideA, sideB, sideC],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: true,
+     * });
+     * ```
+     */
+    circlesTangentToThree(inputs: Inputs.OCCT.CirclesTangentToThreeDto<Inputs.OCCT.TopoDSEdgePointer | Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.circlesTangentToThree", inputs);
+    }
+
+    /**
+     * Draws every circle of a given radius that touches two edges, or passes through the vertices
+     * among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the given edges is
+     * left out.
+     * @param inputs - The two edges or vertices, the plane, the radius, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to two with radius
+     * @drawable true
+     * @example
+     * ```typescript
+     * const fillets = await bitbybit.occt.shapes.edge.circlesTangentToTwoWithRadius({
+     *     shapes: [wall, floor],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     radius: 2,
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: true,
+     * });
+     * ```
+     */
+    circlesTangentToTwoWithRadius(inputs: Inputs.OCCT.CirclesTangentToTwoWithRadiusDto<Inputs.OCCT.TopoDSEdgePointer | Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.circlesTangentToTwoWithRadius", inputs);
+    }
+
+    /**
+     * Draws every circle centered on an edge that touches two other edges, or passes through the
+     * vertices among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles, the edge of centers too,
+     * unless `onArgumentsOnly` is set, which also keeps each center within `centerOn`. Other curves
+     * are touched within their ends.
+     * @param inputs - The two edges or vertices, the edge of centers, the plane, the tolerance and whether the circles must touch the edges themselves
+     * @returns One whole circle per solution
+     * @group constraint
+     * @shortname circles tangent to two centered on
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circles = await bitbybit.occt.shapes.edge.circlesTangentToTwoCenteredOn({
+     *     shapes: [top, bottom],
+     *     centerOn: axis,
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     tolerance: 1e-7,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    circlesTangentToTwoCenteredOn(inputs: Inputs.OCCT.CirclesTangentToTwoCenteredOnDto<Inputs.OCCT.TopoDSEdgePointer | Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.circlesTangentToTwoCenteredOn", inputs);
+    }
+
+    /**
+     * Draws every straight line that touches two curved edges, or touches one and passes through a
+     * vertex, in the plane of a frame.
+     *
+     * Each line runs from the first shape to the second, like a belt between two wheels. Arcs count
+     * as whole circles unless `onArgumentsOnly` is set; straight edges and two vertices are refused.
+     * @param inputs - The two shapes, the plane, the angular tolerance and whether the lines must touch the edges themselves
+     * @returns One line per solution, from contact to contact
+     * @group constraint
+     * @shortname lines tangent to two
+     * @drawable true
+     * @example
+     * ```typescript
+     * const belt = await bitbybit.occt.shapes.edge.linesTangentToTwo({
+     *     shapes: [wheelA, wheelB],
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     angularTolerance: 1e-6,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    linesTangentToTwo(inputs: Inputs.OCCT.LinesTangentToTwoDto<Inputs.OCCT.TopoDSEdgePointer | Inputs.OCCT.TopoDSVertexPointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.linesTangentToTwo", inputs);
+    }
+
+    /**
+     * Draws every straight line that touches a curved edge at an angle to a straight reference edge,
+     * in the plane of a frame.
+     *
+     * The angle, in degrees, turns counterclockwise about the frame's normal. Each line runs from its
+     * touch to the reference's line; a parallel one is centered on its touch, as long as the
+     * reference.
+     * @param inputs - The curve, the reference, the plane, the angle in degrees, the tolerance and whether the lines must touch the edges themselves
+     * @returns One line per solution, from the touch to the reference
+     * @group constraint
+     * @shortname lines tangent at angle
+     * @drawable true
+     * @example
+     * ```typescript
+     * const tangents = await bitbybit.occt.shapes.edge.linesTangentAtAngle({
+     *     shape: arc,
+     *     reference: baseLine,
+     *     frame: { origin: [0, 0, 0], normal: [0, 1, 0], direction: [1, 0, 0] },
+     *     angle: 30,
+     *     angularTolerance: 1e-6,
+     *     onArgumentsOnly: false,
+     * });
+     * ```
+     */
+    linesTangentAtAngle(inputs: Inputs.OCCT.LinesTangentAtAngleDto<Inputs.OCCT.TopoDSEdgePointer>): Promise<Inputs.OCCT.TopoDSEdgePointer[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("shapes.edge.linesTangentAtAngle", inputs);
     }
 
     /**

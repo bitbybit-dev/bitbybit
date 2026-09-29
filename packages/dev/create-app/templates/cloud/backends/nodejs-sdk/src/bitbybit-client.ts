@@ -1,8 +1,8 @@
 import { BitbybitClient } from "@bitbybit-dev/cad-cloud-sdk";
 import { step } from "@bitbybit-dev/cad-cloud-sdk/pipeline";
 
-const BITBYBIT_API_KEY = process.env.BITBYBIT_API_KEY ?? "";
-const BITBYBIT_API_URL = process.env.BITBYBIT_API_URL ?? "https://api.bitbybit.dev";
+const BITBYBIT_API_KEY = process.env["BITBYBIT_API_KEY"] ?? "";
+const BITBYBIT_API_URL = process.env["BITBYBIT_API_URL"] ?? "https://api.bitbybit.dev";
 
 function getClient(): BitbybitClient {
     return new BitbybitClient({
@@ -103,18 +103,13 @@ export async function getTaskResult(taskId: string): Promise<{ status: string; d
     return { status: "completed", downloads };
 }
 
-/**
- * Intentionally invalid request — height exceeds the 50cm maximum.
- * The SDK validates against JSON Schema before sending, so this throws
- * a BitbybitValidationError without ever hitting the network.
- */
 export async function createInvalidCup(): Promise<never> {
     const client = getClient();
 
     await client.models.run("dragon-cup", {
         params: {
-            height: 999,        // max is 50
-            radiusBottom: -5,   // must be > 0
+            height: 999,
+            radiusBottom: -5,
         },
         outputs: {
             formats: ["gltf"],
@@ -124,14 +119,6 @@ export async function createInvalidCup(): Promise<never> {
     throw new Error("unreachable");
 }
 
-// ---------------------------------------------------------------------------
-// Pipeline examples (using typed step() helper)
-// ---------------------------------------------------------------------------
-
-/**
- * Translate, Union + Fillet: createBox → translate → union → fillet
- * Creates a box, translates a copy, unions both, fillets the result.
- */
 export async function runTranslateUnionFilletPipeline(): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient();
 
@@ -146,10 +133,6 @@ export async function runTranslateUnionFilletPipeline(): Promise<{ taskId: strin
     });
 }
 
-/**
- * Map: Cylinders at Positions
- * Parses an array of center positions, maps a cylinder at each, unions the result.
- */
 export async function runMapCylindersPipeline(): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient();
 
@@ -159,7 +142,7 @@ export async function runMapCylindersPipeline(): Promise<{ taskId: string; downl
             {
                 type: "map",
                 items: "$ref:0",
-                steps: [step("occt.shapes.solid.createCylinder", { radius: 1, height: 5, center: "$item" as never })],
+                steps: [step("occt.shapes.solid.createCylinder", { radius: 1, height: 5, center: "$item" })],
             },
             step("occt.booleans.union", { shapes: "$ref:5" }),
         ],
@@ -167,10 +150,6 @@ export async function runMapCylindersPipeline(): Promise<{ taskId: string; downl
     });
 }
 
-/**
- * Map: Spheres at Different Radii
- * Creates spheres of radii 1–5 at pre-computed positions, compounds the result.
- */
 export async function runMapSpheresPipeline(): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient();
 
@@ -181,8 +160,8 @@ export async function runMapSpheresPipeline(): Promise<{ taskId: string; downloa
                 type: "map",
                 items: "$ref:0",
                 steps: [
-                    step("math.twoNrOperation", { first: "$index" as never, second: 1, operation: "add" }),
-                    step("occt.shapes.solid.createSphere", { radius: "$prev" as never, center: "$item" as never }),
+                    step("math.twoNrOperation", { first: "$index", second: 1, operation: "add" }),
+                    step("occt.shapes.solid.createSphere", { radius: "$prev", center: "$item" }),
                 ],
             },
             step("occt.shapes.compound.makeCompound", { shapes: "$ref:11" }),
@@ -191,17 +170,13 @@ export async function runMapSpheresPipeline(): Promise<{ taskId: string; downloa
     });
 }
 
-/**
- * Choice: Conditional Shape Size
- * Parses a number, increments it, then picks a large box (> 5) or small sphere.
- */
 export async function runChoicePipeline(): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient();
 
     return client.cad.pipelineAndPoll({
         steps: [
             step("json.parse", { text: "10" }),
-            step("math.twoNrOperation", { first: "$ref:0" as never, second: 1, operation: "add" }),
+            step("math.twoNrOperation", { first: "$ref:0", second: 1, operation: "add" }),
             {
                 type: "choice",
                 value: "$ref:1",

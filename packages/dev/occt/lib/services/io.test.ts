@@ -7,6 +7,13 @@ import { OCCTSolid, OCCTWire } from "./shapes";
 import { OCCTIO } from "./io";
 import * as Inputs from "../api/inputs";
 
+const asciiStl = (stl: string | Uint8Array): string => {
+    if (typeof stl !== "string") {
+        throw new Error("expected the STL file as ASCII text");
+    }
+    return stl;
+};
+
 describe("OCCT io unit tests", () => {
     let occt: BitbybitOcctModule;
     let io: OCCTIO;
@@ -609,7 +616,7 @@ describe("OCCT io unit tests", () => {
     it("should save cube shape as STL file", () => {
         const cube = solid.createCube({ size: 10, center: [0, 0, 0] });
         const dto = new Inputs.OCCT.SaveStlDto(cube, "cube.stl", 0.01, false);
-        const stl = io.saveShapeStl(dto);
+        const stl = asciiStl(io.saveShapeStl(dto));
         
         expect(stl).toContain("solid");
         expect(stl).toContain("facet normal");
@@ -625,7 +632,7 @@ describe("OCCT io unit tests", () => {
     it("should save cylinder shape as STL file", () => {
         const cylinder = solid.createCylinder({ radius: 5, height: 10, direction: [0, 1, 0], center: [0, 0, 0] });
         const dto = new Inputs.OCCT.SaveStlDto(cylinder, "cylinder.stl", 0.1, false);
-        const stl = io.saveShapeStl(dto);
+        const stl = asciiStl(io.saveShapeStl(dto));
         
         expect(stl).toContain("solid");
         expect(stl).toContain("facet normal");
@@ -640,7 +647,7 @@ describe("OCCT io unit tests", () => {
     it("should save cone shape as STL file with Y to Z adjustment", () => {
         const cone = solid.createCone({ radius1: 10, radius2: 5, height: 20, angle: 360, direction: [0, 1, 0], center: [0, 0, 0] });
         const dto = new Inputs.OCCT.SaveStlDto(cone, "cone.stl", 0.1, true);
-        const stl = io.saveShapeStl(dto);
+        const stl = asciiStl(io.saveShapeStl(dto));
         
         expect(stl).toContain("solid");
         expect(stl).toContain("facet normal");
@@ -652,10 +659,10 @@ describe("OCCT io unit tests", () => {
     it("should save sphere shape as STL file with higher precision", () => {
         const sphere = solid.createSphere({ radius: 5, center: [0, 0, 0] });
         const dtoLowRes = new Inputs.OCCT.SaveStlDto(sphere, "sphere.stl", 1, false);
-        const stlLowRes = io.saveShapeStl(dtoLowRes);
+        const stlLowRes = asciiStl(io.saveShapeStl(dtoLowRes));
         
         const dtoHighRes = new Inputs.OCCT.SaveStlDto(sphere, "sphere.stl", 0.01, false);
-        const stlHighRes = io.saveShapeStl(dtoHighRes);
+        const stlHighRes = asciiStl(io.saveShapeStl(dtoHighRes));
         
         const facetCountLow = (stlLowRes.match(/facet normal/g) || []).length;
         const facetCountHigh = (stlHighRes.match(/facet normal/g) || []).length;
@@ -665,10 +672,30 @@ describe("OCCT io unit tests", () => {
         sphere.delete();
     });
 
+    it("should mesh the STL at its own precision and leave the mesh the shape already had", () => {
+        // Arrange
+        const facets = (stl: string): number => (stl.match(/facet normal/g) ?? []).length;
+        const drawn = solid.createSphere({ radius: 5, center: [0, 0, 0] });
+        const fine = new occt.BRepMesh_IncrementalMesh(drawn, 0.001, false, 0.5, false);
+        const face = occHelper.shapeGettersService.getFaces({ shape: drawn })[0]!;
+        const trianglesDrawn = occt.GetFaceTriangulation(face).NbTriangles();
+        const coarseFromScratch = facets(asciiStl(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(solid.createSphere({ radius: 5, center: [0, 0, 0] }), "sphere.stl", 1, false))));
+
+        // Act
+        const coarse = facets(asciiStl(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(drawn, "sphere.stl", 1, false))));
+        const coarseTurned = facets(asciiStl(io.saveShapeStl(new Inputs.OCCT.SaveStlDto(drawn, "sphere.stl", 1, true))));
+
+        // Assert
+        expect([coarse, coarseTurned]).toEqual([coarseFromScratch, coarseFromScratch]);
+        expect(coarse).toBeLessThan(trianglesDrawn);
+        expect(occt.GetFaceTriangulation(face).NbTriangles()).toBe(trianglesDrawn);
+        fine.delete();
+    });
+
     it("should save box shape as STL file and contain valid vertex coordinates", () => {
         const box = solid.createBox({ width: 4, length: 6, height: 8, center: [0, 0, 0] });
         const dto = new Inputs.OCCT.SaveStlDto(box, "box.stl", 0.01, false);
-        const stl = io.saveShapeStl(dto);
+        const stl = asciiStl(io.saveShapeStl(dto));
         
         const facetCount = (stl.match(/facet normal/g) || []).length;
         expect(facetCount).toBe(12);

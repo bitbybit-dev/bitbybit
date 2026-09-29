@@ -2,7 +2,7 @@
 
 [BabylonJS](https://www.babylonjs.com/) game engine integration for [Bitbybit](https://bitbybit.dev) - draw and interact with CAD geometry from OCCT, JSCAD, and Manifold kernels directly in your BabylonJS scenes.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

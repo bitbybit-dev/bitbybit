@@ -11,9 +11,12 @@ function foldHashLanes(lane1: number, lane2: number): number {
     return 4294967296 * (2097151 & h2) + (h1 >>> 0);
 }
 
+type ItemList = { itemHashes: (string | number)[] };
+
+const isItemList = (entry: unknown): entry is ItemList => typeof entry === "object" && entry !== null && "itemHashes" in entry && Array.isArray(entry.itemHashes);
+
 export class CacheHelper {
 
-    hashesFromPreviousRun: Record<string, string | number> = {};
     usedHashes: Record<string, string | number> = {};
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     argCache: Record<string, any> = {};
@@ -57,7 +60,6 @@ export class CacheHelper {
 
         this.argCache = {};
         this.usedHashes = {};
-        this.hashesFromPreviousRun = {};
     }
 
     cleanCacheForHash(hash: string): void {
@@ -92,54 +94,6 @@ export class CacheHelper {
         }
         delete this.argCache[hash];
         delete this.usedHashes[hash];
-        delete this.hashesFromPreviousRun[hash];
-    }
-
-    cleanUpCache(): void {
-        const usedHashKeys = Object.keys(this.usedHashes);
-        const hashesFromPreviousRunKeys = Object.keys(this.hashesFromPreviousRun);
-
-        let hashesToDelete: string[] = [];
-        if (hashesFromPreviousRunKeys.length > 0) {
-            hashesToDelete = hashesFromPreviousRunKeys.filter(hash => !usedHashKeys.includes(hash));
-        }
-
-        if (hashesToDelete.length > 0) {
-            hashesToDelete.forEach(hash => {
-                if (this.argCache[hash]) {
-                    try {
-                        const cachedItem = this.argCache[hash];
-                        if (this.isOCCTObject(cachedItem)) {
-                            if (Array.isArray(cachedItem)) {
-                                cachedItem.forEach(item => {
-                                    try {
-                                        if (this.isShape(item)) {
-                                            this.occ.BRepTools_Clean_Force(item, true);
-                                            this.occ.BRepTools_CleanGeometry(item);
-                                        }
-                                        item.delete();
-                                    } catch {
-                                        // Ignore errors for already deleted objects
-                                    }
-                                });
-                            } else {
-                                if (this.isShape(cachedItem)) {
-                                    this.occ.BRepTools_Clean_Force(cachedItem, true);
-                                    this.occ.BRepTools_CleanGeometry(cachedItem);
-                                }
-                                cachedItem.delete();
-                            }
-                        }
-                    } catch {
-                        // Ignore errors for already deleted or invalid objects
-                    }
-                    delete this.argCache[hash];
-                }
-                delete this.usedHashes[hash];
-            });
-        }
-
-        this.hashesFromPreviousRun = { ...this.usedHashes };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -174,9 +128,8 @@ export class CacheHelper {
     }
 
     /** Hashes input arguments and checks the cache for that hash.
-     * It returns a copy of the cached object if it exists, but will
-     * call the `cacheMiss()` callback otherwise. The result will be
-     * added to the cache if `GUIState["Cache?"]` is true.
+     * It returns the cached result if it exists, but will call the
+     * `cacheMiss()` callback otherwise. The result will be added to the cache.
      *
      * If `args.inputs` contains a large/binary payload (e.g. STEP file data
      * as a string > LARGE_STRING_THRESHOLD, ArrayBuffer, TypedArray, Blob or
@@ -186,88 +139,127 @@ export class CacheHelper {
      * JSON.stringify crashes / memory blowups on huge inputs while keeping
      * the hash content-sensitive - two different payloads produce different
      * digests, identical payloads produce identical digests (a cache hit).
+     *
+     * A kernel object inside the result is keyed from the call's key and where it sits, never by
+     * writing the arguments out again. A result that is a list of kernel objects is stored item by
+     * item, and the call's own key holds the list of their keys, so an identical call is answered
+     * from the cache with the same objects under the same hashes. When one of the items has since
+     * been deleted the list is computed again, and every item of the old list that is still alive is
+     * freed as its new one takes its key.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cacheOp(args: any, cacheMiss: () => any): any {
-        let toReturn = null;
         const hashableArgs = this.toHashableArgs(args);
         const curHash = this.computeHash(hashableArgs);
         this.usedHashes[curHash] = curHash;
-        this.hashesFromPreviousRun[curHash] = curHash;
         const check = this.checkCache(curHash);
         if (check) {
             if (this.isOCCTObject(check)) {
-                toReturn = check;
-                toReturn.hash = check.hash;
-            } else if (check.value) {
-                toReturn = check.value;
+                return check;
             }
-        } else {
-            toReturn = cacheMiss();
-            if (Array.isArray(toReturn) && this.isOCCTObject(toReturn)) {
-                toReturn.forEach((r, index) => {
-                    const itemHash = this.computeHash({ ...hashableArgs, index });
-                    r.hash = itemHash;
-                    this.addToCache(itemHash, r);
-                });
-            } else {
-                if (this.isOCCTObject(toReturn)) {
-                    toReturn.hash = curHash;
-                    this.addToCache(curHash, toReturn);
-                } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
-                    const compoundHash = this.computeHash({ ...hashableArgs, index: "compound" });
-                    objDef.compound.hash = compoundHash;
-                    this.addToCache(compoundHash, objDef.compound);
-                    objDef.shapes!.forEach((s, index) => {
-                        const itemHash = this.computeHash({ ...hashableArgs, index });
-                        s.shape.hash = itemHash;
-                        this.addToCache(itemHash, s.shape);
-                    });
-                    this.addToCache(curHash, { value: objDef });
-                } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
-                    const docHash = this.computeHash({ ...hashableArgs, index: "document" });
-                    toReturn.document.hash = docHash;
-                    this.addToCache(docHash, toReturn.document);
-                    this.addToCache(curHash, { value: toReturn });
-                }
-                else {
-                    this.hashNestedShapes(toReturn, hashableArgs, "result");
-                    this.addToCache(curHash, { value: toReturn });
-                }
+            if (!isItemList(check)) {
+                return check.value;
+            }
+            const items = this.cachedItems(check.itemHashes);
+            if (items) {
+                return items;
             }
         }
+        const toReturn = cacheMiss();
+        if (Array.isArray(toReturn) && this.isOCCTObject(toReturn)) {
+            const itemHashes = toReturn.map((_item, index) => this.itemHash(curHash, index));
+            this.storeItems(itemHashes.map((hash, index) => [hash, toReturn[index]]));
+            this.addToCache(curHash, { itemHashes });
+        } else if (this.isOCCTObject(toReturn)) {
+            this.addToCache(curHash, toReturn);
+        } else if (toReturn && toReturn.compound && toReturn.data && toReturn.shapes && toReturn.shapes.length > 0) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const objDef: Models.OCCT.ObjectDefinition<any, any> = toReturn;
+            this.addToCache(this.itemHash(curHash, "compound"), objDef.compound);
+            objDef.shapes!.forEach((s, index) => this.addToCache(this.itemHash(curHash, index), s.shape));
+            this.addToCache(curHash, { value: objDef });
+        } else if (toReturn && typeof toReturn === "object" && "success" in toReturn && "document" in toReturn && this.isEntityHandle(toReturn.document)) {
+            this.addToCache(this.itemHash(curHash, "document"), toReturn.document);
+            this.addToCache(curHash, { value: toReturn });
+        } else {
+            this.hashNestedShapes(toReturn, curHash, "result");
+            this.addToCache(curHash, { value: toReturn });
+        }
         return toReturn;
+    }
+
+    /** The key of one kernel object inside a call's result: derived from the call's key and where the
+     * object sits, so it costs nothing however large the call's inputs were. */
+    itemHash(callHash: string | number, position: string | number): number {
+        return this.stringToHash(`${callHash}:${position}`);
+    }
+
+    /** Stores the kernel objects of one result, each under its key. A kernel object a key held before
+     * is freed unless the result hands it back again, so a result computed anew never leaves the one
+     * it replaces alive. */
+    private storeItems(items: readonly (readonly [string | number, unknown])[]): void {
+        const kept = new Set(items.map(([, object]) => object));
+        for (const [hash, object] of items) {
+            const previous: unknown = this.argCache[hash];
+            if (!kept.has(previous) && this.isOCCTObject(previous) && !Array.isArray(previous)) {
+                this.free(previous);
+            }
+            this.addToCache(hash, object);
+        }
+    }
+
+    /** Frees one kernel object the way every cleanup here does: a shape's triangulation first. */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private free(object: any): void {
+        try {
+            if (this.isShape(object)) {
+                this.occ.BRepTools_Clean_Force(object, true);
+                this.occ.BRepTools_CleanGeometry(object);
+            }
+            object.delete();
+        } catch {
+            // An object that is already gone has nothing left to free.
+        }
+    }
+
+    /** The kernel objects a cached list holds, or undefined when any of them is no longer in the cache. */
+    private cachedItems(itemHashes: readonly (string | number)[]): unknown[] | undefined {
+        const items: unknown[] = [];
+        for (const hash of itemHashes) {
+            const item = this.checkCache(hash);
+            if (!item) {
+                return undefined;
+            }
+            items.push(item);
+        }
+        return items;
     }
 
     /**
      * Recursively assign a stable hash to every TopoDS_Shape nested anywhere in a result value and
      * add it to the cache, so shapes returned inside arbitrary structures (e.g. the SVG importer's
      * `{ shapes: [{ shape, ... }], ... }`) are cached exactly like shapes returned directly or inside
-     * an ObjectDefinition. The hash is derived from the operation hash plus the value's path, so it is
+     * an ObjectDefinition. The hash is derived from the call's key plus the value's path, so it is
      * stable across runs (enabling cache hits) and unique per shape. embind objects (shapes/entity
      * handles) are never recursed into; only shapes are hashed here.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    hashNestedShapes(value: any, hashableArgs: any, path: string): void {
+    hashNestedShapes(value: any, callHash: string | number, path: string): void {
         if (value === null || value === undefined || typeof value !== "object") {
             return;
         }
         if (value.$$ !== undefined) {
             if (this.isShape(value) && value.hash === undefined) {
-                const itemHash = this.computeHash({ ...hashableArgs, path });
-                value.hash = itemHash;
-                this.addToCache(itemHash, value);
+                this.addToCache(this.itemHash(callHash, path), value);
             }
             return;
         }
         if (Array.isArray(value)) {
-            value.forEach((item, index) => this.hashNestedShapes(item, hashableArgs, `${path}[${index}]`));
+            value.forEach((item, index) => this.hashNestedShapes(item, callHash, `${path}[${index}]`));
             return;
         }
         for (const key of Object.keys(value)) {
-            this.hashNestedShapes(value[key], hashableArgs, `${path}.${key}`);
+            this.hashNestedShapes(value[key], callHash, `${path}.${key}`);
         }
     }
 

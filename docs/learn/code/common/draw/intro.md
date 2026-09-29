@@ -39,11 +39,11 @@ The Rete editor has a unique characteristic among our editors regarding drawing:
 
     **How to Hide Default Drawing in Rete:**
     1.  Click the arrow button on a component to open its generic options:
-        ![A Rete component with an arrow button highlighted, indicating where to click to open generic options.](https://ik.imagekit.io/bitbybit/app/assets/start/general/editor-categories/open-generic-options.jpeg "Open generic component options")
+        ![A Rete component with an arrow button highlighted, indicating where to click to open generic options.](https://bitbybit.dev/files/site/start/general/editor-categories/open-generic-options.jpeg "Open generic component options")
         *Open generic component options*
 
     2.  Enable the "Hide" checkbox:
-        ![The generic options panel for a Rete component, with the "Hide" checkbox enabled.](https://ik.imagekit.io/bitbybit/app/assets/start/general/editor-categories/enable-hide-checkbox.jpeg "Enable Hide Checkbox")
+        ![The generic options panel for a Rete component, with the "Hide" checkbox enabled.](https://bitbybit.dev/files/site/start/general/editor-categories/enable-hide-checkbox.jpeg "Enable Hide Checkbox")
         *Enable Hide Checkbox*
 
 *   **Not All Components are Drawable:** This "Hide" option is only available for components that inherently produce a drawable output. For example, a component that simply creates a boolean value (true/false) won't have anything to draw directly and thus won't have a "Hide" option in its generic menu. (You could, of course, use that boolean value to control other drawable components or create 3D text from it.)

@@ -30,6 +30,21 @@ describe("OCCTWire textWiresWithData", () => {
         wire = new OCCTWire(manager);
     });
 
+    it("should send the defaults of its DTO for what the caller leaves out", async () => {
+        // Arrange
+        worker.answers.set("shapes.wire.textWiresWithData", {
+            data: { type: "text", name: "AB", shapes: [] },
+            shapes: [],
+            compound: A_COMPOUND,
+        });
+
+        // Act
+        await wire.textWiresWithData({ text: "AB" });
+
+        // Assert
+        expect(worker.posted[0]?.action.inputs).toEqual({ ...new Inputs.OCCT.TextWiresDto(), text: "AB" });
+    });
+
     it("should post the dotted path of the method", async () => {
         // Arrange
         worker.answers.set("shapes.wire.textWiresWithData", {

@@ -2,6 +2,8 @@ import * as BABYLON from "@babylonjs/core";
 import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * The fixed camera: it sits at a position looking at a target with no navigation controls of its
@@ -27,12 +29,13 @@ export class BabylonTargetCamera {
      * ```
      */
     create(inputs: Inputs.BabylonCamera.TargetCameraDto): BABYLON.TargetCamera {
-        const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
+        const resolved = resolveDto(Inputs.BabylonCamera.TargetCameraDto, inputs) as Resolved.BabylonCamera.TargetCameraDto;
+        const pos = new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]);
         const camera = new BABYLON.TargetCamera(uniqueName("targetCamera"),
             pos,
             this.context.scene
         );
-        const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
+        const target = new BABYLON.Vector3(resolved.target[0], resolved.target[1], resolved.target[2]);
         camera.setTarget(target);
         const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
         camera.attachControl(canvas, true);

@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { OCCTWorkerManager } from "./occ-worker-manager";
+import { KernelCallError } from "@bitbybit-dev/base";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { OCCTWorkerManager, OccProgress } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
 import { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { uid: string; result?: unknown; error?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -12,7 +13,15 @@ class RecordingWorker extends EventTarget implements Worker {
     onmessageerror: Worker["onmessageerror"] = null;
     onerror: Worker["onerror"] = null;
 
+    refusals = 0;
+
+    refusal: unknown = new Error("() => 1 could not be cloned.");
+
     postMessage(message: PostedCall): void {
+        if (this.refusals > 0) {
+            this.refusals -= 1;
+            throw this.refusal;
+        }
         this.posted.push(message);
     }
 
@@ -148,6 +157,17 @@ describe("OCCTWorkerManager unit tests", () => {
             await expect(pending).resolves.toBe(0);
         });
 
+        it("should resolve a call the worker answered without a result", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise<void>("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0) });
+
+            // Assert
+            await expect(pending).resolves.toBeUndefined();
+        });
+
         it("should leave a call pending when another call's uid is answered", async () => {
             // Arrange
             const first = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
@@ -163,7 +183,7 @@ describe("OCCTWorkerManager unit tests", () => {
             expect(settled).toBe(false);
         });
 
-        it("should reject with the error the worker reported", async () => {
+        it("should reject with an Error carrying the message the worker reported", async () => {
             // Arrange
             const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
 
@@ -171,7 +191,42 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createSphere", kind: "kernel" });
+            await expect(pending).rejects.toThrow("radius must be positive");
+        });
+
+        it("should carry the kind of failure and the stack the worker reported", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "shapes.solid.createSphere: `radius` must be positive", errorKind: "input", stack: "at kernel" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ kind: "input", workerStack: "at kernel" });
+        });
+
+        it("should carry the code of a failure the kernel named", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("fillets.filletEdges", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "The operation could not be completed.", errorKind: "kernel", code: "occt.fillet.failed", details: { edges: [3] } });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ kind: "kernel", code: "occt.fillet.failed", details: { edges: [3] } });
+        });
+
+        it("should leave the code unset when the worker reported none", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "failed" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ code: undefined, details: undefined });
         });
 
         it("should pass the error to the error callback when one is registered", async () => {
@@ -182,7 +237,7 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Act
             answer({ uid: uidOf(0), error: "radius must be positive" });
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toThrow("radius must be positive");
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("radius must be positive");
@@ -198,7 +253,71 @@ describe("OCCTWorkerManager unit tests", () => {
             answer({ uid: uidOf(0), error: "radius must be positive" });
 
             // Assert
-            await expect(pending).rejects.toBe("radius must be positive");
+            await expect(pending).rejects.toThrow("radius must be positive");
+            vi.restoreAllMocks();
+        });
+
+        it("should reject with exactly the message the worker reported, and no stack when it sent none", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "radius must be positive", functionName: "shapes.solid.createSphere", kind: "kernel", workerStack: undefined });
+        });
+
+        it("should reject a call whose worker reported an empty message", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "", functionName: "shapes.solid.createSphere" });
+        });
+
+        it.each([0, "", null, false])("should resolve a call the worker answered with %j as that value", async (falsy) => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), result: falsy });
+
+            // Assert
+            await expect(pending).resolves.toBe(falsy);
+        });
+
+        it("should settle each call by its own uid when two are outstanding", async () => {
+            // Arrange
+            const first = manager.genericCallToWorkerPromise("shapes.solid.createSphere", { radius: 1 });
+            const second = manager.genericCallToWorkerPromise("shapes.solid.createSphere", { radius: 2 });
+
+            // Act
+            answer({ uid: uidOf(1), result: "the second" });
+            answer({ uid: uidOf(0), error: "the first failed" });
+
+            // Assert
+            await expect(second).resolves.toBe("the second");
+            await expect(first).rejects.toMatchObject({ message: "the first failed" });
+        });
+
+        it("should log what an error callback threw and still reject with the worker's message", async () => {
+            // Arrange
+            const logged: unknown[][] = [];
+            vi.spyOn(console, "error").mockImplementation((...args: unknown[]) => { logged.push(args); });
+            const broke = new Error("the handler broke");
+            manager.errorCallback = () => { throw broke; };
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ name: "KernelCallError", message: "radius must be positive" });
+            expect(logged).toEqual([["OCCT errorCallback threw:", broke]]);
             vi.restoreAllMocks();
         });
 
@@ -212,6 +331,74 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect(errorCallback).toHaveBeenCalledWith("worker died");
+        });
+    });
+
+    describe("inputs that cannot cross to the worker", () => {
+        it("should reject the call at once as a failure of its inputs, naming the path", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", { material: (): number => 1 });
+
+            // Assert
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createBox", kind: "input", message: "shapes.solid.createBox: the inputs could not be sent to the worker: () => 1 could not be cloned." });
+        });
+
+        it("should report the worker loaded when nothing else is outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(pending).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
+        });
+
+        it("should say only that the inputs could not be sent when what was thrown is not an error", async () => {
+            // Arrange
+            worker.refusals = 1;
+            worker.refusal = "not an error";
+
+            // Act
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ functionName: "shapes.solid.createBox", kind: "input", message: "shapes.solid.createBox: the inputs could not be sent to the worker" });
+        });
+
+        it("should not report the worker loaded while another call is still outstanding", async () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("shapes.solid.createCube", {});
+            worker.refusals = 1;
+            states.length = 0;
+
+            // Act
+            const refused = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+
+            // Assert
+            expect(states.filter((s) => s.state === OccStateEnum.loaded)).toEqual([]);
+        });
+
+        it("should not count a call it could not send as outstanding", async () => {
+            // Arrange
+            worker.refusals = 1;
+            const refused = manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            await expect(refused).rejects.toBeInstanceOf(KernelCallError);
+            const sent = manager.genericCallToWorkerPromise("shapes.solid.createCube", {});
+            states.length = 0;
+
+            // Act
+            answer({ uid: uidOf(0), result: "a-shape" });
+            await sent;
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
         });
     });
 
@@ -239,6 +426,18 @@ describe("OCCTWorkerManager unit tests", () => {
             // Act
             answer({ uid: uidOf(0), result: "a-sphere" });
             await pending;
+
+            // Assert
+            expect(states).toEqual([{ state: OccStateEnum.loaded }]);
+        });
+
+        it("should report loaded once the last outstanding call has been refused", async () => {
+            // Arrange
+            const pending = manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            answer({ uid: uidOf(0), error: "radius must be positive" });
+            await expect(pending).rejects.toThrow("radius must be positive");
 
             // Assert
             expect(states).toEqual([{ state: OccStateEnum.loaded }]);
@@ -272,6 +471,207 @@ describe("OCCTWorkerManager unit tests", () => {
 
             // Assert
             expect(settled).toBe(false);
+        });
+    });
+
+    describe("progress and cancelling", () => {
+        let words: Int32Array;
+        let progress: OccProgress[];
+
+        const shareWords = (): void => {
+            words = new Int32Array(new SharedArrayBuffer(12));
+            answer({ progressWords: words });
+        };
+
+        beforeEach(() => {
+            vi.useFakeTimers();
+            progress = [];
+            manager.occWorkerProgress$.subscribe((reading) => progress.push(reading));
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("should not offer cancelling before the worker shares its progress words", () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("shapes.solid.createSphere", {});
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(manager.canCancel()).toBe(false);
+            expect(cancelled).toBe(false);
+        });
+
+        it("should not treat the shared words as an answer or a state", () => {
+            // Act
+            shareWords();
+
+            // Assert
+            expect(manager.canCancel()).toBe(true);
+            expect(states).toEqual([]);
+        });
+
+        it("should raise the stop word for the call running now", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(cancelled).toBe(true);
+            expect(Atomics.load(words, 0)).toBe(1);
+        });
+
+        it("should leave the stop word alone when no call is pending", () => {
+            // Arrange
+            shareWords();
+
+            // Act
+            const cancelled = manager.cancelCurrentCall();
+
+            // Assert
+            expect(cancelled).toBe(false);
+            expect(Atomics.load(words, 0)).toBe(0);
+        });
+
+        it("should reject a cancelled call as cancelled", async () => {
+            // Arrange
+            shareWords();
+            const pending = manager.genericCallToWorkerPromise("booleans.union", {});
+            manager.cancelCurrentCall();
+
+            // Act
+            answer({ uid: uidOf(0), error: "OCCT 'booleans.union' was cancelled before it finished; nothing it made was kept.", errorKind: "cancelled" });
+
+            // Assert
+            await expect(pending).rejects.toMatchObject({ kind: "cancelled" });
+        });
+
+        it("should report the oldest pending call's progress as it moves", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Act
+            Atomics.store(words, 1, 250);
+            Atomics.store(words, 2, 1);
+            vi.advanceTimersByTime(100);
+            vi.advanceTimersByTime(100);
+            Atomics.store(words, 1, 600);
+            vi.advanceTimersByTime(100);
+
+            // Assert
+            expect(progress).toEqual([
+                { functionName: "booleans.union", fraction: 0.25, algorithms: 1 },
+                { functionName: "booleans.union", fraction: 0.6, algorithms: 1 },
+            ]);
+        });
+
+        it("should move on to the next call once the running one is answered", async () => {
+            // Arrange
+            shareWords();
+            const first = manager.genericCallToWorkerPromise("booleans.union", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+            vi.advanceTimersByTime(100);
+
+            // Act
+            answer({ uid: uidOf(0), result: "a-union" });
+            await first;
+            vi.advanceTimersByTime(100);
+
+            // Assert
+            expect(progress.map((reading) => reading.functionName)).toEqual(["booleans.union", "shapes.solid.createBox"]);
+        });
+
+        it("should stop reading once nothing is pending", async () => {
+            // Arrange
+            shareWords();
+            const pending = manager.genericCallToWorkerPromise("booleans.union", {});
+            answer({ uid: uidOf(0), result: "a-union" });
+            await pending;
+
+            // Act
+            Atomics.store(words, 1, 500);
+            vi.advanceTimersByTime(1000);
+
+            // Assert
+            expect(progress).toEqual([]);
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should stop reading when a call it could not send was the only one", async () => {
+            // Arrange
+            shareWords();
+            worker.refusals = 1;
+
+            // Act
+            await expect(manager.genericCallToWorkerPromise("booleans.union", {})).rejects.toThrow();
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should stop reading when the outstanding calls are forgotten", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            manager.cleanPromisesMade();
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should read the words a restarted kernel shares, while a call is pending", () => {
+            // Arrange
+            shareWords();
+            const first = words;
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            shareWords();
+            Atomics.store(first, 1, 900);
+            Atomics.store(words, 1, 300);
+            vi.advanceTimersByTime(100);
+            manager.cancelCurrentCall();
+
+            // Assert
+            expect(progress).toEqual([{ functionName: "booleans.union", fraction: 0.3, algorithms: 0 }]);
+            expect(Atomics.load(words, 0)).toBe(1);
+            expect(Atomics.load(first, 0)).toBe(0);
+            expect(vi.getTimerCount()).toBe(1);
+        });
+
+        it("should forget the words of a worker it replaces", () => {
+            // Arrange
+            shareWords();
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            manager.setOccWorker(new RecordingWorker());
+
+            // Assert
+            expect(manager.canCancel()).toBe(false);
+            expect(vi.getTimerCount()).toBe(0);
+        });
+
+        it("should not read progress when the worker never shared its words", () => {
+            // Arrange
+            void manager.genericCallToWorkerPromise("booleans.union", {});
+
+            // Act
+            vi.advanceTimersByTime(1000);
+
+            // Assert
+            expect(vi.getTimerCount()).toBe(0);
+            expect(progress).toEqual([]);
         });
     });
 

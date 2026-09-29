@@ -55,3 +55,10 @@ The engine is an ordinary dependency here, not a peer as it is in `babylonjs`.
   buffers. Either half alone grows without bound.
 - The pitch setter clamps to **+/-89.9 degrees** on top of the caller's limits, to stay off the poles
   where the spherical conversion and `lookAt` lose their up vector.
+- **`initThreeJS` sizes the camera distance and its limits from `sceneSize`, never the sensitivities.**
+  The wheel and pinch zoom move the camera by a fraction of its distance, and a pan moves the pivot by
+  a fraction of it too, so `distanceSensitivity` and `panSensitivity` already feel the same in a
+  10-unit scene and a 1000-unit one. They were once multiplied by `sceneSize / 20` on top of that,
+  which made a 600-unit scene jump a third of the distance per wheel notch; `scene-helper.test.ts`
+  pins the defaults reaching the controller unchanged. The BabylonJS helper does scale
+  `wheelPrecision` and `panningSensibility`, correctly, because those work in absolute world units.

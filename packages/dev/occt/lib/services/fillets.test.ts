@@ -1,11 +1,29 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { describe, it, expect, beforeAll, vi } from "vitest";
+import createBitbybitOcct, { BitbybitOcctModule, ClassHandle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import * as Inputs from "../api/inputs";
 import { OCCTFillets } from "./fillets";
 import { OCCTEdge, OCCTFace, OCCTSolid, OCCTWire } from "./shapes";
+
+function tracked(occt: BitbybitOcctModule, names: string[], act: () => unknown): ClassHandle[] {
+    const created: ClassHandle[] = [];
+    const originals = names.map(name => [name, Reflect.get(occt, name)] as const);
+    originals.forEach(([name, original]) => Reflect.set(occt, name, new Proxy(original, {
+        construct(target, args): object {
+            const made: ClassHandle = Reflect.construct(target, args);
+            created.push(made);
+            return made;
+        },
+    })));
+    try {
+        act();
+    } finally {
+        originals.forEach(([name, original]) => Reflect.set(occt, name, original));
+    }
+    return created;
+}
 
 describe("OCCT fillets unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -27,142 +45,200 @@ describe("OCCT fillets unit tests", () => {
         fillets = new OCCTFillets(occt, occHelper);
     });
 
-    it("should fillet closed 3D wire on various corners", () => {
-        const starOpt = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3);
-        const star = wire.createStarWire(starOpt);
-        const filletOptions = new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(
-            star,
-            undefined,
-            [0, 1, 0],
-            [0.4, 0.2, 0.5, 0.3, 0.6],
-            [0, 1, 2, 3, 4],
-        );
-        const result = fillets.fillet3DWire(filletOptions);
-        const edges = occHelper.edgesService.getEdgesAlongWire({ shape: result });
-        const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        const expectedLengths = [
-            5.348146466383239,
-            0.4475593096045423,
-            5.268367175439688,
-            0.6392454970881696,
-            5.065399912120434,
-            0.6713389644068104,
-            4.985620621176885,
-            0.7670945965058044,
-            5.594522411134649,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795949,
-            6.073198156795949,
-            5.7540809930217485,
-            0.511396397670537,
-        ];
-        expect(edgeLengths.length).toEqual(expectedLengths.length);
-        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i]!, 10));
-        expect(edgeLengths[1]).toBeLessThan(1);
-        expect(edgeLengths[3]).toBeLessThan(1);
-        expect(edgeLengths[5]).toBeLessThan(1);
-        expect(edgeLengths[7]).toBeLessThan(1);
-        expect(edgeLengths[18]).toBeLessThan(1);
+    const pointsAlong = (shape: TopoDS_Wire): Inputs.Base.Point3[] =>
+        occHelper.edgesService.getEdgesAlongWire({ shape }).map(e => occHelper.edgesService.startPointOnEdge({ shape: e }));
 
-        result.delete();
-        edges.forEach(e => e.delete());
-        star.delete();
+    const lengthsAlong = (shape: TopoDS_Wire): number[] =>
+        occHelper.edgesService.getEdgesAlongWire({ shape }).map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+
+    const endsAlong = (shape: TopoDS_Wire): Inputs.Base.Point3[] =>
+        occHelper.edgesService.getEdgesAlongWire({ shape }).flatMap(e => [
+            occHelper.edgesService.startPointOnEdge({ shape: e }),
+            occHelper.edgesService.endPointOnEdge({ shape: e }),
+        ]);
+
+    const hasEnd = (ends: Inputs.Base.Point3[], point: Inputs.Base.Point3): boolean =>
+        ends.some(end => Math.hypot(end[0] - point[0], end[1] - point[1], end[2] - point[2]) < 1e-9);
+
+    const roundedLengths = (points: Inputs.Base.Point3[], closed: boolean, radii: number[]): number[] => {
+        const count = points.length;
+        const setbacks = points.map(() => 0);
+        const arcs = points.map(() => 0);
+        const unit = (from: Inputs.Base.Point3, to: Inputs.Base.Point3): Inputs.Base.Vector3 => {
+            const length = Math.hypot(to[0] - from[0], to[1] - from[1], to[2] - from[2]);
+            return [(to[0] - from[0]) / length, (to[1] - from[1]) / length, (to[2] - from[2]) / length];
+        };
+        radii.forEach((radius, corner) => {
+            if (radius <= 0) {
+                return;
+            }
+            const at = (corner + 1) % count;
+            const back = unit(points[at]!, points[corner]!);
+            const ahead = unit(points[at]!, points[(at + 1) % count]!);
+            const opening = Math.acos(back[0] * ahead[0] + back[1] * ahead[1] + back[2] * ahead[2]);
+            setbacks[at] = radius / Math.tan(opening / 2);
+            arcs[at] = radius * (Math.PI - opening);
+        });
+        const lengths: number[] = [];
+        for (let side = 0; side < (closed ? count : count - 1); side++) {
+            const next = (side + 1) % count;
+            const [a, b] = [points[side]!, points[next]!];
+            lengths.push(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]) - setbacks[side]! - setbacks[next]!);
+            if (arcs[next]! > 0) {
+                lengths.push(arcs[next]!);
+            }
+        }
+        return lengths;
+    };
+
+    const radiiAt = (corners: number, indexes: number[], radii: number[]): number[] =>
+        Array.from({ length: corners }, (_, corner) => indexes.includes(corner) ? radii[indexes.indexOf(corner)]! : 0);
+
+    it("should round the listed corners of a closed 3D star, each in its own plane with its own radius", () => {
+        // Arrange
+        const star = wire.createStarWire(new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3));
+        const points = pointsAlong(star);
+        const radii = [0.4, 0.2, 0.5, 0.3, 0.6];
+
+        // Act
+        const result = fillets.fillet3DWire(new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(star, undefined, [0, 1, 0], radii, [0, 1, 2, 3, 4]));
+
+        // Assert
+        const expected = roundedLengths(points, true, radiiAt(14, [0, 1, 2, 3, 4], radii));
+        expect(lengthsAlong(result)).toEqual(expected.map(length => expect.closeTo(length, 10)));
+        expect(expected).toHaveLength(19);
     });
 
-    it("should fillet closed 3D wire", () => {
-        const starOpt = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3);
-        const star = wire.createStarWire(starOpt);
-        const filletOptions = new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(
-            star,
-            undefined,
-            [0, 1, 0],
-            [0.3, 0.2, 0.3, 0.3, 0.3],
-            [3, 6, 7, 8, 11],
-        );
-        const result = fillets.fillet3DWire(filletOptions);
-        const edges = occHelper.edgesService.getEdgesAlongWire({ shape: result });
-        const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
-        const expectedLengths = [
-            5.464296366838182,
-            0.6713389644068104,
-            5.464296366838182,
-            6.0731981567959465,
-            5.913639574908849,
-            0.25569819883526734,
-            5.304737784951084,
-            0.671338964406812,
-            5.224958494007533,
-            0.38354729825290185,
-            5.8338602839653,
-            6.073198156795948,
-            5.46429636683818,
-            0.6713389644068126,
-            5.46429636683818,
-            6.073198156795949,
-            6.073198156795948,
-            6.073198156795948,
-            6.073198156795948,
-        ];
-        expect(edgeLengths.length).toEqual(expectedLengths.length);
-        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i]!, 10));
+    it("should round the corners the indexes name, counted from where the first edge ends", () => {
+        // Arrange
+        const star = wire.createStarWire(new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3));
+        const points = pointsAlong(star);
+        const indexes = [3, 6, 7, 8, 11];
+        const radii = [0.3, 0.2, 0.3, 0.3, 0.3];
 
-        expect(edgeLengths[1]).toBeLessThan(1);
-        expect(edgeLengths[5]).toBeLessThan(1);
-        expect(edgeLengths[7]).toBeLessThan(1);
-        expect(edgeLengths[9]).toBeLessThan(1);
-        expect(edgeLengths[13]).toBeLessThan(1);
+        // Act
+        const result = fillets.fillet3DWire(new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(star, undefined, [0, 1, 0], radii, indexes));
 
-        star.delete();
-        edges.forEach(e => e.delete());
-        result.delete();
+        // Assert
+        expect(lengthsAlong(result)).toEqual(roundedLengths(points, true, radiiAt(14, indexes, radii)).map(length => expect.closeTo(length, 10)));
     });
 
-    it("should fillet open 3D wire", () => {
-        const starOpt = new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3);
-        const star = wire.createStarWire(starOpt);
+    it("should round an open 3D wire, its first corner where its first edge ends", () => {
+        // Arrange
+        const star = wire.createStarWire(new Inputs.OCCT.StarDto(10, 6, 7, [0, 0, 0], [0, 1, 0], 3));
+        const starEdges = occHelper.edgesService.getEdgesAlongWire({ shape: star });
+        const open = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: starEdges.slice(0, -1) });
+        const points = [...pointsAlong(open), occHelper.edgesService.endPointOnEdge({ shape: starEdges[12]! })];
+        const radii = [0.4, 0.2, 0.5, 0.3, 0.6];
 
-        const edgesStar = occHelper.shapeGettersService.getEdges({ shape: star });
-        edgesStar.pop();
-        const wireStarOpen = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: edgesStar });
+        // Act
+        const result = fillets.fillet3DWire(new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(open, undefined, [0, 1, 0], radii, [0, 1, 2, 3, 4]));
 
-        const filletOptions = new Inputs.OCCT.Fillet3DWireDto<TopoDS_Wire>(
-            wireStarOpen,
-            undefined,
-            [0, 1, 0],
-            [0.4, 0.2, 0.5, 0.3, 0.6],
-            [0, 1, 2, 3, 4],
-        );
-        const result = fillets.fillet3DWire(filletOptions);
-        const edges = occHelper.shapeGettersService.getEdges({ shape: result });
-        const edgeLengths = edges.map(e => occHelper.edgesService.getEdgeLength({ shape: e }));
+        // Assert
+        expect(lengthsAlong(result)).toEqual(roundedLengths(points, false, radiiAt(12, [0, 1, 2, 3, 4], radii)).map(length => expect.closeTo(length, 10)));
+    });
 
-        const expectedLengths = [
-            5.7540809930217485, 0.5113963976705358,
-            5.348146466383239, 0.4475593096045423,
-            5.268367175439688, 0.6392454970881696,
-            5.065399912120434, 0.6713389644068104,
-            4.985620621176885, 0.7670945965058044,
-            5.594522411134649, 6.073198156795948,
-            6.073198156795948, 6.073198156795948,
-            6.073198156795948, 6.073198156795948,
-            6.073198156795948, 6.073198156795949
-        ];
-        expect(edgeLengths.length).toEqual(expectedLengths.length);
-        edgeLengths.forEach((len, i) => expect(len).toBeCloseTo(expectedLengths[i]!, 10));
-        expect(edgeLengths[1]).toBeLessThan(1);
-        expect(edgeLengths[3]).toBeLessThan(1);
-        expect(edgeLengths[5]).toBeLessThan(1);
-        expect(edgeLengths[7]).toBeLessThan(1);
-        expect(edgeLengths[9]).toBeLessThan(1);
+    it("should round a 3D polyline whose corners lie in different planes, whatever the direction", () => {
+        // Arrange
+        const rod = wire.createPolylineWire({ points: [[0, 0, 0], [10, 0, 0], [10, 10, 0], [10, 10, 10]] });
 
-        star.delete();
-        edges.forEach(e => e.delete());
-        result.delete();
+        // Act
+        const alongY = fillets.fillet3DWire({ shape: rod, radius: 2, direction: [0, 1, 0] });
+        const alongZ = fillets.fillet3DWire({ shape: rod, radius: 2, direction: [0, 0, 1] });
+
+        // Assert
+        expect(wire.getWireLength({ shape: alongY })).toBeCloseTo(22 + 2 * Math.PI, 10);
+        expect(lengthsAlong(alongZ)).toEqual(lengthsAlong(alongY));
+    });
+
+    it("should round only the listed corners with the one radius when there is no radius list", () => {
+        // Arrange
+        const zigzag = wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 1], [4, 0, 0], [6, 0, 1], [8, 0, 0]] });
+
+        // Act
+        const result = fillets.fillet3DWire({ shape: zigzag, radius: 0.3, indexes: [1] });
+
+        // Assert
+        const ends = endsAlong(result);
+        expect([hasEnd(ends, [2, 0, 1]), hasEnd(ends, [4, 0, 0]), hasEnd(ends, [6, 0, 1])]).toEqual([true, false, true]);
+    });
+
+    it.each([
+        ["a radius list that does not pair with the indexes", { radiusList: [0.1, 0.2], indexes: [0] }, "radiusList", "`radiusList` must hold one radius per entry of `indexes`: it holds 2 for 1."],
+        ["an index past the last corner", { indexes: [3] }, "indexes", "`indexes` counts the wire's 3 corners from 0 to 2, and holds 3."],
+        ["a radius of 0", { radius: 0 }, "radius", "`radius` must be above 0, and is 0; a radius of 0 or less rounds nothing."],
+        ["a negative radius for listed corners", { radius: -1, indexes: [1] }, "radius", "`radius` must be above 0, and is -1; a radius of 0 or less rounds nothing."],
+        ["a radius list holding 0", { radiusList: [0.2, 0], indexes: [0, 1] }, "radiusList", "Every radius in `radiusList` must be above 0; a radius of 0 or less rounds nothing."],
+    ])("should refuse %s", (_what, options, property, message) => {
+        // Arrange
+        const zigzag = wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 1], [4, 0, 0], [6, 0, 1], [8, 0, 0]] });
+
+        // Act
+        const act = (): unknown => fillets.fillet3DWire({ shape: zigzag, radius: 0.3, ...options });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "InputError", property, message }));
+    });
+
+    it("should round the corner fillet2d names, counted from 1, on a wire its 2D fillet cannot take", () => {
+        // Arrange
+        const bulge = wire.interpolatePoints({ points: [[10, 0, 0], [12, 0, 5], [10, 0, 10]], periodic: false, tolerance: 1e-7 });
+        const outline = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [
+            wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), bulge,
+            wire.createLineWire({ start: [10, 0, 10], end: [0, 0, 10] }), wire.createLineWire({ start: [0, 0, 10], end: [0, 0, 0] }),
+        ] });
+
+        // Act
+        const result = fillets.fillet2d({ shape: outline, radius: 1, indexes: [2] });
+
+        // Assert
+        const ends = endsAlong(result);
+        expect([hasEnd(ends, [10, 0, 0]), hasEnd(ends, [10, 0, 10]), hasEnd(ends, [0, 0, 10])]).toEqual([true, false, true]);
+    });
+
+    it("should give the listed corners their radii in their order along the outline on a wire its 2D fillet cannot take", () => {
+        // Arrange
+        const bulge = wire.interpolatePoints({ points: [[10, 0, 0], [12, 0, 5], [10, 0, 10]], periodic: false, tolerance: 1e-7 });
+        const outline = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [
+            wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), bulge,
+            wire.createLineWire({ start: [10, 0, 10], end: [0, 0, 10] }), wire.createLineWire({ start: [0, 0, 10], end: [0, 0, 0] }),
+        ] });
+
+        // Act
+        const unsorted = fillets.fillet2d({ shape: outline, radiusList: [1, 0.5], indexes: [2, 1] });
+        const sorted = fillets.fillet2d({ shape: outline, radiusList: [1, 0.5], indexes: [1, 2] });
+        const swapped = fillets.fillet2d({ shape: outline, radiusList: [0.5, 1], indexes: [1, 2] });
+
+        // Assert
+        expect(endsAlong(unsorted)).toEqual(endsAlong(sorted));
+        expect(endsAlong(unsorted)).not.toEqual(endsAlong(swapped));
+    });
+
+    it("should report the 2D fillet's failure, not round nothing, when a wire it cannot take is given a radius of 0", () => {
+        // Arrange
+        const bulge = wire.interpolatePoints({ points: [[10, 0, 0], [12, 0, 5], [10, 0, 10]], periodic: false, tolerance: 1e-7 });
+        const outline = occHelper.converterService.combineEdgesAndWiresIntoAWire({ shapes: [
+            wire.createLineWire({ start: [0, 0, 0], end: [10, 0, 0] }), bulge,
+            wire.createLineWire({ start: [10, 0, 10], end: [0, 0, 10] }), wire.createLineWire({ start: [0, 0, 10], end: [0, 0, 0] }),
+        ] });
+
+        // Act
+        const act = (): unknown => fillets.fillet2d({ shape: outline, radiusList: [1, 0], indexes: [1, 2] });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failedAtCorners" }));
+    });
+
+    it("should leave aside a radius list given without indexes, rounding every corner of a 3D wire with the one radius", () => {
+        // Arrange
+        const zigzag = wire.createPolylineWire({ points: [[0, 0, 0], [2, 0, 1], [4, 0, 0], [6, 0, 1], [8, 0, 0]] });
+
+        // Act
+        const result = fillets.fillet3DWire({ shape: zigzag, radius: 0.3, radiusList: [0] });
+
+        // Assert
+        const ends = endsAlong(result);
+        expect([hasEnd(ends, [2, 0, 1]), hasEnd(ends, [4, 0, 0]), hasEnd(ends, [6, 0, 1])]).toEqual([false, false, false]);
     });
 
     it("should fillet multiple 3D wires with the same radius", () => {
@@ -435,6 +511,64 @@ describe("OCCT fillets unit tests", () => {
         edge.delete();
     });
 
+    it("should release every shape its edge and vertex walks are handed", () => {
+        // Arrange
+        const handedOut: { isDeleted(): boolean }[] = [];
+        const vertices: { isDeleted(): boolean }[] = [];
+        const explorer = occt.TopExp_Explorer;
+        const originalCast: unknown = Reflect.get(occt, "CastToVertex");
+        const castToVertex = occt.CastToVertex.bind(occt);
+        Reflect.set(occt, "CastToVertex", (shape: TopoDS_Shape) => {
+            const vertex = castToVertex(shape);
+            vertices.push(vertex);
+            return vertex;
+        });
+        Reflect.set(occt, "TopExp_Explorer", new Proxy(explorer, {
+            construct(target, args): object {
+                const made = Reflect.construct(target, args);
+                const current = made.Current.bind(made);
+                made.Current = (): TopoDS_Shape => {
+                    const shape = current();
+                    handedOut.push(shape);
+                    return shape;
+                };
+                return made;
+            },
+        }));
+        const box = (): TopoDS_Shape => solid.createCube({ size: 2, center: [0, 0, 0] });
+
+        // Act
+        try {
+            fillets.filletEdges({ shape: box(), radius: 0.1 });
+            fillets.chamferEdges({ shape: box(), distance: 0.1 });
+            fillets.fillet2d({ shape: occHelper.facesService.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
+            fillets.fillet2d({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), radius: 0.1 });
+            fillets.chamfer2dVertices({ shape: wire.createSquareWire({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] }), distance: 0.1 });
+        } finally {
+            Reflect.set(occt, "TopExp_Explorer", explorer);
+            Reflect.set(occt, "CastToVertex", originalCast);
+        }
+
+        // Assert
+        expect(handedOut.length).toBeGreaterThan(40);
+        expect(handedOut.filter(shape => !shape.isDeleted())).toEqual([]);
+        expect(vertices.length).toBeGreaterThan(8);
+        expect(vertices.filter(vertex => !vertex.isDeleted())).toEqual([]);
+    });
+
+    it("should delete the points and the list it builds a variable radius from", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const edge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
+
+        // Act
+        const created = tracked(occt, ["gp_Pnt2d", "TColgp_Array1OfPnt2d"], () => fillets.filletEdgeVariableRadius({ shape: cube, edge, radiusList: [0.1, 0.3, 0.3, 1], paramsU: [0, 0.2, 0.8, 1] }));
+
+        // Assert
+        expect(created).toHaveLength(5);
+        expect(created.filter(made => !made.isDeleted())).toEqual([]);
+    });
+
     it("should not fillet edge with variable radius if params u does not have the same nr of eleemnts as radius list", () => {
         const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
         const edge = occHelper.shapeGettersService.getEdges({ shape: cube })[0]!;
@@ -588,6 +722,21 @@ describe("OCCT fillets unit tests", () => {
         cube.delete();
         chamferRes.delete();
         faces.forEach(f => f.delete());
+    });
+
+    it("should return the shape unchanged, and leave the caller's shape intact, when no index names an edge", () => {
+        // Arrange
+        const cube = solid.createCube({ size: 2, center: [0, 0, 0] });
+        const errors = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        // Act
+        const chamferRes = fillets.chamferEdges({ shape: cube, distance: 0.1, indexes: [999] });
+
+        // Assert
+        expect(solid.getSolidVolume({ shape: chamferRes })).toBeCloseTo(8);
+        expect(solid.getSolidVolume({ shape: cube })).toBeCloseTo(8);
+        expect(errors).toHaveBeenCalledTimes(1);
+        errors.mockRestore();
     });
 
     it("should chamfer specific edges selected by indexes with specific distances", () => {
@@ -801,13 +950,17 @@ describe("OCCT fillets unit tests", () => {
             boxFaces = occHelper.shapeGettersService.getFaces({ shape: box });
         });
 
-        it("should refuse to fillet every edge without being told a radius", () => {
+        it("should fillet every edge with the default radius when the call passes none", () => {
             // Arrange
             const inputs = new Inputs.OCCT.FilletDto<TopoDS_Shape>(box);
             Object.assign(inputs, { radius: undefined });
+            const withDefaultRadius = fillets.filletEdges({ shape: box, radius: new Inputs.OCCT.FilletDto().radius });
 
-            // Act & Assert
-            expect(() => fillets.filletEdges(inputs)).toThrow(/Radius not defined/);
+            // Act
+            const filleted = fillets.filletEdges(inputs);
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: filleted })).toBeCloseTo(solid.getSolidVolume({ shape: withDefaultRadius }));
         });
 
         it("should refuse to fillet named edges with no edges named", () => {
@@ -844,13 +997,17 @@ describe("OCCT fillets unit tests", () => {
             })).toThrow(/same length/);
         });
 
-        it("should refuse to chamfer every edge without being told a distance", () => {
+        it("should chamfer every edge with the default distance when the call passes none", () => {
             // Arrange
             const inputs = new Inputs.OCCT.ChamferDto<TopoDS_Shape>(box);
             Object.assign(inputs, { distance: undefined });
+            const withDefaultDistance = fillets.chamferEdges({ shape: box, distance: new Inputs.OCCT.ChamferDto().distance });
 
-            // Act & Assert
-            expect(() => fillets.chamferEdges(inputs)).toThrow(/Distance is undefined/);
+            // Act
+            const chamfered = fillets.chamferEdges(inputs);
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: chamfered })).toBeCloseTo(solid.getSolidVolume({ shape: withDefaultDistance }));
         });
 
         it("should refuse a distance list of a different length from the edge list", () => {

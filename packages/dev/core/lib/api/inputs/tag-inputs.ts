@@ -24,8 +24,9 @@ export namespace Tag {
         /**
          * When true, a later draw with `tagVariable` changes this tag in place instead of adding
          * another
+         * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * The tag an earlier draw gave back, to change in place; used only when `updatable` is true
          * @optional true
@@ -49,8 +50,9 @@ export namespace Tag {
         /**
          * When true, a later draw with `tagsVariable` changes these tags in place, adding and
          * removing to match the new list
+         * @default false
          */
-        updatable = false;
+        updatable?: boolean | undefined = false;
         /**
          * The tags an earlier draw gave back, to change in place; used only when `updatable` is
          * true
@@ -82,21 +84,25 @@ export namespace Tag {
         /**
          * The point in the scene the label is pinned to; it stays over that point as the camera
          * moves
+         * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Hex color of the label's text
+         * @default #444444
          */
-        colour = "#444444";
+        colour?: string | undefined = "#444444";
         /**
          * Font size of the label, in pixels
+         * @default 12
          */
-        size = 12;
+        size?: number | undefined = 12;
         /**
          * When true, a label far from the camera is drawn smaller than one nearby, as if it sat in
          * the scene
+         * @default false
          */
-        adaptDepth = false;
+        adaptDepth?: boolean | undefined = false;
         /**
          * Set by drawing to ask for a refresh of the label on the next frame; not something to set
          * by hand

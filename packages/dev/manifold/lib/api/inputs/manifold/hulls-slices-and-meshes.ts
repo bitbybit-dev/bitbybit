@@ -31,7 +31,7 @@ export class SliceDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 0.5;
+    height?: number | undefined = 0.5;
 }
 /**
  * Mesh data for the methods that read it whole, such as `mesh.evaluate.numTri` and
@@ -66,7 +66,7 @@ export class MeshVertexIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    vertexIndex: number = 0;
+    vertexIndex?: number | undefined = 0;
 }
 /**
  * Mesh data and a run index for `mesh.evaluate.transform`.
@@ -87,7 +87,7 @@ export class MeshTriangleRunIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    triangleRunIndex: number = 0;
+    triangleRunIndex?: number | undefined = 0;
 }
 /**
  * Mesh data and a half-edge index for `mesh.evaluate.tangent`.
@@ -108,7 +108,7 @@ export class MeshHalfEdgeIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    halfEdgeIndex: number = 0;
+    halfEdgeIndex?: number | undefined = 0;
 }
 /**
  * Mesh data and a triangle index for `mesh.evaluate.verts`.
@@ -129,5 +129,5 @@ export class MeshTriangleIndexDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    triangleIndex: number = 0;
+    triangleIndex?: number | undefined = 0;
 }

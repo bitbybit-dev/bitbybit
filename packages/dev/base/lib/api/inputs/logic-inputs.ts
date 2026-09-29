@@ -51,7 +51,7 @@ export namespace Logic {
          * not convert types.
          * @default less
          */
-        operator: BooleanOperatorsEnum = BooleanOperatorsEnum.less;
+        operator?: BooleanOperatorsEnum | undefined = BooleanOperatorsEnum.less;
     }
     /**
      * One boolean for `logic.boolean` and `logic.not`, which pass it through or flip it.
@@ -64,7 +64,7 @@ export namespace Logic {
          * The boolean value.
          * @default false
          */
-        boolean = false;
+        boolean?: boolean | undefined = false;
     }
     /**
      * A list of booleans for `logic.notList`, which flips every one of them.
@@ -96,7 +96,7 @@ export namespace Logic {
          * When true the gate is open and the value passes; when false the result is undefined.
          * @default false
          */
-        boolean = false;
+        boolean?: boolean | undefined = false;
     }
     /**
      * A preferred value and a fallback for `logic.firstDefinedValueGate`.
@@ -133,7 +133,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 1
          */
-        length = 10;
+        length?: number | undefined = 10;
         /**
          * The chance of each boolean being true, from 0 (never) to 1 (always).
          * @default 0.5
@@ -141,7 +141,7 @@ export namespace Logic {
          * @maximum 1
          * @step 0.1
          */
-        trueThreshold = 0.5;
+        trueThreshold?: number | undefined = 0.5;
     }
     /**
      * Numbers, two thresholds and a step count for `logic.twoThresholdRandomGradient`.
@@ -159,7 +159,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        thresholdTotalTrue: number = 1;
+        thresholdTotalTrue?: number | undefined = 1;
         /**
          * Numbers above this are always false; between the two thresholds the chance of true fades
          * from certain to none.
@@ -168,7 +168,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        thresholdTotalFalse: number = 2;
+        thresholdTotalFalse?: number | undefined = 2;
         /**
          * How many steps the fade between the thresholds has; more steps make it smoother.
          * @default 10
@@ -176,7 +176,7 @@ export namespace Logic {
          * @maximum Infinity
          * @step 1
          */
-        nrLevels: number = 10;
+        nrLevels?: number | undefined = 10;
     }
     /**
      * Numbers and a threshold for `logic.thresholdBooleanList`, which turns them into booleans.
@@ -194,12 +194,12 @@ export namespace Logic {
          * @maximum Infinity
          * @step 0.1
          */
-        threshold: number = 1;
+        threshold?: number | undefined = 1;
         /**
          * When true, every result is flipped: true becomes false and false becomes true.
          * @default false
          */
-        inverse: boolean = false;
+        inverse?: boolean | undefined = false;
     }
     /**
      * Numbers and ranges for `logic.thresholdGapsBooleanList`, which marks the numbers inside any
@@ -221,6 +221,6 @@ export namespace Logic {
          * When true, every result is flipped: true becomes false and false becomes true.
          * @default false
          */
-        inverse: boolean = false;
+        inverse?: boolean | undefined = false;
     }
 }

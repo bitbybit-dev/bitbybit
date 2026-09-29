@@ -7,6 +7,7 @@ import { OCCTVertex } from "./vertex";
 import { OCCTSolid } from "./solid";
 import * as Inputs from "../../api/inputs";
 import { OCCTCompound } from "./compound";
+import { OCCTFace } from "./face";
 
 describe("OCCT vertex unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -14,6 +15,7 @@ describe("OCCT vertex unit tests", () => {
     let solid: OCCTSolid;
     let occHelper: OccHelper;
     let compound: OCCTCompound;
+    let face: OCCTFace;
 
     beforeAll(async () => {
         occt = await createBitbybitOcct();
@@ -23,6 +25,7 @@ describe("OCCT vertex unit tests", () => {
         vertex = new OCCTVertex(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
         compound = new OCCTCompound(occt, occHelper);
+        face = new OCCTFace(occt, occHelper);
     });
 
     it("should recreate a vertex from point", () => {
@@ -149,20 +152,86 @@ describe("OCCT vertex unit tests", () => {
         );
     });
 
-    it("should only return projections of outer shape if second one is inside the first", () => {
+    it("should return every face a path crosses, faces inside another solid of a compound too", () => {
+        // Arrange
         const box = solid.createBox({ width: 2, height: 0.5, length: 2, center: [0, 0, 0] });
         const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
         const c = compound.makeCompound({ shapes: [box, sphere] });
-        const points = vertex.projectPoints({ points: [[0.1, -2.3, 0.6], [0.2, -3.4, 0.7]], shape: c, direction: [0, 20, 0], projectionType: Inputs.OCCT.pointProjectionTypeEnum.all });
-        expect(points.length).toBe(4);
-        expect(points).toEqual(
-            [
-                [0.1, -0.7937253933193773, 0.6],
-                [0.1, 0.7937253933193773, 0.6],
-                [0.2, -0.6855654600401055, 0.7],
-                [0.2, 0.6855654600401055, 0.7]
-            ]
-        );
+
+        // Act
+        const points = vertex.projectPoints({ points: [[0.1, -2.3, 0.6]], shape: c, direction: [0, 20, 0], projectionType: Inputs.OCCT.pointProjectionTypeEnum.all });
+
+        // Assert
+        expect(points).toEqual([
+            [0.1, -0.7937253933193773, 0.6],
+            [0.1, -0.25, 0.6],
+            [0.1, 0.25, 0.6],
+            [0.1, 0.7937253933193773, 0.6],
+        ].map(point => point.map(v => expect.closeTo(v, 12))));
+    });
+
+    describe("where a path lands", () => {
+        const all = Inputs.OCCT.pointProjectionTypeEnum.all;
+
+        it("should land on a lone face", () => {
+            // Arrange
+            const square = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const points = vertex.projectPoints({ points: [[0.5, 3, 0.5], [-1, 3, 1.5]], shape: square, direction: [0, -10, 0], projectionType: Inputs.OCCT.pointProjectionTypeEnum.closest });
+
+            // Assert
+            expect(points).toEqual([[0.5, 0, 0.5], [-1, 0, 1.5]].map(point => point.map(v => expect.closeTo(v, 12))));
+        });
+
+        it("should not count a start inside a solid as a place the path lands", () => {
+            // Arrange
+            const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
+
+            // Act
+            const points = vertex.projectPoints({ points: [[0, 0, 0]], shape: sphere, direction: [0, 5, 0], projectionType: all });
+
+            // Assert
+            expect(points).toEqual([[0, 1, 0].map(v => expect.closeTo(v, 12))]);
+        });
+
+        it.each([
+            Inputs.OCCT.pointProjectionTypeEnum.closest,
+            Inputs.OCCT.pointProjectionTypeEnum.furthest,
+            Inputs.OCCT.pointProjectionTypeEnum.closestAndFurthest,
+            all,
+        ])("should give nothing for a path that misses, keeping %s", (projectionType) => {
+            // Arrange
+            const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
+
+            // Act
+            const points = vertex.projectPoints({ points: [[5, -3, 0], [0, -3, 0]], shape: sphere, direction: [0, 1.5, 0], projectionType });
+
+            // Assert
+            expect(points).toEqual([]);
+        });
+
+        it("should give the one place a path lands twice when both the closest and the furthest are asked for", () => {
+            // Arrange
+            const square = face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const points = vertex.projectPoints({ points: [[0.5, 3, 0.5]], shape: square, direction: [0, -10, 0], projectionType: Inputs.OCCT.pointProjectionTypeEnum.closestAndFurthest });
+
+            // Assert
+            expect(points).toEqual([[0.5, 0, 0.5], [0.5, 0, 0.5]].map(point => point.map(v => expect.closeTo(v, 12))));
+        });
+
+        it("should keep each start's landings together and in the order of the starts", () => {
+            // Arrange
+            const sphere = solid.createSphere({ radius: 1, center: [0, 0, 0] });
+
+            // Act
+            const points = vertex.projectPoints({ points: [[0, -3, 0.6], [5, -3, 0], [0, -3, 0]], shape: sphere, direction: [0, 10, 0], projectionType: all });
+
+            // Assert
+            expect(points).toEqual([[0, -0.8, 0.6], [0, 0.8, 0.6], [0, -1, 0], [0, 1, 0]].map(point => point.map(v => expect.closeTo(v, 12))));
+        });
     });
 
     it("should return closest and furthest points of intersection", () => {

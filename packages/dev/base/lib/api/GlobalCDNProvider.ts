@@ -1,3 +1,3 @@
 export class GlobalCDNProvider {
-    static BITBYBIT_CDN_URL = "https://git-cdn.bitbybit.dev/v1.3.2";
+    static BITBYBIT_CDN_URL = "https://git-cdn.bitbybit.dev/v1.4.0-rc.0";
 }

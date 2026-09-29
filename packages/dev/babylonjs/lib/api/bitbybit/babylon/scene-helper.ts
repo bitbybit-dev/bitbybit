@@ -1,6 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 import { BabylonJSScene, InitBabylonJSResult } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Helper function to initialize a basic BabylonJS scene with lights, shadows, and optional ground plane.
@@ -23,7 +25,7 @@ import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
  * const { scene, engine, directionalLight } = initBabylonJS(options);
  */
 export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBabylonJSResult {
-    const config = inputs || new BabylonJSScene.InitBabylonJSDto();
+    const config = resolveDto(BabylonJSScene.InitBabylonJSDto, inputs) as Resolved.BabylonJSScene.InitBabylonJSDto;
 
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
@@ -105,7 +107,7 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
 
     let arcRotateCamera: BABYLON.ArcRotateCamera | null = null;
     if (config.enableArcRotateCamera) {
-        const camOpts = config.arcRotateCameraOptions ?? new BabylonCamera.ArcRotateCameraDto();
+        const camOpts = resolveDto(BabylonCamera.ArcRotateCameraDto, config.arcRotateCameraOptions) as Resolved.BabylonCamera.ArcRotateCameraDto;
         
         const referenceSize = 20;
         const sizeRatio = config.sceneSize / referenceSize;
@@ -116,7 +118,7 @@ export function initBabylonJS(inputs?: BabylonJSScene.InitBabylonJSDto): InitBab
         const effectiveUpperRadiusLimit = userProvidedCameraOptions && camOpts.upperRadiusLimit !== undefined ? camOpts.upperRadiusLimit : config.sceneSize * 10;
         const effectivePanningSensibility = userProvidedCameraOptions ? camOpts.panningSensibility : camOpts.panningSensibility / sizeRatio;
         const effectiveWheelPrecision = userProvidedCameraOptions ? camOpts.wheelPrecision : Math.max(0.1, camOpts.wheelPrecision / sizeRatio);
-        const effectiveMaxZ = userProvidedCameraOptions && camOpts.maxZ !== undefined ? camOpts.maxZ : config.sceneSize * 50;
+        const effectiveMaxZ = config.arcRotateCameraOptions?.maxZ !== undefined ? camOpts.maxZ : config.sceneSize * 50;
         
         const target = new BABYLON.Vector3(camOpts.target[0], camOpts.target[1], camOpts.target[2]);
         const alphaRad = BABYLON.Tools.ToRadians(camOpts.alpha);

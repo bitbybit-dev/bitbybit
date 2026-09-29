@@ -2,6 +2,8 @@ import { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbyb
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { PathBuilder } from "../svg/path-builder";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
 
 /**
  * A generic 2D path builder: describe an outline as subpaths of line, quadratic, cubic and arc
@@ -45,6 +47,7 @@ export class OCCTPath {
      * ```
      */
     shapeFromPath(inputs: Inputs.OCCT.ShapeFromPathDto): TopoDS_Shape | undefined {
-        return this.builder.shapeFromPath(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeFromPathDto, inputs) as Resolved.OCCT.ShapeFromPathDto;
+        return this.builder.shapeFromPath(resolved);
     }
 }

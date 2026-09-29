@@ -45,7 +45,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate a CIRCLE entity", () => {
             const circleSegment = new Inputs.IO.DxfCircleSegmentDto([50, 50], 25);
             const path = new Inputs.IO.DxfPathDto([circleSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Circles", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Circles", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -79,7 +79,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate an ARC entity", () => {
             const arcSegment = new Inputs.IO.DxfArcSegmentDto([100, 100], 50, 0, 90);
             const path = new Inputs.IO.DxfPathDto([arcSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Arcs", "2", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Arcs", "#ffff00", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -124,7 +124,7 @@ describe("DxfGenerator unit tests", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10], [0, 0]];
             const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, true);
             const path = new Inputs.IO.DxfPathDto([polylineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Polylines", "3", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -167,7 +167,7 @@ describe("DxfGenerator unit tests", () => {
             const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
             const splineSegment = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
             const path = new Inputs.IO.DxfPathDto([splineSegment]);
-            const part = new Inputs.IO.DxfPathsPartDto("Splines", "4", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Splines", "#00ffff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -222,7 +222,7 @@ describe("DxfGenerator unit tests", () => {
             const arc = new Inputs.IO.DxfArcSegmentDto([10, 5], 5, -90, 90);
             const line2 = new Inputs.IO.DxfLineSegmentDto([10, 10], [0, 10]);
             const path = new Inputs.IO.DxfPathDto([line, arc, line2]);
-            const part = new Inputs.IO.DxfPathsPartDto("MixedPath", "5", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("MixedPath", "#0000ff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -243,7 +243,7 @@ describe("DxfGenerator unit tests", () => {
             const spline = new Inputs.IO.DxfSplineSegmentDto([[45, 0], [50, 10], [55, 0]], 3, false);
             
             const path = new Inputs.IO.DxfPathDto([line, arc, circle, polyline, spline]);
-            const part = new Inputs.IO.DxfPathsPartDto("ComplexPath", "7", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("ComplexPath", "#ffffff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -269,7 +269,7 @@ describe("DxfGenerator unit tests", () => {
                 bottomLine, bottomRightArc, rightLine, topRightArc,
                 topLine, topLeftArc, leftLine, bottomLeftArc
             ]);
-            const part = new Inputs.IO.DxfPathsPartDto("RoundedRect", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("RoundedRect", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -291,8 +291,8 @@ describe("DxfGenerator unit tests", () => {
                 new Inputs.IO.DxfCircleSegmentDto([20, 20], 5)
             ]);
             
-            const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "1", [path1]);
-            const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "2", [path2]);
+            const part1 = new Inputs.IO.DxfPathsPartDto("Layer1", "#ff0000", [path1]);
+            const part2 = new Inputs.IO.DxfPathsPartDto("Layer2", "#ffff00", [path2]);
             const model = new Inputs.IO.DxfModelDto([part1, part2]);
 
             const result = generator.generateDxf(model);
@@ -314,7 +314,7 @@ describe("DxfGenerator unit tests", () => {
                 new Inputs.IO.DxfCircleSegmentDto([5, 5], 2)
             ]);
             
-            const part = new Inputs.IO.DxfPathsPartDto("MultiPath", "3", [path1, path2, path3]);
+            const part = new Inputs.IO.DxfPathsPartDto("MultiPath", "#00ff00", [path1, path2, path3]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -367,7 +367,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate AC1009 entities without AcDb subclass markers", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
             const result = generator.generateDxf(model);
@@ -380,7 +380,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate AC1015 entities with AcDb subclass markers", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("TestLayer", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
             const result = generator.generateDxf(model);
@@ -396,7 +396,7 @@ describe("DxfGenerator unit tests", () => {
                 new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 90)
             ];
             const path = new Inputs.IO.DxfPathDto(segments);
-            const part = new Inputs.IO.DxfPathsPartDto("Test", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("Test", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
@@ -453,7 +453,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate simpler entities in AC1009 format", () => {
             const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
             const path = new Inputs.IO.DxfPathDto([arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
             const result = generator.generateDxf(model);
@@ -466,7 +466,7 @@ describe("DxfGenerator unit tests", () => {
         it("should generate more complex entities in AC1015 format", () => {
             const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
             const path = new Inputs.IO.DxfPathDto([arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
             const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
             const result = generator.generateDxf(model);
@@ -482,7 +482,7 @@ describe("DxfGenerator unit tests", () => {
             const circle = new Inputs.IO.DxfCircleSegmentDto([20, 20], 5);
             const arc = new Inputs.IO.DxfArcSegmentDto([30, 30], 5, 0, 180);
             const path = new Inputs.IO.DxfPathDto([line, circle, arc]);
-            const part = new Inputs.IO.DxfPathsPartDto("0", "7", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("0", "#ffffff", [path]);
             const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
             const result = generator.generateDxf(model);
@@ -756,7 +756,7 @@ describe("DxfGenerator unit tests", () => {
             it("should include AcDbCircle marker for CIRCLE entities in AC1015", () => {
                 const circle = new Inputs.IO.DxfCircleSegmentDto([10, 10], 5);
                 const path = new Inputs.IO.DxfPathDto([circle]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -769,7 +769,7 @@ describe("DxfGenerator unit tests", () => {
                 const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
                 const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
                 const path = new Inputs.IO.DxfPathDto([polyline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -782,7 +782,7 @@ describe("DxfGenerator unit tests", () => {
                 const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10], [0, 10]];
                 const polyline = new Inputs.IO.DxfPolylineSegmentDto(points, true);
                 const path = new Inputs.IO.DxfPathDto([polyline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
                 const result = generator.generateDxf(model);
@@ -794,7 +794,7 @@ describe("DxfGenerator unit tests", () => {
                 const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
                 const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
                 const path = new Inputs.IO.DxfPathDto([spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -807,7 +807,7 @@ describe("DxfGenerator unit tests", () => {
                 const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 10], [15, 0]];
                 const spline = new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false);
                 const path = new Inputs.IO.DxfPathDto([spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
                 const result = generator.generateDxf(model);
@@ -818,7 +818,7 @@ describe("DxfGenerator unit tests", () => {
             it("should include both AcDbCircle and AcDbArc markers for ARC entities in AC1015", () => {
                 const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
                 const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -836,7 +836,7 @@ describe("DxfGenerator unit tests", () => {
                 const spline = new Inputs.IO.DxfSplineSegmentDto([[60, 0], [65, 10], [70, 0]], 3, false);
                 
                 const path = new Inputs.IO.DxfPathDto([line, circle, arc, polyline, spline]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -855,7 +855,7 @@ describe("DxfGenerator unit tests", () => {
             it("should use 0.0 for arc Z coordinate in AC1015", () => {
                 const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
                 const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1015");
 
                 const result = generator.generateDxf(model);
@@ -866,7 +866,7 @@ describe("DxfGenerator unit tests", () => {
             it("should use empty string for arc Z coordinate in AC1009", () => {
                 const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
                 const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
                 const result = generator.generateDxf(model);
@@ -878,7 +878,7 @@ describe("DxfGenerator unit tests", () => {
             it("should include empty linetype field for arc in AC1009 only", () => {
                 const arc = new Inputs.IO.DxfArcSegmentDto([10, 10], 5, 0, 90);
                 const path = new Inputs.IO.DxfPathDto([arc]);
-                const part = new Inputs.IO.DxfPathsPartDto("0", "1", [path]);
+                const part = new Inputs.IO.DxfPathsPartDto("0", "#ff0000", [path]);
                 const model = new Inputs.IO.DxfModelDto([part], "aci", "AC1009");
 
                 const result = generator.generateDxf(model);
@@ -894,12 +894,26 @@ describe("DxfGenerator unit tests", () => {
         it("should apply ACI color to entities", () => {
             const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
             const path = new Inputs.IO.DxfPathDto([line]);
-            const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "5", [path]);
+            const part = new Inputs.IO.DxfPathsPartDto("ColorLayer", "#0000ff", [path]);
             const model = new Inputs.IO.DxfModelDto([part]);
 
             const result = generator.generateDxf(model);
 
             expect(result).toContain("62\n5");
+        });
+
+        it("should write a color that is not hex, a number included, as ACI 7", () => {
+            // Arrange
+            const line = new Inputs.IO.DxfLineSegmentDto([0, 0], [10, 10]);
+            const part = new Inputs.IO.DxfPathsPartDto("NumberColor", "5", [new Inputs.IO.DxfPathDto([line])]);
+
+            // Act
+            const result = generator.generateDxf(new Inputs.IO.DxfModelDto([part]));
+
+            // Assert
+            const entities = result.split("SECTION\n2\nENTITIES")[1]?.split("ENDSEC")[0];
+            expect(entities).toContain("62\n7");
+            expect(entities).not.toContain("62\n5");
         });
 
         it("should convert hex color to ACI format by default", () => {
@@ -931,7 +945,7 @@ describe("DxfGenerator unit tests", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
             const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0.5, 0, 0]);
             const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+                new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [new Inputs.IO.DxfPathDto([polylineSegment])]),
             ]);
 
             // Act
@@ -946,7 +960,7 @@ describe("DxfGenerator unit tests", () => {
             const points: Inputs.Base.Point2[] = [[0, 0], [10, 0]];
             const polylineSegment = new Inputs.IO.DxfPolylineSegmentDto(points, false, [0, 0]);
             const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Polylines", "3", [new Inputs.IO.DxfPathDto([polylineSegment])]),
+                new Inputs.IO.DxfPathsPartDto("Polylines", "#00ff00", [new Inputs.IO.DxfPathDto([polylineSegment])]),
             ]);
 
             // Act
@@ -960,7 +974,7 @@ describe("DxfGenerator unit tests", () => {
         it("should write no entity for it", () => {
             const unknown: Inputs.IO.DxfLineSegmentDto = new Inputs.IO.DxfLineSegmentDto();
             const model = new Inputs.IO.DxfModelDto([
-                new Inputs.IO.DxfPathsPartDto("Unknown", "3", [new Inputs.IO.DxfPathDto([unknown])]),
+                new Inputs.IO.DxfPathsPartDto("Unknown", "#00ff00", [new Inputs.IO.DxfPathDto([unknown])]),
             ]);
 
             // Act
@@ -968,6 +982,63 @@ describe("DxfGenerator unit tests", () => {
 
             expect(result).toContain("0\nSECTION");
             expect(result).not.toContain("8\nUnknown");
+        });
+    });
+
+    describe("a model whose parts and segments leave their defaults out", () => {
+        const points: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 10]];
+        const controlPoints: Inputs.Base.Point2[] = [[0, 0], [5, 10], [10, 0], [15, 5]];
+        const spelledModel = (): Inputs.IO.DxfModelDto => new Inputs.IO.DxfModelDto([
+            new Inputs.IO.DxfPathsPartDto("Default", "#000000", [
+                new Inputs.IO.DxfPathDto([
+                    new Inputs.IO.DxfPolylineSegmentDto(points, false),
+                    new Inputs.IO.DxfSplineSegmentDto(controlPoints, 3, false),
+                ]),
+            ]),
+        ], "aci", "AC1009");
+        const entitiesOf = (dxf: string): string => dxf.slice(dxf.indexOf("ENTITIES"));
+
+        it("should write the entities the spelled out model writes when every default is left out", () => {
+            // Act
+            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }, { controlPoints }] }] }] });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(entitiesOf(leftOut)).toBe(entitiesOf(spelled));
+        });
+
+        it("should write the entities the spelled out model writes when every default is handed as undefined", () => {
+            // Act
+            const handedUndefined = new DxfGenerator().generateDxf({
+                dxfPathsParts: [{
+                    layer: undefined,
+                    color: undefined,
+                    paths: [{ segments: [{ points, closed: undefined }, { controlPoints, degree: undefined, closed: undefined }] }],
+                }],
+                colorFormat: undefined,
+                acadVersion: undefined,
+            });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(entitiesOf(handedUndefined)).toBe(entitiesOf(spelled));
+        });
+
+        it("should draw a part that names no layer on the default layer", () => {
+            // Act
+            const result = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
+
+            // Assert
+            expect(result).toContain("0\nLWPOLYLINE\n8\nDefault");
+        });
+
+        it("should declare in the layer table the default layer a part that names no layer is drawn on", () => {
+            // Act
+            const leftOut = new DxfGenerator().generateDxf({ dxfPathsParts: [{ paths: [{ segments: [{ points }] }] }] });
+            const spelled = new DxfGenerator().generateDxf(spelledModel());
+
+            // Assert
+            expect(leftOut.slice(0, leftOut.indexOf("ENTITIES"))).toBe(spelled.slice(0, spelled.indexOf("ENTITIES")));
         });
     });
 });

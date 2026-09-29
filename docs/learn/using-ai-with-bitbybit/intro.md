@@ -8,7 +8,7 @@ tags: [ai]
 
 # Bitbybit for AI coding agents
 
-Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 1725 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
+Agents write more and more of the code that uses Bitbybit, and we treat them as a first-class audience: the same API that a person learns from these pages is published in the forms an agent can read at the moment it needs them. An agent that knows Bitbybit from memory guesses, and Bitbybit has 1901 functions across three CAD kernels, so guessing produces plausible names that do not exist. An agent that looks the API up gets the exact signature, defaults and examples for the version your project has installed, and code that compiles the first time.
 
 This section explains the ways to give an agent that knowledge, in the order we recommend them.
 
@@ -58,7 +58,7 @@ The first seven need the [CAD Cloud MCP](./mcp/cad-cloud-mcp) and a key; the las
 ## What an agent can do with this
 
 - Write a parametric model from a description, with the right function names, argument objects and defaults for your version.
-- Scaffold a project on the packages with `npm init @bitbybit-dev/app` and iterate against a smoke test.
+- Scaffold a project on the packages with `npm init @bitbybit-dev/app` and iterate against a smoke test. Every scaffold, including the [complete app templates](../npm-packages/create-app), ships with an `AGENTS.md`, the docs server configured for Claude Code, Cursor and VS Code, and `npm run smoke`, the headless check an agent iterates against.
 - Explain any member of the API, or find the one you mean when you only remember half of its name.
 - With the cloud server: run an operation and hand you a STEP or glTF file, unfold a sheet-metal part, or answer "what is the volume of this BREP" by uploading the file and running a pipeline, with no backend of your own.
 

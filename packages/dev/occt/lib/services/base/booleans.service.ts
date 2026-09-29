@@ -1,84 +1,132 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { ShapeGettersService } from "./shape-getters";
+import * as Resolved from "../../api/resolved-inputs";
+import * as Models from "../../api/models";
+import { historyFromKernel } from "./history";
+import { InputError } from "@bitbybit-dev/base";
+import { occtFailure } from "../../kernel-failures";
+import { checkedShape, checkedShapes } from "./input-checks";
 
 export class BooleansService {
 
     constructor(
         private readonly occ: BitbybitOcctModule,
-        private readonly shapeGettersService: ShapeGettersService
     ) { }
 
-    intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
+    intersection(inputs: Resolved.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape[] {
         if (inputs.shapes.length < 2) {
             throw (new Error("Intersection requires 2 or more shapes to be given"));
         }
 
+        checkedShapes(inputs.shapes);
         const intersectShape = inputs.shapes[0]!;
-        let intersectionResults: TopoDS_Shape[] = [];
+        const intersectionResults: TopoDS_Shape[] = [];
 
         for (let i = 1; i < inputs.shapes.length; i++) {
             let intersectionResult: TopoDS_Shape;
-            const intersectedCommon = new this.occ.BRepAlgoAPI_Common(
-                intersectShape,
-                inputs.shapes[i]!
-            );
-            if (intersectedCommon.HasGenerated()) {
-                intersectedCommon.Build();
-                intersectionResult = intersectedCommon.Shape();
-                intersectionResults.push(intersectionResult);
+            try {
+                intersectionResult = this.resultOf(this.occ.BooleanCommon([intersectShape], [inputs.shapes[i]!], !inputs.keepEdges, 0));
+            } catch (failure) {
+                intersectionResults.forEach(r => r.delete());
+                throw failure;
             }
-            intersectedCommon.delete();
+            if (this.hasContent(intersectionResult)) {
+                intersectionResults.push(intersectionResult);
+            } else {
+                intersectionResult.delete();
+            }
         }
-
-        if (!inputs.keepEdges && intersectionResults.length > 0) {
-            intersectionResults = intersectionResults.map(i => {
-                return this.occ.ShapeUpgrade_UnifySameDomain_Perform(i, true, true, false);
-            });
-        }
-
         return intersectionResults;
     }
 
-    difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
-        let difference = inputs.shape;
-        const objectsToSubtract = inputs.shapes;
-        for (let i = 0; i < objectsToSubtract.length; i++) {
-            if (!objectsToSubtract[i] || objectsToSubtract[i]!.IsNull()) { console.error("Tool in Difference is null!"); }
-            const differenceCut = new this.occ.BRepAlgoAPI_Cut(difference, objectsToSubtract[i]!);
-            differenceCut.Build();
-            difference = differenceCut.Shape();
-            differenceCut.delete();
+    difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
+        checkedShape(inputs.shape);
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
         }
-
-        if (!inputs.keepEdges) {
-            const fusedShape = this.occ.ShapeUpgrade_UnifySameDomain_Perform(difference, true, true, false);
-            difference.delete();
-            difference = fusedShape;
-        }
-
-        if (this.shapeGettersService.getNumSolidsInCompound(difference) === 1) {
-            const solid = this.shapeGettersService.getSolidFromCompound(difference, 0);
-            difference = solid;
-        }
-
-        return difference;
+        checkedShapes(inputs.shapes);
+        return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
     }
 
-    union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
-        let combined = inputs.shapes[0]!;
-        for (let i = 0; i < inputs.shapes.length; i++) {
-            const combinedFuse = new this.occ.BRepAlgoAPI_Fuse(combined, inputs.shapes[i]!);
-            combinedFuse.Build();
-            combined = combinedFuse.Shape();
-            combinedFuse.delete();
+    /**
+     * The solid of a compound that holds nothing but that one solid, or the shape as it is: a
+     * compound that also holds a face or a wire keeps them.
+     */
+    private loneSolidOf(shape: TopoDS_Shape): TopoDS_Shape {
+        let current: TopoDS_Shape = shape.clone();
+        while (current.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {
+            const children = new this.occ.TopoDS_Iterator(current);
+            const only = children.More() ? children.Value() : undefined;
+            if (only !== undefined) {
+                children.Next();
+            }
+            const isAlone = only !== undefined && !children.More();
+            children.delete();
+            current.delete();
+            if (!isAlone) {
+                only?.delete();
+                return shape;
+            }
+            current = only;
         }
-
-        if (!inputs.keepEdges) {
-            combined = this.occ.ShapeUpgrade_UnifySameDomain_Perform(combined, true, true, false);
+        if (current.ShapeType() !== this.occ.TopAbs_ShapeEnum.SOLID) {
+            current.delete();
+            return shape;
         }
+        shape.delete();
+        return current;
+    }
 
-        return combined;
+    union(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
+        }
+        checkedShapes(inputs.shapes);
+        return this.resultOf(this.occ.BooleanFuse(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy)));
+    }
+
+    private strategyOf(strategy: Inputs.OCCT.booleanStrategyEnum): BitbybitBool_Strategy {
+        switch (strategy) {
+            case Inputs.OCCT.booleanStrategyEnum.inGroups:
+                return this.occ.BitbybitBool_Strategy.InGroups;
+            case Inputs.OCCT.booleanStrategyEnum.allAtOnce:
+                return this.occ.BitbybitBool_Strategy.AllAtOnce;
+            default:
+                return this.occ.BitbybitBool_Strategy.OneAfterAnother;
+        }
+    }
+
+    unionWithHistory(inputs: Resolved.OCCT.UnionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to join.", "shapes");
+        }
+        checkedShapes(inputs.shapes);
+        const result = this.occ.BooleanFuseWithHistory(inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+    }
+
+    differenceWithHistory(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        checkedShape(inputs.shape);
+        if (inputs.shapes.length === 0) {
+            throw new InputError("`shapes` is empty, so there is nothing to subtract from `shape`.", "shapes");
+        }
+        checkedShapes(inputs.shapes);
+        const result = this.occ.BooleanCutWithHistory([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy));
+        return { shape: this.loneSolidOf(this.resultOf(result)), histories: result.histories.map(historyFromKernel) };
+    }
+
+    private resultOf(result: { shape: TopoDS_Shape | null, errorAlerts: string }): TopoDS_Shape {
+        if (result.shape === null) {
+            throw result.errorAlerts.split(" ").includes("BOPAlgo_AlertBOPNotAllowed") ? occtFailure("occt.boolean.mixedDimensions") : occtFailure("occt.boolean.failed");
+        }
+        return result.shape;
+    }
+
+    private hasContent(shape: TopoDS_Shape): boolean {
+        const children = new this.occ.TopoDS_Iterator(shape);
+        const found = children.More();
+        children.delete();
+        return found;
     }
 
 }

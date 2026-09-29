@@ -1,6 +1,9 @@
 import { BitbybitOcctModule, TopoDS_Shape,TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
+import * as Models from "../api/models";
 
 /**
  * Combining OpenCascade shapes with each other: union fuses them into one, difference cuts one away
@@ -21,9 +24,9 @@ export class OCCTBooleans {
     /**
      * Fuses several shapes into one, the way two overlapping blobs of clay become one lump.
      *
-     * The shapes are fused one after another in list order. With `keepEdges` false, the default,
-     * faces that end up on one surface are merged and the seams removed; true keeps every edge of
-     * the inputs.
+     * A compound counts as its pieces, so overlapping pieces of one compound merge too. `strategy`
+     * sets how many shapes go into each step, and `keepEdges` false, the default, merges faces left
+     * on one surface.
      * @param inputs - The shapes to fuse and whether to keep the seam edges
      * @returns The fused shape
      * @group booleans
@@ -35,16 +38,35 @@ export class OCCTBooleans {
      * ```
      */
     union(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.booleansService.union(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UnionDto, inputs) as Resolved.OCCT.UnionDto<TopoDS_Shape>;
+        return this.och.booleansService.union(resolved);
+    }
+
+    /**
+     * Fuses shapes as `union` does, and reports for each shape given, in order, what became of its
+     * faces, edges and vertices in the result, as indexes the selectors and fillets take.
+     * @param inputs - The shapes to fuse, the strategy and whether to keep the seam edges
+     * @returns The fused shape and one history per shape given
+     * @group booleans
+     * @shortname union with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.booleans.unionWithHistory({ shapes: [box, cylinder], keepEdges: false });
+     * ```
+     */
+    unionWithHistory(inputs: Inputs.OCCT.UnionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.UnionDto, inputs) as Resolved.OCCT.UnionDto<TopoDS_Shape>;
+        return this.och.booleansService.unionWithHistory(resolved);
     }
 
     /**
      * Cuts shapes away from a main shape, the way a drill removes material: what remains is the
      * main shape minus every shape in the list.
      *
-     * The shapes are subtracted one after another. With `keepEdges` false, the default, faces left
-     * on one surface are merged; when exactly one solid remains it is returned on its own rather
-     * than inside a compound.
+     * `strategy` sets how many shapes are cut away in each step. With `keepEdges` false, the
+     * default, faces left on one surface are merged, and a lone remaining solid is returned
+     * without a compound.
      * @param inputs - The main shape, the shapes to subtract and whether to keep the seam edges
      * @returns What is left of the main shape
      * @group booleans
@@ -56,7 +78,28 @@ export class OCCTBooleans {
      * ```
      */
     difference(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
-        return this.och.booleansService.difference(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DifferenceDto, inputs) as Resolved.OCCT.DifferenceDto<TopoDS_Shape>;
+        return this.och.booleansService.difference(resolved);
+    }
+
+    /**
+     * Cuts shapes away as `difference` does, and reports what became of the faces, edges and
+     * vertices of the main shape and of each cutting shape, in that order: a drill's side becomes
+     * the wall of its hole.
+     * @param inputs - The main shape, the shapes to subtract, the strategy and whether to keep the seam edges
+     * @returns What is left of the main shape and one history per shape given, the main shape first
+     * @group booleans
+     * @shortname difference with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.booleans.differenceWithHistory({ shape: plate, shapes: [drill], keepEdges: false });
+     * const holeWalls = histories[1].faces.flat();
+     * ```
+     */
+    differenceWithHistory(inputs: Inputs.OCCT.DifferenceDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.DifferenceDto, inputs) as Resolved.OCCT.DifferenceDto<TopoDS_Shape>;
+        return this.och.booleansService.differenceWithHistory(resolved);
     }
 
     /**
@@ -76,7 +119,8 @@ export class OCCTBooleans {
      * ```
      */
     intersection(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape {
-        const int = this.och.booleansService.intersection(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IntersectionDto, inputs) as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
+        const int = this.och.booleansService.intersection(resolved);
         const res = this.och.converterService.makeCompound({ shapes: int });
         return res;
     }
@@ -99,7 +143,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionWires(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
-        return this.och.meshingService.meshMeshIntersectionWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshIntersectionTwoShapesDto, inputs) as Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionWires(resolved);
     }
 
     /**
@@ -119,7 +164,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionPoints(inputs: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.meshingService.meshMeshIntersectionPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshIntersectionTwoShapesDto, inputs) as Resolved.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionPoints(resolved);
     }
 
     /**
@@ -139,7 +185,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionOfShapesWires(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[] {
-        return this.och.meshingService.meshMeshIntersectionOfShapesWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, inputs) as Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionOfShapesWires(resolved);
     }
 
     /**
@@ -159,7 +206,8 @@ export class OCCTBooleans {
      * ```
      */
     meshMeshIntersectionOfShapesPoints(inputs: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.meshingService.meshMeshIntersectionOfShapesPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, inputs) as Resolved.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>;
+        return this.och.meshingService.meshMeshIntersectionOfShapesPoints(resolved);
     }
 
 

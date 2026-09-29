@@ -24,7 +24,7 @@ It's important to understand the distinction between scripts that are synced wit
 *   **Cloud Scripts (Saved, Part of a Project):**
     To save your scripts and organize them into projects, you need to **sign up** for the Bitbybit platform. Scripts created within a project are automatically saved and synced with our cloud database.
 
-![The "Apps" section of the Bitbybit menu, showing direct links to the Rete, Blockly, and TypeScript editors.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/apps.jpeg "Apps available for direct editor access")
+![The "Apps" section of the Bitbybit menu, showing direct links to the Rete, Blockly, and TypeScript editors.](https://bitbybit.dev/files/site/start/general/projects/scripts/apps.jpeg "Apps available for direct editor access")
 *Direct links to editors, usable by both non-signed-up and signed-up users for local script creation.*
 
 ---
@@ -53,13 +53,13 @@ To create scripts that are saved and managed within your Bitbybit account, follo
 2.  **Access Project Management (from an Editor):**
     When you are working within any of our editors (as part of an existing project), you can create additional Cloud scripts. The easiest way is to open the project management panel by clicking the button in the top-left corner of the editor (this button usually shows the current script's name and a settings icon).
 
-    ![The button in the editor's top-left corner used to open the project management panel.](https://ik.imagekit.io/bitbybit/app/assets/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
+    ![The button in the editor's top-left corner used to open the project management panel.](https://bitbybit.dev/files/site/start/general/assets/cloud/script-icon.jpeg "Button to open project management panel")
     *Button to open project management panel*
 
 3.  **Click "Create Script":**
     In the project management panel that opens, find and click the **"Create Script"** button. This is usually located near the top of the panel.
 
-    ![The project management panel highlighting the "Create Script" button.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/create-new-script.jpeg "Button to create a new script")
+    ![The project management panel highlighting the "Create Script" button.](https://bitbybit.dev/files/site/start/general/projects/scripts/create-new-script.jpeg "Button to create a new script")
     *Button to create a new script*
 
 4.  **Fill in Script Details:**
@@ -69,7 +69,7 @@ To create scripts that are saved and managed within your Bitbybit account, follo
 
     The form will look similar to this:
 
-    ![The "New Script" form with fields for script title and script type selection.](https://ik.imagekit.io/bitbybit/app/assets/start/general/projects/scripts/new-script-form.jpeg "New script form")
+    ![The "New Script" form with fields for script title and script type selection.](https://bitbybit.dev/files/site/start/general/projects/scripts/new-script-form.jpeg "New script form")
     *The form that needs to be filled to create a new script*
 
 5.  **Start Coding!**

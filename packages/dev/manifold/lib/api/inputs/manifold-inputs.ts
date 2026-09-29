@@ -146,7 +146,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * A material for the faces from the rendering engine; when given it replaces the face color.
          * @default undefined
@@ -157,17 +157,17 @@ export namespace Manifold {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * How thick a cross-section's lines are drawn.
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
@@ -175,23 +175,23 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * When true, normals are computed for the mesh so it shades smoothly.
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -199,7 +199,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Solids or cross-sections and how to draw them, for the renderer packages: the same options as
@@ -238,7 +238,7 @@ export namespace Manifold {
          * The color of the faces as a hex string such as `#ff0000`.
          * @default #ff0000
          */
-        faceColour: Base.Color = "#ff0000";
+        faceColour?: Base.Color | undefined = "#ff0000";
         /**
          * How opaque the faces are, from 0 for invisible to 1 for solid.
          * @default 1
@@ -246,17 +246,17 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        faceOpacity = 1;
+        faceOpacity?: number | undefined = 1;
         /**
          * The color of a cross-section's lines as a hex string.
          * @default #ff00ff
          */
-        crossSectionColour: Base.Color = "#ff00ff";
+        crossSectionColour?: Base.Color | undefined = "#ff00ff";
         /**
          * How thick a cross-section's lines are drawn.
          * @default 2
          */
-        crossSectionWidth = 2;
+        crossSectionWidth?: number | undefined = 2;
         /**
          * How opaque a cross-section's lines are, from 0 to 1.
          * @default 1
@@ -264,23 +264,23 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        crossSectionOpacity = 1;
+        crossSectionOpacity?: number | undefined = 1;
         /**
          * When true, normals are computed for the meshes so they shade smoothly.
          * @default false
          */
-        computeNormals = false;
+        computeNormals?: boolean | undefined = false;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
          * @default true
          */
-        drawTwoSided = true;
+        drawTwoSided?: boolean | undefined = true;
         /**
          * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
          * @default #0000ff
          */
-        backFaceColour: Base.Color = "#0000ff";
+        backFaceColour?: Base.Color | undefined = "#0000ff";
         /**
          * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
          * @default 1
@@ -288,7 +288,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        backFaceOpacity = 1;
+        backFaceOpacity?: number | undefined = 1;
     }
     /**
      * Mesh data for `manifold.shapes.manifoldFromMesh`, which builds a solid from it.
@@ -393,7 +393,7 @@ export namespace Manifold {
          * along the positive axes.
          * @default true
          */
-        center = true;
+        center?: boolean | undefined = true;
         /**
          * The side length of the cube, in model units.
          * @default 1
@@ -401,7 +401,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * Polygons as 2D points and a fill rule for `crossSection.shapes.create`.
@@ -421,7 +421,7 @@ export namespace Manifold {
          * negative winding.
          * @default EvenOdd
          */
-        fillRule: fillRuleEnum = fillRuleEnum.evenOdd;
+        fillRule?: fillRuleEnum | undefined = fillRuleEnum.evenOdd;
     }
     /**
      * A side length and a placement for `crossSection.shapes.square`.
@@ -435,7 +435,7 @@ export namespace Manifold {
          * When true, the square is centered on the origin; when false its corner sits there.
          * @default false
          */
-        center = false;
+        center?: boolean | undefined = false;
         /**
          * The side length, one number for a square or two for a rectangle along X and Y, in model
          * units.
@@ -444,7 +444,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        size = 1;
+        size?: number | undefined = 1;
     }
     /**
      * A radius and a segment count for `manifold.shapes.sphere`.
@@ -461,7 +461,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How many segments go around the sphere; rounded up to a multiple of four.
          * @default 32
@@ -469,7 +469,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        circularSegments: number = 32;
+        circularSegments?: number | undefined = 32;
     }
     /**
      * The size and placement of a cylinder or cone for `manifold.shapes.cylinder`, which stands it
@@ -490,7 +490,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * The radius of the bottom circle, in model units; must be above 0.
          * @default 1
@@ -498,7 +498,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusLow = 1;
+        radiusLow?: number | undefined = 1;
         /**
          * The radius of the top circle, in model units: equal to `radiusLow` for a cylinder, smaller
          * for a truncated cone, 0 for a pointed cone.
@@ -507,7 +507,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        radiusHigh = 1;
+        radiusHigh?: number | undefined = 1;
         /**
          * How many flat sides go around the cylinder; more is rounder.
          * @default 32
@@ -515,12 +515,12 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        circularSegments = 32;
+        circularSegments?: number | undefined = 32;
         /**
          * When true, the cylinder is centered on the origin; when false it stands on the XY plane.
          * @default true
          */
-        center = true;
+        center?: boolean | undefined = true;
     }
     /**
      * A radius and a segment count for `crossSection.shapes.circle`.
@@ -537,7 +537,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        radius = 1;
+        radius?: number | undefined = 1;
         /**
          * How many straight sides the circle is drawn with; more is rounder.
          * @default 32
@@ -545,7 +545,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        circularSegments = 32;
+        circularSegments?: number | undefined = 32;
     }
     /**
      * Two sides and a placement for `crossSection.shapes.rectangle`.
@@ -563,7 +563,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 1;
+        length?: number | undefined = 1;
         /**
          * The side along Y, in model units.
          * @default 1
@@ -571,12 +571,12 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * When true, the rectangle is centered on the origin; when false its corner sits there.
          * @default false
          */
-        center = false;
+        center?: boolean | undefined = false;
     }
     /**
      * One solid for the methods that take nothing else, such as `manifold.evaluate.volume` or
@@ -612,7 +612,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        normalIdx = 0;
+        normalIdx?: number | undefined = 0;
         /**
          * Edges bent more than this, in degrees, get separate normals on each side and stay crisp; at 0
          * every triangle keeps its own normal.
@@ -621,7 +621,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        minSharpAngle = 0;
+        minSharpAngle?: number | undefined = 0;
     }
     /**
      * A solid and two channels for `manifold.operations.calculateCurvature`.
@@ -642,7 +642,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        gaussianIdx: number = 0;
+        gaussianIdx?: number | undefined = 0;
         /**
          * The property channel that receives the mean curvature, the sum of the two principal
          * curvatures; below 0 skips it.
@@ -651,7 +651,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        meanIdx: number = 1;
+        meanIdx?: number | undefined = 1;
     }
     /**
      * A count for `manifold.operations.reserveIds`, which reserves that many mesh ids.
@@ -689,7 +689,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 10
          */
-        searchLength = 100;
+        searchLength?: number | undefined = 100;
     }
     /**
      * A solid and a ray segment for `manifold.evaluate.rayCast`.
@@ -708,12 +708,12 @@ export namespace Manifold {
          * Where the ray segment starts.
          * @default [0,0,0]
          */
-        origin: Base.Point3 = [0, 0, 0];
+        origin?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Where the ray segment ends; nothing beyond it is hit.
          * @default [0,0,10]
          */
-        endpoint: Base.Point3 = [0, 0, 10];
+        endpoint?: Base.Point3 | undefined = [0, 0, 10];
     }
     /**
      * One place a ray segment crosses the surface of a solid, as `manifold.evaluate.rayCast` reports
@@ -747,7 +747,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1e-7
          */
-        tolerance = 1e-6;
+        tolerance?: number | undefined = 1e-6;
     }
     /**
      * A solid and an edge length for `manifold.operations.refineToLength`.
@@ -768,7 +768,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        length = 0.1;
+        length?: number | undefined = 0.1;
     }
     /**
      * A solid and a count for `manifold.operations.refine`.
@@ -789,7 +789,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        number = 1;
+        number?: number | undefined = 1;
     }
     /**
      * A solid and a normal channel for `manifold.operations.smoothByNormals`.
@@ -811,7 +811,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        normalIdx = 0;
+        normalIdx?: number | undefined = 0;
     }
     /**
      * A solid and a tolerance for `manifold.operations.simplify`.
@@ -852,11 +852,11 @@ export namespace Manifold {
         /**
          * How many properties each vertex has afterwards.
          * @default 3
-         * @minimum 3
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          */
-        numProp = 3;
+        numProp?: number | undefined = 3;
         /**
          * A function that receives the new property array, the vertex position and the old properties,
          * and fills the new array in place.
@@ -881,11 +881,11 @@ export namespace Manifold {
          * Edges bent more than this, in degrees, stay sharp; the rest are smoothed. At 0 nothing is
          * smoothed.
          * @default 60
-         * @minimum -Infinity
-         * @maximum Infinity
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
-        minSharpAngle = 60;
+        minSharpAngle?: number | undefined = 60;
         /**
          * How much the sharp edges are rounded, from 0 for a hard edge to 1 for fully smooth.
          * @default 0
@@ -893,7 +893,7 @@ export namespace Manifold {
          * @maximum 1
          * @step 0.1
          */
-        minSmoothness = 0;
+        minSmoothness?: number | undefined = 0;
     }
     /**
      * Points and solids for `manifold.operations.hullPoints`, which wraps them all in one convex hull.
@@ -925,7 +925,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 0.5;
+        height?: number | undefined = 0.5;
     }
     /**
      * Mesh data for the methods that read it whole, such as `mesh.evaluate.numTri` and
@@ -960,7 +960,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        vertexIndex: number = 0;
+        vertexIndex?: number | undefined = 0;
     }
     /**
      * Mesh data and a run index for `mesh.evaluate.transform`.
@@ -981,7 +981,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        triangleRunIndex: number = 0;
+        triangleRunIndex?: number | undefined = 0;
     }
     /**
      * Mesh data and a half-edge index for `mesh.evaluate.tangent`.
@@ -1002,7 +1002,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        halfEdgeIndex: number = 0;
+        halfEdgeIndex?: number | undefined = 0;
     }
     /**
      * Mesh data and a triangle index for `mesh.evaluate.verts`.
@@ -1023,7 +1023,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        triangleIndex: number = 0;
+        triangleIndex?: number | undefined = 0;
     }
     /**
      * One cross-section for the methods that take nothing else, such as `crossSection.evaluate.area` or
@@ -1069,7 +1069,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        height = 1;
+        height?: number | undefined = 1;
         /**
          * How many extra copies of the outline are inserted along the way; more keeps a twist or taper
          * smooth.
@@ -1078,7 +1078,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        nDivisions = 1;
+        nDivisions?: number | undefined = 1;
         /**
          * How far the top is turned against the bottom, in degrees.
          * @default 0
@@ -1086,7 +1086,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        twistDegrees = 0;
+        twistDegrees?: number | undefined = 0;
         /**
          * How much the top is scaled along X; 1 keeps it, 0 with `scaleTopY` at 0 makes a cone.
          * @default 1
@@ -1094,7 +1094,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleTopX = 1;
+        scaleTopX?: number | undefined = 1;
         /**
          * How much the top is scaled along Y; 1 keeps it, 0 with `scaleTopX` at 0 makes a cone.
          * @default 1
@@ -1102,12 +1102,12 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleTopY = 1;
+        scaleTopY?: number | undefined = 1;
         /**
          * When true, the solid is centered on the XY plane; when false it stands on it.
          * @default true
          */
-        center = true;
+        center?: boolean | undefined = true;
     }
 
     /**
@@ -1129,16 +1129,17 @@ export namespace Manifold {
          * How far to spin, in degrees; 360 gives a full turn.
          * @default 360
          * @minimum 0
+         * @exclusiveMinimum true
          * @maximum Infinity
          * @step 1
          */
-        revolveDegrees: number = 360;
+        revolveDegrees?: number | undefined = 360;
         /**
          * When true, the result is turned back to keep the profile's orientation; when false it stands
          * along Z as the kernel makes it.
          * @default true
          */
-        matchProfile = true;
+        matchProfile?: boolean | undefined = true;
         /**
          * How many segments go around the turn; more is rounder.
          * @default 32
@@ -1146,7 +1147,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        circularSegments = 32;
+        circularSegments?: number | undefined = 32;
     }
     /**
      * A cross-section and the offset settings for `crossSection.operations.offset`.
@@ -1171,12 +1172,12 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        delta: number = 1;
+        delta?: number | undefined = 1;
         /**
          * How corners are treated: `round`, `square`, `miter` or `bevel`.
          * @default round
          */
-        joinType: manifoldJoinTypeEnum = manifoldJoinTypeEnum.round;
+        joinType?: manifoldJoinTypeEnum | undefined = manifoldJoinTypeEnum.round;
         /**
          * For `miter` joins, how far a corner may reach as a multiple of `delta` before it is squared
          * off; 2 is the smallest allowed.
@@ -1185,7 +1186,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        miterLimit = 2;
+        miterLimit?: number | undefined = 2;
         /**
          * For `round` joins, how many segments a full circle of rounding gets.
          * @default 32
@@ -1193,7 +1194,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        circularSegments = 32;
+        circularSegments?: number | undefined = 32;
     }
 
     /**
@@ -1215,7 +1216,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1e-7
          */
-        epsilon = 1e-6;
+        epsilon?: number | undefined = 1e-6;
     }
 
     /**
@@ -1247,7 +1248,7 @@ export namespace Manifold {
          * The normal of the mirror line through the origin; `[1, 0]` mirrors left to right.
          * @default [1,0]
          */
-        normal: Base.Vector2 = [1, 0];
+        normal?: Base.Vector2 | undefined = [1, 0];
     }
     /**
      * A cross-section and two factors for `crossSection.transforms.scale2D`.
@@ -1265,7 +1266,7 @@ export namespace Manifold {
          * The factors along X and Y, about the origin; 1 keeps an axis as it is.
          * @default [2,2]
          */
-        vector: Base.Vector2 = [2, 2];
+        vector?: Base.Vector2 | undefined = [2, 2];
     }
     /**
      * A cross-section and a vector for `crossSection.transforms.translate`.
@@ -1304,7 +1305,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        degrees: number = 45;
+        degrees?: number | undefined = 45;
     }
     /**
      * A cross-section and a factor for `crossSection.transforms.scale`.
@@ -1322,7 +1323,7 @@ export namespace Manifold {
          * The uniform scale about the origin; 2 doubles every size.
          * @default 2
          */
-        factor = 2;
+        factor?: number | undefined = 2;
     }
     /**
      * A cross-section and two distances for `crossSection.transforms.translateXY`.
@@ -1344,7 +1345,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * How far to move along Y, in model units.
          * @default 0
@@ -1352,7 +1353,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        y = 0;
+        y?: number | undefined = 0;
     }
 
     /**
@@ -1407,7 +1408,7 @@ export namespace Manifold {
          * The normal of the mirror plane through the origin; a zero vector gives an empty solid.
          * @default [1,0,0]
          */
-        normal: Base.Vector3 = [1, 0, 0];
+        normal?: Base.Vector3 | undefined = [1, 0, 0];
     }
     /**
      * A solid and three factors for `manifold.transforms.scale3D` and `manifold.transforms.scale`.
@@ -1425,7 +1426,7 @@ export namespace Manifold {
          * The factors along X, Y and Z, about the origin; 1 keeps an axis as it is, 2 doubles it.
          * @default [2,2,2]
          */
-        vector: Base.Vector3 = [2, 2, 2];
+        vector?: Base.Vector3 | undefined = [2, 2, 2];
     }
     /**
      * A solid and a vector for `manifold.transforms.translate`.
@@ -1504,7 +1505,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * The rotation about the Y axis in degrees, applied second.
          * @default 0
@@ -1512,7 +1513,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        y = 0;
+        y?: number | undefined = 0;
         /**
          * The rotation about the Z axis in degrees, applied last.
          * @default 0
@@ -1520,7 +1521,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        z = 0;
+        z?: number | undefined = 0;
     }
     /**
      * A solid and a factor for uniform scaling; currently unused by the library, which scales through
@@ -1539,7 +1540,7 @@ export namespace Manifold {
          * The uniform scale about the origin; 2 doubles every size.
          * @default 2
          */
-        factor = 2;
+        factor?: number | undefined = 2;
     }
     /**
      * A solid and three distances for `manifold.transforms.translateXYZ`.
@@ -1562,7 +1563,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        x = 0;
+        x?: number | undefined = 0;
         /**
          * How far to move along Y, in model units.
          * @default 0
@@ -1570,7 +1571,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        y = 0;
+        y?: number | undefined = 0;
         /**
          * How far to move along Z, in model units.
          * @default 0
@@ -1578,7 +1579,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 1
          */
-        z = 0;
+        z?: number | undefined = 0;
     }
     /**
      * A solid and a 4x4 matrix for `manifold.transforms.transform`.
@@ -1704,7 +1705,7 @@ export namespace Manifold {
          * does not matter.
          * @default [1,0,0]
          */
-        normal: Base.Vector3 = [1, 0, 0];
+        normal?: Base.Vector3 | undefined = [1, 0, 0];
         /**
          * How far the plane sits from the origin along the normal, in model units.
          * @default 0
@@ -1712,7 +1713,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        originOffset = 0;
+        originOffset?: number | undefined = 0;
     }
     /**
      * A solid and a plane for `manifold.booleans.splitByPlane`, which keeps both pieces.
@@ -1732,7 +1733,7 @@ export namespace Manifold {
          * length does not matter.
          * @default [1,0,0]
          */
-        normal: Base.Vector3 = [1, 0, 0];
+        normal?: Base.Vector3 | undefined = [1, 0, 0];
         /**
          * How far the plane sits from the origin along the normal, in model units.
          * @default 0
@@ -1740,7 +1741,7 @@ export namespace Manifold {
          * @maximum Infinity
          * @step 0.1
          */
-        originOffset = 0;
+        originOffset?: number | undefined = 0;
     }
     /**
      * A solid, a plane normal and several distances for `manifold.booleans.splitByPlaneOnOffsets`,
@@ -1760,13 +1761,13 @@ export namespace Manifold {
          * The normal shared by every cutting plane; its length does not matter.
          * @default [1,0,0]
          */
-        normal: Base.Vector3 = [1, 0, 0];
+        normal?: Base.Vector3 | undefined = [1, 0, 0];
         /**
          * How far each plane sits from the origin along the normal, in model units, in increasing
          * order.
          * @default [0]
          */
-        originOffsets = [0];
+        originOffsets?: number[] | undefined = [0];
     }
     /**
      * Several solids for the methods that take a list, such as `manifold.booleans.union` or

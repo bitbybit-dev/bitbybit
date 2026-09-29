@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi, type Mock } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
@@ -62,39 +62,62 @@ export function mockWindow() {
     };
 }
 
+export interface MockWorkerManagers {
+    mockJscadWorkerManager: JSCADWorkerManager;
+    mockManifoldWorkerManager: ManifoldWorkerManager;
+    mockOccWorkerManager: OCCTWorkerManager;
+    jscadWorkerCall: Mock;
+    manifoldWorkerCall: Mock;
+    occtWorkerCall: Mock;
+}
+
+export interface DrawHelperMocks extends MockWorkerManagers {
+    mockContext: Context;
+    mockSolidText: JSCADText;
+    mockVector: Vector;
+    mockScene: pc.Entity;
+}
+
 /**
- * Creates mock worker managers for testing
+ * Creates mock worker managers for testing, with the mock behind each manager's
+ * `genericCallToWorkerPromise` alongside it, so a suite asserts on the mock itself
  */
-export function createMockWorkerManagers() {
+export function createMockWorkerManagers(): MockWorkerManagers {
+    const jscadWorkerCall = vi.fn().mockResolvedValue({
+        positions: [],
+        normals: [],
+        indices: [],
+        transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
+    });
     const mockJscadWorkerManager = partialMock<JSCADWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            positions: [],
-            normals: [],
-            indices: [],
-            transforms: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
-        })
+        genericCallToWorkerPromise: jscadWorkerCall
     });
 
+    const manifoldWorkerCall = vi.fn().mockResolvedValue({
+        positions: [],
+        normals: [],
+        indices: []
+    });
     const mockManifoldWorkerManager = partialMock<ManifoldWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            positions: [],
-            normals: [],
-            indices: []
-        })
+        genericCallToWorkerPromise: manifoldWorkerCall
     });
 
+    const occtWorkerCall = vi.fn().mockResolvedValue({
+        faceList: [],
+        edgeList: [],
+        pointsList: []
+    });
     const mockOccWorkerManager = partialMock<OCCTWorkerManager>({
-        genericCallToWorkerPromise: vi.fn().mockResolvedValue({
-            faceList: [],
-            edgeList: [],
-            pointsList: []
-        })
+        genericCallToWorkerPromise: occtWorkerCall
     });
 
     return {
         mockJscadWorkerManager,
         mockManifoldWorkerManager,
-        mockOccWorkerManager
+        mockOccWorkerManager,
+        jscadWorkerCall,
+        manifoldWorkerCall,
+        occtWorkerCall
     };
 }
 
@@ -119,19 +142,17 @@ export function createMockVector(): Vector {
 /**
  * Creates a complete set of mocks for DrawHelper tests
  */
-export function createDrawHelperMocks() {
+export function createDrawHelperMocks(): DrawHelperMocks {
     const mockContext = createMockContext();
     const mockSolidText = createMockJSCADText();
     const mockVector = createMockVector();
-    const { mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager } = createMockWorkerManagers();
+    const workerManagers = createMockWorkerManagers();
 
     return {
         mockContext,
         mockSolidText,
         mockVector,
-        mockJscadWorkerManager,
-        mockManifoldWorkerManager,
-        mockOccWorkerManager,
+        ...workerManagers,
         mockScene: mockContext.scene
     };
 }
@@ -145,9 +166,11 @@ export function createOrbitCameraMocks() {
     const mockScene = new MockScene();
     // The stand-ins carry the members the camera reaches for, which is where a partial stand-in
     // meets the engine's full types.
+    const appStandIn: unknown = mockApp;
+    const sceneStandIn: unknown = mockScene;
     const mockContext = {
-        app: mockApp as unknown as Context["app"],
-        scene: mockScene as unknown as Context["scene"],
+        app: appStandIn as Context["app"],
+        scene: sceneStandIn as Context["scene"],
     } as Context;
 
     return {

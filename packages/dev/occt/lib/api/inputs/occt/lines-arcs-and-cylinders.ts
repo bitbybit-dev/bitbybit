@@ -15,12 +15,12 @@ export class LineDto {
      * The point the line starts at.
      * @default [0, 0, 0]
      */
-    start: Base.Point3 = [0, 0, 0];
+    start?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The point the line ends at.
      * @default [0, 1, 0]
      */
-    end: Base.Point3 = [0, 1, 0];
+    end?: Base.Point3 | undefined = [0, 1, 0];
 }
 
 /**
@@ -38,12 +38,12 @@ export class LineWithExtensionsDto {
      * The point the line starts at, before the extension.
      * @default [0, 0, 0]
      */
-    start: Base.Point3 = [0, 0, 0];
+    start?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The point the line ends at, before the extension.
      * @default [0, 1, 0]
      */
-    end: Base.Point3 = [0, 1, 0];
+    end?: Base.Point3 | undefined = [0, 1, 0];
     /**
      * How far the line is lengthened past its start, in model units.
      * @default 0.1
@@ -51,7 +51,7 @@ export class LineWithExtensionsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extensionStart = 0.1;
+    extensionStart?: number | undefined = 0.1;
     /**
      * How far the line is lengthened past its end, in model units.
      * @default 0.1
@@ -59,7 +59,7 @@ export class LineWithExtensionsDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extensionEnd = 0.1;
+    extensionEnd?: number | undefined = 0.1;
 }
 /**
  * Several line definitions for `shapes.wire.createLines`, which builds one wire per line.
@@ -76,8 +76,9 @@ export class LinesDto {
     lines!: LineDto[];
     /**
      * When true, the wires are packed into one compound instead of a list.
+     * @default false
      */
-    returnCompound = false;
+    returnCompound?: boolean | undefined = false;
 }
 /**
  * Two points and a starting direction for `shapes.edge.arcThroughTwoPointsAndTangent`, a circular
@@ -93,17 +94,17 @@ export class ArcEdgeTwoPointsTangentDto {
      * The point the arc begins at, where the tangent applies.
      * @default [0, 0, 0]
      */
-    start: Base.Point3 = [0, 0, 0];
+    start?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction the arc leaves the start point in; it fixes the plane and radius of the arc.
      * @default [0, 1, 0]
      */
-    tangentVec: Base.Vector3 = [0, 1, 0];
+    tangentVec?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The point the arc finishes at.
      * @default [0, 0, 1]
      */
-    end: Base.Point3 = [0, 0, 1];
+    end?: Base.Point3 | undefined = [0, 0, 1];
 }
 /**
  * A circle edge and two points on it for `shapes.edge.arcFromCircleAndTwoPoints`, which cuts the
@@ -125,18 +126,18 @@ export class ArcEdgeCircleTwoPointsDto<T> {
      * The point on the circle where the arc starts.
      * @default [0, 0, 0]
      */
-    start: Base.Point3 = [0, 0, 0];
+    start?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The point on the circle where the arc ends.
      * @default [0, 0, 1]
      */
-    end: Base.Point3 = [0, 0, 1];
+    end?: Base.Point3 | undefined = [0, 0, 1];
     /**
      * Which way round the circle the arc runs from start to end: true follows the circle's own
      * direction, false goes the other way.
      * @default true
      */
-    sense = true;
+    sense?: boolean | undefined = true;
 }
 /**
  * A circle edge and two angles for `shapes.edge.arcFromCircleAndTwoAngles`, which cuts the arc
@@ -161,7 +162,7 @@ export class ArcEdgeCircleTwoAnglesDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    alphaAngle1 = 0;
+    alphaAngle1?: number | undefined = 0;
     /**
      * The angle where the arc ends, in degrees around the circle from its own start.
      * @default 90
@@ -169,13 +170,13 @@ export class ArcEdgeCircleTwoAnglesDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    alphaAngle2 = 90;
+    alphaAngle2?: number | undefined = 90;
     /**
      * Which way round the circle the arc runs from the first angle to the second: true follows the
      * circle's own direction, false goes the other way.
      * @default true
      */
-    sense = true;
+    sense?: boolean | undefined = true;
 }
 /**
  * A circle edge, a point on it and an angle for `shapes.edge.arcFromCirclePointAndAngle`, which
@@ -204,13 +205,13 @@ export class ArcEdgeCirclePointAngleDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    alphaAngle = 90;
+    alphaAngle?: number | undefined = 90;
     /**
      * Which way round the circle the arc runs: true follows the circle's own direction, false goes
      * the other way.
      * @default true
      */
-    sense = true;
+    sense?: boolean | undefined = true;
 }
 /**
  * Three points for `shapes.edge.arcThroughThreePoints`, the circular arc that passes through all
@@ -226,17 +227,17 @@ export class ArcEdgeThreePointsDto {
      * The point the arc begins at.
      * @default [0, 0, 0]
      */
-    start: Base.Point3 = [0, 0, 0];
+    start?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * A point the arc passes through on its way; it fixes the plane and radius.
      * @default [0, 1, 0]
      */
-    middle: Base.Point3 = [0, 1, 0];
+    middle?: Base.Point3 | undefined = [0, 1, 0];
     /**
      * The point the arc finishes at.
      * @default [0, 0, 1]
      */
-    end: Base.Point3 = [0, 0, 1];
+    end?: Base.Point3 | undefined = [0, 0, 1];
 }
 /**
  * The size and placement of a cylinder for `shapes.solid.createCylinder`, which stands it on a
@@ -255,23 +256,25 @@ export class CylinderDto {
      * The radius of the round base, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * How far the cylinder grows from its base along `direction`, in model units.
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    height = 2;
+    height?: number | undefined = 2;
     /**
      * The center of the base, or the middle of the cylinder when `originOnCenter` is true.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The direction the cylinder grows in; the default stands it up along Y.
      * @default [0, 1, 0]
@@ -282,7 +285,8 @@ export class CylinderDto {
      * of cake.
      * @default 360
      * @minimum 0
-     * @maximum Infinity
+     * @exclusiveMinimum true
+     * @maximum 360
      * @step 1
      */
     angle?: number | undefined = 360;
@@ -305,10 +309,11 @@ export class CylindersOnLinesDto {
      * The radius shared by every cylinder, in model units.
      * @default 1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    radius: number = 1;
+    radius?: number | undefined = 1;
     /**
      * The lines the cylinders follow, each from its start to its end.
      * @default undefined

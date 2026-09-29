@@ -39,10 +39,11 @@ export class OCCTShell {
     /**
      * Joins faces into a shell by sewing their edges together where they meet within the tolerance.
      *
-     * Faces whose edges are further apart than the tolerance stay unjoined, so a shell meant to be
-     * closed may come out open; a larger tolerance sews more, a smaller one is more precise.
+     * Faces further apart than the tolerance stay unjoined, so a closed shell may come out open; a
+     * larger tolerance sews more. A lone face comes back as that face, and faces that do not all
+     * join as a compound of what did.
      * @param inputs - The faces and the sewing tolerance
-     * @returns The shell made from the faces
+     * @returns The shell, or the face or compound when the faces do not join into one
      * @group create
      * @shortname sew
      * @drawable true

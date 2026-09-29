@@ -28,7 +28,7 @@ describe("PlayCanvas unit tests", () => {
         });
 
         it("should have context reference", () => {
-            expect((playcanvas as any).context).toBe(mockContext);
+            expect(playcanvas["context"]).toBe(mockContext);
         });
     });
 

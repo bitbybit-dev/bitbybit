@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
-
-interface Download {
-    format: string;
-    downloadUrl: string;
-    filename: string;
-}
+import { useEffect, useState, type ReactElement } from "react";
+import { downloadsOf, readJson, stringOf, type Download } from "../api";
 
 interface PipelineResult {
     taskId?: string;
-    downloads?: Download[];
+    status?: string;
     downloadUrl?: string;
+    downloads: Download[];
+    raw: Record<string, unknown>;
 }
 
 interface PipelinesPanelProps {
@@ -18,123 +15,126 @@ interface PipelinesPanelProps {
     onLoadModel: (url: string) => void;
 }
 
-function findGlbUrl(data: PipelineResult): string | undefined {
-    const glb = data.downloads?.find((d) => d.format === "glb" || d.format === "gltf");
-    return glb?.downloadUrl ?? data.downloadUrl ?? data.downloads?.[0]?.downloadUrl;
+function pipelineResultOf(data: Record<string, unknown>): PipelineResult {
+    const result: PipelineResult = { downloads: downloadsOf(data["downloads"]), raw: data };
+    const taskId = stringOf(data, "taskId");
+    if (taskId !== undefined) result.taskId = taskId;
+    const status = stringOf(data, "status");
+    if (status !== undefined) result.status = status;
+    const downloadUrl = stringOf(data, "downloadUrl");
+    if (downloadUrl !== undefined) result.downloadUrl = downloadUrl;
+    return result;
 }
 
-function setTaskInUrl(taskId: string) {
+function findGlbUrl(result: PipelineResult): string | undefined {
+    const glb = result.downloads.find((download) => download.format === "glb" || download.format === "gltf");
+    return glb?.downloadUrl ?? result.downloadUrl ?? result.downloads[0]?.downloadUrl;
+}
+
+function setTaskInUrl(taskId: string): void {
     const url = new URL(window.location.href);
     url.searchParams.set("pipeline-task", taskId);
     window.history.replaceState({}, "", url.toString());
 }
 
-export function PipelinesPanel({ active, modelLoaded, onLoadModel }: PipelinesPanelProps) {
-    const [status, setStatus] = useState("");
+const taskFromUrl = (): string | null => new URLSearchParams(window.location.search).get("pipeline-task");
+
+export function PipelinesPanel({ active, modelLoaded, onLoadModel }: PipelinesPanelProps): ReactElement {
+    const [existingTaskId] = useState(taskFromUrl);
+    const [status, setStatus] = useState(existingTaskId ? "Fetching the existing pipeline result..." : "");
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(existingTaskId !== null);
     const [result, setResult] = useState<PipelineResult | null>(null);
     const [showRawJson, setShowRawJson] = useState(false);
     const [activePipeline, setActivePipeline] = useState<string | null>(null);
 
-    // On mount, check for ?pipeline-task= and fetch existing result
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const existingTaskId = params.get("pipeline-task");
         if (!existingTaskId) return;
-
-        setLoading(true);
-        setStatus("Fetching existing pipeline result…");
-        fetch(`/api/task/${encodeURIComponent(existingTaskId)}`)
-            .then((r) => r.json())
-            .then((data: PipelineResult & { status?: string; error?: string }) => {
-                if (data.status && data.status !== "completed") {
-                    setStatus(`Task still ${data.status} — run a pipeline to try again.`);
+        let cancelled = false;
+        const load = async (): Promise<void> => {
+            try {
+                const data = pipelineResultOf(await readJson(await fetch(`/api/task/${encodeURIComponent(existingTaskId)}`)));
+                if (cancelled) return;
+                if (data.status !== undefined && data.status !== "completed") {
+                    setStatus(`Task still ${data.status} - run a pipeline to try again.`);
                     return;
                 }
                 setResult(data);
                 const glbUrl = findGlbUrl(data);
                 if (glbUrl) {
                     onLoadModel(glbUrl);
-                    setStatus("Pipeline result loaded from URL!");
+                    setStatus("Pipeline result loaded from the URL.");
                 } else {
-                    setStatus("Pipeline result loaded — no 3D preview available.");
+                    setStatus("Pipeline result loaded - no 3D preview available.");
                 }
-            })
-            .catch((e) => {
-                setStatus(e instanceof Error ? e.message : "Failed to fetch task");
+            } catch (caught: unknown) {
+                if (cancelled) return;
+                setStatus(caught instanceof Error ? caught.message : "Failed to fetch the task");
                 setError(true);
-            })
-            .finally(() => setLoading(false));
-    }, []);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+        void load();
+        return () => { cancelled = true; };
+    }, [existingTaskId, onLoadModel]);
 
-    const runPipeline = async (endpoint: string, label: string, expectsFile?: File) => {
+    const runPipeline = async (endpoint: string, label: string, stepFile?: File): Promise<void> => {
         setLoading(true);
         setError(false);
         setResult(null);
         setShowRawJson(false);
         setActivePipeline(endpoint);
-        setStatus(`Running ${label}…`);
+        setStatus(`Running ${label}...`);
         try {
-            let res: Response;
-            if (expectsFile) {
-                const formData = new FormData();
-                formData.append("file", expectsFile);
-                res = await fetch(endpoint, { method: "POST", body: formData });
-            } else {
-                res = await fetch(endpoint, { method: "POST" });
-            }
-            if (!res.ok) throw new Error(`Server error: ${res.status}`);
-            const data: PipelineResult = await res.json();
+            const formData = new FormData();
+            if (stepFile) formData.append("file", stepFile);
+            const response = await fetch(endpoint, stepFile ? { method: "POST", body: formData } : { method: "POST" });
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const data = pipelineResultOf(await readJson(response));
             setResult(data);
 
-            if (data.taskId) {
-                setTaskInUrl(data.taskId);
-            }
+            if (data.taskId) setTaskInUrl(data.taskId);
 
             const glbUrl = findGlbUrl(data);
             if (glbUrl) {
                 onLoadModel(glbUrl);
-                setStatus(`${label} complete — model loaded!`);
+                setStatus(`${label} complete - model loaded!`);
             } else {
-                setStatus(`${label} complete — see result below`);
+                setStatus(`${label} complete - see the result below`);
             }
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : "Unknown error";
-            setStatus(msg);
+        } catch (caught: unknown) {
+            setStatus(caught instanceof Error ? caught.message : "Unknown error");
             setError(true);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleFileInput = () => {
+    const handleFileInput = (): void => {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = ".step,.stp";
         input.onchange = () => {
             const file = input.files?.[0];
-            if (file) {
-                runPipeline("/api/pipeline/file-input", "File Input Pipeline", file);
-            }
+            if (file) void runPipeline("/api/pipeline/file-input", "File Input Pipeline", file);
         };
         input.click();
     };
 
-    const downloadFile = async (url: string, filename: string) => {
+    const downloadFile = async (url: string, filename: string): Promise<void> => {
         try {
             const proxyUrl = `/api/proxy-download?url=${encodeURIComponent(url)}`;
-            const res = await fetch(proxyUrl);
-            if (!res.ok) throw new Error(`Download failed: ${res.status}`);
-            const blob = await res.blob();
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error(`Download failed: ${response.status}`);
+            const blob = await response.blob();
             const blobUrl = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = blobUrl;
-            a.download = filename;
-            a.click();
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = filename;
+            link.click();
             URL.revokeObjectURL(blobUrl);
         } catch {
-            // Fallback to direct link
             window.open(url, "_blank");
         }
     };
@@ -143,26 +143,25 @@ export function PipelinesPanel({ active, modelLoaded, onLoadModel }: PipelinesPa
         ? `${window.location.origin}${window.location.pathname}?pipeline-task=${result.taskId}`
         : null;
 
-    const btnClass = (endpoint: string) =>
-        `btn${activePipeline === endpoint ? "" : " btn-outline"}`;
+    const btnClass = (endpoint: string): string => `btn${activePipeline === endpoint ? "" : " btn-outline"}`;
 
     return (
         <div className={`panel ${active ? "" : "hidden"} ${modelLoaded ? "minimized" : ""}`}>
             <div className="actions">
-                <button className={btnClass("/api/pipeline/translate-union-fillet")} disabled={loading} onClick={() => runPipeline("/api/pipeline/translate-union-fillet", "Translate, Union + Fillet")}>
+                <button className={btnClass("/api/pipeline/translate-union-fillet")} disabled={loading} onClick={() => { void runPipeline("/api/pipeline/translate-union-fillet", "Translate, Union + Fillet"); }}>
                     Translate, Union + Fillet
                 </button>
-                <button className={btnClass("/api/pipeline/map-cylinders")} disabled={loading} onClick={() => runPipeline("/api/pipeline/map-cylinders", "Map Cylinders")}>
+                <button className={btnClass("/api/pipeline/map-cylinders")} disabled={loading} onClick={() => { void runPipeline("/api/pipeline/map-cylinders", "Map Cylinders"); }}>
                     Map: Cylinders at Positions
                 </button>
-                <button className={btnClass("/api/pipeline/map-spheres")} disabled={loading} onClick={() => runPipeline("/api/pipeline/map-spheres", "Map Spheres")}>
+                <button className={btnClass("/api/pipeline/map-spheres")} disabled={loading} onClick={() => { void runPipeline("/api/pipeline/map-spheres", "Map Spheres"); }}>
                     Map: Spheres at Different Radii
                 </button>
-                <button className={btnClass("/api/pipeline/choice")} disabled={loading} onClick={() => runPipeline("/api/pipeline/choice", "Choice Conditional")}>
+                <button className={btnClass("/api/pipeline/choice")} disabled={loading} onClick={() => { void runPipeline("/api/pipeline/choice", "Choice Conditional"); }}>
                     Choice: Conditional Shape
                 </button>
                 <button className={btnClass("/api/pipeline/file-input")} disabled={loading} onClick={handleFileInput}>
-                    File Input: STEP → Fillet
+                    File Input: STEP to Fillet
                 </button>
             </div>
             <p className={`status ${error ? "error" : ""}`}>{status}</p>
@@ -180,32 +179,32 @@ export function PipelinesPanel({ active, modelLoaded, onLoadModel }: PipelinesPa
                             <a className="result-link" href={taskUrl}>{taskUrl}</a>
                         </div>
                     )}
-                    {result.downloads && result.downloads.length > 0 && (
+                    {result.downloads.length > 0 && (
                         <table className="result-table">
                             <thead>
                                 <tr><th>Format</th><th>Filename</th><th></th></tr>
                             </thead>
                             <tbody>
-                                {result.downloads.map((d, i) => (
-                                    <tr key={i}>
-                                        <td><code>{d.format}</code></td>
-                                        <td>{d.filename}</td>
-                                        <td><a className="result-link" href="#" onClick={(e) => { e.preventDefault(); downloadFile(d.downloadUrl, d.filename); }}>Download</a></td>
+                                {result.downloads.map((download) => (
+                                    <tr key={download.downloadUrl}>
+                                        <td><code>{download.format}</code></td>
+                                        <td>{download.filename}</td>
+                                        <td><a className="result-link" href="#" onClick={(event) => { event.preventDefault(); void downloadFile(download.downloadUrl, download.filename); }}>Download</a></td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     )}
-                    {result.downloadUrl && !result.downloads && (
+                    {result.downloadUrl && result.downloads.length === 0 && (
                         <div className="result-row">
                             <span className="result-label">Download</span>
                             <a className="result-link" href={result.downloadUrl} target="_blank" rel="noopener noreferrer">Download result</a>
                         </div>
                     )}
-                    <button className="btn-raw-toggle" onClick={() => setShowRawJson((v) => !v)}>
+                    <button className="btn-raw-toggle" onClick={() => { setShowRawJson((shown) => !shown); }}>
                         {showRawJson ? "Hide" : "Show"} raw JSON
                     </button>
-                    {showRawJson && <pre className="json-preview">{JSON.stringify(result, null, 2)}</pre>}
+                    {showRawJson && <pre className="json-preview">{JSON.stringify(result.raw, null, 2)}</pre>}
                 </div>
             )}
         </div>

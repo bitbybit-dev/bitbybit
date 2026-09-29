@@ -4,6 +4,8 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Models from "../models";
 import { Lists } from "./lists";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Points as plain number arrays. A point is `[x, y, z]` with Y pointing up, the same shape as a
@@ -151,8 +153,9 @@ export class Point {
      * ```
      */
     translateXYZPoints(inputs: Inputs.Point.TranslateXYZPointsDto): Inputs.Base.Point3[] {
-        const translationTransform = this.transforms.translationXYZ({ translation: [inputs.x, inputs.y, inputs.z] });
-        return this.geometryHelper.transformControlPoints(translationTransform, inputs.points);
+        const resolved = resolveDto(Inputs.Point.TranslateXYZPointsDto, inputs) as Resolved.Point.TranslateXYZPointsDto;
+        const translationTransform = this.transforms.translationXYZ({ translation: [resolved.x, resolved.y, resolved.z] });
+        return this.geometryHelper.transformControlPoints(translationTransform, resolved.points);
     }
 
     /**
@@ -174,8 +177,9 @@ export class Point {
      * ```
      */
     scalePointsCenterXYZ(inputs: Inputs.Point.ScalePointsCenterXYZDto): Inputs.Base.Point3[] {
-        const scaleTransforms = this.transforms.scaleCenterXYZ({ center: inputs.center, scaleXyz: inputs.scaleXyz });
-        return this.geometryHelper.transformControlPoints(scaleTransforms, inputs.points);
+        const resolved = resolveDto(Inputs.Point.ScalePointsCenterXYZDto, inputs) as Resolved.Point.ScalePointsCenterXYZDto;
+        const scaleTransforms = this.transforms.scaleCenterXYZ({ center: resolved.center, scaleXyz: resolved.scaleXyz });
+        return this.geometryHelper.transformControlPoints(scaleTransforms, resolved.points);
     }
 
     /**
@@ -199,8 +203,9 @@ export class Point {
      * ```
      */
     stretchPointsDirFromCenter(inputs: Inputs.Point.StretchPointsDirFromCenterDto): Inputs.Base.Point3[] {
-        const stretchTransforms = this.transforms.stretchDirFromCenter({ center: inputs.center, scale: inputs.scale, direction: inputs.direction });
-        return this.geometryHelper.transformControlPoints(stretchTransforms, inputs.points);
+        const resolved = resolveDto(Inputs.Point.StretchPointsDirFromCenterDto, inputs) as Resolved.Point.StretchPointsDirFromCenterDto;
+        const stretchTransforms = this.transforms.stretchDirFromCenter({ center: resolved.center, scale: resolved.scale, direction: resolved.direction });
+        return this.geometryHelper.transformControlPoints(stretchTransforms, resolved.points);
     }
 
     /**
@@ -224,8 +229,9 @@ export class Point {
      * ```
      */
     rotatePointsCenterAxis(inputs: Inputs.Point.RotatePointsCenterAxisDto): Inputs.Base.Point3[] {
-        const rotationTransforms = this.transforms.rotationCenterAxis({ center: inputs.center, axis: inputs.axis, angle: inputs.angle });
-        return this.geometryHelper.transformControlPoints(rotationTransforms, inputs.points);
+        const resolved = resolveDto(Inputs.Point.RotatePointsCenterAxisDto, inputs) as Resolved.Point.RotatePointsCenterAxisDto;
+        const rotationTransforms = this.transforms.rotationCenterAxis({ center: resolved.center, axis: resolved.axis, angle: resolved.angle });
+        return this.geometryHelper.transformControlPoints(rotationTransforms, resolved.points);
     }
 
     /**
@@ -481,7 +487,8 @@ export class Point {
      * ```
      */
     pointXYZ(inputs: Inputs.Point.PointXYZDto): Inputs.Base.Point3 {
-        return [inputs.x, inputs.y, inputs.z];
+        const resolved = resolveDto(Inputs.Point.PointXYZDto, inputs) as Resolved.Point.PointXYZDto;
+        return [resolved.x, resolved.y, resolved.z];
     }
 
     /**
@@ -499,7 +506,8 @@ export class Point {
      * ```
      */
     pointXY(inputs: Inputs.Point.PointXYDto): Inputs.Base.Point2 {
-        return [inputs.x, inputs.y];
+        const resolved = resolveDto(Inputs.Point.PointXYDto, inputs) as Resolved.Point.PointXYDto;
+        return [resolved.x, resolved.y];
     }
 
     /**
@@ -519,12 +527,13 @@ export class Point {
      * ```
      */
     spiral(inputs: Inputs.Point.SpiralDto): Inputs.Base.Point3[] {
-        const phi = inputs.phi;
-        const b = Math.log(phi) / (Math.PI / inputs.widening);
+        const resolved = resolveDto(Inputs.Point.SpiralDto, inputs) as Resolved.Point.SpiralDto;
+        const phi = resolved.phi;
+        const b = Math.log(phi) / (Math.PI / resolved.widening);
         const spiral: Inputs.Base.Point3[] = [];
-        const step = inputs.radius / inputs.numberPoints;
-        for (let i = 0; i < inputs.radius; i += step) {
-            const th = Math.log(i / inputs.factor) / b;
+        const step = resolved.radius / resolved.numberPoints;
+        for (let i = 0; i < resolved.radius; i += step) {
+            const th = Math.log(i / resolved.factor) / b;
             const x = i * Math.cos(th);
             const y = i * Math.sin(th);
             spiral.push([x ? x : 0, y ? y : 0, 0]);
@@ -549,18 +558,19 @@ export class Point {
      * ```
      */
     hexGrid(inputs: Inputs.Point.HexGridCentersDto): Inputs.Base.Point3[] {
-        const xLength = Math.sqrt(Math.pow(inputs.radiusHexagon, 2) - Math.pow(inputs.radiusHexagon / 2, 2));
+        const resolved = resolveDto(Inputs.Point.HexGridCentersDto, inputs) as Resolved.Point.HexGridCentersDto;
+        const xLength = Math.sqrt(Math.pow(resolved.radiusHexagon, 2) - Math.pow(resolved.radiusHexagon / 2, 2));
         const points: Inputs.Base.Point3[] = [];
-        for (let ix = 0; ix < inputs.nrHexagonsX; ix++) {
+        for (let ix = 0; ix < resolved.nrHexagonsX; ix++) {
             const coordX = ix * xLength * 2;
-            for (let iy = 0; iy < inputs.nrHexagonsY; iy++) {
-                const coordY = (inputs.radiusHexagon + inputs.radiusHexagon / 2) * iy;
+            for (let iy = 0; iy < resolved.nrHexagonsY; iy++) {
+                const coordY = (resolved.radiusHexagon + resolved.radiusHexagon / 2) * iy;
                 const adjustX = coordX + (iy % 2 === 0 ? 0 : xLength);
                 points.push([adjustX, coordY, 0]);
             }
         }
 
-        if (inputs.orientOnCenter) {
+        if (resolved.orientOnCenter) {
             const compensateX = points[points.length - 1]![0] / 2;
             const compensateY = points[points.length - 1]![1] / 2;
             points.forEach((p, index) => {
@@ -568,7 +578,7 @@ export class Point {
             });
         }
 
-        if (inputs.pointsOnGround) {
+        if (resolved.pointsOnGround) {
             points.forEach((p, index) => {
                 points[index] = [p[0], 0, p[1]];
             });
@@ -602,20 +612,21 @@ export class Point {
      * ```
      */
     hexGridScaledToFit(inputs: Inputs.Point.HexGridScaledToFitDto): Models.Point.HexGridData {
-        let width = inputs.width ?? 10;
-        let height = inputs.height ?? 10;
-        let nrHexagonsInHeight = inputs.nrHexagonsInHeight ?? 10;
-        let nrHexagonsInWidth = inputs.nrHexagonsInWidth ?? 10;
-        let extendTop = inputs.extendTop ?? false;
-        let extendBottom = inputs.extendBottom ?? false;
-        let extendLeft = inputs.extendLeft ?? false;
-        let extendRight = inputs.extendRight ?? false;
+        const resolved = resolveDto(Inputs.Point.HexGridScaledToFitDto, inputs) as Resolved.Point.HexGridScaledToFitDto;
+        let width = resolved.width;
+        let height = resolved.height;
+        let nrHexagonsInHeight = resolved.nrHexagonsInHeight;
+        let nrHexagonsInWidth = resolved.nrHexagonsInWidth;
+        let extendTop = resolved.extendTop;
+        let extendBottom = resolved.extendBottom;
+        let extendLeft = resolved.extendLeft;
+        let extendRight = resolved.extendRight;
         const {
 
-            flatTop = false,
-            centerGrid = false,
-            pointsOnGround = false
-        } = inputs;
+            flatTop,
+            centerGrid,
+            pointsOnGround
+        } = resolved;
 
         if (flatTop) {
             const oldWidth = width;
@@ -863,7 +874,7 @@ export class Point {
         if(flatTop){
             const grouped = this.lists.groupNth<Inputs.Base.Point3[]>({
                 list: scaledHexagons.reverse(),
-                nrElements: inputs.nrHexagonsInWidth ?? 10,
+                nrElements: resolved.nrHexagonsInWidth,
                 keepRemainder: true,
             });
             const res = this.lists.flipLists({
@@ -874,7 +885,7 @@ export class Point {
 
             const groupedCenters = this.lists.groupNth<Inputs.Base.Point3>({
                 list: scaledCenters.reverse(),
-                nrElements: inputs.nrHexagonsInWidth ?? 10,
+                nrElements: resolved.nrHexagonsInWidth,
                 keepRemainder: true,
             });
             const resCenters = this.lists.flipLists({
@@ -913,7 +924,8 @@ export class Point {
     maxFilletRadius(
         inputs: Inputs.Point.ThreePointsToleranceDto
     ): number {
-        const { start: p1, center: p2, end: c, tolerance = 1e-7 } = inputs;
+        const resolved = resolveDto(Inputs.Point.ThreePointsToleranceDto, inputs) as Resolved.Point.ThreePointsToleranceDto;
+        const { start: p1, center: p2, end: c, tolerance } = resolved;
 
         const v1 = this.vector.sub({ first: p1, second: c }) as Inputs.Base.Vector3;
         const v2 = this.vector.sub({ first: p2, second: c }) as Inputs.Base.Vector3;
@@ -972,7 +984,8 @@ export class Point {
     maxFilletRadiusHalfLine(
         inputs: Inputs.Point.ThreePointsToleranceDto
     ): number {
-        const { start: p1, center: p2, end: c, tolerance = 1e-7 } = inputs;
+        const resolved = resolveDto(Inputs.Point.ThreePointsToleranceDto, inputs) as Resolved.Point.ThreePointsToleranceDto;
+        const { start: p1, center: p2, end: c, tolerance } = resolved;
 
         const v1 = this.vector.sub({ first: p1, second: c }) as Inputs.Base.Vector3;
         const v2 = this.vector.sub({ first: p2, second: c }) as Inputs.Base.Vector3;
@@ -1032,7 +1045,8 @@ export class Point {
     maxFilletsHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
     ): number[] {
-        const { points, checkLastWithFirst = false, tolerance = 1e-7 } = inputs;
+        const resolved = resolveDto(Inputs.Point.PointsMaxFilletsHalfLineDto, inputs) as Resolved.Point.PointsMaxFilletsHalfLineDto;
+        const { points, checkLastWithFirst, tolerance } = resolved;
         const n = points.length;
         const results: number[] = [];
 
@@ -1104,7 +1118,8 @@ export class Point {
     safestPointsMaxFilletHalfLine(
         inputs: Inputs.Point.PointsMaxFilletsHalfLineDto
     ): number {
-        const allMaxRadii = this.maxFilletsHalfLine(inputs);
+        const resolved = resolveDto(Inputs.Point.PointsMaxFilletsHalfLineDto, inputs) as Resolved.Point.PointsMaxFilletsHalfLineDto;
+        const allMaxRadii = this.maxFilletsHalfLine(resolved);
 
         if (allMaxRadii.length === 0) {
             return 0;
@@ -1136,7 +1151,8 @@ export class Point {
      * ```
      */
     removeConsecutiveDuplicates(inputs: Inputs.Point.RemoveConsecutiveDuplicatesDto): Inputs.Base.Point3[] {
-        return this.geometryHelper.removeConsecutivePointDuplicates(inputs.points, inputs.checkFirstAndLast, inputs.tolerance);
+        const resolved = resolveDto(Inputs.Point.RemoveConsecutiveDuplicatesDto, inputs) as Resolved.Point.RemoveConsecutiveDuplicatesDto;
+        return this.geometryHelper.removeConsecutivePointDuplicates(resolved.points, resolved.checkFirstAndLast, resolved.tolerance);
     }
 
     /**
@@ -1162,9 +1178,10 @@ export class Point {
      * ```
      */
     normalFromThreePoints(inputs: Inputs.Point.ThreePointsNormalDto): Inputs.Base.Vector3 | undefined {
-        const p1 = inputs.point1;
-        const p2 = inputs.point2;
-        const p3 = inputs.point3;
+        const resolved = resolveDto(Inputs.Point.ThreePointsNormalDto, inputs) as Resolved.Point.ThreePointsNormalDto;
+        const p1 = resolved.point1;
+        const p2 = resolved.point2;
+        const p3 = resolved.point3;
 
         if (!p1 || !p2 || !p3 || p1.length !== 3 || p2.length !== 3 || p3.length !== 3) {
             throw new Error("All points must be arrays of 3 numbers [x, y, z]");
@@ -1187,7 +1204,7 @@ export class Point {
             return undefined;
         }
 
-        if (inputs.reverseNormal) {
+        if (resolved.reverseNormal) {
             nx = -nx;
             ny = -ny;
             nz = -nz;
@@ -1229,10 +1246,11 @@ export class Point {
      * ```
      */
     twoPointsAlmostEqual(inputs: Inputs.Point.TwoPointsToleranceDto): boolean {
-        const p1 = inputs.point1;
-        const p2 = inputs.point2;
+        const resolved = resolveDto(Inputs.Point.TwoPointsToleranceDto, inputs) as Resolved.Point.TwoPointsToleranceDto;
+        const p1 = resolved.point1;
+        const p2 = resolved.point2;
         const dist = this.distance({ startPoint: p1, endPoint: p2 });
-        return dist < (inputs.tolerance ?? 1e-7);
+        return dist < (resolved.tolerance);
     }
 
     /**

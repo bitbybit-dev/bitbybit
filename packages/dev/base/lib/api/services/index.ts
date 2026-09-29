@@ -12,3 +12,4 @@ export * from "./line";
 export * from "./polyline";
 export * from "./mesh";
 export * from "./io";
+export * from "./frame";

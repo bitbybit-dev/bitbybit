@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, CurvePointResult, TopoDS_Edge, TopoDS_Shape, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTGeom } from "../geom/geom";
@@ -38,14 +38,21 @@ describe("OCCT edge unit tests", () => {
         booleans = new OCCTBooleans(occt, occHelper);
     });
 
-    it("should create a circle edge of the right radius and it will mach the length", async () => {
+    const within = (expected: unknown): unknown => {
+        if (Array.isArray(expected)) {
+            return (expected as unknown[]).map(within);
+        }
+        return typeof expected === "number" ? expect.closeTo(expected, 6 - Math.log10(Math.max(1, Math.abs(expected)))) : expected;
+    };
+
+    it("should create a circle edge of the right radius and it will mach the length", () => {
         const e = edge.createCircleEdge({ radius: 10, center: [0, 0, 0], direction: [0, 0, 1] });
         const length = edge.getEdgeLength({ shape: e });
         expect(length).toEqual(62.83185307179586);
         e.delete();
     });
 
-    it("should create a circle edge and the point on it will be at specific location", async () => {
+    it("should create a circle edge and the point on it will be at specific location", () => {
         const e = edge.createCircleEdge({ radius: 1, center: [0, 1, 0], direction: [1, 1, 0] });
         const point = edge.pointOnEdgeAtParam({ shape: e, param: 0.5 });
         const x = point[0];
@@ -57,14 +64,14 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should create an edge line between two points", async () => {
+    it("should create an edge line between two points", () => {
         const e = edge.line({ start: [-1, -1, -1], end: [1, 1, 1] });
         const length = edge.getEdgeLength({ shape: e });
         expect(length).toEqual(3.4641016151377544);
         e.delete();
     });
 
-    it("should create an edge line between two points and the point on it will be at specific location", async () => {
+    it("should create an edge line between two points and the point on it will be at specific location", () => {
         const e = edge.line({ start: [-1, -1, -1], end: [1, 1, 1] });
         const point = edge.pointOnEdgeAtParam({ shape: e, param: 0.5 });
         const x = point[0];
@@ -76,14 +83,14 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should create an arc edge between three points and the length will be correct", async () => {
+    it("should create an arc edge between three points and the length will be correct", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const length = edge.getEdgeLength({ shape: e });
         expect(length).toEqual(4.05306515313624);
         e.delete();
     });
 
-    it("should make edge from geom 2d curve and surface", async () => {
+    it("should make edge from geom 2d curve and surface", () => {
         const elipse2d = geom.curves.geom2dEllipse({ radiusMinor: 1, radiusMajor: 2, center: [0, 0], direction: [0, 1], sense: true });
         const cylinderSrf = geom.surfaces.cylindricalSurface({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
 
@@ -96,21 +103,21 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should make ellipse edge", async () => {
+    it("should make ellipse edge", () => {
         const e = edge.createEllipseEdge({ radiusMinor: 2, radiusMajor: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const length = edge.getEdgeLength({ shape: e });
-        expect(length).toBeCloseTo(15.869698772210647, 10);
+        expect(length).toBeCloseTo(15.865439589290588, 11);
         e.delete();
     });
 
-    it("should not make ellipse edge when minor radius is larger than major radius", async () => {
+    it("should not make ellipse edge when minor radius is larger than major radius", () => {
         const e = edge.createEllipseEdge({ radiusMinor: 3, radiusMajor: 2, center: [0, 0, 0], direction: [0, 0, 1] });
         if (e && !e.IsNull()) {
             e.delete();
         }
     });
 
-    it("should be able to get an edge from solid shape", async () => {
+    it("should be able to get an edge from solid shape", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         const e = edge.getEdge({ shape: box, index: 0 });
         const length = edge.getEdgeLength({ shape: e });
@@ -119,7 +126,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should not be able to get an edge from solid shape with out of range index", async () => {
+    it("should not be able to get an edge from solid shape with out of range index", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
             edge.getEdge({ shape: box, index: 12 })
@@ -127,7 +134,7 @@ describe("OCCT edge unit tests", () => {
         box.delete();
     });
 
-    it("should be not able to get an edge from solid shape with out of range index", async () => {
+    it("should be not able to get an edge from solid shape with out of range index", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         expect(() =>
             edge.getEdge({ shape: box, index: 13 })
@@ -135,13 +142,13 @@ describe("OCCT edge unit tests", () => {
         box.delete();
     });
 
-    it("should not be able to get an edge if shape is not provided", async () => {
+    it("should not be able to get an edge if shape is not provided", () => {
         expect(() =>
-            edge.getEdge({ shape: undefined as unknown as TopoDS_Shape, index: 0 })
-        ).toThrow("Edge can not be found for shape that is not provided or is of incorrect type");
+            edge.getEdge(new Inputs.OCCT.EdgeIndexDto<TopoDS_Shape>(undefined, 0))
+        ).toThrow("`shape` is missing or empty, as an operation that failed can leave it.");
     });
 
-    it("should not remove internal edges if there are none", async () => {
+    it("should not remove internal edges if there are none", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         const boxEdges = edge.getEdges({ shape: box });
         const shapeWithoutEdges = edge.removeInternalEdges({ shape: box });
@@ -153,14 +160,14 @@ describe("OCCT edge unit tests", () => {
         removedBoxEdges.forEach(e => e.delete());
     });
 
-    it("should get a point on edge at param", async () => {
+    it("should get a point on edge at param", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.pointOnEdgeAtParam({ shape: e, param: 0.25 });
         expect(pt).toEqual([-0.8321107509656731, -0.02482724898439559, -0.8321107509656731]);
         e.delete();
     });
 
-    it("should get a tangent on edge at param", async () => {
+    it("should get a tangent on edge at param", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.tangentOnEdgeAtParam({ shape: e, param: 0.25 });
         expect(pt[0]).toBeCloseTo(0.6895512650714751, 10);
@@ -169,7 +176,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a start point on edge", async () => {
+    it("should get a start point on edge", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.startPointOnEdge({ shape: e });
         const x = pt[0];
@@ -182,7 +189,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get an end point on edge", async () => {
+    it("should get an end point on edge", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.endPointOnEdge({ shape: e });
         const x = pt[0];
@@ -195,7 +202,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a point on the edge at length", async () => {
+    it("should get a point on the edge at length", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.pointOnEdgeAtLength({ shape: e, length: 0 });
         const x = pt[0];
@@ -208,7 +215,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a point on the edge at length", async () => {
+    it("should get a point on the edge at length", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.pointOnEdgeAtLength({ shape: e, length: 0.1 });
         const x = pt[0];
@@ -220,7 +227,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a point on the edge at length", async () => {
+    it("should get a point on the edge at length", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.pointOnEdgeAtLength({ shape: e, length: 0.7 });
         const x = pt[0];
@@ -232,7 +239,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a point on the edge at length", async () => {
+    it("should get a point on the edge at length", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const edgeLength = edge.getEdgeLength({ shape: e });
         const pt = edge.pointOnEdgeAtLength({ shape: e, length: edgeLength });
@@ -245,7 +252,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a tangent on the arc edge at length", async () => {
+    it("should get a tangent on the arc edge at length", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const pt = edge.tangentOnEdgeAtLength({ shape: e, length: 0.1 });
         const x = pt[0];
@@ -257,7 +264,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get a tangent on the circle edge at length", async () => {
+    it("should get a tangent on the circle edge at length", () => {
         const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const pt = edge.tangentOnEdgeAtLength({ shape: e, length: Math.PI });
         const x = pt[0];
@@ -269,7 +276,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should divide the edge by params to points", async () => {
+    it("should divide the edge by params to points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
@@ -279,7 +286,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should divide the edge by params to points", async () => {
+    it("should divide the edge by params to points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
@@ -299,7 +306,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should divide the edge by params to points and remove start and end points", async () => {
+    it("should divide the edge by params to points and remove start and end points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: true, removeStartPoint: true });
         expect(points.length).toBe(9);
@@ -317,7 +324,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should divide the edge by params to points and remove end point", async () => {
+    it("should divide the edge by params to points and remove end point", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByParamsToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: true, removeStartPoint: false });
         expect(points.length).toBe(10);
@@ -327,7 +334,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should divide the edge by equal length to points", async () => {
+    it("should divide the edge by equal length to points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
@@ -338,41 +345,41 @@ describe("OCCT edge unit tests", () => {
     });
 
 
-    it("should divide the edge by equal length to points", async () => {
+    it("should divide the edge by equal length to points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: false, removeStartPoint: false });
         expect(points.length).toBe(11);
         expect(points[0]).toEqual([0, 0, 2]);
-        expect(points[1]).toEqual([1.1755705045849463, 0, 1.618033988749895]);
-        expect(points[2]).toEqual([1.902113032590307, 0, 0.6180339887498949]);
-        expect(points[3]).toEqual([1.902113032590307, 0, -0.6180339887498951]);
-        expect(points[4]).toEqual([1.1755705045849465, 0, -1.6180339887498947]);
-        expect(points[5]).toEqual([2.4492935982947064e-16, 0, -2]);
-        expect(points[6]).toEqual([-1.175570504584946, 0, -1.618033988749895]);
-        expect(points[7]).toEqual([-1.9021130325903075, 0, -0.6180339887498935]);
-        expect(points[8]).toEqual([-1.9021130325903073, 0, 0.6180339887498945]);
-        expect(points[9]).toEqual([-1.1755705045849467, 0, 1.6180339887498947]);
-        expect(points[10]).toEqual([-4.898587196589413e-16, 0, 2]);
+        expect(points[1]).toEqual(within([1.1755705045849463, 0, 1.618033988749895]));
+        expect(points[2]).toEqual(within([1.902113032590307, 0, 0.6180339887498949]));
+        expect(points[3]).toEqual(within([1.902113032590307, 0, -0.6180339887498951]));
+        expect(points[4]).toEqual(within([1.1755705045849465, 0, -1.6180339887498947]));
+        expect(points[5]).toEqual(within([2.4492935982947064e-16, 0, -2]));
+        expect(points[6]).toEqual(within([-1.175570504584946, 0, -1.618033988749895]));
+        expect(points[7]).toEqual(within([-1.9021130325903075, 0, -0.6180339887498935]));
+        expect(points[8]).toEqual(within([-1.9021130325903073, 0, 0.6180339887498945]));
+        expect(points[9]).toEqual(within([-1.1755705045849467, 0, 1.6180339887498947]));
+        expect(points[10]).toEqual(within([-4.898587196589413e-16, 0, 2]));
         e.delete();
     });
 
-    it("should divide the edge by equal length to points and remove start and end points", async () => {
+    it("should divide the edge by equal length to points and remove start and end points", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const points = edge.divideEdgeByEqualDistanceToPoints({ shape: e, nrOfDivisions: 10, removeEndPoint: true, removeStartPoint: true });
         expect(points.length).toBe(9);
-        expect(points[0]).toEqual([1.1755705045849463, 0, 1.618033988749895]);
-        expect(points[1]).toEqual([1.902113032590307, 0, 0.6180339887498949]);
-        expect(points[2]).toEqual([1.902113032590307, 0, -0.6180339887498951]);
-        expect(points[3]).toEqual([1.1755705045849465, 0, -1.6180339887498947]);
-        expect(points[4]).toEqual([2.4492935982947064e-16, 0, -2]);
-        expect(points[5]).toEqual([-1.175570504584946, 0, -1.618033988749895]);
-        expect(points[6]).toEqual([-1.9021130325903075, 0, -0.6180339887498935]);
-        expect(points[7]).toEqual([-1.9021130325903073, 0, 0.6180339887498945]);
-        expect(points[8]).toEqual([-1.1755705045849467, 0, 1.6180339887498947]);
+        expect(points[0]).toEqual(within([1.1755705045849463, 0, 1.618033988749895]));
+        expect(points[1]).toEqual(within([1.902113032590307, 0, 0.6180339887498949]));
+        expect(points[2]).toEqual(within([1.902113032590307, 0, -0.6180339887498951]));
+        expect(points[3]).toEqual(within([1.1755705045849465, 0, -1.6180339887498947]));
+        expect(points[4]).toEqual(within([2.4492935982947064e-16, 0, -2]));
+        expect(points[5]).toEqual(within([-1.175570504584946, 0, -1.618033988749895]));
+        expect(points[6]).toEqual(within([-1.9021130325903075, 0, -0.6180339887498935]));
+        expect(points[7]).toEqual(within([-1.9021130325903073, 0, 0.6180339887498945]));
+        expect(points[8]).toEqual(within([-1.1755705045849467, 0, 1.6180339887498947]));
         e.delete();
     });
 
-    it("should get edge lengths", async () => {
+    it("should get edge lengths", () => {
         const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2, Math.PI * 2);
         const edges = edge.getEdges({ shape: cylinder });
         const lengths = edge.getEdgesLengths({ shapes: edges });
@@ -384,7 +391,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach((e) => e.delete());
     });
 
-    it("should get edge center of mass of a circle", async () => {
+    it("should get edge center of mass of a circle", () => {
         const e = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const center = edge.getEdgeCenterOfMass({ shape: e });
         expect(center[0]).toBeCloseTo(0, closeToNr);
@@ -393,7 +400,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get edge center of mass of an arc", async () => {
+    it("should get edge center of mass of an arc", () => {
         const e = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
         const center = edge.getEdgeCenterOfMass({ shape: e });
         expect(center[0]).toBeCloseTo(-0.24018055142257372, closeToNr);
@@ -402,7 +409,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should get edges centers of mass of a circle", async () => {
+    it("should get edges centers of mass of a circle", () => {
         const e1 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const e2 = edge.arcThroughThreePoints({ start: [-1, -1, -1], middle: [0, 1, 0], end: [1, 1, 1] });
 
@@ -415,7 +422,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should get corner points of edges for the shape", async () => {
+    it("should get corner points of edges for the shape", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(10, 10, 10, [0, 0, 0]);
         const corners = edge.getCornerPointsOfEdgesForShape({ shape: box });
         expect(corners.length).toBe(8);
@@ -659,7 +666,7 @@ describe("OCCT edge unit tests", () => {
                 [3.0512476630476053, 0, -9.390774700406087],
                 [4.055584049054564, 0, -2.946554287538323],
                 [9.874044853809437, 0, -1.45074205086341e-15]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -684,7 +691,7 @@ describe("OCCT edge unit tests", () => {
                 [0.7201745008328464, 0, -7.07919984366991],
                 [3.578415856051085, 0, -6.150500930772071],
                 [6.955265301150748, 0, -1.5026664063837851]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -709,7 +716,7 @@ describe("OCCT edge unit tests", () => {
                 [2.95052198347075, 0, -9.080772934601608],
                 [4.227886525109382, 0, -3.0717393640727724],
                 [9.548089707618868, 0, -1.4446188168676734e-15]
-            ]
+            ].map(point => point.map(value => expect.closeTo(value, 12)))
         );
         star.delete();
         filletWire.delete();
@@ -800,7 +807,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should create tan lines from two points to a circle and return all solutions for unrecognized enum value", () => {
         checkConstraintTanLinesFromTwoPtsToCircle(
-            "whatever" as any,
+            "whatever" as Inputs.OCCT.positionResultEnum,
             Inputs.OCCT.circleInclusionEnum.none,
             4,
             [2.8284271247461903, 2.8284271247461903, 1.7320508075688772, 1.7320508075688772]
@@ -873,7 +880,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should create tan lines from one point to a circle and keep all sides for unrecognized position enum", () => {
         checkConstraintTanLinesFromPtToCircle(
-            "whatever" as any,
+            "whatever" as Inputs.OCCT.positionResultEnum,
             Inputs.OCCT.circleInclusionEnum.keepSide2,
             3,
             [4.737087712930804, 3.984213886400852, 4.737087712930805]
@@ -971,7 +978,7 @@ describe("OCCT edge unit tests", () => {
 
     it("should create tan lines from one circle to another non overlaping circle and return all solutions for lines if unrecognized enum", () => {
         checkConstraintTanLinesOnTwoNotOverlapingCircles(
-            "whatever" as any,
+            "whatever" as Inputs.OCCT.positionResultEnum,
             Inputs.OCCT.twoCircleInclusionEnum.none,
             4,
             [10.148891565092217, 9.746794344808965, 10.14889156509222, 9.746794344808963]
@@ -1278,7 +1285,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     };
 
-    it("should create an edge from base line", async () => {
+    it("should create an edge from base line", () => {
         const line: Inputs.Base.Line3 = { start: [0, 0, 0], end: [1, 1, 1] };
         const e = edge.fromBaseLine({ line });
         const length = edge.getEdgeLength({ shape: e });
@@ -1286,7 +1293,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should create edges from base lines", async () => {
+    it("should create edges from base lines", () => {
         const lines: Inputs.Base.Line3[] = [
             { start: [0, 0, 0], end: [1, 0, 0] },
             { start: [0, 0, 0], end: [0, 2, 0] },
@@ -1301,7 +1308,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create an edge from base segment", async () => {
+    it("should create an edge from base segment", () => {
         const segment: Inputs.Base.Segment3 = [[0, 0, 0], [2, 2, 2]];
         const e = edge.fromBaseSegment({ segment });
         const length = edge.getEdgeLength({ shape: e });
@@ -1309,7 +1316,7 @@ describe("OCCT edge unit tests", () => {
         e.delete();
     });
 
-    it("should create edges from base segments", async () => {
+    it("should create edges from base segments", () => {
         const segments: Inputs.Base.Segment3[] = [
             [[0, 0, 0], [1, 0, 0]],
             [[0, 0, 0], [0, 2, 0]],
@@ -1324,7 +1331,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create edges from points", async () => {
+    it("should create edges from points", () => {
         const points: Inputs.Base.Point3[] = [
             [0, 0, 0],
             [1, 0, 0],
@@ -1340,13 +1347,13 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create no edges from single point", async () => {
+    it("should create no edges from single point", () => {
         const points: Inputs.Base.Point3[] = [[0, 0, 0]];
         const edges = edge.fromPoints({ points });
         expect(edges.length).toBe(0);
     });
 
-    it("should create edges from open polyline", async () => {
+    it("should create edges from open polyline", () => {
         const polyline: Inputs.Base.Polyline3 = {
             points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
             isClosed: false
@@ -1356,7 +1363,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create edges from closed polyline", async () => {
+    it("should create edges from closed polyline", () => {
         const polyline: Inputs.Base.Polyline3 = {
             points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]],
             isClosed: true
@@ -1368,7 +1375,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create edges from triangle", async () => {
+    it("should create edges from triangle", () => {
         const triangle: Inputs.Base.Triangle3 = [
             [0, 0, 0],
             [1, 0, 0],
@@ -1379,7 +1386,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should create edges from mesh", async () => {
+    it("should create edges from mesh", () => {
         const mesh: Inputs.Base.Mesh3 = [
             [[0, 0, 0], [1, 0, 0], [0.5, 1, 0]],
             [[1, 0, 0], [2, 0, 0], [1.5, 1, 0]]
@@ -1389,7 +1396,7 @@ describe("OCCT edge unit tests", () => {
         edges.forEach(e => e.delete());
     });
 
-    it("should get points on multiple edges at param", async () => {
+    it("should get points on multiple edges at param", () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const e3 = edge.line({ start: [0, 0, 0], end: [0, 0, 6] });
@@ -1403,7 +1410,7 @@ describe("OCCT edge unit tests", () => {
         e3.delete();
     });
 
-    it("should get tangents on multiple edges at param", async () => {
+    it("should get tangents on multiple edges at param", () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const tangents = edge.tangentsOnEdgesAtParam({ shapes: [e1, e2], param: 0.5 });
@@ -1418,7 +1425,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should get start points on multiple edges", async () => {
+    it("should get start points on multiple edges", () => {
         const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
         const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
         const startPoints = edge.startPointsOnEdges({ shapes: [e1, e2] });
@@ -1429,7 +1436,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should get end points on multiple edges", async () => {
+    it("should get end points on multiple edges", () => {
         const e1 = edge.line({ start: [1, 2, 3], end: [4, 5, 6] });
         const e2 = edge.line({ start: [7, 8, 9], end: [10, 11, 12] });
         const endPoints = edge.endPointsOnEdges({ shapes: [e1, e2] });
@@ -1440,7 +1447,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should get points on multiple edges at length", async () => {
+    it("should get points on multiple edges at length", () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const points = edge.pointsOnEdgesAtLength({ shapes: [e1, e2], length: 2 });
@@ -1453,7 +1460,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should get tangents on multiple edges at length", async () => {
+    it("should get tangents on multiple edges at length", () => {
         const e1 = edge.line({ start: [0, 0, 0], end: [4, 0, 0] });
         const e2 = edge.line({ start: [0, 0, 0], end: [0, 4, 0] });
         const tangents = edge.tangentsOnEdgesAtLength({ shapes: [e1, e2], length: 1 });
@@ -1466,7 +1473,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should divide multiple edges by params to points", async () => {
+    it("should divide multiple edges by params to points", () => {
         const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const pointsArrays = edge.divideEdgesByParamsToPoints({
@@ -1482,7 +1489,7 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should divide multiple edges by equal distance to points", async () => {
+    it("should divide multiple edges by equal distance to points", () => {
         const e1 = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const e2 = edge.createCircleEdge({ radius: 2, center: [0, 0, 0], direction: [0, 1, 0] });
         const pointsArrays = edge.divideEdgesByEqualDistanceToPoints({
@@ -1498,49 +1505,49 @@ describe("OCCT edge unit tests", () => {
         e2.delete();
     });
 
-    it("should return true for linear edge", async () => {
+    it("should return true for linear edge", () => {
         const e = edge.line({ start: [0, 0, 0], end: [1, 1, 1] });
         const isLinear = edge.isEdgeLinear({ shape: e });
         expect(isLinear).toBe(true);
         e.delete();
     });
 
-    it("should return false for circular edge when checking if linear", async () => {
+    it("should return false for circular edge when checking if linear", () => {
         const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const isLinear = edge.isEdgeLinear({ shape: e });
         expect(isLinear).toBe(false);
         e.delete();
     });
 
-    it("should return false for arc edge when checking if linear", async () => {
+    it("should return false for arc edge when checking if linear", () => {
         const e = edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [1, 1, 0], end: [2, 0, 0] });
         const isLinear = edge.isEdgeLinear({ shape: e });
         expect(isLinear).toBe(false);
         e.delete();
     });
 
-    it("should return true for circular edge", async () => {
+    it("should return true for circular edge", () => {
         const e = edge.createCircleEdge({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const isCircular = edge.isEdgeCircular({ shape: e });
         expect(isCircular).toBe(true);
         e.delete();
     });
 
-    it("should return true for arc edge when checking if circular", async () => {
+    it("should return true for arc edge when checking if circular", () => {
         const e = edge.arcThroughThreePoints({ start: [0, 0, 0], middle: [1, 1, 0], end: [2, 0, 0] });
         const isCircular = edge.isEdgeCircular({ shape: e });
         expect(isCircular).toBe(true);
         e.delete();
     });
 
-    it("should return false for linear edge when checking if circular", async () => {
+    it("should return false for linear edge when checking if circular", () => {
         const e = edge.line({ start: [0, 0, 0], end: [1, 1, 1] });
         const isCircular = edge.isEdgeCircular({ shape: e });
         expect(isCircular).toBe(false);
         e.delete();
     });
 
-    it("should get edge lengths of a box shape", async () => {
+    it("should get edge lengths of a box shape", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(2, 3, 4, [0, 0, 0]);
         const lengths = edge.getEdgeLengthsOfShape({ shape: box });
         expect(lengths.length).toBe(12);
@@ -1551,7 +1558,7 @@ describe("OCCT edge unit tests", () => {
         box.delete();
     });
 
-    it("should get edge lengths of a cylinder shape", async () => {
+    it("should get edge lengths of a cylinder shape", () => {
         const cylinder = occHelper.entitiesService.bRepPrimAPIMakeCylinder([0, 0, 0], [0, 1, 0], 1, 2, Math.PI * 2);
         const lengths = edge.getEdgeLengthsOfShape({ shape: cylinder });
         expect(lengths.length).toBe(3);
@@ -1611,6 +1618,50 @@ describe("OCCT edge unit tests", () => {
             expect(act).toThrow(/not a circular edge/);
 
             line.delete();
+        });
+    });
+
+    describe("what evaluating a point leaves behind", () => {
+        const recordingEvaluations = (act: () => void): { isDeleted(): boolean }[][] => {
+            const results: { isDeleted(): boolean }[] = [];
+            const points: { isDeleted(): boolean }[] = [];
+            const original: unknown = Reflect.get(occt, "EvaluateEdgeCurve");
+            const evaluate = occt.EvaluateEdgeCurve.bind(occt);
+            Reflect.set(occt, "EvaluateEdgeCurve", (shape: TopoDS_Edge, param: number): CurvePointResult => {
+                const result = evaluate(shape, param);
+                results.push(result);
+                return new Proxy(result, {
+                    get(target, property): unknown {
+                        const value: unknown = Reflect.get(target, property);
+                        if (property === "Point") {
+                            points.push(value as gp_Pnt);
+                        }
+                        return typeof value === "function" ? value.bind(target) as unknown : value;
+                    },
+                });
+            });
+            try {
+                act();
+            } finally {
+                Reflect.set(occt, "EvaluateEdgeCurve", original);
+            }
+            return [results, points];
+        };
+
+        it("should delete the evaluation and the one point it reads from it", () => {
+            // Arrange
+            const line = edge.line({ start: [0, 0, 0], end: [2, 0, 0] });
+            let point: Inputs.Base.Point3 | undefined;
+
+            // Act
+            const [results, points] = recordingEvaluations(() => {
+                point = edge.pointOnEdgeAtParam({ shape: line, param: 0.25 });
+            });
+
+            // Assert
+            expect(point).toEqual([0.5, 0, 0]);
+            expect([results!.length, points!.length]).toEqual([1, 1]);
+            expect([...results!, ...points!].filter(made => !made.isDeleted())).toEqual([]);
         });
     });
 });

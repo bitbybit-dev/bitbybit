@@ -3,6 +3,8 @@ import { uniqueName } from "../../../unique-name";
 import { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Sticking images onto meshes, the way a label or a logo sits on a product. A geometry decal is a
@@ -27,24 +29,25 @@ export class BabylonDecal {
      * @drawable true
      */
     createMeshDecal(inputs: Inputs.BabylonDecal.CreateMeshDecalDto): BABYLON.Mesh {
-        const decal = BABYLON.MeshBuilder.CreateDecal(uniqueName("Decal"), inputs.sourceMesh, {
-            position: new BABYLON.Vector3(...inputs.position),
-            normal: new BABYLON.Vector3(...inputs.normal),
-            size: new BABYLON.Vector3(...inputs.size),
-            angle: inputs.angle,
-            cullBackFaces: inputs.cullBackFaces,
-            localMode: inputs.localMode,
+        const resolved = resolveDto(Inputs.BabylonDecal.CreateMeshDecalDto, inputs) as Resolved.BabylonDecal.CreateMeshDecalDto;
+        const decal = BABYLON.MeshBuilder.CreateDecal(uniqueName("Decal"), resolved.sourceMesh, {
+            position: new BABYLON.Vector3(...resolved.position),
+            normal: new BABYLON.Vector3(...resolved.normal),
+            size: new BABYLON.Vector3(...resolved.size),
+            angle: resolved.angle,
+            cullBackFaces: resolved.cullBackFaces,
+            localMode: resolved.localMode,
         });
 
         const material = new BABYLON.StandardMaterial(uniqueName("DecalMaterial"), this.context.scene);
-        material.diffuseTexture = inputs.texture;
+        material.diffuseTexture = resolved.texture;
         material.diffuseTexture.hasAlpha = true;
         material.useAlphaFromDiffuseTexture = true;
-        material.zOffset = inputs.zOffset;
-        material.backFaceCulling = inputs.cullBackFaces;
+        material.zOffset = resolved.zOffset;
+        material.backFaceCulling = resolved.cullBackFaces;
         decal.material = material;
 
-        decal.setParent(inputs.sourceMesh);
+        decal.setParent(resolved.sourceMesh);
         decal.isPickable = false;
         decal.metadata = { shadows: false };
         return decal;
@@ -61,12 +64,13 @@ export class BabylonDecal {
      * @disposableOutput true
      */
     enableDecalMap(inputs: Inputs.BabylonDecal.EnableDecalMapDto): BABYLON.MeshUVSpaceRenderer {
-        const renderer = new BABYLON.MeshUVSpaceRenderer(inputs.mesh, this.context.scene, {
-            width: inputs.width,
-            height: inputs.height,
+        const resolved = resolveDto(Inputs.BabylonDecal.EnableDecalMapDto, inputs) as Resolved.BabylonDecal.EnableDecalMapDto;
+        const renderer = new BABYLON.MeshUVSpaceRenderer(resolved.mesh, this.context.scene, {
+            width: resolved.width,
+            height: resolved.height,
         });
-        inputs.mesh.decalMap = renderer;
-        const material = inputs.material as BABYLON.Material & { decalMap?: { isEnabled: boolean } };
+        resolved.mesh.decalMap = renderer;
+        const material = resolved.material as BABYLON.Material & { decalMap?: { isEnabled: boolean } };
         if (material.decalMap) {
             material.decalMap.isEnabled = true;
         }
@@ -81,12 +85,13 @@ export class BabylonDecal {
      * @shortname project decal
      */
     projectDecal(inputs: Inputs.BabylonDecal.ProjectDecalDto): void {
-        inputs.decalMap.renderTexture(
-            inputs.texture,
-            new BABYLON.Vector3(...inputs.position),
-            new BABYLON.Vector3(...inputs.normal),
-            new BABYLON.Vector3(...inputs.size),
-            inputs.angle,
+        const resolved = resolveDto(Inputs.BabylonDecal.ProjectDecalDto, inputs) as Resolved.BabylonDecal.ProjectDecalDto;
+        resolved.decalMap.renderTexture(
+            resolved.texture,
+            new BABYLON.Vector3(...resolved.position),
+            new BABYLON.Vector3(...resolved.normal),
+            new BABYLON.Vector3(...resolved.size),
+            resolved.angle,
         );
     }
 

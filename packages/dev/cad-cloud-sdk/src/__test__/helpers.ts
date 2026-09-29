@@ -31,10 +31,10 @@ export function mockFetcher(
     ...responses: Response[]
 ): (method: string, path: string, body?: unknown) => Promise<Response> {
     const queue = [...responses];
-    return async (_method: string, _path: string, _body?: unknown) => {
+    return (_method: string, _path: string, _body?: unknown) => {
         const res = queue.shift();
-        if (!res) throw new Error("mockFetcher: no more responses");
-        return res;
+        if (!res) return Promise.reject(new Error("mockFetcher: no more responses"));
+        return Promise.resolve(res);
     };
 }
 
@@ -44,11 +44,11 @@ export function mockFetcher(
 export function spyFetcher(...responses: Response[]) {
     const calls: { method: string; path: string; body?: unknown }[] = [];
     const queue = [...responses];
-    const fn = async (method: string, path: string, body?: unknown) => {
+    const fn = (method: string, path: string, body?: unknown) => {
         calls.push({ method, path, body });
         const res = queue.shift();
-        if (!res) throw new Error("spyFetcher: no more responses");
-        return res;
+        if (!res) return Promise.reject(new Error("spyFetcher: no more responses"));
+        return Promise.resolve(res);
     };
     return { fn, calls };
 }

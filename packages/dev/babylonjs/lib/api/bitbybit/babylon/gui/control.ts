@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * What every GUI control shares, whatever its kind: padding, alignment inside its parent, size,
@@ -54,29 +56,30 @@ export class BabylonGuiControl {
      * ```
      */
     changeControlAlignment(inputs: Inputs.BabylonGui.AlignmentDto<BABYLON.GUI.Control>): BABYLON.GUI.Control {
-        switch (inputs.horizontalAlignment) {
-            case "left":
-                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        const resolved = resolveDto(Inputs.BabylonGui.AlignmentDto, inputs) as Resolved.BabylonGui.AlignmentDto<BABYLON.GUI.Control>;
+        switch (resolved.horizontalAlignment) {
+            case Inputs.BabylonGui.horizontalAlignmentEnum.left:
+                resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
                 break;
-            case "right":
-                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+            case Inputs.BabylonGui.horizontalAlignmentEnum.right:
+                resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                 break;
-            case "center":
-                inputs.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-                break;
-        }
-        switch (inputs.verticalAlignment) {
-            case "top":
-                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                break;
-            case "bottom":
-                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
-                break;
-            case "center":
-                inputs.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+            case Inputs.BabylonGui.horizontalAlignmentEnum.center:
+                resolved.control.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
                 break;
         }
-        return inputs.control;
+        switch (resolved.verticalAlignment) {
+            case Inputs.BabylonGui.verticalAlignmentEnum.top:
+                resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                break;
+            case Inputs.BabylonGui.verticalAlignmentEnum.bottom:
+                resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
+                break;
+            case Inputs.BabylonGui.verticalAlignmentEnum.center:
+                resolved.control.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_CENTER;
+                break;
+        }
+        return resolved.control;
     }
 
     /**
@@ -93,12 +96,13 @@ export class BabylonGuiControl {
      * ```
      */
     cloneControl(inputs: Inputs.BabylonGui.CloneControlDto): BABYLON.GUI.Control {
-        const clonedControl = inputs.control.clone(inputs.host);
-        if (inputs.container) {
-            inputs.container.addControl(clonedControl);
+        const resolved = resolveDto(Inputs.BabylonGui.CloneControlDto, inputs) as Resolved.BabylonGui.CloneControlDto;
+        const clonedControl = resolved.control.clone(resolved.host);
+        if (resolved.container) {
+            resolved.container.addControl(clonedControl);
         }
-        if (inputs.name) {
-            clonedControl.name = inputs.name;
+        if (resolved.name) {
+            clonedControl.name = resolved.name;
         }
         return clonedControl;
     }
@@ -116,7 +120,8 @@ export class BabylonGuiControl {
      * ```
      */
     createControlObservableSelector(inputs: Inputs.BabylonGui.ControlObservableSelectorDto): Inputs.BabylonGui.controlObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.ControlObservableSelectorDto, inputs) as Resolved.BabylonGui.ControlObservableSelectorDto;
+        return resolved.selector;
     }
 
     /**
@@ -131,7 +136,8 @@ export class BabylonGuiControl {
      * ```
      */
     getControlByName(inputs: Inputs.BabylonGui.GetControlByNameDto): BABYLON.GUI.Control {
-        return inputs.container.children.find(c => c.name === inputs.name)!;
+        const resolved = resolveDto(Inputs.BabylonGui.GetControlByNameDto, inputs) as Resolved.BabylonGui.GetControlByNameDto;
+        return resolved.container.children.find(c => c.name === resolved.name)!;
     }
 
     /**
@@ -142,8 +148,9 @@ export class BabylonGuiControl {
      * @shortname set control is visible
      */
     setIsVisible(inputs: Inputs.BabylonGui.SetControlIsVisibleDto): BABYLON.GUI.Control {
-        inputs.control.isVisible = inputs.isVisible;
-        return inputs.control;
+        const resolved = resolveDto(Inputs.BabylonGui.SetControlIsVisibleDto, inputs) as Resolved.BabylonGui.SetControlIsVisibleDto;
+        resolved.control.isVisible = resolved.isVisible;
+        return resolved.control;
     }
 
     /**
@@ -155,8 +162,9 @@ export class BabylonGuiControl {
      * @shortname set control is readonly
      */
     setIsReadonly(inputs: Inputs.BabylonGui.SetControlIsReadonlyDto): BABYLON.GUI.Control {
-        inputs.control.isReadOnly = inputs.isReadOnly;
-        return inputs.control;
+        const resolved = resolveDto(Inputs.BabylonGui.SetControlIsReadonlyDto, inputs) as Resolved.BabylonGui.SetControlIsReadonlyDto;
+        resolved.control.isReadOnly = resolved.isReadOnly;
+        return resolved.control;
     }
 
     /**
@@ -167,8 +175,9 @@ export class BabylonGuiControl {
      * @shortname set control is enabled
      */
     setIsEnabled(inputs: Inputs.BabylonGui.SetControlIsEnabledDto): BABYLON.GUI.Control {
-        inputs.control.isEnabled = inputs.isEnabled;
-        return inputs.control;
+        const resolved = resolveDto(Inputs.BabylonGui.SetControlIsEnabledDto, inputs) as Resolved.BabylonGui.SetControlIsEnabledDto;
+        resolved.control.isEnabled = resolved.isEnabled;
+        return resolved.control;
     }
 
     /**
@@ -206,8 +215,9 @@ export class BabylonGuiControl {
      * @shortname set control color
      */
     setColor(inputs: Inputs.BabylonGui.SetControlColorDto): BABYLON.GUI.Control {
-        inputs.control.color = inputs.color;
-        return inputs.control;
+        const resolved = resolveDto(Inputs.BabylonGui.SetControlColorDto, inputs) as Resolved.BabylonGui.SetControlColorDto;
+        resolved.control.color = resolved.color;
+        return resolved.control;
     }
 
     /**
@@ -218,8 +228,9 @@ export class BabylonGuiControl {
      * @shortname set control font size
      */
     setFontSize(inputs: Inputs.BabylonGui.SetControlFontSizeDto): BABYLON.GUI.Control {
-        inputs.control.fontSize = inputs.fontSize;
-        return inputs.control;
+        const resolved = resolveDto(Inputs.BabylonGui.SetControlFontSizeDto, inputs) as Resolved.BabylonGui.SetControlFontSizeDto;
+        resolved.control.fontSize = resolved.fontSize;
+        return resolved.control;
     }
 
     /**

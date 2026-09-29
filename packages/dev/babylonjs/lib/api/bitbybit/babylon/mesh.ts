@@ -4,6 +4,8 @@ import * as BABYLON from "@babylonjs/core";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import { Base } from "../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 /**
  * Working with meshes already in the BabylonJS scene, the objects `draw.drawAnyAsync` gives back:
@@ -132,11 +134,12 @@ export class BabylonMesh {
      * ```
      */
     setVisibility(inputs: Inputs.BabylonMesh.SetMeshVisibilityDto): void {
-        inputs.babylonMesh.visibility = inputs.visibility;
-        if (inputs.includeChildren) {
-            if (inputs.babylonMesh.getChildMeshes) {
-                inputs.babylonMesh.getChildMeshes().forEach(mesh => {
-                    mesh.visibility = inputs.visibility;
+        const resolved = resolveDto(Inputs.BabylonMesh.SetMeshVisibilityDto, inputs) as Resolved.BabylonMesh.SetMeshVisibilityDto;
+        resolved.babylonMesh.visibility = resolved.visibility;
+        if (resolved.includeChildren) {
+            if (resolved.babylonMesh.getChildMeshes) {
+                resolved.babylonMesh.getChildMeshes().forEach(mesh => {
+                    mesh.visibility = resolved.visibility;
                 });
             }
         }
@@ -154,10 +157,11 @@ export class BabylonMesh {
      * ```
      */
     hide(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
-        inputs.babylonMesh.isVisible = false;
-        if (inputs.includeChildren) {
-            if (inputs.babylonMesh.getChildMeshes) {
-                inputs.babylonMesh.getChildMeshes().forEach(mesh => {
+        const resolved = resolveDto(Inputs.BabylonMesh.ShowHideMeshDto, inputs) as Resolved.BabylonMesh.ShowHideMeshDto;
+        resolved.babylonMesh.isVisible = false;
+        if (resolved.includeChildren) {
+            if (resolved.babylonMesh.getChildMeshes) {
+                resolved.babylonMesh.getChildMeshes().forEach(mesh => {
                     mesh.isVisible = false;
                 });
             }
@@ -176,9 +180,10 @@ export class BabylonMesh {
      * ```
      */
     show(inputs: Inputs.BabylonMesh.ShowHideMeshDto): void {
-        inputs.babylonMesh.isVisible = true;
-        if (inputs.includeChildren) {
-            inputs.babylonMesh.getChildMeshes().forEach(mesh => {
+        const resolved = resolveDto(Inputs.BabylonMesh.ShowHideMeshDto, inputs) as Resolved.BabylonMesh.ShowHideMeshDto;
+        resolved.babylonMesh.isVisible = true;
+        if (resolved.includeChildren) {
+            resolved.babylonMesh.getChildMeshes().forEach(mesh => {
                 mesh.isVisible = true;
             });
         }
@@ -223,11 +228,12 @@ export class BabylonMesh {
      * ```
      */
     setCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): void {
-        inputs.babylonMesh.checkCollisions = inputs.checkCollisions;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto, inputs) as Resolved.BabylonMesh.CheckCollisionsBabylonMeshDto;
+        resolved.babylonMesh.checkCollisions = resolved.checkCollisions;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.checkCollisions = inputs.checkCollisions;
+                child.checkCollisions = resolved.checkCollisions;
             });
         }
     }
@@ -240,7 +246,8 @@ export class BabylonMesh {
      * @shortname check collisions
      */
     getCheckCollisions(inputs: Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto): boolean {
-        return inputs.babylonMesh.checkCollisions;
+        const resolved = resolveDto(Inputs.BabylonMesh.CheckCollisionsBabylonMeshDto, inputs) as Resolved.BabylonMesh.CheckCollisionsBabylonMeshDto;
+        return resolved.babylonMesh.checkCollisions;
     }
 
     /**
@@ -255,11 +262,12 @@ export class BabylonMesh {
      * ```
      */
     setPickable(inputs: Inputs.BabylonMesh.PickableBabylonMeshDto): void {
-        inputs.babylonMesh.isPickable = inputs.pickable;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.PickableBabylonMeshDto, inputs) as Resolved.BabylonMesh.PickableBabylonMeshDto;
+        resolved.babylonMesh.isPickable = resolved.pickable;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.isPickable = inputs.pickable;
+                child.isPickable = resolved.pickable;
             });
         }
     }
@@ -276,9 +284,10 @@ export class BabylonMesh {
      * ```
      */
     enablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
-        inputs.babylonMesh.enablePointerMoveEvents = true;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.BabylonMeshWithChildrenDto, inputs) as Resolved.BabylonMesh.BabylonMeshWithChildrenDto;
+        resolved.babylonMesh.enablePointerMoveEvents = true;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.enablePointerMoveEvents = true;
             });
@@ -297,9 +306,10 @@ export class BabylonMesh {
      * ```
      */
     disablePointerMoveEvents(inputs: Inputs.BabylonMesh.BabylonMeshWithChildrenDto): void {
-        inputs.babylonMesh.enablePointerMoveEvents = false;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.BabylonMeshWithChildrenDto, inputs) as Resolved.BabylonMesh.BabylonMeshWithChildrenDto;
+        resolved.babylonMesh.enablePointerMoveEvents = false;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
                 child.enablePointerMoveEvents = false;
             });
@@ -346,7 +356,8 @@ export class BabylonMesh {
      * ```
      */
     getChildMeshes(inputs: Inputs.BabylonMesh.ChildMeshesBabylonMeshDto): BABYLON.AbstractMesh[] {
-        return inputs.babylonMesh.getChildMeshes(inputs.directDescendantsOnly);
+        const resolved = resolveDto(Inputs.BabylonMesh.ChildMeshesBabylonMeshDto, inputs) as Resolved.BabylonMesh.ChildMeshesBabylonMeshDto;
+        return resolved.babylonMesh.getChildMeshes(resolved.directDescendantsOnly);
     }
 
     /**
@@ -395,7 +406,8 @@ export class BabylonMesh {
      * ```
      */
     getMeshOfUniqueId(inputs: Inputs.BabylonMesh.UniqueIdBabylonMeshDto): BABYLON.AbstractMesh {
-        return this.context.scene.getMeshByUniqueId(inputs.uniqueId)!;
+        const resolved = resolveDto(Inputs.BabylonMesh.UniqueIdBabylonMeshDto, inputs) as Resolved.BabylonMesh.UniqueIdBabylonMeshDto;
+        return this.context.scene.getMeshByUniqueId(resolved.uniqueId)!;
     }
 
     /**
@@ -414,13 +426,14 @@ export class BabylonMesh {
      * ```
      */
     mergeMeshes(inputs: Inputs.BabylonMesh.MergeMeshesDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.BabylonMesh.MergeMeshesDto, inputs) as Resolved.BabylonMesh.MergeMeshesDto;
         const newMesh = BABYLON.Mesh.MergeMeshes(
-            inputs.arrayOfMeshes,
-            inputs.disposeSource,
-            inputs.allow32BitsIndices,
-            inputs.meshSubclass,
-            inputs.subdivideWithSubMeshes,
-            inputs.multiMultiMaterials
+            resolved.arrayOfMeshes,
+            resolved.disposeSource,
+            resolved.allow32BitsIndices,
+            resolved.meshSubclass,
+            resolved.subdivideWithSubMeshes,
+            resolved.multiMultiMaterials
         );
         return newMesh!;
     }
@@ -488,9 +501,10 @@ export class BabylonMesh {
      * ```
      */
     cloneToPositions(inputs: Inputs.BabylonMesh.CloneToPositionsDto): BABYLON.Mesh[] {
+        const resolved = resolveDto(Inputs.BabylonMesh.CloneToPositionsDto, inputs) as Resolved.BabylonMesh.CloneToPositionsDto;
         const clones: BABYLON.Mesh[] = [];
-        inputs.positions.forEach((position) => {
-            const clone = inputs.babylonMesh.clone();
+        resolved.positions.forEach((position) => {
+            const clone = resolved.babylonMesh.clone();
             clone.position = new BABYLON.Vector3(position[0], position[1], position[2]);
             clones.push(clone);
         });
@@ -538,11 +552,12 @@ export class BabylonMesh {
      * @shortname name
      */
     setName(inputs: Inputs.BabylonMesh.NameBabylonMeshDto): void {
-        inputs.babylonMesh.name = inputs.name;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.NameBabylonMeshDto, inputs) as Resolved.BabylonMesh.NameBabylonMeshDto;
+        resolved.babylonMesh.name = resolved.name;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.name = inputs.name;
+                child.name = resolved.name;
             });
         }
     }
@@ -601,11 +616,12 @@ export class BabylonMesh {
      * ```
      */
     setMaterial(inputs: Inputs.BabylonMesh.MaterialBabylonMeshDto): void {
-        inputs.babylonMesh.material = inputs.material;
-        if (inputs.includeChildren) {
-            const children = inputs.babylonMesh.getChildMeshes();
+        const resolved = resolveDto(Inputs.BabylonMesh.MaterialBabylonMeshDto, inputs) as Resolved.BabylonMesh.MaterialBabylonMeshDto;
+        resolved.babylonMesh.material = resolved.material;
+        if (resolved.includeChildren) {
+            const children = resolved.babylonMesh.getChildMeshes();
             children.forEach(child => {
-                child.material = inputs.material;
+                child.material = resolved.material;
             });
         }
     }
@@ -682,8 +698,9 @@ export class BabylonMesh {
      * ```
      */
     moveForward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.forward, inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.forward, resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -693,8 +710,9 @@ export class BabylonMesh {
      * @shortname backward
      */
     moveBackward(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.forward.negate(), inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.forward.negate(), resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -704,8 +722,9 @@ export class BabylonMesh {
      * @shortname up
      */
     moveUp(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.up, inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.up, resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -715,8 +734,9 @@ export class BabylonMesh {
      * @shortname down
      */
     moveDown(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.up.negate(), inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.up.negate(), resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -726,8 +746,9 @@ export class BabylonMesh {
      * @shortname right
      */
     moveRight(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.right, inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.right, resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -737,8 +758,9 @@ export class BabylonMesh {
      * @shortname left
      */
     moveLeft(inputs: Inputs.BabylonMesh.TranslateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        m.translate(m.right.negate(), inputs.distance, BABYLON.Space.WORLD);
+        const resolved = resolveDto(Inputs.BabylonMesh.TranslateBabylonMeshDto, inputs) as Resolved.BabylonMesh.TranslateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        m.translate(m.right.negate(), resolved.distance, BABYLON.Space.WORLD);
     }
 
     /**
@@ -753,8 +775,9 @@ export class BabylonMesh {
      * ```
      */
     yaw(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        const resolved = resolveDto(Inputs.BabylonMesh.RotateBabylonMeshDto, inputs) as Resolved.BabylonMesh.RotateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        const rot = BABYLON.Angle.FromDegrees(resolved.rotate).radians();
         m.rotate(BABYLON.Axis.Y, rot, BABYLON.Space.LOCAL);
     }
 
@@ -766,8 +789,9 @@ export class BabylonMesh {
      * @shortname pitch
      */
     pitch(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        const resolved = resolveDto(Inputs.BabylonMesh.RotateBabylonMeshDto, inputs) as Resolved.BabylonMesh.RotateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        const rot = BABYLON.Angle.FromDegrees(resolved.rotate).radians();
         m.rotate(BABYLON.Axis.X, rot, BABYLON.Space.LOCAL);
     }
 
@@ -779,8 +803,9 @@ export class BabylonMesh {
      * @shortname roll
      */
     roll(inputs: Inputs.BabylonMesh.RotateBabylonMeshDto): void {
-        const m = inputs.babylonMesh;
-        const rot = BABYLON.Angle.FromDegrees(inputs.rotate).radians();
+        const resolved = resolveDto(Inputs.BabylonMesh.RotateBabylonMeshDto, inputs) as Resolved.BabylonMesh.RotateBabylonMeshDto;
+        const m = resolved.babylonMesh;
+        const rot = BABYLON.Angle.FromDegrees(resolved.rotate).radians();
         m.rotate(BABYLON.Axis.Z, rot, BABYLON.Space.LOCAL);
     }
 
@@ -796,10 +821,11 @@ export class BabylonMesh {
      * ```
      */
     rotateAroundAxisWithPosition(inputs: Inputs.BabylonMesh.RotateAroundAxisNodeDto): void {
-        inputs.mesh.rotateAround(
-            new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]),
-            new BABYLON.Vector3(inputs.axis[0], inputs.axis[1], inputs.axis[2]),
-            BABYLON.Angle.FromDegrees(inputs.angle).radians()
+        const resolved = resolveDto(Inputs.BabylonMesh.RotateAroundAxisNodeDto, inputs) as Resolved.BabylonMesh.RotateAroundAxisNodeDto;
+        resolved.mesh.rotateAround(
+            new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]),
+            new BABYLON.Vector3(resolved.axis[0], resolved.axis[1], resolved.axis[2]),
+            BABYLON.Angle.FromDegrees(resolved.angle).radians()
         );
     }
 
@@ -859,7 +885,8 @@ export class BabylonMesh {
      * @shortname scale in place
      */
     setLocalScale(inputs: Inputs.BabylonMesh.ScaleInPlaceDto): void {
-        inputs.babylonMesh.scaling.scaleInPlace(inputs.scale);
+        const resolved = resolveDto(Inputs.BabylonMesh.ScaleInPlaceDto, inputs) as Resolved.BabylonMesh.ScaleInPlaceDto;
+        resolved.babylonMesh.scaling.scaleInPlace(resolved.scale);
     }
 
     /**
@@ -876,7 +903,8 @@ export class BabylonMesh {
      * ```
      */
     intersectsMesh(inputs: Inputs.BabylonMesh.IntersectsMeshDto): boolean {
-        return inputs.babylonMesh.intersectsMesh(inputs.babylonMesh2, inputs.precise, inputs.includeDescendants);
+        const resolved = resolveDto(Inputs.BabylonMesh.IntersectsMeshDto, inputs) as Resolved.BabylonMesh.IntersectsMeshDto;
+        return resolved.babylonMesh.intersectsMesh(resolved.babylonMesh2, resolved.precise, resolved.includeDescendants);
     }
 
     /**
@@ -931,7 +959,7 @@ export class BabylonMesh {
         const parent = new BABYLON.Mesh(uniqueName("instanceContainer"), this.context.scene);
         const sgs = this.context.scene?.metadata?.shadowGenerators as BABYLON.ShadowGenerator[];
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
-            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
+            inputs.mesh.getChildMeshes<BABYLON.Mesh>(false).forEach((child: BABYLON.Mesh) => {
                 const vertices = child.getTotalVertices();
                 if (child.createInstance && vertices > 0) {
                     child.disableEdgesRendering();
@@ -1003,7 +1031,7 @@ export class BabylonMesh {
         if (inputs.mesh && inputs.mesh.getChildMeshes && inputs.mesh.getChildMeshes().length > 0) {
             inputs.mesh.setParent(null);
             const container = new BABYLON.Mesh(uniqueName("meshCloneContainer"));
-            (inputs.mesh.getChildMeshes(false) as BABYLON.Mesh[]).forEach((child: BABYLON.Mesh) => {
+            inputs.mesh.getChildMeshes<BABYLON.Mesh>(false).forEach((child: BABYLON.Mesh) => {
                 if (child.createInstance && child.getTotalVertices() > 0 && child.getTotalIndices() > 0) {
                     const newInstance = child.createInstance(uniqueName("InstanceMesh"));
                     newInstance.parent = container;

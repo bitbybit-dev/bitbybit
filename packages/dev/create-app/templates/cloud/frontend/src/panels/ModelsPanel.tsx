@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
+import { downloadsOf, glbUrlOf, readJson, stringOf } from "../api";
 
 interface ModelsPanelProps {
     active: boolean;
@@ -7,111 +8,102 @@ interface ModelsPanelProps {
     onLoadModels: (urls: string[]) => void;
 }
 
-/** Pick the GLB download URL from various response shapes */
-function extractGlbUrl(data: Record<string, unknown>): string | undefined {
-    // REST backend: { downloadUrl: "..." }
-    if (typeof data.downloadUrl === "string") return data.downloadUrl;
-    // SDK backend: { downloads: [{ format, downloadUrl, filename }] }
-    const downloads = data.downloads as { format: string; downloadUrl: string }[] | undefined;
-    if (Array.isArray(downloads)) {
-        const glb = downloads.find((d) => d.format === "glb") ?? downloads[0];
-        return glb?.downloadUrl;
-    }
-    return undefined;
+function glbUrlIn(data: Record<string, unknown>): string | undefined {
+    return stringOf(data, "downloadUrl") ?? glbUrlOf(downloadsOf(data["downloads"]));
 }
 
-/** Pick GLB URLs from batch response */
-function extractBatchGlbUrls(data: Record<string, unknown>): string[] {
-    // REST backend: { downloadUrls: [...] }
-    if (Array.isArray(data.downloadUrls)) return data.downloadUrls as string[];
-    // SDK backend: { subTasks: [{ downloads: [...] }] }
-    const subTasks = data.subTasks as { downloads: { format: string; downloadUrl: string }[] }[] | undefined;
-    if (Array.isArray(subTasks)) {
-        return subTasks.map((t) => {
-            const glb = t.downloads.find((d) => d.format === "glb") ?? t.downloads[0];
-            return glb.downloadUrl;
-        });
-    }
-    return [];
+function batchGlbUrlsIn(data: Record<string, unknown>): string[] {
+    const listed = data["downloadUrls"];
+    if (Array.isArray(listed)) return listed.filter((entry: unknown): entry is string => typeof entry === "string");
+    const subTasks = data["subTasks"];
+    if (!Array.isArray(subTasks)) return [];
+    return subTasks.flatMap((task: unknown) => {
+        const downloads = task !== null && typeof task === "object" && "downloads" in task ? downloadsOf(task.downloads) : [];
+        const glbUrl = glbUrlOf(downloads);
+        return glbUrl ? [glbUrl] : [];
+    });
 }
 
-export function ModelsPanel({ active, modelLoaded, onLoadModel, onLoadModels }: ModelsPanelProps) {
-    const [status, setStatus] = useState("");
+function rememberTask(taskId: string): void {
+    const url = new URL(window.location.href);
+    url.searchParams.set("task", taskId);
+    window.history.replaceState({}, "", url.toString());
+}
+
+const taskFromUrl = (): string | null => new URLSearchParams(window.location.search).get("task");
+
+export function ModelsPanel({ active, modelLoaded, onLoadModel, onLoadModels }: ModelsPanelProps): ReactElement {
+    const [existingTaskId] = useState(taskFromUrl);
+    const [status, setStatus] = useState(existingTaskId ? "Fetching the existing task result..." : "");
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(existingTaskId !== null);
 
-    // On mount, check for ?task= query param and fetch existing result
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const existingTaskId = params.get("task");
         if (!existingTaskId) return;
-
-        setLoading(true);
-        setStatus("Fetching existing task result…");
-        fetch(`/api/task/${encodeURIComponent(existingTaskId)}`)
-            .then((r) => r.json())
-            .then((data) => {
-                const downloadUrl = extractGlbUrl(data);
+        let cancelled = false;
+        const load = async (): Promise<void> => {
+            try {
+                const data = await readJson(await fetch(`/api/task/${encodeURIComponent(existingTaskId)}`));
+                if (cancelled) return;
+                const downloadUrl = glbUrlIn(data);
+                const taskStatus = stringOf(data, "status");
                 if (downloadUrl) {
                     setStatus("Model loaded!");
                     onLoadModel(downloadUrl);
-                } else if (data.status && data.status !== "completed") {
-                    setStatus(`Task still ${data.status} — click to regenerate.`);
+                } else if (taskStatus !== undefined && taskStatus !== "completed") {
+                    setStatus(`Task still ${taskStatus} - click to regenerate.`);
                 } else {
-                    throw new Error(data.error || "Could not fetch result");
+                    throw new Error(stringOf(data, "error") ?? "Could not fetch the result");
                 }
-            })
-            .catch((e) => {
-                setStatus(e.message);
+            } catch (caught: unknown) {
+                if (cancelled) return;
+                setStatus(caught instanceof Error ? caught.message : "Could not fetch the result");
                 setError(true);
-            })
-            .finally(() => setLoading(false));
-    }, []);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+        void load();
+        return () => { cancelled = true; };
+    }, [existingTaskId, onLoadModel]);
 
-    const generate = async () => {
+    const generate = async (): Promise<void> => {
         setLoading(true);
         setError(false);
-        setStatus("Generating Dragon Cup…");
+        setStatus("Generating the dragon cup...");
         try {
-            const res = await fetch("/api/generate", { method: "POST" });
-            if (!res.ok) throw new Error(`Server error: ${res.status}`);
-            const data = await res.json();
-            const downloadUrl = extractGlbUrl(data);
+            const response = await fetch("/api/generate", { method: "POST" });
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const data = await readJson(response);
+            const downloadUrl = glbUrlIn(data);
             if (!downloadUrl) throw new Error("No GLB download URL returned");
 
-            // Store task ID in URL for refresh
-            if (data.taskId) {
-                const url = new URL(window.location.href);
-                url.searchParams.set("task", data.taskId);
-                window.history.replaceState({}, "", url.toString());
-            }
+            const taskId = stringOf(data, "taskId");
+            if (taskId) rememberTask(taskId);
 
             setStatus("Model loaded!");
             onLoadModel(downloadUrl);
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : "Unknown error";
-            setStatus(msg);
+        } catch (caught: unknown) {
+            setStatus(caught instanceof Error ? caught.message : "Unknown error");
             setError(true);
         } finally {
             setLoading(false);
         }
     };
 
-    const generateBatch = async () => {
+    const generateBatch = async (): Promise<void> => {
         setLoading(true);
         setError(false);
-        setStatus("Generating batch (3 variations)…");
+        setStatus("Generating a batch of three variations...");
         try {
-            const res = await fetch("/api/generate-batch", { method: "POST" });
-            if (!res.ok) throw new Error(`Server error: ${res.status}`);
-            const data = await res.json();
-            const urls = extractBatchGlbUrls(data);
+            const response = await fetch("/api/generate-batch", { method: "POST" });
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
+            const urls = batchGlbUrlsIn(await readJson(response));
             if (urls.length === 0) throw new Error("No GLB downloads returned");
             setStatus(`Loaded ${urls.length} models!`);
             onLoadModels(urls);
-        } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : "Unknown error";
-            setStatus(msg);
+        } catch (caught: unknown) {
+            setStatus(caught instanceof Error ? caught.message : "Unknown error");
             setError(true);
         } finally {
             setLoading(false);
@@ -121,10 +113,10 @@ export function ModelsPanel({ active, modelLoaded, onLoadModel, onLoadModels }: 
     return (
         <div className={`panel ${active ? "" : "hidden"} ${modelLoaded ? "minimized" : ""}`}>
             <div className="actions">
-                <button className="btn" disabled={loading} onClick={generate}>
+                <button className="btn" disabled={loading} onClick={() => { void generate(); }}>
                     Generate Dragon Cup
                 </button>
-                <button className="btn btn-outline" disabled={loading} onClick={generateBatch}>
+                <button className="btn btn-outline" disabled={loading} onClick={() => { void generateBatch(); }}>
                     Generate Batch (3 Cups)
                 </button>
             </div>

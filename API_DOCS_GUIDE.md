@@ -98,8 +98,37 @@ export class FilletDto<T> {
   omitting it does for an optional, and how it relates to its siblings. It never restates the type
   or the name. Thirty words at most. The tags below it (`@default`, `@minimum`, `@maximum`, `@step`,
   `@optional`) stay exactly as they are.
+- `@minimum` and `@maximum` are the limits of what the property accepts, not the range an editor
+  should suggest: `validateInputs` reports a value outside them. A rotation, an offset or anything
+  else that may be negative or past a full turn is `-Infinity` to `Infinity`; a size or a count
+  that cannot be negative has a floor. When the limit itself is invalid - a box of width 0, a
+  meshing precision of 0 - `@exclusiveMinimum true` (or `@exclusiveMaximum true`) beside the bound
+  makes it strict. A bound belongs to the DTO, so it has to hold for every method that takes it:
+  a parameter that is a fraction on an edge but a raw value on a 2D curve has no bound.
 - The same DTO may serve several methods with different semantics; say so per method, as the
   fillet docs do, rather than choosing one.
+- Every property is one of three kinds, and the spelling and the tags say which:
+
+  | kind | spelling | tags |
+  |---|---|---|
+  | required | `shape!: T;` | `@default undefined`, or no `@default` |
+  | defaulted | `tolerance?: number \| undefined = 1e-7;` | `@default` repeating the initializer |
+  | optional | `indexes?: number[] \| undefined;` | `@default undefined` and `@optional true` |
+
+  The initializer is the default - `new Dto()` runs it - and `@default` must name the same value, so
+  a `@default` value with no initializer, or an initializer with no `@default`, is an error. A
+  default already makes a property optional, so `@optional true` never sits beside one. A class
+  that is only ever returned, never taken, keeps `size = 0;`: its readers count on every property
+  being there, and `defaulted-spelling` asks the `?` only of a class some method takes.
+- A singular DTO and its plural (`DrawShapeDto` and `DrawShapesDto`, `SphereDto` and
+  `SphereCentersDto`) declare the properties they share once, in an `abstract` parent named
+  `<Singular>SharedDto` just above them in the same file. Each subclass declares only the property
+  that differs, first, and its constructor calls `super()` and fills the inherited properties in
+  its usual order; whatever lists a DTO's properties puts an abstract parent's after the class's own,
+  so the property that differs stays first. The parent's text has to read true for both, so it says
+  "each shape" rather than "the shape". A pair whose shared properties mean different things (a
+  fillet's `indexes`, counted from 0 on edges, from 1 on corners) stays two classes, and
+  `pair-parity` holds such pairs to one type, default and bounds per shared property.
 
 ## An API class
 

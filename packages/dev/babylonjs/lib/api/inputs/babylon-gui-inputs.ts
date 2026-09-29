@@ -146,18 +146,18 @@ export namespace BabylonGui {
          * Name the GUI layer is known by in the scene
          * @default fullscreen
          */
-        name = "fullscreen";
+        name?: string | undefined = "fullscreen";
         /**
          * When true, the layer is drawn in front of the scene; when false, behind it
          * @default true
          */
-        foreground?: boolean | undefined;
+        foreground?: boolean | undefined = true;
         /**
          * When true, the layer scales with the screen's pixel density so controls keep their size
          * on dense displays
          * @default false
          */
-        adaptiveScaling?: boolean | undefined;
+        adaptiveScaling?: boolean | undefined = false;
     }
 
     /**
@@ -196,24 +196,24 @@ export namespace BabylonGui {
          * When true, controls on the mesh react to the pointer moving over them, at some extra cost
          * @default true
          */
-        supportPointerMove = true;
+        supportPointerMove?: boolean | undefined = true;
         /**
          * When true, transparent pixels are cut out instead of blended, which avoids sorting
          * problems
          * @default false
          */
-        onlyAlphaTesting = false;
+        onlyAlphaTesting?: boolean | undefined = false;
         /**
          * When true, the texture is flipped top to bottom; the default is right for most meshes
          * @default true
          */
-        invertY = true;
+        invertY?: boolean | undefined = true;
         /**
          * How texture pixels are read when scaled: nearest keeps hard pixels, bilinear and
          * trilinear blend them
          * @default trilinear
          */
-        sampling = BabylonTexture.samplingModeEnum.trilinear;
+        sampling?: BabylonTexture.samplingModeEnum | undefined = BabylonTexture.samplingModeEnum.trilinear;
     }
 
     /**
@@ -234,17 +234,17 @@ export namespace BabylonGui {
          * Name the panel is known by, which `control.getControlByName` finds it by
          * @default stackPanel
          */
-        name = "stackPanel";
+        name?: string | undefined = "stackPanel";
         /**
          * When true, children stack top to bottom; when false, left to right
          * @default true
          */
-        isVertical = true;
+        isVertical?: boolean | undefined = true;
         /**
          * Gap between neighboring children, in pixels
          * @default 0
          */
-        spacing = 0;
+        spacing?: number | undefined = 0;
         /**
          * Width as a pixel string or a fraction; give it for a vertical panel and leave it out for
          * a horizontal one, which sizes from its children
@@ -263,13 +263,13 @@ export namespace BabylonGui {
          * CSS color of the panel's text and border; the default is fully transparent
          * @default #00000000
          */
-        color = "#00000000";
+        color?: string | undefined = "#00000000";
         /**
          * CSS color behind the children; the default is a translucent black so the panel can be
          * seen
          * @default #00000055
          */
-        background = "#00000055";
+        background?: string | undefined = "#00000055";
     }
     /**
      * Feeds `babylon.gui.stackPanel.setIsVertical` with a stack panel and its stacking direction.
@@ -288,7 +288,7 @@ export namespace BabylonGui {
          * When true, children stack top to bottom; when false, left to right
          * @default true
          */
-        isVertical = true;
+        isVertical?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gui.stackPanel.setSpacing` with a stack panel and the gap between its
@@ -308,7 +308,7 @@ export namespace BabylonGui {
          * Gap between neighboring children, in pixels
          * @default 0
          */
-        spacing = 0;
+        spacing?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gui.stackPanel.setWidth` with a stack panel and its new width.
@@ -365,98 +365,98 @@ export namespace BabylonGui {
      * Feeds the slider observable selector method with the name of the slider event to select.
      */
     export class SliderObservableSelectorDto {
-        constructor(selector: sliderObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: sliderObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which slider event, by its observable name
          * @default onValueChangedObservable
          */
-        selector: sliderObservableSelectorEnum;
+        selector?: sliderObservableSelectorEnum | undefined = sliderObservableSelectorEnum.onValueChangedObservable;
     }
     /**
      * Feeds the color picker observable selector method with the name of the color picker event to
      * select.
      */
     export class ColorPickerObservableSelectorDto {
-        constructor(selector: colorPickerObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: colorPickerObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which color picker event, by its observable name
          * @default onValueChangedObservable
          */
-        selector: colorPickerObservableSelectorEnum;
+        selector?: colorPickerObservableSelectorEnum | undefined = colorPickerObservableSelectorEnum.onValueChangedObservable;
     }
     /**
      * Feeds the text field observable selector method with the name of the text field event to
      * select.
      */
     export class InputTextObservableSelectorDto {
-        constructor(selector: inputTextObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: inputTextObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which text field event, by its observable name
          * @default onTextChangedObservable
          */
-        selector: inputTextObservableSelectorEnum;
+        selector?: inputTextObservableSelectorEnum | undefined = inputTextObservableSelectorEnum.onTextChangedObservable;
     }
     /**
      * Feeds the radio button observable selector method with the name of the radio button event to
      * select.
      */
     export class RadioButtonObservableSelectorDto {
-        constructor(selector: radioButtonObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: radioButtonObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which radio button event, by its observable name
          * @default onIsCheckedChangedObservable
          */
-        selector: radioButtonObservableSelectorEnum;
+        selector?: radioButtonObservableSelectorEnum | undefined = radioButtonObservableSelectorEnum.onIsCheckedChangedObservable;
     }
 
     /**
      * Feeds the checkbox observable selector method with the name of the checkbox event to select.
      */
     export class CheckboxObservableSelectorDto {
-        constructor(selector: checkboxObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: checkboxObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which checkbox event, by its observable name
          * @default onIsCheckedChangedObservable
          */
-        selector: checkboxObservableSelectorEnum;
+        selector?: checkboxObservableSelectorEnum | undefined = checkboxObservableSelectorEnum.onIsCheckedChangedObservable;
     }
 
     /**
      * Feeds the control observable selector method with the name of the control event to select.
      */
     export class ControlObservableSelectorDto {
-        constructor(selector: controlObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: controlObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which control event, by its observable name
          * @default onPointerClickObservable
          */
-        selector: controlObservableSelectorEnum;
+        selector?: controlObservableSelectorEnum | undefined = controlObservableSelectorEnum.onPointerClickObservable;
     }
     /**
      * Feeds the text block observable selector method with the name of the text block event to
      * select.
      */
     export class TextBlockObservableSelectorDto {
-        constructor(selector: textBlockObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: textBlockObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which text block event, by its observable name
          * @default onTextChangedObservable
          */
-        selector: textBlockObservableSelectorEnum;
+        selector?: textBlockObservableSelectorEnum | undefined = textBlockObservableSelectorEnum.onTextChangedObservable;
     }
     /**
      * Feeds the `babylon.gui.container` getters with the container to read from.
@@ -495,7 +495,7 @@ export namespace BabylonGui {
          * When true, the container is emptied first, so the order is exactly the list's
          * @default true
          */
-        clearControlsFirst = true;
+        clearControlsFirst?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gui.control.getControlByName` with the container to search and the name to
@@ -515,7 +515,7 @@ export namespace BabylonGui {
          * The name the control was created with
          * @default controlName
          */
-        name = "controlName";
+        name?: string | undefined = "controlName";
     }
     /**
      * Feeds `babylon.gui.control.setIsVisible` with a control and whether it is shown.
@@ -534,7 +534,7 @@ export namespace BabylonGui {
          * When true, the control is shown; when false, hidden while keeping its place in the layout
          * @default true
          */
-        isVisible = true;
+        isVisible?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gui.control.setIsReadonly` with a control and whether it ignores input.
@@ -553,7 +553,7 @@ export namespace BabylonGui {
          * When true, the control is shown normally but ignores input
          * @default false
          */
-        isReadOnly = false;
+        isReadOnly?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gui.control.setIsEnabled` with a control and whether it is active.
@@ -572,7 +572,7 @@ export namespace BabylonGui {
          * When true, the control is active; when false, it is drawn dimmed and ignores input
          * @default true
          */
-        isEnabled = true;
+        isEnabled?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gui.image.createImage`: the name, the picture's address, a color and the
@@ -590,7 +590,7 @@ export namespace BabylonGui {
          * Name the image is known by, which `control.getControlByName` finds it by
          * @default imageName
          */
-        name = "imageName";
+        name?: string | undefined = "imageName";
         /**
          * Address the picture is loaded from
          * @default undefined
@@ -600,7 +600,7 @@ export namespace BabylonGui {
          * CSS color of the control, used for its border
          * @default black
          */
-        color = "black";
+        color?: string | undefined = "black";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -667,22 +667,22 @@ export namespace BabylonGui {
          * Name the button is known by, which `control.getControlByName` finds it by
          * @default buttonName
          */
-        name = "buttonName";
+        name?: string | undefined = "buttonName";
         /**
          * The text shown on the button
          * @default Click me!
          */
-        label = "Click me!";
+        label?: string | undefined = "Click me!";
         /**
          * CSS color of the label text
          * @default black
          */
-        color = "black";
+        color?: string | undefined = "black";
         /**
          * CSS color of the button's face
          * @default #f0cebb
          */
-        background = "#f0cebb";
+        background?: string | undefined = "#f0cebb";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -701,7 +701,7 @@ export namespace BabylonGui {
          * Font size of the label, in pixels
          * @default 24
          */
-        fontSize = 24;
+        fontSize?: number | undefined = 24;
     }
     /**
      * Feeds `babylon.gui.button.setButtonText` with a button and its new label.
@@ -720,7 +720,7 @@ export namespace BabylonGui {
          * The text shown on the button from then on
          * @default Click me!
          */
-        text = "Click me!";
+        text?: string | undefined = "Click me!";
     }
     /**
      * Feeds `babylon.gui.button.getButtonText` with the button to read from.
@@ -753,17 +753,17 @@ export namespace BabylonGui {
          * Name the color picker is known by, which `control.getControlByName` finds it by
          * @default colorPickerName
          */
-        name = "colorPickerName";
+        name?: string | undefined = "colorPickerName";
         /**
          * Hex color the picker starts on
          * @default #f0cebb
          */
-        defaultColor = "#f0cebb";
+        defaultColor?: string | undefined = "#f0cebb";
         /**
          * CSS color of the control's border
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * Width as a pixel string or a fraction; left out, 300 pixels
          * @default undefined
@@ -778,7 +778,7 @@ export namespace BabylonGui {
         height?: number | string | undefined;
         /**
          * Width and height together, as a pixel string or a fraction; it overrides both when given
-         * @default 300px
+         * @default undefined
          * @optional true
          */
         size?: number | string | undefined;
@@ -819,9 +819,8 @@ export namespace BabylonGui {
         /**
          * Width and height together, as a pixel string or a fraction
          * @default 300px
-         * @optional true
          */
-        size?: number | string | undefined;
+        size?: number | string | undefined = "300px";
     }
     /**
      * Feeds the `babylon.gui.colorPicker` getters with the color picker to read from.
@@ -854,12 +853,12 @@ export namespace BabylonGui {
          * Name the checkbox is known by, which `control.getControlByName` finds it by
          * @default checkboxName
          */
-        name = "checkboxName";
+        name?: string | undefined = "checkboxName";
         /**
          * When true, the checkbox starts checked
          * @default false
          */
-        isChecked = false;
+        isChecked?: boolean | undefined = false;
         /**
          * How much of the square the inner mark fills, from 0 to 1
          * @default 0.8
@@ -867,17 +866,17 @@ export namespace BabylonGui {
          * @maximum 1
          * @step 0.05
          */
-        checkSizeRatio = 0.8;
+        checkSizeRatio?: number | undefined = 0.8;
         /**
          * CSS color of the mark and the border
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * CSS color of the square behind the mark
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -911,7 +910,7 @@ export namespace BabylonGui {
          * Font size of the control's text, in pixels
          * @default 24
          */
-        fontSize = 24;
+        fontSize?: number | undefined = 24;
     }
     /**
      * Feeds `babylon.gui.control.setHeight` with a control and its new height.
@@ -968,7 +967,7 @@ export namespace BabylonGui {
          * CSS color of the control's text or fill, depending on its kind
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
     }
     /**
      * Feeds `babylon.gui.container.setBackground` with a container and its new background color.
@@ -987,7 +986,7 @@ export namespace BabylonGui {
          * CSS color behind the container's children; an eight-digit hex makes it translucent
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
     }
     /**
      * Feeds `babylon.gui.container.setIsReadonly` with a container and whether it and its children
@@ -1007,7 +1006,7 @@ export namespace BabylonGui {
          * When true, the container and everything in it are shown normally but ignore input
          * @default false
          */
-        isReadOnly = false;
+        isReadOnly?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gui.checkbox.setBackground` with a checkbox and the color of its square.
@@ -1026,7 +1025,7 @@ export namespace BabylonGui {
          * CSS color of the square behind the mark
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
     }
     /**
      * Feeds `babylon.gui.checkbox.setCheckSizeRatio` with a checkbox and how large its mark is.
@@ -1048,7 +1047,7 @@ export namespace BabylonGui {
          * @maximum 1
          * @step 0.05
          */
-        checkSizeRatio = 0.8;
+        checkSizeRatio?: number | undefined = 0.8;
     }
 
     /**
@@ -1096,7 +1095,7 @@ export namespace BabylonGui {
          * When true, the checkbox becomes checked; the change fires its event like a click
          * @default false
          */
-        isChecked = false;
+        isChecked?: boolean | undefined = false;
     }
 
     /**
@@ -1115,27 +1114,27 @@ export namespace BabylonGui {
          * Name the text field is known by, which `control.getControlByName` finds it by
          * @default inputName
          */
-        name = "inputName";
+        name?: string | undefined = "inputName";
         /**
          * The text the field starts with; empty shows the placeholder
          * @default
          */
-        text!: string;
+        text?: string | undefined = "";
         /**
          * The hint shown while the field is empty
          * @default
          */
-        placeholder!: string;
+        placeholder?: string | undefined = "";
         /**
          * CSS color of the typed text
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * CSS color behind the text
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -1168,7 +1167,7 @@ export namespace BabylonGui {
          * CSS color behind the text
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
     }
     /**
      * Feeds `babylon.gui.inputText.setText` with a text field and the text to put in it.
@@ -1187,7 +1186,7 @@ export namespace BabylonGui {
          * The text the field holds from then on; the change fires its event like typing
          * @default
          */
-        text!: string;
+        text?: string | undefined = "";
     }
     /**
      * Feeds `babylon.gui.inputText.setPlaceholder` with a text field and its new hint.
@@ -1206,7 +1205,7 @@ export namespace BabylonGui {
          * The hint shown while the field is empty
          * @default
          */
-        placeholder!: string;
+        placeholder?: string | undefined = "";
     }
     /**
      * Feeds the `babylon.gui.inputText` getters with the text field to read from.
@@ -1241,7 +1240,7 @@ export namespace BabylonGui {
          * Name the radio button is known by, which `control.getControlByName` finds it by
          * @default radioBtnName
          */
-        name = "radioBtnName";
+        name?: string | undefined = "radioBtnName";
         /**
          * Radio buttons sharing a group let only one of them be checked at a time; left out, the
          * button is in the unnamed group
@@ -1253,7 +1252,7 @@ export namespace BabylonGui {
          * When true, the radio button starts checked
          * @default false
          */
-        isChecked = false;
+        isChecked?: boolean | undefined = false;
         /**
          * How much of the circle the inner dot fills, from 0 to 1
          * @default 0.8
@@ -1261,17 +1260,17 @@ export namespace BabylonGui {
          * @maximum 1
          * @step 0.05
          */
-        checkSizeRatio = 0.8;
+        checkSizeRatio?: number | undefined = 0.8;
         /**
          * CSS color of the dot and the border
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * CSS color of the circle behind the dot
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -1308,7 +1307,7 @@ export namespace BabylonGui {
          * @maximum 1
          * @step 0.05
          */
-        checkSizeRatio = 0.8;
+        checkSizeRatio?: number | undefined = 0.8;
     }
     /**
      * Feeds `babylon.gui.radioButton.setGroup` with a radio button and the group it joins.
@@ -1327,7 +1326,7 @@ export namespace BabylonGui {
          * The group joined; only one radio button per group can be checked
          * @default
          */
-        group!: string;
+        group?: string | undefined = "";
     }
     /**
      * Feeds `babylon.gui.radioButton.setBackground` with a radio button and the color of its
@@ -1347,7 +1346,7 @@ export namespace BabylonGui {
          * CSS color of the circle behind the dot
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
     }
     /**
      * Feeds the `babylon.gui.radioButton` getters with the radio button to read from.
@@ -1384,7 +1383,7 @@ export namespace BabylonGui {
          * Name the slider is known by, which `control.getControlByName` finds it by
          * @default sliderName
          */
-        name = "sliderName";
+        name?: string | undefined = "sliderName";
         /**
          * The value at the left or bottom end
          * @default 0
@@ -1392,7 +1391,7 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        minimum = 0;
+        minimum?: number | undefined = 0;
         /**
          * The value at the right or top end
          * @default 10
@@ -1400,7 +1399,7 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        maximum = 10;
+        maximum?: number | undefined = 10;
         /**
          * The value the slider starts at, between the minimum and maximum
          * @default 5
@@ -1408,30 +1407,30 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        value = 5;
+        value?: number | undefined = 5;
         /**
          * The increment the value moves in; 1 gives whole numbers, 0 moves smoothly
          * @default 0.01
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 0.01
          */
-        step = 0.01;
+        step?: number | undefined = 0.01;
         /**
          * When true, the slider runs bottom to top; when false, left to right
          * @default false
          */
-        isVertical = false;
+        isVertical?: boolean | undefined = false;
         /**
          * CSS color of the filled part of the track
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * CSS color of the unfilled part of the track
          * @default black
          */
-        background = "black";
+        background?: string | undefined = "black";
         /**
          * Width as a pixel string or a fraction; left out, a horizontal slider fills the parent and
          * a vertical one is 42 pixels
@@ -1450,7 +1449,7 @@ export namespace BabylonGui {
          * When true, the draggable thumb is drawn; when false, only the track
          * @default true
          */
-        displayThumb = true;
+        displayThumb?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gui.textBlock.createTextBlock`: the name, text, color, optional size and font
@@ -1468,17 +1467,17 @@ export namespace BabylonGui {
          * Name the text block is known by, which `control.getControlByName` finds it by
          * @default textBlockName
          */
-        name = "textBlockName";
+        name?: string | undefined = "textBlockName";
         /**
          * The text shown
          * @default Hello World!
          */
-        text = "Hello World!";
+        text?: string | undefined = "Hello World!";
         /**
          * CSS color of the text
          * @default #f0cebb
          */
-        color = "#f0cebb";
+        color?: string | undefined = "#f0cebb";
         /**
          * Width, as a pixel string such as `200px` or a fraction of the parent from 0 to 1; left
          * out, the engine chooses
@@ -1497,7 +1496,7 @@ export namespace BabylonGui {
          * Font size of the text, in pixels
          * @default 24
          */
-        fontSize = 24;
+        fontSize?: number | undefined = 24;
     }
 
     /**
@@ -1538,7 +1537,7 @@ export namespace BabylonGui {
          * When true, the block grows or shrinks to fit its text instead of keeping its set size
          * @default false
          */
-        resizeToFit = false;
+        resizeToFit?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gui.textBlock.setTextWrapping` with a text block and how it handles text wider
@@ -1616,12 +1615,12 @@ export namespace BabylonGui {
          * When true, the thumb is round; when false, square
          * @default false
          */
-        isThumbCircle = false;
+        isThumbCircle?: boolean | undefined = false;
         /**
          * CSS color of the thumb
          * @default white
          */
-        thumbColor = "white";
+        thumbColor?: string | undefined = "white";
         /**
          * Width of the thumb as a pixel string or a fraction; left out, the engine chooses
          * @default undefined
@@ -1632,12 +1631,12 @@ export namespace BabylonGui {
          * When true, the thumb stays inside the track at the ends instead of overhanging it
          * @default false
          */
-        isThumbClamped = false;
+        isThumbClamped?: boolean | undefined = false;
         /**
          * When true, the thumb is drawn; when false, only the track
          * @default true
          */
-        displayThumb = true;
+        displayThumb?: boolean | undefined = true;
     }
     /**
      * Feeds the `babylon.gui.slider` getters with the slider to read from.
@@ -1670,7 +1669,7 @@ export namespace BabylonGui {
          * CSS color of the line around the track
          * @default white
          */
-        borderColor = "white";
+        borderColor?: string | undefined = "white";
     }
     /**
      * Feeds `babylon.gui.slider.setBackgroundColor` with a slider and the color of the unfilled
@@ -1690,7 +1689,7 @@ export namespace BabylonGui {
          * CSS color of the unfilled part of the track
          * @default black
          */
-        backgroundColor = "black";
+        backgroundColor?: string | undefined = "black";
     }
     /**
      * Feeds `babylon.gui.slider.setValue`, `setMinimum`, `setMaximum` and `setStep` with a slider
@@ -1714,7 +1713,7 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        value: number = 5;
+        value?: number | undefined = 5;
     }
     /**
      * Feeds `babylon.gui.control.changeControlPadding` with a control and the space kept clear on
@@ -1787,7 +1786,7 @@ export namespace BabylonGui {
          * Name the copy is known by
          * @default clonedControl
          */
-        name = "clonedControl";
+        name?: string | undefined = "clonedControl";
         /**
          * The GUI texture the copy belongs to; left out, the original's host is used
          * @default undefined
@@ -1814,12 +1813,12 @@ export namespace BabylonGui {
          * Left, center or right inside the parent
          * @default center
          */
-        horizontalAlignment: horizontalAlignmentEnum = horizontalAlignmentEnum.center;
+        horizontalAlignment?: horizontalAlignmentEnum | undefined = horizontalAlignmentEnum.center;
         /**
          * Top, center or bottom inside the parent
          * @default center
          */
-        verticalAlignment: verticalAlignmentEnum = verticalAlignmentEnum.center;
+        verticalAlignment?: verticalAlignmentEnum | undefined = verticalAlignmentEnum.center;
     }
 
     /**
@@ -1844,11 +1843,11 @@ export namespace BabylonGui {
          * @maximum Infinity
          * @step 0.1
          */
-        outlineWidth: number = 0;
+        outlineWidth?: number | undefined = 0;
         /**
          * CSS color of the outline
          * @default white
          */
-        outlineColor = "white";
+        outlineColor?: string | undefined = "white";
     }
 }

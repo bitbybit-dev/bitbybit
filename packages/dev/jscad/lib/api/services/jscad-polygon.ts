@@ -1,8 +1,9 @@
-import { GeometryHelper } from "@bitbybit-dev/base";
+import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as JSCAD from "@jscad/modeling";
 import { asPath } from "./entity-narrowing";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Building flat JSCAD shapes, the filled 2D regions that booleans combine and extrusions turn into
@@ -23,9 +24,9 @@ export class JSCADPolygon {
      * Builds a filled 2D shape from the outline points, taken in order and closed back to the
      * first.
      *
-     * Only X and Y are used, Z is dropped; repeated consecutive points are removed and at least
-     * three distinct points are needed. Counter-clockwise order gives a normal shape, clockwise
-     * gives a negative one.
+     * The points may be 2D or 3D; only X and Y are used. Repeated consecutive points are removed
+     * and at least three distinct points are needed. Counter-clockwise order gives a normal shape,
+     * clockwise gives a negative one.
      * @param inputs - The outline points
      * @returns The 2D shape
      * @group from
@@ -36,7 +37,7 @@ export class JSCADPolygon {
      * const triangle = await bitbybit.jscad.polygon.createFromPoints({ points: [[0, 0, 0], [10, 0, 0], [5, 8, 0]] });
      * ```
      */
-    createFromPoints(inputs: Inputs.Point.PointsDto): Inputs.JSCAD.JSCADEntity {
+    createFromPoints(inputs: Inputs.JSCAD.PointsDto): Inputs.JSCAD.JSCADEntity {
         const twoDimensionalPoints = inputs.points.map(pt => [pt[0], pt[1]]) as Inputs.Base.Point2[];
         return this.removeDuplicatesAndCreateFromPoints(twoDimensionalPoints);
     }
@@ -120,7 +121,8 @@ from points or from a polyline instead.
      * ```
      */
     circle(inputs: Inputs.JSCAD.CircleDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.primitives.circle({ center: inputs.center, radius: inputs.radius, segments: inputs.segments });
+        const resolved = resolveDto(Inputs.JSCAD.CircleDto, inputs) as Resolved.JSCAD.CircleDto;
+        return this.jscad.primitives.circle({ center: resolved.center, radius: resolved.radius, segments: resolved.segments });
     }
 
     /**
@@ -137,11 +139,12 @@ from points or from a polyline instead.
      * ```
      */
     ellipse(inputs: Inputs.JSCAD.EllipseDto): Inputs.JSCAD.JSCADEntity {
+        const resolved = resolveDto(Inputs.JSCAD.EllipseDto, inputs) as Resolved.JSCAD.EllipseDto;
         return this.jscad.primitives.ellipse(
             {
-                center: inputs.center,
-                radius: [inputs.radius[0], inputs.radius[1]],
-                segments: inputs.segments
+                center: resolved.center,
+                radius: [resolved.radius[0], resolved.radius[1]],
+                segments: resolved.segments
             }
         );
     }
@@ -159,10 +162,11 @@ from points or from a polyline instead.
      * ```
      */
     rectangle(inputs: Inputs.JSCAD.RectangleDto): Inputs.JSCAD.JSCADEntity {
+        const resolved = resolveDto(Inputs.JSCAD.RectangleDto, inputs) as Resolved.JSCAD.RectangleDto;
         return this.jscad.primitives.rectangle(
             {
-                center: [inputs.center[0], inputs.center[1]],
-                size: [inputs.width, inputs.length]
+                center: [resolved.center[0], resolved.center[1]],
+                size: [resolved.width, resolved.length]
             }
         );
     }
@@ -184,11 +188,12 @@ from points or from a polyline instead.
      * ```
      */
     roundedRectangle(inputs: Inputs.JSCAD.RoundedRectangleDto): Inputs.JSCAD.JSCADEntity {
+        const resolved = resolveDto(Inputs.JSCAD.RoundedRectangleDto, inputs) as Resolved.JSCAD.RoundedRectangleDto;
         return this.jscad.primitives.roundedRectangle({
-            center: [inputs.center[0], inputs.center[1]],
-            size: [inputs.width, inputs.length],
-            roundRadius: inputs.roundRadius,
-            segments: inputs.segments,
+            center: [resolved.center[0], resolved.center[1]],
+            size: [resolved.width, resolved.length],
+            roundRadius: resolved.roundRadius,
+            segments: resolved.segments,
         });
     }
 
@@ -206,7 +211,8 @@ from points or from a polyline instead.
      * ```
      */
     square(inputs: Inputs.JSCAD.SquareDto): Inputs.JSCAD.JSCADEntity {
-        return this.jscad.primitives.square({ center: [inputs.center[0], inputs.center[1]], size: inputs.size });
+        const resolved = resolveDto(Inputs.JSCAD.SquareDto, inputs) as Resolved.JSCAD.SquareDto;
+        return this.jscad.primitives.square({ center: [resolved.center[0], resolved.center[1]], size: resolved.size });
     }
 
     /**
@@ -227,13 +233,14 @@ from points or from a polyline instead.
      * ```
      */
     star(inputs: Inputs.JSCAD.StarDto): Inputs.JSCAD.JSCADEntity {
+        const resolved = resolveDto(Inputs.JSCAD.StarDto, inputs) as Resolved.JSCAD.StarDto;
         return this.jscad.primitives.star({
-            center: [inputs.center[0], inputs.center[1]],
-            vertices: inputs.vertices,
-            density: inputs.density,
-            outerRadius: inputs.outerRadius,
-            innerRadius: inputs.innerRadius,
-            startAngle: this.math.degToRad({ number: inputs.startAngle }),
+            center: [resolved.center[0], resolved.center[1]],
+            vertices: resolved.vertices,
+            density: resolved.density,
+            outerRadius: resolved.outerRadius,
+            innerRadius: resolved.innerRadius,
+            startAngle: this.math.degToRad({ number: resolved.startAngle }),
         });
     }
 

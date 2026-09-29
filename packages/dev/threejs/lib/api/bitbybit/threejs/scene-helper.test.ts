@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
+import { MockMaterial, MockPlaneGeometry, instanceOf } from "../../__mocks__/threejs.mock";
 vi.mock("three", async () => {
     const { createThreeJSMock } = await vi.importActual<typeof import("../../__mocks__/threejs.mock")>("../../__mocks__/threejs.mock");
     return createThreeJSMock();
@@ -15,6 +16,10 @@ vi.mock("./orbit-camera", async () => {
 });
 
 import { initThreeJS } from "./scene-helper";
+import { createOrbitCamera } from "./orbit-camera";
+import { ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
+import * as Resolved from "../../resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 describe("initThreeJS unit tests", () => {
     let mockCanvas: HTMLCanvasElement;
@@ -75,7 +80,7 @@ describe("initThreeJS unit tests", () => {
 
         it("should create hemisphere light with default settings", () => {
             // Arrange
-            const defaultDto = new ThreeJSScene.InitThreeJSDto();
+            const defaultDto = resolveDto(ThreeJSScene.InitThreeJSDto, {}) as Resolved.ThreeJSScene.InitThreeJSDto;
 
             // Act
             const result = initThreeJS();
@@ -90,7 +95,7 @@ describe("initThreeJS unit tests", () => {
 
         it("should create directional light with default settings", () => {
             // Arrange
-            const defaultDto = new ThreeJSScene.InitThreeJSDto();
+            const defaultDto = resolveDto(ThreeJSScene.InitThreeJSDto, {}) as Resolved.ThreeJSScene.InitThreeJSDto;
 
             // Act
             const result = initThreeJS();
@@ -102,6 +107,25 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.position.x).toBeCloseTo(expectedOffset, 5);
             expect(result.directionalLight.position.y).toBeCloseTo(expectedHeight, 5);
             expect(result.directionalLight.position.z).toBeCloseTo(expectedOffset, 5);
+
+            result.dispose();
+        });
+    });
+
+    describe("an options object that leaves settings out", () => {
+        it("should fill every setting it leaves out from the defaults", () => {
+            // Arrange
+            const expectedColor = hexToRgb("#1a1c1f");
+
+            // Act
+            const result = initThreeJS({ canvasId: "test-canvas", sceneSize: 40 });
+
+            // Assert
+            const background = result.scene.background as { r: number; g: number; b: number };
+            expect(Math.abs(background.r - expectedColor.r)).toBeLessThan(0.01);
+            expect(Math.abs(background.g - expectedColor.g)).toBeLessThan(0.01);
+            expect(Math.abs(background.b - expectedColor.b)).toBeLessThan(0.01);
+            expect(result.hemisphereLight.position.y).toBeCloseTo(30, 5);
 
             result.dispose();
         });
@@ -294,7 +318,7 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS(config);
 
             // Assert
-            const material = result.ground?.material as unknown as { color: { r: number; g: number; b: number } };
+            const material = instanceOf(result.ground?.material, MockMaterial);
             const expectedColor = hexToRgb("#ff0000");
             expect(Math.abs(material.color.r - expectedColor.r)).toBeLessThan(0.01);
             expect(Math.abs(material.color.g - expectedColor.g)).toBeLessThan(0.01);
@@ -369,6 +393,95 @@ describe("initThreeJS unit tests", () => {
 
             result.dispose();
         });
+
+        const orbitCameraArguments = (): Parameters<typeof createOrbitCamera>[0] => {
+            const call = vi.mocked(createOrbitCamera).mock.calls[0];
+            if (!call) {
+                throw new Error("initThreeJS created no orbit camera");
+            }
+            return call[0];
+        };
+
+        it("should size the camera distance and its limits from the scene size when no camera options are given", () => {
+            // Arrange
+            const config = new ThreeJSScene.InitThreeJSDto();
+            config.canvasId = "test-canvas";
+            config.sceneSize = 600;
+
+            // Act
+            const result = initThreeJS(config);
+
+            // Assert
+            const passed = orbitCameraArguments();
+            expect(passed.distance).toBeCloseTo(600 * Math.sqrt(2), 5);
+            expect(passed.distanceMin).toBeCloseTo(600 * 0.05, 5);
+            expect(passed.distanceMax).toBeCloseTo(600 * 10, 5);
+
+            result.dispose();
+        });
+
+        it("should keep the zoom and pan sensitivities at their defaults in a large scene, because both already scale with the camera distance", () => {
+            // Arrange
+            const defaults = new ThreeJSCamera.OrbitCameraDto();
+            const config = new ThreeJSScene.InitThreeJSDto();
+            config.canvasId = "test-canvas";
+            config.sceneSize = 600;
+
+            // Act
+            const result = initThreeJS(config);
+
+            // Assert
+            const passed = orbitCameraArguments();
+            expect(passed.distanceSensitivity).toBe(defaults.distanceSensitivity);
+            expect(passed.panSensitivity).toBe(defaults.panSensitivity);
+            expect(passed.orbitSensitivity).toBe(defaults.orbitSensitivity);
+
+            result.dispose();
+        });
+
+        it("should pass the sensitivities of a small scene through unchanged as well", () => {
+            // Arrange
+            const defaults = new ThreeJSCamera.OrbitCameraDto();
+            const config = new ThreeJSScene.InitThreeJSDto();
+            config.canvasId = "test-canvas";
+            config.sceneSize = 2;
+
+            // Act
+            const result = initThreeJS(config);
+
+            // Assert
+            const passed = orbitCameraArguments();
+            expect(passed.distanceSensitivity).toBe(defaults.distanceSensitivity);
+            expect(passed.panSensitivity).toBe(defaults.panSensitivity);
+
+            result.dispose();
+        });
+
+        it("should pass user camera options through untouched whatever the scene size", () => {
+            // Arrange
+            const config = new ThreeJSScene.InitThreeJSDto();
+            config.canvasId = "test-canvas";
+            config.sceneSize = 600;
+            config.orbitCameraOptions = new ThreeJSCamera.OrbitCameraDto();
+            config.orbitCameraOptions.distance = 100;
+            config.orbitCameraOptions.distanceMin = 3;
+            config.orbitCameraOptions.distanceMax = 900;
+            config.orbitCameraOptions.distanceSensitivity = 0.4;
+            config.orbitCameraOptions.panSensitivity = 2;
+
+            // Act
+            const result = initThreeJS(config);
+
+            // Assert
+            const passed = orbitCameraArguments();
+            expect(passed.distance).toBe(100);
+            expect(passed.distanceMin).toBe(3);
+            expect(passed.distanceMax).toBe(900);
+            expect(passed.distanceSensitivity).toBe(0.4);
+            expect(passed.panSensitivity).toBe(2);
+
+            result.dispose();
+        });
     });
 
     describe("scene size scaling", () => {
@@ -404,7 +517,7 @@ describe("initThreeJS unit tests", () => {
             const result = initThreeJS(config);
 
             // Assert
-            const geometry = result.ground?.geometry as unknown as { parameters: { width: number; height: number } };
+            const geometry = instanceOf(result.ground?.geometry, MockPlaneGeometry);
             const expectedSize = config.sceneSize * config.groundScaleFactor;
             expect(geometry.parameters.width).toBe(expectedSize);
             expect(geometry.parameters.height).toBe(expectedSize);
@@ -483,6 +596,59 @@ describe("initThreeJS unit tests", () => {
             expect(result.directionalLight.intensity).toBe(3.0);
 
             result.dispose();
+        });
+    });
+
+    describe("window resize", () => {
+        it("should refit the camera aspect and the renderer to the new window size", () => {
+            // Arrange
+            const result = initThreeJS();
+            const camera = result.orbitCamera!.camera;
+            const setSizeSpy = vi.spyOn(result.renderer, "setSize");
+            const projectionSpy = vi.spyOn(camera, "updateProjectionMatrix");
+            Object.defineProperty(window, "innerWidth", { value: 800, writable: true });
+            Object.defineProperty(window, "innerHeight", { value: 400, writable: true });
+
+            // Act
+            window.dispatchEvent(new Event("resize"));
+
+            // Assert
+            expect(camera.aspect).toBe(2);
+            expect(projectionSpy).toHaveBeenCalledTimes(1);
+            expect(setSizeSpy).toHaveBeenCalledWith(800, 400);
+
+            result.dispose();
+        });
+
+        it("should still resize the renderer when no orbit camera was created", () => {
+            // Arrange
+            const config = new ThreeJSScene.InitThreeJSDto();
+            config.enableOrbitCamera = false;
+            const result = initThreeJS(config);
+            const setSizeSpy = vi.spyOn(result.renderer, "setSize");
+            Object.defineProperty(window, "innerWidth", { value: 640, writable: true });
+            Object.defineProperty(window, "innerHeight", { value: 480, writable: true });
+
+            // Act
+            window.dispatchEvent(new Event("resize"));
+
+            // Assert
+            expect(setSizeSpy).toHaveBeenCalledWith(640, 480);
+
+            result.dispose();
+        });
+
+        it("should stop following the window once disposed", () => {
+            // Arrange
+            const result = initThreeJS();
+            const setSizeSpy = vi.spyOn(result.renderer, "setSize");
+            result.dispose();
+
+            // Act
+            window.dispatchEvent(new Event("resize"));
+
+            // Assert
+            expect(setSizeSpy).not.toHaveBeenCalled();
         });
     });
 

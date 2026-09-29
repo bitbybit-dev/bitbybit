@@ -91,22 +91,22 @@ describe("Logic unit tests", () => {
     });
 
     it("should compare two unequal values as equal without strict mode", () => {
-        const res = logic.compare({ first: "1", second: 1 as any, operator: Inputs.Logic.BooleanOperatorsEnum.equal });
+        const res = logic.compare<string | number>({ first: "1", second: 1, operator: Inputs.Logic.BooleanOperatorsEnum.equal });
         expect(res).toBe(true);
     });
 
     it("should compare two unequal values as not equal without strict mode", () => {
-        const res = logic.compare({ first: "1", second: 1 as any, operator: Inputs.Logic.BooleanOperatorsEnum.notEqual });
+        const res = logic.compare<string | number>({ first: "1", second: 1, operator: Inputs.Logic.BooleanOperatorsEnum.notEqual });
         expect(res).toBe(false);
     });
 
     it("should compare two unequal values as equal with strict mode", () => {
-        const res = logic.compare({ first: "1", second: 1 as any, operator: Inputs.Logic.BooleanOperatorsEnum.tripleEqual });
+        const res = logic.compare<string | number>({ first: "1", second: 1, operator: Inputs.Logic.BooleanOperatorsEnum.tripleEqual });
         expect(res).toBe(false);
     });
 
     it("should compare two unequal values as not equal with strict mode", () => {
-        const res = logic.compare({ first: "1", second: 1 as any, operator: Inputs.Logic.BooleanOperatorsEnum.tripleNotEqual });
+        const res = logic.compare<string | number>({ first: "1", second: 1, operator: Inputs.Logic.BooleanOperatorsEnum.tripleNotEqual });
         expect(res).toBe(true);
     });
 
@@ -156,7 +156,7 @@ describe("Logic unit tests", () => {
     });
 
     it("should return false if unknown operator is provided", () => {
-        const res = logic.compare({ first: 5, second: 5, operator: "whatever" as any });
+        const res = logic.compare({ first: 5, second: 5, operator: "whatever" as Inputs.Logic.BooleanOperatorsEnum });
         expect(res).toBe(false);
     });
 

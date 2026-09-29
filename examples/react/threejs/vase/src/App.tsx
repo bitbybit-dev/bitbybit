@@ -244,7 +244,7 @@ function App() {
 
     return (
         <ThemeProvider theme={theme}>
-            <img className="imageback" src="https://app.bitbybit.dev/assets/bitbybit-threejs.png" alt="showing the bitbybit threejs 3d printable vase configurator app"></img>
+            <img className="imageback" src="https://bitbybit.dev/files/site/bitbybit-threejs.png" alt="showing the bitbybit threejs 3d printable vase configurator app"></img>
             <div className="hideMenu">
                 <Button onClick={() => setHideMenu(!hideMenu)} color="primary" variant="contained">{hideMenu ? 'Show menu' : 'Hide menu'}</Button>
             </div>

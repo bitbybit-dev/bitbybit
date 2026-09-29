@@ -2,6 +2,8 @@ import * as THREEJS from "three";
 import { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import { OrbitCameraInstance, InputHandler, OrbitCameraController } from "../../inputs/threejs-camera-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 export type { OrbitCameraInstance, InputHandler, OrbitCameraController };
 
@@ -63,6 +65,7 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     create(inputs: Inputs.ThreeJSCamera.OrbitCameraDto): OrbitCameraController {
+        const resolved = resolveDto(Inputs.ThreeJSCamera.OrbitCameraDto, inputs) as Resolved.ThreeJSCamera.OrbitCameraDto;
         if (!this.context.scene) {
             throw new Error("Scene not initialized. Ensure context.scene is set first.");
         }
@@ -79,38 +82,38 @@ export class ThreeJSOrbitCamera {
         );
 
         const orbitCamera = this.createOrbitCameraInstance(camera, {
-            autoRender: inputs.autoRender,
-            distanceMax: inputs.distanceMax,
-            distanceMin: inputs.distanceMin,
-            pitchAngleMax: inputs.pitchAngleMax,
-            pitchAngleMin: inputs.pitchAngleMin,
-            inertiaFactor: inputs.inertiaFactor,
-            enableDamping: inputs.enableDamping,
-            dampingFactor: inputs.dampingFactor,
-            focusObject: inputs.focusObject || null,
-            frameOnStart: inputs.frameOnStart
+            autoRender: resolved.autoRender,
+            distanceMax: resolved.distanceMax,
+            distanceMin: resolved.distanceMin,
+            pitchAngleMax: resolved.pitchAngleMax,
+            pitchAngleMin: resolved.pitchAngleMin,
+            inertiaFactor: resolved.inertiaFactor,
+            enableDamping: resolved.enableDamping,
+            dampingFactor: resolved.dampingFactor,
+            focusObject: resolved.focusObject || null,
+            frameOnStart: resolved.frameOnStart
         });
 
-        const pivotVec = new THREEJS.Vector3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
+        const pivotVec = new THREEJS.Vector3(resolved.pivotPoint[0], resolved.pivotPoint[1], resolved.pivotPoint[2]);
         orbitCamera.pivotPoint = pivotVec;
-        orbitCamera.distance = inputs.distance;
-        orbitCamera.pitch = inputs.pitch;
-        orbitCamera.yaw = inputs.yaw;
+        orbitCamera.distance = resolved.distance;
+        orbitCamera.pitch = resolved.pitch;
+        orbitCamera.yaw = resolved.yaw;
 
         orbitCamera.initializePivotPoint(pivotVec);
 
-        const domElement = inputs.domElement || document.body;
+        const domElement = resolved.domElement || document.body;
 
         const mouseInput = this.createMouseInput(camera, orbitCamera, domElement, {
-            orbitSensitivity: inputs.orbitSensitivity,
-            distanceSensitivity: inputs.distanceSensitivity,
-            panSensitivity: inputs.panSensitivity
+            orbitSensitivity: resolved.orbitSensitivity,
+            distanceSensitivity: resolved.distanceSensitivity,
+            panSensitivity: resolved.panSensitivity
         });
 
         const touchInput = this.createTouchInput(camera, orbitCamera, domElement, {
-            orbitSensitivity: inputs.orbitSensitivity,
-            distanceSensitivity: inputs.distanceSensitivity,
-            panSensitivity: inputs.panSensitivity
+            orbitSensitivity: resolved.orbitSensitivity,
+            distanceSensitivity: resolved.distanceSensitivity,
+            panSensitivity: resolved.panSensitivity
         });
 
         const keyboardInput = this.createKeyboardInput(orbitCamera);
@@ -119,8 +122,8 @@ export class ThreeJSOrbitCamera {
             orbitCamera.update(dt);
         };
 
-        if (inputs.focusObject && inputs.frameOnStart) {
-            orbitCamera.focus(inputs.focusObject);
+        if (resolved.focusObject && resolved.frameOnStart) {
+            orbitCamera.focus(resolved.focusObject);
         }
 
         return {
@@ -149,8 +152,9 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     setPivotPoint(inputs: Inputs.ThreeJSCamera.PivotPointDto): void {
-        const pivotVec = new THREEJS.Vector3(inputs.pivotPoint[0], inputs.pivotPoint[1], inputs.pivotPoint[2]);
-        inputs.orbitCamera.orbitCamera.pivotPoint = pivotVec;
+        const resolved = resolveDto(Inputs.ThreeJSCamera.PivotPointDto, inputs) as Resolved.ThreeJSCamera.PivotPointDto;
+        const pivotVec = new THREEJS.Vector3(resolved.pivotPoint[0], resolved.pivotPoint[1], resolved.pivotPoint[2]);
+        resolved.orbitCamera.orbitCamera.pivotPoint = pivotVec;
     }
 
     /**
@@ -161,7 +165,8 @@ export class ThreeJSOrbitCamera {
      * @shortname get pivot point
      */
     getPivotPoint(inputs: Inputs.ThreeJSCamera.PivotPointDto): Inputs.Base.Point3 {
-        const pivot = inputs.orbitCamera.orbitCamera.pivotPoint;
+        const resolved = resolveDto(Inputs.ThreeJSCamera.PivotPointDto, inputs) as Resolved.ThreeJSCamera.PivotPointDto;
+        const pivot = resolved.orbitCamera.orbitCamera.pivotPoint;
         return [pivot.x, pivot.y, pivot.z];
     }
 
@@ -177,7 +182,8 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     focusOnObject(inputs: Inputs.ThreeJSCamera.FocusObjectDto): void {
-        inputs.orbitCamera.orbitCamera.focus(inputs.object, inputs.padding);
+        const resolved = resolveDto(Inputs.ThreeJSCamera.FocusObjectDto, inputs) as Resolved.ThreeJSCamera.FocusObjectDto;
+        resolved.orbitCamera.orbitCamera.focus(resolved.object, resolved.padding);
     }
 
     /**
@@ -192,7 +198,8 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     resetCamera(inputs: Inputs.ThreeJSCamera.ResetCameraDto): void {
-        inputs.orbitCamera.orbitCamera.reset(inputs.yaw, inputs.pitch, inputs.distance);
+        const resolved = resolveDto(Inputs.ThreeJSCamera.ResetCameraDto, inputs) as Resolved.ThreeJSCamera.ResetCameraDto;
+        resolved.orbitCamera.orbitCamera.reset(resolved.yaw, resolved.pitch, resolved.distance);
     }
 
     /**
@@ -214,7 +221,8 @@ export class ThreeJSOrbitCamera {
      * @shortname set distance
      */
     setDistance(inputs: Inputs.ThreeJSCamera.ResetCameraDto): void {
-        inputs.orbitCamera.orbitCamera.distance = inputs.distance;
+        const resolved = resolveDto(Inputs.ThreeJSCamera.ResetCameraDto, inputs) as Resolved.ThreeJSCamera.ResetCameraDto;
+        resolved.orbitCamera.orbitCamera.distance = resolved.distance;
     }
 
     /**
@@ -251,8 +259,9 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     setDistanceLimits(inputs: Inputs.ThreeJSCamera.SetDistanceLimitsDto): void {
-        inputs.orbitCamera.orbitCamera.distanceMin = inputs.min;
-        inputs.orbitCamera.orbitCamera.distanceMax = inputs.max;
+        const resolved = resolveDto(Inputs.ThreeJSCamera.SetDistanceLimitsDto, inputs) as Resolved.ThreeJSCamera.SetDistanceLimitsDto;
+        resolved.orbitCamera.orbitCamera.distanceMin = resolved.min;
+        resolved.orbitCamera.orbitCamera.distanceMax = resolved.max;
     }
 
     /**
@@ -267,8 +276,9 @@ export class ThreeJSOrbitCamera {
      * ```
      */
     setPitchLimits(inputs: Inputs.ThreeJSCamera.SetPitchLimitsDto): void {
-        inputs.orbitCamera.orbitCamera.pitchAngleMin = inputs.min;
-        inputs.orbitCamera.orbitCamera.pitchAngleMax = inputs.max;
+        const resolved = resolveDto(Inputs.ThreeJSCamera.SetPitchLimitsDto, inputs) as Resolved.ThreeJSCamera.SetPitchLimitsDto;
+        resolved.orbitCamera.orbitCamera.pitchAngleMin = resolved.min;
+        resolved.orbitCamera.orbitCamera.pitchAngleMax = resolved.max;
     }
 
     private createOrbitCameraInstance(camera: THREEJS.PerspectiveCamera, config: OrbitCameraConfig): OrbitCameraInstance {

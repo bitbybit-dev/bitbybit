@@ -187,4 +187,80 @@ describe("Tag", () => {
             expect(context.tagBag).toHaveLength(3);
         });
     });
+
+    describe("drawing a tag that names only its text", () => {
+        const DOCUMENTED = { position: [0, 0, 0], colour: "#444444", size: 12, adaptDepth: false };
+
+        it("drawTag should draw and record it with the documented position, colour, size and depth", () => {
+            // Act
+            const drawn = tag.drawTag({ tag: { text: TEXT } });
+
+            // Assert
+            expect(drawn).toMatchObject({ text: TEXT, ...DOCUMENTED });
+            expect(context.tagBag).toEqual([drawn]);
+        });
+
+        it("drawTag should leave the caller's tag as it was", () => {
+            // Arrange
+            const given: Inputs.Tag.TagDto = { text: TEXT };
+
+            // Act
+            tag.drawTag({ tag: given });
+
+            // Assert
+            expect(given).toEqual({ text: TEXT });
+        });
+
+        it("drawTags should draw and record each with the documented position, colour, size and depth", () => {
+            // Act
+            const drawn = tag.drawTags({ tags: [{ text: TEXT }, { text: SECOND_TEXT, size: SIZE }] });
+
+            // Assert
+            expect(drawn[0]).toMatchObject({ text: TEXT, ...DOCUMENTED });
+            expect(drawn[1]).toMatchObject({ text: SECOND_TEXT, ...DOCUMENTED, size: SIZE });
+            expect(context.tagBag).toEqual(drawn);
+        });
+
+        it("drawTags should leave the caller's tags as they were", () => {
+            // Arrange
+            const given: Inputs.Tag.TagDto[] = [{ text: TEXT }, { text: SECOND_TEXT }];
+
+            // Act
+            tag.drawTags({ tags: given });
+
+            // Assert
+            expect(given).toEqual([{ text: TEXT }, { text: SECOND_TEXT }]);
+        });
+
+        it("drawTags should give a tag the list has gained on an update the documented colour and size", () => {
+            // Arrange
+            const drawn = tag.drawTags({ tags: [{ text: TEXT }] });
+
+            // Act
+            tag.drawTags({ tags: [{ text: TEXT }, { text: SECOND_TEXT }, { text: THIRD_TEXT }], updatable: true, tagsVariable: drawn });
+
+            // Assert
+            expect(context.tagBag.map((t) => [t.colour, t.size])).toEqual([["#444444", 12], ["#444444", 12], ["#444444", 12]]);
+        });
+    });
+
+    describe("create with its defaults left to the DTO", () => {
+        it("should give a tag that names only its text the documented position, colour, size and depth", () => {
+            // Act
+            const leftOut = tag.create({ text: TEXT });
+            const spelled = tag.create(new Inputs.Tag.TagDto(TEXT));
+
+            // Assert
+            expect(leftOut).toEqual({ text: TEXT, position: [0, 0, 0], colour: "#444444", size: 12, adaptDepth: false });
+            expect(leftOut).toEqual(spelled);
+        });
+
+        it("should give the documented defaults for properties handed as undefined", () => {
+            // Act
+            const handedUndefined = tag.create({ text: TEXT, position: undefined, colour: undefined, size: undefined, adaptDepth: undefined });
+
+            // Assert
+            expect(handedUndefined).toEqual({ text: TEXT, position: [0, 0, 0], colour: "#444444", size: 12, adaptDepth: false });
+        });
+    });
 });

@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Sliders for picking a number between a minimum and a maximum by dragging a thumb, horizontally or
@@ -31,42 +33,43 @@ export class BabylonGuiSlider {
      * ```
      */
     createSlider(inputs: Inputs.BabylonGui.CreateSliderDto): BABYLON.GUI.Slider {
-        const slider = new BABYLON.GUI.Slider(inputs.name);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateSliderDto, inputs) as Resolved.BabylonGui.CreateSliderDto;
+        const slider = new BABYLON.GUI.Slider(resolved.name);
 
-        slider.minimum = inputs.minimum;
-        slider.maximum = inputs.maximum;
-        slider.value = inputs.value;
-        slider.step = inputs.step;
-        slider.isVertical = inputs.isVertical;
-        slider.displayThumb = inputs.displayThumb;
+        slider.minimum = resolved.minimum;
+        slider.maximum = resolved.maximum;
+        slider.value = resolved.value;
+        slider.step = resolved.step;
+        slider.isVertical = resolved.isVertical;
+        slider.displayThumb = resolved.displayThumb;
         slider.thumbColor = "white";
 
-        if (inputs.isVertical) {
-            if (inputs.height) {
-                slider.height = inputs.height;
+        if (resolved.isVertical) {
+            if (resolved.height) {
+                slider.height = resolved.height;
             } else {
                 slider.height = 1;
             }
-            if (inputs.width) {
-                slider.width = inputs.width;
+            if (resolved.width) {
+                slider.width = resolved.width;
             } else {
                 slider.width = "42px";
             }
         } else {
-            if (inputs.width) {
-                slider.width = inputs.width;
+            if (resolved.width) {
+                slider.width = resolved.width;
             } else {
                 slider.width = 1;
             }
-            if (inputs.height) {
-                slider.height = inputs.height;
+            if (resolved.height) {
+                slider.height = resolved.height;
             } else {
                 slider.height = "42px";
             }
         }
 
-        slider.color = inputs.color;
-        slider.background = inputs.background;
+        slider.color = resolved.color;
+        slider.background = resolved.background;
       
         return slider;
     }
@@ -84,14 +87,15 @@ export class BabylonGuiSlider {
      * ```
      */
     changeSliderThumb(inputs: Inputs.BabylonGui.SliderThumbDto): BABYLON.GUI.Slider {
-        inputs.slider.thumbColor = inputs.thumbColor;
-        inputs.slider.isThumbCircle = inputs.isThumbCircle;
-        inputs.slider.isThumbClamped = inputs.isThumbClamped;
-        inputs.slider.displayThumb = inputs.displayThumb;
-        if (inputs.thumbWidth) {
-            inputs.slider.thumbWidth = inputs.thumbWidth;
+        const resolved = resolveDto(Inputs.BabylonGui.SliderThumbDto, inputs) as Resolved.BabylonGui.SliderThumbDto;
+        resolved.slider.thumbColor = resolved.thumbColor;
+        resolved.slider.isThumbCircle = resolved.isThumbCircle;
+        resolved.slider.isThumbClamped = resolved.isThumbClamped;
+        resolved.slider.displayThumb = resolved.displayThumb;
+        if (resolved.thumbWidth) {
+            resolved.slider.thumbWidth = resolved.thumbWidth;
         }
-        return inputs.slider;
+        return resolved.slider;
     }
 
     /**
@@ -102,8 +106,9 @@ export class BabylonGuiSlider {
      * @shortname set slider border color
      */
     setBorderColor(inputs: Inputs.BabylonGui.SliderBorderColorDto): BABYLON.GUI.Slider {
-        inputs.slider.borderColor = inputs.borderColor;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SliderBorderColorDto, inputs) as Resolved.BabylonGui.SliderBorderColorDto;
+        resolved.slider.borderColor = resolved.borderColor;
+        return resolved.slider;
     }
 
     /**
@@ -114,8 +119,9 @@ export class BabylonGuiSlider {
      * @shortname set slider background color
      */
     setBackgroundColor(inputs: Inputs.BabylonGui.SliderBackgroundColorDto): BABYLON.GUI.Slider {
-        inputs.slider.background = inputs.backgroundColor;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SliderBackgroundColorDto, inputs) as Resolved.BabylonGui.SliderBackgroundColorDto;
+        resolved.slider.background = resolved.backgroundColor;
+        return resolved.slider;
     }
 
     /**
@@ -126,8 +132,9 @@ export class BabylonGuiSlider {
      * @shortname set slider maximum
      */
     setMaximum(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
-        inputs.slider.maximum = inputs.value;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SetSliderValueDto, inputs) as Resolved.BabylonGui.SetSliderValueDto;
+        resolved.slider.maximum = resolved.value;
+        return resolved.slider;
     }
 
     /**
@@ -138,8 +145,9 @@ export class BabylonGuiSlider {
      * @shortname set slider minimum
      */
     setMinimum(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
-        inputs.slider.minimum = inputs.value;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SetSliderValueDto, inputs) as Resolved.BabylonGui.SetSliderValueDto;
+        resolved.slider.minimum = resolved.value;
+        return resolved.slider;
     }
 
     /**
@@ -151,8 +159,9 @@ export class BabylonGuiSlider {
      * @shortname set slider step
      */
     setStep(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
-        inputs.slider.step = inputs.value;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SetSliderValueDto, inputs) as Resolved.BabylonGui.SetSliderValueDto;
+        resolved.slider.step = resolved.value;
+        return resolved.slider;
     }
 
     /**
@@ -167,8 +176,9 @@ export class BabylonGuiSlider {
      * ```
      */
     setValue(inputs: Inputs.BabylonGui.SetSliderValueDto): BABYLON.GUI.Slider {
-        inputs.slider.value = inputs.value;
-        return inputs.slider;
+        const resolved = resolveDto(Inputs.BabylonGui.SetSliderValueDto, inputs) as Resolved.BabylonGui.SetSliderValueDto;
+        resolved.slider.value = resolved.value;
+        return resolved.slider;
     }
 
     /**
@@ -180,7 +190,8 @@ export class BabylonGuiSlider {
      * @shortname slider observable selector
      */
     createSliderObservableSelector(inputs: Inputs.BabylonGui.SliderObservableSelectorDto): Inputs.BabylonGui.sliderObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.SliderObservableSelectorDto, inputs) as Resolved.BabylonGui.SliderObservableSelectorDto;
+        return resolved.selector;
     }
 
     /**

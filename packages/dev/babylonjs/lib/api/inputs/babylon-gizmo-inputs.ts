@@ -74,33 +74,33 @@ export namespace BabylonGizmo {
          * When true, the arrows that drag the mesh along an axis are shown
          * @default true
          */
-        positionGizmoEnabled: boolean = true;
+        positionGizmoEnabled?: boolean | undefined = true;
         /**
          * When true, the rings that turn the mesh around an axis are shown
          * @default false
          */
-        rotationGizmoEnabled: boolean = false;
+        rotationGizmoEnabled?: boolean | undefined = false;
         /**
          * When true, the handles that stretch the mesh along an axis are shown
          * @default false
          */
-        scaleGizmoEnabled: boolean = false;
+        scaleGizmoEnabled?: boolean | undefined = false;
         /**
          * When true, the frame with scale and rotate handles around the mesh is shown
          * @default false
          */
-        boundingBoxGizmoEnabled: boolean = false;
+        boundingBoxGizmoEnabled?: boolean | undefined = false;
         /**
          * When true, clicking a mesh attaches the gizmos to it; when false, attach them with
          * `attachToMesh`
          * @default true
          */
-        usePointerToAttachGizmos = true;
+        usePointerToAttachGizmos?: boolean | undefined = true;
         /**
          * When true, clicking into empty space detaches the gizmos
          * @default false
          */
-        clearGizmoOnEmptyPointerEvent = false;
+        clearGizmoOnEmptyPointerEvent?: boolean | undefined = false;
         /**
          * How large the gizmo handles are drawn; 1 is the default size and 2 doubles it
          * @default 1
@@ -108,7 +108,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleRatio = 1;
+        scaleRatio?: number | undefined = 1;
         /**
          * The only meshes the pointer may attach the gizmos to; left out or empty, any mesh
          * qualifies
@@ -150,7 +150,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleRatio = 1;
+        scaleRatio?: number | undefined = 1;
     }
     /**
      * Feeds the `babylon.gizmo.manager` methods that take just the manager: the gizmo getters and
@@ -198,7 +198,7 @@ export namespace BabylonGizmo {
          * When true, the square handles that drag within a plane are shown next to the axis arrows
          * @default true
          */
-        planarGizmoEnabled = true;
+        planarGizmoEnabled?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gizmo.scaleGizmo.snapDistance` with a scale gizmo and the step it scales in.
@@ -220,7 +220,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        snapDistance = 0;
+        snapDistance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gizmo.scaleGizmo.setIncrementalSnap` with a scale gizmo and how its snapping
@@ -240,7 +240,7 @@ export namespace BabylonGizmo {
          * When true, the steps add up, 1.1 then 1.2; when false, they multiply, 1.1 then 1.21
          * @default false
          */
-        incrementalSnap = false;
+        incrementalSnap?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gizmo.scaleGizmo.sensitivity` with a scale gizmo and how much a drag scales
@@ -263,7 +263,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        sensitivity = 1;
+        sensitivity?: number | undefined = 1;
     }
     /**
      * Feeds the `babylon.gizmo.scaleGizmo` getters with the scale gizmo to read from.
@@ -313,7 +313,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        rotationSphereSize = 0.1;
+        rotationSphereSize?: number | undefined = 0.1;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setFixedDragMeshScreenSize` with a bounding box gizmo
@@ -334,7 +334,7 @@ export namespace BabylonGizmo {
          * over the bounds size option
          * @default false
          */
-        fixedDragMeshScreenSize = false;
+        fixedDragMeshScreenSize?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setFixedDragMeshBoundsSize` with a bounding box gizmo
@@ -355,7 +355,7 @@ export namespace BabylonGizmo {
          * a fixed world size
          * @default false
          */
-        fixedDragMeshBoundsSize = false;
+        fixedDragMeshBoundsSize?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setFixedDragMeshScreenSizeDistanceFactor` with a
@@ -379,7 +379,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        fixedDragMeshScreenSizeDistanceFactor = 10;
+        fixedDragMeshScreenSizeDistanceFactor?: number | undefined = 10;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setScalingSnapDistance` with a bounding box gizmo and
@@ -402,7 +402,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        scalingSnapDistance = 0;
+        scalingSnapDistance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setRotationSnapDistance` with a bounding box gizmo and
@@ -425,7 +425,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        rotationSnapDistance = 0;
+        rotationSnapDistance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setScaleBoxSize` with a bounding box gizmo and the size
@@ -449,7 +449,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleBoxSize = 0.1;
+        scaleBoxSize?: number | undefined = 0.1;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setIncrementalSnap` with a bounding box gizmo and how
@@ -469,7 +469,7 @@ export namespace BabylonGizmo {
          * When true, the steps add up, 1.1 then 1.2; when false, they multiply, 1.1 then 1.21
          * @default false
          */
-        incrementalSnap = false;
+        incrementalSnap?: boolean | undefined = false;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.setScalePivot` with a bounding box gizmo and the point
@@ -534,7 +534,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        scaleDragSpeed = 1;
+        scaleDragSpeed?: number | undefined = 1;
     }
     /**
      * Feeds `babylon.gizmo.positionGizmo.snapDistance` with a position gizmo and the step it moves
@@ -557,7 +557,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        snapDistance = 0;
+        snapDistance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gizmo.rotationGizmo.snapDistance` with a rotation gizmo and the angle step it
@@ -580,7 +580,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        snapDistance = 0;
+        snapDistance?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.gizmo.rotationGizmo.sensitivity` with a rotation gizmo and how far a drag
@@ -603,7 +603,7 @@ export namespace BabylonGizmo {
          * @maximum Infinity
          * @step 0.1
          */
-        sensitivity = 1;
+        sensitivity?: number | undefined = 1;
     }
     /**
      * Feeds the `babylon.gizmo.rotationGizmo` getters with the rotation gizmo to read from.
@@ -649,7 +649,7 @@ export namespace BabylonGizmo {
          * When true, the handle is shown and usable; when false, that axis cannot be scaled
          * @default true
          */
-        isEnabled = true;
+        isEnabled?: boolean | undefined = true;
     }
 
     /**
@@ -684,7 +684,7 @@ export namespace BabylonGizmo {
          * that axis
          * @default true
          */
-        isEnabled = true;
+        isEnabled?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gizmo.planeRotationGizmo.setIsEnabled` with one ring of a rotation gizmo and
@@ -705,7 +705,7 @@ export namespace BabylonGizmo {
          * that axis
          * @default true
          */
-        isEnabled = true;
+        isEnabled?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gizmo.planeDragGizmo.setIsEnabled` with one plane handle of a position gizmo
@@ -727,7 +727,7 @@ export namespace BabylonGizmo {
          * plane
          * @default true
          */
-        isEnabled = true;
+        isEnabled?: boolean | undefined = true;
     }
     /**
      * Feeds `babylon.gizmo.planeDragGizmo.getIsEnabled` with one plane handle of a position gizmo.
@@ -761,18 +761,18 @@ export namespace BabylonGizmo {
      * appear on.
      */
     export class AttachToMeshDto {
-        constructor(mesh: BABYLON.AbstractMesh, gizmoManager: BABYLON.GizmoManager) {
-            this.mesh = mesh;
-            this.gizmoManager = gizmoManager;
+        constructor(mesh?: BABYLON.AbstractMesh, gizmoManager?: BABYLON.GizmoManager) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+            if (gizmoManager !== undefined) { this.gizmoManager = gizmoManager; }
         }
         /**
          * The mesh the gizmos attach to; the mesh attached before is released
          */
-        mesh: BABYLON.AbstractMesh;
+        mesh!: BABYLON.AbstractMesh;
         /**
          * The gizmo manager, as `createGizmoManager` gave it
          */
-        gizmoManager: BABYLON.GizmoManager;
+        gizmoManager!: BABYLON.GizmoManager;
     }
 
     /**
@@ -780,39 +780,39 @@ export namespace BabylonGizmo {
      * the drag event to select.
      */
     export class PositionGizmoObservableSelectorDto {
-        constructor(selector: positionGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: positionGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: positionGizmoObservableSelectorEnum;
+        selector!: positionGizmoObservableSelectorEnum;
     }
     /**
      * Feeds `babylon.gizmo.boundingBoxGizmo.createBoundingBoxGizmoObservableSelector` with the name
      * of the handle event to select.
      */
     export class BoundingBoxGizmoObservableSelectorDto {
-        constructor(selector: boundingBoxGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: boundingBoxGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: a drag start, or a scale box or rotation sphere drag and its end
          */
-        selector: boundingBoxGizmoObservableSelectorEnum;
+        selector!: boundingBoxGizmoObservableSelectorEnum;
     }
     /**
      * Feeds `babylon.gizmo.rotationGizmo.createRotationGizmoObservableSelector` with the name of
      * the drag event to select.
      */
     export class RotationGizmoObservableSelectorDto {
-        constructor(selector: rotationGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: rotationGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: rotationGizmoObservableSelectorEnum;
+        selector!: rotationGizmoObservableSelectorEnum;
     }
 
     /**
@@ -820,12 +820,12 @@ export namespace BabylonGizmo {
      * event to select.
      */
     export class ScaleGizmoObservableSelectorDto {
-        constructor(selector: scaleGizmoObservableSelectorEnum) {
-            this.selector = selector;
+        constructor(selector?: scaleGizmoObservableSelectorEnum) {
+            if (selector !== undefined) { this.selector = selector; }
         }
         /**
          * Which event: drag start, drag or drag end
          */
-        selector: scaleGizmoObservableSelectorEnum;
+        selector!: scaleGizmoObservableSelectorEnum;
     }
 }

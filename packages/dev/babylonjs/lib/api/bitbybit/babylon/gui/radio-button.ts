@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Radio buttons: round toggles of which only one per `group` can be checked at a time, for picking
@@ -27,24 +29,25 @@ export class BabylonGuiRadioButton {
      * ```
      */
     createRadioButton(inputs: Inputs.BabylonGui.CreateRadioButtonDto): BABYLON.GUI.RadioButton {
-        const radioButton = new BABYLON.GUI.RadioButton(inputs.name);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateRadioButtonDto, inputs) as Resolved.BabylonGui.CreateRadioButtonDto;
+        const radioButton = new BABYLON.GUI.RadioButton(resolved.name);
 
-        if (inputs.height) {
-            radioButton.height = inputs.height;
+        if (resolved.height) {
+            radioButton.height = resolved.height;
         } else {
             radioButton.height = "32px";
         }
-        if (inputs.width) {
-            radioButton.width = inputs.width;
+        if (resolved.width) {
+            radioButton.width = resolved.width;
         } else {
             radioButton.width = "32px";
         }
 
-        radioButton.checkSizeRatio = inputs.checkSizeRatio;
-        radioButton.group = inputs.group ?? "";
-        radioButton.color = inputs.color;
-        radioButton.isChecked = inputs.isChecked;
-        radioButton.background = inputs.background;
+        radioButton.checkSizeRatio = resolved.checkSizeRatio;
+        radioButton.group = resolved.group ?? "";
+        radioButton.color = resolved.color;
+        radioButton.isChecked = resolved.isChecked;
+        radioButton.background = resolved.background;
    
         return radioButton;
     }
@@ -57,8 +60,9 @@ export class BabylonGuiRadioButton {
      * @shortname set radio button check size ratio
      */
     setCheckSizeRatio(inputs: Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto): BABYLON.GUI.RadioButton {
-        inputs.radioButton.checkSizeRatio = inputs.checkSizeRatio;
-        return inputs.radioButton;
+        const resolved = resolveDto(Inputs.BabylonGui.SetRadioButtonCheckSizeRatioDto, inputs) as Resolved.BabylonGui.SetRadioButtonCheckSizeRatioDto;
+        resolved.radioButton.checkSizeRatio = resolved.checkSizeRatio;
+        return resolved.radioButton;
     }
 
     /**
@@ -69,8 +73,9 @@ export class BabylonGuiRadioButton {
      * @shortname set radio button group
      */
     setGroup(inputs: Inputs.BabylonGui.SetRadioButtonGroupDto): BABYLON.GUI.RadioButton {
-        inputs.radioButton.group = inputs.group;
-        return inputs.radioButton;
+        const resolved = resolveDto(Inputs.BabylonGui.SetRadioButtonGroupDto, inputs) as Resolved.BabylonGui.SetRadioButtonGroupDto;
+        resolved.radioButton.group = resolved.group;
+        return resolved.radioButton;
     }
 
     /**
@@ -81,8 +86,9 @@ export class BabylonGuiRadioButton {
      * @shortname set radio button background
      */
     setBackground(inputs: Inputs.BabylonGui.SetRadioButtonBackgroundDto): BABYLON.GUI.RadioButton {
-        inputs.radioButton.background = inputs.background;
-        return inputs.radioButton;
+        const resolved = resolveDto(Inputs.BabylonGui.SetRadioButtonBackgroundDto, inputs) as Resolved.BabylonGui.SetRadioButtonBackgroundDto;
+        resolved.radioButton.background = resolved.background;
+        return resolved.radioButton;
     }
 
     /**
@@ -127,6 +133,7 @@ export class BabylonGuiRadioButton {
      * @shortname radio button observable selector
      */
     createRadioButtonObservableSelector(inputs: Inputs.BabylonGui.RadioButtonObservableSelectorDto): Inputs.BabylonGui.radioButtonObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.RadioButtonObservableSelectorDto, inputs) as Resolved.BabylonGui.RadioButtonObservableSelectorDto;
+        return resolved.selector;
     }
 }

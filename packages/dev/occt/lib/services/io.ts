@@ -1,15 +1,29 @@
-import { IGESControl_Reader, BitbybitOcctModule, STEPControl_Reader, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { IGESControl_Reader, BitbybitOcctModule, Handle_TDocStd_Document, STEPControl_Reader, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import * as Models from "../api/models";
 import { IO } from "@bitbybit-dev/base/lib/api/inputs";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../api/resolved-inputs";
+import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
+import { readKernelException } from "../kernel-exception";
+import { numbersOfFrames } from "./base/frames";
+import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
+import { DrawingLine, svgOfDrawing } from "./base/svg-drawing";
+import { stlWithYAndZSwapped } from "./base/stl-data";
+
+/** What a whole BREP text opens with, after an optional line a drawing tool writes before it. */
+const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
+
+/** What a whole BREP text ends with: its table of shapes, then the reference to the shape it holds. */
+const BREP_ENDING = /\r?\nTShapes \d+\r?\n[\s\S]*\r?\n[+\-ie]\d+ \d+\s*$/;
 
 /**
- * Reading and writing OpenCascade shapes in exchange formats: STEP and IGES in, STEP, STL and DXF
- * out, STEP to glTF conversion with the assembly tree, colors and names preserved, and a STEP
- * assembly structure as JSON. Files travel as text or binary data, never as paths. OpenCascade
- * treats Z as up while this library treats Y as up, so the `adjustYtoZ` and `adjustZtoY` flags swap
- * the axes on the way out and in.
+ * Reading and writing OpenCascade shapes in exchange formats: STEP, IGES, STL and BREP in; STEP, STL,
+ * BREP, OBJ, PLY, SVG and DXF out; STEP to glTF conversion with the assembly tree, colors and names
+ * preserved, and a STEP assembly structure as JSON. Files travel as text or binary data, never as
+ * paths. OpenCascade treats Z as up while this library treats Y as up, so the `adjustYtoZ` and
+ * `adjustZtoY` flags swap the axes on the way out and in.
  */
 export class OCCTIO {
 
@@ -37,11 +51,12 @@ export class OCCTIO {
      * ```
      */
     saveShapeSTEP(inputs: Inputs.OCCT.SaveStepDto<TopoDS_Shape>): string {
-        const shapeToUse = inputs.shape;
+        const resolved = resolveDto(Inputs.OCCT.SaveStepDto, inputs) as Resolved.OCCT.SaveStepDto<TopoDS_Shape>;
+        const shapeToUse = resolved.shape;
         let adjustedShape;
-        if (inputs.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
-            if (inputs.fromRightHanded) {
+        if (resolved.adjustYtoZ) {
+            const rotatedShape = this.och.transformsService.rotate({ shape: resolved.shape, axis: [1, 0, 0], angle: -90 });
+            if (resolved.fromRightHanded) {
                 adjustedShape = rotatedShape;
             } else {
                 adjustedShape = this.och.transformsService.mirrorAlongNormal(
@@ -91,63 +106,150 @@ export class OCCTIO {
 
     /**
      * Triangulates a shape and writes it as STL, the mesh format 3D printers and slicers read,
-     * returning the file's text.
+     * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely and make a bigger file. `adjustYtoZ` turns the shape so Y-up becomes Z-up.
-     * `fileName` and `tryDownload` only matter where a download can start.
-     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download options
-     * @returns The STL file as text
+     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
+     * where a download can start.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment, the form and the download options
+     * @returns The STL file as text, or as bytes when `binary` is true
      * @group io
      * @shortname save stl return
      * @drawable false
      * @example
      * ```typescript
      * const stl = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false });
+     * const bytes = await bitbybit.occt.io.saveShapeStlAndReturn({ shape: box, fileName: "box.stl", precision: 0.01, adjustYtoZ: true, tryDownload: false, binary: true });
      * ```
      */
-    saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string {
-        const shapeToUse = inputs.shape;
-
-        this.occ.BRepTools.Clean(shapeToUse);
-
-        let adjustedShape;
-        if (inputs.adjustYtoZ) {
-            const rotatedShape = this.och.transformsService.rotate({ shape: inputs.shape, axis: [1, 0, 0], angle: -90 });
-            adjustedShape = this.och.transformsService.mirrorAlongNormal(
-                { shape: rotatedShape, origin: [0, 0, 0], normal: [0, 0, 1] }
-            );
-            rotatedShape.delete();
-        }
+    saveShapeStl(inputs: Inputs.OCCT.SaveStlDto<TopoDS_Shape>): string | Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.SaveStlDto, inputs) as Resolved.OCCT.SaveStlDto<TopoDS_Shape>;
+        const transferShape = this.occ.BRepBuilderAPI_Copy_Shape(resolved.shape, false);
         const fileName = "x";
         const writer = new this.occ.StlAPI_Writer();
-        let transferShape;
-        if (adjustedShape) {
-            transferShape = adjustedShape;
-        } else {
-            transferShape = shapeToUse;
-        }
-        let result: string;
-        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, inputs.precision, false, 0.5, false);
-
-        const writeResult = writer.Write(transferShape, fileName);
-        if (writeResult) {
-            const stlFile = this.occ.FS.readFile("/" + fileName, { encoding: "utf8" }) as string;
-            this.occ.FS.unlink("/" + fileName);
-            result = stlFile;
-        } else {
-            throw (new Error("Failed when writing stl file."));
-        }
-
-        if (adjustedShape) {
-            adjustedShape.delete();
-        }
-
-        if (incrementalMeshBuilder) {
+        const incrementalMeshBuilder = new this.occ.BRepMesh_IncrementalMesh(transferShape, resolved.precision, false, 0.5, this.occ.RunsInParallel());
+        try {
+            writer.SetASCIIMode(!resolved.binary);
+            if (!writer.Write(transferShape, fileName)) {
+                throw (new Error("Failed when writing stl file."));
+            }
+            const bytes = this.occ.FS.readFile("/" + fileName) as Uint8Array;
+            const turned = resolved.adjustYtoZ ? stlWithYAndZSwapped(bytes) : bytes;
+            return resolved.binary ? turned : new TextDecoder().decode(turned);
+        } finally {
+            this.removeFile("/" + fileName);
+            writer.delete();
             incrementalMeshBuilder.delete();
+            transferShape.delete();
         }
+    }
 
-        return result;
+    /**
+     * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and
+     * returns the file's text.
+     *
+     * `io.loadBrep` reads the text back into the same shape, placement and orientation included.
+     * `fileName` and `tryDownload` only matter where a download can start.
+     * @param inputs - The shape, the file name and the download option
+     * @returns The BREP file as text
+     * @group io
+     * @shortname save brep and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const brep = await bitbybit.occt.io.saveShapeBrepAndReturn({ shape: box, fileName: "box.brep", tryDownload: false });
+     * const copy = await bitbybit.occt.io.loadBrep({ brepData: brep });
+     * ```
+     */
+    saveShapeBrep(inputs: Inputs.OCCT.SaveBrepDto<TopoDS_Shape>): string {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepDto, inputs) as Resolved.OCCT.SaveBrepDto<TopoDS_Shape>;
+        return this.occ.WriteBREPToString(checkedShape(resolved.shape));
+    }
+
+    /**
+     * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
+     * the file's text.
+     *
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
+     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
+     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns The OBJ text, with an empty material library text
+     * @group io
+     * @shortname save obj and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const files = await bitbybit.occt.io.saveShapeObjAndReturn({ shape: box, fileName: "box.obj", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * console.log(files.obj);
+     * ```
+     */
+    saveShapeObj(inputs: Inputs.OCCT.SaveObjDto<TopoDS_Shape>): Models.OCCT.ObjFiles {
+        const resolved = resolveDto(Inputs.OCCT.SaveObjDto, inputs) as Resolved.OCCT.SaveObjDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
+        const name = objNameOf(resolved.fileName, "fileName");
+        return this.writtenAsDocument(shape, resolved.adjustYtoZ, name, document => {
+            const files = this.occ.ExportDocumentToObj(document, precision, name);
+            return { obj: files.obj, mtl: files.mtl };
+        });
+    }
+
+    /**
+     * Triangulates a shape and writes it as ASCII PLY with a normal per vertex, a mesh format
+     * scanning tools read, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * @param inputs - The shape, the file name, the meshing precision, the axis adjustment and the download option
+     * @returns The PLY file as text
+     * @group io
+     * @shortname save ply and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const ply = await bitbybit.occt.io.saveShapePlyAndReturn({ shape: box, fileName: "box.ply", precision: 0.01, adjustYtoZ: false, tryDownload: false });
+     * ```
+     */
+    saveShapePly(inputs: Inputs.OCCT.SavePlyDto<TopoDS_Shape>): string {
+        const resolved = resolveDto(Inputs.OCCT.SavePlyDto, inputs) as Resolved.OCCT.SavePlyDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const precision = checkedNumber(resolved.precision, "precision", SMALLEST_MESH_DEFLECTION);
+        return this.writtenAsDocument(shape, resolved.adjustYtoZ, "shape", document => this.occ.ExportDocumentToPly(document, precision));
+    }
+
+    /**
+     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
+     * asked, and returns the file's text.
+     *
+     * It shows the view from the frame's normal side in model units, x running right along the
+     * frame's direction and y up, so the file holds each point as x and minus y.
+     * @param inputs - The shape, the view, whether to draw hidden edges, the precision and the download options
+     * @returns The SVG file as text
+     * @group io
+     * @shortname save svg and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const view = { origin: [0, 0, 0], normal: [1, 1, 1], direction: [1, -1, 0] };
+     * const svg = await bitbybit.occt.io.saveShapeSvgAndReturn({ shape: box, frame: view, drawHidden: true, precision: 0.01, fileName: "box.svg", tryDownload: false });
+     * ```
+     */
+    saveShapeSvg(inputs: Inputs.OCCT.SaveSvgDto<TopoDS_Shape>): string {
+        const resolved = resolveDto(Inputs.OCCT.SaveSvgDto, inputs) as Resolved.OCCT.SaveSvgDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const frame = checkedFrame(resolved.frame, "frame");
+        const precision = checkedNumber(resolved.precision, "precision", 0);
+        if (precision === 0) {
+            throw new InputError("`precision` must be above 0; it is 0.", "precision");
+        }
+        const lines = this.occ.HiddenLines(shape, numbersOfFrames([frame]), true, false, resolved.drawHidden, 0, precision);
+        try {
+            return svgOfDrawing(this.drawingLinesOf(lines.visible, precision), this.drawingLinesOf(lines.hidden, precision));
+        } finally {
+            lines.visible.delete();
+            lines.hidden.delete();
+        }
     }
 
     /**
@@ -161,8 +263,9 @@ export class OCCTIO {
      * @returns The shape, or undefined when the file could not be read
      */
     loadSTEPorIGES(inputs: Inputs.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined {
-        const fileName = inputs.fileName;
-        const fileText = inputs.filetext;
+        const resolved = resolveDto(Inputs.OCCT.LoadStepOrIgesDto, inputs) as Resolved.OCCT.LoadStepOrIgesDto;
+        const fileName = resolved.fileName;
+        const fileText = resolved.filetext;
         const extension = fileName.toLowerCase().split(".").pop();
         
         const fileType = (() => {
@@ -228,7 +331,7 @@ export class OCCTIO {
         }
         
         let adjustedShape;
-        if (inputs.adjustZtoY && stepShape) {
+        if (resolved.adjustZtoY && stepShape) {
             const mirroredShape = this.och.transformsService.mirrorAlongNormal(
                 { shape: stepShape, origin: [0, 0, 0], normal: [0, 0, 1] }
             );
@@ -240,10 +343,79 @@ export class OCCTIO {
             stepShape?.delete();
             return adjustedShape;
         }
-        
+
         return stepShape;
     }
-    
+
+    /**
+     * Reads an STL file, ASCII or binary, into a shape: one planar face per triangle, or one face
+     * that carries the whole mesh.
+     *
+     * With `asFaces` true the faces share their corners' edges in a compound that
+     * `shapeFix.sewWithReport` can join into a shell. `adjustZtoY` turns Z-up into Y-up, and a file
+     * without triangles is refused.
+     * @param inputs - The STL file, the face option and the axis adjustment
+     * @returns A compound of triangular faces, or one face that carries the mesh
+     * @group io
+     * @shortname load stl
+     * @drawable true
+     * @example
+     * ```typescript
+     * const mesh = await bitbybit.occt.io.loadStl({ stlData: stlText, asFaces: true, adjustZtoY: true });
+     * const sewn = await bitbybit.occt.shapeFix.sewWithReport({ shapes: [mesh], tolerance: 1e-6 });
+     * ```
+     */
+    loadStl(inputs: Inputs.OCCT.LoadStlDto): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.LoadStlDto, inputs) as Resolved.OCCT.LoadStlDto;
+        const bytes = bytesOfFile(resolved.stlData, "stlData");
+        return this.occ.ReadStlFromBytes(resolved.adjustZtoY ? stlWithYAndZSwapped(bytes) : bytes, resolved.asFaces);
+    }
+
+    /**
+     * Reads a BREP file, the text format that keeps a shape's exact geometry and topology, back into
+     * the shape `io.saveShapeBrep` wrote.
+     *
+     * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
+     * one cut short, is refused, and so is a damaged one, with where it is damaged.
+     * @param inputs - The BREP file
+     * @returns The shape the file holds
+     * @group io
+     * @shortname load brep
+     * @drawable true
+     * @example
+     * ```typescript
+     * const brep = await bitbybit.occt.io.saveShapeBrepAndReturn({ shape: box, fileName: "box.brep", tryDownload: false });
+     * const copy = await bitbybit.occt.io.loadBrep({ brepData: brep });
+     * ```
+     */
+    loadBrep(inputs: Inputs.OCCT.LoadBrepDto): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.LoadBrepDto, inputs);
+        const text = textOfFile(resolved.brepData, "brepData");
+        if (!BREP_HEADER.test(text) || !BREP_ENDING.test(text)) {
+            throw new InputError("`brepData` is not a whole BREP file: its header, its table of shapes or the shape it names at the end is missing.", "brepData");
+        }
+        const shape = this.brepShapeOf(text);
+        if (shape.IsNull()) {
+            shape.delete();
+            throw new InputError("`brepData` holds no shape a BREP reader can build.", "brepData");
+        }
+        return shape;
+    }
+
+    /** The kernel's reading of BREP text; text the kernel finds damaged is refused as an input error saying where. */
+    private brepShapeOf(text: string): TopoDS_Shape {
+        try {
+            return this.occ.ReadBREPFromString(text);
+        } catch (thrown) {
+            const read = readKernelException(this.occ, thrown);
+            const damage = read instanceof Error ? /the BREP text is damaged: (.+)$/.exec(read.message) : null;
+            if (damage === null) {
+                throw read;
+            }
+            throw new InputError(`\`brepData\` is damaged: ${damage[1]}.`, "brepData");
+        }
+    }
+
     /**
      * Turns the wires of a shape into DXF path records, the first step of a 2D DXF export.
      *
@@ -268,7 +440,8 @@ export class OCCTIO {
      * ```
      */
     shapeToDxfPaths(inputs: Inputs.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>): IO.DxfPathDto[] {
-        return this.och.dxfService.shapeToDxfPaths(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeToDxfPathsDto, inputs) as Resolved.OCCT.ShapeToDxfPathsDto<TopoDS_Shape>;
+        return this.och.dxfService.shapeToDxfPaths(resolved);
     }
 
     /**
@@ -287,7 +460,8 @@ export class OCCTIO {
      * ```
      */
     dxfPathsWithLayer(inputs: Inputs.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto {
-        return this.och.dxfService.dxfPathsWithLayer(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DxfPathsWithLayerDto, inputs) as Resolved.OCCT.DxfPathsWithLayerDto;
+        return this.och.dxfService.dxfPathsWithLayer(resolved);
     }
 
     /**
@@ -313,7 +487,8 @@ export class OCCTIO {
      * ```
      */
     dxfCreate(inputs: Inputs.OCCT.DxfPathsPartsListDto): string {
-        return this.och.dxfService.dxfCreate(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DxfPathsPartsListDto, inputs) as Resolved.OCCT.DxfPathsPartsListDto;
+        return this.och.dxfService.dxfCreate(resolved);
     }
 
     /**
@@ -334,15 +509,16 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltf(inputs: Inputs.OCCT.ConvertStepToGltfDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfDto, inputs) as Resolved.OCCT.ConvertStepToGltfDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let result: Uint8Array;
 
-            const meshPrecision = inputs.meshPrecision ?? 0.005;
-            const meshAngle = inputs.meshAngle ?? 0.5;
-            const meshRelative = inputs.meshRelative ?? true;
-            const internalVerticesMode = inputs.internalVerticesMode ?? false;
-            const controlSurfaceDeflection = inputs.controlSurfaceDeflection ?? false;
+            const meshPrecision = resolved.meshPrecision;
+            const meshAngle = resolved.meshAngle;
+            const meshRelative = resolved.meshRelative;
+            const internalVerticesMode = resolved.internalVerticesMode;
+            const controlSurfaceDeflection = resolved.controlSurfaceDeflection;
 
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinary(
@@ -414,93 +590,94 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfAdvanced(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let result: Uint8Array;
             
-            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
+            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.nodeNameFormat);
+            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
+            const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
             
             if (stepData instanceof Uint8Array) {
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     stepData,
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else if (stepData instanceof ArrayBuffer) {
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     new Uint8Array(stepData),
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else if (typeof stepData === "string") {
                 const encoder = new TextEncoder();
                 const binaryData = encoder.encode(stepData);
                 result = this.occ.ConvertStepToGltfFromBinaryAdvanced(
                     binaryData,
-                    inputs.readColors ?? true,
-                    inputs.readNames ?? true,
-                    inputs.readMaterials ?? true,
-                    inputs.readLayers ?? false,
-                    inputs.readProps ?? false,
-                    inputs.meshDeflection ?? 0.005,
-                    inputs.meshAngle ?? 0.5,
-                    inputs.meshParallel ?? true,
-                    inputs.meshRelative ?? true,
-                    inputs.internalVerticesMode ?? false,
-                    inputs.controlSurfaceDeflection ?? false,
-                    inputs.faceCountThreshold ?? -1,
-                    inputs.mergeFaces ?? true,
-                    inputs.splitIndices16 ?? true,
-                    inputs.parallelWrite ?? true,
-                    inputs.embedTextures ?? true,
-                    inputs.forceUVExport ?? false,
+                    resolved.readColors,
+                    resolved.readNames,
+                    resolved.readMaterials,
+                    resolved.readLayers,
+                    resolved.readProps,
+                    resolved.meshDeflection,
+                    resolved.meshAngle,
+                    resolved.meshParallel,
+                    resolved.meshRelative,
+                    resolved.internalVerticesMode,
+                    resolved.controlSurfaceDeflection,
+                    resolved.faceCountThreshold,
+                    resolved.mergeFaces,
+                    resolved.splitIndices16,
+                    resolved.parallelWrite,
+                    resolved.embedTextures,
+                    resolved.forceUVExport,
                     nodeNameFormatNum,
                     meshNameFormatNum,
                     transformFormatNum,
-                    inputs.adjustZtoY ?? true,
-                    inputs.scale ?? 1.0
+                    resolved.adjustZtoY,
+                    resolved.scale
                 );
             } else {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
@@ -539,8 +716,9 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfWithDracoDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfWithDracoDto, inputs) as Resolved.OCCT.ConvertStepToGltfWithDracoDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let binaryData: Uint8Array;
 
             if (stepData instanceof Uint8Array) {
@@ -555,20 +733,20 @@ export class OCCTIO {
 
             const result = this.occ.ConvertStepToGltfFromBinaryWithDraco(
                 binaryData,
-                inputs.meshPrecision ?? 0.005,
-                inputs.meshAngle ?? 0.5,
-                inputs.meshRelative ?? true,
-                inputs.internalVerticesMode ?? false,
-                inputs.controlSurfaceDeflection ?? false,
+                resolved.meshPrecision,
+                resolved.meshAngle,
+                resolved.meshRelative,
+                resolved.internalVerticesMode,
+                resolved.controlSurfaceDeflection,
                 -1,
-                inputs.useDraco ?? true,
-                inputs.dracoCompressionLevel ?? 7,
-                inputs.dracoQuantizePositionBits ?? 14,
-                inputs.dracoQuantizeNormalBits ?? 10,
-                inputs.dracoQuantizeTexcoordBits ?? 12,
-                inputs.dracoQuantizeColorBits ?? 8,
-                inputs.dracoQuantizeGenericBits ?? 12,
-                inputs.dracoUnifiedQuantization ?? false
+                resolved.useDraco,
+                resolved.dracoCompressionLevel,
+                resolved.dracoQuantizePositionBits,
+                resolved.dracoQuantizeNormalBits,
+                resolved.dracoQuantizeTexcoordBits,
+                resolved.dracoQuantizeColorBits,
+                resolved.dracoQuantizeGenericBits,
+                resolved.dracoUnifiedQuantization
             );
 
             if (result.length === 0) {
@@ -604,8 +782,9 @@ export class OCCTIO {
      * ```
      */
     convertStepToGltfAdvancedWithDraco(inputs: Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.ConvertStepToGltfAdvancedWithDracoDto, inputs) as Resolved.OCCT.ConvertStepToGltfAdvancedWithDracoDto;
         try {
-            const stepData = inputs.stepData;
+            const stepData = resolved.stepData;
             let binaryData: Uint8Array;
 
             if (stepData instanceof Uint8Array) {
@@ -618,42 +797,42 @@ export class OCCTIO {
                 throw new Error("File/Blob must be converted to ArrayBuffer before calling this method. Use the worker layer for automatic conversion.");
             }
 
-            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.nodeNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(inputs.meshNameFormat ?? Inputs.OCCT.gltfNameFormatEnum.instance);
-            const transformFormatNum = this.gltfTransformFormatEnumToOcct(inputs.transformFormat ?? Inputs.OCCT.gltfTransformFormatEnum.compact);
+            const nodeNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.nodeNameFormat);
+            const meshNameFormatNum = this.gltfNameFormatEnumToOcct(resolved.meshNameFormat);
+            const transformFormatNum = this.gltfTransformFormatEnumToOcct(resolved.transformFormat);
 
             const result = this.occ.ConvertStepToGltfFromBinaryAdvancedWithDraco(
                 binaryData,
-                inputs.readColors ?? true,
-                inputs.readNames ?? true,
-                inputs.readMaterials ?? true,
-                inputs.readLayers ?? false,
-                inputs.readProps ?? false,
-                inputs.meshDeflection ?? 0.005,
-                inputs.meshAngle ?? 0.5,
-                inputs.meshParallel ?? true,
-                inputs.meshRelative ?? true,
-                inputs.internalVerticesMode ?? false,
-                inputs.controlSurfaceDeflection ?? false,
-                inputs.faceCountThreshold ?? -1,
-                inputs.mergeFaces ?? true,
-                inputs.splitIndices16 ?? true,
-                inputs.parallelWrite ?? true,
-                inputs.embedTextures ?? true,
-                inputs.forceUVExport ?? false,
+                resolved.readColors,
+                resolved.readNames,
+                resolved.readMaterials,
+                resolved.readLayers,
+                resolved.readProps,
+                resolved.meshDeflection,
+                resolved.meshAngle,
+                resolved.meshParallel,
+                resolved.meshRelative,
+                resolved.internalVerticesMode,
+                resolved.controlSurfaceDeflection,
+                resolved.faceCountThreshold,
+                resolved.mergeFaces,
+                resolved.splitIndices16,
+                resolved.parallelWrite,
+                resolved.embedTextures,
+                resolved.forceUVExport,
                 nodeNameFormatNum,
                 meshNameFormatNum,
                 transformFormatNum,
-                inputs.adjustZtoY ?? true,
-                inputs.scale ?? 1.0,
-                inputs.useDraco ?? true,
-                inputs.dracoCompressionLevel ?? 7,
-                inputs.dracoQuantizePositionBits ?? 14,
-                inputs.dracoQuantizeNormalBits ?? 10,
-                inputs.dracoQuantizeTexcoordBits ?? 12,
-                inputs.dracoQuantizeColorBits ?? 8,
-                inputs.dracoQuantizeGenericBits ?? 12,
-                inputs.dracoUnifiedQuantization ?? false
+                resolved.adjustZtoY,
+                resolved.scale,
+                resolved.useDraco,
+                resolved.dracoCompressionLevel,
+                resolved.dracoQuantizePositionBits,
+                resolved.dracoQuantizeNormalBits,
+                resolved.dracoQuantizeTexcoordBits,
+                resolved.dracoQuantizeColorBits,
+                resolved.dracoQuantizeGenericBits,
+                resolved.dracoUnifiedQuantization
             );
 
             if (result.length === 0) {
@@ -738,6 +917,75 @@ export class OCCTIO {
             case Inputs.OCCT.gltfTransformFormatEnum.mat4: return 1;
             case Inputs.OCCT.gltfTransformFormatEnum.trs: return 2;
             default: return 0;
+        }
+    }
+
+    /**
+     * A copy of the shape without the mesh it may carry, so a mesh export triangulates at its own
+     * precision and leaves the caller's mesh alone. With `adjustYtoZ` the copy is placed with y and z
+     * swapped, which turns Y-up into Z-up; a placement moves a face that carries only a mesh too, and
+     * the mesh writers turn the triangles of a mirrored placement so they keep facing out.
+     */
+    private unmeshedCopy(shape: TopoDS_Shape, adjustYtoZ: boolean): TopoDS_Shape {
+        const copy = this.occ.BRepBuilderAPI_Copy_Shape(shape, false);
+        if (!adjustYtoZ) {
+            return copy;
+        }
+        const swap = new this.occ.gp_Trsf();
+        swap.SetValues(1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0);
+        const location = new this.occ.TopLoc_Location(swap);
+        const placed = copy.Moved(location);
+        location.delete();
+        swap.delete();
+        copy.delete();
+        return placed;
+    }
+
+    /**
+     * Puts a copy of the shape into a new document as one part named `name`, hands the document to
+     * `write` and deletes the document and the copy, whatever `write` does.
+     */
+    private writtenAsDocument<R>(shape: TopoDS_Shape, adjustYtoZ: boolean, name: string, write: (document: Handle_TDocStd_Document) => R): R {
+        const copy = this.unmeshedCopy(shape, adjustYtoZ);
+        try {
+            const structure = JSON.stringify({ parts: [{ id: "shape", shapeIndex: 0, name }], nodes: [] });
+            const document = this.occ.BuildAssemblyDocument(structure, [copy], undefined, []);
+            try {
+                if (document.IsNull()) {
+                    throw new Error("The shape could not be put into a document for the export.");
+                }
+                return write(document);
+            } finally {
+                document.delete();
+            }
+        } finally {
+            copy.delete();
+        }
+    }
+
+    /** The edges of a flat drawing as lines of x and y, each curve traced within `precision`. */
+    private drawingLinesOf(drawing: TopoDS_Compound, precision: number): DrawingLine[] {
+        const edges = this.occ.EdgesOf(drawing, true);
+        try {
+            return edges.map(edge => {
+                const numbers: ArrayLike<number> = this.occ.SubdivideEdgeByDeflection(edge, precision);
+                const line: [number, number][] = [];
+                for (let at = 0; at + 2 < numbers.length; at += 3) {
+                    line.push([numbers[at]!, numbers[at + 1]!]);
+                }
+                return line;
+            });
+        } finally {
+            edges.forEach(edge => edge.delete());
+        }
+    }
+
+    /** Removes a file the kernel staged, if it is there. */
+    private removeFile(path: string): void {
+        try {
+            this.occ.FS.unlink(path);
+        } catch {
+            return;
         }
     }
 }

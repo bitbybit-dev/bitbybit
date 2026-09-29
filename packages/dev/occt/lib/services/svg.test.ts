@@ -111,6 +111,40 @@ describe("OCCTSVG + OCCTPath integration", () => {
         });
     });
 
+    describe("shapeFromPath with defaults left to the DTOs", () => {
+        it("should build the wire the spelled out DTO builds when the path leaves its own defaults out", () => {
+            // Act
+            const leftOut = path.shapeFromPath({ subpaths: squareSubpaths() })!;
+            const spelled = path.shapeFromPath(Object.assign(new Inputs.OCCT.ShapeFromPathDto(), { subpaths: squareSubpaths() }))!;
+
+            // Assert
+            expect(shapeType(leftOut)).toBe(Inputs.OCCT.shapeTypeEnum.wire);
+            expect(wireLength(leftOut)).toBeCloseTo(40, 4);
+            expect(wireLength(leftOut)).toBe(wireLength(spelled));
+            leftOut.delete();
+            spelled.delete();
+        });
+
+        it("should build a circle face from arcs that leave their rotation and start angle to the segment's defaults", () => {
+            // Act
+            const shape = path.shapeFromPath({
+                makeFaces: true,
+                subpaths: [{
+                    start: [10, 0],
+                    closed: true,
+                    segments: [
+                        { type: "arc", to: [-10, 0], center: [0, 0], rx: 10, ry: 10, deltaAngle: Math.PI },
+                        { type: "arc", to: [10, 0], center: [0, 0], rx: 10, ry: 10, xAxisRotation: undefined, startAngle: Math.PI, deltaAngle: Math.PI },
+                    ],
+                }],
+            })!;
+
+            // Assert
+            expect(faceArea(shape)).toBeCloseTo(Math.PI * 100, 0);
+            shape.delete();
+        });
+    });
+
     describe("loadSVGStructured", () => {
         it("builds a wire per element with metadata, by default (no faces)", () => {
             const dto = new Inputs.OCCT.LoadSVGDto();

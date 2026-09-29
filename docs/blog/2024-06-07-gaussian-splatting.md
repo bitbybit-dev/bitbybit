@@ -1,13 +1,13 @@
 ---
 slug: gaussian-splatting
 title: "GAUSSIAN SPLATTING: Bringing Realistic 3D Scans to Your Projects"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/gaussian-splatting/gaussian-splatting.jpeg
+image: https://bitbybit.dev/files/site/blog/gaussian-splatting/gaussian-splatting.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Explore the power of 3D Gaussian Splatting for creating realistic 3D scans of real-world objects and scenes, and learn how to integrate them into your Bitbybit.dev projects."
 ---
 
-![Rete editor showing a Gaussian Splatting 3D scan of a plant placed within a CAD-designed vase.](https://ik.imagekit.io/bitbybit/app/assets/blog/gaussian-splatting/gaussian-splatting.jpeg "Rete editor with Gaussian Splatting 3D scan of a plant in the CAD vase")
+![Rete editor showing a Gaussian Splatting 3D scan of a plant placed within a CAD-designed vase.](https://bitbybit.dev/files/site/blog/gaussian-splatting/gaussian-splatting.jpeg "Rete editor with Gaussian Splatting 3D scan of a plant in the CAD vase")
 
 The ability to include realistic 3D scans of real-world objects and environments directly into your Bitbybit.dev scenes opens up a multitude of new creative and practical scenarios. In this blog post, we'll dive into what Gaussian Splatting is, its potential uses, and how you can leverage it on our platform.
 
@@ -48,7 +48,7 @@ When it comes to editing your 3D scans (e.g., cleaning up artifacts, cropping, o
 
 *   **Try SUPERSPLAT Editor:** [playcanvas.com/supersplat/editor](https://playcanvas.com/supersplat/editor)
 
-![Screenshot of the SUPERSPLAT editor by PlayCanvas, showing a Gaussian Splat being edited.](https://ik.imagekit.io/bitbybit/app/assets/blog/gaussian-splatting/supersplat.jpeg "SUPERSPLAT editor from PlayCanvas")
+![Screenshot of the SUPERSPLAT editor by PlayCanvas, showing a Gaussian Splat being edited.](https://bitbybit.dev/files/site/blog/gaussian-splatting/supersplat.jpeg "SUPERSPLAT editor from PlayCanvas")
 
 **Recommendation:** When exporting from SUPERSPLAT or other tools, we strongly advise you to export to the binary `.splat` file format. It is compatible with our platform and is generally much lighter in file size compared to other formats like `.ply` when used for splats.
 

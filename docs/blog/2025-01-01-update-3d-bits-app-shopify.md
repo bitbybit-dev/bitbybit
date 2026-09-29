@@ -1,13 +1,13 @@
 ---
 slug: updated-3d-bits-app-for-shopify
 title: "UPDATED: 3D Bits App for Shopify - Simpler Static 3D Models & Project Embedding!"
-image: https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-embed-towel-bucket.jpeg
+image: https://bitbybit.dev/files/site/start/shopify/bitbybit-embed-towel-bucket.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "Exciting updates for the 3D Bits app for Shopify! Introducing new capabilities for simpler use cases, including easier static 3D model display and direct embedding of public Bitbybit.dev projects."
 ---
 
-![3D Bits app for Shopify was updated to embed preview links to public bitbybit.dev scripts, showcasing a 3D towel and bucket model.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-embed-towel-bucket.jpeg "3D Bits app for Shopify was updated to embed preview links to public bitbybit.dev scripts")
+![3D Bits app for Shopify was updated to embed preview links to public bitbybit.dev scripts, showcasing a 3D towel and bucket model.](https://bitbybit.dev/files/site/start/shopify/bitbybit-embed-towel-bucket.jpeg "3D Bits app for Shopify was updated to embed preview links to public bitbybit.dev scripts")
 
 We are happy to announce that the **3D Bits app for Shopify** has been updated with some powerful new capabilities designed to simplify common use cases! While parametric 3D models offer incredible flexibility, we understand that the learning curve associated with programming them can be steep.
 
@@ -48,7 +48,7 @@ For the best results with assets you own, we recommend uploading them to Shopify
 
 ➡️ **[Learn more about the BITBYBIT VIEWER block](/learn/3d-bits/theme-blocks/bitbybit-viewer)**
 
-![Shopify theme editor showing the configuration options for the BITBYBIT VIEWER theme app extension block, including dynamic links for 3D model URLs.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/3d-bits-bitbybit-viewer-theme-app-extension-configuration-dynamic-links.jpeg "This is how VIEWER theme app extension block looks like on admin panel of Shopify product template")
+![Shopify theme editor showing the configuration options for the BITBYBIT VIEWER theme app extension block, including dynamic links for 3D model URLs.](https://bitbybit.dev/files/site/start/shopify/3d-bits-bitbybit-viewer-theme-app-extension-configuration-dynamic-links.jpeg "This is how VIEWER theme app extension block looks like on admin panel of Shopify product template")
 
 Here's a short tutorial that will walk you through all the steps involved to set up and use the BITBYBIT VIEWER block:
 
@@ -64,7 +64,7 @@ The **BITBYBIT PREVIEW** block works with a single metafield where you can paste
 
 ➡️ **[Learn more about the BITBYBIT PREVIEW block](/learn/3d-bits/theme-blocks/bitbybit-preview)**
 
-![Shopify theme editor showing the configuration options for the BITBYBIT PREVIEW theme app extension block, typically requiring a single URL to a public Bitbybit.dev project.](https://ik.imagekit.io/bitbybit/app/assets/start/shopify/bitbybit-preview-block.jpeg "This is how PREVIEW theme app extension block looks like on admin panel of Shopify product template")
+![Shopify theme editor showing the configuration options for the BITBYBIT PREVIEW theme app extension block, typically requiring a single URL to a public Bitbybit.dev project.](https://bitbybit.dev/files/site/start/shopify/bitbybit-preview-block.jpeg "This is how PREVIEW theme app extension block looks like on admin panel of Shopify product template")
 
 Here's a short tutorial that will walk you through all the steps involved to set up and use the BITBYBIT PREVIEW block:
 
@@ -97,4 +97,4 @@ If you have any questions, need help with anything, or have feedback, please fee
 Want to learn more about the original capabilities of 3D Bits for parametric and interactive configurators?
 ➡️ **[Read about the original release of 3D Bits and what it can do here](/blog/3d-bits-app-for-shopify)**
 
-![Screenshot of the 3D Bits app for Shopify demo store, showcasing interactive 3D products.](https://ik.imagekit.io/bitbybit/app/assets/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg "3D Bits app for Shopify demo store")
+![Screenshot of the 3D Bits app for Shopify demo store, showcasing interactive 3D products.](https://bitbybit.dev/files/site/blog/3d-bits-app-for-shopify/3d-bits-app-for-shopify-demo-store-picture.jpeg "3D Bits app for Shopify demo store")

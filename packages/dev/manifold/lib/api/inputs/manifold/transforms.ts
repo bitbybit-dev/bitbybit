@@ -18,7 +18,7 @@ export class MirrorDto<T> {
      * The normal of the mirror plane through the origin; a zero vector gives an empty solid.
      * @default [1,0,0]
      */
-    normal: Base.Vector3 = [1, 0, 0];
+    normal?: Base.Vector3 | undefined = [1, 0, 0];
 }
 /**
  * A solid and three factors for `manifold.transforms.scale3D` and `manifold.transforms.scale`.
@@ -36,7 +36,7 @@ export class Scale3DDto<T> {
      * The factors along X, Y and Z, about the origin; 1 keeps an axis as it is, 2 doubles it.
      * @default [2,2,2]
      */
-    vector: Base.Vector3 = [2, 2, 2];
+    vector?: Base.Vector3 | undefined = [2, 2, 2];
 }
 /**
  * A solid and a vector for `manifold.transforms.translate`.
@@ -115,7 +115,7 @@ export class RotateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    x = 0;
+    x?: number | undefined = 0;
     /**
      * The rotation about the Y axis in degrees, applied second.
      * @default 0
@@ -123,7 +123,7 @@ export class RotateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    y = 0;
+    y?: number | undefined = 0;
     /**
      * The rotation about the Z axis in degrees, applied last.
      * @default 0
@@ -131,7 +131,7 @@ export class RotateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    z = 0;
+    z?: number | undefined = 0;
 }
 /**
  * A solid and a factor for uniform scaling; currently unused by the library, which scales through
@@ -150,7 +150,7 @@ export class ScaleDto<T> {
      * The uniform scale about the origin; 2 doubles every size.
      * @default 2
      */
-    factor = 2;
+    factor?: number | undefined = 2;
 }
 /**
  * A solid and three distances for `manifold.transforms.translateXYZ`.
@@ -173,7 +173,7 @@ export class TranslateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    x = 0;
+    x?: number | undefined = 0;
     /**
      * How far to move along Y, in model units.
      * @default 0
@@ -181,7 +181,7 @@ export class TranslateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    y = 0;
+    y?: number | undefined = 0;
     /**
      * How far to move along Z, in model units.
      * @default 0
@@ -189,7 +189,7 @@ export class TranslateXYZDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    z = 0;
+    z?: number | undefined = 0;
 }
 /**
  * A solid and a 4x4 matrix for `manifold.transforms.transform`.

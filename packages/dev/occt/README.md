@@ -2,7 +2,7 @@
 
 OpenCascade Technology (OCCT) CAD kernel integration for [Bitbybit](https://bitbybit.dev) - professional-grade 3D modeling with boolean operations, fillets, chamfers, lofts, sweeps, STEP/IGES import/export, and more.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

@@ -153,46 +153,61 @@ export class EntitiesService {
     }
 
     gpAx3_3(point: Base.Point3, normal: Base.Vector3, direction: Base.Vector3): gp_Ax3 {
-        return new this.occ.gp_Ax3(
-            this.gpPnt(point),
-            this.gpDir(normal),
-            this.gpDir(direction)
-        );
+        const pt = this.gpPnt(point);
+        const norm = this.gpDir(normal);
+        const dir = this.gpDir(direction);
+        const ax = new this.occ.gp_Ax3(pt, norm, dir);
+        pt.delete();
+        norm.delete();
+        dir.delete();
+        return ax;
     }
 
     gpAx3_4(point: Base.Point3, direction: Base.Vector3): gp_Ax3 {
-        return new this.occ.gp_Ax3(
-            this.gpPnt(point),
-            this.gpDir(direction)
-        );
+        const pt = this.gpPnt(point);
+        const dir = this.gpDir(direction);
+        const ax = new this.occ.gp_Ax3(pt, dir);
+        pt.delete();
+        dir.delete();
+        return ax;
     }
 
     gpAx2(point: Base.Point3, direction: Base.Vector3): gp_Ax2 {
-        return new this.occ.gp_Ax2(
-            this.gpPnt(point),
-            this.gpDir(direction)
-        );
+        const pt = this.gpPnt(point);
+        const dir = this.gpDir(direction);
+        const ax = new this.occ.gp_Ax2(pt, dir);
+        pt.delete();
+        dir.delete();
+        return ax;
     }
 
     gpAx2FromTwoVectors(point: Base.Point3, directionFirst: Base.Vector3, directionSecond: Base.Vector3): gp_Ax2 {
-        return new this.occ.gp_Ax2(
-            this.gpPnt(point),
-            this.gpDir(directionFirst),
-            this.gpDir(directionSecond)
-        );
+        const pt = this.gpPnt(point);
+        const first = this.gpDir(directionFirst);
+        const second = this.gpDir(directionSecond);
+        const ax = new this.occ.gp_Ax2(pt, first, second);
+        pt.delete();
+        first.delete();
+        second.delete();
+        return ax;
     }
 
     gpAx1(point: Base.Point3, direction: Base.Vector3): gp_Ax1 {
-        return new this.occ.gp_Ax1(
-            this.gpPnt(point),
-            this.gpDir(direction)
-        );
+        const pt = this.gpPnt(point);
+        const dir = this.gpDir(direction);
+        const ax = new this.occ.gp_Ax1(pt, dir);
+        pt.delete();
+        dir.delete();
+        return ax;
     }
 
     gpAx2d(point: Base.Point2, direction: Base.Vector2): gp_Ax2d {
         const pt = this.gpPnt2d(point);
         const dir = this.gpDir2d(direction);
-        return new this.occ.gp_Ax2d(pt, dir);
+        const ax = new this.occ.gp_Ax2d(pt, dir);
+        pt.delete();
+        dir.delete();
+        return ax;
     }
 
     gpAx22d(point: Base.Point2, direction1: Base.Vector2, direction2: Base.Vector2): gp_Ax22d {

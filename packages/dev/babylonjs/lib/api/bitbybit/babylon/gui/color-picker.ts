@@ -2,6 +2,8 @@
 import { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Color pickers: a color wheel with a square for lightness and saturation, giving a hex color.
@@ -27,26 +29,27 @@ export class BabylonGuiColorPicker {
      * ```
      */
     createColorPicker(inputs: Inputs.BabylonGui.CreateColorPickerDto): BABYLON.GUI.ColorPicker {
-        const colorPicker = new BABYLON.GUI.ColorPicker(inputs.name);
+        const resolved = resolveDto(Inputs.BabylonGui.CreateColorPickerDto, inputs) as Resolved.BabylonGui.CreateColorPickerDto;
+        const colorPicker = new BABYLON.GUI.ColorPicker(resolved.name);
 
-        if (inputs.height) {
-            colorPicker.height = inputs.height;
+        if (resolved.height) {
+            colorPicker.height = resolved.height;
         } else {
             colorPicker.height = "300px";
         }
-        if (inputs.width) {
-            colorPicker.width = inputs.width;
+        if (resolved.width) {
+            colorPicker.width = resolved.width;
         } else {
             colorPicker.width = "300px";
         }
-        if (inputs.size) {
-            colorPicker.size = inputs.size;
+        if (resolved.size) {
+            colorPicker.size = resolved.size;
         }
 
-        if (inputs.defaultColor) {
-            colorPicker.value = BABYLON.Color3.FromHexString(inputs.defaultColor);
+        if (resolved.defaultColor) {
+            colorPicker.value = BABYLON.Color3.FromHexString(resolved.defaultColor);
         }
-        colorPicker.color = inputs.color;
+        colorPicker.color = resolved.color;
         return colorPicker;
     }
 
@@ -72,8 +75,9 @@ export class BabylonGuiColorPicker {
      * @shortname set color picker size
      */
     setColorPickerSize(inputs: Inputs.BabylonGui.SetColorPickerSizeDto): BABYLON.GUI.ColorPicker {
-        inputs.colorPicker.size = inputs.size ?? "300px";
-        return inputs.colorPicker;
+        const resolved = resolveDto(Inputs.BabylonGui.SetColorPickerSizeDto, inputs) as Resolved.BabylonGui.SetColorPickerSizeDto;
+        resolved.colorPicker.size = resolved.size;
+        return resolved.colorPicker;
     }
 
     /**
@@ -107,6 +111,7 @@ export class BabylonGuiColorPicker {
      * @shortname color picker observable selector
      */
     createColorPickerObservableSelector(inputs: Inputs.BabylonGui.ColorPickerObservableSelectorDto): Inputs.BabylonGui.colorPickerObservableSelectorEnum {
-        return inputs.selector;
+        const resolved = resolveDto(Inputs.BabylonGui.ColorPickerObservableSelectorDto, inputs) as Resolved.BabylonGui.ColorPickerObservableSelectorDto;
+        return resolved.selector;
     }
 }

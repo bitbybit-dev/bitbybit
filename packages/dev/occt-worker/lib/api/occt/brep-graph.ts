@@ -198,7 +198,7 @@ export class OCCTBrepGraph {
      * Checks the structure of a shape's graph for problems such as dangling references or
      * inconsistent links, and lists every issue found with its severity.
      *
-     * This checks the bookkeeping, not the geometry; `shapes.shape.isValid` and
+     * This checks the bookkeeping, not the geometry; `shapeFix.isValid` and
      * `shapeFix.basicShapeRepair` deal with geometric validity.
      * @param inputs - The shape to analyze
      * @returns Whether the graph is sound and the issues found

@@ -1,0 +1,5 @@
+{
+    "servers": {
+        "bitbybit": { "type": "http", "url": "https://mcp.bitbybit.dev/mcp" }
+    }
+}

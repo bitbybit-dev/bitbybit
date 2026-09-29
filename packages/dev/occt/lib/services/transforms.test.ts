@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTEdge, OCCTSolid } from "./shapes";
 import { OCCTTransforms } from "./transforms";
 import * as Inputs from "../api/inputs";
+
+const closeTo12 = (points: number[][]): unknown[] => points.map(point => point.map(value => expect.closeTo(value, 12)));
 
 describe("OCCT transforms unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -145,7 +147,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.5, 5, 3],
                 [2.5, 5, -3]
             ]);
-            expect(cornerPointsTransformed).toEqual([
+            expect(cornerPointsTransformed).toEqual(closeTo12([
                 [-3.6547190333315784, -7.96562362415893, -11.529657342509488],
                 [6.089855678599293, -12.543212886549313, -2.8966427920499775],
                 [-1.5394597587180137, 1.8451446975498715, 13.344315061168142],
@@ -154,7 +156,7 @@ describe("OCCT transforms unit tests", () => {
                 [13.284034470648885, -4.422733959940254, -6.711300510708632],
                 [5.654719033331578, 9.96562362415893, 9.529657342509488],
                 [-4.089855678599293, 14.543212886549313, 0.8966427920499784]
-            ]);
+            ]));
             box.delete();
             transformed.delete();
         });
@@ -175,7 +177,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.5, 5, 3],
                 [2.5, 5, -3]
             ]);
-            expect(cornerPointsTransformed).toEqual([
+            expect(cornerPointsTransformed).toEqual(closeTo12([
                 [-3.2061286023138313, -4.668290633160117, -2.6255807645260507],
                 [1.0306430115691567, -6.658546834199415, 1.127903822630258],
                 [-2.286450656829672, -0.4027391889388996, 8.18918984576857],
@@ -184,7 +186,7 @@ describe("OCCT transforms unit tests", () => {
                 [4.158546834199415, -3.1279038226302576, -0.5306430115691567],
                 [0.8414531658005857, 3.1279038226302576, 6.530643011569157],
                 [-3.395318448082403, 5.118160023669555, 2.777158424412848]
-            ]);
+            ]));
             box.delete();
             transformed.delete();
         });
@@ -413,7 +415,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.4221921821840584, 2.2458935839654326, 0.6680857661494919],
                 [5.739285850582889, -4.815392439172882, 6.923893411410006]
             ]);
-            expect(cornerPointsTransformedBox).toEqual([
+            expect(cornerPointsTransformedBox).toEqual(closeTo12([
                 [-5.17221333773584, -3.021283208849262, -2.3573898777171816],
                 [-3.2551388192611195, -4.4863268142318695, 3.136103776137572],
                 [0.6153271730570782, 4.669495942192721, 4.227159528721259],
@@ -422,7 +424,7 @@ describe("OCCT transforms unit tests", () => {
                 [1.0695193858785517, -6.083888912960802, 1.200870779978474],
                 [4.939985378196749, 3.0719338434637864, 2.2919265325621607],
                 [3.0229108597220273, 4.536977448846393, -3.2015671212925927]
-            ]);
+            ]));
             sphere.delete();
             box.delete();
             transformed.forEach(t => t.delete());
@@ -477,11 +479,11 @@ describe("OCCT transforms unit tests", () => {
             const cornerPointsTransformedSphere = edge.getCornerPointsOfEdgesForShape({ shape: transformedSphere });
             const cornerPointsTransformedBox = edge.getCornerPointsOfEdgesForShape({ shape: transformedBox });
 
-            expect(cornerPointsTransformedSphere).toEqual([
+            expect(cornerPointsTransformedSphere).toEqual(closeTo12([
                 [5.109355812233703, 6.940603060551568, -0.15004112721472485],
                 [12.738671249551015, -9.300354792666553, 14.238316456884455]
-            ]);
-            expect(cornerPointsTransformedBox).toEqual([
+            ]));
+            expect(cornerPointsTransformedBox).toEqual(closeTo12([
                 [-6.584149036949443, -2.5699127892347864, -5.486987307709507],
                 [-3.708537259237361, -4.767478197308697, 2.7532531730726237],
                 [2.097161729239936, 8.966255937328187, 4.389836801948155],
@@ -490,7 +492,7 @@ describe("OCCT transforms unit tests", () => {
                 [2.778450048472146, -7.163821345402098, -0.14959632116602428],
                 [8.584149036949443, 6.569912789234786, 1.4869873077095066],
                 [5.70853725923736, 8.767478197308696, -6.753253173072624]
-            ]);
+            ]));
             sphere.delete();
             box.delete();
             transformed.forEach(t => t.delete());
@@ -681,6 +683,222 @@ describe("OCCT transforms unit tests", () => {
             transformed.forEach(t => t.delete());
         });
 
+    });
+
+    describe("moves composed into one", () => {
+        const copiesMadeBy = (act: () => unknown): number => {
+            let copies = 0;
+            const original = occt.BRepBuilderAPI_Transform;
+            Reflect.set(occt, "BRepBuilderAPI_Transform", new Proxy(original, {
+                construct(target, args): object {
+                    copies++;
+                    return Reflect.construct(target, args);
+                },
+            }));
+            try {
+                act();
+            } finally {
+                Reflect.set(occt, "BRepBuilderAPI_Transform", original);
+            }
+            return copies;
+        };
+
+        it("should copy the shape once for a scale, turn and move, and once for a turn about a center", () => {
+            // Arrange
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+
+            // Act
+            const copies = [
+                copiesMadeBy(() => transforms.transform({ shape: box, translation: [1, 1, -1], scaleFactor: 2.3, rotationAxis: [1, 1, 1], rotationAngle: 64 })),
+                copiesMadeBy(() => transforms.rotateAroundCenter({ shape: box, angle: 30, center: [5, 0, 5], axis: [0, 1, 0] })),
+            ];
+
+            // Assert
+            expect(copies).toEqual([1, 1]);
+        });
+
+        it("should give back the shape itself when turning it about a center by 0 degrees", () => {
+            // Arrange
+            const box = solid.createBox({ width: 5, height: 10, length: 6, center: [0, 0, 0] });
+
+            // Act
+            const turned = transforms.rotateAroundCenter({ shape: box, angle: 0, center: [5, 0, 5], axis: [0, 1, 0] });
+
+            // Assert
+            expect(turned.IsSame(box)).toBe(true);
+        });
+
+        it("should not read the rotation axis when the angle is 0, so an axis of length 0 does no harm", () => {
+            // Arrange
+            const vertex = occHelper.entitiesService.makeVertex([1, 0, 0]);
+
+            // Act
+            const moved = transforms.transform({ shape: vertex, translation: [0, 0, 10], scaleFactor: 3, rotationAxis: [0, 0, 0], rotationAngle: 0 });
+
+            // Assert
+            expect(occHelper.converterService.vertexToPoint({ shape: moved })).toEqual([3, 0, 10].map(value => expect.closeTo(value, 12)));
+        });
+
+        it("should scale first, then turn, then move", () => {
+            // Arrange
+            const vertex = occHelper.entitiesService.makeVertex([1, 0, 0]);
+
+            // Act
+            const moved = transforms.transform({ shape: vertex, translation: [0, 0, 10], scaleFactor: 2, rotationAxis: [0, 0, 1], rotationAngle: 90 });
+
+            // Assert
+            expect(occHelper.converterService.vertexToPoint({ shape: moved })).toEqual([0, 2, 10].map(value => expect.closeTo(value, 12)));
+        });
+    });
+
+    describe("which transforms keep the geometry exact", () => {
+        const cylinder = (): TopoDS_Shape => solid.createCylinder({ radius: 2, height: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const surfaceTypes = (shape: TopoDS_Shape): string[] => occHelper.shapeGettersService.getFaces({ shape }).map(face => occt.GetFaceSurfaceType(face));
+        const cos = Math.cos(Math.PI / 6);
+        const sin = Math.sin(Math.PI / 6);
+        const turnAndMove: Inputs.Base.TransformMatrix = [cos, 0, -sin, 0, 0, 1, 0, 0, sin, 0, cos, 0, 1, 2, 3, 1];
+        const doubled: Inputs.Base.TransformMatrix = [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1];
+        const mirroredInX: Inputs.Base.TransformMatrix = [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 5, 0, 0, 1];
+        const stretchedInY: Inputs.Base.TransformMatrix = [1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+        const volume = 16 * Math.PI;
+        const turnCos = Math.cos(Math.PI / 60) * 1e4;
+        const turnSin = Math.sin(Math.PI / 60) * 1e4;
+        const scaledTurn: Inputs.Base.TransformMatrix = [turnCos, turnSin, 0, 0, -turnSin, turnCos, 0, 0, 0, 0, 1e4, 0, 0, 0, 0, 1];
+
+        it.each([
+            ["a turn and a move", turnAndMove, volume],
+            ["a uniform scale", doubled, 8 * volume],
+            ["a mirror", mirroredInX, volume],
+            ["a turn, then a uniform scale, folded from a list", [turnAndMove, doubled] as Inputs.Base.TransformMatrixes, 8 * volume],
+            ["a 3 degree turn scaled by 10,000, whose axes differ in length only by rounding", scaledTurn, 1e12 * volume],
+        ])("keeps a cylinder a cylinder under %s", (_what, transformation, expectedVolume) => {
+            // Act
+            const transformed = transforms.transformByMatrix({ shape: cylinder(), transformation });
+
+            // Assert
+            expect(surfaceTypes(transformed)).toEqual(["cylinder", "plane", "plane"]);
+            expect(solid.getSolidVolume({ shape: transformed }) / expectedVolume).toBeCloseTo(1, 9);
+            expect(occt.ShapeIsValid(transformed)).toBe(true);
+        });
+
+        it.each([
+            ["a stretch along one axis", stretchedInY],
+            ["a shear so small it is still not a turn", [1, 0, 0, 0, 1e-3, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew that keeps every axis its length", [1, 0, 0, 0, 0.6, 0.8, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew between the first and last axes", [0.8, 0, 0.6, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a skew between the last two axes", [1, 0, 0, 0, 0, 1, 0, 0, 0, 0.6, 0.8, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch along the last axis", [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch of one part in ten billion, far above rounding", [1, 0, 0, 0, 0, 1 + 1e-10, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+            ["a stretch whose squared length overflows", [1e200, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] as Inputs.Base.TransformMatrix],
+        ])("approximates the surfaces under %s, which no exact transform can do", (_what, transformation) => {
+            // Act
+            const transformed = transforms.transformByMatrix({ shape: cylinder(), transformation });
+
+            // Assert
+            expect(surfaceTypes(transformed)).toEqual(["bspline", "bspline", "bspline"]);
+        });
+
+        it("keeps a cylinder a cylinder when scale3d scales every axis alike", () => {
+            // Act
+            const uniform = transforms.scale3d({ shape: cylinder(), scale: [2, 2, 2], center: [1, 1, 1] });
+
+            // Assert
+            expect(surfaceTypes(uniform)).toEqual(["cylinder", "plane", "plane"]);
+            expect(solid.getSolidVolume({ shape: uniform })).toBeCloseTo(8 * volume, 6);
+            expect(occHelper.operationsService.boundingBoxOfShape({ shape: uniform }).center).toEqual([-1, 3, -1].map(v => expect.closeTo(v, 6)));
+        });
+
+        it.each([
+            [[2, 1, 1]],
+            [[1, 2, 1]],
+            [[1, 1, 2]],
+        ] as Inputs.Base.Vector3[][])("approximates the surfaces when scale3d scales by %j, as only an approximation can", (scale) => {
+            // Act
+            const stretched = transforms.scale3d({ shape: cylinder(), scale, center: [0, 0, 0] });
+
+            // Assert
+            expect(surfaceTypes(stretched)).toEqual(["bspline", "bspline", "bspline"]);
+        });
+    });
+
+    describe("scale factors that would shrink a shape to a point", () => {
+        const cylinder = (): TopoDS_Shape => solid.createCylinder({ radius: 2, height: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+        const refusalOf = (act: () => unknown): unknown => {
+            try {
+                act();
+            } catch (failure) {
+                return failure;
+            }
+            return undefined;
+        };
+
+        it.each([0, Number.NaN, Number.POSITIVE_INFINITY, -1e-101])("refuses a factor of %s in every method that scales by one factor, naming the input", (factor) => {
+            // Arrange
+            const box = (): TopoDS_Shape => solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+            const calls: [string, () => unknown][] = [
+                ["factor", () => transforms.scale({ shape: box(), factor })],
+                ["factor", () => transforms.scaleFromCenter({ shape: box(), factor, center: [1, 0, 0] })],
+                ["scaleFactor", () => transforms.transform({ shape: box(), translation: [0, 0, 0], rotationAxis: [0, 1, 0], rotationAngle: 0, scaleFactor: factor })],
+                ["factors[1]", () => transforms.scaleShapes({ shapes: [box(), box()], factors: [2, factor] })],
+                ["scaleFactors[1]", () => transforms.transformShapes({ shapes: [box(), box()], translations: [[0, 0, 0], [0, 0, 0]], rotationAxes: [[0, 1, 0], [0, 1, 0]], rotationAngles: [0, 0], scaleFactors: [2, factor] })],
+            ];
+
+            // Act
+            const refusals = calls.map(([, act]) => refusalOf(act));
+
+            // Assert
+            expect(refusals).toEqual(calls.map(([property]) => expect.objectContaining({
+                name: "InputError",
+                property,
+                message: `\`${property}\` is ${factor}, and a scale factor has to be a finite number at least 1e-100 away from 0; nearer 0 the shape shrinks to a point.`,
+            })));
+        });
+
+        it("scales by a negative factor, which turns the shape through the center as it scales", () => {
+            // Act
+            const scaled = transforms.scaleFromCenter({ shape: cylinder(), factor: -2, center: [0, 0, 0] });
+
+            // Assert
+            expect(solid.getSolidVolume({ shape: scaled })).toBeCloseTo(8 * 16 * Math.PI, 6);
+            expect(occHelper.operationsService.boundingBoxOfShape({ shape: scaled }).min[1]).toBeCloseTo(-8, 6);
+        });
+
+        it("scales by a factor exactly 1e-100 away from 0", () => {
+            // Act
+            const scale = (): unknown => transforms.scaleFromCenter({ shape: cylinder(), factor: 1e-100, center: [0, 0, 0] });
+
+            // Assert
+            expect(scale).not.toThrow();
+        });
+
+        it("gives a matrix that shrinks a shape nearer 0 than 1e-100 to the general transform, since the exact one never returns on curved faces", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 3, height: 4, center: [0, 0, 0] });
+
+            // Act
+            const shrunk = transforms.transformByMatrix({ shape: box, transformation: [1e-150, 0, 0, 0, 0, 1e-150, 0, 0, 0, 0, 1e-150, 0, 0, 0, 0, 1] });
+
+            // Assert
+            expect(occHelper.shapeGettersService.getFaces({ shape: shrunk }).map(face => occt.GetFaceSurfaceType(face))).toEqual(Array(6).fill("bspline"));
+        });
+
+        it("leaves factors of 0 in scale3d to the general transform, which flattens a curve onto a plane", () => {
+            // Arrange
+            const tilted = edge.createCircleEdge({ radius: 2, center: [0, 0, 3], direction: [0, 1, 1] });
+
+            // Act
+            const flattened = transforms.scale3d({ shape: tilted, scale: [1, 1, 0], center: [0, 0, 0] });
+            const collapse = (): unknown => transforms.scale3d({ shape: cylinder(), scale: [0, 0, 0], center: [0, 0, 0] });
+
+            // Assert
+            const depth = (shape: TopoDS_Shape): number => {
+                const box = occHelper.operationsService.boundingBoxOfShape({ shape });
+                return box.max[2] - box.min[2];
+            };
+            expect(depth(tilted)).toBeGreaterThan(2);
+            expect(depth(flattened)).toBeLessThan(1e-6);
+            expect(collapse).not.toThrow();
+        });
     });
 
     describe("matrix transforms", () => {

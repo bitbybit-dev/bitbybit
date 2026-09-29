@@ -1,13 +1,13 @@
 ---
 slug: playcanvas-support
 title: "ANNOUNCING PlayCanvas Support: High-Performance 3D CAD for Game Developers"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/playcanvas-support/playcanvas-and-bitbybit-dev.webp
+image: https://bitbybit.dev/files/site/blog/playcanvas-support/playcanvas-and-bitbybit-dev.webp
 authors: [ubarevicius]
 tags: [bitbybit, cad, playcanvas]
 description: "Introducing @bitbybit-dev/playcanvas NPM package and PlayCanvas Runner - bringing professional CAD capabilities to one of the web's most powerful game engines."
 ---
 
-![Playcanvas and Bitbybit logos.](https://ik.imagekit.io/bitbybit/app/assets/blog/playcanvas-support/playcanvas-and-bitbybit-dev.webp "Playcanvas and Bitbybit logos")
+![Playcanvas and Bitbybit logos.](https://bitbybit.dev/files/site/blog/playcanvas-support/playcanvas-and-bitbybit-dev.webp "Playcanvas and Bitbybit logos")
 
 We are excited to announce the release of our new open-source NPM package and runner for **PlayCanvas**, one of the most performant and feature-rich WebGL game engines available. The [**`@bitbybit-dev/playcanvas`**](https://www.npmjs.com/package/@bitbybit-dev/playcanvas) package and [**PlayCanvas Runner**](/learn/runners/engines/playcanvas/full-runner) continue our mission to make professional 3D CAD accessible across the entire web development ecosystem, now empowering PlayCanvas developers with industrial-grade geometric modeling capabilities.
 
@@ -170,7 +170,7 @@ The primary differences relate to the game engines themselves:
 
 Our PlayCanvas integration maintains the same modular, engine-agnostic architecture we established with ThreeJS and BabylonJS support:
 
-![Bitbybit platform architecture showing the engine-agnostic core with PlayCanvas, ThreeJS, and BabylonJS integration layers](https://ik.imagekit.io/bitbybit/app/assets/npm-package-architecture.jpeg "Bitbybit architecture with PlayCanvas support")
+![Bitbybit platform architecture showing the engine-agnostic core with PlayCanvas, ThreeJS, and BabylonJS integration layers](https://bitbybit.dev/files/site/npm-package-architecture.jpeg "Bitbybit architecture with PlayCanvas support")
 
 The **`@bitbybit-dev/core`** package contains all fundamental CAD logic, data structures, and interfaces. Each game engine-specific package (`@bitbybit-dev/playcanvas`, `@bitbybit-dev/threejs`, `@bitbybit-dev/babylonjs`) provides a thin integration layer that translates between Bitbybit's CAD operations and the respective engine's rendering system.
 

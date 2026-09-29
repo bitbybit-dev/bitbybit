@@ -7,10 +7,12 @@ import { EnumService } from "./enum.service";
 import { WiresService } from "./wires.service";
 import { BooleansService } from "./booleans.service";
 import { ConverterService } from "./converter.service";
-import { FilletsService } from "./fillets.service";
-import { TransformsService } from "./transforms.service";
-import { VectorHelperService } from "../../api";
 import { BaseBitByBit } from "../../base";
+import * as Resolved from "../../api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
+import { occtFailure } from "../../kernel-failures";
+import { coordinatesOf, massesAndCentres, pointsFromCoordinates } from "./kernel-arrays";
+import { checkedShapes } from "./input-checks";
 
 export class FacesService {
 
@@ -22,28 +24,20 @@ export class FacesService {
         private readonly converterService: ConverterService,
         public booleansService: BooleansService,
         private readonly wiresService: WiresService,
-        private readonly transformsService: TransformsService,
-        private readonly vectorService: VectorHelperService,
         private readonly base: BaseBitByBit,
-        private readonly fillets: () => FilletsService,
     ) { }
 
-    /** The fillets service, resolved on use because it and this one refer to each other. */
-    get filletsService(): FilletsService {
-        return this.fillets();
-    }
-
-    createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+    createFaceFromWireOnFace(inputs: Resolved.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWireOnFace(inputs.face, inputs.wire, inputs.inside);
         return result;
     }
 
-    createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
+    createFacesFromWiresOnFace(inputs: Resolved.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
         const result = this.entitiesService.bRepBuilderAPIMakeFacesFromWiresOnFace(inputs.face, inputs.wires, inputs.inside);
         return result;
     }
 
-    createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
+    createFaceFromWire(inputs: Resolved.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
         let result: TopoDS_Face;
         if (this.enumService.getShapeTypeEnum(inputs.shape) !== Inputs.OCCT.shapeTypeEnum.wire) {
             throw new Error("Provided input shape is not a wire");
@@ -78,88 +72,56 @@ export class FacesService {
 
 
     getFaceArea(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): number {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
-        const area = gprops.Mass();
-        gprops.delete();
-        return area;
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.mass;
     }
 
     getFacesAreas(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(face => this.getFaceArea({ shape: face }));
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach(inputs.shapes)).map(properties => properties.mass);
     }
 
     getFaceCenterOfMass(inputs: Inputs.OCCT.ShapeDto<TopoDS_Face>): Base.Point3 {
-        const gprops = new this.occ.GProp_GProps();
-        this.occ.BRepGProp_SurfaceProperties(inputs.shape, gprops);
-        const gppnt = gprops.CentreOfMass();
-        const pt: Base.Point3 = [gppnt.X(), gppnt.Y(), gppnt.Z()];
-        gprops.delete();
-        gppnt.delete();
-        return pt;
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach([inputs.shape]))[0]!.centre;
     }
 
     getFacesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Face>): Base.Point3[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(face => this.getFaceCenterOfMass({ shape: face }));
+        return massesAndCentres(this.occ.SurfacePropertiesOfEach(inputs.shapes)).map(properties => properties.centre);
     }
 
-    filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
+    filterFacePoints(inputs: Resolved.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
         const face = inputs.shape;
         const points = inputs.points;
-        const tolerance = inputs.tolerance ?? 1e-4;
+        const tolerance = inputs.tolerance;
         const keepOn = inputs.keepOn !== false;
         const keepIn = inputs.keepIn !== false;
         const keepOut = inputs.keepOut === true;
         const keepUnknown = inputs.keepUnknown === true;
-        const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance ?? 0.1) : undefined;
+        const bounds = inputs.useBndBox ? this.enlargedBoundingBox(face, inputs.gapTolerance) : undefined;
 
-        const result: Base.Point3[] = [];
-
-        for (const pt of points) {
-            const gpPnt = new this.occ.gp_Pnt(pt[0], pt[1], pt[2]);
-            try {
-                if (bounds && this.isOutsideBounds(bounds, pt)) {
-                    if (keepOut) {
-                        result.push(pt);
-                    }
-                    continue;
-                }
-                const classifier = new this.occ.BRepClass_FaceClassifier(face, gpPnt, tolerance);
-                const stateValue = classifier.State().value;
-                if ((stateValue === 0 && keepIn) ||
-                    (stateValue === 1 && keepOut) ||
-                    (stateValue === 2 && keepOn) ||
-                    (stateValue === 3 && keepUnknown)) {
-                    result.push(pt);
-                }
-                classifier.delete();
-            } finally {
-                gpPnt.delete();
-            }
-        }
-
-        return result;
+        const outside = (pt: Base.Point3): boolean => bounds !== undefined && this.isOutsideBounds(bounds, pt);
+        const classified = points.filter(pt => !outside(pt));
+        const states = this.occ.ClassifyPointsOnFace(face, coordinatesOf(classified), tolerance);
+        const kept = (state: number): boolean => (state === 0 && keepIn) || (state === 1 && keepOut) || (state === 2 && keepOn) || (state === 3 && keepUnknown);
+        let next = 0;
+        return points.filter(pt => outside(pt) ? keepOut : kept(states[next++]!));
     }
 
-    private enlargedBoundingBox(shape: TopoDS_Shape, gap: number): { min: Base.Point3, max: Base.Point3 } {
-        const bbox = new this.occ.Bnd_Box();
-        this.occ.BRepBndLib.Add(shape, bbox, false);
-        const cornerMin = bbox.CornerMin();
-        const cornerMax = bbox.CornerMax();
-        const bounds = {
-            min: [cornerMin.X() - gap, cornerMin.Y() - gap, cornerMin.Z() - gap] as Base.Point3,
-            max: [cornerMax.X() + gap, cornerMax.Y() + gap, cornerMax.Z() + gap] as Base.Point3,
+    private enlargedBoundingBox(shape: TopoDS_Shape, gap: number): { min: Base.Point3, max: Base.Point3 } | undefined {
+        const box = this.occ.BoundingBoxOf(shape);
+        if (box.length < 6) {
+            return undefined;
+        }
+        return {
+            min: [box[0]! - gap, box[1]! - gap, box[2]! - gap],
+            max: [box[3]! + gap, box[4]! + gap, box[5]! + gap],
         };
-        cornerMin.delete();
-        cornerMax.delete();
-        bbox.delete();
-        return bounds;
     }
 
     private isOutsideBounds(bounds: { min: Base.Point3, max: Base.Point3 }, pt: Base.Point3): boolean {
@@ -167,21 +129,21 @@ export class FacesService {
     }
 
 
-    createSquareFace(inputs: Inputs.OCCT.SquareDto): TopoDS_Face {
+    createSquareFace(inputs: Resolved.OCCT.SquareDto): TopoDS_Face {
         const squareWire = this.wiresService.createSquareWire(inputs);
         const faceMakerFromWire = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(squareWire, true);
         squareWire.delete();
         return faceMakerFromWire;
     }
 
-    createRectangleFace(inputs: Inputs.OCCT.RectangleDto): TopoDS_Face {
+    createRectangleFace(inputs: Resolved.OCCT.RectangleDto): TopoDS_Face {
         const rectangleWire = this.wiresService.createRectangleWire(inputs);
         const faceMakerFromWire = this.entitiesService.bRepBuilderAPIMakeFaceFromWire(rectangleWire, true);
         rectangleWire.delete();
         return faceMakerFromWire;
     }
 
-    createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
+    createFaceFromMultipleCircleTanWires(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
         const circleWires = inputs.circles;
         const faces: TopoDS_Face[] = [];
         if (inputs.combination === Inputs.OCCT.combinationCirclesForFaceEnum.allWithAll) {
@@ -225,14 +187,14 @@ export class FacesService {
         }
         let result;
         if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false });
+            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
         } else {
             result = this.converterService.makeCompound({ shapes: faces });
         }
         return result;
     }
 
-    createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
+    createFaceFromMultipleCircleTanWireCollections(inputs: Resolved.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
         const listsOfCircles = inputs.listsOfCircles;
 
         const faces: TopoDS_Face[] = [];
@@ -314,31 +276,20 @@ export class FacesService {
         }
         let result;
         if (inputs.unify) {
-            result = this.booleansService.union({ shapes: faces, keepEdges: false });
+            result = this.booleansService.union({ shapes: faces, keepEdges: false, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
         } else {
             result = this.converterService.makeCompound({ shapes: faces });
         }
         return result;
     }
 
-    faceNormalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
+    faceNormalOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const u = uMin + (uMax - uMin) * inputs.paramU;
-        const v = vMin + (vMax - vMin) * inputs.paramV;
-        const gpDir = this.occ.GeomLib_NormEstim(surface, this.entitiesService.gpPnt2d([u, v]), 1e-7);
-        if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
-            gpDir.Reverse();
-        }
-        const dir: Base.Vector3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
-        gpDir.delete();
-        handle.delete();
-        return dir;
+        return this.surfaceNormalsAt(face, [uMin + (uMax - uMin) * inputs.paramU, vMin + (vMax - vMin) * inputs.paramV])[0]!;
     }
 
     getUVBounds(face: TopoDS_Face): { uMin: number, uMax: number, vMin: number, vMax: number } {
@@ -348,25 +299,27 @@ export class FacesService {
             : { uMin: 0, uMax: 0, vMin: 0, vMax: 0 };
     }
 
-    createFaceFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
+    createFaceFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face {
+        checkedShapes(inputs.shapes);
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.shapes, inputs.planar);
         return result;
     }
 
-    createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
+    createFaceFromWiresOnFace(inputs: Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
         const result = this.entitiesService.bRepBuilderAPIMakeFaceFromWires(inputs.wires, false, inputs.face, inputs.inside);
         return result;
     }
 
-    faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
+    faceFromSurface(inputs: Resolved.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
         return this.occ.MakeFaceFromSurface(inputs.shape, inputs.tolerance);
     }
 
-    faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
+    faceFromSurfaceAndWire(inputs: Resolved.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
         return this.occ.MakeFaceFromSurfaceAndWire(inputs.surface, inputs.wire, inputs.inside);
     }
 
-    createFacesFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
+    createFacesFromWires(inputs: Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
+        checkedShapes(inputs.shapes);
         const result = inputs.shapes.map(shape => {
             return this.createFaceFromWire({ shape, planar: inputs.planar });
         });
@@ -397,15 +350,13 @@ export class FacesService {
         return vMax;
     }
 
-    subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPointsControlled(inputs: Resolved.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const points: Base.Point3[] = [];
+        const uv: number[] = [];
 
         for (let i = 0; i < inputs.nrDivisionsU; i++) {
             const stepU = (uMax - uMin) / (inputs.nrDivisionsU - 1);
@@ -420,8 +371,6 @@ export class FacesService {
                 v += (inputs.shiftHalfStepNthV && (i + inputs.shiftHalfStepVOffsetN) % inputs.shiftHalfStepNthV === 0) ? halfStepV : 0;
                 let u = uMin + stepsU;
                 u += (inputs.shiftHalfStepNthU && (j + inputs.shiftHalfStepUOffsetN) % inputs.shiftHalfStepNthU === 0) ? halfStepU : 0;
-                const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-                const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
 
                 let shouldPush = true;
                 if (i === 0 && inputs.removeStartEdgeNthU && (j + inputs.removeStartEdgeUOffsetN) % inputs.removeStartEdgeNthU === 0) {
@@ -434,24 +383,20 @@ export class FacesService {
                     shouldPush = false;
                 }
                 if (shouldPush) {
-                    points.push(pt);
+                    uv.push(u, v);
                 }
-                gpPnt.delete();
             }
         }
-        handle.delete();
-        return points;
+        return this.surfacePointsAt(face, uv);
     }
 
-    subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPoints(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const points: Base.Point3[] = [];
+        const uv: number[] = [];
 
         const uStartRemoval = inputs.removeStartEdgeU ? 1 : 0;
         const uEndRemoval = inputs.removeEndEdgeU ? 1 : 0;
@@ -469,17 +414,13 @@ export class FacesService {
                 const halfStepV = stepV / 2;
                 const stepsV = stepV * j;
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
-                const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-                const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-                points.push(pt);
-                gpPnt.delete();
+                uv.push(u, v);
             }
         }
-        handle.delete();
-        return points;
+        return this.surfacePointsAt(face, uv);
     }
 
-    subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToWires(inputs: Resolved.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -519,14 +460,11 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToRectangleWires(inputs: Resolved.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const shapesToDelete = [];
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const paramsU = [];
@@ -547,30 +485,15 @@ export class FacesService {
             paramsV.push(pV);
         }
 
-        const line1 = this.wiresService.createLineWire({
-            start: [0, 0, 0],
-            end: [1, 0, 0],
-        });
-        const line2 = this.wiresService.createLineWire({
-            start: [0, 0, 0],
-            end: [0, 0, 1],
-        });
-
-        const placedLine1 = this.wiresService.placeWire(line1, surface);
-        const placedLine2 = this.wiresService.placeWire(line2, surface);
-        const scaleX = this.wiresService.getWireLength({ shape: placedLine1 });
-        const scaleZ = this.wiresService.getWireLength({ shape: placedLine2 });
-
+        let unitLengths: { alongU: number, alongV: number } | undefined;
         const scaleU = (uMax - uMin);
         const scaleV = (vMax - vMin);
+        const outlines = new OutlineList();
 
-        const wires = [];
         let currentScalePatternUIndex = 0;
         let currentScalePatternVIndex = 0;
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
-
-        const cachedRectangles: { id: string, shape: TopoDS_Wire }[] = [];
 
         for (let i = 0; i < paramsU.length; i++) {
             for (let j = 0; j < paramsV.length; j++) {
@@ -601,150 +524,51 @@ export class FacesService {
                     }
                 }
 
-                let fillet = 0;
+                let filletFactor = 0;
                 if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    fillet = inputs.filletPattern[currentFilletPatternIndex] ?? 0;
+                    filletFactor = inputs.filletPattern[currentFilletPatternIndex] ?? 0;
                     currentFilletPatternIndex++;
                     if (currentFilletPatternIndex >= inputs.filletPattern.length) {
                         currentFilletPatternIndex = 0;
                     }
                 }
 
-                if (include) {
-
+                if (include && scaleFromPatternU > 0 && scaleFromPatternV > 0) {
                     const width = stepV * scaleFromPatternV;
                     const length = stepU * scaleFromPatternU;
-                    const minForFillet = Math.min(width * scaleV * scaleX, length * scaleU * scaleZ);
-                    if (minForFillet === width * scaleV * scaleX) {
-                        fillet = minForFillet / 2 * fillet;
-                    } else if (minForFillet === length * scaleU * scaleZ) {
-                        fillet = minForFillet / 2 * fillet;
-                    }
-
-                    const useRec = cachedRectangles.find(r => r.id === `${width}-${length}-${fillet}`)?.shape;
-                    const translation = [paramsV[j]! * scaleV + vMin, 0, paramsU[i]! * scaleU + uMin] as Base.Vector3;
-
-                    if (useRec) {
-                        const translated = this.transformsService.translate({
-                            shape: useRec,
-                            translation,
-                        });
-                        const placedRec = this.wiresService.placeWire(translated, surface);
-                        wires.push(placedRec);
+                    const shiftU = paramsU[i]! * scaleU + uMin;
+                    const shiftV = paramsV[j]! * scaleV + vMin;
+                    if (filletFactor > 0) {
+                        unitLengths ??= this.unitParameterLengths(face);
+                        const halfU = length * scaleU * unitLengths.alongU / 2;
+                        const halfV = width * scaleV * unitLengths.alongV / 2;
+                        outlines.add(this.rectangleCorners(halfU, halfV), Math.min(halfU, halfV) * filletFactor,
+                            1 / unitLengths.alongU, 1 / unitLengths.alongV, shiftU, shiftV);
                     } else {
-                        const rectangle = this.wiresService.createRectangleWire({
-                            width,
-                            length,
-                            center: [0, 0, 0],
-                            direction: [0, 1, 0],
-                        });
-
-                        if (fillet > 0) {
-                            const scaleVec2 = [scaleV * scaleX, 1, scaleU * scaleZ] as Base.Vector3;
-                            const scaledRec2 = this.transformsService.scale3d({
-                                shape: rectangle,
-                                center: [0, 0, 0],
-                                scale: scaleVec2,
-                            });
-
-                            const filletRectangle = this.filletsService.fillet2d({
-                                shape: scaledRec2,
-                                radius: fillet,
-                            });
-
-                            const scaleVec3 = [1 / scaleX, 1, 1 / scaleZ] as Base.Vector3;
-                            let scaledRec3 = filletRectangle;
-                            if (!this.vectorService.vectorsTheSame(scaleVec3, [1, 1, 1], 1e-7)) {
-                                scaledRec3 = this.transformsService.scale3d({
-                                    shape: filletRectangle,
-                                    center: [0, 0, 0],
-                                    scale: scaleVec3,
-                                });
-                            }
-
-                            const translated = this.transformsService.translate({
-                                shape: scaledRec3,
-                                translation,
-                            });
-                            shapesToDelete.push(rectangle);
-
-                            const placedRec = this.wiresService.placeWire(translated, surface);
-                            wires.push(placedRec);
-                            cachedRectangles.push({ id: `${width}-${length}-${fillet}`, shape: scaledRec3 });
-                        } else {
-                            const scaledRec = this.transformsService.scale3d({
-                                shape: rectangle,
-                                center: [0, 0, 0],
-                                scale: [scaleV, 1, scaleU],
-                            });
-                            const translated = this.transformsService.translate({
-                                shape: scaledRec,
-                                translation,
-                            });
-                            shapesToDelete.push(rectangle);
-                            const placedRec = this.wiresService.placeWire(translated, surface);
-                            wires.push(placedRec);
-                            cachedRectangles.push({ id: `${width}-${length}-${fillet}`, shape: scaledRec });
-                        }
+                        outlines.add(this.rectangleCorners(length * scaleU / 2, width * scaleV / 2), 0, 1, 1, shiftU, shiftV);
                     }
                 }
             }
         }
-
-        shapesToDelete.forEach(s => s.delete());
-
-        return wires;
+        return this.outlinesOnFace(face, outlines);
     }
 
-    subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
+    subdivideToRectangleHoles(inputs: Resolved.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
         const wires = this.subdivideToRectangleWires({
             ...inputs,
             scalePatternU: inputs.scalePatternU ?? [0.5],
             scalePatternV: inputs.scalePatternV ?? [0.5],
         });
-        const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
-        const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
-
-        const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
-        const listOfWires = [longestFaceWire, ...revWires];
-        const newFace = this.createFaceFromWiresOnFace({ wires: listOfWires, face: inputs.shape, inside: true });
-
-        const normalOriginal = this.faceNormalOnUV({ shape: inputs.shape, paramU: 0, paramV: 0 });
-        const normalNew = this.faceNormalOnUV({ shape: newFace, paramU: 0, paramV: 0 });
-
-        let shouldReverse = false;
-        if (this.vectorService.angleBetweenVectors(normalOriginal, normalNew) > 1e-7) {
-            shouldReverse = true;
-            newFace.Reverse();
-        }
-
-        let faces: TopoDS_Face[] = [];
-        if (inputs.holesToFaces) {
-            faces = wires.map(wire => {
-                return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
-            });
-            if (shouldReverse) {
-                faces.forEach(f => f.Reverse());
-            }
-        }
-
-        wires.forEach(w => w.delete());
-        longestFaceWire.delete();
-        revWires.forEach(w => w.delete());
-
-        return [newFace, ...faces];
+        return this.cutOutlines(inputs.shape, wires, inputs.holesToFaces);
     }
 
 
     subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        if (inputs.shape === undefined) {
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>;
+        if (resolved.shape === undefined) {
             throw new Error("Face not defined");
         }
-        const shapesToDelete: TopoDS_Shape[] = [];
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
+        const face = resolved.shape;
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
 
         const scaleU = uMax - uMin;
@@ -755,8 +579,8 @@ export class FacesService {
             return [];
         }
 
-        const offsetFromBorderU = inputs.offsetFromBorderU ?? 0;
-        const offsetFromBorderV = inputs.offsetFromBorderV ?? 0;
+        const offsetFromBorderU = resolved.offsetFromBorderU;
+        const offsetFromBorderV = resolved.offsetFromBorderV;
         const gridHeightU = scaleU * (1 - offsetFromBorderU * 2);
         const gridWidthV = scaleV * (1 - offsetFromBorderV * 2);
 
@@ -771,172 +595,82 @@ export class FacesService {
         const hex = this.base.point.hexGridScaledToFit({
             width: gridWidthV,
             height: gridHeightU,
-            nrHexagonsInHeight: inputs.nrHexagonsU,
-            nrHexagonsInWidth: inputs.nrHexagonsV,
+            nrHexagonsInHeight: resolved.nrHexagonsU,
+            nrHexagonsInWidth: resolved.nrHexagonsV,
             centerGrid: false,
             pointsOnGround: true,
-            flatTop: inputs.flatU,
-            extendTop: inputs.extendUUp,
-            extendBottom: inputs.extendUBottom,
-            extendLeft: inputs.extendVBottom,
-            extendRight: inputs.extendVUp,
+            flatTop: resolved.flatU,
+            extendTop: resolved.extendUUp,
+            extendBottom: resolved.extendUBottom,
+            extendLeft: resolved.extendVBottom,
+            extendRight: resolved.extendVUp,
         });
 
-        const localHexWires = hex.hexagons.map(hexPoints => {
-            return this.wiresService.createPolygonWire({
-                points: hexPoints
-            });
-        });
-        shapesToDelete.push(...localHexWires);
+        const nrHexagonsU = resolved.nrHexagonsU;
+        const nrHexagonsV = resolved.nrHexagonsV;
 
-        const uvTranslation = [gridOriginV, 0, gridOriginU] as Base.Vector3;
-
-        const uvHexWires = localHexWires.map(h => {
-            return this.transformsService.translate({
-                shape: h,
-                translation: uvTranslation
-            });
-        });
-        shapesToDelete.push(...uvHexWires);
-
-        const uvHexCenters = this.base.point.translatePoints({
-            points: hex.centers,
-            translation: uvTranslation
-        });
-
-        const finalPlacedWires = [];
-
+        const outlines = new OutlineList();
         let currentScalePatternUIndex = 0;
         let currentScalePatternVIndex = 0;
         let currentInclusionPatternIndex = 0;
         let currentFilletPatternIndex = 0;
-
-        const nrHexagonsU = inputs.nrHexagonsU ?? 10;
-        const nrHexagonsV = inputs.nrHexagonsV ?? 10;
-        const totalHexagons = nrHexagonsU * nrHexagonsV;
-        if (uvHexWires.length !== totalHexagons || uvHexCenters.length !== totalHexagons) {
-            console.error(`Generated ${uvHexWires.length} hexagons, but expected ${totalHexagons}. Check hexGridScaledToFit logic.`);
-            return [];
-        }
 
         for (let i = 0; i < nrHexagonsU; i++) {
             for (let j = 0; j < nrHexagonsV; j++) {
                 const hexIndex = i * nrHexagonsV + j;
 
                 let scaleFromPatternU = 1;
-                if (inputs.scalePatternU && inputs.scalePatternU.length > 0) {
-                    scaleFromPatternU = inputs.scalePatternU[currentScalePatternUIndex % inputs.scalePatternU.length]!;
+                if (resolved.scalePatternU && resolved.scalePatternU.length > 0) {
+                    scaleFromPatternU = resolved.scalePatternU[currentScalePatternUIndex % resolved.scalePatternU.length]!;
                     currentScalePatternUIndex++;
                 }
 
                 let scaleFromPatternV = 1;
-                if (inputs.scalePatternV && inputs.scalePatternV.length > 0) {
-                    scaleFromPatternV = inputs.scalePatternV[currentScalePatternVIndex % inputs.scalePatternV.length]!;
+                if (resolved.scalePatternV && resolved.scalePatternV.length > 0) {
+                    scaleFromPatternV = resolved.scalePatternV[currentScalePatternVIndex % resolved.scalePatternV.length]!;
                     currentScalePatternVIndex++;
                 }
 
                 let include = true;
-                if (inputs.inclusionPattern && inputs.inclusionPattern.length > 0) {
-                    include = inputs.inclusionPattern[currentInclusionPatternIndex % inputs.inclusionPattern.length]!;
+                if (resolved.inclusionPattern && resolved.inclusionPattern.length > 0) {
+                    include = resolved.inclusionPattern[currentInclusionPatternIndex % resolved.inclusionPattern.length]!;
                     currentInclusionPatternIndex++;
                 }
 
                 let filletFactor = 0;
-                if (inputs.filletPattern && inputs.filletPattern.length > 0) {
-                    filletFactor = inputs.filletPattern[currentFilletPatternIndex % inputs.filletPattern.length]!;
+                if (resolved.filletPattern && resolved.filletPattern.length > 0) {
+                    filletFactor = resolved.filletPattern[currentFilletPatternIndex % resolved.filletPattern.length]!;
                     currentFilletPatternIndex++;
                 }
 
-                if (include) {
-                    const uvHexagon = uvHexWires[hexIndex]!;
-                    const uvCenter = uvHexCenters[hexIndex]!;
-
-                    let shapeToScale = uvHexagon;
+                if (include && scaleFromPatternU > 0 && scaleFromPatternV > 0) {
+                    const center = hex.centers[hexIndex]!;
+                    const corners = hex.hexagons[hexIndex]!.flatMap(point => [point[2] - center[2], point[0] - center[0]]);
                     const filletRadius = (hex.maxFilletRadius ?? 0) * filletFactor;
-                    if (filletRadius > 1e-6) {
-                        const filletedHex = this.filletsService.fillet2d({
-                            shape: uvHexagon,
-                            radius: filletRadius,
-                        });
-                        shapesToDelete.push(filletedHex);
-                        shapeToScale = filletedHex;
-                    }
-
-                    let shapeToPlace = shapeToScale;
-                    const scaleVec = [scaleFromPatternV, 1, scaleFromPatternU] as Base.Vector3;
-                    if (Math.abs(scaleFromPatternU - 1.0) > 1e-6 || Math.abs(scaleFromPatternV - 1.0) > 1e-6) {
-                        const scaledHex = this.transformsService.scale3d({
-                            shape: shapeToScale,
-                            center: uvCenter,
-                            scale: scaleVec,
-                        });
-                        shapesToDelete.push(scaledHex);
-                        shapeToPlace = scaledHex;
-                    }
-
-                    const placedWire = this.wiresService.placeWire(shapeToPlace, surface);
-                    finalPlacedWires.push(placedWire);
-
+                    outlines.add(corners, filletRadius > 1e-6 ? filletRadius : 0, scaleFromPatternU, scaleFromPatternV,
+                        center[2] + gridOriginU, center[0] + gridOriginV);
                 }
             }
         }
-
-        shapesToDelete.forEach(s => {
-            s.delete();
-        });
-       
-        return finalPlacedWires;
+        return this.outlinesOnFace(face, outlines);
     }
 
-    subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
+    subdivideToHexagonHoles(inputs: Resolved.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Wire[] {
         const wires = this.subdivideToHexagonWires({
             ...inputs,
             scalePatternU: inputs.scalePatternU ?? [0.5],
             scalePatternV: inputs.scalePatternV ?? [0.5],
         });
-        const faceWires = this.shapeGettersService.getWires({ shape: inputs.shape });
-        const wireLengths = this.wiresService.getWiresLengths({ shapes: faceWires });
-        const longestFaceWire = faceWires[wireLengths.indexOf(Math.max(...wireLengths))]!;
-
-        const revWires = wires.map(wire => { return this.wiresService.reversedWire({ shape: wire }); });
-        const listOfWires = [longestFaceWire, ...revWires];
-        const newFace = this.createFaceFromWiresOnFace({ wires: listOfWires, face: inputs.shape, inside: true });
-
-        const normalOriginal = this.faceNormalOnUV({ shape: inputs.shape, paramU: 0, paramV: 0 });
-        const normalNew = this.faceNormalOnUV({ shape: newFace, paramU: 0, paramV: 0 });
-
-        let shouldReverse = false;
-        if (this.vectorService.angleBetweenVectors(normalOriginal, normalNew) > 1e-7) {
-            shouldReverse = true;
-            newFace.Reverse();
-        }
-
-        let faces: TopoDS_Face[] = [];
-        if (inputs.holesToFaces) {
-            faces = wires.map(wire => {
-                return this.createFaceFromWireOnFace({ wire, face: inputs.shape, inside: true });
-            });
-            if (shouldReverse) {
-                faces.forEach(f => f.Reverse());
-            }
-        }
-
-        wires.forEach(w => w.delete());
-        longestFaceWire.delete();
-        revWires.forEach(w => w.delete());
-
-        return [newFace, ...faces];
+        return this.cutOutlines(inputs.shape, wires, inputs.holesToFaces);
     }
 
-    subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
+    subdivideToNormals(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const points: Base.Point3[] = [];
+        const uv: number[] = [];
 
         const uStartRemoval = inputs.removeStartEdgeU ? 1 : 0;
         const uEndRemoval = inputs.removeEndEdgeU ? 1 : 0;
@@ -954,22 +688,13 @@ export class FacesService {
                 const halfStepV = stepV / 2;
                 const stepsV = stepV * j;
                 const v = vMin + (inputs.shiftHalfStepV ? halfStepV : 0) + stepsV;
-                const gpUv = this.entitiesService.gpPnt2d([u, v]);
-                const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
-                if (face.Orientation() === this.occ.TopAbs_Orientation.REVERSED) {
-                    gpDir.Reverse();
-                }
-                const pt: Base.Point3 = [gpDir.X(), gpDir.Y(), gpDir.Z()];
-                points.push(pt);
-                gpDir.delete();
-                gpUv.delete();
+                uv.push(u, v);
             }
         }
-        handle.delete();
-        return points;
+        return this.surfaceNormalsAt(face, uv);
     }
 
-    wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
+    wireAlongParam(inputs: Resolved.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1005,7 +730,7 @@ export class FacesService {
         return placedWire;
     }
 
-    wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
+    wiresAlongParams(inputs: Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1024,15 +749,13 @@ export class FacesService {
         return wires;
     }
 
-    subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
+    subdivideToPointsOnParam(inputs: Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
         const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
         const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const points: Base.Point3[] = [];
+        const uv: number[] = [];
         const removeStart = inputs.removeStartPoint ? 1 : 0;
         const removeEnd = inputs.removeEndPoint ? 1 : 0;
 
@@ -1056,21 +779,16 @@ export class FacesService {
                 const stepsU = stepU * j;
                 p = uMin + (inputs.shiftHalfStep ? halfStepU : 0) + stepsU;
             }
-            let gpPnt;
             if (inputs.isU) {
-                gpPnt = this.occ.Geom_Surface_Value(surface, param, p);
+                uv.push(param, p);
             } else {
-                gpPnt = this.occ.Geom_Surface_Value(surface, p, param);
+                uv.push(p, param);
             }
-            const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-            points.push(pt);
-            gpPnt.delete();
         }
-        handle.delete();
-        return points;
+        return this.surfacePointsAt(face, uv);
     }
 
-    subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+    subdivideToUVOnParam(inputs: Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1110,7 +828,7 @@ export class FacesService {
         return uvs;
     }
 
-    subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
+    subdivideToUV(inputs: Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1141,7 +859,7 @@ export class FacesService {
         return uvs;
     }
 
-    uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
+    uvOnFace(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
@@ -1152,65 +870,28 @@ export class FacesService {
         return [u, v];
     }
 
-    pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
+    pointsOnUVs(inputs: Resolved.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const pts: Base.Point3[] = inputs.paramsUV.map(uv => {
-            const u = uMin + (uMax - uMin) * uv[0];
-            const v = vMin + (vMax - vMin) * uv[1];
-            const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-            const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-            gpPnt.delete();
-            return pt;
-        });
-        return pts;
+        return this.surfacePointsAt(inputs.shape, this.parametersOf(inputs.shape, inputs.paramsUV));
     }
 
-    normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
+    normalsOnUVs(inputs: Resolved.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const nrmls: Base.Vector3[] = inputs.paramsUV.map(uv => {
-            const u = uMin + (uMax - uMin) * uv[0];
-            const v = vMin + (vMax - vMin) * uv[1];
-            const gpUv = this.entitiesService.gpPnt2d([u, v]);
-            const gpDir = this.occ.GeomLib_NormEstim(surface, gpUv, 1e-7);
-            const pt = [gpDir.X(), gpDir.Y(), gpDir.Z()];
-            gpDir.delete();
-            gpUv.delete();
-            return pt as Base.Vector3;
-        });
-        handle.delete();
-        return nrmls;
+        return this.surfaceNormalsAt(inputs.shape, this.parametersOf(inputs.shape, inputs.paramsUV));
     }
 
-    pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
+    pointOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
         if (inputs.shape === undefined) {
             throw (Error(("Face not defined")));
         }
-        const face = inputs.shape;
-        const handle = this.occ.BRep_Tool_Surface(face);
-        const surface = this.surfaceOf(handle);
-        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
-        const u = uMin + (uMax - uMin) * inputs.paramU;
-        const v = vMin + (vMax - vMin) * inputs.paramV;
-        const gpPnt = this.occ.Geom_Surface_Value(surface, u, v);
-        const pt: Base.Point3 = [gpPnt.X(), gpPnt.Y(), gpPnt.Z()];
-        gpPnt.delete();
-        handle.delete();
-        return pt;
+        return this.surfacePointsAt(inputs.shape, this.parametersOf(inputs.shape, [[inputs.paramU, inputs.paramV]]))[0]!;
     }
 
-    normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
+    normalOnUV(inputs: Resolved.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
         return this.faceNormalOnUV(inputs);
     }
 
@@ -1221,11 +902,106 @@ export class FacesService {
         return result;
     }
 
+    /**
+     * The corners of a rectangle about the origin with half sides `halfU` and `halfV`, in the order a
+     * rectangle wire runs: counterclockwise from the corner at the lowest u and highest v.
+     */
+    private rectangleCorners(halfU: number, halfV: number): number[] {
+        return [-halfU, halfV, -halfU, -halfV, halfU, -halfV, halfU, halfV];
+    }
+
+    /**
+     * How long one unit of each parameter is along a face's surface, from its parameter origin, which
+     * turns lengths on the surface into parameter steps and back.
+     */
+    private unitParameterLengths(face: TopoDS_Face): { alongU: number, alongV: number } {
+        const handle = this.occ.BRep_Tool_Surface(face);
+        const surface = this.surfaceOf(handle);
+        const lengthAlong = (end: Base.Point3): number => {
+            const line = this.wiresService.createLineWire({ start: [0, 0, 0], end });
+            const placed = this.wiresService.placeWire(line, surface);
+            const length = this.wiresService.getWireLength({ shape: placed });
+            line.delete();
+            placed.delete();
+            return length;
+        };
+        const lengths = { alongU: lengthAlong([0, 0, 1]), alongV: lengthAlong([1, 0, 0]) };
+        handle.delete();
+        return lengths;
+    }
+
+    /**
+     * The wires of the outlines on a face in one kernel call, leaving out those that reach outside its
+     * trims or into its holes.
+     */
+    private outlinesOnFace(face: TopoDS_Face, outlines: OutlineList): TopoDS_Wire[] {
+        const wires = this.occ.OutlinesOnFace(face, outlines.counts, outlines.corners, outlines.placements);
+        if (wires === null) {
+            throw occtFailure("occt.fillet.failed");
+        }
+        return wires;
+    }
+
+    /** The face with the wires cut from it as holes, and when asked, a face inside each wire. */
+    private cutOutlines(face: TopoDS_Face, wires: TopoDS_Wire[], holesToFaces: boolean): TopoDS_Face[] {
+        const holed = this.occ.FaceWithHoles(face, wires);
+        const cells = holesToFaces ? this.occ.FacesInsideWires(face, wires) : [];
+        wires.forEach(wire => wire.delete());
+        return [holed, ...cells];
+    }
+
+    /** The u and v parameters of a face at fractions of its parameter ranges, u and v one after the other. */
+    private parametersOf(face: TopoDS_Face, fractions: Base.Point2[]): number[] {
+        const { uMin, uMax, vMin, vMax } = this.getUVBounds(face);
+        return fractions.flatMap(([u, v]) => [uMin + (uMax - uMin) * u, vMin + (vMax - vMin) * v]);
+    }
+
+    /** The points of a face's surface at u and v parameters given one pair after the other, in one kernel call. */
+    private surfacePointsAt(face: TopoDS_Face, parameters: number[]): Base.Point3[] {
+        const coordinates = this.occ.FacePointsAtUV(face, parameters);
+        if (coordinates === null) {
+            throw new Error("Face has no surface");
+        }
+        return pointsFromCoordinates(coordinates);
+    }
+
+    /**
+     * The unit normals of a face at u and v parameters given one pair after the other, in one kernel
+     * call, turned over where the face is reversed or mirrored so they point out of its material.
+     */
+    private surfaceNormalsAt(face: TopoDS_Face, parameters: number[]): Base.Vector3[] {
+        const coordinates = this.occ.FaceNormalsAtUV(face, parameters);
+        if (coordinates === null) {
+            throw new Error("Face has no surface");
+        }
+        return pointsFromCoordinates(coordinates);
+    }
+
     private surfaceOf(handle: Handle_Geom_Surface): Geom_Surface {
         const surface = handle.get();
         if (!surface) {
             throw new Error("Face has no surface");
         }
         return surface;
+    }
+}
+
+/**
+ * Outlines in a face's parameter space, gathered for one kernel call: the corner count, the corners
+ * and the placement of each, in flat lists.
+ */
+class OutlineList {
+    readonly counts: number[] = [];
+    readonly corners: number[] = [];
+    readonly placements: number[] = [];
+
+    /**
+     * Adds an outline: its corners, x and y one after the other, the radius its corners are rounded
+     * with, and the scales and shifts that place it at u = x * scaleU + shiftU, v = y * scaleV + shiftV.
+     */
+    add(corners: number[], radius: number, scaleU: number, scaleV: number, shiftU: number, shiftV: number): void {
+        this.counts.push(corners.length / 2);
+        this.corners.push(...corners);
+        this.placements.push(radius, scaleU, scaleV, shiftU, shiftV);
     }
 }

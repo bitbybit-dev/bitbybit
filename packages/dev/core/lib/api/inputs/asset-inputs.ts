@@ -80,7 +80,7 @@ export namespace Asset {
          * When true, the loaded model is added to the scene invisible, to be shown later
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
     }
     /**
      * A model file to load into the scene by address, as the renderer packages'
@@ -108,7 +108,7 @@ export namespace Asset {
          * When true, the loaded model is added to the scene invisible, to be shown later
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
     }
     /**
      * Feeds `asset.download`: what to write into the downloaded file, what to call it and which
@@ -136,12 +136,12 @@ export namespace Asset {
          * Extension added to the file name after a dot, such as `txt`, `csv` or `json`
          * @default txt
          */
-        extension = "txt";
+        extension?: string | undefined = "txt";
         /**
          * MIME type declared for text content, such as `text/plain` or `application/json`
          * @default text/plain
          */
-        contentType = "text/plain";
+        contentType?: string | undefined = "text/plain";
     }
     /**
      * A glb model held as bytes to load into the scene, as the renderer packages'
@@ -163,12 +163,12 @@ export namespace Asset {
          * match a real file
          * @default model.glb
          */
-        fileName = "model.glb";
+        fileName?: string | undefined = "model.glb";
         /**
          * When true, the loaded model is added to the scene invisible, to be shown later
          * @default false
          */
-        hidden = false;
+        hidden?: boolean | undefined = false;
     }
     /**
      * Feeds `asset.blobToFile`: the Blob to wrap, the name the File gets and, when the Blob's own
@@ -189,7 +189,7 @@ export namespace Asset {
          * Name the File carries, extension included
          * @default file
          */
-        fileName = "file";
+        fileName?: string | undefined = "file";
         /**
          * MIME type declared on the File, such as `model/gltf-binary`; left out, the Blob's own
          * type is kept

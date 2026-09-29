@@ -33,16 +33,27 @@ consume.
 Suites here are kernel-heavy: keep the `NODE_OPTIONS` the scripts already set, or failures look
 like test bugs rather than an exhausted heap.
 
+## Measuring speed
+
+`npm run bench` times seven workloads through the public API - a hexagon facade, extruded text,
+spline sampling, a drilled plate, a lofted and meshed blade, a filleted block, a meshed part - and
+prints each median with a fingerprint of its output, so a faster run can be told from a different
+one. It runs outside `npm test` (`bench/vitest.config.ts`). `BENCH_KERNEL=<folder>` loads the glue
+and wasm from another folder, such as a kernel build that was never deployed, `BENCH_RUNS` sets the
+repeats (5), `BENCH_PARALLEL=off` runs the multithreaded kernel on one thread (the report says which
+it ran) and `BENCH_OUT` writes the report as JSON. Compare two kernels on a quiet machine, one
+after the other: a compile in the background moves the numbers more than most changes do.
+
 ## Services are built in a ring
 
-Wires, operations, fillets and faces need each other in a cycle: wires needs operations and fillets,
-operations needs wires and faces, fillets needs operations and faces, faces needs wires and fillets.
-No construction order gives every one of them its collaborators.
+Wires and operations need each other: operations builds on wires and faces, and wires asks
+operations for a bounding box. No construction order gives both their collaborator.
 
-Each link that closes a cycle is therefore passed in as a **supplier function**, called when it is
-needed rather than when the object is built. Everything else is built in true dependency order, and
-nothing is assigned onto a service afterwards. Replace a supplier with a direct reference, or go back
-to assigning fields after construction, and collaborators are undefined at runtime.
+The link that closes the cycle, wires to operations, is therefore passed in as a **supplier
+function**, called when it is needed rather than when the object is built. Everything else is built
+in true dependency order, and nothing is assigned onto a service afterwards. Replace the supplier
+with a direct reference, or go back to assigning fields after construction, and the collaborator is
+undefined at runtime.
 
 ## Living with the embind bindings
 
@@ -67,6 +78,23 @@ not visible in the return type.
 **A status code is not a result.** `ReadFile` returns `RetDone` for a file it parsed but could build
 no model from, and the transfer then yields a null shape. Success has two parts, the status and a
 non-null shape, and both loaders check both.
+
+**An operation the kernel cannot complete throws a named failure.** The services check the builder
+(`IsDone()`, and `HasErrors()` on a boolean) and a null result before reading it, and throw
+`occtFailure(code, details?)`: a `KernelOperationError` whose code, English template and detail
+types come from `lib/kernel-failures.ts` (`OcctFailureDetails` makes a code's details required
+exactly when its template names any). Where OCCT keeps the reason, the code names it: the edges a
+fillet failed on (`FaultyEdges`, numbered as `getEdge` numbers them), the corners a 2D fillet could
+not round (numbered from 1, as `fillet2d` takes them), shapes of different dimensions in a boolean
+(its `BOPAlgo_AlertBOPNotAllowed`). Offsets report nothing useful (`NoError` or `UnknownError` on real
+failures) and 2D chamfers report every corner done even when the result is not valid, so neither
+has a reason code. The codes and detail types are in the API report, because hosts translate by
+them; a new kind of failure gets a new code, and a code is never reused for another meaning. Inputs
+that would crash or trivially fail the kernel (a loft through fewer than two sections, a loft of
+points only, an empty operand of a boolean) are refused as an `InputError` before it runs. OCCT also
+reports success for some results that are not valid solids - a fillet radius larger than the faces
+allow, a pipe whose profile does not fit its bends - and those still come back without an error;
+`shapeFix.isValid` finds the first kind.
 
 Two behaviours are stable and surprising, so assume the opposite at your peril:
 

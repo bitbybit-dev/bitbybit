@@ -68,7 +68,7 @@ describe("BabylonMaterialPbrMetallicRoughness", () => {
             expect(plain.emissiveColor.equals(new BABYLON.Color3(0, 0, 0))).toBe(true);
         });
 
-        it("should fall back to its default values where nothing was asked for", () => {
+        it("should fall back to its documented defaults where nothing was asked for", () => {
             // Arrange
             const inputs = new Inputs.BabylonMaterial.PBRMetallicRoughnessDto("mat");
             Object.assign(inputs, {
@@ -84,10 +84,25 @@ describe("BabylonMaterialPbrMetallicRoughness", () => {
 
             // Assert
             expect(service.getBaseColor(propsOf(material))).toBe("#0000ff");
-            expect(service.getMetallic(propsOf(material))).toBe(0.5);
+            expect(service.getMetallic(propsOf(material))).toBe(0.6);
             expect(service.getRoughness(propsOf(material))).toBe(0.5);
-            expect(service.getAlpha(propsOf(material))).toBe(0.5);
-            expect(service.getBackFaceCulling(propsOf(material))).toBe(true);
+            expect(service.getAlpha(propsOf(material))).toBe(1);
+            expect(service.getBackFaceCulling(propsOf(material))).toBe(false);
+        });
+
+        it("should build the material the spelled out DTO builds when a script leaves every default out", () => {
+            // Act
+            const leftOut = service.create({});
+            const spelled = service.create(new Inputs.BabylonMaterial.PBRMetallicRoughnessDto());
+
+            // Assert
+            expect(leftOut.name).toBe("Custom Material");
+            expect(service.getBaseColor(propsOf(leftOut))).toBe(service.getBaseColor(propsOf(spelled)));
+            expect(service.getMetallic(propsOf(leftOut))).toBe(0.6);
+            expect(service.getRoughness(propsOf(leftOut))).toBe(0.5);
+            expect(service.getAlpha(propsOf(leftOut))).toBe(1);
+            expect(service.getBackFaceCulling(propsOf(leftOut))).toBe(false);
+            expect(leftOut.zOffset).toBe(spelled.zOffset);
         });
     });
 

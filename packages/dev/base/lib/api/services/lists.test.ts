@@ -454,7 +454,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should find the depth of the deepest level count in the list with one level", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(1);
     });
 
@@ -464,12 +464,12 @@ describe("Lists unit tests", () => {
     });
 
     it("should find the depth of the deepest level count in the list", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, [3, 4], 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, [3, 4], 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(2);
     });
 
     it("should find the depth of the deepest level count in the list", () => {
-        const result = lists.getListDepth({ list: [0, 1, 2, [3, [2], 4], 5, 6, 7, 8, 9, 10] } as Inputs.Lists.ListCloneDto<any>);
+        const result = lists.getListDepth({ list: [0, 1, 2, [3, [2], 4], 5, 6, 7, 8, 9, 10] as unknown[] } as Inputs.Lists.ListCloneDto<[]>);
         expect(result).toBe(3);
     });
 
@@ -503,7 +503,7 @@ describe("Lists unit tests", () => {
     });
 
     it("should not get the elements by following the empty pattern", () => {
-        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: undefined as unknown as boolean[] })).toThrow("Pattern is empty or does not exist");
+        expect(() => lists.getByPattern({ list: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], pattern: [] })).toThrow("Pattern is empty or does not exist");
     });
 
     it("should get list length", () => {
@@ -827,6 +827,69 @@ describe("Lists unit tests", () => {
     it("should interleave string lists", () => {
         const result = lists.interleave({ lists: [["a", "b"], ["c", "d"]] });
         expect(result).toEqual(["a", "c", "b", "d"]);
+    });
+
+    describe("with clone false, the same result as with a clone", () => {
+        const items = (): { id: number }[] => [{ id: 3 }, { id: 1 }, { id: 2 }, { id: 1 }];
+        const cases: [string, (clone: boolean) => unknown][] = [
+            ["getItem", (clone) => lists.getItem({ list: items(), index: 1, clone })],
+            ["getFirstItem", (clone) => lists.getFirstItem({ list: items(), clone })],
+            ["getLastItem", (clone) => lists.getLastItem({ list: items(), clone })],
+            ["getSubList", (clone) => lists.getSubList({ list: items(), indexStart: 1, indexEnd: 3, clone })],
+            ["getNthItem", (clone) => lists.getNthItem({ list: items(), nth: 2, offset: 0, clone })],
+            ["reverse", (clone) => lists.reverse({ list: items(), clone })],
+            ["addItemAtIndex", (clone) => lists.addItemAtIndex({ list: items(), item: { id: 9 }, index: 1, clone })],
+            ["addItemAtIndexes", (clone) => lists.addItemAtIndexes({ list: items(), item: { id: 9 }, indexes: [1, 3], clone })],
+            ["addItemsAtIndexes", (clone) => lists.addItemsAtIndexes({ list: items(), items: [{ id: 8 }, { id: 9 }], indexes: [1, 3], clone })],
+            ["removeItemAtIndex", (clone) => lists.removeItemAtIndex({ list: items(), index: 1, clone })],
+            ["removeFirstItem", (clone) => lists.removeFirstItem({ list: items(), clone })],
+            ["removeLastItem", (clone) => lists.removeLastItem({ list: items(), clone })],
+            ["removeItemAtIndexFromEnd", (clone) => lists.removeItemAtIndexFromEnd({ list: items(), index: 1, clone })],
+            ["removeItemsAtIndexes", (clone) => lists.removeItemsAtIndexes({ list: items(), indexes: [0, 2], clone })],
+            ["removeNthItem", (clone) => lists.removeNthItem({ list: items(), nth: 2, offset: 0, clone })],
+            ["removeDuplicateNumbers", (clone) => lists.removeDuplicateNumbers({ list: [3, 1, 2, 1], clone })],
+            ["removeDuplicates", (clone) => lists.removeDuplicates({ list: ["c", "a", "b", "a"], clone })],
+            ["addItem", (clone) => lists.addItem({ list: items(), item: { id: 9 }, clone })],
+            ["prependItem", (clone) => lists.prependItem({ list: items(), item: { id: 9 }, clone })],
+            ["addItemFirstLast", (clone) => lists.addItemFirstLast({ list: items(), item: { id: 9 }, position: Inputs.Lists.firstLastEnum.first, clone })],
+            ["concatenate", (clone) => lists.concatenate({ lists: [items(), items()], clone })],
+            ["repeatInPattern", (clone) => lists.repeatInPattern({ list: items(), lengthLimit: 6, clone })],
+            ["sortNumber", (clone) => lists.sortNumber({ list: [3, 1, 2], orderAsc: true, clone })],
+            ["sortTexts", (clone) => lists.sortTexts({ list: ["c", "a", "b"], orderAsc: true, clone })],
+            ["sortByPropValue", (clone) => lists.sortByPropValue({ list: items(), property: "id", orderAsc: true, clone })],
+            ["interleave", (clone) => lists.interleave({ lists: [items(), items()], clone })],
+        ];
+
+        it.each(cases)("%s should give without a clone what it gives with one", (_name, run) => {
+            // Act
+            const shared = run(false);
+            const cloned = run(true);
+
+            // Assert
+            expect(shared).toEqual(cloned);
+        });
+
+        it("should hand back the caller's own object when not cloning", () => {
+            // Arrange
+            const list = items();
+
+            // Act
+            const item = lists.getItem({ list, index: 1, clone: false });
+
+            // Assert
+            expect(item).toBe(list[1]);
+        });
+
+        it("should shuffle the caller's list in place when not cloning", () => {
+            // Arrange
+            const list = [1, 2, 3, 4, 5];
+
+            // Act
+            const shuffled = lists.shuffle({ list, clone: false });
+
+            // Assert
+            expect(shuffled).toBe(list);
+        });
     });
 
 });

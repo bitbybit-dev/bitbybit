@@ -1,17 +1,140 @@
-import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
+import { occtFailure } from "../../kernel-failures";
+import { framesFromNumbers, framesOnCurve } from "../base/frames";
+import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
+import { checkedCurve, fromGroundToKernelPlane } from "../base/curve-analysis";
+
+const JOIN_TYPES: readonly Inputs.OCCT.joinTypeEnum[] = [
+    Inputs.OCCT.joinTypeEnum.arc,
+    Inputs.OCCT.joinTypeEnum.intersection,
+    Inputs.OCCT.joinTypeEnum.tangent,
+];
+
+/** The kernel's value for a way of joining offset pieces. */
+const kernelJoinType = (occ: BitbybitOcctModule, joinType: Inputs.OCCT.joinTypeEnum): EmbindEnumValue => {
+    switch (joinType) {
+        case Inputs.OCCT.joinTypeEnum.intersection:
+            return occ.GeomAbs_JoinType.Intersection;
+        case Inputs.OCCT.joinTypeEnum.tangent:
+            return occ.GeomAbs_JoinType.Tangent;
+        default:
+            return occ.GeomAbs_JoinType.Arc;
+    }
+};
+
+/** A new wire handle for an edge or a wire: a wire of that one edge, or the wire itself. */
+const wireOf = (occ: BitbybitOcctModule, och: OccHelper, curve: TopoDS_Shape): TopoDS_Wire => {
+    if (curve.ShapeType() === occ.TopAbs_ShapeEnum.WIRE) {
+        return occ.CastToWire(curve);
+    }
+    const edge = occ.CastToEdge(curve);
+    const wire = och.entitiesService.bRepBuilderAPIMakeWire(edge);
+    edge.delete();
+    return wire;
+};
+
+/**
+ * The pieces of an edge or a wire cut at fractions or at lengths, as wires: an edge is cut as a wire
+ * of that one edge.
+ */
+const splitAsWires = (occ: BitbybitOcctModule, och: OccHelper, shape: unknown, values: number[], isLength: boolean): TopoDS_Wire[] => {
+    const wire = wireOf(occ, och, checkedCurve(occ, checkedShape(shape), "shape"));
+    try {
+        return occ.SplitCurve(wire, values, isLength);
+    } finally {
+        wire.delete();
+    }
+};
+
+/** A new handle to the wire running the other way. */
+const reversedWireOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire): TopoDS_Wire => {
+    const reversed = wire.Reversed();
+    const cast = occ.CastToWire(reversed);
+    reversed.delete();
+    return cast;
+};
+
+/**
+ * An unbounded face on the plane of a flat face, with the face's normal, for an open offset to lie
+ * in: the offset maker would offset a face's own boundary too. The face must be flat and the wire
+ * must lie in its plane, or the offset maker fails, and can crash when the wire runs across it.
+ */
+const planeFaceOf = (occ: BitbybitOcctModule, och: OccHelper, face: TopoDS_Face, wire: TopoDS_Wire): TopoDS_Face => {
+    const frames = framesFromNumbers(occ.FramesOnFace(face, [0.5, 0.5, 0, 0, 1, 0, 0, 1, 1, 1]));
+    const middle = frames[0]!;
+    const offPlane = (point: Inputs.Base.Point3): number => Math.abs(
+        (point[0] - middle.origin[0]) * middle.normal[0] + (point[1] - middle.origin[1]) * middle.normal[1] + (point[2] - middle.origin[2]) * middle.normal[2]);
+    const slack = (point: Inputs.Base.Point3): number => 1e-6 * Math.max(1, ...point.map(Math.abs), ...middle.origin.map(Math.abs));
+    const bends = frames.some(frame =>
+        frame.normal[0] * middle.normal[0] + frame.normal[1] * middle.normal[1] + frame.normal[2] * middle.normal[2] < 1 - 1e-9 || offPlane(frame.origin) > slack(frame.origin));
+    if (bends) {
+        throw new InputError("`face` is not flat; an open wire is offset in a plane.", "face");
+    }
+    const edges = occ.EdgesOf(wire, true);
+    const samples = 4 * Math.max(1, edges.length);
+    edges.forEach(edge => edge.delete());
+    const points = och.geomService.pointsAtNormalizedParameters(wire, Array.from({ length: samples + 1 }, (_, index) => index / samples));
+    if (points.some(point => offPlane(point) > slack(point))) {
+        throw new InputError("`shape` does not lie in the plane of `face`.", "shape");
+    }
+    const square = och.facesService.createSquareFace({ size: 1, center: middle.origin, direction: middle.normal });
+    const plane = occ.MakeFaceFromFaceSurface(square, 0);
+    square.delete();
+    return plane;
+};
+
+/**
+ * What the offset maker makes of a wire in open mode, or nothing when it fails. On an unbounded plane
+ * face it offsets to the left of the wire, seen from the face's normal, whatever the distance's sign.
+ */
+const offsetOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire, plane: TopoDS_Face | undefined, joinType: EmbindEnumValue, distance: number): TopoDS_Shape | undefined => {
+    const maker = new occ.BRepOffsetAPI_MakeOffset();
+    try {
+        if (plane !== undefined) {
+            maker.Init(plane, joinType, true);
+        } else {
+            maker.InitJoin(joinType, true);
+        }
+        maker.AddWire(wire);
+        maker.Perform(distance, 0);
+        return maker.IsDone() ? maker.Shape() : undefined;
+    } finally {
+        maker.delete();
+    }
+};
+
+/**
+ * The one wire an open offset made, refused as a failed offset when there is none: the offset maker
+ * gives a wire, or a compound holding it.
+ */
+const onlyWireOf = (occ: BitbybitOcctModule, offset: TopoDS_Shape | undefined): TopoDS_Wire => {
+    if (offset === undefined || offset.IsNull()) {
+        offset?.delete();
+        throw occtFailure("occt.offset.failed");
+    }
+    const wires = occ.WiresOf(offset, true);
+    offset.delete();
+    if (wires.length !== 1) {
+        wires.forEach(wire => wire.delete());
+        throw occtFailure("occt.offset.failed");
+    }
+    return wires[0]!;
+};
 
 /**
  * Wires in OpenCascade: chains of edges joined end to end, open like a path or closed like an
  * outline. Build them from points and curves (polylines, B-splines, Beziers, interpolations,
  * helices, spirals), as ready-made flat outlines (circles, rectangles, stars, beam profiles, text)
  * that lie on the ground plane unless `direction` says otherwise, or by joining and splitting
- * existing edges and wires; read them back as points, tangents, lengths and centers; map them onto
- * faces or project them onto shapes. Parameters along a wire run from 0 at its start to 1 at its
- * end and follow each edge's own parameter, not distance. A closed wire is what `shapes.face` fills
- * to make a face.
+ * existing edges and wires; read them back as points, tangents, lengths and centers; offset an open
+ * one to one side; map, wrap or project them onto faces and shapes. Parameters along a wire run from
+ * 0 at its start to 1 at its end and follow each edge's own parameter, not distance. A closed wire is
+ * what `shapes.face` fills to make a face.
  */
 export class OCCTWire {
 
@@ -38,8 +161,9 @@ export class OCCTWire {
      * ```
      */
     rebuildWireDegree(inputs: Inputs.OCCT.RebuildCurveDegreeDto<TopoDS_Wire>): TopoDS_Wire {
-        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
-        const rebuilt = edges.map((e) => this.occ.RebuildEdgeDegree(e, inputs.degree, inputs.tolerance));
+        const resolved = resolveDto(Inputs.OCCT.RebuildCurveDegreeDto, inputs) as Resolved.OCCT.RebuildCurveDegreeDto<TopoDS_Wire>;
+        const edges = this.och.shapeGettersService.getEdges({ shape: resolved.shape });
+        const rebuilt = edges.map((e) => this.occ.RebuildEdgeDegree(e, resolved.degree, resolved.tolerance));
         return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: rebuilt });
     }
 
@@ -61,8 +185,9 @@ export class OCCTWire {
      * ```
      */
     moveWireSeamByParameter(inputs: Inputs.OCCT.CurveSeamByParameterDto<TopoDS_Wire>): TopoDS_Wire {
-        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
-        const moved = edges.map((e) => this.occ.MoveSeamByParameter(e, inputs.parameter));
+        const resolved = resolveDto(Inputs.OCCT.CurveSeamByParameterDto, inputs) as Resolved.OCCT.CurveSeamByParameterDto<TopoDS_Wire>;
+        const edges = this.och.shapeGettersService.getEdges({ shape: resolved.shape });
+        const moved = edges.map((e) => this.occ.MoveSeamByParameter(e, resolved.parameter));
         return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: moved });
     }
 
@@ -84,8 +209,9 @@ export class OCCTWire {
      * ```
      */
     moveWireSeamByLength(inputs: Inputs.OCCT.CurveSeamByLengthDto<TopoDS_Wire>): TopoDS_Wire {
-        const edges = this.och.shapeGettersService.getEdges({ shape: inputs.shape });
-        const moved = edges.map((e) => this.occ.MoveSeamByLength(e, inputs.length));
+        const resolved = resolveDto(Inputs.OCCT.CurveSeamByLengthDto, inputs) as Resolved.OCCT.CurveSeamByLengthDto<TopoDS_Wire>;
+        const edges = this.och.shapeGettersService.getEdges({ shape: resolved.shape });
+        const moved = edges.map((e) => this.occ.MoveSeamByLength(e, resolved.length));
         return this.och.converterService.combineEdgesAndWiresIntoAWire({ shapes: moved });
     }
 
@@ -318,8 +444,9 @@ export class OCCTWire {
      * ```
      */
     createPolygons(inputs: Inputs.OCCT.PolygonsDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.polygons.map(p => this.createPolygonWire(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.PolygonsDto, inputs) as Resolved.OCCT.PolygonsDto;
+        const wires = resolved.polygons.map(p => this.createPolygonWire(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -335,7 +462,8 @@ export class OCCTWire {
      * ```
      */
     createLineWire(inputs: Inputs.OCCT.LineDto): TopoDS_Wire {
-        return this.och.wiresService.createLineWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LineDto, inputs) as Resolved.OCCT.LineDto;
+        return this.och.wiresService.createLineWire(resolved);
     }
 
     /**
@@ -354,7 +482,8 @@ export class OCCTWire {
      * ```
      */
     createLineWireWithExtensions(inputs: Inputs.OCCT.LineWithExtensionsDto): TopoDS_Wire {
-        return this.och.wiresService.createLineWireWithExtensions(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LineWithExtensionsDto, inputs) as Resolved.OCCT.LineWithExtensionsDto;
+        return this.och.wiresService.createLineWireWithExtensions(resolved);
     }
 
     /**
@@ -375,8 +504,9 @@ export class OCCTWire {
      * ```
      */
     createLines(inputs: Inputs.OCCT.LinesDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.lines.map(p => this.createLineWire(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.LinesDto, inputs) as Resolved.OCCT.LinesDto;
+        const wires = resolved.lines.map(p => this.createLineWire(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -397,6 +527,100 @@ export class OCCTWire {
      */
     splitOnPoints(inputs: Inputs.OCCT.SplitWireOnPointsDto<TopoDS_Wire>): TopoDS_Wire[] {
         return this.och.wiresService.splitOnPoints(inputs);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as fractions from 0 at its start to 1 at its end, every
+     * edge an equal share.
+     *
+     * A piece running across a corner holds an edge on each side. Ends and repeats are skipped, so n
+     * places inside give n + 1 pieces; an edge is cut as a one-edge wire.
+     * @param inputs - The wire and the fractions to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const [first, second] = await bitbybit.occt.shapes.wire.splitWireAtParams({ shape: wire, params: [0.5] });
+     * ```
+     */
+    splitWireAtParams(inputs: Inputs.OCCT.DataOnGeometryAtParamsDto<TopoDS_Wire>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamsDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamsDto<TopoDS_Wire>;
+        return splitAsWires(this.occ, this.och, resolved.shape, checkedNumberList(resolved.params, "params", { atLeast: 0, atMost: 1 }), false);
+    }
+
+    /**
+     * Cuts a wire into pieces at places given as lengths along it from its start, in model units.
+     *
+     * A piece running across a corner holds an edge on each side. Lengths at or past the ends and
+     * repeats are skipped, so n lengths inside give n + 1 pieces; an edge is cut as a wire of that one
+     * edge.
+     * @param inputs - The wire and the lengths to cut at
+     * @returns The pieces as wires, in order from the start
+     * @group edit
+     * @shortname split wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const dashes = await bitbybit.occt.shapes.wire.splitWireAtLengths({ shape: wire, lengths: [1, 2, 3, 4] });
+     * ```
+     */
+    splitWireAtLengths(inputs: Inputs.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthsDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthsDto<TopoDS_Wire>;
+        return splitAsWires(this.occ, this.och, resolved.shape, checkedNumberList(resolved.lengths, "lengths", { atLeast: 0 }), true);
+    }
+
+    /**
+     * Draws the offset of an open wire or an edge on one side of it, not the loop
+     * `operations.offset` draws around it.
+     *
+     * A positive distance lies to the right of the wire's direction, seen from the side `face` looks
+     * to, or from above on the ground plane. A straight wire needs a flat `face` to give it a plane.
+     * @param inputs - The open wire or edge, an optional flat face, the distance and the corner style
+     * @returns The offset curve as a wire
+     * @group offsets
+     * @shortname offset open
+     * @drawable true
+     * @example
+     * ```typescript
+     * const alongside = await bitbybit.occt.shapes.wire.offsetOpen({ shape: path, distance: 1, joinType: Bit.Inputs.OCCT.joinTypeEnum.arc });
+     * ```
+     */
+    offsetOpen(inputs: Inputs.OCCT.OffsetOpenDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>): TopoDS_Wire {
+        const resolved = resolveDto(Inputs.OCCT.OffsetOpenDto, inputs) as Resolved.OCCT.OffsetOpenDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>;
+        const shape = checkedCurve(this.occ, checkedShape(resolved.shape), "shape");
+        const face = resolved.face;
+        if (face !== undefined && checkedShape(face, "face").ShapeType() !== this.occ.TopAbs_ShapeEnum.FACE) {
+            throw new InputError("`face` is not a face.", "face");
+        }
+        const distance = checkedNumber(resolved.distance, "distance");
+        const joinType = kernelJoinType(this.occ, checkedChoice(resolved.joinType, JOIN_TYPES, "joinType"));
+        const wire = wireOf(this.occ, this.och, shape);
+        try {
+            if (face === undefined) {
+                return onlyWireOf(this.occ, offsetOf(this.occ, wire, undefined, joinType, distance));
+            }
+            const plane = planeFaceOf(this.occ, this.och, face, wire);
+            try {
+                if (distance <= 0) {
+                    return onlyWireOf(this.occ, offsetOf(this.occ, wire, plane, joinType, -distance));
+                }
+                const reversed = reversedWireOf(this.occ, wire);
+                try {
+                    const offset = onlyWireOf(this.occ, offsetOf(this.occ, reversed, plane, joinType, distance));
+                    const turnedBack = reversedWireOf(this.occ, offset);
+                    offset.delete();
+                    return turnedBack;
+                } finally {
+                    reversed.delete();
+                }
+            } finally {
+                plane.delete();
+            }
+        } finally {
+            wire.delete();
+        }
     }
 
     /**
@@ -423,7 +647,8 @@ export class OCCTWire {
      * ```
      */
     wiresToPoints(inputs: Inputs.OCCT.WiresToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
-        return this.och.wiresService.wiresToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WiresToPointsDto, inputs) as Resolved.OCCT.WiresToPointsDto<TopoDS_Shape>;
+        return this.och.wiresService.wiresToPoints(resolved);
     }
 
     /**
@@ -462,7 +687,8 @@ export class OCCTWire {
      * ```
      */
     createZigZagBetweenTwoWires(inputs: Inputs.OCCT.ZigZagBetweenTwoWiresDto<TopoDS_Wire>): TopoDS_Wire {
-        return this.och.wiresService.createZigZagBetweenTwoWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ZigZagBetweenTwoWiresDto, inputs) as Resolved.OCCT.ZigZagBetweenTwoWiresDto<TopoDS_Wire>;
+        return this.och.wiresService.createZigZagBetweenTwoWires(resolved);
     }
 
     /**
@@ -488,7 +714,8 @@ export class OCCTWire {
      * ```
      */
     createWiresBetweenStartEndPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
-        return this.och.wiresService.createWiresBetweenStartEndPointsOfWiresAndEdges(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto, inputs) as Resolved.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>;
+        return this.och.wiresService.createWiresBetweenStartEndPointsOfWiresAndEdges(resolved);
     }
 
     /**
@@ -516,7 +743,8 @@ export class OCCTWire {
      * ```
      */
     createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs: Inputs.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Wire[] {
-        return this.och.wiresService.createWiresBetweenSubdividedPointsOfWiresAndEdges(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto, inputs) as Resolved.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<TopoDS_Wire | TopoDS_Edge>;
+        return this.och.wiresService.createWiresBetweenSubdividedPointsOfWiresAndEdges(resolved);
     }
 
     /**
@@ -543,7 +771,8 @@ export class OCCTWire {
      * ```
      */
     createWireFromTwoCirclesTan(inputs: Inputs.OCCT.WireFromTwoCirclesTanDto<TopoDS_Wire>): TopoDS_Wire {
-        return this.och.wiresService.createWireFromTwoCirclesTan(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WireFromTwoCirclesTanDto, inputs) as Resolved.OCCT.WireFromTwoCirclesTanDto<TopoDS_Wire>;
+        return this.och.wiresService.createWireFromTwoCirclesTan(resolved);
     }
 
     /**
@@ -564,8 +793,9 @@ export class OCCTWire {
      * ```
      */
     createPolylines(inputs: Inputs.OCCT.PolylinesDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.polylines.map(p => this.createPolylineWire(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.PolylinesDto, inputs) as Resolved.OCCT.PolylinesDto;
+        const wires = resolved.polylines.map(p => this.createPolylineWire(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -585,7 +815,8 @@ export class OCCTWire {
      * ```
      */
     createBezier(inputs: Inputs.OCCT.BezierDto): TopoDS_Wire {
-        return this.och.wiresService.createBezier(inputs);
+        const resolved = resolveDto(Inputs.OCCT.BezierDto, inputs) as Resolved.OCCT.BezierDto;
+        return this.och.wiresService.createBezier(resolved);
     }
 
     /**
@@ -611,7 +842,8 @@ export class OCCTWire {
      * ```
      */
     createBezierWeights(inputs: Inputs.OCCT.BezierWeightsDto): TopoDS_Wire {
-        return this.och.wiresService.createBezierWeights(inputs);
+        const resolved = resolveDto(Inputs.OCCT.BezierWeightsDto, inputs) as Resolved.OCCT.BezierWeightsDto;
+        return this.och.wiresService.createBezierWeights(resolved);
     }
 
     /**
@@ -632,8 +864,9 @@ export class OCCTWire {
      * ```
      */
     createBezierWires(inputs: Inputs.OCCT.BezierWiresDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.bezierWires.map(p => this.createBezier(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.BezierWiresDto, inputs) as Resolved.OCCT.BezierWiresDto;
+        const wires = resolved.bezierWires.map(p => this.createBezier(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -659,7 +892,8 @@ export class OCCTWire {
      * ```
      */
     interpolatePoints(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Wire {
-        return this.och.wiresService.interpolatePoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.InterpolationDto, inputs) as Resolved.OCCT.InterpolationDto;
+        return this.och.wiresService.interpolatePoints(resolved);
     }
 
     /**
@@ -680,7 +914,8 @@ export class OCCTWire {
      * ```
      */
     interpolatePointsSymmetric(inputs: Inputs.OCCT.InterpolateSymmetricDto): TopoDS_Wire {
-        return this.och.wiresService.interpolatePointsSymmetric(inputs);
+        const resolved = resolveDto(Inputs.OCCT.InterpolateSymmetricDto, inputs) as Resolved.OCCT.InterpolateSymmetricDto;
+        return this.och.wiresService.interpolatePointsSymmetric(resolved);
     }
 
     /**
@@ -701,8 +936,9 @@ export class OCCTWire {
      * ```
      */
     interpolateWires(inputs: Inputs.OCCT.InterpolateWiresDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.interpolations.map(p => this.interpolatePoints(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.InterpolateWiresDto, inputs) as Resolved.OCCT.InterpolateWiresDto;
+        const wires = resolved.interpolations.map(p => this.interpolatePoints(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -723,7 +959,8 @@ export class OCCTWire {
      * ```
      */
     createBSpline(inputs: Inputs.OCCT.BSplineDto): TopoDS_Wire {
-        return this.och.wiresService.createBSpline(inputs);
+        const resolved = resolveDto(Inputs.OCCT.BSplineDto, inputs) as Resolved.OCCT.BSplineDto;
+        return this.och.wiresService.createBSpline(resolved);
     }
 
     /**
@@ -744,8 +981,9 @@ export class OCCTWire {
      * ```
      */
     createBSplines(inputs: Inputs.OCCT.BSplinesDto): TopoDS_Wire[] | TopoDS_Compound {
-        const wires = inputs.bSplines.map(p => this.createBSpline(p)).filter(s => s !== undefined);
-        return this.och.converterService.makeCompoundIfNeeded(wires, inputs.returnCompound);
+        const resolved = resolveDto(Inputs.OCCT.BSplinesDto, inputs) as Resolved.OCCT.BSplinesDto;
+        const wires = resolved.bSplines.map(p => this.createBSpline(p)).filter(s => s !== undefined);
+        return this.och.converterService.makeCompoundIfNeeded(wires, resolved.returnCompound);
     }
 
     /**
@@ -819,7 +1057,8 @@ export class OCCTWire {
      * ```
      */
     divideWireByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
-        return this.och.wiresService.divideWireByParamsToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DivideDto, inputs) as Resolved.OCCT.DivideDto<TopoDS_Wire>;
+        return this.och.wiresService.divideWireByParamsToPoints(resolved);
     }
 
     /**
@@ -835,7 +1074,9 @@ export class OCCTWire {
      * ```
      */
     divideWiresByParamsToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs.Base.Point3[][] {
-        return inputs.shapes.map(s => this.divideWireByParamsToPoints({ ...inputs, shape: s }));
+        const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Wire>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map(s => this.divideWireByParamsToPoints({ ...resolved, shape: s }));
     }
 
     /**
@@ -854,7 +1095,8 @@ export class OCCTWire {
      * ```
      */
     divideWireByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Wire>): Inputs.Base.Point3[] {
-        return this.och.wiresService.divideWireByEqualDistanceToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DivideDto, inputs) as Resolved.OCCT.DivideDto<TopoDS_Wire>;
+        return this.och.wiresService.divideWireByEqualDistanceToPoints(resolved);
     }
 
     /**
@@ -870,7 +1112,9 @@ export class OCCTWire {
      * ```
      */
     divideWiresByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideShapesDto<TopoDS_Wire>): Inputs.Base.Point3[][] {
-        return inputs.shapes.map(s => this.divideWireByEqualDistanceToPoints({ ...inputs, shape: s }));
+        const resolved = resolveDto(Inputs.OCCT.DivideShapesDto, inputs) as Resolved.OCCT.DivideShapesDto<TopoDS_Wire>;
+        checkedShapes(resolved.shapes);
+        return resolved.shapes.map(s => this.divideWireByEqualDistanceToPoints({ ...resolved, shape: s }));
     }
 
     /**
@@ -889,7 +1133,8 @@ export class OCCTWire {
      * ```
      */
     pointOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Inputs.Base.Point3 {
-        return this.och.wiresService.pointOnWireAtParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>;
+        return this.och.wiresService.pointOnWireAtParam(resolved);
     }
 
     /**
@@ -906,7 +1151,8 @@ export class OCCTWire {
      * ```
      */
     pointOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Inputs.Base.Point3 {
-        return this.och.wiresService.pointOnWireAtLength(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>;
+        return this.och.wiresService.pointOnWireAtLength(resolved);
     }
 
     /**
@@ -942,16 +1188,17 @@ export class OCCTWire {
      * ```
      */
     pointsOnWireAtEqualLength(inputs: Inputs.OCCT.PointsOnWireAtEqualLengthDto<TopoDS_Wire>): Inputs.Base.Point3[] {
-        return this.och.wiresService.pointsOnWireAtEqualLength(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PointsOnWireAtEqualLengthDto, inputs) as Resolved.OCCT.PointsOnWireAtEqualLengthDto<TopoDS_Wire>;
+        return this.och.wiresService.pointsOnWireAtEqualLength(resolved);
     }
 
     /**
      * Places points along a wire at a repeating pattern of gaps, such as 1, 3, 1, 3, until the wire
      * runs out.
      *
-     * `lengths` is the pattern of gaps in model units, repeated from the start; `includeFirst`
-     * keeps the start point, `includeLast` appends the end point, and `tryNext` asks for one more
-     * point at the next gap past the last.
+     * `lengths` holds the gaps in model units, repeated from the start, and must add up to more
+     * than 0 or it throws. `includeFirst` adds the start point, `includeLast` the end, and
+     * `tryNext` one point past the last gap.
      * @param inputs - The wire, the pattern of gaps and which end points to include
      * @returns The points along the wire, in order
      * @group extract
@@ -963,7 +1210,8 @@ export class OCCTWire {
      * ```
      */
     pointsOnWireAtPatternOfLengths(inputs: Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto<TopoDS_Wire>): Inputs.Base.Point3[] {
-        return this.och.wiresService.pointsOnWireAtPatternOfLengths(inputs);
+        const resolved = resolveDto(Inputs.OCCT.PointsOnWireAtPatternOfLengthsDto, inputs) as Resolved.OCCT.PointsOnWireAtPatternOfLengthsDto<TopoDS_Wire>;
+        return this.och.wiresService.pointsOnWireAtPatternOfLengths(resolved);
     }
 
     /**
@@ -982,7 +1230,8 @@ export class OCCTWire {
      * ```
      */
     tangentOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): Inputs.Base.Vector3 {
-        return this.och.wiresService.tangentOnWireAtParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>;
+        return this.och.wiresService.tangentOnWireAtParam(resolved);
     }
 
     /**
@@ -999,7 +1248,8 @@ export class OCCTWire {
      * ```
      */
     tangentOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): Inputs.Base.Vector3 {
-        return this.och.wiresService.tangentOnWireAtLength(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>;
+        return this.och.wiresService.tangentOnWireAtLength(resolved);
     }
 
     /**
@@ -1020,10 +1270,11 @@ export class OCCTWire {
      * ```
      */
     derivativesOnWireAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>): [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] {
-        const wire = inputs.shape;
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtLengthDto, inputs) as Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Wire>;
+        const wire = resolved.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
 
-        const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(curve, inputs.length, curve.FirstParameter());
+        const absc = this.occ.GCPnts_AbscissaPoint_FromCompCurve(curve, resolved.length, curve.FirstParameter());
         const param = absc.Parameter();
         const gpPnt = this.och.entitiesService.gpPnt([0, 0, 0]);
 
@@ -1059,7 +1310,8 @@ export class OCCTWire {
      * ```
      */
     derivativesOnWireAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>): [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] {
-        const wire = inputs.shape;
+        const resolved = resolveDto(Inputs.OCCT.DataOnGeometryAtParamDto, inputs) as Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Wire>;
+        const wire = resolved.shape;
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
 
         const gpPnt = this.och.entitiesService.gpPnt([0, 0, 0]);
@@ -1068,7 +1320,7 @@ export class OCCTWire {
         const der2 = this.och.entitiesService.gpVec([0, 0, 0]);
         const der3 = this.och.entitiesService.gpVec([0, 0, 0]);
 
-        const param = this.och.vecHelper.remap(inputs.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
+        const param = this.och.vecHelper.remap(resolved.param, 0, 1, curve.FirstParameter(), curve.LastParameter());
 
         curve.D3(param, gpPnt, der1, der2, der3);
         const der: [Inputs.Base.Vector3, Inputs.Base.Vector3, Inputs.Base.Vector3] = [[der1.X(), der1.Y(), der1.Z()], [der2.X(), der2.Y(), der2.Z()], [der3.X(), der3.Y(), der3.Z()]];
@@ -1078,6 +1330,111 @@ export class OCCTWire {
         curve.delete();
         gpPnt.delete();
         return der;
+    }
+
+    /**
+     * Finds a frame on a wire at a parameter, from 0 where the wire starts in its own direction.
+     * `kind` sets how it follows: carried from the start without twisting, across the wire level with
+     * `up`, or in the plane it bends in; Frenet frames throw where the wire runs straight, level
+     * ones where it runs along `up`.
+     * @param inputs - The wire, the fraction along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at param
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtParam({ shape: wire, param: 0.5, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtParam(inputs: Inputs.OCCT.FrameOnCurveAtParamDto<TopoDS_Wire>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtParamDto, inputs) as Resolved.OCCT.FrameOnCurveAtParamDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.param], false, resolved.kind, resolved.up, "param")[0]!;
+    }
+
+    /**
+     * Finds a frame on a wire at a length from its start, as `frameOnWireAtParam` finds it at a
+     * parameter.
+     * @param inputs - The wire, the length along it, the kind of frame and the up vector
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on wire at length
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.wire.frameOnWireAtLength({ shape: wire, length: 2, kind: Bit.Inputs.OCCT.curveFrameEnum.perpendicular, up: [0, 0, 1] });
+     * ```
+     */
+    frameOnWireAtLength(inputs: Inputs.OCCT.FrameOnCurveAtLengthDto<TopoDS_Wire>): Inputs.Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameOnCurveAtLengthDto, inputs) as Resolved.OCCT.FrameOnCurveAtLengthDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, [resolved.length], true, resolved.kind, resolved.up, "length")[0]!;
+    }
+
+    /**
+     * Finds frames on a wire at several parameters in one pass. Rotation-minimizing frames are
+     * carried along the whole wire from its start, so each is the frame a swept profile would ride on
+     * there.
+     * @param inputs - The wire, the fractions along it, the kind of frame and the up vector
+     * @returns One frame per parameter, in the same order
+     * @group frames
+     * @shortname frames on wire at params
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtParams({ shape: wire, params: [0, 0.5, 1], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtParams(inputs: Inputs.OCCT.FramesOnCurveAtParamsDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtParamsDto, inputs) as Resolved.OCCT.FramesOnCurveAtParamsDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.params, false, resolved.kind, resolved.up, "params");
+    }
+
+    /**
+     * Finds frames on a wire at several lengths from its start in one pass, as
+     * `framesOnWireAtParams` finds them at parameters.
+     * @param inputs - The wire, the lengths along it, the kind of frame and the up vector
+     * @returns One frame per length, in the same order
+     * @group frames
+     * @shortname frames on wire at lengths
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.wire.framesOnWireAtLengths({ shape: wire, lengths: [0, 1, 2], kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1] });
+     * ```
+     */
+    framesOnWireAtLengths(inputs: Inputs.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesOnCurveAtLengthsDto, inputs) as Resolved.OCCT.FramesOnCurveAtLengthsDto<TopoDS_Wire>;
+        return framesOnCurve(this.occ, resolved.shape, resolved.lengths, true, resolved.kind, resolved.up, "lengths");
+    }
+
+    /**
+     * Spreads `count` frames evenly by length along a wire, the first at its start, to place copies
+     * along a path or to carry a profile along it.
+     *
+     * On an open wire the last sits at the end; on a closed wire they go around the loop without
+     * repeating the first, unless `skipEndOnClosed` is off.
+     * @param inputs - The wire, how many frames, the kind of frame, the up vector and the closed-wire rule
+     * @returns The frames from the start onward
+     * @group frames
+     * @shortname frames along wire
+     * @drawable true
+     * @example
+     * ```typescript
+     * const circle = await bitbybit.occt.shapes.wire.createCircleWire({ radius: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const frames = await bitbybit.occt.shapes.wire.framesAlongWire({ shape: circle, count: 10, kind: Bit.Inputs.OCCT.curveFrameEnum.rotationMinimizing, up: [0, 0, 1], skipEndOnClosed: true });
+     * ```
+     */
+    framesAlongWire(inputs: Inputs.OCCT.FramesAlongWireDto<TopoDS_Wire>): Inputs.Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesAlongWireDto, inputs) as Resolved.OCCT.FramesAlongWireDto<TopoDS_Wire>;
+        checkedShape(resolved.shape);
+        if (!Number.isInteger(resolved.count) || resolved.count < 2) {
+            throw new InputError(`\`count\` must be a whole number of 2 or more; it is ${resolved.count}.`, "count");
+        }
+        const length = this.och.wiresService.getWireLength({ shape: resolved.shape });
+        const aroundTheLoop = resolved.skipEndOnClosed && this.och.wiresService.isWireClosed({ shape: resolved.shape });
+        const steps = aroundTheLoop ? resolved.count : resolved.count - 1;
+        const lengths = Array.from({ length: resolved.count }, (_, index) => length * index / steps);
+        return framesOnCurve(this.occ, resolved.shape, lengths, true, resolved.kind, resolved.up, "count");
     }
 
     /**
@@ -1146,7 +1503,8 @@ export class OCCTWire {
      * ```
      */
     createCircleWire(inputs: Inputs.OCCT.CircleDto): TopoDS_Wire {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -1175,7 +1533,8 @@ export class OCCTWire {
      * ```
      */
     hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Wire[] {
-        return this.och.wiresService.hexagonsInGrid(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HexagonsInGridDto, inputs) as Resolved.OCCT.HexagonsInGridDto;
+        return this.och.wiresService.hexagonsInGrid(resolved);
     }
 
     /**
@@ -1193,7 +1552,8 @@ export class OCCTWire {
      * ```
      */
     createSquareWire(inputs: Inputs.OCCT.SquareDto): TopoDS_Wire {
-        return this.och.wiresService.createSquareWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SquareDto, inputs) as Resolved.OCCT.SquareDto;
+        return this.och.wiresService.createSquareWire(resolved);
     }
 
     /**
@@ -1214,7 +1574,8 @@ export class OCCTWire {
      * ```
      */
     createStarWire(inputs: Inputs.OCCT.StarDto): TopoDS_Wire {
-        return this.och.wiresService.createStarWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.StarDto, inputs) as Resolved.OCCT.StarDto;
+        return this.och.wiresService.createStarWire(resolved);
     }
 
     /**
@@ -1246,7 +1607,8 @@ export class OCCTWire {
      * ```
      */
     createChristmasTreeWire(inputs: Inputs.OCCT.ChristmasTreeDto): TopoDS_Wire {
-        return this.och.wiresService.createChristmasTreeWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChristmasTreeDto, inputs) as Resolved.OCCT.ChristmasTreeDto;
+        return this.och.wiresService.createChristmasTreeWire(resolved);
     }
 
     /**
@@ -1264,7 +1626,8 @@ export class OCCTWire {
      * ```
      */
     createNGonWire(inputs: Inputs.OCCT.NGonWireDto): TopoDS_Wire {
-        return this.och.wiresService.createNGonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.NGonWireDto, inputs) as Resolved.OCCT.NGonWireDto;
+        return this.och.wiresService.createNGonWire(resolved);
     }
 
     /**
@@ -1285,7 +1648,8 @@ export class OCCTWire {
      * ```
      */
     createParallelogramWire(inputs: Inputs.OCCT.ParallelogramDto): TopoDS_Wire {
-        return this.och.wiresService.createParallelogramWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ParallelogramDto, inputs) as Resolved.OCCT.ParallelogramDto;
+        return this.och.wiresService.createParallelogramWire(resolved);
     }
 
     /**
@@ -1305,7 +1669,8 @@ export class OCCTWire {
      * ```
      */
     createHeartWire(inputs: Inputs.OCCT.Heart2DDto): TopoDS_Wire {
-        return this.och.wiresService.createHeartWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Heart2DDto, inputs) as Resolved.OCCT.Heart2DDto;
+        return this.och.wiresService.createHeartWire(resolved);
     }
 
     /**
@@ -1324,7 +1689,8 @@ export class OCCTWire {
      * ```
      */
     createRectangleWire(inputs: Inputs.OCCT.RectangleDto): TopoDS_Wire {
-        return this.och.wiresService.createRectangleWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RectangleDto, inputs) as Resolved.OCCT.RectangleDto;
+        return this.och.wiresService.createRectangleWire(resolved);
     }
 
     /**
@@ -1354,7 +1720,8 @@ export class OCCTWire {
      * ```
      */
     createLPolygonWire(inputs: Inputs.OCCT.LPolygonDto): TopoDS_Wire {
-        return this.och.wiresService.createLPolygonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LPolygonDto, inputs) as Resolved.OCCT.LPolygonDto;
+        return this.och.wiresService.createLPolygonWire(resolved);
     }
 
     /**
@@ -1384,7 +1751,8 @@ export class OCCTWire {
      * ```
      */
     createIBeamProfileWire(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Wire {
-        return this.och.wiresService.createIBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IBeamProfileDto, inputs) as Resolved.OCCT.IBeamProfileDto;
+        return this.och.wiresService.createIBeamProfileWire(resolved);
     }
 
     /**
@@ -1414,7 +1782,8 @@ export class OCCTWire {
      * ```
      */
     createHBeamProfileWire(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Wire {
-        return this.och.wiresService.createHBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HBeamProfileDto, inputs) as Resolved.OCCT.HBeamProfileDto;
+        return this.och.wiresService.createHBeamProfileWire(resolved);
     }
 
     /**
@@ -1444,7 +1813,8 @@ export class OCCTWire {
      * ```
      */
     createTBeamProfileWire(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Wire {
-        return this.och.wiresService.createTBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TBeamProfileDto, inputs) as Resolved.OCCT.TBeamProfileDto;
+        return this.och.wiresService.createTBeamProfileWire(resolved);
     }
 
     /**
@@ -1475,7 +1845,8 @@ export class OCCTWire {
      * ```
      */
     createUBeamProfileWire(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Wire {
-        return this.och.wiresService.createUBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UBeamProfileDto, inputs) as Resolved.OCCT.UBeamProfileDto;
+        return this.och.wiresService.createUBeamProfileWire(resolved);
     }
 
     /**
@@ -1495,7 +1866,8 @@ export class OCCTWire {
      * ```
      */
     createEllipseWire(inputs: Inputs.OCCT.EllipseDto): TopoDS_Wire {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.wire);
+        const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.wire);
     }
 
     /**
@@ -1516,7 +1888,8 @@ export class OCCTWire {
      * ```
      */
     createHelixWire(inputs: Inputs.OCCT.HelixWireDto): TopoDS_Wire {
-        return this.och.wiresService.createHelixWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HelixWireDto, inputs) as Resolved.OCCT.HelixWireDto;
+        return this.och.wiresService.createHelixWire(resolved);
     }
 
     /**
@@ -1533,7 +1906,8 @@ export class OCCTWire {
      * ```
      */
     createHelixWireByTurns(inputs: Inputs.OCCT.HelixWireByTurnsDto): TopoDS_Wire {
-        return this.och.wiresService.createHelixWireByTurns(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HelixWireByTurnsDto, inputs) as Resolved.OCCT.HelixWireByTurnsDto;
+        return this.och.wiresService.createHelixWireByTurns(resolved);
     }
 
     /**
@@ -1553,7 +1927,8 @@ export class OCCTWire {
      * ```
      */
     createTaperedHelixWire(inputs: Inputs.OCCT.TaperedHelixWireDto): TopoDS_Wire {
-        return this.och.wiresService.createTaperedHelixWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TaperedHelixWireDto, inputs) as Resolved.OCCT.TaperedHelixWireDto;
+        return this.och.wiresService.createTaperedHelixWire(resolved);
     }
 
     /**
@@ -1573,7 +1948,8 @@ export class OCCTWire {
      * ```
      */
     createFlatSpiralWire(inputs: Inputs.OCCT.FlatSpiralWireDto): TopoDS_Wire {
-        return this.och.wiresService.createFlatSpiralWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FlatSpiralWireDto, inputs) as Resolved.OCCT.FlatSpiralWireDto;
+        return this.och.wiresService.createFlatSpiralWire(resolved);
     }
 
     /**
@@ -1601,7 +1977,8 @@ export class OCCTWire {
      * ```
      */
     textWires(inputs: Inputs.OCCT.TextWiresDto): TopoDS_Wire[] {
-        return this.och.wiresService.textWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TextWiresDto, inputs) as Resolved.OCCT.TextWiresDto;
+        return this.och.wiresService.textWires(resolved);
     }
 
     /**
@@ -1629,7 +2006,8 @@ export class OCCTWire {
      * ```
      */
     textWiresWithData(inputs: Inputs.OCCT.TextWiresDto): Models.OCCT.ObjectDefinition<Models.OCCT.TextWiresDataDto<string>, TopoDS_Shape> {
-        return this.och.wiresService.textWiresWithData(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TextWiresDto, inputs) as Resolved.OCCT.TextWiresDto;
+        return this.och.wiresService.textWiresWithData(resolved);
     }
 
     /**
@@ -1649,7 +2027,8 @@ export class OCCTWire {
      * ```
      */
     getWire(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Wire {
-        return this.och.shapeGettersService.getWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeIndexDto, inputs) as Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>;
+        return this.och.shapeGettersService.getWire(resolved);
     }
 
     /**
@@ -1698,6 +2077,7 @@ export class OCCTWire {
      * ```
      */
     getWiresCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Wire>): Inputs.Base.Point3[] {
+        checkedShapes(inputs.shapes);
         return inputs.shapes.map(w => this.och.wiresService.getWireCenterOfMass({
             shape: w
         }));
@@ -1839,6 +2219,36 @@ export class OCCTWire {
     }
 
     /**
+     * Wraps flat wires drawn on the ground plane around a plane, cylinder or cone face, keeping every
+     * length, as a label wraps a can.
+     *
+     * On a cylinder of radius r, X runs around it from the face's start, 2 pi r to a turn, and Z runs
+     * along its axis. The wires follow the surface past the face's edges.
+     * @param inputs - The flat wires or edges, the face and the tolerance
+     * @returns The wrapped wires, in the same order
+     * @group place
+     * @shortname wrap wires on face
+     * @drawable true
+     * @example
+     * ```typescript
+     * const band = await bitbybit.occt.shapes.wire.createRectangleWire({ width: 6, length: 1, center: [3, 0, 2], direction: [0, 1, 0] });
+     * const wrapped = await bitbybit.occt.shapes.wire.wrapWiresOnFace({ wires: [band], face: cylinderWall, tolerance: 1e-4 });
+     * ```
+     */
+    wrapWiresOnFace(inputs: Inputs.OCCT.WrapWiresOnFaceDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>): TopoDS_Wire[] {
+        const resolved = resolveDto(Inputs.OCCT.WrapWiresOnFaceDto, inputs) as Resolved.OCCT.WrapWiresOnFaceDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Face>;
+        const wires = checkedShapes(resolved.wires, "wires");
+        const face = checkedShape(resolved.face, "face");
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const onKernelPlane = wires.map(wire => fromGroundToKernelPlane(this.och, wire));
+        try {
+            return this.occ.WrapOnFace(onKernelPlane, face, tolerance);
+        } finally {
+            onKernelPlane.forEach(wire => wire.delete());
+        }
+    }
+
+    /**
      * Closes an open wire with a straight edge from its end point back to its start point.
      *
      * A wire whose ends already meet is returned as it is.
@@ -1883,9 +2293,10 @@ export class OCCTWire {
      * ```
      */
     project(inputs: Inputs.OCCT.ProjectWireDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Compound {
-        const wire = inputs.wire;
-        const gpDir = this.och.entitiesService.gpDir(inputs.direction);
-        const proj = new this.occ.BRepProj_Projection(wire, inputs.shape, gpDir);
+        const resolved = resolveDto(Inputs.OCCT.ProjectWireDto, inputs) as Resolved.OCCT.ProjectWireDto<TopoDS_Wire, TopoDS_Shape>;
+        const wire = resolved.wire;
+        const gpDir = this.och.entitiesService.gpDir(resolved.direction);
+        const proj = new this.occ.BRepProj_Projection(wire, resolved.shape, gpDir);
         const shape = proj.Shape();
         gpDir.delete();
         proj.delete();
@@ -1905,10 +2316,11 @@ export class OCCTWire {
      * ```
      */
     projectWires(inputs: Inputs.OCCT.ProjectWiresDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Compound[] {
+        const resolved = resolveDto(Inputs.OCCT.ProjectWiresDto, inputs) as Resolved.OCCT.ProjectWiresDto<TopoDS_Wire, TopoDS_Shape>;
         const shapes: TopoDS_Compound[] = [];
-        inputs.wires.forEach(wire => {
-            const gpDir = this.och.entitiesService.gpDir(inputs.direction);
-            const proj = new this.occ.BRepProj_Projection(wire, inputs.shape, gpDir);
+        resolved.wires.forEach(wire => {
+            const gpDir = this.och.entitiesService.gpDir(resolved.direction);
+            const proj = new this.occ.BRepProj_Projection(wire, resolved.shape, gpDir);
             const shape = proj.Shape();
             shapes.push(shape);
             gpDir.delete();
@@ -1916,5 +2328,54 @@ export class OCCTWire {
         });
 
         return shapes;
+    }
+
+    /**
+     * Lays edges or wires onto the faces of a shape along the surface's normals, rather than along one
+     * direction as `project` does.
+     *
+     * The pieces join into wires, one per loop or chain, within the faces' edges. `maxDistance` drops
+     * the parts landing farther than it; a projection that misses gives an empty compound.
+     * @param inputs - The edges or wires, the shape, the fitting tolerance and the greatest distance
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project normal
+     * @drawable true
+     * @example
+     * ```typescript
+     * const onBall = await bitbybit.occt.shapes.wire.projectNormal({ wires: [circle], shape: sphere, tolerance: 1e-4, maxDistance: 0 });
+     * ```
+     */
+    projectNormal(inputs: Inputs.OCCT.ProjectNormalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>): TopoDS_Compound {
+        const resolved = resolveDto(Inputs.OCCT.ProjectNormalDto, inputs) as Resolved.OCCT.ProjectNormalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>;
+        const wires = checkedShapes(resolved.wires, "wires");
+        const shape = checkedShape(resolved.shape);
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const maxDistance = checkedNumber(resolved.maxDistance, "maxDistance", 0);
+        return this.occ.ProjectNormal(wires, shape, tolerance, maxDistance);
+    }
+
+    /**
+     * Casts an edge or a wire onto the faces of a shape along the lines from a point through it, like
+     * the shadow a lamp throws.
+     *
+     * The result is a compound of the wires where those lines meet the shape, near side and far side
+     * alike; lines that miss give an empty compound.
+     * @param inputs - The edge or wire, the shape and the point to cast from
+     * @returns A compound of the projected wires
+     * @group place
+     * @shortname project conical
+     * @drawable true
+     * @example
+     * ```typescript
+     * const shadow = await bitbybit.occt.shapes.wire.projectConical({ wire: square, shape: floor, from: [0, 20, 0] });
+     * ```
+     */
+    projectConical(inputs: Inputs.OCCT.ProjectConicalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>): TopoDS_Compound {
+        const resolved = resolveDto(Inputs.OCCT.ProjectConicalDto, inputs) as Resolved.OCCT.ProjectConicalDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Shape>;
+        const wire = checkedShape(resolved.wire, "wire");
+        const shape = checkedShape(resolved.shape);
+        const from = checkedPoint(resolved.from, "from");
+        return this.occ.ProjectConical(wire, shape, from);
     }
 }

@@ -6,7 +6,7 @@ describe("OCCT shapes helper unit tests", () => {
 
     let service: ShapesHelperService;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         service = new ShapesHelperService();
     });
 

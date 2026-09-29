@@ -21,4 +21,4 @@ export * from "./node-inputs";
 export * from "./draw-inputs";
 export * from "./base-inputs";
 // Re-export from core excluding Base (already exported above with BabylonJS extensions)
-export { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/inputs";
+export { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/inputs";

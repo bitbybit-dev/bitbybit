@@ -1,13 +1,13 @@
 ---
 slug: mixed-reality-cad
 title: MIXED REALITY CAD
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/mixed-reality-cad/mixed-reality-cad.jpg
+image: https://bitbybit.dev/files/site/blog/mixed-reality-cad/mixed-reality-cad.jpg
 authors: [ubarevicius]
 description: "Our latest experiment demonstrates that it is possible to use our CAD algorithms in a mixed reality environment, showcasing interactions with parametric 3D models using Meta Quest Pro."
 tags: [bitbybit, cad, xr, vr]
 ---
 
-![User interacting with a parametric 3D model in mixed reality.](https://ik.imagekit.io/bitbybit/app/assets/blog/mixed-reality-cad/mixed-reality-cad.jpg "User interacting with the parametric 3D model in mixed reality.")
+![User interacting with a parametric 3D model in mixed reality.](https://bitbybit.dev/files/site/blog/mixed-reality-cad/mixed-reality-cad.jpg "User interacting with the parametric 3D model in mixed reality.")
 
 Mixed reality is an exciting new frontier for computer-aided design (CAD) applications, and we are thrilled to share our latest parametric experiment with you. With the help of Meta Quest Pro and WebXR, we have created an experimental CAD application that allows users to build designs directly in their surroundings.
 

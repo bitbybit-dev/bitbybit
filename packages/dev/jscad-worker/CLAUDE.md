@@ -12,10 +12,11 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
   deliberate: making them log or rethrow aborts a cleanup sweep part-way and leaks everything after it.
 - **Non-geometry results are stored wrapped** as `{ value: result }`, so a plain cached value cannot be
   mistaken for a geometry handle.
-- **Retention is bounded by a count, not by memory.** `startedTheRun` clears everything once more than
-  `CACHE_THRESHOLD` hashes have been used; otherwise `cleanUpCache` keeps only the hashes touched in the
-  run that finished and rolls that set forward. Together they are the only bound on WASM memory growth
-  across a long session.
+- **Retention is bounded by a count, not by memory.** Only two things bound it: the count threshold in
+  `startedTheRun`, which clears everything once more than `CACHE_THRESHOLD` hashes have been used, and
+  the delete command, `cleanAllCache` - this worker has no command that deletes a single entry. An
+  entry a later run no longer uses stays until one of them frees it, so the threshold is the only
+  automatic bound on WASM memory growth across a long session.
 
   It counts hashes because hashes are what this side can see. What one hash costs in WASM memory is
   unknowable from here - a point or a hundred-megabyte assembly - so no threshold in hashes can be

@@ -50,7 +50,7 @@ describe("OCCT vector helper unit tests", () => {
 
     let service: VectorHelperService;
 
-    beforeAll(async () => {
+    beforeAll(() => {
         service = new VectorHelperService();
     });
 

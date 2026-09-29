@@ -316,6 +316,24 @@ describe("BabylonScene", () => {
             // Assert
             expect(camera.lowerRadiusLimit).toBe(3);
         });
+
+        it("should set a beta limit, a sensitivity or the far plane left out to its default rather than keep the camera's own", () => {
+            // Arrange
+            const camera = scene.getCameraByName("Camera") as BABYLON.ArcRotateCamera;
+            camera.upperBetaLimit = 0.5;
+            camera.panningSensibility = 5;
+            camera.wheelPrecision = 8;
+            camera.maxZ = 5000;
+
+            // Act
+            sceneService.adjustActiveArcRotateCamera({ position: [0, 10, 20], lookAt: [0, 0, 0] });
+
+            // Assert
+            expect(camera.upperBetaLimit).toBeCloseTo(179 * Math.PI / 180, 9);
+            expect(camera.panningSensibility).toBe(1000);
+            expect(camera.wheelPrecision).toBe(3);
+            expect(camera.maxZ).toBe(1000);
+        });
     });
 
     describe("the pointer callbacks", () => {
@@ -859,6 +877,70 @@ describe("BabylonScene", () => {
 
             // Assert
             expect(scene.meshes.filter(m => m.name === "bitbybit-hdrSkyBox")).toHaveLength(1);
+        });
+    });
+
+    describe("the PBR skybox", () => {
+        const aCubeTexture = (): BABYLON.CubeTexture => new BABYLON.CubeTexture("https://example.test/sky", scene);
+
+        const skyboxShape = (mesh: BABYLON.Mesh) => {
+            const material = mesh.material as BABYLON.PBRMaterial;
+            return {
+                materialClass: material.getClassName(),
+                materialName: material.name,
+                backFaceCulling: material.backFaceCulling,
+                microSurface: material.microSurface,
+                disableLighting: material.disableLighting,
+                twoSidedLighting: material.twoSidedLighting,
+                coordinatesMode: material.reflectionTexture?.coordinatesMode,
+                reflectionIsACopy: material.reflectionTexture !== scene.environmentTexture,
+                extent: mesh.getBoundingInfo().boundingBox.extendSize.asArray(),
+                vertices: mesh.getTotalVertices(),
+                isPickable: mesh.isPickable,
+                infiniteDistance: mesh.infiniteDistance,
+                ignoreCameraMaxZ: mesh.ignoreCameraMaxZ,
+            };
+        };
+
+        it("should build the same skybox as the BabylonJS scene helper", () => {
+            // Arrange
+            const texture = aCubeTexture();
+            const reference = scene.createDefaultSkybox(texture, true, 100, 0.3, true)!;
+            const expected = skyboxShape(reference);
+            reference.dispose(false, true);
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(texture, 100, 0.3, 1, false, false));
+
+            // Assert
+            expect(skyboxShape(scene.getMeshByName("bitbybit-hdrSkyBox") as BABYLON.Mesh)).toStrictEqual(expected);
+            expect(scene.environmentTexture).toBe(texture);
+        });
+
+        it("should build the skybox without the BabylonJS scene helper", () => {
+            // Arrange
+            const helper = vi.spyOn(scene, "createDefaultSkybox");
+
+            // Act
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(aCubeTexture(), 100, 0.1, 1, false, false));
+            sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(new BABYLON.BaseTexture(scene), 100, 0.1, 1, false, true));
+
+            // Assert
+            expect(helper).not.toHaveBeenCalled();
+            expect(scene.getMeshByName("bitbybit-hdrSkyBox")!.material).toBeInstanceOf(BABYLON.PBRMaterial);
+        });
+
+        it("should warn as the BabylonJS scene helper does and build nothing when there is no texture", () => {
+            // Arrange
+            const warn = vi.spyOn(BABYLON.Logger, "Warn").mockImplementation(() => undefined);
+
+            // Act
+            const act = () => sceneService.enableSkyboxFromTexture(new Inputs.BabylonScene.SkyboxFromTextureDto(undefined, 100, 0.1, 1));
+
+            // Assert
+            expect(act).toThrow(TypeError);
+            expect(warn).toHaveBeenCalledWith("Can not create default skybox without environment texture.");
+            expect(scene.getMeshByName("hdrSkyBox")).toBeNull();
         });
     });
 

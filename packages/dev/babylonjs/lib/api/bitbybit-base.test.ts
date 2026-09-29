@@ -1,4 +1,4 @@
-import { MockScene } from "./__mocks__/babylonjs.mock";
+import { MockScene, instanceOf } from "./__mocks__/babylonjs.mock";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 vi.mock("@babylonjs/core", async () => {
     const { createBabylonJSMock } = await vi.importActual<typeof import("./__mocks__/babylonjs.mock")>("./__mocks__/babylonjs.mock");
@@ -10,7 +10,7 @@ import { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitby
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import {
-    Vector, Point, Line, Polyline, TextBitByBit, Color, MathBitByBit,
+    Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit,
     Lists, Logic, Transforms, Dates, MeshBitByBit
 } from "@bitbybit-dev/base";
 import { Context } from "./context";
@@ -18,6 +18,9 @@ import { Draw } from "./bitbybit/draw";
 import { Babylon } from "./bitbybit/babylon/babylon";
 import { BitByBitBase } from "./bitbybit-base";
 import * as BABYLON from "@babylonjs/core";
+import { partialMock } from "./__mocks__/test-helpers";
+
+type ServiceField = { [K in keyof BitByBitBase]: BitByBitBase[K] extends (...args: never[]) => unknown ? never : K }[keyof BitByBitBase];
 
 describe("BitByBitBase unit tests", () => {
     let bitByBit: BitByBitBase;
@@ -31,7 +34,7 @@ describe("BitByBitBase unit tests", () => {
             expect(bitByBit).toBeInstanceOf(BitByBitBase);
         });
 
-        const wiring: [keyof BitByBitBase, new (...args: never[]) => object][] = [
+        const wiring: [ServiceField, new (...args: never[]) => object][] = [
             ["context", Context],
             ["jscadWorkerManager", JSCADWorkerManager],
             ["manifoldWorkerManager", ManifoldWorkerManager],
@@ -44,6 +47,7 @@ describe("BitByBitBase unit tests", () => {
             ["vector", Vector],
             ["babylon", Babylon],
             ["point", Point],
+            ["frame", Frame],
             ["line", Line],
             ["transforms", Transforms],
             ["polyline", Polyline],
@@ -80,7 +84,7 @@ describe("BitByBitBase unit tests", () => {
         let mockScene: BABYLON.Scene;
 
         beforeEach(() => {
-            mockScene = new MockScene() as unknown as BABYLON.Scene;
+            mockScene = instanceOf(new MockScene(), BABYLON.Scene);
         });
 
         it("should initialize with scene", () => {
@@ -101,7 +105,7 @@ describe("BitByBitBase unit tests", () => {
         });
 
         it("should initialize with scene and occt worker", () => {
-            const mockOcctWorker = {
+            const mockOcctWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -110,14 +114,14 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockScene, mockOcctWorker);
             expect(bitByBit.context.scene).toBe(mockScene);
         });
 
         it("should initialize with scene and jscad worker", () => {
-            const mockJscadWorker = {
+            const mockJscadWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -126,14 +130,14 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockScene, undefined, mockJscadWorker);
             expect(bitByBit.context.scene).toBe(mockScene);
         });
 
         it("should initialize with scene and manifold worker", () => {
-            const mockManifoldWorker = {
+            const mockManifoldWorker: Worker = {
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -142,17 +146,17 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker;
+            };
             
             bitByBit.init(mockScene, undefined, undefined, mockManifoldWorker);
             expect(bitByBit.context.scene).toBe(mockScene);
         });
 
         it("should initialize with havok plugin", () => {
-            const mockHavokPlugin = {
+            const mockHavokPlugin = partialMock<BABYLON.HavokPlugin>({
                 name: "havok",
                 setGravity: vi.fn()
-            } as unknown as BABYLON.HavokPlugin;
+            });
             
             bitByBit.init(mockScene, undefined, undefined, undefined, mockHavokPlugin);
             expect(bitByBit.context.scene).toBe(mockScene);
@@ -160,7 +164,7 @@ describe("BitByBitBase unit tests", () => {
         });
 
         it("should initialize with all workers", () => {
-            const createMockWorker = () => ({
+            const createMockWorker = (): Worker => ({
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -169,7 +173,7 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker);
+            });
             
             const mockOcctWorker = createMockWorker();
             const mockJscadWorker = createMockWorker();
@@ -180,7 +184,7 @@ describe("BitByBitBase unit tests", () => {
         });
 
         it("should initialize with all parameters", () => {
-            const createMockWorker = () => ({
+            const createMockWorker = (): Worker => ({
                 postMessage: vi.fn(),
                 addEventListener: vi.fn(),
                 removeEventListener: vi.fn(),
@@ -189,15 +193,15 @@ describe("BitByBitBase unit tests", () => {
                 onmessageerror: null,
                 onerror: null,
                 dispatchEvent: vi.fn(),
-            } as unknown as Worker);
+            });
             
             const mockOcctWorker = createMockWorker();
             const mockJscadWorker = createMockWorker();
             const mockManifoldWorker = createMockWorker();
-            const mockHavokPlugin = {
+            const mockHavokPlugin = partialMock<BABYLON.HavokPlugin>({
                 name: "havok",
                 setGravity: vi.fn()
-            } as unknown as BABYLON.HavokPlugin;
+            });
             
             bitByBit.init(mockScene, mockOcctWorker, mockJscadWorker, mockManifoldWorker, mockHavokPlugin);
             expect(bitByBit.context.scene).toBe(mockScene);
@@ -305,8 +309,8 @@ describe("BitByBitBase unit tests", () => {
             const instance1 = new BitByBitBase();
             const instance2 = new BitByBitBase();
             
-            const scene1 = new MockScene() as unknown as BABYLON.Scene;
-            const scene2 = new MockScene() as unknown as BABYLON.Scene;
+            const scene1 = instanceOf(new MockScene(), BABYLON.Scene);
+            const scene2 = instanceOf(new MockScene(), BABYLON.Scene);
             
             instance1.init(scene1);
             instance2.init(scene2);
@@ -321,7 +325,7 @@ describe("BitByBitBase unit tests", () => {
         let mockScene: BABYLON.Scene;
 
         beforeEach(() => {
-            mockScene = new MockScene() as unknown as BABYLON.Scene;
+            mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             bitByBit.init(mockScene);
         });
 
@@ -377,7 +381,7 @@ describe("BitByBitBase unit tests", () => {
         let mockScene: BABYLON.Scene;
 
         beforeEach(() => {
-            mockScene = new MockScene() as unknown as BABYLON.Scene;
+            mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             bitByBit.init(mockScene);
         });
 
@@ -394,7 +398,7 @@ describe("BitByBitBase unit tests", () => {
         let mockScene: BABYLON.Scene;
 
         beforeEach(() => {
-            mockScene = new MockScene() as unknown as BABYLON.Scene;
+            mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             bitByBit.init(mockScene);
         });
 
@@ -407,7 +411,7 @@ describe("BitByBitBase unit tests", () => {
         let mockScene: BABYLON.Scene;
 
         beforeEach(() => {
-            mockScene = new MockScene() as unknown as BABYLON.Scene;
+            mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             bitByBit.init(mockScene);
         });
 

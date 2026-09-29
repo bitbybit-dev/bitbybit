@@ -4,8 +4,8 @@ import { Base } from "../base-inputs";
 import { JSCADEntity, solidCornerTypeEnum } from "./entities-and-enums";
 
 /**
- * Feeds `expansions.expand` and `expansions.offset`: the geometry, the signed distance to move its
- * boundary by and how the corners are shaped on the way.
+ * Feeds `expansions.offset`: the 2D shape or path, the signed distance to build its outline at and
+ * how the corners are shaped, kept sharp unless `corners` says otherwise.
  */
 export class ExpansionDto {
     constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
@@ -15,26 +15,24 @@ export class ExpansionDto {
         if (segments !== undefined) { this.segments = segments; }
     }
     /**
-     * The 2D shape, path or solid to grow; `offset` takes 2D shapes and paths only. It stays as it
-     * is and a new entity comes back
+     * The 2D shape or path to outline; it stays as it is and a new entity comes back
      * @default undefined
      */
     geometry!: JSCADEntity;
     /**
      * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it
-     * (a solid accepts positive only)
      * @default 0.1
      * @minimum -Infinity
      * @maximum Infinity
      * @step 0.1
      */
-    delta = 0.1;
+    delta?: number | undefined = 0.1;
     /**
      * How a convex corner is shaped: `edge` keeps it sharp, `chamfer` cuts it flat, `round` curves
-     * it; a solid accepts `round` only
+     * it with `segments` pieces
      * @default edge
      */
-    corners: solidCornerTypeEnum = solidCornerTypeEnum.edge;
+    corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.edge;
     /**
      * Number of straight pieces a `round` corner is made of over a full circle; more makes it
      * smoother
@@ -43,7 +41,48 @@ export class ExpansionDto {
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
+}
+/**
+ * Feeds `expansions.expand`: the geometry, the signed distance to move its boundary by and how the
+ * corners are shaped, rounded unless `corners` says otherwise.
+ */
+export class ExpandDto {
+    constructor(geometry?: JSCADEntity, delta?: number, corners?: solidCornerTypeEnum, segments?: number) {
+        if (geometry !== undefined) { this.geometry = geometry; }
+        if (delta !== undefined) { this.delta = delta; }
+        if (corners !== undefined) { this.corners = corners; }
+        if (segments !== undefined) { this.segments = segments; }
+    }
+    /**
+     * The 2D shape, path or solid to grow; it stays as it is and a new entity comes back
+     * @default undefined
+     */
+    geometry!: JSCADEntity;
+    /**
+     * How far the boundary moves, in model units: positive grows the geometry, negative shrinks it;
+     * a solid or a path accepts a positive value only
+     * @default 0.1
+     * @minimum -Infinity
+     * @maximum Infinity
+     * @step 0.1
+     */
+    delta?: number | undefined = 0.1;
+    /**
+     * How a convex corner is shaped: `round` curves it with `segments` pieces, `chamfer` cuts it
+     * flat, `edge` keeps it sharp; a solid accepts `round` only
+     * @default round
+     */
+    corners?: solidCornerTypeEnum | undefined = solidCornerTypeEnum.round;
+    /**
+     * Number of straight pieces a `round` corner is made of over a full circle; more makes it
+     * smoother, and a solid needs at least 4
+     * @default 24
+     * @minimum 0
+     * @maximum Infinity
+     * @step 1
+     */
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `extrusions.extrudeLinear`: the flat shape, how far it rises along Z and the optional twist
@@ -69,7 +108,7 @@ export class ExtrudeLinearDto {
      * @maximum Infinity
      * @step 0.1
      */
-    height = 1;
+    height?: number | undefined = 1;
     /**
      * How far the top is turned relative to the bottom around Z, in degrees; 0 gives a straight
      * extrusion
@@ -78,16 +117,16 @@ export class ExtrudeLinearDto {
      * @maximum Infinity
      * @step 1
      */
-    twistAngle = 90;
+    twistAngle?: number | undefined = 90;
     /**
      * Number of slices the twist is built from, at least 1; more makes a smoother twist and a
      * heavier mesh
      * @default 15
-     * @minimum 0
+     * @minimum 1
      * @maximum Infinity
      * @step 1
      */
-    twistSteps = 15;
+    twistSteps?: number | undefined = 15;
 }
 
 /**
@@ -119,11 +158,37 @@ export class SolidDto {
     mesh!: JSCADEntity;
 }
 /**
+ * The wall a rectangular extrusion builds, shared by `ExtrudeRectangularDto` and
+ * `ExtrudeRectangularPointsDto`: how thick and how tall.
+ */
+export abstract class ExtrudeRectangularSharedDto {
+    /**
+     * How tall the wall is along Z, in model units, standing on the XY plane
+     * @default 1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.1
+     */
+    height?: number | undefined = 1;
+    /**
+     * How far the wall reaches to each side of the path, in model units, so the wall is twice this
+     * thick
+     * @default 1
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.1
+     */
+    size?: number | undefined = 1;
+}
+/**
  * Feeds `extrusions.extrudeRectangular`: the outline to build a wall along, the wall's height along
  * Z and its half thickness.
  */
-export class ExtrudeRectangularDto {
+export class ExtrudeRectangularDto extends ExtrudeRectangularSharedDto {
     constructor(geometry?: JSCADEntity, height?: number, size?: number) {
+        super();
         if (geometry !== undefined) { this.geometry = geometry; }
         if (height !== undefined) { this.height = height; }
         if (size !== undefined) { this.size = size; }
@@ -133,30 +198,14 @@ export class ExtrudeRectangularDto {
      * @default undefined
      */
     geometry!: JSCADEntity;
-    /**
-     * How tall the wall is along Z, in model units, standing on the XY plane
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    height = 1;
-    /**
-     * How far the wall reaches to each side of the outline, in model units, so the wall is twice
-     * this thick
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    size = 1;
 }
 /**
  * Feeds `extrusions.extrudeRectangularPoints`: the points of the line to build a wall along, the
  * wall's height along Z and its half thickness.
  */
-export class ExtrudeRectangularPointsDto {
+export class ExtrudeRectangularPointsDto extends ExtrudeRectangularSharedDto {
     constructor(points?: Base.Point3[], height?: number, size?: number) {
+        super();
         if (points !== undefined) { this.points = points; }
         if (height !== undefined) { this.height = height; }
         if (size !== undefined) { this.size = size; }
@@ -166,23 +215,6 @@ export class ExtrudeRectangularPointsDto {
      * @default undefined
      */
     points!: Base.Point3[];
-    /**
-     * How tall the wall is along Z, in model units, standing on the XY plane
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    height = 1;
-    /**
-     * How far the wall reaches to each side of the line, in model units, so the wall is twice this
-     * thick
-     * @default 1
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    size = 1;
 }
 /**
  * Feeds `extrusions.extrudeRotate`: the flat profile to spin around the Z axis, how far and from
@@ -208,7 +240,7 @@ export class ExtrudeRotateDto {
      * @maximum Infinity
      * @step 1
      */
-    angle = 90;
+    angle?: number | undefined = 90;
     /**
      * Where the revolution starts, in degrees from the X axis
      * @default 0
@@ -216,14 +248,14 @@ export class ExtrudeRotateDto {
      * @maximum Infinity
      * @step 1
      */
-    startAngle = 0;
+    startAngle?: number | undefined = 0;
     /**
      * Number of steps in a full turn; a partial angle uses proportionally fewer. Fewer than 3
      * throws an error
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }

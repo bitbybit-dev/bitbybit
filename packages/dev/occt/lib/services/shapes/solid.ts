@@ -3,6 +3,8 @@ import { BitbybitOcctModule, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "..
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Solids in OpenCascade: closed shapes that enclose a volume. Build one from a primitive
@@ -85,7 +87,8 @@ export class OCCTSolid {
      * ```
      */
     createBox(inputs: Inputs.OCCT.BoxDto): TopoDS_Solid {
-        return this.och.solidsService.createBox(inputs);
+        const resolved = resolveDto(Inputs.OCCT.BoxDto, inputs) as Resolved.OCCT.BoxDto;
+        return this.och.solidsService.createBox(resolved);
     }
 
     /**
@@ -104,7 +107,8 @@ export class OCCTSolid {
      * ```
      */
     createCube(inputs: Inputs.OCCT.CubeDto): TopoDS_Solid {
-        return this.och.solidsService.createCube(inputs);
+        const resolved = resolveDto(Inputs.OCCT.CubeDto, inputs) as Resolved.OCCT.CubeDto;
+        return this.och.solidsService.createCube(resolved);
     }
 
     /**
@@ -123,7 +127,8 @@ export class OCCTSolid {
      * ```
      */
     createBoxFromCorner(inputs: Inputs.OCCT.BoxFromCornerDto): TopoDS_Solid {
-        return this.och.solidsService.createBoxFromCorner(inputs);
+        const resolved = resolveDto(Inputs.OCCT.BoxFromCornerDto, inputs) as Resolved.OCCT.BoxFromCornerDto;
+        return this.och.solidsService.createBoxFromCorner(resolved);
     }
 
     /**
@@ -143,7 +148,8 @@ export class OCCTSolid {
      * ```
      */
     createCylinder(inputs: Inputs.OCCT.CylinderDto): TopoDS_Solid {
-        return this.och.solidsService.createCylinder(inputs);
+        const resolved = resolveDto(Inputs.OCCT.CylinderDto, inputs) as Resolved.OCCT.CylinderDto;
+        return this.och.solidsService.createCylinder(resolved);
     }
 
     /**
@@ -165,7 +171,8 @@ export class OCCTSolid {
      * ```
      */
     createCylindersOnLines(inputs: Inputs.OCCT.CylindersOnLinesDto): TopoDS_Solid[] {
-        return this.och.solidsService.createCylindersOnLines(inputs);
+        const resolved = resolveDto(Inputs.OCCT.CylindersOnLinesDto, inputs) as Resolved.OCCT.CylindersOnLinesDto;
+        return this.och.solidsService.createCylindersOnLines(resolved);
     }
 
     /**
@@ -181,7 +188,8 @@ export class OCCTSolid {
      * ```
      */
     createSphere(inputs: Inputs.OCCT.SphereDto): TopoDS_Solid {
-        return this.och.solidsService.createSphere(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SphereDto, inputs) as Resolved.OCCT.SphereDto;
+        return this.och.solidsService.createSphere(resolved);
     }
 
     /**
@@ -201,7 +209,8 @@ export class OCCTSolid {
      * ```
      */
     createCone(inputs: Inputs.OCCT.ConeDto): TopoDS_Solid {
-        return this.och.solidsService.createCone(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ConeDto, inputs) as Resolved.OCCT.ConeDto;
+        return this.och.solidsService.createCone(resolved);
     }
 
     /**
@@ -221,7 +230,8 @@ export class OCCTSolid {
      * ```
      */
     createTorus(inputs: Inputs.OCCT.TorusDto): TopoDS_Solid {
-        return this.och.solidsService.createTorus(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TorusDto, inputs) as Resolved.OCCT.TorusDto;
+        return this.och.solidsService.createTorus(resolved);
     }
 
     /**
@@ -251,9 +261,10 @@ export class OCCTSolid {
      * ```
      */
     createStarSolid(inputs: Inputs.OCCT.StarSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createStarWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.StarSolidDto, inputs) as Resolved.OCCT.StarSolidDto;
+        const wire = this.och.wiresService.createStarWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -280,9 +291,10 @@ export class OCCTSolid {
      * ```
      */
     createNGonSolid(inputs: Inputs.OCCT.NGonSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createNGonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.NGonSolidDto, inputs) as Resolved.OCCT.NGonSolidDto;
+        const wire = this.och.wiresService.createNGonWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -311,9 +323,10 @@ export class OCCTSolid {
      * ```
      */
     createParallelogramSolid(inputs: Inputs.OCCT.ParallelogramSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createParallelogramWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ParallelogramSolidDto, inputs) as Resolved.OCCT.ParallelogramSolidDto;
+        const wire = this.och.wiresService.createParallelogramWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -340,9 +353,10 @@ export class OCCTSolid {
      * ```
      */
     createHeartSolid(inputs: Inputs.OCCT.HeartSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createHeartWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HeartSolidDto, inputs) as Resolved.OCCT.HeartSolidDto;
+        const wire = this.och.wiresService.createHeartWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -375,9 +389,10 @@ export class OCCTSolid {
      * ```
      */
     createChristmasTreeSolid(inputs: Inputs.OCCT.ChristmasTreeSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createChristmasTreeWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChristmasTreeSolidDto, inputs) as Resolved.OCCT.ChristmasTreeSolidDto;
+        const wire = this.och.wiresService.createChristmasTreeWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -408,9 +423,10 @@ export class OCCTSolid {
      * ```
      */
     createLPolygonSolid(inputs: Inputs.OCCT.LPolygonSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createLPolygonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LPolygonSolidDto, inputs) as Resolved.OCCT.LPolygonSolidDto;
+        const wire = this.och.wiresService.createLPolygonWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -440,9 +456,10 @@ export class OCCTSolid {
      * ```
      */
     createIBeamProfileSolid(inputs: Inputs.OCCT.IBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IBeamProfileSolidDto, inputs) as Resolved.OCCT.IBeamProfileSolidDto;
+        const wire = this.och.wiresService.createIBeamProfileWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -472,9 +489,10 @@ export class OCCTSolid {
      * ```
      */
     createHBeamProfileSolid(inputs: Inputs.OCCT.HBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HBeamProfileSolidDto, inputs) as Resolved.OCCT.HBeamProfileSolidDto;
+        const wire = this.och.wiresService.createHBeamProfileWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -504,9 +522,10 @@ export class OCCTSolid {
      * ```
      */
     createTBeamProfileSolid(inputs: Inputs.OCCT.TBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TBeamProfileSolidDto, inputs) as Resolved.OCCT.TBeamProfileSolidDto;
+        const wire = this.och.wiresService.createTBeamProfileWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     /**
@@ -537,9 +556,10 @@ export class OCCTSolid {
      * ```
      */
     createUBeamProfileSolid(inputs: Inputs.OCCT.UBeamProfileSolidDto): TopoDS_Solid {
-        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UBeamProfileSolidDto, inputs) as Resolved.OCCT.UBeamProfileSolidDto;
+        const wire = this.och.wiresService.createUBeamProfileWire(resolved);
         const face = this.och.facesService.createFaceFromWire({ shape: wire, planar: true });
-        return this.extrudeFaceToSolid(face, inputs.extrusionLengthFront, inputs.extrusionLengthBack);
+        return this.extrudeFaceToSolid(face, resolved.extrusionLengthFront, resolved.extrusionLengthBack);
     }
 
     private extrudeFaceToSolid(face: TopoDS_Shape, lengthFront: number, lengthBack: number): TopoDS_Solid {
@@ -567,38 +587,20 @@ export class OCCTSolid {
             paramV 
         });
 
+        const front = Math.max(lengthFront, 0);
+        const back = Math.max(lengthBack, 0);
         let result: TopoDS_Shape | undefined;
-
-        if (lengthFront > 0) {
-            const frontVec = new this.occ.gp_Vec(
-                normalizedDir[0] * lengthFront,
-                normalizedDir[1] * lengthFront,
-                normalizedDir[2] * lengthFront
-            );
-            const frontPrism = new this.occ.BRepPrimAPI_MakePrism(face, frontVec);
-            result = frontPrism.Shape();
-            frontPrism.delete();
-            frontVec.delete();
-        }
-
-        if (lengthBack > 0) {
-            const backVec = new this.occ.gp_Vec(
-                -normalizedDir[0] * lengthBack,
-                -normalizedDir[1] * lengthBack,
-                -normalizedDir[2] * lengthBack
-            );
-            const backPrism = new this.occ.BRepPrimAPI_MakePrism(face, backVec);
-            const backShape = backPrism.Shape();
-            backPrism.delete();
-            backVec.delete();
-
-            if (result) {
-                const fused = this.och.booleansService.union({ shapes: [result, backShape], keepEdges: false });
-                result.delete();
-                backShape.delete();
-                result = fused;
-            } else {
-                result = backShape;
+        if (front + back > 0) {
+            const start = back > 0
+                ? this.och.transformsService.translate({ shape: face, translation: [-normalizedDir[0] * back, -normalizedDir[1] * back, -normalizedDir[2] * back] })
+                : face;
+            const vector = new this.occ.gp_Vec(normalizedDir[0] * (front + back), normalizedDir[1] * (front + back), normalizedDir[2] * (front + back));
+            const prism = new this.occ.BRepPrimAPI_MakePrism(start, vector);
+            result = prism.Shape();
+            prism.delete();
+            vector.delete();
+            if (start !== face) {
+                start.delete();
             }
         }
 
@@ -734,6 +736,7 @@ export class OCCTSolid {
      * ```
      */
     filterSolidPoints(inputs: Inputs.OCCT.FilterSolidPointsDto<TopoDS_Solid>): Base.Point3[] {
-        return this.och.solidsService.filterSolidPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilterSolidPointsDto, inputs) as Resolved.OCCT.FilterSolidPointsDto<TopoDS_Solid>;
+        return this.och.solidsService.filterSolidPoints(resolved);
     }
 }

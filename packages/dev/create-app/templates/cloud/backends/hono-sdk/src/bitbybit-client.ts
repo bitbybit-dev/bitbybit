@@ -101,18 +101,13 @@ export async function getTaskResult(env: Env, taskId: string): Promise<{ status:
     return { status: "completed", downloads };
 }
 
-/**
- * Intentionally invalid request — height exceeds the 50cm maximum.
- * The SDK validates against JSON Schema before sending, so this throws
- * a BitbybitValidationError without ever hitting the network.
- */
 export async function createInvalidCup(env: Env): Promise<never> {
     const client = getClient(env);
 
     await client.models.run("dragon-cup", {
         params: {
-            height: 999,        // max is 50
-            radiusBottom: -5,   // must be > 0
+            height: 999,
+            radiusBottom: -5,
         },
         outputs: {
             formats: ["gltf"],
@@ -122,14 +117,6 @@ export async function createInvalidCup(env: Env): Promise<never> {
     throw new Error("unreachable");
 }
 
-// ---------------------------------------------------------------------------
-// Pipeline examples (using typed step() helper)
-// ---------------------------------------------------------------------------
-
-/**
- * Translate, Union + Fillet: createBox → translate → union → fillet
- * Creates a box, translates a copy, unions both, fillets the result.
- */
 export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient(env);
 
@@ -144,10 +131,6 @@ export async function runTranslateUnionFilletPipeline(env: Env): Promise<{ taskI
     });
 }
 
-/**
- * Map: Cylinders at Positions
- * Parses an array of center positions, maps a cylinder at each, unions the result.
- */
 export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient(env);
 
@@ -157,7 +140,7 @@ export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: strin
             {
                 type: "map",
                 items: "$ref:0",
-                steps: [step("occt.shapes.solid.createCylinder", { radius: 1, height: 5, center: "$item" as never })],
+                steps: [step("occt.shapes.solid.createCylinder", { radius: 1, height: 5, center: "$item" })],
             },
             step("occt.booleans.union", { shapes: "$ref:5" }),
         ],
@@ -165,10 +148,6 @@ export async function runMapCylindersPipeline(env: Env): Promise<{ taskId: strin
     });
 }
 
-/**
- * Map: Spheres at Different Radii
- * Creates spheres of radii 1–5 at pre-computed positions, compounds the result.
- */
 export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient(env);
 
@@ -179,8 +158,8 @@ export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string;
                 type: "map",
                 items: "$ref:0",
                 steps: [
-                    step("math.twoNrOperation", { first: "$index" as never, second: 1, operation: "add" }),
-                    step("occt.shapes.solid.createSphere", { radius: "$prev" as never, center: "$item" as never }),
+                    step("math.twoNrOperation", { first: "$index", second: 1, operation: "add" }),
+                    step("occt.shapes.solid.createSphere", { radius: "$prev", center: "$item" }),
                 ],
             },
             step("occt.shapes.compound.makeCompound", { shapes: "$ref:11" }),
@@ -189,17 +168,13 @@ export async function runMapSpheresPipeline(env: Env): Promise<{ taskId: string;
     });
 }
 
-/**
- * Choice: Conditional Shape Size
- * Parses a number, increments it, then picks a large box (> 5) or small sphere.
- */
 export async function runChoicePipeline(env: Env): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient(env);
 
     return client.cad.pipelineAndPoll({
         steps: [
             step("json.parse", { text: "10" }),
-            step("math.twoNrOperation", { first: "$ref:0" as never, second: 1, operation: "add" }),
+            step("math.twoNrOperation", { first: "$ref:0", second: 1, operation: "add" }),
             {
                 type: "choice",
                 value: "$ref:1",
@@ -213,9 +188,6 @@ export async function runChoicePipeline(env: Env): Promise<{ taskId: string; dow
     });
 }
 
-/**
- * File-input pipeline: import an uploaded STEP file, fillet all edges, export.
- */
 export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ taskId: string; downloads: { format: string; downloadUrl: string; filename: string }[] }> {
     const client = getClient(env);
 
@@ -229,9 +201,6 @@ export async function runFileInputPipeline(env: Env, fileId: string): Promise<{ 
     });
 }
 
-/**
- * Upload a file via the SDK and get a fileId for use in pipelines.
- */
 export async function uploadFile(env: Env, fileBuffer: ArrayBuffer, filename: string): Promise<string> {
     const client = getClient(env);
     const result = await client.files.uploadBytes(filename, fileBuffer);

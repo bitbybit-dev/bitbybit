@@ -80,6 +80,7 @@ export class SimpleLinearLengthDimensionDto {
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -95,8 +96,8 @@ export class SimpleLinearLengthDimensionDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;
@@ -140,7 +141,6 @@ export class SimpleLinearLengthDimensionDto {
      * An expression written instead of the plain number, with `val` standing for the distance, such
      * as `100*val` or `Length: val mm`.
      * @default 1*val
-     * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**
@@ -180,17 +180,17 @@ export class SimpleAngularDimensionDto {
      * The direction of the first leg of the angle, from the center.
      * @default [1, 0, 0]
      */
-    direction1: Base.Point3 = [1, 0, 0];
+    direction1?: Base.Point3 | undefined = [1, 0, 0];
     /**
      * The direction of the second leg of the angle, from the center.
      * @default [0, 0, 1]
      */
-    direction2: Base.Point3 = [0, 0, 1];
+    direction2?: Base.Point3 | undefined = [0, 0, 1];
     /**
      * The point the angle is measured at.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The distance from the center to the dimension arc, in model units.
      * @default 4
@@ -198,7 +198,7 @@ export class SimpleAngularDimensionDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 4;
+    radius?: number | undefined = 4;
     /**
      * The gap between the center and the start of each extension line, in model units.
      * @default 0.5
@@ -206,7 +206,7 @@ export class SimpleAngularDimensionDto {
      * @maximum Infinity
      * @step 0.1
      */
-    offsetFromCenter = 0.5;
+    offsetFromCenter?: number | undefined = 0.5;
     /**
      * How far the extension lines stick out past the arc, in model units.
      * @default 0
@@ -214,7 +214,7 @@ export class SimpleAngularDimensionDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extraSize = 0;
+    extraSize?: number | undefined = 0;
     /**
      * How many decimals the angle is rounded to in the label.
      * @default 2
@@ -222,20 +222,21 @@ export class SimpleAngularDimensionDto {
      * @maximum Infinity
      * @step 1
      */
-    decimalPlaces = 2;
+    decimalPlaces?: number | undefined = 2;
     /**
      * Text written after the number, such as the unit.
      * @default (deg)
      */
-    labelSuffix = "(deg)";
+    labelSuffix?: string | undefined = "(deg)";
     /**
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    labelSize = 0.1;
+    labelSize?: number | undefined = 0.1;
     /**
      * How far the label sits from the arc, in model units.
      * @default 0.3
@@ -243,12 +244,12 @@ export class SimpleAngularDimensionDto {
      * @maximum Infinity
      * @step 0.1
      */
-    labelOffset = 0.3;
+    labelOffset?: number | undefined = 0.3;
     /**
      * When true, the angle is written in radians instead of degrees.
      * @default false
      */
-    radians = false;
+    radians?: boolean | undefined = false;
     /**
      * What the arc ends with: nothing, or an arrowhead.
      * @default none
@@ -278,8 +279,8 @@ export class SimpleAngularDimensionDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;
@@ -297,7 +298,6 @@ export class SimpleAngularDimensionDto {
      * An expression written instead of the plain number, with `val` standing for the angle, such as
      * `100*val` or `Angle: val deg`.
      * @default 1*val
-     * @optional true
      */
     labelOverwrite?: string | undefined = "1*val";
     /**
@@ -331,7 +331,7 @@ export class PinWithLabelDto {
      * The spot on the model the pin marks.
      * @default [0, 0, 0]
      */
-    startPoint: Base.Point3 = [0, 0, 0];
+    startPoint?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The point the pin line ends at, where the label is written.
      * @default [0, 5, 2]
@@ -367,6 +367,7 @@ export class PinWithLabelDto {
      * The height of the label's capital letters, in model units.
      * @default 0.1
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
@@ -400,8 +401,8 @@ export class PinWithLabelDto {
     /**
      * Extra rotation of the label in its plane, in degrees.
      * @default 0
-     * @minimum -360
-     * @maximum 360
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 1
      */
     labelRotation?: number | undefined = 0;
@@ -433,7 +434,7 @@ export class StarSolidDto extends StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the star grows against its plane normal, in model units.
      * @default 0
@@ -441,7 +442,7 @@ export class StarSolidDto extends StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 /**
  * A regular polygon and the extrusion lengths for `shapes.solid.createNGonSolid`; at least one
@@ -460,7 +461,7 @@ export class NGonSolidDto extends NGonWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the polygon grows against its plane normal, in model units.
      * @default 0
@@ -468,7 +469,7 @@ export class NGonSolidDto extends NGonWireDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 /**
  * A parallelogram and the extrusion lengths for `shapes.solid.createParallelogramSolid`; at least
@@ -487,7 +488,7 @@ export class ParallelogramSolidDto extends ParallelogramDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the parallelogram grows against its plane normal, in model units.
      * @default 0
@@ -495,7 +496,7 @@ export class ParallelogramSolidDto extends ParallelogramDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 /**
  * A heart outline and the extrusion lengths for `shapes.solid.createHeartSolid`; at least one
@@ -514,7 +515,7 @@ export class HeartSolidDto extends Heart2DDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the heart grows against its plane normal, in model units.
      * @default 0
@@ -522,7 +523,7 @@ export class HeartSolidDto extends Heart2DDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 /**
  * A tree outline and the extrusion lengths for `shapes.solid.createChristmasTreeSolid`; at least
@@ -541,7 +542,7 @@ export class ChristmasTreeSolidDto extends ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the tree grows against its plane normal, in model units.
      * @default 0
@@ -549,7 +550,7 @@ export class ChristmasTreeSolidDto extends ChristmasTreeDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 /**
  * An L shape and the extrusion lengths for `shapes.solid.createLPolygonSolid`; at least one length
@@ -568,7 +569,7 @@ export class LPolygonSolidDto extends LPolygonDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthFront = 1;
+    extrusionLengthFront?: number | undefined = 1;
     /**
      * How far the L shape grows against its plane normal, in model units.
      * @default 0
@@ -576,6 +577,6 @@ export class LPolygonSolidDto extends LPolygonDto {
      * @maximum Infinity
      * @step 0.1
      */
-    extrusionLengthBack = 0;
+    extrusionLengthBack?: number | undefined = 0;
 }
 

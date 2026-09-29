@@ -17,7 +17,7 @@ describe("OCCT corners unit tests", () => {
     let edge: OCCTEdge;
 
     const has = (name: string): boolean =>
-        typeof (occt as unknown as Record<string, unknown>)[name] === "function";
+        typeof Reflect.get(occt, name) === "function";
 
     const box = (): TopoDS_Shape => solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });
 

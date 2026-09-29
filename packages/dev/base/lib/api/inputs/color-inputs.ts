@@ -18,7 +18,7 @@ export namespace Color {
          * The color as a hex text such as `#ff5733`, with or without the `#`.
          * @default #0000ff
          */
-        color: Base.Color = "#0000ff";
+        color?: Base.Color | undefined = "#0000ff";
     }
     /**
      * An `{ r, g, b }` color with channels from 0 to 255, for `color.rgb255Color`.
@@ -33,7 +33,7 @@ export namespace Color {
          * @minimum 0
          * @maximum 255
          */
-        colorRgb: Base.ColorRGB = { r: 0, g: 0, b: 255 };
+        colorRgb?: Base.ColorRGB | undefined = { r: 0, g: 0, b: 255 };
     }
     /**
      * An `{ r, g, b }` color with channels from 0 to 1, for `color.rgb1Color`.
@@ -48,7 +48,7 @@ export namespace Color {
          * @minimum 0
          * @maximum 1
          */
-        colorRgb: Base.ColorRGB = { r: 0, g: 0, b: 1 };
+        colorRgb?: Base.ColorRGB | undefined = { r: 0, g: 0, b: 1 };
     }
     /**
      * An `{ r, g, b, a }` color with color channels from 0 to 255 and opacity from 0 to 1, for
@@ -65,7 +65,7 @@ export namespace Color {
          * @minimum 0
          * @maximum 255
          */
-        colorRgba: Base.ColorRGBA = { r: 0, g: 0, b: 255, a: 1 };
+        colorRgba?: Base.ColorRGBA | undefined = { r: 0, g: 0, b: 255, a: 1 };
     }
     /**
      * An `{ r, g, b, a }` color with every channel from 0 to 1, for `color.rgba1Color`.
@@ -81,7 +81,7 @@ export namespace Color {
          * @minimum 0
          * @maximum 1
          */
-        colorRgba: Base.ColorRGBA = { r: 0, g: 0, b: 1, a: 1 };
+        colorRgba?: Base.ColorRGBA | undefined = { r: 0, g: 0, b: 1, a: 1 };
     }
     /**
      * Separate red, green and blue values from 0 to 255, for color.rgbAtomic255Color.
@@ -98,21 +98,21 @@ export namespace Color {
          * @minimum 0
          * @maximum 255
          */
-        r = 0;
+        r?: number | undefined = 0;
         /**
          * The green channel, from 0 to 255.
          * @default 0
          * @minimum 0
          * @maximum 255
          */
-        g = 0;
+        g?: number | undefined = 0;
         /**
          * The blue channel, from 0 to 255.
          * @default 255
          * @minimum 0
          * @maximum 255
          */
-        b = 255;
+        b?: number | undefined = 255;
     }
 
     /**
@@ -170,21 +170,21 @@ export namespace Color {
          * @minimum 0
          * @maximum 1
          */
-        r = 0;
+        r?: number | undefined = 0;
         /**
          * The green channel, from 0 to 1.
          * @default 0
          * @minimum 0
          * @maximum 1
          */
-        g = 0;
+        g?: number | undefined = 0;
         /**
          * The blue channel, from 0 to 1.
          * @default 1
          * @minimum 0
          * @maximum 1
          */
-        b = 1;
+        b?: number | undefined = 1;
     }
 
     /**
@@ -237,12 +237,13 @@ export namespace Color {
          * The color to invert, as a hex text such as `#ff5733`.
          * @default #0000ff
          */
-        color: Base.Color = "#0000ff";
+        color?: Base.Color | undefined = "#0000ff";
         /**
          * When true, the result is black for a light color and white for a dark one instead of the
          * exact inverse; useful for readable text.
+         * @default false
          */
-        blackAndWhite = false;
+        blackAndWhite?: boolean | undefined = false;
     }
     /**
      * A hex color and a target range for `color.hexToRgbMapped`, `color.getRedParam`,
@@ -258,7 +259,7 @@ export namespace Color {
          * The color as a hex text such as `#ff5733`.
          * @default #0000ff
          */
-        color: Base.Color = "#0000ff";
+        color?: Base.Color | undefined = "#0000ff";
         /**
          * The value a channel of 0 maps to.
          * @default 0
@@ -266,7 +267,7 @@ export namespace Color {
          * @maximum Infinity
          * @step 1
          */
-        from = 0;
+        from?: number | undefined = 0;
         /**
          * The value a channel of 255 maps to; 1 gives channels from 0 to 1.
          * @default 255
@@ -274,7 +275,7 @@ export namespace Color {
          * @maximum Infinity
          * @step 1
          */
-        to = 255;
+        to?: number | undefined = 255;
     }
     /**
      * An `{ r, g, b }` color and the range its channels use, for `color.rgbObjToHex`.
@@ -296,7 +297,7 @@ export namespace Color {
          * @maximum 255
          * @step 0.1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The highest value a channel can have in this object: 255 or 1; anything else is remapped
          * to 0 to 255 first.
@@ -305,7 +306,7 @@ export namespace Color {
          * @maximum 255
          * @step 0.1
          */
-        max = 255;
+        max?: number | undefined = 255;
     }
     /**
      * Three channel values and the range they use, for `color.rgbToHex`.
@@ -325,7 +326,7 @@ export namespace Color {
          * @maximum 255
          * @step 1
          */
-        r = 255;
+        r?: number | undefined = 255;
         /**
          * The green channel, within `min` to `max`.
          * @default 255
@@ -333,7 +334,7 @@ export namespace Color {
          * @maximum 255
          * @step 1
          */
-        g = 255;
+        g?: number | undefined = 255;
         /**
          * The blue channel, within `min` to `max`.
          * @default 255
@@ -341,7 +342,7 @@ export namespace Color {
          * @maximum 255
          * @step 1
          */
-        b = 255;
+        b?: number | undefined = 255;
         /**
          * The lowest value a channel can have, usually 0.
          * @default 0
@@ -349,7 +350,7 @@ export namespace Color {
          * @maximum 255
          * @step 0.1
          */
-        min = 0;
+        min?: number | undefined = 0;
         /**
          * The highest value a channel can have: 255 or 1; anything else is remapped to 0 to 255
          * first.
@@ -358,7 +359,7 @@ export namespace Color {
          * @maximum 255
          * @step 0.1
          */
-        max = 255;
+        max?: number | undefined = 255;
     }
     /**
      * An `{ r, g, b }` color for `color.rgbToRed`, `color.rgbToGreen` and `color.rgbToBlue`.

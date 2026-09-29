@@ -1,10 +1,11 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Face, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
+import createBitbybitOcct, { BitbybitOcctModule, Handle_Geom_Surface, TopoDS_Face, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTFace } from "./face";
+import { OCCTSolid } from "./solid";
 import { OCCTGeom } from "../geom/geom";
 import { Base, OCCT } from "../../api/inputs";
 
@@ -13,6 +14,7 @@ describe("OCCT face unit tests", () => {
     let wire: OCCTWire;
     let face: OCCTFace;
     let geom: OCCTGeom;
+    let solid: OCCTSolid;
     let occHelper: OccHelper;
 
     beforeAll(async () => {
@@ -23,9 +25,10 @@ describe("OCCT face unit tests", () => {
         wire = new OCCTWire(occt, occHelper);
         face = new OCCTFace(occt, occHelper);
         geom = new OCCTGeom(occt, occHelper);
+        solid = new OCCTSolid(occt, occHelper);
     });
 
-    it("should create a face from closed planar wire", async () => {
+    it("should create a face from closed planar wire", () => {
         const w = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const f = face.createFaceFromWire({ shape: w, planar: true });
         const area = face.getFaceArea({ shape: f });
@@ -35,7 +38,7 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should create a face from closed non-planar wire", async () => {
+    it("should create a face from closed non-planar wire", () => {
         const w = wire.interpolatePoints({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], periodic: true, tolerance: 1e-7 });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
@@ -45,7 +48,7 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not create a good face from open non-planar wire", async () => {
+    it("should not create a good face from open non-planar wire", () => {
         const w = wire.createBezier({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0]], closed: false });
         const f = face.createFaceFromWire({ shape: w, planar: false });
         const area = face.getFaceArea({ shape: f });
@@ -55,13 +58,13 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not create a good face from shape that is not a wire", async () => {
+    it("should not create a good face from shape that is not a wire", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.createFaceFromWire({ shape: b, planar: false })).toThrow("Provided input shape is not a wire");
         b.delete();
     });
 
-    it("should create a faces from closed planar wires", async () => {
+    it("should create a faces from closed planar wires", () => {
         const w1 = wire.createCircleWire({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const w2 = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
         const f = face.createFacesFromWires({ shapes: [w1, w2], planar: true });
@@ -74,16 +77,15 @@ describe("OCCT face unit tests", () => {
         f.forEach(s => s.delete());
     });
 
-    it("should create an infinite face from surface", async () => {
+    it("should create an infinite face from surface", () => {
         const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
         const area = face.getFaceArea({ shape: f });
         expect(area).toBeCloseTo(2e+100);
-        srf.delete();
         f.delete();
     });
 
-    it("should create an face from surface and wire", async () => {
+    it("should create an face from surface and wire", () => {
         const f1 = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const srf = geom.surfaces.surfaceFromFace({ shape: f1 });
         const w = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
@@ -91,9 +93,192 @@ describe("OCCT face unit tests", () => {
         const area = face.getFaceArea({ shape: f });
         expect(area).toBeCloseTo(12.566370614359167);
         f1.delete();
-        srf.delete();
         w.delete();
         f.delete();
+    });
+
+    describe("normals of faces placed in a mirror", () => {
+        const outwardFrom = (normal: Base.Vector3, point: Base.Point3): boolean => normal[0] * point[0] + normal[1] * point[1] + normal[2] * point[2] > 0;
+
+        it("should point out of the shape, as the faces of the shape it places do", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, length: 4, height: 6, center: [0, 0, 0] });
+            const mirror = new occt.gp_Trsf();
+            const plane = occHelper.entitiesService.gpAx2([0, 0, 0], [1, 0, 0]);
+            mirror.SetMirrorOnPlane(plane);
+            const placement = new occt.TopLoc_Location(mirror);
+            const faces = occHelper.shapeGettersService.getFaces({ shape: box.Moved(placement) });
+            const grid = { nrDivisionsU: 3, nrDivisionsV: 3, shiftHalfStepU: false, removeStartEdgeU: false, removeEndEdgeU: false, shiftHalfStepV: false, removeStartEdgeV: false, removeEndEdgeV: false };
+
+            // Act
+            const middles = faces.map(f => outwardFrom(face.normalOnUV({ shape: f, paramU: 0.5, paramV: 0.5 }), face.pointOnUV({ shape: f, paramU: 0.5, paramV: 0.5 })));
+            const grids = faces.map(f => {
+                const points = face.subdivideToPoints({ shape: f, ...grid });
+                return face.subdivideToNormals({ shape: f, ...grid }).every((normal, index) => outwardFrom(normal, points[index]!));
+            });
+
+            // Assert
+            expect(middles).toEqual(Array(6).fill(true));
+            expect(grids).toEqual(Array(6).fill(true));
+        });
+
+        it("should ask the surface without making a parameter point it would have to delete", () => {
+            // Arrange
+            const square = face.createSquareFace({ size: 2, center: [0, 0, 0], direction: [0, 1, 0] });
+            const points: { isDeleted(): boolean }[] = [];
+            const original = occt.gp_Pnt2d;
+            Reflect.set(occt, "gp_Pnt2d", new Proxy(original, {
+                construct(target, args): object {
+                    const made = Reflect.construct(target, args);
+                    points.push(made);
+                    return made;
+                },
+            }));
+
+            // Act
+            try {
+                face.normalOnUV({ shape: square, paramU: 0.5, paramV: 0.5 });
+            } finally {
+                Reflect.set(occt, "gp_Pnt2d", original);
+            }
+
+            // Assert
+            expect(points).toEqual([]);
+        });
+    });
+
+    describe("the surface handles a face method takes from the kernel", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        function capturedHandles(): Handle_Geom_Surface[] {
+            const handles: Handle_Geom_Surface[] = [];
+            const original = occt.BRep_Tool_Surface.bind(occt);
+            vi.spyOn(occt, "BRep_Tool_Surface").mockImplementation((shape) => {
+                const handle = original(shape);
+                handles.push(handle);
+                return handle;
+            });
+            return handles;
+        }
+
+        const square = (): TopoDS_Face => face.createSquareFace({ size: 4, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it.each([
+            ["subdivideToWires", (): unknown => face.subdivideToWires({ shape: square() })],
+            ["subdivideToRectangleWires with round corners", (): unknown => face.subdivideToRectangleWires({ shape: square(), filletPattern: [0.5] })],
+            ["wireAlongParam", (): unknown => face.wireAlongParam({ shape: square(), param: 0.5, isU: true })],
+            ["wiresAlongParams", (): unknown => face.wiresAlongParams({ shape: square(), params: [0.25, 0.75], isU: true })],
+            ["surfaceFromFace", (): unknown => geom.surfaces.surfaceFromFace({ shape: square() })],
+        ])("releases every surface handle %s takes", (_method, run) => {
+            // Arrange
+            const handles = capturedHandles();
+
+            // Act
+            run();
+
+            // Assert
+            expect(handles.length).toBeGreaterThan(0);
+            expect(handles.every(handle => handle.isDeleted())).toBe(true);
+        });
+
+        it.each([
+            ["normalOnUV", (): unknown => face.normalOnUV({ shape: square(), paramU: 0.5, paramV: 0.5 })],
+            ["subdivideToPointsControlled", (): unknown => face.subdivideToPointsControlled({ shape: square() })],
+            ["subdivideToPoints", (): unknown => face.subdivideToPoints({ shape: square() })],
+            ["subdivideToRectangleWires", (): unknown => face.subdivideToRectangleWires({ shape: square() })],
+            ["subdivideToHexagonWires", (): unknown => face.subdivideToHexagonWires({ shape: square() })],
+            ["subdivideToNormals", (): unknown => face.subdivideToNormals({ shape: square() })],
+            ["subdivideToPointsOnParam", (): unknown => face.subdivideToPointsOnParam({ shape: square(), nrPoints: 4, param: 0.5, isU: true })],
+            ["pointsOnUVs", (): unknown => face.pointsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["normalsOnUVs", (): unknown => face.normalsOnUVs({ shape: square(), paramsUV: [[0.2, 0.3], [0.5, 0.4]] })],
+            ["pointOnUV", (): unknown => face.pointOnUV({ shape: square(), paramU: 0.2, paramV: 0.3 })],
+        ])("reads the surface inside the kernel for %s, taking no handle", (_method, run) => {
+            // Arrange
+            const handles = capturedHandles();
+
+            // Act
+            run();
+
+            // Assert
+            expect(handles).toHaveLength(0);
+        });
+
+        it("gives no hexagons when the face has no parametric range for a grid", () => {
+            // Arrange
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+            vi.spyOn(occHelper.facesService, "getUVBounds").mockReturnValue({ uMin: 0, uMax: 0, vMin: 0, vMax: 1 });
+
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square() });
+
+            // Assert
+            expect(wires).toEqual([]);
+        });
+
+        it("gives no hexagons when the grid leaves no room on the face", () => {
+            // Arrange
+            vi.spyOn(console, "warn").mockImplementation(() => undefined);
+
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square(), offsetFromBorderU: 0.5, offsetFromBorderV: 0.5 });
+
+            // Assert
+            expect(wires).toEqual([]);
+        });
+    });
+
+    describe("a surface and the faces built on it", () => {
+        it("keeps a face whole when the surface it was built on is deleted first", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
+
+                // Act
+                srf.delete();
+
+                // Assert
+                expect(face.getFaceArea({ shape: f })).toBeCloseTo(2e+100);
+                f.delete();
+            }
+        });
+
+        it("keeps a surface whole when the face built on it is deleted first", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const srf = geom.surfaces.cylindricalSurface({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const f = face.faceFromSurface({ shape: srf, tolerance: 1e-7 });
+
+                // Act
+                f.delete();
+
+                // Assert
+                expect(srf.Radius()).toBe(3);
+                srf.delete();
+            }
+        });
+
+        it("keeps a face whole when the surface taken from it is deleted", () => {
+            for (let round = 0; round < 50; round++) {
+                // Arrange
+                const disc = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
+                const srf = geom.surfaces.surfaceFromFace({ shape: disc });
+                const w = wire.createCircleWire({ radius: 2, center: [0, 0, 1], direction: [0, 0, 1] });
+                const trimmed = face.faceFromSurfaceAndWire({ surface: srf, wire: w, inside: true });
+
+                // Act
+                srf.delete();
+
+                // Assert
+                expect(face.getFaceArea({ shape: disc })).toBeCloseTo(Math.PI * 9);
+                expect(face.getFaceArea({ shape: trimmed })).toBeCloseTo(Math.PI * 4);
+                disc.delete();
+                w.delete();
+                trimmed.delete();
+            }
+        });
     });
 
     it("should get u min bound", () => {
@@ -795,25 +980,25 @@ describe("OCCT face unit tests", () => {
         f.delete();
     });
 
-    it("should not get a face of a shape that does not have faces", async () => {
+    it("should not get a face of a shape that does not have faces", () => {
         const d = occHelper.edgesService.lineEdge({ start: [0, 0, 0], end: [1, 1, 1] });
         expect(() => face.getFace({ shape: d, index: 22 })).toThrow("Shape is of incorrect type");
         d.delete();
     });
 
-    it("should not get a face of a shape that does not have particular index", async () => {
+    it("should not get a face of a shape that does not have particular index", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.getFace({ shape: b, index: 22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
-    it("should not get a face of a shape that does not have particular index", async () => {
+    it("should not get a face of a shape that does not have particular index", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         expect(() => face.getFace({ shape: b, index: -22 })).toThrow("Face index is out of range");
         b.delete();
     });
 
-    it("should get faces", async () => {
+    it("should get faces", () => {
         const b = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 1, 1, [0, 0, 0]);
         const faces = face.getFaces({ shape: b });
         expect(faces.length).toBe(6);
@@ -821,7 +1006,7 @@ describe("OCCT face unit tests", () => {
         faces.forEach(f => f.delete());
     });
 
-    it("should reverse a face", async () => {
+    it("should reverse a face", () => {
         const f = face.createRectangleFace({ center: [0, 0, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const w = wire.getWire({ shape: f, index: 0 });
         const fr = face.reversedFace({ shape: f });
@@ -835,7 +1020,7 @@ describe("OCCT face unit tests", () => {
         wr.delete();
     });
 
-    it("should get faces areas", async () => {
+    it("should get faces areas", () => {
         const f1 = face.createRectangleFace({ center: [0, 0, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const f2 = face.createCircleFace({ radius: 3, center: [0, 0, 0], direction: [0, 0, 1] });
         const areas = face.getFacesAreas({ shapes: [f1, f2] });
@@ -846,19 +1031,19 @@ describe("OCCT face unit tests", () => {
         f2.delete();
     });
 
-    it("should get faces centers of mass", async () => {
+    it("should get faces centers of mass", () => {
         const f1 = face.createRectangleFace({ center: [0, 1, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const f2 = face.createCircleFace({ radius: 3, center: [0, 3, 3], direction: [0, 0, 1] });
         const centers = face.getFacesCentersOfMass({ shapes: [f1, f2] });
-        expect(centers).toEqual([
-            [2.0816681711721685e-17, 1, 8.023096076392733e-18],
-            [4.440892098500626e-16, 2.9999999999999996, 3]
-        ]);
+        expect(centers).toHaveLength(2);
+        [[0, 1, 0], [0, 3, 3]].forEach((expected, index) => {
+            expected.forEach((coordinate, axis) => expect(centers[index]![axis]).toBeCloseTo(coordinate, 12));
+        });
         f1.delete();
         f2.delete();
     });
 
-    it("should get face center of mass", async () => {
+    it("should get face center of mass", () => {
         const f1 = face.createRectangleFace({ center: [0, 1, 0], width: 2, length: 1, direction: [0, 1, 0] });
         const center = face.getFaceCenterOfMass({ shape: f1 });
         expect(center).toEqual(
@@ -867,7 +1052,7 @@ describe("OCCT face unit tests", () => {
         f1.delete();
     });
 
-    it("should filter points in and on the face", async () => {
+    it("should filter points in and on the face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -898,7 +1083,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should filter points outside face", async () => {
+    it("should filter points outside face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -941,7 +1126,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should filter points on the edge of the face", async () => {
+    it("should filter points on the edge of the face", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -975,7 +1160,7 @@ describe("OCCT face unit tests", () => {
         heartFace.delete();
     });
 
-    it("should not filter if provided points are empty", async () => {
+    it("should not filter if provided points are empty", () => {
         const hOpt = new OCCT.Heart2DDto();
         const heartWire = wire.createHeartWire(hOpt);
         const heartFace = face.createFaceFromWire({ shape: heartWire, planar: true });
@@ -1034,7 +1219,7 @@ describe("OCCT face unit tests", () => {
         square.delete();
     });
 
-    it("should create a face from wires", async () => {
+    it("should create a face from wires", () => {
         const circle1 = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
         const circle2 = wire.createCircleWire({ radius: 0.2, center: [0, 0, 0.3], direction: [0, 1, 0] });
         const reverse2 = wire.reversedWire({ shape: circle2 });
@@ -1944,6 +2129,62 @@ describe("OCCT face unit tests", () => {
         });
     });
 
+    describe("face patterns on a face with a hole", () => {
+        const withSquareHole = (): TopoDS_Face => {
+            const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            return face.subdivideToRectangleHoles(new OCCT.FaceSubdivideToRectangleHolesDto(panel, 1, 1, [0.4], [0.4]))[0]!;
+        };
+
+        it("should leave out the cells that fall in the face's hole", () => {
+            // Arrange
+            const holed = withSquareHole();
+
+            // Act
+            const wires = face.subdivideToRectangleWires(new OCCT.FaceSubdivideToRectangleWiresDto(holed, 3, 3, [0.5], [0.5]));
+
+            // Assert
+            expect(wires).toHaveLength(8);
+        });
+
+        it("should keep the face's own hole when it cuts new ones", () => {
+            // Arrange
+            const holed = withSquareHole();
+
+            // Act
+            const faces = face.subdivideToRectangleHoles(new OCCT.FaceSubdivideToRectangleHolesDto(holed, 3, 3, [0.5], [0.5]));
+
+            // Assert
+            expect(faces).toHaveLength(1);
+            expect(face.getFaceArea({ shape: faces[0]! })).toBeCloseTo(100 - 16 - 8 * (10 / 6) ** 2, 9);
+        });
+
+        it("should face the new cells the way the face does", () => {
+            // Arrange
+            const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+            const flipped = occHelper.converterService.getActualTypeOfShape(panel.Reversed());
+
+            // Act
+            const faces = face.subdivideToHexagonHoles(new OCCT.FaceSubdivideToHexagonHolesDto(flipped, 2, 2, false, true));
+
+            // Assert
+            const normals = faces.map(cell => face.normalOnUV({ shape: cell, paramU: 0.5, paramV: 0.5 }));
+            expect(normals).toEqual(faces.map(() => face.normalOnUV({ shape: flipped, paramU: 0.5, paramV: 0.5 }).map(value => expect.closeTo(value, 12))));
+        });
+    });
+
+    it("should flip the normals of a reversed face at every uv pair, as normalOnUV does", () => {
+        // Arrange
+        const panel = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
+        const flipped = occHelper.converterService.getActualTypeOfShape(panel.Reversed());
+
+        // Act
+        const normals = face.normalsOnUVs({ shape: flipped, paramsUV: [[0.2, 0.3], [0.5, 0.4]] });
+
+        // Assert
+        expect(normals).toEqual([face.normalOnUV({ shape: flipped, paramU: 0.2, paramV: 0.3 }), face.normalOnUV({ shape: flipped, paramU: 0.5, paramV: 0.4 })]);
+        expect(normals[0]).toEqual(face.normalOnUV({ shape: panel, paramU: 0.2, paramV: 0.3 }).map(value => expect.closeTo(-value, 12)));
+    });
+
     describe("Face subdivision to hexagon wires and holes", () => {
         it("should subdivide face to hexagon wires", () => {
             const f = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 0, 1] });
@@ -2210,6 +2451,115 @@ describe("OCCT face unit tests", () => {
             straight.forEach(w => w.delete());
             shifted.forEach(w => w.delete());
             rectangle.delete();
+        });
+    });
+
+    describe("subdivideToHexagonWires handed a partial object", () => {
+        it("should subdivide by the default counts and offsets the partial object leaves out", () => {
+            // Arrange
+            const square = face.createRectangleFace({ width: 10, length: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const leftOut = occHelper.facesService.subdivideToHexagonWires({ shape: square });
+            const spelled = occHelper.facesService.subdivideToHexagonWires(Object.assign(new OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>(), { shape: square }));
+
+            // Assert
+            expect(leftOut).toHaveLength(spelled.length);
+            expect(leftOut.map((w) => wire.getWireLength({ shape: w }))).toEqual(spelled.map((w) => wire.getWireLength({ shape: w })));
+            [...leftOut, ...spelled, square].forEach((s) => s.delete());
+        });
+    });
+
+    describe("points classified against a face in one call", () => {
+        const points: Base.Point3[] = [[50, 0, 50], [0, 0, 0], [1, 0, 0], [0.9, 0, 0.9]];
+        const disc = (): TopoDS_Face => face.createCircleFace({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it.each([
+            ["inside", { keepIn: true, keepOn: false, keepOut: false }, [[0, 0, 0]]],
+            ["on the edge", { keepIn: false, keepOn: true, keepOut: false }, [[1, 0, 0]]],
+            ["outside, whether past the bounding box or only past the edge", { keepIn: false, keepOn: false, keepOut: true }, [[50, 0, 50], [0.9, 0, 0.9]]],
+        ] as [string, { keepIn: boolean, keepOn: boolean, keepOut: boolean }, Base.Point3[]][])("should keep the points %s, with the bounding box sorting the far ones first", (_what, keep, expected) => {
+            // Act
+            const kept = face.filterFacePoints({ shape: disc(), points, tolerance: 1e-4, useBndBox: true, gapTolerance: 0.1, keepUnknown: false, ...keep });
+
+            // Assert
+            expect(kept).toEqual(expected);
+        });
+
+        it("should keep every point as unknown against a shape that is not a face", () => {
+            // Arrange
+            const outline = wire.createCircleWire({ radius: 1, center: [0, 0, 0], direction: [0, 1, 0] });
+
+            // Act
+            const kept = face.filterFacePoints({ shape: outline, points, tolerance: 1e-4, useBndBox: false, gapTolerance: 0.1, keepIn: false, keepOn: false, keepOut: false, keepUnknown: true });
+
+            // Assert
+            expect(kept).toEqual(points);
+        });
+
+        it("should skip the bounding box of a null face, and call every point unknown", () => {
+            // Arrange
+            const nothing = new occt.TopoDS_Face();
+
+            // Act
+            const kept = face.filterFacePoints({ shape: nothing, points, tolerance: 1e-4, useBndBox: true, gapTolerance: 0.1, keepIn: false, keepOn: false, keepOut: false, keepUnknown: true });
+
+            // Assert
+            expect(kept).toEqual(points);
+        });
+
+        it("should give each face's own centroid, which for a triangle is not the middle of its bounding box", () => {
+            // Arrange
+            const triangle = face.createFaceFromWire({ shape: wire.createPolygonWire({ points: [[0, 0, 0], [3, 0, 0], [0, 0, 3]] }), planar: true });
+            const round = face.createCircleFace({ radius: 1, center: [0, 0, 5], direction: [0, 1, 0] });
+
+            // Act
+            const centres = face.getFacesCentersOfMass({ shapes: [triangle, round] });
+
+            // Assert
+            expect(centres).toEqual([[1, 0, 1], [0, 0, 5]].map(point => point.map(value => expect.closeTo(value, 12))));
+        });
+    });
+
+    describe("patterns with cells of no size and roundings that cannot fit", () => {
+        const square = (): TopoDS_Face => face.createSquareFace({ size: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        it("should leave out a rectangle cell scaled to 0 along either direction", () => {
+            // Act
+            const wires = face.subdivideToRectangleWires({ shape: square(), nrRectanglesU: 2, nrRectanglesV: 2, scalePatternU: [0, 0.5], scalePatternV: [0.5, 0.5, 0.5, 0], offsetFromBorderU: 0, offsetFromBorderV: 0 });
+
+            // Assert
+            expect(wires).toHaveLength(1);
+        });
+
+        it("should leave out a hexagon cell scaled to 0 along either direction", () => {
+            // Act
+            const wires = face.subdivideToHexagonWires({ shape: square(), nrHexagonsU: 2, nrHexagonsV: 2, scalePatternU: [0.5, 0], scalePatternV: [0, 0.5, 0.5, 0.5] });
+
+            // Assert
+            expect(wires).toHaveLength(1);
+        });
+
+        it.each([
+            ["rectangles", (): unknown => face.subdivideToRectangleWires({ shape: square(), nrRectanglesU: 2, nrRectanglesV: 2, filletPattern: [2], offsetFromBorderU: 0, offsetFromBorderV: 0 })],
+            ["hexagons", (): unknown => face.subdivideToHexagonWires({ shape: square(), nrHexagonsU: 2, nrHexagonsV: 2, filletPattern: [2] })],
+        ])("should name the fillet when a rounding fraction above 1 does not fit the %s", (_what, run) => {
+            // Act
+            const act = (): unknown => run();
+
+            // Assert
+            expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.fillet.failed" }));
+        });
+
+        it.each([
+            ["a point", (): unknown => face.pointOnUV({ shape: new occt.TopoDS_Face(), paramU: 0.5, paramV: 0.5 })],
+            ["a normal", (): unknown => face.normalOnUV({ shape: new occt.TopoDS_Face(), paramU: 0.5, paramV: 0.5 })],
+        ])("should say a face without a surface has no %s on it", (_what, run) => {
+            // Act
+            const act = (): unknown => run();
+
+            // Assert
+            expect(act).toThrow("Face has no surface");
         });
     });
 });

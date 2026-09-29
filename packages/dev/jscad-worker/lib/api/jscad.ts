@@ -12,6 +12,8 @@ import { JSCADPolygon } from "./polygon";
 import { JSCADShapes } from "./shapes";
 import { JSCADText } from "./text";
 import { JSCADColors } from "./colors";
+import * as Resolved from "@bitbybit-dev/jscad/lib/api/resolved-inputs";
+import { resolveDto } from "@bitbybit-dev/base";
 
 /**
  * The entry point to the JSCAD kernel, a mesh-based solid modeler with three kinds of geometry: a
@@ -159,8 +161,9 @@ export class JSCAD {
      * ```
      */
     async downloadGeometryDxf(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", inputs);
-        this.downloadFile(res.blob, inputs.fileName, "dxf");
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometryDxf", resolved);
+        this.downloadFile(res.blob, resolved.fileName, "dxf");
     }
 
     /**
@@ -178,8 +181,9 @@ export class JSCAD {
      * ```
      */
     async downloadGeometry3MF(inputs: Inputs.JSCAD.DownloadGeometryDto): Promise<void> {
-        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", inputs);
-        this.downloadFile(res.blob, inputs.fileName, "3mf");
+        const resolved = resolveDto(Inputs.JSCAD.DownloadGeometryDto, inputs) as Resolved.JSCAD.DownloadGeometryDto;
+        const res = await this.jscadWorkerManager.genericCallToWorkerPromise<{ blob: Blob }>("downloadGeometry3MF", resolved);
+        this.downloadFile(res.blob, resolved.fileName, "3mf");
     }
 
     private downloadFile(blob: Blob, fileName: string, extension: string): void {

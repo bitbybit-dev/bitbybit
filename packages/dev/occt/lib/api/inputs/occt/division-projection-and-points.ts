@@ -4,11 +4,37 @@ import { Base } from "@bitbybit-dev/base";
 import { pointProjectionTypeEnum } from "./enums";
 
 /**
+ * How a curve is divided into points, shared by `DivideDto` and `DivideShapesDto`: the number of
+ * steps and whether the end points are kept.
+ */
+export abstract class DivideSharedDto {
+    /**
+     * How many steps to divide each curve into; one more point than that is placed, the ends
+     * included.
+     * @default 10
+     * @minimum 1
+     * @maximum Infinity
+     * @step 1
+     */
+    nrOfDivisions?: number | undefined = 10;
+    /**
+     * When true, the point at the start of each curve is left out.
+     * @default false
+     */
+    removeStartPoint?: boolean | undefined = false;
+    /**
+     * When true, the point at the end of each curve is left out.
+     * @default false
+     */
+    removeEndPoint?: boolean | undefined = false;
+}
+/**
  * A wire or edge and a division count for `divideWireByParamsToPoints`,
  * `divideEdgeByEqualDistanceToPoints` and their siblings in `shapes.wire` and `shapes.edge`.
  */
-export class DivideDto<T> {
+export class DivideDto<T> extends DivideSharedDto {
     constructor(shape?: T, nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        super();
         if (shape !== undefined) { this.shape = shape; }
         if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
         if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -19,33 +45,31 @@ export class DivideDto<T> {
      * @default undefined
      */
     shape!: T;
-    /**
-     * How many steps to divide the curve into; one more point than that is placed, the ends
-     * included.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfDivisions?: number | undefined = 10;
-    /**
-     * When true, the point at the start is left out.
-     * @default false
-     */
-    removeStartPoint?: boolean | undefined = false;
-    /**
-     * When true, the point at the end is left out.
-     * @default false
-     */
-    removeEndPoint?: boolean | undefined = false;
 }
 
+/**
+ * Where a wire is projected, shared by `ProjectWireDto` and `ProjectWiresDto`: the shape it lands
+ * on and the direction it is cast along.
+ */
+export abstract class ProjectWireSharedDto<U> {
+    /**
+     * The shape each wire lands on.
+     * @default undefined
+     */
+    shape!: U;
+    /**
+     * The direction each wire is cast along; only its direction matters.
+     * @default [0, 1, 0]
+     */
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
+}
 /**
  * A wire, a shape and a direction for `shapes.wire.project`, which casts the wire onto the shape
  * along the direction.
  */
-export class ProjectWireDto<T, U> {
+export class ProjectWireDto<T, U> extends ProjectWireSharedDto<U> {
     constructor(wire?: T, shape?: U, direction?: Base.Vector3) {
+        super();
         if (wire !== undefined) { this.wire = wire; }
         if (shape !== undefined) { this.shape = shape; }
         if (direction !== undefined) { this.direction = direction; }
@@ -55,16 +79,6 @@ export class ProjectWireDto<T, U> {
      * @default undefined
      */
     wire!: T;
-    /**
-     * The shape the wire lands on.
-     * @default undefined
-     */
-    shape!: U;
-    /**
-     * The direction the wire is cast along; only its direction matters.
-     * @default [0, 1, 0]
-     */
-    direction: Base.Vector3 = [0, 1, 0];
 }
 /**
  * Points, a shape and a direction for `shapes.vertex.projectPoints`, which casts each point onto
@@ -92,13 +106,13 @@ export class ProjectPointsOnShapeDto<T> {
      * length are not found.
      * @default [0, 10, 0]
      */
-    direction: Base.Vector3 = [0, 10, 0];
+    direction?: Base.Vector3 | undefined = [0, 10, 0];
     /**
      * Which hits to keep when a point crosses the shape more than once: all of them, the closest,
      * the farthest, or both of those.
      * @default all
      */
-    projectionType: pointProjectionTypeEnum = pointProjectionTypeEnum.all;
+    projectionType?: pointProjectionTypeEnum | undefined = pointProjectionTypeEnum.all;
 }
 /**
  * A shape and deflection settings for `shapes.wire.wiresToPoints`, which traces every wire of the
@@ -126,7 +140,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    angularDeflection = 0.1;
+    angularDeflection?: number | undefined = 0.1;
     /**
      * The largest distance, in model units, the polyline may stray from the curve; smaller follows
      * it more closely.
@@ -135,7 +149,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    curvatureDeflection = 0.1;
+    curvatureDeflection?: number | undefined = 0.1;
     /**
      * The fewest points any edge is traced with, however straight.
      * @default 2
@@ -143,7 +157,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minimumOfPoints = 2;
+    minimumOfPoints?: number | undefined = 2;
     /**
      * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
@@ -151,7 +165,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-9
      */
-    uTolerance = 1.0e-9;
+    uTolerance?: number | undefined = 1.0e-9;
     /**
      * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
@@ -159,7 +173,7 @@ export class WiresToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-7
      */
-    minimumLength = 1.0e-7;
+    minimumLength?: number | undefined = 1.0e-7;
 }
 /**
  * A shape and deflection settings for `shapes.edge.edgesToPoints`, which traces every edge of the
@@ -187,7 +201,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 0.01
      */
-    angularDeflection = 0.1;
+    angularDeflection?: number | undefined = 0.1;
     /**
      * The largest distance, in model units, the polyline may stray from the curve; smaller follows
      * it more closely.
@@ -196,7 +210,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 0.001
      */
-    curvatureDeflection = 0.1;
+    curvatureDeflection?: number | undefined = 0.1;
     /**
      * The fewest points any edge is traced with, however straight.
      * @default 2
@@ -204,7 +218,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1
      */
-    minimumOfPoints = 2;
+    minimumOfPoints?: number | undefined = 2;
     /**
      * How close two parameter values must be to count as the same point.
      * @default 1.0e-9
@@ -212,7 +226,7 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-9
      */
-    uTolerance = 1.0e-9;
+    uTolerance?: number | undefined = 1.0e-9;
     /**
      * Edges shorter than this, in model units, are traced with the minimum number of points.
      * @default 1.0e-7
@@ -220,14 +234,15 @@ export class EdgesToPointsDto<T> {
      * @maximum Infinity
      * @step 1.0e-7
      */
-    minimumLength = 1.0e-7;
+    minimumLength?: number | undefined = 1.0e-7;
 }
 /**
  * Wires, a shape and a direction for `shapes.wire.projectWires`, which casts each wire onto the
  * shape along the direction.
  */
-export class ProjectWiresDto<T, U> {
+export class ProjectWiresDto<T, U> extends ProjectWireSharedDto<U> {
     constructor(wires?: T[], shape?: U, direction?: Base.Vector3) {
+        super();
         if (wires !== undefined) { this.wires = wires; }
         if (shape !== undefined) { this.shape = shape; }
         if (direction !== undefined) { this.direction = direction; }
@@ -237,23 +252,14 @@ export class ProjectWiresDto<T, U> {
      * @default undefined
      */
     wires!: T[];
-    /**
-     * The shape the wires land on.
-     * @default undefined
-     */
-    shape!: U;
-    /**
-     * The direction the wires are cast along; only its direction matters.
-     * @default [0, 1, 0]
-     */
-    direction: Base.Vector3 = [0, 1, 0];
 }
 /**
  * Wires or edges and a division count for `divideWiresByParamsToPoints`,
  * `divideEdgesByEqualDistanceToPoints` and their siblings.
  */
-export class DivideShapesDto<T> {
-    constructor(shapes: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+export class DivideShapesDto<T> extends DivideSharedDto {
+    constructor(shapes?: T[], nrOfDivisions?: number, removeStartPoint?: boolean, removeEndPoint?: boolean) {
+        super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (nrOfDivisions !== undefined) { this.nrOfDivisions = nrOfDivisions; }
         if (removeStartPoint !== undefined) { this.removeStartPoint = removeStartPoint; }
@@ -264,32 +270,13 @@ export class DivideShapesDto<T> {
      * @default undefined
      */
     shapes!: T[];
-    /**
-     * How many steps to divide each curve into; one more point than that is placed, the ends
-     * included.
-     * @default 10
-     * @minimum 1
-     * @maximum Infinity
-     * @step 1
-     */
-    nrOfDivisions = 10;
-    /**
-     * When true, the point at the start of each curve is left out.
-     * @default false
-     */
-    removeStartPoint = false;
-    /**
-     * When true, the point at the end of each curve is left out.
-     * @default false
-     */
-    removeEndPoint = false;
 }
 /**
  * A wire, edge or 2D curve and a parameter for the `...AtParam` methods, such as
  * `shapes.wire.pointOnWireAtParam` and `shapes.edge.tangentOnEdgeAtParam`.
  */
 export class DataOnGeometryAtParamDto<T> {
-    constructor(shape: T, param?: number) {
+    constructor(shape?: T, param?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (param !== undefined) { this.param = param; }
     }
@@ -302,18 +289,18 @@ export class DataOnGeometryAtParamDto<T> {
      * Where to evaluate, as a fraction from 0 at the start to 1 at the end; for a raw 2D curve it
      * is the curve's own parameter.
      * @default 0.5
-     * @minimum 0
-     * @maximum 1
+     * @minimum -Infinity
+     * @maximum Infinity
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
 }
 /**
  * Several edges and one parameter for `shapes.edge.pointsOnEdgesAtParam` and
  * `tangentsOnEdgesAtParam`.
  */
 export class DataOnGeometryesAtParamDto<T> {
-    constructor(shapes: T[], param?: number) {
+    constructor(shapes?: T[], param?: number) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (param !== undefined) { this.param = param; }
     }
@@ -329,14 +316,14 @@ export class DataOnGeometryesAtParamDto<T> {
      * @maximum 1
      * @step 0.1
      */
-    param = 0.5;
+    param?: number | undefined = 0.5;
 }
 /**
  * A wire and a spacing for `shapes.wire.pointsOnWireAtEqualLength`, which places points every
  * `length` units from the start.
  */
 export class PointsOnWireAtEqualLengthDto<T> {
-    constructor(shape: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
+    constructor(shape?: T, length?: number, tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (length !== undefined) { this.length = length; }
         if (tryNext !== undefined) { this.tryNext = tryNext; }
@@ -351,26 +338,27 @@ export class PointsOnWireAtEqualLengthDto<T> {
     /**
      * The distance between points along the wire, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
     /**
      * When true, one more point is asked for a step beyond the last one that fit.
      * @default false
      */
-    tryNext = false;
+    tryNext?: boolean | undefined = false;
     /**
      * When true, the point at the start of the wire is kept.
      * @default false
      */
-    includeFirst = false;
+    includeFirst?: boolean | undefined = false;
     /**
      * When true, the end point of the wire is appended whatever the spacing.
      * @default false
      */
-    includeLast = false;
+    includeLast?: boolean | undefined = false;
 }
 
 
@@ -378,7 +366,7 @@ export class PointsOnWireAtEqualLengthDto<T> {
  * A wire and a repeating pattern of gaps for `shapes.wire.pointsOnWireAtPatternOfLengths`.
  */
 export class PointsOnWireAtPatternOfLengthsDto<T> {
-    constructor(shape: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
+    constructor(shape?: T, lengths?: number[], tryNext?: boolean, includeFirst?: boolean, includeLast?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (lengths !== undefined) { this.lengths = lengths; }
         if (tryNext !== undefined) { this.tryNext = tryNext; }
@@ -392,7 +380,7 @@ export class PointsOnWireAtPatternOfLengthsDto<T> {
     shape!: T;
     /**
      * The gaps between points in model units, applied in turn from the start and repeated until the
-     * wire runs out.
+     * wire runs out; they must add up to more than 0.
      * @default undefined
      */
     lengths!: number[];
@@ -400,24 +388,24 @@ export class PointsOnWireAtPatternOfLengthsDto<T> {
      * When true, one more point is asked for at the next gap beyond the last one that fit.
      * @default false
      */
-    tryNext = false;
+    tryNext?: boolean | undefined = false;
     /**
      * When true, the point at the start of the wire is kept.
      * @default false
      */
-    includeFirst = false;
+    includeFirst?: boolean | undefined = false;
     /**
      * When true, the end point of the wire is appended whatever the pattern.
      * @default false
      */
-    includeLast = false;
+    includeLast?: boolean | undefined = false;
 }
 /**
  * A wire or edge and a distance for the `...AtLength` methods, such as
  * `shapes.wire.pointOnWireAtLength` and `shapes.edge.tangentOnEdgeAtLength`.
  */
 export class DataOnGeometryAtLengthDto<T> {
-    constructor(shape: T, length?: number) {
+    constructor(shape?: T, length?: number) {
         if (shape !== undefined) { this.shape = shape; }
         if (length !== undefined) { this.length = length; }
     }
@@ -429,11 +417,11 @@ export class DataOnGeometryAtLengthDto<T> {
     /**
      * The distance from the start along the curve, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
 }
 
 /**
@@ -441,7 +429,7 @@ export class DataOnGeometryAtLengthDto<T> {
  * `tangentsOnEdgesAtLength`.
  */
 export class DataOnGeometryesAtLengthDto<T> {
-    constructor(shapes: T[], length?: number) {
+    constructor(shapes?: T[], length?: number) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (length !== undefined) { this.length = length; }
     }
@@ -453,23 +441,25 @@ export class DataOnGeometryesAtLengthDto<T> {
     /**
      * The distance from the start of each edge along its curve, in model units.
      * @default 0.5
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    length = 0.5;
+    length?: number | undefined = 0.5;
 }
 
 /**
- * A wire and several distances for `shapes.wire.pointsOnWireAtLengths`.
+ * A curve and several distances along it, for `shapes.wire.pointsOnWireAtLengths`,
+ * `analysis.curves.curvaturesAtLengths`, `shapes.edge.splitEdgeAtLengths` and
+ * `shapes.wire.splitWireAtLengths`.
  */
 export class DataOnGeometryAtLengthsDto<T> {
-    constructor(shape: T, lengths?: number[]) {
+    constructor(shape?: T, lengths?: number[]) {
         if (shape !== undefined) { this.shape = shape; }
         if (lengths !== undefined) { this.lengths = lengths; }
     }
     /**
-     * The wire to evaluate.
+     * The edge or wire to evaluate; each method says which it takes.
      * @default undefined
      */
     shape!: T;
@@ -496,17 +486,17 @@ export class CircleDto {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * The point the circle is centered on.
      * @default [0, 0, 0]
      */
-    center: Base.Point3 = [0, 0, 0];
+    center?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the circle lies in; the default lays it flat on the ground.
      * @default [0, 1, 0]
      */
-    direction: Base.Vector3 = [0, 1, 0];
+    direction?: Base.Vector3 | undefined = [0, 1, 0];
 }
 /**
  * A rectangle, hexagon counts and optional patterns for `shapes.wire.hexagonsInGrid` and

@@ -26,17 +26,17 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * The direction of the axis to turn around.
          * @default [0, 1, 0]
          */
-        axis: Base.Vector3 = [0, 1, 0];
+        axis?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * A point the axis passes through; it stays in place.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A center and an angle for `transforms.rotationCenterX`, `transforms.rotationCenterY` and
@@ -55,12 +55,12 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        angle = 90;
+        angle?: number | undefined = 90;
         /**
          * The point the axis passes through; it stays in place.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Three angles and a center for `transforms.rotationCenterYawPitchRoll`.
@@ -79,7 +79,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        yaw = 0;
+        yaw?: number | undefined = 0;
         /**
          * The turn about the X axis, in degrees.
          * @default 0
@@ -87,7 +87,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        pitch = 0;
+        pitch?: number | undefined = 0;
         /**
          * The turn about the Z axis, in degrees.
          * @default 0
@@ -95,12 +95,12 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 1
          */
-        roll = 0;
+        roll?: number | undefined = 0;
         /**
          * The point the rotation turns around; it stays in place.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A factor per axis for `transforms.scaleXYZ`, measured from the origin.
@@ -114,7 +114,7 @@ export namespace Transforms {
          * X and Z as they are.
          * @default [1, 1, 1]
          */
-        scaleXyz: Base.Vector3 = [1, 1, 1];
+        scaleXyz?: Base.Vector3 | undefined = [1, 1, 1];
     }
     /**
      * A center, a direction and a factor for `transforms.stretchDirFromCenter`.
@@ -158,13 +158,13 @@ export namespace Transforms {
          * The point that stays in place while everything else moves away from it or toward it.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The factor for each axis as `[x, y, z]`: `[1, 2, 1]` doubles distances along Y and leaves
          * X and Z as they are.
          * @default [1, 1, 1]
          */
-        scaleXyz: Base.Vector3 = [1, 1, 1];
+        scaleXyz?: Base.Vector3 | undefined = [1, 1, 1];
     }
     /**
      * One factor for `transforms.uniformScale`, applied on every axis from the origin.
@@ -181,7 +181,7 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
     }
     /**
      * One factor and a center for `transforms.uniformScaleFromCenter`.
@@ -199,12 +199,12 @@ export namespace Transforms {
          * @maximum Infinity
          * @step 0.1
          */
-        scale = 1;
+        scale?: number | undefined = 1;
         /**
          * The point that stays in place while everything else moves away from it or toward it.
          * @default [0, 0, 0]
          */
-        center: Base.Point3 = [0, 0, 0];
+        center?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * A vector for `transforms.translationXYZ`, which builds the matrix that moves by it.
@@ -217,7 +217,7 @@ export namespace Transforms {
          * How far to move along each axis, as `[x, y, z]` in model units.
          * @default [0, 0, 0]
          */
-        translation: Base.Vector3 = [0, 0, 0];
+        translation?: Base.Vector3 | undefined = [0, 0, 0];
     }
     /**
      * Several vectors for `transforms.translationsXYZ`, one transformation each.

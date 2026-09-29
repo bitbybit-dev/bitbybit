@@ -23,6 +23,19 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } {
     };
 }
 
+/**
+ * Hands `value` back as an instance of `type` once it has checked that it is one, so a test that
+ * reads a double's own state gets there through a check instead of an assertion. Where `three` is
+ * mocked, its classes are the doubles in this file, and a suite that forgot the mock fails here, by
+ * name, rather than somewhere downstream.
+ */
+export function instanceOf<T>(value: unknown, type: abstract new (...args: never[]) => T): T {
+    if (value instanceof type) {
+        return value;
+    }
+    throw new TypeError(`Expected an instance of ${type.name}`);
+}
+
 export class MockColor {
     r: number;
     g: number;

@@ -1,5 +1,7 @@
 import * as Inputs from "../../../inputs";
 import { DxfGenerator } from "./dxf-generator";
+import * as Resolved from "../../../resolved-inputs";
+import { resolveDto } from "../../../kernel-calls";
 
 export class Dxf {
 
@@ -54,7 +56,8 @@ export class Dxf {
      * @drawable false
      */
     polylineSegment(inputs: Inputs.IO.DxfPolylineSegmentDto): Inputs.IO.DxfPolylineSegmentDto {
-        return inputs;
+        const resolved = resolveDto(Inputs.IO.DxfPolylineSegmentDto, inputs) as Resolved.IO.DxfPolylineSegmentDto;
+        return resolved;
     }
 
     /**
@@ -67,7 +70,8 @@ export class Dxf {
      * @drawable false
      */
     splineSegment(inputs: Inputs.IO.DxfSplineSegmentDto): Inputs.IO.DxfSplineSegmentDto {
-        return inputs;
+        const resolved = resolveDto(Inputs.IO.DxfSplineSegmentDto, inputs) as Resolved.IO.DxfSplineSegmentDto;
+        return resolved;
     }
 
     /**
@@ -95,7 +99,8 @@ export class Dxf {
      * @drawable false
      */
     pathsPart(inputs: Inputs.IO.DxfPathsPartDto): Inputs.IO.DxfPathsPartDto {
-        return inputs;
+        const resolved = resolveDto(Inputs.IO.DxfPathsPartDto, inputs) as Resolved.IO.DxfPathsPartDto;
+        return resolved;
     }
 
     /**
@@ -109,7 +114,8 @@ export class Dxf {
      * @drawable false
      */
     dxfCreate(inputs: Inputs.IO.DxfModelDto): string {
-        return this.dxfGenerator.generateDxf(inputs);
+        const resolved = resolveDto(Inputs.IO.DxfModelDto, inputs) as Resolved.IO.DxfModelDto;
+        return this.dxfGenerator.generateDxf(resolved);
     }
 
 }

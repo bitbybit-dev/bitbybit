@@ -5,6 +5,8 @@ import { Base } from "../../../inputs";
 import { BabylonArcRotateCamera } from "./arc-rotate-camera";
 import { BabylonFreeCamera } from "./free-camera";
 import { BabylonTargetCamera } from "./target-camera";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../../resolved-inputs";
 
 /**
  * Cameras of the BabylonJS scene: `arcRotate` orbits a target and is the usual choice for looking
@@ -61,8 +63,9 @@ export class BabylonCamera {
      * ```
      */
     setPosition(inputs: Inputs.BabylonCamera.PositionDto): void {
-        const pos = new BABYLON.Vector3(inputs.position[0], inputs.position[1], inputs.position[2]);
-        inputs.camera.position = pos;
+        const resolved = resolveDto(Inputs.BabylonCamera.PositionDto, inputs) as Resolved.BabylonCamera.PositionDto;
+        const pos = new BABYLON.Vector3(resolved.position[0], resolved.position[1], resolved.position[2]);
+        resolved.camera.position = pos;
     }
 
     /**
@@ -73,7 +76,8 @@ export class BabylonCamera {
      * @shortname get camera position
      */
     getPosition(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
-        return [inputs.camera.position.x, inputs.camera.position.y, inputs.camera.position.z];
+        const resolved = resolveDto(Inputs.BabylonCamera.PositionDto, inputs) as Resolved.BabylonCamera.PositionDto;
+        return [resolved.camera.position.x, resolved.camera.position.y, resolved.camera.position.z];
     }
 
     /**
@@ -87,8 +91,9 @@ export class BabylonCamera {
      * ```
      */
     setTarget(inputs: Inputs.BabylonCamera.TargetDto): void {
-        const target = new BABYLON.Vector3(inputs.target[0], inputs.target[1], inputs.target[2]);
-        inputs.camera.setTarget(target);
+        const resolved = resolveDto(Inputs.BabylonCamera.TargetDto, inputs) as Resolved.BabylonCamera.TargetDto;
+        const target = new BABYLON.Vector3(resolved.target[0], resolved.target[1], resolved.target[2]);
+        resolved.camera.setTarget(target);
     }
 
     /**
@@ -99,7 +104,8 @@ export class BabylonCamera {
      * @shortname get camera target
      */
     getTarget(inputs: Inputs.BabylonCamera.PositionDto): Base.Point3 {
-        return [inputs.camera.target.x, inputs.camera.target.y, inputs.camera.target.z];
+        const resolved = resolveDto(Inputs.BabylonCamera.PositionDto, inputs) as Resolved.BabylonCamera.PositionDto;
+        return [resolved.camera.target.x, resolved.camera.target.y, resolved.camera.target.z];
     }
 
     /**
@@ -110,7 +116,8 @@ export class BabylonCamera {
      * @shortname set camera speed
      */
     setSpeed(inputs: Inputs.BabylonCamera.SpeedDto): void {
-        inputs.camera.speed = inputs.speed;
+        const resolved = resolveDto(Inputs.BabylonCamera.SpeedDto, inputs) as Resolved.BabylonCamera.SpeedDto;
+        resolved.camera.speed = resolved.speed;
     }
 
     /**
@@ -121,7 +128,8 @@ export class BabylonCamera {
      * @shortname get camera speed
      */
     getSpeed(inputs: Inputs.BabylonCamera.PositionDto): number {
-        return inputs.camera.speed;
+        const resolved = resolveDto(Inputs.BabylonCamera.PositionDto, inputs) as Resolved.BabylonCamera.PositionDto;
+        return resolved.camera.speed;
     }
 
     /**
@@ -132,7 +140,8 @@ export class BabylonCamera {
      * @shortname set camera min z
      */
     setMinZ(inputs: Inputs.BabylonCamera.MinZDto): void {
-        inputs.camera.minZ = inputs.minZ;
+        const resolved = resolveDto(Inputs.BabylonCamera.MinZDto, inputs) as Resolved.BabylonCamera.MinZDto;
+        resolved.camera.minZ = resolved.minZ;
     }
 
     /**
@@ -143,7 +152,8 @@ export class BabylonCamera {
      * @shortname camera max z
      */
     setMaxZ(inputs: Inputs.BabylonCamera.MaxZDto): void {
-        inputs.camera.maxZ = inputs.maxZ;
+        const resolved = resolveDto(Inputs.BabylonCamera.MaxZDto, inputs) as Resolved.BabylonCamera.MaxZDto;
+        resolved.camera.maxZ = resolved.maxZ;
     }
 
     /**
@@ -161,11 +171,12 @@ export class BabylonCamera {
      * ```
      */
     makeCameraOrthographic(inputs: Inputs.BabylonCamera.OrthographicDto): void {
-        inputs.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-        inputs.camera.orthoBottom = inputs.orthoBottom || -1;
-        inputs.camera.orthoTop = inputs.orthoTop || 1;
-        inputs.camera.orthoLeft = inputs.orthoLeft || -1;
-        inputs.camera.orthoRight = inputs.orthoRight || 1;
+        const resolved = resolveDto(Inputs.BabylonCamera.OrthographicDto, inputs) as Resolved.BabylonCamera.OrthographicDto;
+        resolved.camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
+        resolved.camera.orthoBottom = resolved.orthoBottom || -1;
+        resolved.camera.orthoTop = resolved.orthoTop || 1;
+        resolved.camera.orthoLeft = resolved.orthoLeft || -1;
+        resolved.camera.orthoRight = resolved.orthoRight || 1;
     }
 
 

@@ -6,7 +6,7 @@ import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,
- * which way it is oriented, whether it is closed, valid or the same object as another, and
+ * which way it is oriented, whether it is closed or the same object as another, and
  * `unifySameDomain`, which merges faces and edges that lie on one surface after a boolean. For work
  * specific to one kind, use the vertex, edge, wire, face, shell, solid and compound classes beside
  * this one.

@@ -10,8 +10,12 @@ import { Lists } from "./lists";
 import { VectorFont } from "../models/simplex";
 
 
+const SIMPLEX_LINE_SPACING = 2.142857142857143;
+const SIMPLEX_LETTER_SPACING = 1;
+
 describe("Text unit tests", () => {
     let text: TextBitByBit;
+    const loose = <T>(value: unknown): T => value as T;
 
     const mockFont: VectorFont = {
         height: 100,
@@ -68,7 +72,7 @@ describe("Text unit tests", () => {
     const TOLERANCE = 1e-7;
 
 
-    beforeAll(async () => {
+    beforeAll(() => {
         const geometryHelper = new GeometryHelper();
         const math = new MathBitByBit();
         const vector = new Vector(math, geometryHelper);
@@ -78,32 +82,32 @@ describe("Text unit tests", () => {
         text = new TextBitByBit(points);
     });
 
-    it("should create a text", async () => {
+    it("should create a text", () => {
         const result = text.create({ text: "Hello World, Matas" });
         expect(result).toEqual("Hello World, Matas");
     });
 
-    it("should split text", async () => {
+    it("should split text", () => {
         const result = text.split({ text: "Hello World, Matas, Ubarevicius", separator: "," });
         expect(result).toEqual(["Hello World", " Matas", " Ubarevicius"]);
     });
 
-    it("should replace all in text", async () => {
+    it("should replace all in text", () => {
         const result = text.replaceAll({ text: "Hello World, Matas, Ubarevicius", search: ",", replaceWith: "-" });
         expect(result).toEqual("Hello World- Matas- Ubarevicius");
     });
 
-    it("should join all items", async () => {
+    it("should join all items", () => {
         const result = text.join({ list: ["Hello World", " Matas", " Ubarevicius"], separator: "," });
         expect(result).toEqual("Hello World, Matas, Ubarevicius");
     });
 
-    it("should convert to string item", async () => {
+    it("should convert to string item", () => {
         const result = text.toString({ item: [0, 0, 0] });
         expect(result).toEqual("0,0,0");
     });
 
-    it("should convert to string items", async () => {
+    it("should convert to string items", () => {
         const result = text.toStringEach({ list: [0, 1, 2] });
         expect(result).toEqual(["0", "1", "2"]);
     });
@@ -470,11 +474,23 @@ describe("Text unit tests", () => {
             ]);
         });
 
+        it("should space lines and letters by the documented defaults when the call leaves them out", () => {
+            // Arrange
+            const txt = "A\nAB";
+
+            // Act
+            const leftOut = text.vectorText({ text: txt, font: mockFont, height: 10 } as Mocked<Inputs.Text.VectorTextDto>);
+            const spelled = text.vectorText({ text: txt, font: mockFont, height: 10, lineSpacing: 1.4, letterSpacing: 0 } as Mocked<Inputs.Text.VectorTextDto>);
+
+            // Assert
+            expect(leftOut).toEqual(spelled);
+        });
+
         it("should align text center", () => {
             const txt = "A\nAB";
             const height = 10;
 
-            const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.center } as Mocked<Inputs.Text.VectorTextDto>);
+            const result = text.vectorText({ text: txt, font: mockFont, height: height, lineSpacing: SIMPLEX_LINE_SPACING, letterSpacing: SIMPLEX_LETTER_SPACING, align: Inputs.Base.horizontalAlignEnum.center } as Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
 
             expect(result[0]!.chars[0]!.paths).toEqual([[[14.285714285714285, 0, 10], [10.476190476190476, 0, 0]], [[14.285714285714285, 0, 10], [18.095238095238095, 0, 0]], [[11.904761904761905, 0, 3.333333333333333], [16.666666666666664, 0, 3.333333333333333]]]);
@@ -484,7 +500,7 @@ describe("Text unit tests", () => {
             const txt = "A\nAB";
             const height = 10;
 
-            const result = text.vectorText({ text: txt, font: mockFont, height: height, align: Inputs.Base.horizontalAlignEnum.right } as Mocked<Inputs.Text.VectorTextDto>);
+            const result = text.vectorText({ text: txt, font: mockFont, height: height, lineSpacing: SIMPLEX_LINE_SPACING, letterSpacing: SIMPLEX_LETTER_SPACING, align: Inputs.Base.horizontalAlignEnum.right } as Mocked<Inputs.Text.VectorTextDto>);
             expect(result).toHaveLength(2);
             expect(result[0]!.chars[0]!.paths).toEqual([
                 [[24.285714285714285, 0, 10], [20.476190476190474, 0, 0]],
@@ -521,7 +537,7 @@ describe("Text unit tests", () => {
 
         it("should throw error for non-string input", () => {
             expect(() => {
-                text.vectorText({ text: 123 as any, font: mockFont } as Mocked<Inputs.Text.VectorTextDto>);
+                text.vectorText({ text: loose<string>(123), font: mockFont } as Mocked<Inputs.Text.VectorTextDto>);
             }).toThrow("text must be a string");
         });
 

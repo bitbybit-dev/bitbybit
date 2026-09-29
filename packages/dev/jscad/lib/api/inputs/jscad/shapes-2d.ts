@@ -16,23 +16,23 @@ export class CircleDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * Distance from the center to the rim, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 1;
+    radius?: number | undefined = 1;
     /**
      * Number of straight sides around the circle; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `polygon.ellipse`: a filled ellipse in the XY plane, given by its 2D center, its two
@@ -48,20 +48,20 @@ export class EllipseDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * The half width along X and the half height along Y, in model units, as `[x, y]`
      * @default [1, 2]
      */
-    radius: Base.Point2 = [1, 2];
+    radius?: Base.Point2 | undefined = [1, 2];
     /**
      * Number of straight sides around the ellipse; more makes it rounder
      * @default 24
-     * @minimum 0
+     * @minimum 3
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
 }
 /**
  * Feeds `polygon.square`: a filled square in the XY plane with sides parallel to the axes, given by
@@ -76,15 +76,15 @@ export class SquareDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * Length of each side, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    size = 1;
+    size?: number | undefined = 1;
 
 }
 /**
@@ -101,23 +101,23 @@ export class RectangleDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * Full size along X, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size along Y, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
 }
 /**
  * Feeds `polygon.roundedRectangle`: a filled rectangle in the XY plane whose four corners are
@@ -136,41 +136,41 @@ export class RoundedRectangleDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * Radius of each rounded corner, in model units; it must be less than half of the smaller side
      * or an error is thrown
      * @default 0.2
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    roundRadius = 0.2;
+    roundRadius?: number | undefined = 0.2;
     /**
      * Number of straight pieces a full circle of rounding is made of, so each corner gets a
      * quarter; more makes it smoother
      * @default 24
-     * @minimum 0
+     * @minimum 4
      * @maximum Infinity
      * @step 1
      */
-    segments = 24;
+    segments?: number | undefined = 24;
     /**
      * Full size along X, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    width = 1;
+    width?: number | undefined = 1;
     /**
      * Full size along Y, in model units
      * @default 1
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 0.1
      */
-    length = 1;
+    length?: number | undefined = 1;
 }
 /**
  * Feeds `polygon.star`: a filled star in the XY plane, given by its 2D center, how many tips it
@@ -189,15 +189,15 @@ export class StarDto {
      * The 2D center point, as X and Y in the plane
      * @default [0, 0]
      */
-    center: Base.Point2 = [0, 0];
+    center?: Base.Point2 | undefined = [0, 0];
     /**
      * Number of tips; the star has as many notches between them
      * @default 10
-     * @minimum 0
+     * @minimum 2
      * @maximum Infinity
      * @step 1
      */
-    vertices = 10;
+    vertices?: number | undefined = 10;
     /**
      * Read only when `innerRadius` is 0: how many tips apart the edges connect, 2 for a pentagram,
      * from which the notch radius is derived
@@ -206,15 +206,16 @@ export class StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    density = 1;
+    density?: number | undefined = 1;
     /**
      * Distance from the center to each tip, in model units
      * @default 2
      * @minimum 0
+     * @exclusiveMinimum true
      * @maximum Infinity
      * @step 0.1
      */
-    outerRadius = 2;
+    outerRadius?: number | undefined = 2;
     /**
      * Distance from the center to each notch, in model units; 0 lets `density` decide it
      * @default 1
@@ -222,13 +223,13 @@ export class StarDto {
      * @maximum Infinity
      * @step 0.1
      */
-    innerRadius = 1;
+    innerRadius?: number | undefined = 1;
     /**
      * Direction of the first tip, in degrees counter-clockwise from the X axis
      * @default 0
-     * @minimum -Infinity
+     * @minimum 0
      * @maximum Infinity
      * @step 1
      */
-    startAngle = 0;
+    startAngle?: number | undefined = 0;
 }

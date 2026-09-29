@@ -40,39 +40,39 @@ export namespace BabylonDecal {
          * Position of the decal projector in world coordinates. Often picked from a ray/pick hit on the mesh.
          * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Direction the decal is projected along, in world coordinates. Usually the surface normal at the hit point.
          * @default [0, 1, 0]
          */
-        normal: Base.Vector3 = [0, 1, 0];
+        normal?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * Size of the decal box on each axis. The third value is the projection depth.
          * @default [1, 1, 1]
          */
-        size: Base.Vector3 = [1, 1, 1];
+        size?: Base.Vector3 | undefined = [1, 1, 1];
         /**
          * Angle to rotate the decal around the projection direction, in radians.
          * @default 0
          * @step 0.1
          */
-        angle = 0;
+        angle?: number | undefined = 0;
         /**
          * Remove back faces from the decal mesh so it only sticks to faces pointing towards the projector.
          * @default true
          */
-        cullBackFaces = true;
+        cullBackFaces?: boolean | undefined = true;
         /**
          * Compute the decal using the local mesh coordinates instead of world space. Useful when the source mesh is transformed.
          * @default false
          */
-        localMode = false;
+        localMode?: boolean | undefined = false;
         /**
          * Depth bias used to avoid z-fighting between the decal and the surface. Negative values push the decal towards the camera.
          * @default -2
          * @step 0.5
          */
-        zOffset = -2;
+        zOffset?: number | undefined = -2;
     }
 
     /**
@@ -100,12 +100,12 @@ export namespace BabylonDecal {
          * Width in pixels of the internal decal map render target.
          * @default 1024
          */
-        width = 1024;
+        width?: number | undefined = 1024;
         /**
          * Height in pixels of the internal decal map render target.
          * @default 1024
          */
-        height = 1024;
+        height?: number | undefined = 1024;
     }
 
     /**
@@ -135,23 +135,23 @@ export namespace BabylonDecal {
          * Position of the projector in world coordinates.
          * @default [0, 0, 0]
          */
-        position: Base.Point3 = [0, 0, 0];
+        position?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * Projection direction in world coordinates, usually the surface normal at the projection point.
          * @default [0, 1, 0]
          */
-        normal: Base.Vector3 = [0, 1, 0];
+        normal?: Base.Vector3 | undefined = [0, 1, 0];
         /**
          * Size of the projection box on each axis.
          * @default [1, 1, 1]
          */
-        size: Base.Vector3 = [1, 1, 1];
+        size?: Base.Vector3 | undefined = [1, 1, 1];
         /**
          * Angle to rotate the projection around the projection direction, in radians.
          * @default 0
          * @step 0.1
          */
-        angle = 0;
+        angle?: number | undefined = 0;
     }
 
     /**

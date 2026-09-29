@@ -47,11 +47,12 @@ export default defineConfig([
         "docs/",
         "examples/",
         "packages/dev/create-app/templates/",
+        "packages/dev/create-app/.local/",
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
         "**/*.d.ts",
         ...targets.map((t) => t.out),
-    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
+    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users and the projects its smoke lanes keep under .local for running by hand, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],
@@ -137,7 +138,9 @@ export default defineConfig([
     // this file, which allows the three step markers and nothing else. The rest here are not
     // commentary at all but input or output: a worker package's lib/api is emitted by
     // scripts/gen-worker-api.mjs and check:worker-api compares it byte for byte, so an edit there is
-    // undone by the next regeneration and fails a gate in the meantime. The SDK's generated types and
+    // undone by the next regeneration and fails a gate in the meantime; a kernel's lib/api/dto-registry.ts
+    // and a package's lib/api/resolved-inputs are emitted by scripts/gen-dto-meta.mjs and held by
+    // check:dto-meta the same way. The SDK's generated types and
     // request schemas are written by the API's own generators, and their banner is not a note but a
     // record: it carries the catalog version that the release version registry checks for. The marker
     // line above every member of a worker API fragment
@@ -153,6 +156,8 @@ export default defineConfig([
             "**/lib/api-hand/**",
             "**/lib/api/inputs/**",
             "packages/dev/*-worker/lib/api/**",
+            "packages/dev/*/lib/api/dto-registry.ts",
+            "packages/dev/*/lib/api/resolved-inputs/**",
             "packages/dev/cad-cloud-sdk/src/types/schema-exports.ts",
             "packages/dev/cad-cloud-sdk/src/types/pipeline-operations.ts",
             "packages/dev/cad-cloud-sdk/src/types/generated.ts",

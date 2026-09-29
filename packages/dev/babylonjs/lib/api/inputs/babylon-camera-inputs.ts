@@ -35,33 +35,33 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        radius = 20;
+        radius?: number | undefined = 20;
         /**
          * The point the camera looks at and orbits around
          * @default [0, 0, 0]
          */
-        target: Base.Point3 = [0, 0, 0];
+        target?: Base.Point3 | undefined = [0, 0, 0];
         /**
          * The camera's angle around the vertical axis, in degrees
          * @default 45
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          */
-        alpha = 45;
+        alpha?: number | undefined = 45;
         /**
          * The camera's angle down from straight above, in degrees; 90 is level with the target
          * @default 70
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
-        beta = 70;
+        beta?: number | undefined = 70;
         /**
          * The closest the camera may zoom to the target, in scene units; left out, there is no
          * limit
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -71,7 +71,7 @@ export namespace BabylonCamera {
          * The farthest the camera may zoom from the target, in scene units; left out, there is no
          * limit
          * @default undefined
-         * @minimum -Infinity
+         * @minimum 0
          * @maximum Infinity
          * @step 1
          * @optional true
@@ -81,8 +81,8 @@ export namespace BabylonCamera {
          * The smallest angle around the vertical axis the camera may orbit to, in degrees; left
          * out, it orbits freely
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -91,8 +91,8 @@ export namespace BabylonCamera {
          * The largest angle around the vertical axis the camera may orbit to, in degrees; left out,
          * it orbits freely
          * @default undefined
-         * @minimum -360
-         * @maximum 360
+         * @minimum -Infinity
+         * @maximum Infinity
          * @step 1
          * @optional true
          */
@@ -101,20 +101,20 @@ export namespace BabylonCamera {
          * How close to straight above the camera may go, in degrees down from the top; 0 would look
          * straight down
          * @default 1
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
-        lowerBetaLimit = 1;
+        lowerBetaLimit?: number | undefined = 1;
         /**
          * How close to straight below the camera may go, in degrees down from the top; 180 would
          * look straight up
          * @default 179
-         * @minimum -360
-         * @maximum 360
+         * @minimum 0
+         * @maximum 180
          * @step 1
          */
-        upperBetaLimit = 179;
+        upperBetaLimit?: number | undefined = 179;
         /**
          * How much pointer movement a horizontal orbit takes; lower turns faster
          * @default 1000
@@ -122,7 +122,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 10
          */
-        angularSensibilityX = 1000;
+        angularSensibilityX?: number | undefined = 1000;
         /**
          * How much pointer movement a vertical orbit takes; lower turns faster
          * @default 1000
@@ -130,7 +130,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 10
          */
-        angularSensibilityY = 1000;
+        angularSensibilityY?: number | undefined = 1000;
         /**
          * How much pointer movement a pan takes; lower pans faster, so lower it for large models
          * @default 1000
@@ -138,7 +138,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 100
          */
-        panningSensibility = 1000;
+        panningSensibility?: number | undefined = 1000;
         /**
          * How much wheel movement a zoom step takes; lower zooms faster, so lower it for large
          * models
@@ -147,7 +147,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 0.1
          */
-        wheelPrecision = 3;
+        wheelPrecision?: number | undefined = 3;
         /**
          * The farthest distance the camera draws, in scene units; anything beyond is not rendered
          * @default 1000
@@ -155,7 +155,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 10
          */
-        maxZ = 1000;
+        maxZ?: number | undefined = 1000;
     }
     /**
      * Feeds `babylon.camera.free.create` with where the flying camera starts and what it looks at.
@@ -169,12 +169,12 @@ export namespace BabylonCamera {
          * Where the camera starts
          * @default [20, 20, 20]
          */
-        position: Base.Point3 = [20, 20, 20];
+        position?: Base.Point3 | undefined = [20, 20, 20];
         /**
          * The point the camera looks at to begin with
          * @default [0, 0, 0]
          */
-        target: Base.Point3 = [0, 0, 0];
+        target?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.camera.target.create` with where the fixed camera sits and what it looks at.
@@ -188,12 +188,12 @@ export namespace BabylonCamera {
          * Where the camera sits
          * @default [20, 20, 20]
          */
-        position: Base.Point3 = [20, 20, 20];
+        position?: Base.Point3 | undefined = [20, 20, 20];
         /**
          * The point the camera looks at
          * @default [0, 0, 0]
          */
-        target: Base.Point3 = [0, 0, 0];
+        target?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.camera.setPosition` and the camera getters with a camera and the point to move
@@ -212,7 +212,7 @@ export namespace BabylonCamera {
          * Where to move the camera
          * @default [20, 20, 20]
          */
-        position: Base.Point3 = [20, 20, 20];
+        position?: Base.Point3 | undefined = [20, 20, 20];
     }
     /**
      * Feeds `babylon.camera.setSpeed` with a camera and how fast its controls move it.
@@ -233,7 +233,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 0.1
          */
-        speed = 1;
+        speed?: number | undefined = 1;
     }
     /**
      * Feeds `babylon.camera.setTarget` with a camera and the point to look at.
@@ -251,7 +251,7 @@ export namespace BabylonCamera {
          * The point the camera is turned to look at
          * @default [0, 0, 0]
          */
-        target: Base.Point3 = [0, 0, 0];
+        target?: Base.Point3 | undefined = [0, 0, 0];
     }
     /**
      * Feeds `babylon.camera.setMinZ` with a camera and its near clipping distance.
@@ -273,7 +273,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 0.01
          */
-        minZ = 0;
+        minZ?: number | undefined = 0;
     }
     /**
      * Feeds `babylon.camera.setMaxZ` with a camera and its far clipping distance.
@@ -294,7 +294,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        maxZ = 1000;
+        maxZ?: number | undefined = 1000;
     }
 
     /**
@@ -320,7 +320,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        orthoLeft = -1;
+        orthoLeft?: number | undefined = -1;
         /**
          * The right edge of the view, in scene units from the camera's axis; 0 falls back to 1
          * @default 1
@@ -328,7 +328,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        orthoRight = 1;
+        orthoRight?: number | undefined = 1;
         /**
          * The bottom edge of the view, in scene units from the camera's axis; 0 falls back to -1
          * @default -1
@@ -336,7 +336,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        orthoBottom = -1;
+        orthoBottom?: number | undefined = -1;
         /**
          * The top edge of the view, in scene units from the camera's axis; 0 falls back to 1
          * @default 1
@@ -344,7 +344,7 @@ export namespace BabylonCamera {
          * @maximum Infinity
          * @step 1
          */
-        orthoTop = 1;
+        orthoTop?: number | undefined = 1;
     }
 
     /**

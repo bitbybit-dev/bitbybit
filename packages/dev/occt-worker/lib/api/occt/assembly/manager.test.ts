@@ -65,20 +65,36 @@ describe("OCCTAssemblyManager exports", () => {
             expect(anchor()).toMatchObject({ clicked: 1, removed: 1, target: "_self" });
         });
 
-        it("should name an uncompressed export itself when the caller gave no name", async () => {
+        it("should name an export by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await manager.exportDocumentToStep(stepInputs({ fileName: "", tryDownload: true }));
+            await manager.exportDocumentToStep({ document: A_DOCUMENT, tryDownload: true });
 
             // Assert
             expect(anchor().download).toBe("assembly.step");
         });
 
-        it("should name a compressed export with the compressed extension", async () => {
+        it("should download a compressed export left unnamed as STEP-Z", async () => {
             // Act
-            await manager.exportDocumentToStep(stepInputs({ fileName: "", compress: true, tryDownload: true }));
+            await manager.exportDocumentToStep({ document: A_DOCUMENT, compress: true, tryDownload: true });
 
             // Assert
             expect(anchor().download).toBe("assembly.stpZ");
+        });
+
+        it("should download a compressed export under the name the caller gave it", async () => {
+            // Act
+            await manager.exportDocumentToStep({ document: A_DOCUMENT, compress: true, fileName: "part.step", tryDownload: true });
+
+            // Assert
+            expect(anchor().download).toBe("part.step");
+        });
+
+        it("should download nothing by the default of its DTO when the caller leaves the download option out", async () => {
+            // Act
+            await manager.exportDocumentToStep({ document: A_DOCUMENT });
+
+            // Assert
+            expect(anchors).toEqual([]);
         });
     });
 
@@ -99,9 +115,9 @@ describe("OCCTAssemblyManager exports", () => {
             expect(anchor().download).toBe("frame.glb");
         });
 
-        it("should name the file itself when the caller gave no name", async () => {
+        it("should name the file by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await manager.exportDocumentToGltf(gltfInputs({ fileName: "", tryDownload: true }));
+            await manager.exportDocumentToGltf({ document: A_DOCUMENT, tryDownload: true });
 
             // Assert
             expect(anchor().download).toBe("assembly.glb");
@@ -133,9 +149,9 @@ describe("OCCTAssemblyManager exports", () => {
             expect(anchor().download).toBe("frame.glb");
         });
 
-        it("should name the file itself when the caller gave no name", async () => {
+        it("should name the file by the default of its DTO when the caller leaves the name out", async () => {
             // Act
-            await manager.exportDocumentToGltfWithDraco(dracoInputs({ fileName: "", tryDownload: true }));
+            await manager.exportDocumentToGltfWithDraco({ document: A_DOCUMENT, tryDownload: true });
 
             // Assert
             expect(anchor().download).toBe("assembly.glb");

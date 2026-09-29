@@ -1,7 +1,7 @@
 // A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
 // directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 import { Base } from "@bitbybit-dev/base";
-import { circleInclusionEnum, positionResultEnum, twoCircleInclusionEnum } from "./enums";
+import { circleInclusionEnum, positionResultEnum, surfaceAnalysisEnum, twoCircleInclusionEnum } from "./enums";
 
 /**
  * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
@@ -30,6 +30,31 @@ export class DecomposedMeshDto {
      * @optional true
      */
     colorGroups?: { [color: string]: number[] } | undefined;
+    /**
+     * The faces' iso curves as polylines, face by face with u curves before v curves; a curve crossing
+     * a hole comes in pieces. Present only when asked for.
+     * @optional true
+     */
+    isoCurveList?: Base.Point3[][] | undefined;
+}
+
+/**
+ * An indexed triangle mesh as `shapeToManifoldMesh` returns it, in the form
+ * `manifold.shapes.manifoldFromMesh` takes: the vertex positions and the triangles that index them.
+ */
+export class DecomposedManifoldMeshDto {
+    /**
+     * How many numbers each vertex carries in `vertProperties`: 3, its position.
+     */
+    numProp!: number;
+    /**
+     * The x, y and z of every vertex, one vertex after another.
+     */
+    vertProperties!: Float32Array;
+    /**
+     * The triangles as vertex indexes, three per triangle, wound so that they face out of the shape.
+     */
+    triVerts!: Uint32Array;
 }
 
 /**
@@ -107,6 +132,12 @@ export class DecomposedFaceDto {
      * @optional true
      */
     faceUid?: number | undefined;
+    /**
+     * The surface analysis value at each vertex in `vertexCoord` order, such as a curvature or a draft
+     * angle in degrees, NaN where undefined; present only with `surfaceAnalysis`.
+     * @optional true
+     */
+    analysisValues?: number[] | undefined;
 }
 /**
  * One edge inside a `DecomposedMeshDto`: the points that trace it for drawing, plus optional facts
@@ -185,7 +216,7 @@ export class PointDto {
      * The position of the vertex, in model units.
      * @default [0, 0, 0]
      */
-    point: Base.Point3 = [0, 0, 0];
+    point?: Base.Point3 | undefined = [0, 0, 0];
 }
 /**
  * Three coordinates for `shapes.vertex.vertexFromXYZ`, which turns them into a vertex shape.
@@ -203,7 +234,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    x: number = 0;
+    x?: number | undefined = 0;
     /**
      * The Y coordinate, in model units; Y is up.
      * @default 0
@@ -211,7 +242,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    y: number = 0;
+    y?: number | undefined = 0;
     /**
      * The Z coordinate, in model units.
      * @default 0
@@ -219,7 +250,7 @@ export class XYZDto {
      * @maximum Infinity
      * @step 0.1
      */
-    z: number = 0;
+    z?: number | undefined = 0;
 }
 /**
  * A list of points for the methods that build shapes from them, such as
@@ -265,18 +296,18 @@ export class ConstraintTanLinesFromPtToCircleDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: those on one side of the circle, the other side, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Whether to add the piece of the circle between the touching points on one side or the other;
      * `none` adds nothing.
      * @default none
      */
-    circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+    circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
 }
 /**
  * A circle, two points and the filtering options for
@@ -314,18 +345,18 @@ export class ConstraintTanLinesFromTwoPtsToCircleDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: those on one side of the circle, the other side, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Whether to add the piece of the circle between the touching points on one side or the other;
      * `none` adds nothing.
      * @default none
      */
-    circleRemainder: circleInclusionEnum = circleInclusionEnum.none;
+    circleRemainder?: circleInclusionEnum | undefined = circleInclusionEnum.none;
 }
 /**
  * Two circles and the filtering options for `shapes.edge.constraintTanLinesOnTwoCircles` and
@@ -356,18 +387,18 @@ export class ConstraintTanLinesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * Which lines to keep: the outer pair, the crossing inner pair, or all of them.
      * @default all
      */
-    positionResult: positionResultEnum = positionResultEnum.all;
+    positionResult?: positionResultEnum | undefined = positionResultEnum.all;
     /**
      * Which pieces of the circles between the touching points to add: the outside arcs, the inside
      * arcs, one of each, or `none`.
      * @default none
      */
-    circleRemainders: twoCircleInclusionEnum = twoCircleInclusionEnum.none;
+    circleRemainders?: twoCircleInclusionEnum | undefined = twoCircleInclusionEnum.none;
 }
 
 /**
@@ -398,7 +429,7 @@ export class ConstraintTanCirclesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * The radius of the circles to draw, in model units.
      * @default 0.3
@@ -406,7 +437,7 @@ export class ConstraintTanCirclesOnTwoCirclesDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
 }
 /**
  * A circle, a point and a radius for `shapes.edge.constraintTanCirclesOnCircleAndPnt`, which draws
@@ -436,7 +467,7 @@ export class ConstraintTanCirclesOnCircleAndPntDto<T> {
      * @maximum Infinity
      * @step 0.00001
      */
-    tolerance = 1e-7;
+    tolerance?: number | undefined = 1e-7;
     /**
      * The radius of the circles to draw, in model units.
      * @default 0.3
@@ -444,7 +475,7 @@ export class ConstraintTanCirclesOnCircleAndPntDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
 }
 /**
  * A 2D curve and a surface for `shapes.edge.makeEdgeFromGeom2dCurveAndSurface`, which lays the
@@ -494,12 +525,12 @@ export class FilletTwoEdgesInPlaneDto<T> {
      * it.
      * @default [0, 0, 0]
      */
-    planeOrigin: Base.Point3 = [0, 0, 0];
+    planeOrigin?: Base.Point3 | undefined = [0, 0, 0];
     /**
      * The normal of the plane the edges lie in.
      * @default [0, 1, 0]
      */
-    planeDirection: Base.Vector3 = [0, 1, 0];
+    planeDirection?: Base.Vector3 | undefined = [0, 1, 0];
     /**
      * The radius of the rounding arc, in model units.
      * @default 0.3
@@ -507,17 +538,17 @@ export class FilletTwoEdgesInPlaneDto<T> {
      * @maximum Infinity
      * @step 0.1
      */
-    radius = 0.3;
+    radius?: number | undefined = 0.3;
     /**
      * Which arc to use when several fit, counted from 0; -1 takes the one nearest `planeOrigin`.
      * @default -1
-     * @optional true
      */
     solution?: number | undefined = -1;
 }
 /**
- * A shape and points for `operations.closestPointsOnShapeFromPoints` and
- * `operations.distancesToShapeFromPoints`.
+ * A shape and points for `operations.closestPointsOnShapeFromPoints`,
+ * `operations.distancesToShapeFromPoints`, `analysis.curves.closestPoints` and
+ * `analysis.surfaces.closestPoints`.
  */
 export class ClosestPointsOnShapeFromPointsDto<T> {
     constructor(shape?: T, points?: Base.Point3[]) {
@@ -687,7 +718,7 @@ export class FaceFromSurfaceAndWireDto<T, U> {
      * own direction decides.
      * @default true
      */
-    inside = true;
+    inside?: boolean | undefined = true;
 }
 /**
  * A flat wire and a face for `shapes.wire.placeWireOnFace`, which maps the wire onto the face's
@@ -710,14 +741,226 @@ export class WireOnFaceDto<T, U> {
     face!: U;
 }
 /**
+ * How a shape is drawn, shared by `DrawShapeDto` and `DrawShapesDto`: colors and opacity of faces,
+ * edges and vertices, what to show, iso curves and surface analysis, and how finely to mesh the shape.
+ */
+export abstract class DrawShapeSharedDto {
+    /**
+     * How opaque the faces are, from 0 for invisible to 1 for solid.
+     * @default 1
+     * @minimum 0
+     * @maximum 1
+     * @step 0.1
+     */
+    faceOpacity?: number | undefined = 1;
+    /**
+     * How opaque the edges are, from 0 for invisible to 1 for solid.
+     * @default 1
+     * @minimum 0
+     * @maximum 1
+     * @step 0.1
+     */
+    edgeOpacity?: number | undefined = 1;
+    /**
+     * The color of the edges as a hex string such as `#ffffff`.
+     * @default #ffffff
+     */
+    edgeColour?: Base.Color | undefined = "#ffffff";
+    /**
+     * A material for the faces from the rendering engine; when given it replaces the face color.
+     * @default undefined
+     * @optional true
+     */
+    faceMaterial?: Base.Material | undefined;
+    /**
+     * The color of the faces as a hex string such as `#ff0000`.
+     * @default #ff0000
+     */
+    faceColour?: Base.Color | undefined = "#ff0000";
+    /**
+     * How thick the edge lines are drawn.
+     * @default 2
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.1
+     */
+    edgeWidth?: number | undefined = 2;
+    /**
+     * When false, the edges are not drawn.
+     * @default true
+     */
+    drawEdges?: boolean | undefined = true;
+    /**
+     * When false, the faces are not drawn.
+     * @default true
+     */
+    drawFaces?: boolean | undefined = true;
+    /**
+     * When true, the vertices are drawn as small markers.
+     * @default false
+     */
+    drawVertices?: boolean | undefined = false;
+    /**
+     * The color of the vertex markers as a hex string.
+     * @default #ff00ff
+     */
+    vertexColour?: string | undefined = "#ff00ff";
+    /**
+     * The size of the vertex markers, in model units.
+     * @default 0.03
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.01
+     */
+    vertexSize?: number | undefined = 0.03;
+    /**
+     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+     * with more triangles.
+     * @default 0.01
+     * @minimum 0
+     * @exclusiveMinimum true
+     * @maximum Infinity
+     * @step 0.01
+     */
+    precision?: number | undefined = 0.01;
+    /**
+     * When true, each edge's index is written next to it, handy for picking edges to fillet.
+     * @default false
+     */
+    drawEdgeIndexes?: boolean | undefined = false;
+    /**
+     * The height of the edge index labels, in model units.
+     * @default 0.06
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.01
+     */
+    edgeIndexHeight?: number | undefined = 0.06;
+    /**
+     * The color of the edge index labels as a hex string.
+     * @default #ff00ff
+     */
+    edgeIndexColour?: Base.Color | undefined = "#ff00ff";
+    /**
+     * When true, each face's index is written on it, handy for picking faces.
+     * @default false
+     */
+    drawFaceIndexes?: boolean | undefined = false;
+    /**
+     * The height of the face index labels, in model units.
+     * @default 0.06
+     * @minimum 0
+     * @maximum Infinity
+     * @step 0.01
+     */
+    faceIndexHeight?: number | undefined = 0.06;
+    /**
+     * The color of the face index labels as a hex string.
+     * @default #0000ff
+     */
+    faceIndexColour?: Base.Color | undefined = "#0000ff";
+    /**
+     * When true, the back of each face is drawn in its own color, which shows which way faces
+     * point.
+     * @default true
+     */
+    drawTwoSided?: boolean | undefined = true;
+    /**
+     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
+     * @default #0000ff
+     */
+    backFaceColour?: Base.Color | undefined = "#0000ff";
+    /**
+     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
+     * @default 1
+     * @minimum 0
+     * @maximum 1
+     * @step 0.1
+     */
+    backFaceOpacity?: number | undefined = 1;
+    /**
+     * When true, the triangulation stays cached on each shape after drawing; when false it is
+     * cleared so memory does not grow across draws.
+     * @default false
+     */
+    keepMeshData?: boolean | undefined = false;
+    /**
+     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
+     * for.
+     * @default true
+     */
+    allowQualityDecrease?: boolean | undefined = true;
+    /**
+     * When true, every face is remeshed at the requested precision even when a triangulation is
+     * cached.
+     * @default false
+     */
+    forceFaceDeflection?: boolean | undefined = false;
+    /**
+     * When true, each face's iso curves are drawn with the shape, as its edges are: at `edgeWidth`
+     * and `edgeOpacity`, in `isoCurvesColour`.
+     * @default false
+     */
+    drawIsoCurves?: boolean | undefined = false;
+    /**
+     * How many iso curves of constant u each face gets with `drawIsoCurves`, at values spread evenly
+     * inside its u range and trimmed to the face.
+     * @default 5
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesU?: number | undefined = 5;
+    /**
+     * How many iso curves of constant v each face gets with `drawIsoCurves`, at values spread evenly
+     * inside its v range and trimmed to the face.
+     * @default 5
+     * @minimum 0
+     * @maximum 1000
+     * @step 1
+     */
+    isoCurvesV?: number | undefined = 5;
+    /**
+     * The color of the iso curves as a hex string.
+     * @default #808080
+     */
+    isoCurvesColour?: Base.Color | undefined = "#808080";
+    /**
+     * The surface analysis coloring the faces instead of `faceColour` and `faceMaterial`, from blue at
+     * `analysisMin` through green to red at `analysisMax`; vertices without a value keep `faceColour`.
+     * @default none
+     */
+    surfaceAnalysis?: surfaceAnalysisEnum | undefined = surfaceAnalysisEnum.none;
+    /**
+     * The pull direction the draft angles are measured against; read only by `draftAngle`.
+     * @default [0, 1, 0]
+     */
+    draftDirection?: Base.Vector3 | undefined = [0, 1, 0];
+    /**
+     * The analysis value drawn blue, and anything below it; left out, the lowest finite value
+     * found.
+     * @default undefined
+     * @optional true
+     */
+    analysisMin?: number | undefined;
+    /**
+     * The analysis value drawn red, and anything above it; left out, the highest finite value
+     * found.
+     * @default undefined
+     * @optional true
+     */
+    analysisMax?: number | undefined;
+}
+/**
  * A shape and how to draw it, for the renderer packages' shape drawing: colors and opacity of
  * faces, edges and vertices, what to show, and how finely to mesh the shape.
  */
-export class DrawShapeDto<T> {
+export class DrawShapeDto<T> extends DrawShapeSharedDto {
     /**
      * Provide options without default values
      */
-    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
+        super();
         if (shape !== undefined) { this.shape = shape; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
         if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -743,6 +986,14 @@ export class DrawShapeDto<T> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+        if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
     }
     /**
      * The shape to draw; it is meshed at `precision` first.
@@ -750,167 +1001,18 @@ export class DrawShapeDto<T> {
      * @optional true
      */
     shape?: T | undefined;
-    /**
-     * How opaque the faces are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    faceOpacity = 1;
-    /**
-     * How opaque the edges are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    edgeOpacity = 1;
-    /**
-     * The color of the edges as a hex string such as `#ffffff`.
-     * @default #ffffff
-     */
-    edgeColour: Base.Color = "#ffffff";
-    /**
-     * A material for the faces from the rendering engine; when given it replaces the face color.
-     * @default undefined
-     * @optional true
-     */
-    faceMaterial?: Base.Material | undefined;
-    /**
-     * The color of the faces as a hex string such as `#ff0000`.
-     * @default #ff0000
-     */
-    faceColour: Base.Color = "#ff0000";
-    /**
-     * How thick the edge lines are drawn.
-     * @default 2
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    edgeWidth = 2;
-    /**
-     * When false, the edges are not drawn.
-     * @default true
-     */
-    drawEdges = true;
-    /**
-     * When false, the faces are not drawn.
-     * @default true
-     */
-    drawFaces = true;
-    /**
-     * When true, the vertices are drawn as small markers.
-     * @default false
-     */
-    drawVertices = false;
-    /**
-     * The color of the vertex markers as a hex string.
-     * @default #ff00ff
-     */
-    vertexColour = "#ff00ff";
-    /**
-     * The size of the vertex markers, in model units.
-     * @default 0.03
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    vertexSize = 0.03;
-    /**
-     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
-     * with more triangles.
-     * @default 0.01
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    precision = 0.01;
-    /**
-     * When true, each edge's index is written next to it, handy for picking edges to fillet.
-     * @default false
-     */
-    drawEdgeIndexes = false;
-    /**
-     * The height of the edge index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    edgeIndexHeight = 0.06;
-    /**
-     * The color of the edge index labels as a hex string.
-     * @default #ff00ff
-     */
-    edgeIndexColour: Base.Color = "#ff00ff";
-    /**
-     * When true, each face's index is written on it, handy for picking faces.
-     * @default false
-     */
-    drawFaceIndexes = false;
-    /**
-     * The height of the face index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    faceIndexHeight = 0.06;
-    /**
-     * The color of the face index labels as a hex string.
-     * @default #0000ff
-     */
-    faceIndexColour: Base.Color = "#0000ff";
-    /**
-     * When true, the back of each face is drawn in its own color, which shows which way faces
-     * point.
-     * @default true
-     */
-    drawTwoSided = true;
-    /**
-     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
-     * @default #0000ff
-     */
-    backFaceColour: Base.Color = "#0000ff";
-    /**
-     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    backFaceOpacity = 1;
-    /**
-     * When true, the triangulation stays cached on the shape after drawing; when false it is
-     * cleared so memory does not grow across draws.
-     * @default false
-     */
-    keepMeshData = false;
-    /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
-     * @default true
-     */
-    allowQualityDecrease = true;
-    /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
-     * @default false
-     */
-    forceFaceDeflection = false;
 }
 /**
  * Shapes and how to draw them, for the renderer packages' shape drawing: the same options as
  * `DrawShapeDto`, applied to every shape in the list.
  */
-export class DrawShapesDto<T> {
+export class DrawShapesDto<T> extends DrawShapeSharedDto {
 
     /**
      * Provide options without default values
      */
-    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
+        super();
         if (shapes !== undefined) { this.shapes = shapes; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
         if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
@@ -936,160 +1038,18 @@ export class DrawShapesDto<T> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (drawIsoCurves !== undefined) { this.drawIsoCurves = drawIsoCurves; }
+        if (isoCurvesU !== undefined) { this.isoCurvesU = isoCurvesU; }
+        if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
+        if (isoCurvesColour !== undefined) { this.isoCurvesColour = isoCurvesColour; }
+        if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
+        if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
+        if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
     }
     /**
      * The shapes to draw with the same options.
      * @default undefined
      */
     shapes!: T[];
-    /**
-     * How opaque the faces are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    faceOpacity = 1;
-    /**
-     * How opaque the edges are, from 0 for invisible to 1 for solid.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    edgeOpacity = 1;
-    /**
-     * The color of the edges as a hex string such as `#ffffff`.
-     * @default #ffffff
-     */
-    edgeColour: Base.Color = "#ffffff";
-    /**
-     * A material for the faces from the rendering engine; when given it replaces the face color.
-     * @default undefined
-     * @optional true
-     */
-    faceMaterial?: Base.Material | undefined;
-    /**
-     * The color of the faces as a hex string such as `#ff0000`.
-     * @default #ff0000
-     */
-    faceColour: Base.Color = "#ff0000";
-    /**
-     * How thick the edge lines are drawn.
-     * @default 2
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.1
-     */
-    edgeWidth = 2;
-    /**
-     * When false, the edges are not drawn.
-     * @default true
-     */
-    drawEdges = true;
-    /**
-     * When false, the faces are not drawn.
-     * @default true
-     */
-    drawFaces = true;
-    /**
-     * When true, the vertices are drawn as small markers.
-     * @default false
-     */
-    drawVertices = false;
-    /**
-     * The color of the vertex markers as a hex string.
-     * @default #ff00ff
-     */
-    vertexColour = "#ff00ff";
-    /**
-     * The size of the vertex markers, in model units.
-     * @default 0.03
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    vertexSize = 0.03;
-    /**
-     * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
-     * with more triangles.
-     * @default 0.01
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    precision = 0.01;
-    /**
-     * When true, each edge's index is written next to it, handy for picking edges to fillet.
-     * @default false
-     */
-    drawEdgeIndexes = false;
-    /**
-     * The height of the edge index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    edgeIndexHeight = 0.06;
-    /**
-     * The color of the edge index labels as a hex string.
-     * @default #ff00ff
-     */
-    edgeIndexColour: Base.Color = "#ff00ff";
-    /**
-     * When true, each face's index is written on it, handy for picking faces.
-     * @default false
-     */
-    drawFaceIndexes = false;
-    /**
-     * The height of the face index labels, in model units.
-     * @default 0.06
-     * @minimum 0
-     * @maximum Infinity
-     * @step 0.01
-     */
-    faceIndexHeight = 0.06;
-    /**
-     * The color of the face index labels as a hex string.
-     * @default #0000ff
-     */
-    faceIndexColour: Base.Color = "#0000ff";
-    /**
-     * When true, the back of each face is drawn in its own color, which shows which way faces
-     * point.
-     * @default true
-     */
-    drawTwoSided = true;
-    /**
-     * The color of the back of the faces as a hex string; used only with `drawTwoSided`.
-     * @default #0000ff
-     */
-    backFaceColour: Base.Color = "#0000ff";
-    /**
-     * How opaque the back of the faces is, from 0 to 1; used only with `drawTwoSided`.
-     * @default 1
-     * @minimum 0
-     * @maximum 1
-     * @step 0.1
-     */
-    backFaceOpacity = 1;
-    /**
-     * When true, the triangulation stays cached on each shape after drawing; when false it is
-     * cleared so memory does not grow across draws.
-     * @default false
-     */
-    keepMeshData = false;
-    /**
-     * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-     * for.
-     * @default true
-     */
-    allowQualityDecrease = true;
-    /**
-     * When true, every face is remeshed at the requested precision even when a triangulation is
-     * cached.
-     * @default false
-     */
-    forceFaceDeflection = false;
 }

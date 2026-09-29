@@ -2,7 +2,7 @@
 
 Base algorithms for [Bitbybit](https://bitbybit.dev) CAD platform - math, vectors, matrices, lists, text utilities, and shared types used across all higher-level packages.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

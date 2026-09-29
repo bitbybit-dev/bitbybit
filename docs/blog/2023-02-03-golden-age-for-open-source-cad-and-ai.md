@@ -1,12 +1,12 @@
 ---
 slug: golden-age-for-open-source-cad-and-ai
 title: GOLDEN AGE FOR OPEN-SOURCE CAD AND AI
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/ai-and-cad/ai-cad.webp
+image: https://bitbybit.dev/files/site/blog/ai-and-cad/ai-cad.webp
 authors: [ubarevicius]
 tags: [bitbybit, ai]
 ---
 
-![The image showing some possible web technologies where bitbybit can be implemented. There are definitely more.](https://ik.imagekit.io/bitbybit/app/assets/blog/ai-and-cad/ai-cad.webp)
+![The image showing some possible web technologies where bitbybit can be implemented. There are definitely more.](https://bitbybit.dev/files/site/blog/ai-and-cad/ai-cad.webp)
 
 Open-source CAD software and AI have the potential to revolutionize the field by providing a platform for collaboration and innovation. Closed-source ecosystems may struggle to keep up due to proprietary restrictions and a focus on commercial interests over innovation.
 
@@ -24,7 +24,7 @@ AI systems learn by utilizing publicly accessible libraries, which presents a ch
 
 Just consider the OpenCascade kernel example - it's open-source and ChatGPT was able to give us great advice because it was able to learn and understand the code. On the other hand, closed-source systems restrict access, which slows down AI growth and limits its capabilities. Basically, open-source is like a giant brain-boosting library for AI. It helps AI learn faster and smarter, leading to better and more advanced AI systems.
 
-![The image showing ChatGPT AI explaining OpenCascade Kernel.](https://ik.imagekit.io/bitbybit/app/assets/blog/ai-and-cad/chatgpt.webp)
+![The image showing ChatGPT AI explaining OpenCascade Kernel.](https://bitbybit.dev/files/site/blog/ai-and-cad/chatgpt.webp)
 
 ChatGPT AI explaining OpenCascade Kernel
 

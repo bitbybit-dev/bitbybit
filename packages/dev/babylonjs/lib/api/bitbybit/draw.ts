@@ -7,11 +7,13 @@ import { Tag, DrawCore } from "@bitbybit-dev/core";
 import { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
 import { DrawHelper } from "../draw-helper";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../resolved-inputs";
 
 /**
- * Drawing anything into the scene: kernel shapes, points, lines, polylines, curves, meshes and tags
- * all go through `drawAnyAsync`, which picks the right renderer for the entity and returns the
- * drawn object. The `options` methods build the drawing options with defaults for each kind of
+ * Drawing anything into the scene: kernel shapes, points, lines, polylines, frames, curves, meshes
+ * and tags all go through `drawAnyAsync`, which picks the right renderer for the entity and returns
+ * the drawn object. The `options` methods build the drawing options with defaults for each kind of
  * entity, `createPBRMaterial` and `createTexture` make materials for the face slots, and a drawn
  * object can be redrawn in place by passing it back.
  */
@@ -29,6 +31,7 @@ export class Draw extends DrawCore {
         colorZ: "#0000ff",
         size: 2,
     };
+    private defaultFrameOptions = new Inputs.Draw.DrawFrameOptions();
     constructor(
         /**
          * @ignore true
@@ -70,8 +73,8 @@ export class Draw extends DrawCore {
 
     /**
      * Draws any entity the library produces into the scene and gives back the drawn object: kernel
-     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, curves, meshes, tags and
-     * nodes.
+     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, frames, curves, meshes, tags
+     * and nodes.
      *
      * The options are matched to the entity, with defaults when none are given; pass the previous
      * result back in the update slot to redraw in place.
@@ -115,19 +118,39 @@ export class Draw extends DrawCore {
         return Promise.resolve(this.drawResolved(inputs));
     }
 
-    private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Inputs.Draw.DrawOcctShapeOptions {
+    private mergedOcctShapeOptions(inputs: Inputs.Draw.DrawAny): Resolved.Draw.DrawOcctShapeOptions {
         let options = inputs.options ? inputs.options : new Inputs.Draw.DrawOcctShapeOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
-        return { ...new Inputs.Draw.DrawOcctShapeOptions(), ...options as Inputs.Draw.DrawOcctShapeOptions };
+        return this.occtOptions(options);
+    }
+
+    /**
+     * The options a draw call was given, laid over the defaults of the options class for the kind
+     * being drawn: a partial object gets the same values the matching `options` method would give it.
+     */
+    private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
+    }
+
+    private occtOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawOcctShapeOptions {
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+    }
+
+    private manifoldOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawManifoldOrCrossSectionOptions {
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+    }
+
+    private nodeOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawNodeOptions {
+        return resolveDto(Inputs.Draw.DrawNodeOptions, options) as Resolved.Draw.DrawNodeOptions;
     }
 
     private handleDecomposedMeshShape(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
         return this.drawHelper.handleDecomposedMesh(
             options,
-            inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto,
+            inputs.entity as Inputs.OCCT.DecomposedMeshDto,
             options
         ).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
@@ -137,9 +160,10 @@ export class Draw extends DrawCore {
 
     private async handleDecomposedMeshes(inputs: Inputs.Draw.DrawAny) {
         const options = this.mergedOcctShapeOptions(inputs);
-        const decomposedMeshes = inputs.entity as unknown as Inputs.OCCT.DecomposedMeshDto[];
+        const decomposedMeshes = inputs.entity as Inputs.OCCT.DecomposedMeshDto[];
+        const pooled = this.drawHelper.withSurfaceAnalysisRange(options, decomposedMeshes);
         const drawn = await Promise.all(decomposedMeshes.map(dm => this.drawHelper.handleDecomposedMesh(
-            options, dm, options)));
+            pooled, dm, pooled)));
         const container = new BABYLON.Mesh(`decomposedMeshesContainer-${++this.decomposedMeshesContainerCounter}`, this.context.scene);
         container.isVisible = false;
         drawn.forEach(mesh => { if (mesh) { mesh.parent = container; } });
@@ -172,6 +196,10 @@ export class Draw extends DrawCore {
                     break;
                 case Inputs.Draw.drawingTypes.polylines:
                     result = this.handlePolylines(inputs);
+                    break;
+                case Inputs.Draw.drawingTypes.frame:
+                case Inputs.Draw.drawingTypes.frames:
+                    result = this.handleFrames(inputs);
                     break;
                 case Inputs.Draw.drawingTypes.jscadPath:
                     result = this.handleJscadPath(inputs);
@@ -212,7 +240,7 @@ export class Draw extends DrawCore {
 
     /**
      * Draws an entity that needs no kernel work, as `drawAny` does, without giving the drawn object
-     * back; points, lines, polylines and tags qualify, kernel shapes do not.
+     * back; points, lines, polylines, frames and tags qualify, kernel shapes do not.
      * @param inputs - The entity to draw and the optional drawing options
      * @group draw sync
      * @shortname draw sync void
@@ -227,7 +255,7 @@ export class Draw extends DrawCore {
 
     /**
      * Draws an entity that needs no kernel work into the scene right away and gives back the drawn
-     * object: points, lines, polylines, tags and nodes.
+     * object: points, lines, polylines, frames, tags and nodes.
      *
      * Kernel shapes from OCCT, JSCAD and Manifold must go through `drawAnyAsync`, which waits for
      * the kernel to mesh them.
@@ -260,11 +288,13 @@ export class Draw extends DrawCore {
             point: (i) => this.handlePoint(i),
             jscadPath: (i) => this.handleJscadPath(i),
             polyline: (i) => this.handlePolyline(i),
+            frame: (i) => this.handleFrames(i),
             node: (i) => this.handleNode(i),
             verbCurve: (i) => this.handleVerbCurve(i),
             verbSurface: (i) => this.handleVerbSurface(i),
             jscadPaths: (i) => this.handleJscadPaths(i),
             polylines: (i) => this.handlePolylines(i),
+            frames: (i) => this.handleFrames(i),
             lines: (i) => this.handleLines(i),
             points: (i) => this.handlePoints(i),
             nodes: (i) => this.handleNodes(i),
@@ -351,7 +381,8 @@ export class Draw extends DrawCore {
      * ```
      */
     drawGridMeshNoReturn(inputs: Inputs.Draw.SceneDrawGridMeshDto): void {
-        this.drawGridMesh(inputs);
+        const resolved = resolveDto(Inputs.Draw.SceneDrawGridMeshDto, inputs) as Resolved.Draw.SceneDrawGridMeshDto;
+        this.drawGridMesh(resolved);
     }
 
     /**
@@ -368,21 +399,22 @@ export class Draw extends DrawCore {
      * ```
      */
     drawGridMesh(inputs: Inputs.Draw.SceneDrawGridMeshDto): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.Draw.SceneDrawGridMeshDto, inputs) as Resolved.Draw.SceneDrawGridMeshDto;
         try {
             const groundMaterial = new GridMaterial(uniqueName("groundMaterial"), this.context.scene);
-            groundMaterial.majorUnitFrequency = inputs.majorUnitFrequency;
-            groundMaterial.minorUnitVisibility = inputs.minorUnitVisibility;
-            groundMaterial.gridRatio = inputs.gridRatio;
-            groundMaterial.backFaceCulling = inputs.backFaceCulling;
-            groundMaterial.mainColor = BABYLON.Color3.FromHexString(inputs.mainColor);
-            groundMaterial.lineColor = BABYLON.Color3.FromHexString(inputs.secondaryColor);
-            groundMaterial.opacity = inputs.opacity;
+            groundMaterial.majorUnitFrequency = resolved.majorUnitFrequency;
+            groundMaterial.minorUnitVisibility = resolved.minorUnitVisibility;
+            groundMaterial.gridRatio = resolved.gridRatio;
+            groundMaterial.backFaceCulling = resolved.backFaceCulling;
+            groundMaterial.mainColor = BABYLON.Color3.FromHexString(resolved.mainColor);
+            groundMaterial.lineColor = BABYLON.Color3.FromHexString(resolved.secondaryColor);
+            groundMaterial.opacity = resolved.opacity;
             groundMaterial.linesOnly = true;
             const ground = BABYLON.MeshBuilder.CreateGround(uniqueName("bitbybit-ground"),
                 {
-                    width: inputs.width,
-                    height: inputs.height,
-                    subdivisions: inputs.subdivisions,
+                    width: resolved.width,
+                    height: resolved.height,
+                    subdivisions: resolved.subdivisions,
                     updatable: false,
 
                 },
@@ -411,24 +443,42 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsSimple(inputs: Inputs.Draw.DrawBasicGeometryOptions): Inputs.Draw.DrawBasicGeometryOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, inputs);
+    }
+
+    /**
+     * Builds drawing options for frames: how long the axes are and their colors, whether the small
+     * grid in the frame's plane is drawn and in which color, the line width and whether the frame
+     * can be redrawn in place, with defaults for what is left out.
+     * @param inputs - The options to start from
+     * @returns The drawing options
+     * @group options
+     * @shortname frame
+     * @example
+     * ```typescript
+     * const options = bitbybit.draw.optionsFrame({ size: 2, colorX: "#ff0000", colorY: "#00ff00", colorZ: "#0000ff", drawPlane: true, colorPlane: "#808080", lineWidth: 2, updatable: false });
+     * const drawn = bitbybit.draw.drawAny({ entity: bitbybit.frame.world(), options });
+     * ```
+     */
+    optionsFrame(inputs: Inputs.Draw.DrawFrameOptions): Inputs.Draw.DrawFrameOptions {
+        return resolveDto(Inputs.Draw.DrawFrameOptions, inputs);
     }
 
     /**
      * Builds the full drawing options for OCCT shapes: meshing precision, face, edge and vertex
-     * colors and sizes, index labels, arrows on edges, two-sided rendering and the triangulation
-     * cache, with defaults for what is left out.
+     * colors and sizes, index labels, arrows on edges, two-sided rendering, iso curves, a surface
+     * analysis coloring the faces and the triangulation cache, with defaults for what is left out.
      * @param inputs - The options to start from
      * @returns The drawing options
      * @group options
      * @shortname occt shape
      * @example
      * ```typescript
-     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false });
+     * const options = bitbybit.draw.optionsOcctShape({ faceOpacity: 1, edgeOpacity: 1, edgeColour: "#ffffff", faceColour: "#ff0000", edgeWidth: 2, drawEdges: true, drawFaces: true, drawVertices: false, vertexColour: "#ff00ff", vertexSize: 0.03, precision: 0.01, drawEdgeIndexes: false, edgeIndexHeight: 0.06, edgeIndexColour: "#ff00ff", drawFaceIndexes: false, faceIndexHeight: 0.06, faceIndexColour: "#0000ff", drawTwoSided: true, backFaceColour: "#0000ff", backFaceOpacity: 1, edgeArrowSize: 0, edgeArrowAngle: 15, keepMeshData: false, allowQualityDecrease: true, forceFaceDeflection: false, drawIsoCurves: true, isoCurvesU: 5, isoCurvesV: 5, isoCurvesColour: "#808080", surfaceAnalysis: Bit.Inputs.OCCT.surfaceAnalysisEnum.gaussian, draftDirection: [0, 1, 0] });
      * ```
      */
     optionsOcctShape(inputs: Inputs.Draw.DrawOcctShapeOptions): Inputs.Draw.DrawOcctShapeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeOptions, inputs);
     }
 
     /**
@@ -444,7 +494,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShapeSimple(inputs: Inputs.Draw.DrawOcctShapeSimpleOptions): Inputs.Draw.DrawOcctShapeSimpleOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeSimpleOptions, inputs);
     }
 
     /**
@@ -461,7 +511,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsOcctShapeMaterial(inputs: Inputs.Draw.DrawOcctShapeMaterialOptions): Inputs.Draw.DrawOcctShapeMaterialOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawOcctShapeMaterialOptions, inputs);
     }
 
     /**
@@ -478,7 +528,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsManifoldShapeMaterial(inputs: Inputs.Draw.DrawManifoldOrCrossSectionOptions): Inputs.Draw.DrawManifoldOrCrossSectionOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, inputs);
     }
 
     /**
@@ -495,7 +545,7 @@ export class Draw extends DrawCore {
      * ```
      */
     optionsBabylonNode(inputs: Inputs.Draw.DrawNodeOptions): Inputs.Draw.DrawNodeOptions {
-        return inputs;
+        return resolveDto(Inputs.Draw.DrawNodeOptions, inputs);
     }
 
     /**
@@ -512,21 +562,22 @@ export class Draw extends DrawCore {
      * ```
      */
     createTexture(inputs: Inputs.Draw.GenericTextureDto): BABYLON.Texture {
-        const samplingMode = this.getSamplingMode(inputs.samplingMode);
+        const resolved = resolveDto(Inputs.Draw.GenericTextureDto, inputs) as Resolved.Draw.GenericTextureDto;
+        const samplingMode = this.getSamplingMode(resolved.samplingMode);
         const texture = new BABYLON.Texture(
-            inputs.url,
+            resolved.url,
             this.context.scene,
             false,
-            inputs.invertY,
+            resolved.invertY,
             samplingMode
         );
 
-        texture.name = inputs.name;
-        texture.uOffset = inputs.uOffset || 0;
-        texture.vOffset = inputs.vOffset || 0;
-        texture.uScale = inputs.uScale || 1;
-        texture.vScale = inputs.vScale || 1;
-        texture.wAng = inputs.wAng || 0;
+        texture.name = resolved.name;
+        texture.uOffset = resolved.uOffset;
+        texture.vOffset = resolved.vOffset;
+        texture.uScale = resolved.uScale || 1;
+        texture.vScale = resolved.vScale || 1;
+        texture.wAng = resolved.wAng;
 
         return texture;
     }
@@ -547,63 +598,54 @@ export class Draw extends DrawCore {
      * ```
      */
     createPBRMaterial(inputs: Inputs.Draw.GenericPBRMaterialDto): BABYLON.PBRMetallicRoughnessMaterial {
-        const mat = new BABYLON.PBRMetallicRoughnessMaterial(inputs.name, this.context.scene);
+        const resolved = resolveDto(Inputs.Draw.GenericPBRMaterialDto, inputs) as Resolved.Draw.GenericPBRMaterialDto;
+        const mat = new BABYLON.PBRMetallicRoughnessMaterial(resolved.name, this.context.scene);
 
-        if (inputs.baseColor) {
-            mat.baseColor = BABYLON.Color3.FromHexString(inputs.baseColor);
+        if (resolved.baseColor) {
+            mat.baseColor = BABYLON.Color3.FromHexString(resolved.baseColor);
         }
-        mat.metallic = inputs.metallic || 1;
-        mat.roughness = inputs.roughness || 1;
-        mat.alpha = inputs.alpha;
+        mat.metallic = resolved.metallic;
+        mat.roughness = resolved.roughness;
+        mat.alpha = resolved.alpha;
 
-        if (inputs.emissiveColor) {
-            const emissive = BABYLON.Color3.FromHexString(inputs.emissiveColor);
-            if (inputs.emissiveIntensity !== undefined) {
-                mat.emissiveColor = emissive.scale(inputs.emissiveIntensity);
-            } else {
-                mat.emissiveColor = emissive;
-            }
+        if (resolved.emissiveColor) {
+            const emissive = BABYLON.Color3.FromHexString(resolved.emissiveColor);
+            mat.emissiveColor = emissive.scale(resolved.emissiveIntensity);
         }
 
-        if (inputs.baseColorTexture) {
-            mat.baseTexture = inputs.baseColorTexture as BABYLON.BaseTexture;
+        if (resolved.baseColorTexture) {
+            mat.baseTexture = resolved.baseColorTexture as BABYLON.BaseTexture;
         }
-        if (inputs.metallicRoughnessTexture) {
-            mat.metallicRoughnessTexture = inputs.metallicRoughnessTexture as BABYLON.BaseTexture;
+        if (resolved.metallicRoughnessTexture) {
+            mat.metallicRoughnessTexture = resolved.metallicRoughnessTexture as BABYLON.BaseTexture;
         }
-        if (inputs.normalTexture) {
-            mat.normalTexture = inputs.normalTexture as BABYLON.BaseTexture;
+        if (resolved.normalTexture) {
+            mat.normalTexture = resolved.normalTexture as BABYLON.BaseTexture;
         }
-        if (inputs.emissiveTexture) {
-            mat.emissiveTexture = inputs.emissiveTexture as BABYLON.BaseTexture;
+        if (resolved.emissiveTexture) {
+            mat.emissiveTexture = resolved.emissiveTexture as BABYLON.BaseTexture;
         }
-        if (inputs.occlusionTexture) {
-            mat.occlusionTexture = inputs.occlusionTexture as BABYLON.BaseTexture;
-        }
-
-        if (inputs.alphaCutoff !== undefined) {
-            mat.alphaCutOff = inputs.alphaCutoff;
+        if (resolved.occlusionTexture) {
+            mat.occlusionTexture = resolved.occlusionTexture as BABYLON.BaseTexture;
         }
 
-        if (inputs.alphaMode !== undefined) {
-            switch (inputs.alphaMode) {
-                case Inputs.Draw.alphaModeEnum.opaque:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
-                    break;
-                case Inputs.Draw.alphaModeEnum.mask:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST;
-                    break;
-                case Inputs.Draw.alphaModeEnum.blend:
-                    mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
-                    break;
-            }
+        mat.alphaCutOff = resolved.alphaCutoff;
+
+        switch (resolved.alphaMode) {
+            case Inputs.Draw.alphaModeEnum.opaque:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_OPAQUE;
+                break;
+            case Inputs.Draw.alphaModeEnum.mask:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHATEST;
+                break;
+            case Inputs.Draw.alphaModeEnum.blend:
+                mat.transparencyMode = BABYLON.PBRMaterial.PBRMATERIAL_ALPHABLEND;
+                break;
         }
 
-        if (inputs.doubleSided !== undefined) {
-            mat.doubleSided = inputs.doubleSided;
-        }
+        mat.doubleSided = resolved.doubleSided;
 
-        if (inputs.unlit) {
+        if (resolved.unlit) {
             mat.disableLighting = true;
         }
 
@@ -628,9 +670,9 @@ export class Draw extends DrawCore {
             updatable: false,
         };
         const result = this.tag.drawTags({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagsVariable: inputs.babylonMesh as any,
             tags: inputs.entity as Inputs.Tag.TagDto[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
 
         const drawnTags = result as Inputs.Draw.DrawnTags;
@@ -648,9 +690,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.tag.drawTag({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             tagVariable: inputs.babylonMesh as any,
             tag: inputs.entity as Inputs.Tag.TagDto,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         const drawnTag = result as Inputs.Draw.DrawnTag;
         drawnTag.metadata = { type: Inputs.Draw.drawingTypes.tag, options };
@@ -663,25 +705,24 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawSurfacesMultiColour({
+            ...this.basicOptions(options),
             surfacesMesh: inputs.babylonMesh,
             surfaces: inputs.entity as Inputs.Base.VerbSurface[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurfaces, options, result);
         return result;
     }
 
     private handleVerbCurves(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : this.defaultBasicOptions;
-
+        let options = inputs.options ? inputs.options : this.defaultPolylineOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawCurves({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             curvesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curves: inputs.entity as Inputs.Base.VerbCurve[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
-        });
+        } as Inputs.Verb.DrawCurvesDto<BABYLON.GreasedLineMesh>);
 
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbCurves, options, result);
         return result;
@@ -695,8 +736,8 @@ export class Draw extends DrawCore {
         const result = inputs.entity as BABYLON.TransformNode[];
         const existing = new Map(result.map(node => [node, new Set(node.getChildMeshes())]));
         this.node.drawNodes({
+            ...this.nodeOptions(options),
             nodes: result,
-            ...options as Inputs.Draw.DrawNodeOptions
         });
         result.forEach(node => {
             const before = existing.get(node)!;
@@ -712,9 +753,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawPoints({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             pointsMesh: inputs.babylonMesh,
             points: inputs.entity as Inputs.Base.Point3[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.points, options, result);
         return result;
@@ -737,11 +778,46 @@ export class Draw extends DrawCore {
             });
         }
         const result = this.drawHelper.drawPolylinesWithColours({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: pts.map(e => ({ points: [...e] })),
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.lines, options, result);
+        return result;
+    }
+
+    /**
+     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
+     * frame in the list go into the same draw call, however long the list is. Whether it is one
+     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
+     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
+     */
+    private handleFrames(inputs: Inputs.Draw.DrawAny) {
+        let options = inputs.options ? inputs.options : this.defaultFrameOptions;
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        const style = resolveDto(Inputs.Draw.DrawFrameOptions, options) as Resolved.Draw.DrawFrameOptions;
+        const entity: unknown = inputs.entity;
+        const frames: Inputs.Base.Frame[] = this.detectFrames(entity) ? entity : this.detectFrame(entity) ? [entity] : [];
+        const type = Array.isArray(entity) ? Inputs.Draw.drawingTypes.frames : Inputs.Draw.drawingTypes.frame;
+        const { polylines, colours } = this.frameMarkerLines(frames, style);
+        if (polylines.length === 0) {
+            if (style.updatable) {
+                inputs.babylonMesh?.dispose();
+            }
+            return undefined;
+        }
+        const result = this.drawHelper.drawPolylinesWithColours({
+            polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
+            polylines,
+            colours,
+            size: style.lineWidth,
+            opacity: 1,
+            updatable: style.updatable,
+            colorMapStrategy: Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
+        });
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
     }
 
@@ -751,9 +827,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawPolylinesWithColours({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: inputs.entity as Inputs.Base.Polyline3[],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
@@ -765,9 +841,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawSurface({
+            ...this.basicOptions(options),
             surfaceMesh: inputs.babylonMesh,
             surface: inputs.entity,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbSurface, options, result);
         return result;
@@ -779,10 +855,10 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawCurve({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             curveMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             curve: inputs.entity,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
-        });
+        } as Inputs.Verb.DrawCurveDto<BABYLON.GreasedLineMesh>);
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.verbCurve, options, result);
         return result;
     }
@@ -795,8 +871,8 @@ export class Draw extends DrawCore {
         const result = inputs.entity as BABYLON.TransformNode;
         const existing = new Set(result.getChildMeshes());
         this.node.drawNode({
+            ...this.nodeOptions(options),
             node: result,
-            ...options as Inputs.Draw.DrawNodeOptions
         });
         const triad = result.getChildMeshes().filter(m => !existing.has(m));
         this.applyNodeSettingsAndMetadata(Inputs.Draw.drawingTypes.node, options, result, triad);
@@ -827,9 +903,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawPolylineClose({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             polylineMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polyline: inputs.entity as Inputs.Base.Polyline3,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(type, options, result);
         return result;
@@ -841,9 +917,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         const result = this.drawHelper.drawPoint({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             pointMesh: inputs.babylonMesh,
             point: inputs.entity as Inputs.Base.Point3,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.point, options, result);
         return result;
@@ -862,9 +938,9 @@ export class Draw extends DrawCore {
             pts.push(...line);
         }
         const result = this.drawHelper.drawPolylinesWithColours({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             polylinesMesh: inputs.babylonMesh as BABYLON.GreasedLineMesh,
             polylines: [{ points: pts }],
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         });
         this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.line, options, result);
         return result;
@@ -876,9 +952,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMeshes({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             jscadMesh: inputs.babylonMesh,
             meshes,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMeshes, options, r);
             return r;
@@ -886,14 +962,13 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShape(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawManifoldOrCrossSection({
+            ...this.manifoldOptions(options),
             manifoldOrCrossSection: inputs.entity as Inputs.Manifold.ManifoldPointer,
-            ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(),
-            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r as BABYLON.Mesh;
@@ -901,14 +976,13 @@ export class Draw extends DrawCore {
     }
 
     private handleManifoldShapes(inputs: Inputs.Draw.DrawAny) {
-        let options = inputs.options ? inputs.options : new Inputs.Manifold.DrawManifoldOrCrossSectionDto(inputs.entity);
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawManifoldsOrCrossSections({
+            ...this.manifoldOptions(options),
             manifoldsOrCrossSections: inputs.entity as Inputs.Manifold.ManifoldPointer[],
-            ...new Inputs.Manifold.DrawManifoldOrCrossSectionDto(),
-            ...options as Inputs.Draw.DrawManifoldOrCrossSectionOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r;
@@ -921,9 +995,8 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShape({
+            ...this.occtOptions(options),
             shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
-            ...new Inputs.Draw.DrawOcctShapeOptions(),
-            ...options as Inputs.Draw.DrawOcctShapeOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;
@@ -936,9 +1009,8 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawShapes({
+            ...this.occtOptions(options),
             shapes: inputs.entity as Inputs.OCCT.TopoDSShapePointer[],
-            ...new Inputs.Draw.DrawOcctShapeOptions(),
-            ...options as Inputs.Draw.DrawOcctShapeOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.occt, options, r);
             return r;
@@ -951,9 +1023,9 @@ export class Draw extends DrawCore {
             options = inputs.babylonMesh.metadata.options;
         }
         return this.drawHelper.drawSolidOrPolygonMesh({
+            ...options as Inputs.Draw.DrawBasicGeometryOptions,
             jscadMesh: inputs.babylonMesh,
             mesh,
-            ...options as Inputs.Draw.DrawBasicGeometryOptions
         }).then(r => {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.jscadMesh, options, r);
             return r;

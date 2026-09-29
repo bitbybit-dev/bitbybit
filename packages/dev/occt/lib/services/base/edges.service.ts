@@ -8,10 +8,11 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ConverterService } from "./converter.service";
 import { EntitiesService } from "./entities.service";
 import { ShapeGettersService } from "./shape-getters";
-import { IteratorService } from "./iterator.service";
 import { EnumService } from "./enum.service";
 import { GeomService } from "./geom.service";
 import { TransformsService } from "./transforms.service";
+import * as Resolved from "../../api/resolved-inputs";
+import { checkedShape, checkedShapes } from "./input-checks";
 
 export class EdgesService {
 
@@ -19,7 +20,6 @@ export class EdgesService {
         private readonly occ: BitbybitOcctModule,
         private readonly shapeGettersService: ShapeGettersService,
         private readonly entitiesService: EntitiesService,
-        private readonly iteratorService: IteratorService,
         private readonly converterService: ConverterService,
         private readonly enumService: EnumService,
         private readonly geomService: GeomService,
@@ -67,29 +67,27 @@ export class EdgesService {
     }
 
     getEdgesAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Edge[] {
-        if (inputs.shape && this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
+        checkedShape(inputs.shape);
+        if (this.enumService.getShapeTypeEnum(inputs.shape) === Inputs.OCCT.shapeTypeEnum.edge) {
             return [inputs.shape];
         }
-        if (!inputs.shape || inputs.shape.IsNull()) {
-            throw (new Error("Shape is not provided or is of incorrect type"));
+        const edges = this.occ.EdgesAlongWire(inputs.shape);
+        if (edges.length === 0) {
+            throw new Error("Wire could not be constructed");
         }
-        const edges: TopoDS_Edge[] = [];
-        const wireWithFixedEdges = this.fixEdgeOrientationsAlongWire(inputs);
-        this.iteratorService.forEachEdgeAlongWire(wireWithFixedEdges, (_i, edge) => {
-            edges.push(edge);
-        });
         return edges;
     }
 
     fixEdgeOrientationsAlongWire(inputs: Inputs.OCCT.ShapeDto<TopoDS_Wire>): TopoDS_Wire {
-        const edges: TopoDS_Edge[] = [];
-        this.iteratorService.forEachEdgeAlongWire(inputs.shape, (_i, edge) => {
-            edges.push(edge);
-        });
-        return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
+        const edges = this.occ.EdgesAlongWire(inputs.shape);
+        try {
+            return this.converterService.combineEdgesAndWiresIntoAWire({ shapes: edges });
+        } finally {
+            edges.forEach(edge => edge.delete());
+        }
     }
 
-    arcThroughThreePoints(inputs: Inputs.OCCT.ArcEdgeThreePointsDto) {
+    arcThroughThreePoints(inputs: Resolved.OCCT.ArcEdgeThreePointsDto) {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.middle);
         const gpPnt3 = this.entitiesService.gpPnt(inputs.end);
@@ -100,7 +98,7 @@ export class EdgesService {
         return shape;
     }
 
-    arcThroughTwoPointsAndTangent(inputs: Inputs.OCCT.ArcEdgeTwoPointsTangentDto) {
+    arcThroughTwoPointsAndTangent(inputs: Resolved.OCCT.ArcEdgeTwoPointsTangentDto) {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpVec = this.entitiesService.gpVec(inputs.tangentVec);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
@@ -111,7 +109,7 @@ export class EdgesService {
         return shape;
     }
 
-    arcFromCircleAndTwoAngles(inputs: Inputs.OCCT.ArcEdgeCircleTwoAnglesDto<TopoDS_Edge>) {
+    arcFromCircleAndTwoAngles(inputs: Resolved.OCCT.ArcEdgeCircleTwoAnglesDto<TopoDS_Edge>) {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const radAlpha1 = this.vecHelper.degToRad(inputs.alphaAngle1);
         const radAlpha2 = this.vecHelper.degToRad(inputs.alphaAngle2);
@@ -120,7 +118,7 @@ export class EdgesService {
         return shape;
     }
 
-    arcFromCirclePointAndAngle(inputs: Inputs.OCCT.ArcEdgeCirclePointAngleDto<TopoDS_Edge>) {
+    arcFromCirclePointAndAngle(inputs: Resolved.OCCT.ArcEdgeCirclePointAngleDto<TopoDS_Edge>) {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const radAlpha = this.vecHelper.degToRad(inputs.alphaAngle);
         const point = this.entitiesService.gpPnt(inputs.point);
@@ -130,7 +128,7 @@ export class EdgesService {
         return shape;
     }
 
-    lineEdge(inputs: Inputs.OCCT.LineDto) {
+    lineEdge(inputs: Resolved.OCCT.LineDto) {
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
         const edge = this.occ.MakeLineEdgeBetweenPoints(gpPnt1, gpPnt2);
@@ -145,26 +143,30 @@ export class EdgesService {
 
     getEdgeLengthsOfShape(inputs: Inputs.OCCT.ShapeDto<TopoDS_Shape>): number[] {
         const edgesOnShape = this.shapeGettersService.getEdges({ shape: inputs.shape });
-        return edgesOnShape.map(edge => {
-            return this.getEdgeLength({ shape: edge });
-        });
+        const lengths = this.geomService.lengthsAndCentres(edgesOnShape).map(properties => properties.mass);
+        if (edgesOnShape[0] !== inputs.shape) {
+            edgesOnShape.forEach(edge => edge.delete());
+        }
+        return lengths;
     }
 
     getEdgesLengths(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): number[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(edge => this.getEdgeLength({ shape: edge }));
+        return this.geomService.lengthsAndCentres(inputs.shapes).map(properties => properties.mass);
     }
 
     getEdgesCentersOfMass(inputs: Inputs.OCCT.ShapesDto<TopoDS_Edge>): Base.Point3[] {
+        checkedShapes(inputs.shapes);
         if (inputs.shapes === undefined) {
             throw (Error(("Shapes are not defined")));
         }
-        return inputs.shapes.map(edge => this.geomService.getLinearCenterOfMass({ shape: edge }));
+        return this.geomService.lengthsAndCentres(inputs.shapes).map(properties => properties.centre);
     }
 
-    edgesToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
+    edgesToPoints(inputs: Resolved.OCCT.EdgesToPointsDto<TopoDS_Shape>): Inputs.Base.Point3[][] {
         const shapeType = this.enumService.getShapeTypeEnum(inputs.shape);
         let edges: TopoDS_Shape[];
         if (shapeType === Inputs.OCCT.shapeTypeEnum.edge) {
@@ -198,7 +200,7 @@ export class EdgesService {
         return pt;
     }
 
-    edgeToPoints(inputs: Inputs.OCCT.EdgesToPointsDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+    edgeToPoints(inputs: Resolved.OCCT.EdgesToPointsDto<TopoDS_Edge>): Inputs.Base.Point3[] {
         const edgePoints: Base.Point3[] = [];
         const aLocation = new this.occ.TopLoc_Location();
         const adaptorCurve = new this.occ.BRepAdaptor_Curve(inputs.shape);
@@ -243,18 +245,18 @@ export class EdgesService {
     }
 
     makeEdgeFromGeom2dCurveAndSurfaceBounded(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>, umin: number, umax: number): TopoDS_Edge {
-        return this.occ.MakeEdgeFromGeom2dCurveAndSurfaceBounded(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface, umin, umax);
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurfaceBounded(inputs.curve as Handle_Geom2d_Curve, inputs.surface, umin, umax);
     }
 
     makeEdgeFromGeom2dCurveAndSurface(inputs: Inputs.OCCT.CurveAndSurfaceDto<Geom2d_Curve, Geom_Surface>): TopoDS_Edge {
-        return this.occ.MakeEdgeFromGeom2dCurveAndSurface(inputs.curve as unknown as Handle_Geom2d_Curve, inputs.surface);
+        return this.occ.MakeEdgeFromGeom2dCurveAndSurface(inputs.curve as Handle_Geom2d_Curve, inputs.surface);
     }
 
-    constraintTanLinesFromTwoPtsToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
+    constraintTanLinesFromTwoPtsToCircle(inputs: Resolved.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
         const cirDir = this.getCircularEdgePlaneDirection({ shape: inputs.circle });
         const cirPos = this.getCircularEdgeCenterPoint({ shape: inputs.circle });
 
-        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>();
+        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>() as Resolved.OCCT.AlignDto<TopoDS_Shape>;
         alignOpt.fromDirection = cirDir;
         alignOpt.toDirection = [0, 0, 1];
         alignOpt.fromOrigin = cirPos;
@@ -366,11 +368,11 @@ export class EdgesService {
         return resultingSol;
     }
 
-    constraintTanLinesFromPtToCircle(inputs: Inputs.OCCT.ConstraintTanLinesFromPtToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
+    constraintTanLinesFromPtToCircle(inputs: Resolved.OCCT.ConstraintTanLinesFromPtToCircleDto<TopoDS_Edge>): TopoDS_Shape[] {
         const cirDir = this.getCircularEdgePlaneDirection({ shape: inputs.circle });
         const cirPos = this.getCircularEdgeCenterPoint({ shape: inputs.circle });
 
-        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>();
+        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>() as Resolved.OCCT.AlignDto<TopoDS_Shape>;
         alignOpt.fromDirection = cirDir;
         alignOpt.toDirection = [0, 0, 1];
         alignOpt.fromOrigin = cirPos;
@@ -439,11 +441,11 @@ export class EdgesService {
         return resultingSol;
     }
 
-    constraintTanLinesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanLinesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
+    constraintTanLinesOnTwoCircles(inputs: Resolved.OCCT.ConstraintTanLinesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
         const cirDir = this.getCircularEdgePlaneDirection({ shape: inputs.circle1 });
         const cirPos = this.getCircularEdgeCenterPoint({ shape: inputs.circle1 });
 
-        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>();
+        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>() as Resolved.OCCT.AlignDto<TopoDS_Shape>;
         alignOpt.fromDirection = cirDir;
         alignOpt.toDirection = [0, 0, 1];
         alignOpt.fromOrigin = cirPos;
@@ -592,7 +594,7 @@ export class EdgesService {
         return resultingSol;
     }
 
-    constraintTanCirclesOnCircleAndPnt(inputs: Inputs.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[] {
+    constraintTanCirclesOnCircleAndPnt(inputs: Resolved.OCCT.ConstraintTanCirclesOnCircleAndPntDto<TopoDS_Edge>): TopoDS_Shape[] {
         const cirDir = this.getCircularEdgePlaneDirection({ shape: inputs.circle });
         const cirPos = this.getCircularEdgeCenterPoint({ shape: inputs.circle });
 
@@ -636,7 +638,7 @@ export class EdgesService {
     }
 
     private alignCircle(cirDir: Base.Vector3, cirPos: Base.Point3, circle: TopoDS_Edge) {
-        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>();
+        const alignOpt = new Inputs.OCCT.AlignDto<TopoDS_Shape>() as Resolved.OCCT.AlignDto<TopoDS_Shape>;
         alignOpt.fromDirection = cirDir;
         alignOpt.toDirection = [0, 0, 1];
         alignOpt.fromOrigin = cirPos;
@@ -646,7 +648,7 @@ export class EdgesService {
         return { alignOpt, circle1Aligned };
     }
 
-    constraintTanCirclesOnTwoCircles(inputs: Inputs.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
+    constraintTanCirclesOnTwoCircles(inputs: Resolved.OCCT.ConstraintTanCirclesOnTwoCirclesDto<TopoDS_Edge>): TopoDS_Shape[] {
         const cirDir = this.getCircularEdgePlaneDirection({ shape: inputs.circle1 });
         const cirPos = this.getCircularEdgeCenterPoint({ shape: inputs.circle1 });
 
@@ -688,41 +690,32 @@ export class EdgesService {
         return solutions;
     }
 
-    divideEdgeByParamsToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
-        const edge = inputs.shape;
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const points = this.geomService.divideCurveToNrSegments({ ...inputs, shape: curve }, curve.FirstParameter(), curve.LastParameter());
-        curve.delete();
-        wire.delete();
-        return points;
+    divideEdgeByParamsToPoints(inputs: Resolved.OCCT.DivideDto<TopoDS_Edge>): Inputs.Base.Point3[] {
+        return this.geomService.pointsAtNormalizedParameters(inputs.shape, this.geomService.divisions(inputs, 1));
     }
 
-    divideEdgeByEqualDistanceToPoints(inputs: Inputs.OCCT.DivideDto<TopoDS_Edge>): Base.Point3[] {
-        const edge = inputs.shape;
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const points = this.geomService.divideCompCurveByEqualLengthDistance({ ...inputs, shape: curve });
-        curve.delete();
-        wire.delete();
-        return points;
+    divideEdgeByEqualDistanceToPoints(inputs: Resolved.OCCT.DivideDto<TopoDS_Edge>): Base.Point3[] {
+        const length = this.geomService.lengthsAndCentres([inputs.shape])[0]!.mass;
+        return this.geomService.pointsAtLengths(inputs.shape, this.geomService.divisions(inputs, length));
     }
 
-    pointOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Point3 {
+    pointOnEdgeAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const { uMin, uMax } = this.getEdgeBounds(edge);
         const param = this.vecHelper.remap(inputs.param, 0, 1, uMin, uMax);
         const result = this.occ.EvaluateEdgeCurve(edge, param);
-        if (result && result.IsValid) {
-            const pt: Base.Point3 = [result.Point.X(), result.Point.Y(), result.Point.Z()];
+        if (!result.IsValid) {
             result.delete();
-            return pt;
-        } else {
             throw new Error("Point on edge could not be evaluated");
         }
+        const point = result.Point;
+        const pt: Base.Point3 = [point.X(), point.Y(), point.Z()];
+        point.delete();
+        result.delete();
+        return pt;
     }
 
-    private reconstructCircleAndAlignBack(sol: gp_Circ2d, alignOpt: Inputs.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
+    private reconstructCircleAndAlignBack(sol: gp_Circ2d, alignOpt: Resolved.OCCT.AlignDto<TopoDS_Shape>, dir: Base.Vector3, pos: Base.Point3) {
         const locationStart = sol.Location();
         const startPoint = [locationStart.X(), locationStart.Y(), 0] as Inputs.Base.Point3;
         const circle = this.entitiesService.createCircle(sol.Radius(), startPoint, [0, 0, 1], Inputs.OCCT.typeSpecificityEnum.edge);
@@ -738,7 +731,7 @@ export class EdgesService {
         return aligned;
     }
 
-    arcFromCircleAndTwoPoints(inputs: Inputs.OCCT.ArcEdgeCircleTwoPointsDto<TopoDS_Edge>) {
+    arcFromCircleAndTwoPoints(inputs: Resolved.OCCT.ArcEdgeCircleTwoPointsDto<TopoDS_Edge>) {
         const circle = this.getGpCircleFromEdge({ shape: inputs.circle });
         const gpPnt1 = this.entitiesService.gpPnt(inputs.start);
         const gpPnt2 = this.entitiesService.gpPnt(inputs.end);
@@ -811,7 +804,7 @@ export class EdgesService {
     }
 
 
-    tangentOnEdgeAtParam(inputs: Inputs.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Vector3 {
+    tangentOnEdgeAtParam(inputs: Resolved.OCCT.DataOnGeometryAtParamDto<TopoDS_Edge>): Base.Vector3 {
         const edge = inputs.shape;
         const result = this.occ.GetDerivativesOnEdgeAtParam(edge, inputs.param);
         if (result && result.isValid) {
@@ -820,17 +813,11 @@ export class EdgesService {
         throw new Error("Could not get tangent on edge at param");
     }
 
-    pointOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
-        const edge = inputs.shape;
-        const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
-        const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
-        const res = this.geomService.pointOnCompCurveAtLength({ ...inputs, shape: curve });
-        curve.delete();
-        wire.delete();
-        return res;
+    pointOnEdgeAtLength(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
+        return this.geomService.pointsAtLengths(inputs.shape, [inputs.length])[0]!;
     }
 
-    tangentOnEdgeAtLength(inputs: Inputs.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
+    tangentOnEdgeAtLength(inputs: Resolved.OCCT.DataOnGeometryAtLengthDto<TopoDS_Edge>): Base.Point3 {
         const edge = inputs.shape;
         const wire = this.converterService.combineEdgesAndWiresIntoAWire({ shapes: [edge] });
         const curve = new this.occ.BRepAdaptor_CompCurve(wire, false);
@@ -864,7 +851,7 @@ export class EdgesService {
      * @param inputs Points to interpolate
      * @returns Symmetric periodic BSpline edge
      */
-    createSymmetricPeriodicBSplineEdge(inputs: Inputs.OCCT.InterpolationDto): TopoDS_Edge {
+    createSymmetricPeriodicBSplineEdge(inputs: Resolved.OCCT.InterpolationDto): TopoDS_Edge {
         const coords = new this.occ.VectorDouble();
         for (const pt of inputs.points) {
             coords.push_back(pt[0]);

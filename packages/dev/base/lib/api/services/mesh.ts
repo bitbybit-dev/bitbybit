@@ -1,6 +1,8 @@
 import * as Inputs from "../inputs";
 import { Polyline } from "./polyline";
 import { Vector } from "./vector";
+import { resolveDto } from "../kernel-calls";
+import * as Resolved from "../resolved-inputs";
 
 /**
  * Geometry on plain triangle meshes: a mesh is a list of triangles, each three points. The methods
@@ -48,10 +50,11 @@ export class MeshBitByBit {
      * ```
      */
     calculateTrianglePlane(inputs: Inputs.Mesh.TriangleToleranceDto): Inputs.Base.TrianglePlane3 | undefined {
-        const EPSILON_SQ = (inputs.tolerance || 1e-7) ** 2;
+        const resolved = resolveDto(Inputs.Mesh.TriangleToleranceDto, inputs) as Resolved.Mesh.TriangleToleranceDto;
+        const EPSILON_SQ = (resolved.tolerance || 1e-7) ** 2;
 
-        const edge1 = this.vector.sub({ first: inputs.triangle[1], second: inputs.triangle[0] });
-        const edge2 = this.vector.sub({ first: inputs.triangle[2], second: inputs.triangle[0] });
+        const edge1 = this.vector.sub({ first: resolved.triangle[1], second: resolved.triangle[0] });
+        const edge2 = this.vector.sub({ first: resolved.triangle[2], second: resolved.triangle[0] });
         const normal = this.vector.cross({ first: edge1, second: edge2 });
 
         if (this.vector.lengthSq({ vector: normal as Inputs.Base.Vector3 }) < EPSILON_SQ) {
@@ -59,7 +62,7 @@ export class MeshBitByBit {
         }
 
         const normalizedNormal = this.vector.normalized({ vector: normal }) as Inputs.Base.Vector3;
-        const d = this.vector.dot({ first: normalizedNormal, second: inputs.triangle[0] });
+        const d = this.vector.dot({ first: normalizedNormal, second: resolved.triangle[0] });
         return { normal: normalizedNormal, d: d };
     }
 
@@ -84,9 +87,10 @@ export class MeshBitByBit {
      * ```
      */
     triangleTriangleIntersection(inputs: Inputs.Mesh.TriangleTriangleToleranceDto): Inputs.Base.Segment3 | undefined {
-        const t1 = inputs.triangle1;
-        const t2 = inputs.triangle2;
-        const EPSILON = inputs.tolerance || 1e-7;
+        const resolved = resolveDto(Inputs.Mesh.TriangleTriangleToleranceDto, inputs) as Resolved.Mesh.TriangleTriangleToleranceDto;
+        const t1 = resolved.triangle1;
+        const t2 = resolved.triangle2;
+        const EPSILON = resolved.tolerance || 1e-7;
         const p1 = t1[0], p2 = t1[1], p3 = t1[2];
         const q1 = t2[0], q2 = t2[1], q3 = t2[2];
 
@@ -226,8 +230,9 @@ export class MeshBitByBit {
      * ```
      */
     meshMeshIntersectionSegments(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Segment3[] {
-        const mesh1 = inputs.mesh1;
-        const mesh2 = inputs.mesh2;
+        const resolved = resolveDto(Inputs.Mesh.MeshMeshToleranceDto, inputs) as Resolved.Mesh.MeshMeshToleranceDto;
+        const mesh1 = resolved.mesh1;
+        const mesh2 = resolved.mesh2;
         const intersectionSegments: Inputs.Base.Segment3[] = [];
 
         for (let i = 0; i < mesh1.length; ++i) {
@@ -235,7 +240,7 @@ export class MeshBitByBit {
                 const triangle1 = mesh1[i]!;
                 const triangle2 = mesh2[j]!;
 
-                const segment = this.triangleTriangleIntersection({ triangle1, triangle2, tolerance: inputs.tolerance });
+                const segment = this.triangleTriangleIntersection({ triangle1, triangle2, tolerance: resolved.tolerance });
 
                 if (segment) {
                     intersectionSegments.push(segment);
@@ -262,8 +267,9 @@ export class MeshBitByBit {
      * ```
      */
     meshMeshIntersectionPolylines(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Polyline3[] {
-        const segments = this.meshMeshIntersectionSegments(inputs);
-        return this.polyline.sortSegmentsIntoPolylines({ segments, tolerance: inputs.tolerance });
+        const resolved = resolveDto(Inputs.Mesh.MeshMeshToleranceDto, inputs) as Resolved.Mesh.MeshMeshToleranceDto;
+        const segments = this.meshMeshIntersectionSegments(resolved);
+        return this.polyline.sortSegmentsIntoPolylines({ segments, tolerance: resolved.tolerance });
     }
 
     /**
@@ -283,7 +289,8 @@ export class MeshBitByBit {
      * ```
      */
     meshMeshIntersectionPoints(inputs: Inputs.Mesh.MeshMeshToleranceDto): Inputs.Base.Point3[][] {
-        const polylines = this.meshMeshIntersectionPolylines(inputs);
+        const resolved = resolveDto(Inputs.Mesh.MeshMeshToleranceDto, inputs) as Resolved.Mesh.MeshMeshToleranceDto;
+        const polylines = this.meshMeshIntersectionPolylines(resolved);
         return polylines.map(polyline => {
             if(polyline.isClosed){
                 return [...polyline.points, polyline.points[0]!];

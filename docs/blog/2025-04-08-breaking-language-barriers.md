@@ -1,13 +1,13 @@
 ---
 slug: editors-translated-to-multiple-languages
 title: "BREAKING LANGUAGE BARRIERS: Bitbybit.dev Opens 3D Design to a Global Audience"
-image: https://ik.imagekit.io/bitbybit/app/assets/blog/translated-editors/translated-editors.jpeg
+image: https://bitbybit.dev/files/site/blog/translated-editors/translated-editors.jpeg
 authors: [ubarevicius]
 tags: [bitbybit, cad]
 description: "We are excited to announce that all components of Bitbybit.dev's Rete & Blockly visual programming editors are now translated into Spanish, Hindi, Arabic, Chinese, French, and Lithuanian, making 3D design more accessible worldwide."
 ---
 
-![An image symbolizing the translation of Bitbybit.dev editors, perhaps like a Rosetta Stone for 3D design with various scripts.](https://ik.imagekit.io/bitbybit/app/assets/blog/translated-editors/translated-editors.jpeg "Image showing a script stone symbolizing the translation of the editors.")
+![An image symbolizing the translation of Bitbybit.dev editors, perhaps like a Rosetta Stone for 3D design with various scripts.](https://bitbybit.dev/files/site/blog/translated-editors/translated-editors.jpeg "Image showing a script stone symbolizing the translation of the editors.")
 
 In our ongoing mission to make powerful 3D design tools accessible to everyone, we're thrilled to announce a significant milestone: **all components of Bitbybit.dev's Rete and Blockly visual programming editors are now translated into multiple new languages!**
 
@@ -26,7 +26,7 @@ You'll also find a new language selection button within the platform, allowing y
 Imagine a world where the language you speak doesn’t limit your ability to create, design, and innovate. A world where children from Buenos Aires to Beijing can explore the wonders of 3D design in their own tongue. Bitbybit.dev is making this a reality. This exciting development is more than just a technical update - it’s a transformative step toward making technology and education truly accessible to millions worldwide.
 
 To select your preferred language, look for the new language switcher button in our editors:
-![Screenshot showing the location of the new language selection button within the Bitbybit.dev interface.](https://ik.imagekit.io/bitbybit/app/assets/blog/translated-editors/select-language.jpeg "This picture shows where to find the button which can switch to your language.")
+![Screenshot showing the location of the new language selection button within the Bitbybit.dev interface.](https://bitbybit.dev/files/site/blog/translated-editors/select-language.jpeg "This picture shows where to find the button which can switch to your language.")
 
 ### Why Language Matters in STEM
 

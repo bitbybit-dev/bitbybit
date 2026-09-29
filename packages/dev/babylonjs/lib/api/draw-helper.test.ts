@@ -4,8 +4,8 @@ vi.mock("@babylonjs/core", async () => {
     return createBabylonJSMock();
 });
 
-import { createDrawHelperMocks } from "./__mocks__/test-helpers";
-import type { MockGreasedLineMesh, MockLinesMesh, MockScene } from "./__mocks__/babylonjs.mock";
+import { createDrawHelperMocks, partialMock } from "./__mocks__/test-helpers";
+import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, instanceOf, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
@@ -47,6 +47,15 @@ describe("DrawHelper unit tests", () => {
     let mockManifoldWorkerManager: ManifoldWorkerManager;
     let mockOccWorkerManager: OCCTWorkerManager;
     let mockScene: MockScene;
+    let jscadWorkerCall: Mock;
+    let manifoldWorkerCall: Mock;
+    let occtWorkerCall: Mock;
+    let createVectorText: Mock;
+    let vectorAdd: Mock;
+    const greasedLineOf = (mesh: unknown): MockGreasedLineMesh => {
+        expect(mesh).toBeInstanceOf(MockGreasedLineMesh);
+        return mesh as MockGreasedLineMesh;
+    };
 
     beforeEach(() => {
         const mocks = createDrawHelperMocks();
@@ -57,6 +66,11 @@ describe("DrawHelper unit tests", () => {
         mockJscadWorkerManager = mocks.mockJscadWorkerManager;
         mockManifoldWorkerManager = mocks.mockManifoldWorkerManager;
         mockOccWorkerManager = mocks.mockOccWorkerManager;
+        jscadWorkerCall = mocks.jscadWorkerCall;
+        manifoldWorkerCall = mocks.manifoldWorkerCall;
+        occtWorkerCall = mocks.occtWorkerCall;
+        createVectorText = mocks.createVectorText;
+        vectorAdd = mocks.vectorAdd;
 
         drawHelper = new DrawHelper(
             mockContext,
@@ -173,6 +187,16 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("drawPoints", () => {
+        it("should draw points given nothing else in the documented default colour and opacity", () => {
+            // Act
+            const result = drawHelper.drawPoints({ points: [[0, 0, 0], [1, 1, 1]] });
+
+            // Assert
+            const material = result.getChildMeshes()[0]!.material as BABYLON.StandardMaterial;
+            expect(material.alpha).toBe(1);
+            expect(colorsAreEqual({ r: material.emissiveColor.r, g: material.emissiveColor.g, b: material.emissiveColor.b }, hexToRgb("#444444"))).toBe(true);
+        });
+
         it("should draw multiple points", () => {
             const inputs = new Inputs.Point.DrawPointsDto<BABYLON.Mesh>(
                 [[0, 0, 0], [1, 1, 1], [2, 2, 2]],
@@ -425,7 +449,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0]]);
         });
 
@@ -438,7 +462,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect(options.colors!.map((c) => [c.r, c.g, c.b])).toEqual([[0, 0, 1], [0, 0, 1], [0, 1, 0], [0, 1, 0]]);
         });
 
@@ -455,7 +479,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(inputs);
 
-            const points = (result as unknown as MockGreasedLineMesh)._points;
+            const points = greasedLineOf(result)._points;
             expect(points).toHaveLength(1);
             expect(points[0]!.slice(0, 3)).toEqual([0, 0, 0]);
             expect(points[0]!.slice(-3)).toEqual([0, 0, 0]);
@@ -489,7 +513,26 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawPolylinesWithColours(updateInputs);
 
+            expect(result).not.toBe(existingMesh);
+            expect(greasedLineOf(result)._points).toHaveLength(2);
+            expect(mockScene._meshes).not.toContain(existingMesh);
+        });
+
+        it("should move the points of an updatable line in place and give it the new width and colors", () => {
+            const lines = (end: number) => [
+                { points: [[0, 0, 0], [end, 0, 0]] as Inputs.Base.Point3[], isClosed: false },
+                { points: [[0, 0, 0], [0, end, 0]] as Inputs.Base.Point3[], isClosed: false },
+            ];
+            const existingMesh = drawHelper.drawPolylinesWithColours(new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(lines(1), 1, ["#ff0000", "#00ff00"], 2, true));
+
+            const result = drawHelper.drawPolylinesWithColours(new Inputs.Polyline.DrawPolylinesDto<BABYLON.GreasedLineMesh>(lines(3), 1, ["#0000ff", "#ffff00"], 5, true, existingMesh));
+
             expect(result).toBe(existingMesh);
+            const line = greasedLineOf(result);
+            expect(line._points[0]).toEqual([0, 0, 0, 3, 0, 0]);
+            expect(line.greasedLineMaterial!.width).toBeCloseTo(0.05, 12);
+            expect(line.greasedLineMaterial!.color!.toHexString()).toBe("#0000ff");
+            expect(line.greasedLineMaterial!.colors!.map(c => c.toHexString())).toEqual(["#0000ff", "#0000ff", "#ffff00", "#ffff00"]);
         });
     });
 
@@ -760,7 +803,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawLines(inputs);
 
-            const colours = (result as unknown as MockLinesMesh)._colors;
+            const colours = instanceOf(result, MockLinesMesh)._colors;
             expect(colours).toHaveLength(2);
             expect(colours[0]!.map((c) => [c.r, c.g, c.b])).toEqual([[1, 0, 0], [1, 0, 0]]);
             expect(colours[1]!.map((c) => [c.r, c.g, c.b])).toEqual([[0, 1, 0], [0, 1, 0]]);
@@ -939,7 +982,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = drawHelper.drawSurface(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1305,7 +1348,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(jscadWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should handle mesh with baked-in color", async () => {
@@ -1322,7 +1365,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1386,7 +1429,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            const baseColor = (result.material as unknown as { baseColor: { r: number, g: number, b: number } }).baseColor;
+            const baseColor = instanceOf(result.material, MockPBRMetallicRoughnessMaterial).baseColor;
             expect([baseColor.r, baseColor.g, baseColor.b]).toEqual([1, 0, 0]);
         });
 
@@ -1592,7 +1635,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapeToMesh", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapeToMesh", expect.anything());
         });
 
         it("should draw OCCT shape with edges", async () => {
@@ -1765,7 +1808,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
+            expect(occtWorkerCall).toHaveBeenCalledWith("shapesToMeshes", expect.anything());
             expect(result.getChildMeshes().length).toBeGreaterThanOrEqual(2);
         });
     });
@@ -1789,7 +1832,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(BABYLON.Mesh);
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
+            expect(manifoldWorkerCall).toHaveBeenCalledWith("decomposeManifoldOrCrossSection", expect.anything());
         });
 
         it("should return undefined when triVerts is empty", async () => {
@@ -2039,7 +2082,7 @@ describe("DrawHelper unit tests", () => {
 
             const result = await drawHelper.drawPath(inputs);
 
-            const options = (result as unknown as MockGreasedLineMesh)._materialOptions;
+            const options = greasedLineOf(result)._materialOptions;
             expect([options.color!.r, options.color!.g, options.color!.b]).toEqual([1, 0, 0]);
         });
     });
@@ -2237,7 +2280,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawSolidOrPolygonMesh(inputs);
 
-            expect(mockJscadWorkerManager.genericCallToWorkerPromise).toHaveBeenCalled();
+            expect(jscadWorkerCall).toHaveBeenCalled();
             const [callArgs] = (mockJscadWorkerManager.genericCallToWorkerPromise as Mock).mock.calls as [unknown[]];
             expect(callArgs[1]).toMatchObject({
                 mesh: mockMesh
@@ -2263,7 +2306,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs as Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>);
 
-            expect(mockOccWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(occtWorkerCall).toHaveBeenCalledWith(
                 "shapeToMesh",
                 expect.objectContaining({
                     shape: inputs.shape
@@ -2285,7 +2328,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawManifoldOrCrossSection(inputs);
 
-            expect(mockManifoldWorkerManager.genericCallToWorkerPromise).toHaveBeenCalledWith(
+            expect(manifoldWorkerCall).toHaveBeenCalledWith(
                 "decomposeManifoldOrCrossSection",
                 expect.objectContaining({
                     manifoldOrCrossSection: inputs.manifoldOrCrossSection
@@ -2514,11 +2557,11 @@ describe("DrawHelper unit tests", () => {
         });
 
         it("should handle error during material disposal", () => {
-            const mockErrorMaterial = {
+            const mockErrorMaterial = partialMock<BABYLON.PBRMetallicRoughnessMaterial>({
                 dispose: vi.fn().mockImplementation(() => {
                     throw new Error("Disposal error");
                 })
-            } as unknown as BABYLON.PBRMetallicRoughnessMaterial;
+            });
             
             const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => undefined);
             drawHelper["materialCache"].set("error-material", mockErrorMaterial);
@@ -3153,7 +3196,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(2);
             
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
@@ -3191,8 +3234,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
         });
 
         it("should handle edge with exactly 3 vertex coordinates (use middle vertex)", async () => {
@@ -3224,7 +3267,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
 
         it("should handle edge with more than 3 vertex coordinates", async () => {
@@ -3256,7 +3299,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
 
         it("should set zOffset on edge index mesh material", async () => {
@@ -3337,7 +3380,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
             expect((mockSolidText.createVectorText as Mock).mock.calls.length).toBeGreaterThanOrEqual(1);
             
             const [[firstCall]] = (mockSolidText.createVectorText as Mock).mock.calls as [[{ height: number; text: string; lineSpacing?: number }]];
@@ -3425,8 +3468,8 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
         });
 
         it("should set zOffset on face index mesh when drawEdges is true", async () => {
@@ -3505,7 +3548,7 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawShape(inputs);
 
             expect(result).toBeDefined();
-            expect(mockSolidText.createVectorText).toHaveBeenCalled();
+            expect(createVectorText).toHaveBeenCalled();
         });
     });
 
@@ -3728,7 +3771,7 @@ describe("DrawHelper unit tests", () => {
 
             await drawHelper.drawShape(inputs);
 
-            expect(mockVector.add).toHaveBeenCalled();
+            expect(vectorAdd).toHaveBeenCalled();
             const [[firstAdd]] = (mockVector.add as Mock).mock.calls as [[{ first: number[] }]];
             expect(firstAdd.first[1]).toBe(0.05);
         });
@@ -4118,6 +4161,155 @@ describe("DrawHelper unit tests", () => {
 
             // Assert
             expect(drawHelper.isDisposed()).toBe(true);
+        });
+    });
+
+    describe("defaults left to the draw DTOs", () => {
+        const widthOf = (mesh: unknown): number | undefined => (mesh instanceof MockGreasedLineMesh ? mesh._materialOptions.width : undefined);
+        const openCorner = (): Inputs.Polyline.PolylinePropertiesDto => ({ points: [[0, 0, 0], [1, 0, 0], [1, 1, 0]] });
+        const LINE_DTO_WIDTH = 0.03;
+
+        it("should build a point that names no size as a sphere of the documented 0.1 diameter", () => {
+            // Arrange
+            const createSphere = vi.spyOn(BABYLON.MeshBuilder, "CreateSphere");
+
+            // Act
+            drawHelper.drawPoint({ point: [0, 0, 0] });
+
+            // Assert
+            expect(createSphere).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ diameter: 0.1 }), expect.anything());
+            createSphere.mockRestore();
+        });
+
+        it("should build a point handed an undefined size as a sphere of the documented 0.1 diameter", () => {
+            // Arrange
+            const createSphere = vi.spyOn(BABYLON.MeshBuilder, "CreateSphere");
+
+            // Act
+            drawHelper.drawPoint({ point: [0, 0, 0], size: undefined });
+
+            // Assert
+            expect(createSphere).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ diameter: 0.1 }), expect.anything());
+            createSphere.mockRestore();
+        });
+
+        it("should draw a polyline that names no size at the line DTO's width", () => {
+            // Act
+            const leftOut = drawHelper.drawPolylineClose({ polyline: openCorner() });
+            const spelled = drawHelper.drawPolylineClose(new Inputs.Polyline.DrawPolylineDto<BABYLON.GreasedLineMesh>(openCorner()));
+
+            // Assert
+            expect(widthOf(leftOut)).toBeCloseTo(LINE_DTO_WIDTH, 9);
+            expect(widthOf(leftOut)).toBe(widthOf(spelled));
+        });
+
+        it("should draw polylines handed an undefined size at the line DTO's width", () => {
+            // Act
+            const drawn = drawHelper.drawPolylinesWithColours({ polylines: [openCorner()], size: undefined, colours: undefined, opacity: undefined });
+
+            // Assert
+            expect(widthOf(drawn)).toBeCloseTo(LINE_DTO_WIDTH, 9);
+        });
+
+        it("should draw a JSCAD mesh's back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Act
+            const drawn = await drawHelper.drawSolidOrPolygonMesh({ mesh: jscadSolid(), opacity: 0.4 });
+
+            // Assert
+            expect(drawn.material!.alpha).toBe(0.4);
+            expect(drawn.getChildMeshes()[0]!.material!.alpha).toBe(1);
+        });
+
+        it("should draw a list of JSCAD meshes with back faces at the documented opacity of 1 when the options leave it out", async () => {
+            // Arrange
+            const callWorker = vi.fn().mockResolvedValue([{ positions: [0, 0, 0, 1, 0, 0, 0, 1, 0], normals: [0, 0, 1, 0, 0, 1, 0, 0, 1], indices: [0, 1, 2], transforms: [] }]);
+            mockJscadWorkerManager.genericCallToWorkerPromise = callWorker;
+
+            // Act
+            const drawn = await drawHelper.drawSolidOrPolygonMeshes({ meshes: [jscadSolid()], opacity: 0.4 });
+
+            // Assert
+            const solid = drawn.getChildMeshes()[0]!;
+            expect(solid.getChildMeshes()[0]!.material!.alpha).toBe(1);
+        });
+    });
+
+    describe("the colours a list of polylines is drawn in", () => {
+        const coloursOf = (mesh: unknown): number[][] | undefined => (mesh instanceof MockGreasedLineMesh ? mesh._materialOptions.colors?.map((c) => [c.r, c.g, c.b]) : undefined);
+        const segment = (x: number, color?: string): Inputs.Polyline.PolylinePropertiesDto => (color === undefined ? { points: [[x, 0, 0], [x + 1, 0, 0]] } : { points: [[x, 0, 0], [x + 1, 0, 0]], color });
+
+        it("should leave the caller's colour list as it was when a polyline brings its own colour", () => {
+            // Arrange
+            const colours = ["#ff0000", "#00ff00"];
+
+            // Act
+            drawHelper.drawPolylinesWithColours({ polylines: [segment(0, "#0000ff"), segment(2)], colours });
+
+            // Assert
+            expect(colours).toEqual(["#ff0000", "#00ff00"]);
+        });
+
+        it("should redraw with the caller's colours after a draw in which a polyline brought its own", () => {
+            // Arrange
+            const options = { colours: ["#ff0000", "#00ff00"] };
+            drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0, "#0000ff"), segment(2)] });
+
+            // Act
+            const redrawn = drawHelper.drawPolylinesWithColours({ ...options, polylines: [segment(0), segment(2)] });
+
+            // Assert
+            expect(coloursOf(redrawn)).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0]]);
+        });
+
+        it("should give every polyline without its own colour the one the strategy assigns when the list is shorter than the polylines", () => {
+            // Act
+            const drawn = drawHelper.drawPolylinesWithColours({ polylines: [segment(0), segment(2), segment(4), segment(6, "#0000ff")], colours: ["#ff0000", "#00ff00"] });
+
+            // Assert
+            expect(coloursOf(drawn)).toEqual([[1, 0, 0], [1, 0, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 1, 0], [0, 0, 1], [0, 0, 1]]);
+        });
+    });
+
+    describe("the arrows on an OCCT shape's edges", () => {
+        class ArrowAngleWatchingDrawHelper extends DrawHelper {
+            readonly arrowAngles: number[] = [];
+
+            protected override computeArrowHeadLines(polylinePoints: Inputs.Base.Point3[], arrowSize: number, arrowAngleDeg: number): Inputs.Base.Point3[][] {
+                this.arrowAngles.push(arrowAngleDeg);
+                return super.computeArrowHeadLines(polylinePoints, arrowSize, arrowAngleDeg);
+            }
+        }
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const watchingHelper = (): ArrowAngleWatchingDrawHelper => new ArrowAngleWatchingDrawHelper(mockContext, mockSolidText, mockVector, mockJscadWorkerManager, mockManifoldWorkerManager, mockOccWorkerManager);
+
+        it("should draw arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMesh({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
+        });
+
+        it("should draw each edge's arrows asked for without an angle at the documented 15 degrees", async () => {
+            // Arrange
+            const helper = watchingHelper();
+
+            // Act
+            await helper.handleDecomposedMeshIndividually({ drawFaces: false }, oneEdge(), { edgeArrowSize: 2 });
+
+            // Assert
+            expect(helper.arrowAngles).toEqual([15]);
         });
     });
 });

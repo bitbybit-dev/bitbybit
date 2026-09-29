@@ -1,17 +1,35 @@
-import { Geom_Surface, BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { Geom_Surface, BitbybitOcctModule, GeomFill_FillingStyle, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { Base } from "../../api/inputs";
 import * as Models from "../../api/models";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../api/resolved-inputs";
+import { framesFromNumbers } from "../base/frames";
+import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedPoints, checkedShape, checkedShapes, checkedWhole, checkedWithin } from "../base/input-checks";
+import { checkedPointGrid } from "../base/surface-analysis";
+
+const FILLING_STYLES: readonly Inputs.OCCT.fillingStyleEnum[] = [
+    Inputs.OCCT.fillingStyleEnum.stretch,
+    Inputs.OCCT.fillingStyleEnum.coons,
+    Inputs.OCCT.fillingStyleEnum.curved,
+];
+
+const CONTINUITIES: readonly Inputs.OCCT.continuityEnum[] = [
+    Inputs.OCCT.continuityEnum.position,
+    Inputs.OCCT.continuityEnum.tangent,
+    Inputs.OCCT.continuityEnum.curvature,
+];
 
 /**
  * Faces in OpenCascade: bounded pieces of a surface, flat or curved, with an outer boundary wire
- * and optional inner wires that make holes. Build them from wires or surfaces, or as ready-made
- * flat shapes (circles, rectangles, stars, beam profiles) that lie on the ground plane unless
- * `direction` says otherwise; walk their surface through UV parameters to get points, normals and
- * grids of wires; cut hole patterns into them; and measure area and center of mass. U and V are the
- * two directions of a surface, given here as fractions from 0 to 1 of the face's own range. Faces
- * join edge to edge into shells, which `shapes.shell` handles.
+ * and optional inner wires that make holes. Build them from wires or surfaces, through point grids,
+ * between or inside edges, or as ready-made flat shapes (circles, rectangles, stars, beam profiles)
+ * that lie on the ground plane unless `direction` says otherwise; walk their surface through UV
+ * parameters to get points, normals, iso curves and grids of wires; cut hole patterns into them, lay
+ * them flat, and measure area and center of mass. U and V are the two directions of a surface, given
+ * here as fractions from 0 to 1 of the face's own range. Faces join edge to edge into shells, which
+ * `shapes.shell` handles.
  */
 export class OCCTFace {
 
@@ -39,7 +57,8 @@ export class OCCTFace {
      * ```
      */
     rebuildFaceDegree(inputs: Inputs.OCCT.RebuildFaceDegreeDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.RebuildFaceDegree(inputs.shape, inputs.uDegree, inputs.vDegree, inputs.tolerance, inputs.keepTrim);
+        const resolved = resolveDto(Inputs.OCCT.RebuildFaceDegreeDto, inputs) as Resolved.OCCT.RebuildFaceDegreeDto<TopoDS_Face>;
+        return this.occ.RebuildFaceDegree(resolved.shape, resolved.uDegree, resolved.vDegree, resolved.tolerance, resolved.keepTrim);
     }
 
     /**
@@ -60,7 +79,8 @@ export class OCCTFace {
      * ```
      */
     flipFaceUV(inputs: Inputs.OCCT.FlipFaceUVDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.FlipFaceUV(inputs.shape, inputs.swapUV, inputs.reverseU, inputs.reverseV);
+        const resolved = resolveDto(Inputs.OCCT.FlipFaceUVDto, inputs) as Resolved.OCCT.FlipFaceUVDto<TopoDS_Face>;
+        return this.occ.FlipFaceUV(resolved.shape, resolved.swapUV, resolved.reverseU, resolved.reverseV);
     }
 
     /**
@@ -80,7 +100,8 @@ export class OCCTFace {
      * ```
      */
     normalizeFaceParametrization(inputs: Inputs.OCCT.NormalizeFaceParametrizationDto<TopoDS_Face>): TopoDS_Face {
-        return this.occ.NormalizeFaceParametrization(inputs.shape, inputs.normalizeU, inputs.normalizeV, inputs.samples, inputs.tolerance);
+        const resolved = resolveDto(Inputs.OCCT.NormalizeFaceParametrizationDto, inputs) as Resolved.OCCT.NormalizeFaceParametrizationDto<TopoDS_Face>;
+        return this.occ.NormalizeFaceParametrization(resolved.shape, resolved.normalizeU, resolved.normalizeV, resolved.samples, resolved.tolerance);
     }
 
     /**
@@ -168,7 +189,8 @@ export class OCCTFace {
      * ```
      */
     createFacesFromWiresOnFace(inputs: Inputs.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.createFacesFromWiresOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FacesFromWiresOnFaceDto, inputs) as Resolved.OCCT.FacesFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFacesFromWiresOnFace(resolved);
     }
 
     /**
@@ -188,7 +210,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWireOnFace(inputs: Inputs.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWireOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWireOnFaceDto, inputs) as Resolved.OCCT.FaceFromWireOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFaceFromWireOnFace(resolved);
     }
 
     /**
@@ -209,7 +232,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWire(inputs: Inputs.OCCT.FaceFromWireDto<TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWireDto, inputs) as Resolved.OCCT.FaceFromWireDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromWire(resolved);
     }
 
     /**
@@ -231,7 +255,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWires(inputs: Inputs.OCCT.FaceFromWiresDto<TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWiresDto, inputs) as Resolved.OCCT.FaceFromWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromWires(resolved);
     }
 
     /**
@@ -251,7 +276,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromWiresOnFace(inputs: Inputs.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>): TopoDS_Face {
-        return this.och.facesService.createFaceFromWiresOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromWiresOnFaceDto, inputs) as Resolved.OCCT.FaceFromWiresOnFaceDto<TopoDS_Wire, TopoDS_Face>;
+        return this.och.facesService.createFaceFromWiresOnFace(resolved);
     }
 
     /**
@@ -270,7 +296,8 @@ export class OCCTFace {
      * ```
      */
     createFacesFromWires(inputs: Inputs.OCCT.FacesFromWiresDto<TopoDS_Wire>): TopoDS_Face[] {
-        return this.och.facesService.createFacesFromWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FacesFromWiresDto, inputs) as Resolved.OCCT.FacesFromWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFacesFromWires(resolved);
     }
 
     /**
@@ -299,7 +326,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromMultipleCircleTanWires(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromMultipleCircleTanWiresDto, inputs) as Resolved.OCCT.FaceFromMultipleCircleTanWiresDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromMultipleCircleTanWires(resolved);
     }
 
     /**
@@ -325,7 +353,8 @@ export class OCCTFace {
      * ```
      */
     createFaceFromMultipleCircleTanWireCollections(inputs: Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>): TopoDS_Shape {
-        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromMultipleCircleTanWireCollectionsDto, inputs) as Resolved.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<TopoDS_Wire>;
+        return this.och.facesService.createFaceFromMultipleCircleTanWireCollections(resolved);
     }
 
 
@@ -345,7 +374,8 @@ export class OCCTFace {
      * ```
      */
     faceFromSurface(inputs: Inputs.OCCT.ShapeWithToleranceDto<Geom_Surface>): TopoDS_Face {
-        return this.och.facesService.faceFromSurface(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeWithToleranceDto, inputs) as Resolved.OCCT.ShapeWithToleranceDto<Geom_Surface>;
+        return this.och.facesService.faceFromSurface(resolved);
     }
 
     /**
@@ -365,7 +395,178 @@ export class OCCTFace {
      * ```
      */
     faceFromSurfaceAndWire(inputs: Inputs.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>): TopoDS_Face {
-        return this.och.facesService.faceFromSurfaceAndWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceFromSurfaceAndWireDto, inputs) as Resolved.OCCT.FaceFromSurfaceAndWireDto<Geom_Surface, TopoDS_Wire>;
+        return this.och.facesService.faceFromSurfaceAndWire(resolved);
+    }
+
+    /**
+     * Creates a B-spline face through a grid of points, or near them.
+     *
+     * The rows step along u and each row runs along v. Interpolating passes through every point at
+     * degree 3, closed in u when `periodic`; approximating keeps within `tolerance` at a degree from
+     * `degreeMin` to `degreeMax`. Neighbouring rows or columns holding the same points are refused.
+     * @param inputs - The rows of points, whether to interpolate, and the degrees and tolerance of an approximation
+     * @returns The face
+     * @group from
+     * @shortname face from point grid
+     * @drawable true
+     * @example
+     * ```typescript
+     * const face = await bitbybit.occt.shapes.face.fromPointGrid({
+     *     points: [
+     *         [[0, 0, 0], [0, 1, 5], [0, 0, 10]],
+     *         [[5, 2, 0], [5, 3, 5], [5, 2, 10]],
+     *         [[10, 0, 0], [10, 1, 5], [10, 0, 10]],
+     *     ],
+     *     interpolate: true,
+     * });
+     * ```
+     */
+    fromPointGrid(inputs: Inputs.OCCT.FaceFromPointGridDto): TopoDS_Face {
+        const resolved = resolveDto(Inputs.OCCT.FaceFromPointGridDto, inputs) as Resolved.OCCT.FaceFromPointGridDto;
+        const rows = checkedPointGrid(resolved.points, "points");
+        const interpolate = resolved.interpolate;
+        let degreeMin = 3;
+        let degreeMax = 8;
+        let tolerance = 1e-3;
+        if (!interpolate) {
+            degreeMin = checkedWhole(resolved.degreeMin, "degreeMin", 1, 25);
+            degreeMax = checkedWhole(resolved.degreeMax, "degreeMax", 1, 25);
+            if (degreeMax < degreeMin) {
+                throw new InputError(`\`degreeMax\` is ${degreeMax}, below \`degreeMin\`, which is ${degreeMin}.`, "degreeMax");
+            }
+            tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        }
+        return this.occ.FaceThroughPointGrid(rows.flat(2), rows.length, rows[0]!.length, interpolate, resolved.periodic, degreeMin, degreeMax, tolerance);
+    }
+
+    /**
+     * Creates the ruled surface between two edges, or two wires edge by edge: straight lines from one
+     * to the other.
+     *
+     * Each line joins the points at the same share of the two curves, so reversing one twists the
+     * surface. Wires need as many edges each, paired as each wire runs. The shapes given are left
+     * unchanged.
+     * @param inputs - Two edges or two wires
+     * @returns A face for two edges, a shell of one face per pair of edges for two wires
+     * @group from
+     * @shortname ruled between
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bottom = await bitbybit.occt.shapes.edge.line({ start: [0, 0, 0], end: [10, 0, 0] });
+     * const top = await bitbybit.occt.shapes.edge.arcThroughThreePoints({ start: [0, 5, 0], middle: [5, 5, 3], end: [10, 5, 0] });
+     * const face = await bitbybit.occt.shapes.face.ruledBetween({ shapeA: bottom, shapeB: top });
+     * ```
+     */
+    ruledBetween(inputs: Inputs.OCCT.TwoShapesDto<TopoDS_Shape>): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.TwoShapesDto, inputs) as Resolved.OCCT.TwoShapesDto<TopoDS_Shape>;
+        const ruled = this.occ.RuledBetween(checkedShape(resolved.shapeA, "shapeA"), checkedShape(resolved.shapeB, "shapeB"));
+        const result = this.och.converterService.getActualTypeOfShape(ruled);
+        ruled.delete();
+        return result;
+    }
+
+    /**
+     * Creates a B-spline face bounded by two, three or four edges.
+     *
+     * Four edges, in any order and direction, must close up. Of three, one must meet the other two,
+     * and a straight side closes their free ends. Two are opposite sides joined start to start; the
+     * curved style instead sweeps one along the other from a shared corner.
+     * @param inputs - The boundary edges and the filling style
+     * @returns The face
+     * @group from
+     * @shortname boundary patch
+     * @drawable true
+     * @example
+     * ```typescript
+     * const edges = await bitbybit.occt.shapes.edge.fromPoints({ points: [[0, 0, 0], [10, 0, 2], [10, 10, 0], [0, 10, 2], [0, 0, 0]] });
+     * const patch = await bitbybit.occt.shapes.face.boundaryPatch({ edges, style: Bit.Inputs.OCCT.fillingStyleEnum.coons });
+     * ```
+     */
+    boundaryPatch(inputs: Inputs.OCCT.BoundaryPatchDto<TopoDS_Edge>): TopoDS_Face {
+        const resolved = resolveDto(Inputs.OCCT.BoundaryPatchDto, inputs) as Resolved.OCCT.BoundaryPatchDto<TopoDS_Edge>;
+        const edges = checkedShapes(resolved.edges, "edges");
+        if (edges.length < 2 || edges.length > 4) {
+            throw new InputError(`\`edges\` holds ${edges.length} edges, and a patch is bounded by two, three or four.`, "edges");
+        }
+        const style = checkedChoice(resolved.style, FILLING_STYLES, "style");
+        return this.occ.BoundaryPatch(edges, this.fillingStyle(style));
+    }
+
+    /**
+     * Creates a face that fills a closed loop of edges and passes near given points.
+     *
+     * The edges may come in any order and direction. Each continuity says whether the patch passes
+     * through its edge, meets the face beside it at a tangent, or also bends as it does; an edge that
+     * stores no face takes that face in `supports`.
+     * @param inputs - The boundary edges, their continuities and support faces, the points and the fit's settings
+     * @returns The face
+     * @group from
+     * @shortname fill patch
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 2, height: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const side = await bitbybit.occt.shapes.face.getFace({ shape: cylinder, index: 0 });
+     * const rim = await bitbybit.occt.shapes.edge.getEdge({ shape: cylinder, index: 0 });
+     * const dome = await bitbybit.occt.shapes.face.fillPatch({
+     *     edges: [rim],
+     *     continuities: [Bit.Inputs.OCCT.continuityEnum.tangent],
+     *     supports: [side],
+     *     points: [[0, 7, 0]],
+     * });
+     * ```
+     */
+    fillPatch(inputs: Inputs.OCCT.FillPatchDto<TopoDS_Edge, TopoDS_Face>): TopoDS_Face {
+        const resolved = resolveDto(Inputs.OCCT.FillPatchDto, inputs) as Resolved.OCCT.FillPatchDto<TopoDS_Edge, TopoDS_Face>;
+        const edges = checkedShapes(resolved.edges, "edges");
+        const continuities = this.oneEach(resolved.continuities, edges.length, "continuities")
+            .map(continuity => CONTINUITIES.indexOf(checkedChoice(continuity, CONTINUITIES, "continuities")));
+        const supports = this.oneEach(resolved.supports, edges.length, "supports").map((support, position) => this.checkedSupport(support, position));
+        const points = resolved.points === undefined ? [] : checkedPoints(resolved.points, "points");
+        const degree = checkedWhole(resolved.degree, "degree", 2, 9);
+        const pointsOnCurves = checkedWhole(resolved.pointsOnCurves, "pointsOnCurves", 2);
+        const iterations = checkedWhole(resolved.iterations, "iterations", 1);
+        const tolerance = checkedWithin(resolved.tolerance, "tolerance", { above: 0 });
+        const none = supports.map(support => support === undefined ? new this.occ.TopoDS_Shape() : undefined);
+        try {
+            return this.occ.FillPatch(edges, continuities, supports.map((support, position) => support ?? none[position]!), points.flat(), degree, pointsOnCurves, iterations, tolerance);
+        } finally {
+            none.forEach(empty => empty?.delete());
+        }
+    }
+
+    /**
+     * Lays a plane, cylinder or cone face out flat without stretching it, as the pattern a sheet is
+     * cut from.
+     *
+     * Lengths and areas are kept, holes and notches included, and a closed face opens along its seam.
+     * The flat face lies on the ground plane facing +Y, as the other flat shapes do, ready for a DXF
+     * export.
+     * @param inputs - The face and the tolerance of the flat edges
+     * @returns The flat face on the XZ plane
+     * @group develop
+     * @shortname unroll
+     * @drawable true
+     * @example
+     * ```typescript
+     * const cylinder = await bitbybit.occt.shapes.solid.createCylinder({ radius: 2, height: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+     * const wall = await bitbybit.occt.shapes.face.getFace({ shape: cylinder, index: 0 });
+     * const pattern = await bitbybit.occt.shapes.face.unroll({ shape: wall, tolerance: 1e-4 });
+     * ```
+     */
+    unroll(inputs: Inputs.OCCT.UnrollFaceDto<TopoDS_Face>): TopoDS_Face {
+        const resolved = resolveDto(Inputs.OCCT.UnrollFaceDto, inputs) as Resolved.OCCT.UnrollFaceDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        const flat = this.occ.UnrollFace(face, checkedWithin(resolved.tolerance, "tolerance", { above: 0 }));
+        const grounded = this.och.transformsService.rotate({ shape: flat, angle: 90, axis: [1, 0, 0] });
+        flat.delete();
+        const facingUp = grounded.Reversed();
+        grounded.delete();
+        const result = this.occ.CastToFace(facingUp);
+        facingUp.delete();
+        return result;
     }
 
     /**
@@ -402,7 +603,8 @@ export class OCCTFace {
      * ```
      */
     createCircleFace(inputs: Inputs.OCCT.CircleDto): TopoDS_Face {
-        return this.och.entitiesService.createCircle(inputs.radius, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        const resolved = resolveDto(Inputs.OCCT.CircleDto, inputs) as Resolved.OCCT.CircleDto;
+        return this.och.entitiesService.createCircle(resolved.radius, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -431,7 +633,8 @@ export class OCCTFace {
      * ```
      */
     hexagonsInGrid(inputs: Inputs.OCCT.HexagonsInGridDto): TopoDS_Face[] {
-        const hexagonWires = this.och.wiresService.hexagonsInGrid(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HexagonsInGridDto, inputs) as Resolved.OCCT.HexagonsInGridDto;
+        const hexagonWires = this.och.wiresService.hexagonsInGrid(resolved);
         return this.och.facesService.createFacesFromWires({ shapes: hexagonWires, planar: true });
     }
 
@@ -451,7 +654,8 @@ export class OCCTFace {
      * ```
      */
     createEllipseFace(inputs: Inputs.OCCT.EllipseDto): TopoDS_Face {
-        return this.och.entitiesService.createEllipse(inputs.radiusMinor, inputs.radiusMajor, inputs.center, inputs.direction, Inputs.OCCT.typeSpecificityEnum.face);
+        const resolved = resolveDto(Inputs.OCCT.EllipseDto, inputs) as Resolved.OCCT.EllipseDto;
+        return this.och.entitiesService.createEllipse(resolved.radiusMinor, resolved.radiusMajor, resolved.center, resolved.direction, Inputs.OCCT.typeSpecificityEnum.face);
     }
 
     /**
@@ -469,7 +673,8 @@ export class OCCTFace {
      * ```
      */
     createSquareFace(inputs: Inputs.OCCT.SquareDto): TopoDS_Face {
-        return this.och.facesService.createSquareFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.SquareDto, inputs) as Resolved.OCCT.SquareDto;
+        return this.och.facesService.createSquareFace(resolved);
     }
 
     /**
@@ -488,7 +693,8 @@ export class OCCTFace {
      * ```
      */
     createRectangleFace(inputs: Inputs.OCCT.RectangleDto): TopoDS_Face {
-        return this.och.facesService.createRectangleFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.RectangleDto, inputs) as Resolved.OCCT.RectangleDto;
+        return this.och.facesService.createRectangleFace(resolved);
     }
 
     /**
@@ -518,7 +724,8 @@ export class OCCTFace {
      * ```
      */
     createLPolygonFace(inputs: Inputs.OCCT.LPolygonDto): TopoDS_Face {
-        const wire = this.och.wiresService.createLPolygonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.LPolygonDto, inputs) as Resolved.OCCT.LPolygonDto;
+        const wire = this.och.wiresService.createLPolygonWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -540,7 +747,8 @@ export class OCCTFace {
      * ```
      */
     createStarFace(inputs: Inputs.OCCT.StarDto): TopoDS_Face {
-        const wire = this.och.wiresService.createStarWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.StarDto, inputs) as Resolved.OCCT.StarDto;
+        const wire = this.och.wiresService.createStarWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -573,7 +781,8 @@ export class OCCTFace {
      * ```
      */
     createChristmasTreeFace(inputs: Inputs.OCCT.ChristmasTreeDto): TopoDS_Face {
-        const wire = this.och.wiresService.createChristmasTreeWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ChristmasTreeDto, inputs) as Resolved.OCCT.ChristmasTreeDto;
+        const wire = this.och.wiresService.createChristmasTreeWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -595,7 +804,8 @@ export class OCCTFace {
      * ```
      */
     createParallelogramFace(inputs: Inputs.OCCT.ParallelogramDto): TopoDS_Face {
-        const wire = this.och.wiresService.createParallelogramWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ParallelogramDto, inputs) as Resolved.OCCT.ParallelogramDto;
+        const wire = this.och.wiresService.createParallelogramWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -615,7 +825,8 @@ export class OCCTFace {
      * ```
      */
     createHeartFace(inputs: Inputs.OCCT.Heart2DDto): TopoDS_Face {
-        const wire = this.och.wiresService.createHeartWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.Heart2DDto, inputs) as Resolved.OCCT.Heart2DDto;
+        const wire = this.och.wiresService.createHeartWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -634,7 +845,8 @@ export class OCCTFace {
      * ```
      */
     createNGonFace(inputs: Inputs.OCCT.NGonWireDto): TopoDS_Face {
-        const wire = this.och.wiresService.createNGonWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.NGonWireDto, inputs) as Resolved.OCCT.NGonWireDto;
+        const wire = this.och.wiresService.createNGonWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -666,7 +878,8 @@ export class OCCTFace {
      * ```
      */
     createIBeamProfileFace(inputs: Inputs.OCCT.IBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createIBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.IBeamProfileDto, inputs) as Resolved.OCCT.IBeamProfileDto;
+        const wire = this.och.wiresService.createIBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -681,7 +894,8 @@ export class OCCTFace {
      * @returns The UV pairs along the line, in order
      */
     subdivideToUVOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUVOnParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceLinearSubdivisionDto, inputs) as Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToUVOnParam(resolved);
     }
 
     /**
@@ -711,7 +925,8 @@ export class OCCTFace {
      * ```
      */
     createHBeamProfileFace(inputs: Inputs.OCCT.HBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createHBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.HBeamProfileDto, inputs) as Resolved.OCCT.HBeamProfileDto;
+        const wire = this.och.wiresService.createHBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -724,7 +939,8 @@ export class OCCTFace {
      * @returns The real U and V values
      */
     uvOnFace(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point2 {
-        return this.och.facesService.uvOnFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.uvOnFace(resolved);
     }
 
     /**
@@ -754,7 +970,8 @@ export class OCCTFace {
      * ```
      */
     createTBeamProfileFace(inputs: Inputs.OCCT.TBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createTBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.TBeamProfileDto, inputs) as Resolved.OCCT.TBeamProfileDto;
+        const wire = this.och.wiresService.createTBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -786,7 +1003,8 @@ export class OCCTFace {
      * ```
      */
     createUBeamProfileFace(inputs: Inputs.OCCT.UBeamProfileDto): TopoDS_Face {
-        const wire = this.och.wiresService.createUBeamProfileWire(inputs);
+        const resolved = resolveDto(Inputs.OCCT.UBeamProfileDto, inputs) as Resolved.OCCT.UBeamProfileDto;
+        const wire = this.och.wiresService.createUBeamProfileWire(resolved);
         return this.createFaceFromWire({ shape: wire, planar: true });
     }
 
@@ -807,7 +1025,8 @@ export class OCCTFace {
      * ```
      */
     getFace(inputs: Inputs.OCCT.ShapeIndexDto<TopoDS_Shape>): TopoDS_Face {
-        return this.och.shapeGettersService.getFace(inputs);
+        const resolved = resolveDto(Inputs.OCCT.ShapeIndexDto, inputs) as Resolved.OCCT.ShapeIndexDto<TopoDS_Shape>;
+        return this.och.shapeGettersService.getFace(resolved);
     }
 
     /**
@@ -876,7 +1095,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPoints(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPoints(resolved);
     }
 
     /**
@@ -897,16 +1117,17 @@ export class OCCTFace {
      * ```
      */
     subdivideToWires(inputs: Inputs.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionToWiresDto, inputs) as Resolved.OCCT.FaceSubdivisionToWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToWires(resolved);
     }
 
     /**
      * Lays rectangular wires over a face, one per cell of an `nrRectanglesU` by `nrRectanglesV`
      * division of its UV range, following the surface.
      *
-     * The border offsets trim the range at each end. Each rectangle sits centered in its cell,
-     * sized by the scale patterns as a fraction of it; the fillet pattern rounds corners, the
-     * inclusion pattern skips cells.
+     * Border offsets trim the range; each rectangle is centered in its cell, sized by the scale
+     * patterns, rounded by the fillet pattern, skipped by the inclusion pattern. One crossing a trim
+     * or hole is left out.
      * @param inputs - The face, the cell counts, the border offsets and the optional patterns
      * @returns The rectangle wires, cell by cell
      * @group patterns
@@ -928,15 +1149,16 @@ export class OCCTFace {
      * ```
      */
     subdivideToRectangleWires(inputs: Inputs.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToRectangleWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToRectangleWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToRectangleWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToRectangleWires(resolved);
     }
 
     /**
      * Cuts a grid of rectangular holes into a face and returns the perforated face.
      *
-     * The holes follow the same cells and patterns as `subdivideToRectangleWires`; when no scale
-     * pattern is given each hole covers half its cell. With `holesToFaces` true the result also
-     * carries one face per hole, after the perforated face, which is handy for lids or fillers.
+     * The holes follow the cells and patterns of `subdivideToRectangleWires`; with no scale pattern
+     * each covers half its cell, and existing holes stay. With `holesToFaces` true one face per hole
+     * follows the perforated face.
      * @param inputs - The face, the cell counts, the border offsets, the optional patterns and whether to return the hole faces
      * @returns The perforated face, followed by the hole faces when asked for
      * @group patterns
@@ -959,16 +1181,17 @@ export class OCCTFace {
      * ```
      */
     subdivideToRectangleHoles(inputs: Inputs.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToRectangleHoles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToRectangleHolesDto, inputs) as Resolved.OCCT.FaceSubdivideToRectangleHolesDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToRectangleHoles(resolved);
     }
 
     /**
      * Lays a honeycomb of hexagonal wires over a face, `nrHexagonsU` by `nrHexagonsV` of them
      * fitted into its UV range, each following the surface.
      *
-     * The border offsets trim a fraction of the range at each end; `flatU` turns a flat side toward
-     * U, the extend flags stretch the outer rows past the edges. Scale, fillet and inclusion
-     * patterns repeat per hexagon.
+     * Border offsets trim the range; `flatU` turns a flat side toward U, the extend flags stretch
+     * the outer rows past the edges, and patterns repeat per hexagon. One crossing a trim or hole is
+     * left out.
      * @param inputs - The face, the hexagon counts, the orientation, the border offsets, the extend flags and the optional patterns
      * @returns The hexagon wires, row by row
      * @group patterns
@@ -991,15 +1214,16 @@ export class OCCTFace {
      * ```
      */
     subdivideToHexagonWires(inputs: Inputs.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.subdivideToHexagonWires(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonWiresDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonWiresDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToHexagonWires(resolved);
     }
 
     /**
      * Cuts a honeycomb of hexagonal holes into a face and returns the perforated face.
      *
-     * The holes follow the same layout and patterns as `subdivideToHexagonWires`; when no scale
-     * pattern is given each hole is half the size of its hexagon. With `holesToFaces` true the
-     * result also carries one face per hole, after the perforated face.
+     * The holes follow the layout and patterns of `subdivideToHexagonWires`; with no scale pattern
+     * each is half its hexagon, and existing holes stay. With `holesToFaces` true one face per hole
+     * follows the perforated face.
      * @param inputs - The face, the hexagon counts, the orientation, the border offsets, the optional patterns and whether to return the hole faces
      * @returns The perforated face, followed by the hole faces when asked for
      * @group patterns
@@ -1023,7 +1247,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToHexagonHoles(inputs: Inputs.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>): TopoDS_Face[] {
-        return this.och.facesService.subdivideToHexagonHoles(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivideToHexagonHolesDto, inputs) as Resolved.OCCT.FaceSubdivideToHexagonHolesDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToHexagonHoles(resolved);
     }
 
     /**
@@ -1060,7 +1285,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPointsControlled(inputs: Inputs.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsControlled(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionControlledDto, inputs) as Resolved.OCCT.FaceSubdivisionControlledDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPointsControlled(resolved);
     }
 
     /**
@@ -1090,7 +1316,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToNormals(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.subdivideToNormals(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToNormals(resolved);
     }
 
     /**
@@ -1119,7 +1346,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToUV(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Point2[] {
-        return this.och.facesService.subdivideToUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToUV(resolved);
     }
 
     /**
@@ -1138,7 +1366,8 @@ export class OCCTFace {
      * ```
      */
     pointOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Point3 {
-        return this.och.facesService.pointOnUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.pointOnUV(resolved);
     }
 
     /**
@@ -1157,7 +1386,8 @@ export class OCCTFace {
      * ```
      */
     normalOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Vector3 {
-        return this.och.facesService.faceNormalOnUV(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        return this.och.facesService.faceNormalOnUV(resolved);
     }
 
     /**
@@ -1175,15 +1405,16 @@ export class OCCTFace {
      * ```
      */
     pointsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.pointsOnUVs(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        return this.och.facesService.pointsOnUVs(resolved);
     }
 
     /**
      * Finds the surface normals of a face at several UV fraction pairs at once.
      *
      * Each pair holds U then V, both from 0 to 1 over the face's range. The normals are unit
-     * vectors of the underlying surface; unlike `normalOnUV`, they are not flipped for a reversed
-     * face.
+     * vectors and follow the face's orientation, as `normalOnUV` does, so a reversed face gives them
+     * flipped.
      * @param inputs - The face and the list of U and V fraction pairs
      * @returns One unit normal per pair, in the same order
      * @group extract
@@ -1195,7 +1426,138 @@ export class OCCTFace {
      * ```
      */
     normalsOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Vector3[] {
-        return this.och.facesService.normalsOnUVs(inputs);
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        return this.och.facesService.normalsOnUVs(resolved);
+    }
+
+    /**
+     * Finds the frame of a face at a UV fraction pair, where a profile or a copy would sit: at the
+     * surface point, normal as `normalOnUV` gives it, direction along U.
+     *
+     * U and V run from 0 to 1 over the face's range. Where the surface has no normal, as at a cone's
+     * point, it is read inside the face.
+     * @param inputs - The face and the U and V fractions
+     * @returns The frame at that place
+     * @group frames
+     * @shortname frame on uv
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
+     * ```
+     */
+    frameOnUV(inputs: Inputs.OCCT.DataOnUVDto<TopoDS_Face>): Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVDto, inputs) as Resolved.OCCT.DataOnUVDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        return framesFromNumbers(this.occ.FramesOnFace(face, [checkedNumber(resolved.paramU, "paramU"), checkedNumber(resolved.paramV, "paramV")]))[0]!;
+    }
+
+    /**
+     * Finds the frames of a face at several UV fraction pairs at once, each as `frameOnUV` finds it.
+     * @param inputs - The face and the list of U and V fraction pairs
+     * @returns One frame per pair, in the same order
+     * @group frames
+     * @shortname frames on uvs
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesOnUVs({ shape: face, paramsUV: [[0.25, 0.5], [0.75, 0.5]] });
+     * ```
+     */
+    framesOnUVs(inputs: Inputs.OCCT.DataOnUVsDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.DataOnUVsDto, inputs) as Resolved.OCCT.DataOnUVsDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        if (!Array.isArray(resolved.paramsUV)) {
+            throw new InputError("`paramsUV` is not a list of U and V pairs.", "paramsUV");
+        }
+        const faulty = resolved.paramsUV.findIndex(pair => !(Array.isArray(pair) && pair.length === 2 && pair.every(Number.isFinite)));
+        if (faulty !== -1) {
+            throw new InputError(`\`paramsUV\` holds something other than a U and V pair at position ${faulty}; each is two finite numbers.`, "paramsUV");
+        }
+        return framesFromNumbers(this.occ.FramesOnFace(face, resolved.paramsUV.flat()));
+    }
+
+    /**
+     * Places frames on a face in a grid, one at each point `subdivideToPoints` gives for the same
+     * inputs, each turned as `frameOnUV` turns it.
+     *
+     * The frames come in the order of the points, their normals match `subdivideToNormals` and
+     * their X axes run along the face's U direction.
+     * @param inputs - The face, the number of points in U and V, and the shift and removal options
+     * @returns One frame per point of the grid, in order
+     * @group frames
+     * @shortname subdivide to frames
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.subdivideToFrames({
+     *     shape: face,
+     *     nrDivisionsU: 5,
+     *     nrDivisionsV: 5,
+     *     shiftHalfStepU: false,
+     *     removeStartEdgeU: false,
+     *     removeEndEdgeU: false,
+     *     shiftHalfStepV: false,
+     *     removeStartEdgeV: false,
+     *     removeEndEdgeV: false,
+     * });
+     * const studs = await bitbybit.occt.transforms.placeOnFrames({ shape: stud, frames });
+     * ```
+     */
+    subdivideToFrames(inputs: Inputs.OCCT.FaceSubdivisionDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FaceSubdivisionDto, inputs) as Resolved.OCCT.FaceSubdivisionDto<TopoDS_Face>;
+        checkedShape(resolved.shape);
+        const { uMin, uMax, vMin, vMax } = this.och.facesService.getUVBounds(resolved.shape);
+        const fractions = this.och.facesService.subdivideToUV(resolved).flatMap(([u, v]) => [(u - uMin) / (uMax - uMin), (v - vMin) / (vMax - vMin)]);
+        return framesFromNumbers(this.occ.FramesOnFace(resolved.shape, fractions));
+    }
+
+    /**
+     * Finds the frame of a face at the place nearest a point, as `frameOnUV` finds it there; a point
+     * beyond the face's edge comes to the edge.
+     * @param inputs - The face and the point
+     * @returns The frame at the nearest place
+     * @group frames
+     * @shortname frame nearest point
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frame = await bitbybit.occt.shapes.face.frameNearestPoint({ shape: face, point: [1, 2, 10] });
+     * ```
+     */
+    frameNearestPoint(inputs: Inputs.OCCT.FrameNearestPointDto<TopoDS_Face>): Base.Frame {
+        const resolved = resolveDto(Inputs.OCCT.FrameNearestPointDto, inputs) as Resolved.OCCT.FrameNearestPointDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        return framesFromNumbers(this.occ.FramesOnFaceNearest(face, checkedPoint(resolved.point, "point")))[0]!;
+    }
+
+    /**
+     * Finds the frames of a face at the places nearest several points at once, each as
+     * `frameNearestPoint` finds it.
+     * @param inputs - The face and the points
+     * @returns One frame per point, in the same order
+     * @group frames
+     * @shortname frames nearest points
+     * @drawable true
+     * @example
+     * ```typescript
+     * const frames = await bitbybit.occt.shapes.face.framesNearestPoints({ shape: face, points: [[1, 2, 10], [4, 5, 10]] });
+     * ```
+     */
+    framesNearestPoints(inputs: Inputs.OCCT.FramesNearestPointsDto<TopoDS_Face>): Base.Frame[] {
+        const resolved = resolveDto(Inputs.OCCT.FramesNearestPointsDto, inputs) as Resolved.OCCT.FramesNearestPointsDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        if (!Array.isArray(resolved.points)) {
+            throw new InputError("`points` is not a list of points.", "points");
+        }
+        const points = resolved.points.map((point, position) => {
+            try {
+                return checkedPoint(point, "points");
+            } catch {
+                throw new InputError(`\`points\` holds something other than a point at position ${position}; each is three finite numbers.`, "points");
+            }
+        });
+        return framesFromNumbers(this.occ.FramesOnFaceNearest(face, points.flat()));
     }
 
     /**
@@ -1216,7 +1578,8 @@ export class OCCTFace {
      * ```
      */
     subdivideToPointsOnParam(inputs: Inputs.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.subdivideToPointsOnParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FaceLinearSubdivisionDto, inputs) as Resolved.OCCT.FaceLinearSubdivisionDto<TopoDS_Face>;
+        return this.och.facesService.subdivideToPointsOnParam(resolved);
     }
 
     /**
@@ -1235,14 +1598,16 @@ export class OCCTFace {
      * ```
      */
     wireAlongParam(inputs: Inputs.OCCT.WireAlongParamDto<TopoDS_Face>): TopoDS_Wire {
-        return this.och.facesService.wireAlongParam(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WireAlongParamDto, inputs) as Resolved.OCCT.WireAlongParamDto<TopoDS_Face>;
+        return this.och.facesService.wireAlongParam(resolved);
     }
 
     /**
      * Draws several wires across a face, one per parameter value, following the surface.
      *
      * With `isU` true each wire sits at its fraction of the U range and runs over the whole V
-     * range; with false the roles swap.
+     * range; with false the roles swap. The wires ignore the face's trims; `isoCurves` gives the
+     * exact curves trimmed to the face.
      * @param inputs - The face, the direction and the fractions along it
      * @returns One wire per fraction, in the same order
      * @group extract
@@ -1254,7 +1619,29 @@ export class OCCTFace {
      * ```
      */
     wiresAlongParams(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Wire[] {
-        return this.och.facesService.wiresAlongParams(inputs);
+        const resolved = resolveDto(Inputs.OCCT.WiresAlongParamsDto, inputs) as Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>;
+        return this.och.facesService.wiresAlongParams(resolved);
+    }
+
+    /**
+     * Finds a face's exact iso curves at fractions of its UV range, trimmed to the face.
+     *
+     * With `isU` true each curve holds u at its fraction and runs along v; false swaps them. A curve
+     * stops at a hole and goes on past it; 0 and 1 give the boundary, and values outside give none.
+     * @param inputs - The face, the direction and the fractions
+     * @returns The edges, value after value, each value's pieces in order along the curve
+     * @group extract
+     * @shortname iso curves
+     * @drawable true
+     * @example
+     * ```typescript
+     * const curves = await bitbybit.occt.shapes.face.isoCurves({ shape: face, isU: true, params: [0.25, 0.5, 0.75] });
+     * ```
+     */
+    isoCurves(inputs: Inputs.OCCT.WiresAlongParamsDto<TopoDS_Face>): TopoDS_Edge[] {
+        const resolved = resolveDto(Inputs.OCCT.WiresAlongParamsDto, inputs) as Resolved.OCCT.WiresAlongParamsDto<TopoDS_Face>;
+        const face = checkedShape(resolved.shape);
+        return this.occ.IsoCurvesOnFace(face, resolved.isU, checkedNumberList(resolved.params, "params"));
     }
 
     /**
@@ -1417,7 +1804,8 @@ export class OCCTFace {
      * ```
      */
     filterFacePoints(inputs: Inputs.OCCT.FilterFacePointsDto<TopoDS_Face>): Base.Point3[] {
-        return this.och.facesService.filterFacePoints(inputs);
+        const resolved = resolveDto(Inputs.OCCT.FilterFacePointsDto, inputs) as Resolved.OCCT.FilterFacePointsDto<TopoDS_Face>;
+        return this.och.facesService.filterFacePoints(resolved);
     }
 
     /**
@@ -1447,10 +1835,61 @@ export class OCCTFace {
      * ```
      */
     filterFacesPoints(inputs: Inputs.OCCT.FilterFacesPointsDto<TopoDS_Face>): Base.Point3[] | Base.Point3[][] {
-        let res: Base.Point3[] | Base.Point3[][] = inputs.shapes.map(s => this.och.facesService.filterFacePoints({ ...inputs, shape: s }));
-        if (inputs.flatPointsArray) {
+        const resolved = resolveDto(Inputs.OCCT.FilterFacesPointsDto, inputs) as Resolved.OCCT.FilterFacesPointsDto<TopoDS_Face>;
+        checkedShapes(resolved.shapes);
+        let res: Base.Point3[] | Base.Point3[][] = resolved.shapes.map(s => this.och.facesService.filterFacePoints({ ...resolved, shape: s }));
+        if (resolved.flatPointsArray) {
             res = res.flat();
         }
         return res;
+    }
+
+    /**
+     * The kernel's value for a filling style.
+     * @ignore true
+     */
+    private fillingStyle(style: Inputs.OCCT.fillingStyleEnum): GeomFill_FillingStyle {
+        switch (style) {
+            case Inputs.OCCT.fillingStyleEnum.stretch:
+                return this.occ.GeomFill_FillingStyle.StretchStyle;
+            case Inputs.OCCT.fillingStyleEnum.curved:
+                return this.occ.GeomFill_FillingStyle.CurvedStyle;
+            default:
+                return this.occ.GeomFill_FillingStyle.CoonsStyle;
+        }
+    }
+
+    /**
+     * A list that holds one entry per edge, or nothing: left out and empty both read as no entries,
+     * and any other length is refused.
+     * @ignore true
+     */
+    private oneEach<T>(list: T[] | undefined, count: number, property: string): T[] {
+        if (list === undefined) {
+            return [];
+        }
+        if (!Array.isArray(list)) {
+            throw new InputError(`\`${property}\` is not a list.`, property);
+        }
+        if (list.length !== 0 && list.length !== count) {
+            throw new InputError(`\`${property}\` holds ${list.length} entries for ${count} edges; give one per edge, or leave it out.`, property);
+        }
+        return list;
+    }
+
+    /**
+     * A support face as the caller gave it: undefined, or null, for an edge without one, and
+     * otherwise a shape that is not empty.
+     * @ignore true
+     */
+    private checkedSupport(support: TopoDS_Face | undefined | null, position: number): TopoDS_Shape | undefined {
+        if (support === undefined || support === null) {
+            return undefined;
+        }
+        try {
+            return checkedShape(support, "supports");
+        } catch {
+            throw new InputError(`\`supports\` holds an empty shape or something other than a shape at position ${position}; an edge without a face beside it takes an undefined entry.`, "supports");
+        }
     }
 }

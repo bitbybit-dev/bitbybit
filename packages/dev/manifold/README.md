@@ -2,7 +2,7 @@
 
 [Manifold](https://github.com/elalish/manifold) 3D mesh boolean engine integration for [Bitbybit](https://bitbybit.dev) - fast union, intersection, difference, and mesh operations for watertight geometry.
 
-<img src="https://app.bitbybit.dev/assets/git-cover.png" alt="Picture showing bitbybit.dev platform">
+<img src="https://bitbybit.dev/files/site/git-cover.png" alt="Picture showing bitbybit.dev platform">
 
 ## Overview
 

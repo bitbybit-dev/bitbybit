@@ -27,11 +27,7 @@ export class CacheHelper {
     cleanAllCache(): void;
     // (undocumented)
     cleanCacheForHash(hash: string): void;
-    // (undocumented)
-    cleanUpCache(): void;
     computeHash(args: any, raw?: boolean): number | string;
-    // (undocumented)
-    hashesFromPreviousRun: Record<string, string | number>;
     // (undocumented)
     isJSCADObject(obj: any): boolean;
     // (undocumented)

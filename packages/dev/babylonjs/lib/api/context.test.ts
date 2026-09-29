@@ -1,4 +1,4 @@
-import { MockScene } from "./__mocks__/babylonjs.mock";
+import { MockScene, instanceOf } from "./__mocks__/babylonjs.mock";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 vi.mock("@babylonjs/core", async () => {
     const { createBabylonJSMock } = await vi.importActual<typeof import("./__mocks__/babylonjs.mock")>("./__mocks__/babylonjs.mock");
@@ -8,6 +8,7 @@ vi.mock("@babylonjs/core", async () => {
 import { Context } from "./context";
 import * as Inputs from "./inputs";
 import * as BABYLON from "@babylonjs/core";
+import { partialMock } from "./__mocks__/test-helpers";
 
 describe("Context unit tests", () => {
     let context: Context;
@@ -23,25 +24,25 @@ describe("Context unit tests", () => {
         });
 
         it("should be able to have scene property assigned", () => {
-            const mockScene = new MockScene() as unknown as BABYLON.Scene;
+            const mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
         });
 
         it("should be able to have engine property assigned", () => {
-            const mockEngine = {
+            const mockEngine = partialMock<BABYLON.Engine>({
                 dispose: vi.fn(),
                 runRenderLoop: vi.fn()
-            } as unknown as BABYLON.Engine;
+            });
             context.engine = mockEngine;
             expect(context.engine).toBe(mockEngine);
         });
 
         it("should be able to have havokPlugin property assigned", () => {
-            const mockHavokPlugin = {
+            const mockHavokPlugin = partialMock<BABYLON.HavokPlugin>({
                 name: "havok",
                 setGravity: vi.fn()
-            } as unknown as BABYLON.HavokPlugin;
+            });
             context.havokPlugin = mockHavokPlugin;
             expect(context.havokPlugin).toBe(mockHavokPlugin);
         });
@@ -49,7 +50,7 @@ describe("Context unit tests", () => {
 
     describe("getSamplingMode", () => {
         beforeEach(() => {
-            context.scene = new MockScene() as unknown as BABYLON.Scene;
+            context.scene = instanceOf(new MockScene(), BABYLON.Scene);
         });
 
         it("should return NEAREST_SAMPLINGMODE for nearest enum", () => {
@@ -68,7 +69,8 @@ describe("Context unit tests", () => {
         });
 
         it("should return NEAREST_SAMPLINGMODE as default", () => {
-            const result = context.getSamplingMode("invalid" as any);
+            const invalidMode: string = "invalid";
+            const result = context.getSamplingMode(invalidMode as Inputs.BabylonTexture.samplingModeEnum);
             expect(result).toBe(BABYLON.Texture.NEAREST_SAMPLINGMODE);
         });
 
@@ -89,25 +91,25 @@ describe("Context unit tests", () => {
 
     describe("Property assignment", () => {
         it("should allow setting scene property", () => {
-            const mockScene = new MockScene() as unknown as BABYLON.Scene;
+            const mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
         });
 
         it("should allow setting engine property", () => {
-            const mockEngine = {
+            const mockEngine = partialMock<BABYLON.Engine>({
                 dispose: vi.fn(),
                 runRenderLoop: vi.fn()
-            } as unknown as BABYLON.Engine;
+            });
             context.engine = mockEngine;
             expect(context.engine).toBe(mockEngine);
         });
 
         it("should allow setting havokPlugin property", () => {
-            const mockHavokPlugin = {
+            const mockHavokPlugin = partialMock<BABYLON.HavokPlugin>({
                 name: "havok",
                 setGravity: vi.fn()
-            } as unknown as BABYLON.HavokPlugin;
+            });
             context.havokPlugin = mockHavokPlugin;
             expect(context.havokPlugin).toBe(mockHavokPlugin);
         });
@@ -125,8 +127,8 @@ describe("Context unit tests", () => {
             const context1 = new Context();
             const context2 = new Context();
             
-            const scene1 = new MockScene() as unknown as BABYLON.Scene;
-            const scene2 = new MockScene() as unknown as BABYLON.Scene;
+            const scene1 = instanceOf(new MockScene(), BABYLON.Scene);
+            const scene2 = instanceOf(new MockScene(), BABYLON.Scene);
             
             context1.scene = scene1;
             context2.scene = scene2;
@@ -138,7 +140,7 @@ describe("Context unit tests", () => {
     describe("Context inheritance", () => {
         it("should inherit from ContextBase", () => {
             expect(context).toBeDefined();
-            const mockScene = new MockScene() as unknown as BABYLON.Scene;
+            const mockScene = instanceOf(new MockScene(), BABYLON.Scene);
             context.scene = mockScene;
             expect(context.scene).toBe(mockScene);
         });
@@ -146,11 +148,11 @@ describe("Context unit tests", () => {
 
     describe("WebGPU Engine support", () => {
         it("should support WebGPU Engine type", () => {
-            const mockWebGPUEngine = {
+            const mockWebGPUEngine = partialMock<BABYLON.WebGPUEngine>({
                 dispose: vi.fn(),
                 runRenderLoop: vi.fn(),
                 initAsync: vi.fn()
-            } as unknown as BABYLON.WebGPUEngine;
+            });
             
             context.engine = mockWebGPUEngine;
             expect(context.engine).toBe(mockWebGPUEngine);

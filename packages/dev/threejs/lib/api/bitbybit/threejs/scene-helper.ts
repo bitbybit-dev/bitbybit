@@ -2,6 +2,8 @@ import * as THREEJS from "three";
 import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
 import { OrbitCameraController, ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
 import { createOrbitCamera } from "./orbit-camera";
+import { resolveDto } from "@bitbybit-dev/base";
+import * as Resolved from "../../resolved-inputs";
 
 const SIXTY_HZ_FRAMES_PER_SECOND = 60;
 const FIRST_FRAME_DELTA_SECONDS = 1 / SIXTY_HZ_FRAMES_PER_SECOND;
@@ -41,7 +43,7 @@ function frameDeltaSeconds(previousFrameTimeMs: number | undefined, frameTimeMs:
  * ```
  */
 export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSResult {
-    const config = inputs || new ThreeJSScene.InitThreeJSDto();
+    const config = resolveDto(ThreeJSScene.InitThreeJSDto, inputs) as Resolved.ThreeJSScene.InitThreeJSDto;
 
     let canvas: HTMLCanvasElement;
     if (config.canvasId) {
@@ -138,18 +140,13 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
 
     let orbitCamera: OrbitCameraController | null = null;
     if (config.enableOrbitCamera) {
-        const camOpts = config.orbitCameraOptions ?? new ThreeJSCamera.OrbitCameraDto();
-        
-        const referenceSize = 20;
-        const sizeRatio = config.sceneSize / referenceSize;
-        
+        const camOpts = resolveDto(ThreeJSCamera.OrbitCameraDto, config.orbitCameraOptions) as Resolved.ThreeJSCamera.OrbitCameraDto;
+
         const userProvidedCameraOptions = config.orbitCameraOptions !== undefined;
         const effectiveDistance = userProvidedCameraOptions ? camOpts.distance : config.sceneSize * Math.sqrt(2);
         const effectiveDistanceMin = userProvidedCameraOptions ? camOpts.distanceMin : config.sceneSize * 0.05;
         const effectiveDistanceMax = userProvidedCameraOptions ? camOpts.distanceMax : config.sceneSize * 10;
-        const effectiveDistanceSensitivity = userProvidedCameraOptions ? camOpts.distanceSensitivity : camOpts.distanceSensitivity * sizeRatio;
-        const effectivePanSensitivity = userProvidedCameraOptions ? camOpts.panSensitivity : camOpts.panSensitivity * sizeRatio;
-        
+
         orbitCamera = createOrbitCamera({
             pivotPoint: camOpts.pivotPoint,
             distance: effectiveDistance,
@@ -160,8 +157,8 @@ export function initThreeJS(inputs?: ThreeJSScene.InitThreeJSDto): InitThreeJSRe
             pitchAngleMin: camOpts.pitchAngleMin,
             pitchAngleMax: camOpts.pitchAngleMax,
             orbitSensitivity: camOpts.orbitSensitivity,
-            distanceSensitivity: effectiveDistanceSensitivity,
-            panSensitivity: effectivePanSensitivity,
+            distanceSensitivity: camOpts.distanceSensitivity,
+            panSensitivity: camOpts.panSensitivity,
             inertiaFactor: camOpts.inertiaFactor,
             autoRender: camOpts.autoRender,
             frameOnStart: camOpts.frameOnStart,

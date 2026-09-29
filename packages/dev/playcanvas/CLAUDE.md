@@ -36,3 +36,8 @@ The engine is an ordinary dependency here, not a peer as it is in `babylonjs`.
 - Texture filters are set **inside `image.onload`, after `setSource`**, not at construction.
 - After setting the orbit camera's `pivotPoint`, the controller's internal `_pivotPoint` is set to
   match, so the camera **starts** at the target rather than gliding in under its inertia factor.
+- **`initPlayCanvas` sizes the camera distance and its limits from `sceneSize`, never
+  `distanceSensitivity`.** The wheel and the pinch move the camera by a fraction of its distance and
+  the pan projects screen points at that distance, so the sensitivity already feels the same at every
+  scene size; it was once multiplied by `sceneSize / 20` on top of that, and `scene-helper.test.ts`
+  now pins one wheel step to the same fraction of the distance in a 20-unit and a 600-unit scene.

@@ -1,40 +1,43 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 
-export function ApiKeyWarning() {
-    const [visible, setVisible] = useState(false);
+const CAD_CLOUD_URL = "https://bitbybit.dev/cad-cloud";
+const STUDIO_KEYS_URL = "https://studio.bitbybit.dev/keys/billing";
+
+export function ApiKeyWarning(): ReactElement | null {
+    const [state, setState] = useState<"ok" | "no-key" | "no-backend">("ok");
 
     useEffect(() => {
-        // Probe the backend to check if the API key is configured
         fetch("/api/generate", { method: "POST" })
-            .then(async (res) => {
-                // 503 = API key not configured, 502/504 = backend not reachable
-                if (res.status === 503 || res.status === 502 || res.status === 504) {
-                    setVisible(true);
-                }
+            .then((res) => {
+                if (res.status === 503) setState("no-key");
+                else if (res.status === 502 || res.status === 504) setState("no-backend");
             })
-            .catch(() => {
-                // Backend not reachable — show generic warning
-                setVisible(true);
-            });
+            .catch(() => { setState("no-backend"); });
     }, []);
 
-    if (!visible) return null;
+    if (state === "ok") return null;
 
     return (
         <div className="api-key-warning">
             <div className="api-key-warning-icon">⚠️</div>
             <div className="api-key-warning-content">
-                <strong>API Key Not Configured</strong>
-                <p>
-                    You need a Bitbybit API key to use this application.
-                    Create an account on{" "}
-                    <a href="https://bitbybit.dev" target="_blank" rel="noopener noreferrer">bitbybit.dev</a>{" "}
-                    and purchase an API key plan at{" "}
-                    <a href="https://bitbybit.dev/auth/pick-plan?api-keys=true" target="_blank" rel="noopener noreferrer">
-                        bitbybit.dev/auth/pick-plan
-                    </a>{" "}
-                    to get access to managed CAD cloud servers.
-                </p>
+                {state === "no-backend" ? (
+                    <>
+                        <strong>Backend not reachable</strong>
+                        <p>Start it in a second terminal: <code>cd backend</code> then <code>npm run dev</code> (or <code>dotnet run</code>). The frontend proxies <code>/api</code> to it.</p>
+                    </>
+                ) : (
+                    <>
+                        <strong>This app needs CAD Cloud</strong>
+                        <p>
+                            Everything it renders is computed on{" "}
+                            <a href={CAD_CLOUD_URL} target="_blank" rel="noopener noreferrer">CAD Cloud</a>, and the backend has no API key yet.
+                            Any plan includes one: create it in{" "}
+                            <a href={STUDIO_KEYS_URL} target="_blank" rel="noopener noreferrer">Bitbybit Studio</a>, put it in the backend's secret file
+                            (see the README) and restart the backend. The key stays on the server; this page never sees it.
+                        </p>
+                    </>
+                )}
             </div>
         </div>
     );
