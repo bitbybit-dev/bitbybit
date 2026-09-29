@@ -349,6 +349,27 @@ export type OperationPath =
     | "math.toFixed"
     | "math.twoNrOperation"
     | "math.wrap"
+    | "occt.analysis.clashes.betweenShapes"
+    | "occt.analysis.clashes.facesWithin"
+    | "occt.analysis.clashes.selfIntersections"
+    | "occt.analysis.curves.closestPoints"
+    | "occt.analysis.curves.curvatureComb"
+    | "occt.analysis.curves.curvaturesAtLengths"
+    | "occt.analysis.curves.curvaturesAtParams"
+    | "occt.analysis.curves.curveType"
+    | "occt.analysis.curves.extremesAlong"
+    | "occt.analysis.curves.intersectCurves"
+    | "occt.analysis.curves.intersectCurveWithFace"
+    | "occt.analysis.curves.kinks"
+    | "occt.analysis.measure.angleBetween"
+    | "occt.analysis.measure.boundingBoxInFrame"
+    | "occt.analysis.measure.dihedralAngle"
+    | "occt.analysis.measure.extrema"
+    | "occt.analysis.measure.minCurvatureRadius"
+    | "occt.analysis.measure.tightBoundingBox"
+    | "occt.analysis.surfaces.closestPoints"
+    | "occt.analysis.surfaces.curvaturesOnUVs"
+    | "occt.analysis.surfaces.surfaceType"
     | "occt.assembly.manager.buildAssemblyDocument"
     | "occt.assembly.manager.combineStructure"
     | "occt.assembly.manager.createAssemblyNode"
@@ -359,12 +380,17 @@ export type OperationPath =
     | "occt.assembly.manager.deleteDocument"
     | "occt.assembly.manager.exportDocumentToGltf"
     | "occt.assembly.manager.exportDocumentToGltfWithDraco"
+    | "occt.assembly.manager.exportDocumentToObj"
+    | "occt.assembly.manager.exportDocumentToPly"
     | "occt.assembly.manager.exportDocumentToStep"
+    | "occt.assembly.manager.loadGltfToDoc"
+    | "occt.assembly.manager.loadObjToDoc"
     | "occt.assembly.manager.loadStepToDoc"
     | "occt.assembly.manager.setDocLabelColor"
     | "occt.assembly.manager.setDocLabelName"
     | "occt.assembly.query.getAssemblyHierarchy"
     | "occt.assembly.query.getDocumentParts"
+    | "occt.assembly.query.getDocumentPmi"
     | "occt.assembly.query.getLabelColor"
     | "occt.assembly.query.getLabelInfo"
     | "occt.assembly.query.getLabelTransform"
@@ -406,6 +432,19 @@ export type OperationPath =
     | "occt.draft.draftAngle"
     | "occt.draft.makeDraft"
     | "occt.draft.makeDraftToShape"
+    | "occt.features.boss"
+    | "occt.features.counterboredHoles"
+    | "occt.features.countersunkHoles"
+    | "occt.features.groove"
+    | "occt.features.holes"
+    | "occt.features.pocket"
+    | "occt.features.pushPullFaces"
+    | "occt.features.removeFaces"
+    | "occt.features.revolvedBoss"
+    | "occt.features.revolvedPocket"
+    | "occt.features.rib"
+    | "occt.features.taperedBoss"
+    | "occt.features.taperedPocket"
     | "occt.fillets.chamfer2dVertices"
     | "occt.fillets.chamferEdgeDistAngle"
     | "occt.fillets.chamferEdges"
@@ -442,12 +481,22 @@ export type OperationPath =
     | "occt.io.convertStepToGltfWithDraco"
     | "occt.io.dxfCreate"
     | "occt.io.dxfPathsWithLayer"
+    | "occt.io.loadBrep"
     | "occt.io.loadSTEPorIGES"
+    | "occt.io.loadStl"
     | "occt.io.parseStepToJson"
+    | "occt.io.saveShapeBrep"
+    | "occt.io.saveShapeBrepAndReturn"
+    | "occt.io.saveShapeObj"
+    | "occt.io.saveShapeObjAndReturn"
+    | "occt.io.saveShapePly"
+    | "occt.io.saveShapePlyAndReturn"
     | "occt.io.saveShapeSTEP"
     | "occt.io.saveShapeSTEPAndReturn"
     | "occt.io.saveShapeStl"
     | "occt.io.saveShapeStlAndReturn"
+    | "occt.io.saveShapeSvg"
+    | "occt.io.saveShapeSvgAndReturn"
     | "occt.io.shapeToDxfPaths"
     | "occt.operations.boundingBoxCenterOfShape"
     | "occt.operations.boundingBoxMaxOfShape"
@@ -466,6 +515,7 @@ export type OperationPath =
     | "occt.operations.extrude"
     | "occt.operations.extrudeShapes"
     | "occt.operations.extrudeWithHistory"
+    | "occt.operations.hiddenLines"
     | "occt.operations.loft"
     | "occt.operations.loftAdvanced"
     | "occt.operations.makeThickSolidByJoin"
@@ -478,13 +528,19 @@ export type OperationPath =
     | "occt.operations.pipePolylineWireNGon"
     | "occt.operations.pipeWireCylindrical"
     | "occt.operations.pipeWiresCylindrical"
+    | "occt.operations.pipeWithScaling"
     | "occt.operations.principalFrame"
     | "occt.operations.revolve"
     | "occt.operations.revolveWithHistory"
     | "occt.operations.rotatedExtrude"
+    | "occt.operations.sectionWires"
     | "occt.operations.slice"
+    | "occt.operations.sliceByFrames"
     | "occt.operations.sliceInStepPattern"
+    | "occt.operations.splitByFrame"
+    | "occt.operations.splitFaceByWires"
     | "occt.operations.splitShapeWithShapes"
+    | "occt.operations.sweepEvolved"
     | "occt.path.shapeFromPath"
     | "occt.select.edges.along"
     | "occt.select.edges.between"
@@ -518,7 +574,13 @@ export type OperationPath =
     | "occt.shapeFacesToPolygonPoints"
     | "occt.shapeFix.basicShapeRepair"
     | "occt.shapeFix.fixEdgeOrientationsAlongWire"
+    | "occt.shapeFix.fixShell"
     | "occt.shapeFix.fixSmallEdgeOnWire"
+    | "occt.shapeFix.fixSolid"
+    | "occt.shapeFix.freeBoundaries"
+    | "occt.shapeFix.orientClosedSolid"
+    | "occt.shapeFix.sewWithReport"
+    | "occt.shapeFix.validityReport"
     | "occt.shapes.compound.getShapesOfCompound"
     | "occt.shapes.compound.makeCompound"
     | "occt.shapes.edge.arcFromCircleAndTwoAngles"
@@ -526,6 +588,10 @@ export type OperationPath =
     | "occt.shapes.edge.arcFromCirclePointAndAngle"
     | "occt.shapes.edge.arcThroughThreePoints"
     | "occt.shapes.edge.arcThroughTwoPointsAndTangent"
+    | "occt.shapes.edge.blendBetweenEdges"
+    | "occt.shapes.edge.circlesTangentToThree"
+    | "occt.shapes.edge.circlesTangentToTwoCenteredOn"
+    | "occt.shapes.edge.circlesTangentToTwoWithRadius"
     | "occt.shapes.edge.constraintTanCirclesOnCircleAndPnt"
     | "occt.shapes.edge.constraintTanCirclesOnTwoCircles"
     | "occt.shapes.edge.constraintTanLinesFromPtToCircle"
@@ -541,6 +607,7 @@ export type OperationPath =
     | "occt.shapes.edge.edgesToPoints"
     | "occt.shapes.edge.endPointOnEdge"
     | "occt.shapes.edge.endPointsOnEdges"
+    | "occt.shapes.edge.extendEdge"
     | "occt.shapes.edge.frameOnEdgeAtLength"
     | "occt.shapes.edge.frameOnEdgeAtParam"
     | "occt.shapes.edge.framesOnEdgeAtLengths"
@@ -570,6 +637,8 @@ export type OperationPath =
     | "occt.shapes.edge.isEdgeCircular"
     | "occt.shapes.edge.isEdgeLinear"
     | "occt.shapes.edge.line"
+    | "occt.shapes.edge.linesTangentAtAngle"
+    | "occt.shapes.edge.linesTangentToTwo"
     | "occt.shapes.edge.makeEdgeFromGeom2dCurveAndSurface"
     | "occt.shapes.edge.moveEdgeSeamByLength"
     | "occt.shapes.edge.moveEdgeSeamByParameter"
@@ -580,12 +649,15 @@ export type OperationPath =
     | "occt.shapes.edge.rebuildEdgeDegree"
     | "occt.shapes.edge.removeInternalEdges"
     | "occt.shapes.edge.reversedEdge"
+    | "occt.shapes.edge.splitEdgeAtLengths"
+    | "occt.shapes.edge.splitEdgeAtParams"
     | "occt.shapes.edge.startPointOnEdge"
     | "occt.shapes.edge.startPointsOnEdges"
     | "occt.shapes.edge.tangentOnEdgeAtLength"
     | "occt.shapes.edge.tangentOnEdgeAtParam"
     | "occt.shapes.edge.tangentsOnEdgesAtLength"
     | "occt.shapes.edge.tangentsOnEdgesAtParam"
+    | "occt.shapes.face.boundaryPatch"
     | "occt.shapes.face.createChristmasTreeFace"
     | "occt.shapes.face.createCircleFace"
     | "occt.shapes.face.createEllipseFace"
@@ -612,6 +684,7 @@ export type OperationPath =
     | "occt.shapes.face.debugInfo"
     | "occt.shapes.face.faceFromSurface"
     | "occt.shapes.face.faceFromSurfaceAndWire"
+    | "occt.shapes.face.fillPatch"
     | "occt.shapes.face.filterFacePoints"
     | "occt.shapes.face.filterFacesPoints"
     | "occt.shapes.face.flipFaceUV"
@@ -621,6 +694,7 @@ export type OperationPath =
     | "occt.shapes.face.framesOnUVs"
     | "occt.shapes.face.fromBaseMesh"
     | "occt.shapes.face.fromBaseTriangle"
+    | "occt.shapes.face.fromPointGrid"
     | "occt.shapes.face.getFace"
     | "occt.shapes.face.getFaceArea"
     | "occt.shapes.face.getFaceCenterOfMass"
@@ -632,6 +706,7 @@ export type OperationPath =
     | "occt.shapes.face.getVMaxBound"
     | "occt.shapes.face.getVMinBound"
     | "occt.shapes.face.hexagonsInGrid"
+    | "occt.shapes.face.isoCurves"
     | "occt.shapes.face.normalizeFaceParametrization"
     | "occt.shapes.face.normalOnUV"
     | "occt.shapes.face.normalsOnUVs"
@@ -639,6 +714,7 @@ export type OperationPath =
     | "occt.shapes.face.pointsOnUVs"
     | "occt.shapes.face.rebuildFaceDegree"
     | "occt.shapes.face.reversedFace"
+    | "occt.shapes.face.ruledBetween"
     | "occt.shapes.face.subdivideToFrames"
     | "occt.shapes.face.subdivideToHexagonHoles"
     | "occt.shapes.face.subdivideToHexagonWires"
@@ -650,6 +726,7 @@ export type OperationPath =
     | "occt.shapes.face.subdivideToRectangleWires"
     | "occt.shapes.face.subdivideToUV"
     | "occt.shapes.face.subdivideToWires"
+    | "occt.shapes.face.unroll"
     | "occt.shapes.face.wireAlongParam"
     | "occt.shapes.face.wiresAlongParams"
     | "occt.shapes.shape.getOrientation"
@@ -781,6 +858,7 @@ export type OperationPath =
     | "occt.shapes.wire.midPointOnWire"
     | "occt.shapes.wire.moveWireSeamByLength"
     | "occt.shapes.wire.moveWireSeamByParameter"
+    | "occt.shapes.wire.offsetOpen"
     | "occt.shapes.wire.placeWireOnFace"
     | "occt.shapes.wire.placeWiresOnFace"
     | "occt.shapes.wire.pointOnWireAtLength"
@@ -789,17 +867,22 @@ export type OperationPath =
     | "occt.shapes.wire.pointsOnWireAtLengths"
     | "occt.shapes.wire.pointsOnWireAtPatternOfLengths"
     | "occt.shapes.wire.project"
+    | "occt.shapes.wire.projectConical"
+    | "occt.shapes.wire.projectNormal"
     | "occt.shapes.wire.projectWires"
     | "occt.shapes.wire.rebuildWireDegree"
     | "occt.shapes.wire.reversedWire"
     | "occt.shapes.wire.reversedWireFromReversedEdges"
     | "occt.shapes.wire.splitOnPoints"
+    | "occt.shapes.wire.splitWireAtLengths"
+    | "occt.shapes.wire.splitWireAtParams"
     | "occt.shapes.wire.startPointOnWire"
     | "occt.shapes.wire.tangentOnWireAtLength"
     | "occt.shapes.wire.tangentOnWireAtParam"
     | "occt.shapes.wire.textWires"
     | "occt.shapes.wire.textWiresWithData"
     | "occt.shapes.wire.wiresToPoints"
+    | "occt.shapes.wire.wrapWiresOnFace"
     | "occt.shapesToMeshes"
     | "occt.shapeToManifoldMesh"
     | "occt.shapeToMesh"
@@ -5446,6 +5529,336 @@ export interface OperationParams {
         max?: number | PipelineRef;
     };
     /**
+     * Finds every pair among a list of shapes that overlap, touch or come within a clearance of each
+     * other, such as colliding parts.
+     *
+     * A clash names the two by their positions in the list, from 0, with their distance, 0 where they
+     * touch, overlap or nest, and the volume two solids share.
+     */
+    "occt.analysis.clashes.betweenShapes": {
+        /** The shapes to check against each other; a clash names two of them by their positions here. */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * How close two shapes may come before they clash, in model units; 0 reports only shapes that
+         * touch or overlap.
+         */
+        clearance?: number | PipelineRef;
+    };
+    /**
+     * Finds the faces of one shape that come within a clearance of faces of another, each pair
+     * measured exactly.
+     *
+     * A clash names a face of each as `shapes.face.getFaces` numbers them, sorted by the first shape's
+     * face. Candidates come from meshes of copies at `precision`, so the shapes given stay unmeshed;
+     * faces without a surface take no part.
+     */
+    "occt.analysis.clashes.facesWithin": {
+        /** The first shape, whose faces are side A of each clash. */
+        shapeA: unknown | PipelineRef;
+        /** The second shape, whose faces are side B of each clash. */
+        shapeB: unknown | PipelineRef;
+        /**
+         * How close a face of one shape may come to a face of the other before the two clash, in model
+         * units.
+         */
+        clearance?: number | PipelineRef;
+        /**
+         * The mesh deflection of the search for candidate pairs, in model units; every pair it finds is
+         * then measured exactly.
+         */
+        precision?: number | PipelineRef;
+    };
+    /**
+     * Finds the pairs of faces of one shape that cross each other anywhere but along an edge they
+     * share.
+     *
+     * A clash names the two faces as `shapes.face.getFaces` numbers them, with both points at one
+     * place on their crossing. Candidates come from a mesh of a copy at `precision` and are confirmed
+     * exactly; a mere touch can be missed.
+     */
+    "occt.analysis.clashes.selfIntersections": {
+        /** The shape whose faces are checked against each other. */
+        shape: unknown | PipelineRef;
+        /**
+         * The mesh deflection of the search for candidate pairs, in model units; every pair it finds is
+         * then confirmed exactly.
+         */
+        precision?: number | PipelineRef;
+    };
+    /**
+     * Finds the point of an edge or a wire nearest each given point, with where it lies along the
+     * curve.
+     *
+     * Each result carries the point, its parameter as a fraction of the curve, its length from the
+     * start, its distance from the given point and the edge it lies on; at a corner that is the
+     * edge starting there.
+     */
+    "occt.analysis.curves.closestPoints": {
+        /** The shape the closest points are looked for on. */
+        shape: unknown | PipelineRef;
+        /** The points to measure from, in the order the results should come back. */
+        points: [number, number, number][] | PipelineRef;
+    };
+    /**
+     * Draws a curvature comb along an edge or a wire: teeth standing on the curve, as long as the
+     * curvature there, pointing away from its center.
+     *
+     * The first polyline runs through the tips, showing how the curvature changes; then comes one
+     * two-point polyline per tooth, from the curve to its tip. The teeth are spaced evenly by length.
+     */
+    "occt.analysis.curves.curvatureComb": {
+        /** The edge or wire whose curvature is drawn. */
+        shape: unknown | PipelineRef;
+        /** How many teeth, spaced evenly by length from the start of the curve to its end. */
+        samples?: number | PipelineRef;
+        /**
+         * How long a tooth is per unit of curvature; 0 picks the scale that makes the longest tooth a
+         * fifth of the curve's length.
+         */
+        scale?: number | PipelineRef;
+    };
+    /**
+     * Reads how an edge or a wire bends at places given as lengths along it from its start, in model
+     * units.
+     *
+     * Each result is what `curvaturesAtParams` gives: the point, the tangent, normal and binormal,
+     * the curvature with its radius and center, and the torsion. At a corner of a wire the edge
+     * starting there is read.
+     */
+    "occt.analysis.curves.curvaturesAtLengths": {
+        /** The edge or wire to evaluate; each method says which it takes. */
+        shape: unknown | PipelineRef;
+        /** The distances from the start along the wire, in model units, one point each. */
+        lengths: number[] | PipelineRef;
+    };
+    /**
+     * Reads how an edge or a wire bends at places given as fractions from 0 at its start to 1 at its
+     * end.
+     *
+     * Each result holds the point, tangent, normal, binormal, curvature, radius, center and torsion;
+     * a straight stretch reads `isStraight` with an `Infinity` radius. At a corner of a wire the edge
+     * starting there is read.
+     */
+    "occt.analysis.curves.curvaturesAtParams": {
+        /** The edge or wire to read or cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * Places along the curve, each a fraction from 0 at the start to 1 at the end; each edge of a
+         * wire takes an equal share, as in `shapes.wire.pointOnWireAtParam`.
+         */
+        params: number[] | PipelineRef;
+    };
+    /**
+     * Tells what kind of curve an edge runs along: a line, a circle, an ellipse, a hyperbola, a
+     * parabola, a Bezier curve, a B-spline, an offset curve or another kind.
+     *
+     * The kinds are the ones `select.edges.ofType` chooses edges by.
+     */
+    "occt.analysis.curves.curveType": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
+     * Finds the highest and lowest points of an edge or a wire along a direction, such as the crests
+     * of a wave.
+     *
+     * They come in order along the curve, marked as maxima or minima, and as global when nothing lies
+     * higher, or lower; ties are all global. An open curve's ends count; a level stretch is reported
+     * at its start.
+     */
+    "occt.analysis.curves.extremesAlong": {
+        /** The edge or wire to look along. */
+        shape: unknown | PipelineRef;
+        /** The way up: the highest points lie furthest along it; only its direction matters. */
+        direction?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Finds where two edges or wires cross or touch, with the parameter and the edge of each point on
+     * both curves.
+     *
+     * The points come in order along the first curve. Where the curves run together, the two ends of
+     * the shared stretch come back marked `isOverlap`; curves that do not meet give an empty list.
+     */
+    "occt.analysis.curves.intersectCurves": {
+        /** The first edge or wire; the points come back in order along it. */
+        shapeA: unknown | PipelineRef;
+        /** The second edge or wire, the one the first meets. */
+        shapeB: unknown | PipelineRef;
+        /**
+         * How close the curves may pass and still count as meeting, in model units; points closer than
+         * it to each other merge into one.
+         */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Finds where an edge or a wire passes through a face or lies on it, within the face's edges.
+     *
+     * The points come in order along the curve, with `u` and `v` as the fractions that
+     * `shapes.face.pointOnUV` takes. A stretch lying on the face gives its two ends, marked
+     * `isOverlap`.
+     */
+    "occt.analysis.curves.intersectCurveWithFace": {
+        /** The edge or wire that meets the face; the points come back in order along it. */
+        shape: unknown | PipelineRef;
+        /** The face the curve meets, within its edges; the surface beyond them does not count. */
+        face: unknown | PipelineRef;
+        /**
+         * How close the curve may pass and still count as meeting the face, in model units; points
+         * closer than it to each other merge into one.
+         */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Finds the corners of an edge or a wire where the tangent turns by more than an angle, such as
+     * the corners of a polyline.
+     *
+     * Each kink comes with the edge ending there and the turn in degrees, in walking order; a closed
+     * wire's closing corner, at its start, comes first.
+     */
+    "occt.analysis.curves.kinks": {
+        /** The edge or wire to look along. */
+        shape: unknown | PipelineRef;
+        /**
+         * How far the tangent must turn where two edges meet for the joint to count as a kink, in
+         * degrees; a turn of exactly this much does not count.
+         */
+        angle?: number | PipelineRef;
+    };
+    /**
+     * Measures the angle in degrees between two faces or edges where they come nearest each other.
+     *
+     * Faces compare their normals, 0 when they look the same way and 180 when opposite; edges compare
+     * their tangents; a face and an edge compare the normal with the tangent, so the edge meets the
+     * face's plane at 90 minus the angle.
+     */
+    "occt.analysis.measure.angleBetween": {
+        /** The first shape, side A of the results. */
+        shapeA: unknown | PipelineRef;
+        /** The second shape, side B of the results. */
+        shapeB: unknown | PipelineRef;
+    };
+    /**
+     * Finds the box that just holds a shape with its sides along a frame's axes instead of the
+     * world's.
+     *
+     * The box's x runs along the frame's direction and its z along the normal. It comes back as a
+     * frame at its center and half its size along each axis; `operations.orientedBoundingBox` turns
+     * the box to fit instead.
+     */
+    "occt.analysis.measure.boundingBoxInFrame": {
+        /** The shape the box is found around. */
+        shape: unknown | PipelineRef;
+        /**
+         * The frame whose axes the box follows: its x along the frame's direction and its z along the
+         * frame's normal. Only the axes matter, not the origin.
+         */
+        frame: unknown | PipelineRef;
+    };
+    /**
+     * Measures the angle through the material between the two faces that meet at an edge.
+     *
+     * A box's edges read 90 degrees, a smooth join 180 and an L's inner edge 270; up to 180 the edge
+     * is convex. `param` is a share of the edge's parameter range, and of its length only on lines and
+     * circles.
+     */
+    "occt.analysis.measure.dihedralAngle": {
+        /** The shape the edge belongs to. */
+        shape: unknown | PipelineRef;
+        /** The edge, counted from 0 as `shapes.edge.getEdges` lists them. */
+        index?: number | PipelineRef;
+        /**
+         * Where along the edge the angle is read, as a share of its parameter range from 0 at its start
+         * to 1 at its end.
+         */
+        param?: number | PipelineRef;
+    };
+    /**
+     * Finds every nearest pair of points between two shapes, with the vertex, edge or face each point
+     * lies on and where on it.
+     *
+     * Touching, overlapping and nested shapes are 0 apart; a shape inside another gives one pair on
+     * one of its vertices, with -1 as the containing side's index.
+     * `operations.closestPointsBetweenTwoShapes` gives one pair alone.
+     */
+    "occt.analysis.measure.extrema": {
+        /** The first shape, side A of the results. */
+        shapeA: unknown | PipelineRef;
+        /** The second shape, side B of the results. */
+        shapeB: unknown | PipelineRef;
+    };
+    /**
+     * Finds the tightest bend of a shape, sampled over its faces and edges, and where it is.
+     *
+     * Each face is read on a grid of `samples` by `samples` places inside its trims and each edge at
+     * `samples` places, so a tighter bend between them can be missed. A sharp edge between faces is no
+     * bend; `dihedralAngle` measures it.
+     */
+    "occt.analysis.measure.minCurvatureRadius": {
+        /** The shape whose tightest bend is found. */
+        shape: unknown | PipelineRef;
+        /**
+         * How densely the shape is read: a grid of this many by this many places on each face, and this
+         * many places along each edge.
+         */
+        samples?: number | PipelineRef;
+        /**
+         * True reads only where faces bend concavely, the tightest radius a round tool can reach; edges
+         * and convex bends are then skipped.
+         */
+        concaveOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Finds the box lined up with the axes that just holds a shape's exact geometry.
+     *
+     * Unlike `operations.boundingBoxOfShape`, which may add tolerances and the mesh, it leaves no gap:
+     * a ball of radius 3 gets a box of 6. A face carrying only a mesh is boxed by its nodes; a shape
+     * with nothing to bound is refused.
+     */
+    "occt.analysis.measure.tightBoundingBox": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
+     * Finds the point of a face nearest each given point, with its (u, v) and the face's normal there.
+     *
+     * The face is bounded, so a point beyond its edges comes to its boundary, which `isOnBoundary`
+     * says. `u` and `v` are fractions of the face's UV bounds, as `shapes.face.pointOnUV` takes them;
+     * `operations.closestPointsOnShapeFromPoints` gives the points alone, for any shape.
+     */
+    "occt.analysis.surfaces.closestPoints": {
+        /** The shape the closest points are looked for on. */
+        shape: unknown | PipelineRef;
+        /** The points to measure from, in the order the results should come back. */
+        points: [number, number, number][] | PipelineRef;
+    };
+    /**
+     * Reads how a face bends at (u, v) pairs: its largest and smallest curvature with their
+     * directions, their mean and product, and the normal.
+     *
+     * U and V are fractions of the face's UV bounds. A curvature is 1 over a radius, positive where the
+     * face bulges out along its normal, so the inside of a hole reads negative.
+     */
+    "occt.analysis.surfaces.curvaturesOnUVs": {
+        /** The face to evaluate. */
+        shape: unknown | PipelineRef;
+        /**
+         * The positions as `[u, v]` pairs, each a fraction from 0 to 1 of the face's range, one result
+         * each.
+         */
+        paramsUV?: unknown[] | PipelineRef;
+    };
+    /**
+     * Tells what kind of surface a face lies on, such as a plane, a cylinder or a B-spline.
+     *
+     * A surface trimmed to a rectangle reads as the surface it trims, as `select.faces.ofType` reads
+     * it, and a face without a surface, as an imported mesh has, reads as `other`. A shape that is not
+     * a face is refused.
+     */
+    "occt.analysis.surfaces.surfaceType": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Builds an assembly document from a structure, or applies the structure to an existing
      * document.
      *
@@ -5744,6 +6157,50 @@ export interface OperationParams {
         dracoUnifiedQuantization?: boolean | PipelineRef;
     };
     /**
+     * Triangulates an assembly document and writes it as OBJ, returning the file's text and the
+     * text of the material library its `mtllib` line names.
+     *
+     * The file name without its extension names the library, which holds the parts' colors and is
+     * empty for a document without any. Coordinates keep six decimals. `meshDeflection` sets how
+     * finely curved surfaces are triangulated.
+     */
+    "occt.assembly.manager.exportDocumentToObj": {
+        /** The document from `buildAssemblyDocument`, `loadStepToDoc` or another loader. */
+        document: unknown | PipelineRef;
+        /** How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh. */
+        meshDeflection?: number | PipelineRef;
+        /**
+         * The name the downloaded file gets. Without its extension it also names the material library,
+         * so it may hold no spaces or slashes.
+         */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the OBJ file and of any material library is started where
+         * that is possible; the kernel itself only returns the texts.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Triangulates an assembly document and writes it as ASCII PLY with a normal per vertex and the
+     * parts' colors, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so a model more than about 1000 units across loses
+     * detail below 0.01. `meshDeflection` sets how finely curved surfaces are triangulated.
+     */
+    "occt.assembly.manager.exportDocumentToPly": {
+        /** The document from `buildAssemblyDocument`, `loadStepToDoc` or another loader. */
+        document: unknown | PipelineRef;
+        /** How closely triangles follow curved surfaces, in model units; smaller gives a finer mesh. */
+        meshDeflection?: number | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
      * Writes an assembly document as a STEP file with its hierarchy, names and colors, and returns
      * the file's bytes.
      *
@@ -5766,6 +6223,35 @@ export interface OperationParams {
          * itself only returns the bytes.
          */
         tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Loads a glTF file into a new assembly document, with its hierarchy, names and colors, the
+     * meshes becoming faces that carry triangles.
+     *
+     * `gltfData` is a binary `.glb` or a `.gltf` with its buffers embedded; the file's header tells
+     * which. glTF's Y-up becomes the document's Z-up, as `exportDocumentToGltf` writes it, and a file
+     * that holds no mesh is refused.
+     */
+    "occt.assembly.manager.loadGltfToDoc": {
+        /**
+         * A binary `.glb`, or a `.gltf` with its buffers embedded, as text, ArrayBuffer, Uint8Array,
+         * File or Blob; the file's header tells which of the two it is.
+         */
+        gltfData: unknown | PipelineRef;
+    };
+    /**
+     * Loads an OBJ file into a new assembly document, its meshes becoming faces that carry
+     * triangles, named as the file names them.
+     *
+     * Coordinates are taken as they are, since OBJ has no agreed up axis. A material library the
+     * file names is not read, and a file that holds no mesh is refused.
+     */
+    "occt.assembly.manager.loadObjToDoc": {
+        /**
+         * The OBJ file as text, ArrayBuffer, Uint8Array, File or Blob; a material library it names is
+         * not read.
+         */
+        objData: unknown | PipelineRef;
     };
     /**
      * Loads a STEP file into a new assembly document, with its parts, sub-assemblies, names, colors
@@ -5830,6 +6316,18 @@ export interface OperationParams {
      * The labels are what the other query methods and the label setters take.
      */
     "occt.assembly.query.getDocumentParts": {
+        /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
+        document: unknown | PipelineRef;
+    };
+    /**
+     * Reads the product manufacturing information a document holds, as a STEP AP242 file brings it:
+     * dimensions, geometric tolerances and the datums they refer to.
+     *
+     * Each entry names its shapes by label, which `getShapeFromLabel` reads. Lengths are in the
+     * document's unit, millimeters for a loaded STEP file, and angles in degrees; a document without
+     * any gives empty lists.
+     */
+    "occt.assembly.query.getDocumentPmi": {
         /** The document from `buildAssemblyDocument` or `loadStepToDoc`. */
         document: unknown | PipelineRef;
     };
@@ -6640,6 +7138,380 @@ export interface OperationParams {
         keepOut?: boolean | PipelineRef;
         /** When true, the skirt leans inward instead of outward. */
         internal?: boolean | PipelineRef;
+    };
+    /**
+     * Grows a boss out of a base by sweeping a profile face that lies on one of its faces along
+     * `direction`.
+     *
+     * `extent` stops it after `length`, at the face `untilFaceIndex` names, such as the underside of
+     * an overhang, or through all of the base in its way, which needs base ahead of it.
+     */
+    "occt.features.boss": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** The direction the profile travels in: away from the base for a boss, into it for a pocket. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the profile travels when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
+     * Drills holes as `holes` does, each with a wider, flat-bottomed counterbore at its mouth that
+     * sinks a screw head below the surface.
+     *
+     * The counterbore must be wider than the hole and, in a hole of a given `depth`, shallower than
+     * it; a hole that breaks either rule is refused.
+     */
+    "occt.features.counterboredHoles": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+        /** The diameter of the counterbore, in model units; it must be wider than `diameter`. */
+        counterboreDiameter?: number | PipelineRef;
+        /**
+         * How deep the counterbore goes from the hole's entry, in model units; it must stay shallower
+         * than a hole of a given `depth`.
+         */
+        counterboreDepth?: number | PipelineRef;
+    };
+    /**
+     * Drills holes as `holes` does, each with a cone-shaped countersink at its mouth that sinks a
+     * flat screw head flush with the surface.
+     *
+     * `countersinkAngle` is the cone's full angle in degrees. The countersink must be wider than the
+     * hole and end above the bottom of a hole of a given `depth`.
+     */
+    "occt.features.countersunkHoles": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+        /**
+         * The diameter of the countersink where it meets the surface, in model units; it must be wider
+         * than `diameter`.
+         */
+        countersinkDiameter?: number | PipelineRef;
+        /**
+         * The full angle of the countersink cone, in degrees, such as 90 or 82 for common flat head
+         * screws.
+         */
+        countersinkAngle?: number | PipelineRef;
+    };
+    /**
+     * Cuts a groove into a base: the part of the base's section on the left of a wire as it runs,
+     * seen from the side the frame's normal points to, removed across the plane.
+     *
+     * A wire bent round a corner keeps the region inside the bend and cuts the rest; an edge is made
+     * into a wire first.
+     */
+    "occt.features.groove": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The wire outlining the rib or groove in the plane of `frame`; the feature lies on its left as
+         * it runs, seen from the side the normal points to.
+         */
+        wire: unknown | PipelineRef;
+        /**
+         * The plane the wire lies in, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * How thick the feature is on the side of the plane the frame's normal points to, in model
+         * units.
+         */
+        thickness?: number | PipelineRef;
+        /**
+         * How thick the feature is on the other side of the plane, in model units; it and `thickness`
+         * are not both 0.
+         */
+        otherSideThickness?: number | PipelineRef;
+    };
+    /**
+     * Drills plain holes into a shape, one at each frame: its origin is where the hole enters and its
+     * normal points out of the material.
+     *
+     * `depth` 0 drills through the whole shape; `tipAngle` 0 leaves a flat bottom and 118 the point of
+     * a twist drill, in degrees. Holes that meet are cut as one.
+     */
+    "occt.features.holes": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+    };
+    /**
+     * Cuts a pocket into a base by sweeping a profile face that lies on one of its faces along
+     * `direction`, which points into the base.
+     *
+     * `extent` stops it after `length`, at the face `untilFaceIndex` names, such as the ceiling of a
+     * void or the far side of the base, or through all of it.
+     */
+    "occt.features.pocket": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** The direction the profile travels in: away from the base for a boss, into it for a pocket. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the profile travels when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
+     * Moves faces of a shape along their outward normals and stretches the faces around them to
+     * follow, such as raising the top of a block.
+     *
+     * `distance` moves every chosen face, a negative one inward; `distances` gives one per index
+     * instead. Each solid of a compound moves on its own and stays a solid.
+     */
+    "occt.features.pushPullFaces": {
+        /** The shape whose faces move. */
+        shape: unknown | PipelineRef;
+        /** The faces to move, counted from 0 as `shapes.face.getFaces` lists them, each at most once. */
+        indexes: number[] | PipelineRef;
+        /**
+         * How far every chosen face moves along its outward normal, in model units; a negative
+         * distance moves it inward.
+         */
+        distance?: number | PipelineRef;
+        /**
+         * One distance per entry of `indexes`, in the same order, used instead of `distance`; left out,
+         * every chosen face moves by `distance`.
+         */
+        distances?: number[] | PipelineRef;
+    };
+    /**
+     * Removes faces from a solid and closes the gap by extending the faces around them, as when a
+     * hole or a rounded edge is deleted from a part.
+     *
+     * The shape must hold solids only; a gap its neighbours cannot close, such as the top of a box
+     * leaves, is refused rather than left open.
+     */
+    "occt.features.removeFaces": {
+        /** The shape to remove faces from; it must hold solids only. */
+        shape: unknown | PipelineRef;
+        /** The faces to remove, counted from 0 as `shapes.face.getFaces` lists them. */
+        indexes: number[] | PipelineRef;
+    };
+    /**
+     * Adds a ring to a base by turning a profile face about an axis, such as a collar round a shaft:
+     * the profile lies on a face of the base, in a plane through the axis.
+     *
+     * `angle` is in degrees and follows the right-hand rule about `axisDirection`; 360 makes a whole
+     * ring.
+     */
+    "occt.features.revolvedBoss": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The face to turn, lying in a plane through the axis; it must lie on the face of the base that
+         * `sketchFaceIndex` names.
+         */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** A point on the axis the profile turns about. */
+        axisOrigin?: [number, number, number] | PipelineRef;
+        /** The direction of the axis the profile turns about. */
+        axisDirection?: [number, number, number] | PipelineRef;
+        /**
+         * How far the profile turns, in degrees, following the right-hand rule about the axis; 360
+         * makes a whole ring.
+         */
+        angle?: number | PipelineRef;
+    };
+    /**
+     * Cuts a groove round a base by turning a profile face about an axis, such as the seat of a
+     * circlip on a shaft: the profile lies on a face of the base, in a plane through the axis.
+     *
+     * `angle` is in degrees and follows the right-hand rule about `axisDirection`; 360 cuts all the
+     * way round.
+     */
+    "occt.features.revolvedPocket": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The face to turn, lying in a plane through the axis; it must lie on the face of the base that
+         * `sketchFaceIndex` names.
+         */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** A point on the axis the profile turns about. */
+        axisOrigin?: [number, number, number] | PipelineRef;
+        /** The direction of the axis the profile turns about. */
+        axisDirection?: [number, number, number] | PipelineRef;
+        /**
+         * How far the profile turns, in degrees, following the right-hand rule about the axis; 360
+         * makes a whole ring.
+         */
+        angle?: number | PipelineRef;
+    };
+    /**
+     * Adds a rib to a base: the region between a wire and the base's faces, on the wire's left as it
+     * runs seen from the side the frame's normal points to, filled and thickened across the plane.
+     *
+     * A wire across the inside corner of an L fills the corner; an edge is made into a wire first.
+     */
+    "occt.features.rib": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /**
+         * The wire outlining the rib or groove in the plane of `frame`; the feature lies on its left as
+         * it runs, seen from the side the normal points to.
+         */
+        wire: unknown | PipelineRef;
+        /**
+         * The plane the wire lies in, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * How thick the feature is on the side of the plane the frame's normal points to, in model
+         * units.
+         */
+        thickness?: number | PipelineRef;
+        /**
+         * How thick the feature is on the other side of the plane, in model units; it and `thickness`
+         * are not both 0.
+         */
+        otherSideThickness?: number | PipelineRef;
+    };
+    /**
+     * Grows a boss out of a base as `boss` does, straight out of the sketch face, with its sides
+     * leaning by `angle` degrees.
+     *
+     * A positive angle narrows the boss as it rises from the sketch face, a negative one widens it
+     * and rounds its outer corners. `extent` works as for `boss`.
+     */
+    "occt.features.taperedBoss": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /**
+         * How far the sides lean from straight, in degrees: a positive angle narrows the feature as it
+         * goes away from the sketch face, a negative one widens it.
+         */
+        angle?: number | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the feature runs from the sketch face when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
+     * Cuts a pocket into a base as `pocket` does, straight in from the sketch face, with its sides
+     * leaning by `angle` degrees.
+     *
+     * A positive angle narrows the pocket as it deepens, a negative one widens it. The kernel cannot
+     * stop a tapered pocket at the far side of the base; run it through all instead.
+     */
+    "occt.features.taperedPocket": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /**
+         * How far the sides lean from straight, in degrees: a positive angle narrows the feature as it
+         * goes away from the sketch face, a negative one widens it.
+         */
+        angle?: number | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the feature runs from the sketch face when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
     };
     /**
      * Bevels the corners of a flat wire or face: each corner is cut back by `distance` along one
@@ -7530,6 +8402,17 @@ export interface OperationParams {
         /** The color of the paths as a hex string such as `#000000`. */
         color?: unknown | PipelineRef;
     };
+    /**
+     * Reads a BREP file, the text format that keeps a shape's exact geometry and topology, back into
+     * the shape `io.saveShapeBrep` wrote.
+     *
+     * The shape keeps its placement and orientation. Text that is not a whole BREP file, such as
+     * one cut short, is refused.
+     */
+    "occt.io.loadBrep": {
+        /** The BREP file's text, or a File or Blob that holds it. */
+        brepData: unknown | PipelineRef;
+    };
     /** Loads a STEP or IGES file into an OCCT shape. Pass file content as text (for .step/.stp/.iges/.igs) or ArrayBuffer (for .stpz/.igz). */
     "occt.io.loadSTEPorIGES": {
         /** File content: string for plain text files (.step, .stp, .iges, .igs), or base64-encoded ArrayBuffer for compressed files (.stpz, .igz). */
@@ -7537,6 +8420,28 @@ export interface OperationParams {
         /** File name with extension (used to determine file type, e.g. 'model.step'). */
         fileName?: string | PipelineRef;
         /** Adjusts models that use Z coordinate as up to Y up system. */
+        adjustZtoY?: boolean | PipelineRef;
+    };
+    /**
+     * Reads an STL file, ASCII or binary, into a shape: one planar face per triangle, or one face
+     * that carries the whole mesh.
+     *
+     * With `asFaces` true the faces share their corners' edges in a compound that
+     * `shapeFix.sewWithReport` can join into a shell. `adjustZtoY` turns Z-up into Y-up, and a file
+     * without triangles is refused.
+     */
+    "occt.io.loadStl": {
+        /**
+         * The STL file, ASCII or binary: the text of an ASCII file, or the file as ArrayBuffer,
+         * Uint8Array, File or Blob.
+         */
+        stlData: unknown | PipelineRef;
+        /**
+         * When true, each triangle becomes a planar face that sewing can join into a shell; when false,
+         * one face carries the whole mesh, light to draw but not for modelling.
+         */
+        asFaces?: boolean | PipelineRef;
+        /** When true, the file's Z-up is turned into this library's Y-up. */
         adjustZtoY?: boolean | PipelineRef;
     };
     /**
@@ -7553,6 +8458,151 @@ export interface OperationParams {
          * is unpacked on its own.
          */
         stepData: unknown | PipelineRef;
+    };
+    /**
+     * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and starts
+     * a browser download of the file.
+     *
+     * `io.loadBrep` reads the file back into the same shape. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapeBrepAndReturn` gives the text instead.
+     */
+    "occt.io.saveShapeBrep": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and
+     * returns the file's text.
+     *
+     * `io.loadBrep` reads the text back into the same shape, placement and orientation included.
+     * `fileName` and `tryDownload` only matter where a download can start.
+     */
+    "occt.io.saveShapeBrepAndReturn": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
+     * browser download of the file.
+     *
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up. The
+     * file name may hold no spaces or slashes; `tryDownload` false skips the download, and
+     * `saveShapeObjAndReturn` gives the text instead.
+     */
+    "occt.io.saveShapeObj": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /**
+         * The name the downloaded file gets. Without its extension it also names the shape and the
+         * material library, so it may hold no spaces or slashes.
+         */
+        fileName?: string | PipelineRef;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        adjustYtoZ?: boolean | PipelineRef;
+        /**
+         * When true, a browser download of the OBJ file and of any material library is started where
+         * that is possible; the kernel itself only returns the texts.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Triangulates a shape and writes it as OBJ, the mesh format most 3D programs read, returning
+     * the file's text.
+     *
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up, and
+     * coordinates keep six decimals. `mtl` stays empty, since a shape carries no colors;
+     * `assembly.manager.exportDocumentToObj` writes colored parts.
+     */
+    "occt.io.saveShapeObjAndReturn": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /**
+         * The name the downloaded file gets. Without its extension it also names the shape and the
+         * material library, so it may hold no spaces or slashes.
+         */
+        fileName?: string | PipelineRef;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        adjustYtoZ?: boolean | PipelineRef;
+        /**
+         * When true, a browser download of the OBJ file and of any material library is started where
+         * that is possible; the kernel itself only returns the texts.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Triangulates a shape, writes it as ASCII PLY with a normal per vertex, and starts a browser
+     * download of the file.
+     *
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     * `fileName` names the download and `tryDownload` false skips it; `saveShapePlyAndReturn` gives
+     * the text instead.
+     */
+    "occt.io.saveShapePly": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        adjustYtoZ?: boolean | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
+    };
+    /**
+     * Triangulates a shape and writes it as ASCII PLY with a normal per vertex, a mesh format
+     * scanning tools read, returning the file's text.
+     *
+     * Coordinates keep six significant digits, so past 1000 units they keep two decimals.
+     * `precision` is the meshing tolerance in model units and `adjustYtoZ` turns Y-up into Z-up.
+     */
+    "occt.io.saveShapePlyAndReturn": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * The meshing tolerance in model units; a smaller value follows curved surfaces more closely
+         * and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** When true, the shape is turned so this library's Y-up becomes Z-up. */
+        adjustYtoZ?: boolean | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
     };
     /**
      * Writes a shape as STEP, the standard exchange format for exact CAD geometry, and starts a
@@ -7610,9 +8660,9 @@ export interface OperationParams {
      * Triangulates a shape, writes it as STL, the mesh format 3D printers read, and starts a browser
      * download of the file.
      *
-     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces more
-     * closely and make a bigger file. `adjustYtoZ` turns Y-up into Z-up. `fileName` names the
-     * download, `tryDownload` false skips it. `saveShapeStlAndReturn` gives the text instead.
+     * `precision` is the meshing tolerance in model units, `adjustYtoZ` turns Y-up into Z-up and
+     * `binary` writes the smaller binary form. `fileName` names the download, `tryDownload` false
+     * skips it. `saveShapeStlAndReturn` gives the file instead.
      */
     "occt.io.saveShapeStl": {
         /** The shape written to the file. */
@@ -7628,19 +8678,22 @@ export interface OperationParams {
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
-         * itself only returns the text.
+         * itself only returns the text or the bytes.
          */
         tryDownload?: boolean | PipelineRef;
-        /** When true, the STL is written in its binary form, which is much smaller than the text form. */
+        /**
+         * When true, the STL is written in its binary form, which is much smaller than the text form, and
+         * comes back as bytes; when false, as ASCII text.
+         */
         binary?: boolean | PipelineRef;
     };
     /**
      * Triangulates a shape and writes it as STL, the mesh format 3D printers and slicers read,
-     * returning the file's text.
+     * returning the file's text, or its bytes when `binary` is true.
      *
      * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely and make a bigger file. `adjustYtoZ` turns the shape so Y-up becomes Z-up.
-     * `fileName` and `tryDownload` only matter where a download can start.
+     * more closely. `adjustYtoZ` turns Y-up into Z-up. `fileName` and `tryDownload` only matter
+     * where a download can start.
      */
     "occt.io.saveShapeStlAndReturn": {
         /** The shape written to the file. */
@@ -7656,11 +8709,74 @@ export interface OperationParams {
         adjustYtoZ?: boolean | PipelineRef;
         /**
          * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text or the bytes.
+         */
+        tryDownload?: boolean | PipelineRef;
+        /**
+         * When true, the STL is written in its binary form, which is much smaller than the text form, and
+         * comes back as bytes; when false, as ASCII text.
+         */
+        binary?: boolean | PipelineRef;
+    };
+    /**
+     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
+     * asked, and starts a browser download of the file.
+     *
+     * The drawing shows the view from the frame's normal side, x running right along its direction.
+     * `tryDownload` false skips the download; `saveShapeSvgAndReturn` gives the text instead.
+     */
+    "occt.io.saveShapeSvg": {
+        /** The shape to draw. */
+        shape: unknown | PipelineRef;
+        /**
+         * The view, as in `operations.hiddenLines`: the eye sits on the side the normal points to and
+         * looks back along it, and the drawing's x runs along the direction.
+         */
+        frame: unknown | PipelineRef;
+        /** When true, the edges other faces cover are drawn too, dashed. */
+        drawHidden?: boolean | PipelineRef;
+        /**
+         * How far the straight segments that trace a curved edge may stray from it, in model units;
+         * a smaller value follows curves more closely and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
          * itself only returns the text.
          */
         tryDownload?: boolean | PipelineRef;
-        /** When true, the STL is written in its binary form, which is much smaller than the text form. */
-        binary?: boolean | PipelineRef;
+    };
+    /**
+     * Draws the edges a view of a shape sees as an SVG drawing, with the hidden edges dashed when
+     * asked, and returns the file's text.
+     *
+     * It shows the view from the frame's normal side in model units, x running right along the
+     * frame's direction and y up, so the file holds each point as x and minus y.
+     */
+    "occt.io.saveShapeSvgAndReturn": {
+        /** The shape to draw. */
+        shape: unknown | PipelineRef;
+        /**
+         * The view, as in `operations.hiddenLines`: the eye sits on the side the normal points to and
+         * looks back along it, and the drawing's x runs along the direction.
+         */
+        frame: unknown | PipelineRef;
+        /** When true, the edges other faces cover are drawn too, dashed. */
+        drawHidden?: boolean | PipelineRef;
+        /**
+         * How far the straight segments that trace a curved edge may stray from it, in model units;
+         * a smaller value follows curves more closely and makes a bigger file.
+         */
+        precision?: number | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the text.
+         */
+        tryDownload?: boolean | PipelineRef;
     };
     /**
      * Turns the wires of a shape into DXF path records, the first step of a 2D DXF export.
@@ -7720,7 +8836,8 @@ export interface OperationParams {
      * center and its size along X, Y and Z.
      *
      * On curved shapes the box can be a little larger than the shape itself, because the kernel
-     * bounds the control geometry rather than the exact surface.
+     * bounds the control geometry rather than the exact surface. `analysis.measure.tightBoundingBox`
+     * follows the exact geometry.
      */
     "occt.operations.boundingBoxOfShape": {
         /** The shape to work on; it is not changed. */
@@ -7769,7 +8886,8 @@ export interface OperationParams {
      * Finds the pair of points, one on each shape, that are closest to each other.
      *
      * The distance between them is the gap between the shapes; it is 0 when they touch or overlap.
-     * Throws an error when no pair can be found.
+     * Throws an error when no pair can be found. `analysis.measure.extrema` gives every closest pair,
+     * with the sub-shapes the points lie on.
      */
     "occt.operations.closestPointsBetweenTwoShapes": {
         /** The first shape; the first point of the result lies on it. */
@@ -7844,6 +8962,47 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The direction and distance of the sweep as one vector, in model units. */
         direction?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Draws a shape seen from a view frame as a technical drawing does, flat on the XZ plane: the
+     * edges the eye sees and those that faces hide.
+     *
+     * The eye looks back along the frame's normal. Its origin lands on the world origin, its direction
+     * on x and the normal crossed with the direction on z. Both compounds hold edges.
+     */
+    "occt.operations.hiddenLines": {
+        /** The shape to draw. */
+        shape: unknown | PipelineRef;
+        /**
+         * The view: the eye sits on the side the normal points to and looks back along it, and the
+         * drawing's x runs along the direction from the frame's origin.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * When true, the drawing is made from the exact geometry; when false, from a mesh, which is
+         * faster and draws parallel views only.
+         */
+        exact?: boolean | PipelineRef;
+        /**
+         * When true, the edges where faces meet without a crease, such as the borders of a fillet, are
+         * drawn too.
+         */
+        smoothEdges?: boolean | PipelineRef;
+        /**
+         * When true, the edges that faces cover are collected in `hidden`; when false, `hidden` stays
+         * empty.
+         */
+        hiddenEdges?: boolean | PipelineRef;
+        /**
+         * How far the eye sits from the frame's origin along its normal for a perspective, in model
+         * units; 0 draws a parallel view. A perspective needs `exact`.
+         */
+        focus?: number | PipelineRef;
+        /**
+         * The meshing tolerance in model units when `exact` is false; a smaller value follows curved
+         * faces more closely.
+         */
+        precision?: number | PipelineRef;
     };
     /**
      * Builds a surface through a series of wires, like skin stretched over ribs: each wire is one
@@ -8040,6 +9199,8 @@ export interface OperationParams {
      * Finds the smallest box that fits around a shape, turned to follow it rather than the axes: a
      * frame at the box's centre, its direction along the longest side and its normal along the
      * shortest, with half the box's size along each.
+     *
+     * `analysis.measure.boundingBoxInFrame` keeps the axes of a frame you give instead.
      */
     "occt.operations.orientedBoundingBox": {
         /** The shape to work on; it is not changed. */
@@ -8124,6 +9285,34 @@ export interface OperationParams {
         forceApproxC1?: boolean | PipelineRef;
     };
     /**
+     * Sweeps a profile along a spine while scaling it, such as a tube that widens toward one end.
+     *
+     * `params` are places along the spine from 0 to 1, each scaled by the entry of `scales` at the
+     * same position; between them the scale changes smoothly. Place the profile across the start of
+     * the spine; `makeSolid` needs it closed.
+     */
+    "occt.operations.pipeWithScaling": {
+        /** The path to sweep along, an edge or a wire. */
+        spine: unknown | PipelineRef;
+        /** The edge or wire to sweep, placed across the start of the spine. */
+        profile: unknown | PipelineRef;
+        /**
+         * Places along the spine as fractions of it, rising from 0 at its start to 1 at its end; the
+         * first is 0 and the last is 1.
+         */
+        params?: number[] | PipelineRef;
+        /**
+         * The scale of the profile at each place in `params`, in the same order, each above 0; 1 keeps
+         * the profile's size.
+         */
+        scales?: number[] | PipelineRef;
+        /**
+         * When true, the ends are capped into a solid, which needs a closed profile; when false, the
+         * result is an open shell.
+         */
+        makeSolid?: boolean | PipelineRef;
+    };
+    /**
      * Finds a shape's principal axes of inertia as a frame at its centre of mass: the direction is
      * the axis it turns about most easily, the normal the one it resists most.
      *
@@ -8190,6 +9379,21 @@ export interface OperationParams {
         makeSolid?: boolean | PipelineRef;
     };
     /**
+     * Finds the curves where two shapes meet and joins them end to end into wires, such as the
+     * outline a plane cuts from a solid.
+     *
+     * A loop comes back as a closed wire, branches or loose ends as open wires, and shapes that do
+     * not meet give an empty list.
+     */
+    "occt.operations.sectionWires": {
+        /** One of the two shapes, such as a solid to cut through. */
+        shapeA: unknown | PipelineRef;
+        /** The shape it meets, such as a face or a solid passing through `shapeA`. */
+        shapeB: unknown | PipelineRef;
+        /** How close the ends of two section edges must lie to be joined into one wire, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
      * Cuts a solid into parallel slices along a direction, like a loaf of bread, every `step` model
      * units from the bottom of the shape up.
      *
@@ -8203,6 +9407,29 @@ export interface OperationParams {
         step?: number | PipelineRef;
         /** The direction the slices are stacked along; each cutting plane is perpendicular to it. */
         direction?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Slices a shape with the plane of each frame, which passes through the frame's origin square to
+     * its normal.
+     *
+     * With `makeFaces` true a slice holds the faces where the plane passes through the solids, holes
+     * included; with false, the section wires. A plane that misses the shape gives an empty compound.
+     */
+    "occt.operations.sliceByFrames": {
+        /** The shape to slice: faces come from its solids, wires from its solids, shells and faces. */
+        shape: unknown | PipelineRef;
+        /**
+         * One plane per frame, through the frame's origin and square to its normal; the frame's
+         * direction does not matter.
+         */
+        frames: unknown[] | PipelineRef;
+        /**
+         * When true, each slice holds the faces where its plane passes through the solids, holes
+         * included; when false, it holds the section wires.
+         */
+        makeFaces?: boolean | PipelineRef;
+        /** How close the ends of two section edges must lie to be joined into one wire, in model units. */
+        tolerance?: number | PipelineRef;
     };
     /**
      * Cuts a solid into parallel slices like `slice`, but with a repeating pattern of gaps between
@@ -8221,6 +9448,40 @@ export interface OperationParams {
         steps?: number[] | PipelineRef;
         /** The direction the slices are stacked along; each cutting plane is perpendicular to it. */
         direction?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Splits a shape in two with the plane of a frame: what lies on the side the frame's normal
+     * points to comes back as `front`, the rest as `back`.
+     *
+     * The pieces are solids when the shape has any, else faces, else edges. A shape the plane misses
+     * comes back whole on its side.
+     */
+    "occt.operations.splitByFrame": {
+        /**
+         * The shape to split: its solids become the pieces, or its faces when it has no solids, or its
+         * edges when it has neither.
+         */
+        shape: unknown | PipelineRef;
+        /**
+         * The plane to split along, through the frame's origin; `front` holds what lies on the side its
+         * normal points to.
+         */
+        frame: unknown | PipelineRef;
+    };
+    /**
+     * Cuts a face into pieces along edges or wires lying on it, like scoring a sheet.
+     *
+     * A cutter cuts only where it lies on the face, and a closed loop inside it cuts out the region it
+     * encloses. With no cutters the face comes back whole.
+     */
+    "occt.operations.splitFaceByWires": {
+        /** The face to cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * The edges or wires to cut along, lying on the face; a closed loop cuts out the region it
+         * encloses.
+         */
+        wires: unknown[] | PipelineRef;
     };
     /**
      * Cuts a shape into pieces with other shapes, the way a knife splits a loaf, without removing
@@ -8245,6 +9506,26 @@ export interface OperationParams {
          * when false only the pieces of `shape` come back.
          */
         nonDestructive?: boolean | PipelineRef;
+    };
+    /**
+     * Sweeps a profile along a flat spine, keeping its place beside it, as a moulding follows a wall.
+     *
+     * Draw the profile about the origin: x along the spine, y to the left of travel, inside a
+     * counter-clockwise loop, and z up from the spine's plane. A spine out of plane is refused.
+     */
+    "occt.operations.sweepEvolved": {
+        /** The path: a wire or a face lying in one plane; a face is swept along its boundary. */
+        spine: unknown | PipelineRef;
+        /**
+         * The edge or wire to sweep, drawn about the origin: x along the spine, y to the left of travel
+         * and z up from the spine's plane.
+         */
+        profile: unknown | PipelineRef;
+        /**
+         * When true, the sweep is closed into a solid where it can be: a closed profile gives a solid
+         * wall, and a wall round a closed spine is capped.
+         */
+        makeSolid?: boolean | PipelineRef;
     };
     /**
      * Builds a shape from path subpaths: one wire per subpath, packed into a compound when there
@@ -8777,6 +10058,16 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
     };
     /**
+     * Repairs a shell: turns its faces so they all face the same way and fixes its faces and edges.
+     *
+     * When the faces cannot all be turned one way, as on a strip given a half twist, the result is
+     * a compound of shells. A shape that is not a shell is refused.
+     */
+    "occt.shapeFix.fixShell": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Removes edges shorter than `precsmall` from a wire and closes the gaps they leave, so a tiny
      * sliver no longer breaks a fillet or a face.
      *
@@ -8793,6 +10084,71 @@ export interface OperationParams {
         lockvtx?: boolean | PipelineRef;
         /** Edges shorter than this, in model units, are removed; 0 uses the wire's own tolerance. */
         precsmall?: number | PipelineRef;
+    };
+    /**
+     * Repairs a solid, or makes one from a closed shell, with its shells fixed and turned so the
+     * material is inside.
+     *
+     * A shell that encloses nothing comes back fixed but still a shell, and shells that fix into
+     * separate solids come back as a compound of them. Other kinds of shape are refused.
+     */
+    "occt.shapeFix.fixSolid": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
+     * Finds the edges of a shape that bound only one face, joined into wires: the rims of an open
+     * shell's openings, or a lone face's outline and holes.
+     *
+     * Wires that close on themselves come back in `closed`, the rest in `open`; a closed solid has
+     * none. Edges closer than `tolerance`, in model units, count as one.
+     */
+    "occt.shapeFix.freeBoundaries": {
+        /** The shape or surface to work on. */
+        shape: unknown | PipelineRef;
+        /** How close geometry must be to count as touching, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Turns a closed solid so its material is inside, which gives an inside-out solid its positive
+     * volume back; only the orientation changes.
+     *
+     * A shape that is not a solid, a solid without a shell and a solid whose shell has an opening
+     * are refused.
+     */
+    "occt.shapeFix.orientClosedSolid": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
+     * Sews the faces of shapes together along edges that lie within `tolerance` of each other, as
+     * `shapes.shell.sewFaces` does, and reports what it joined and what it left open.
+     *
+     * `freeEdges` holds the edges left bounding only one face; with `nonManifold` true an edge may
+     * join more than two faces. The shapes given are left as they were.
+     */
+    "occt.shapeFix.sewWithReport": {
+        /** The faces, shells or other shapes whose faces are sewn together. */
+        shapes: unknown[] | PipelineRef;
+        /** How far apart two edges may lie and still be sewn into one, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * When true, an edge may join more than two faces, as where three sheets meet along one line;
+         * when false, an edge joins two faces at most.
+         */
+        nonManifold?: boolean | PipelineRef;
+    };
+    /**
+     * Checks a shape as `shapes.shape.isValid` does and reports each faulty sub-shape with the checks
+     * it fails, and the spread of its tolerances.
+     *
+     * A fault's index is the one the getter of its kind uses: `shapes.face.getFace` with a face
+     * fault's index gives that face. Overlapping faces are not looked for;
+     * `analysis.clashes.selfIntersections` finds those.
+     */
+    "occt.shapeFix.validityReport": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
     };
     /** Takes a compound apart into the shapes it was made of, in the order they were added. */
     "occt.shapes.compound.getShapesOfCompound": {
@@ -8890,7 +10246,115 @@ export interface OperationParams {
         /** The point the arc finishes at. */
         end?: [number, number, number] | PipelineRef;
     };
-    /** Draws the circles of a given radius that pass through a point and just touch a circle. */
+    /**
+     * Bridges the gap from the end of one edge to the start of another with a smooth Bezier edge
+     * that leaves and arrives along their tangents.
+     *
+     * With `matchCurvature` it also bends as each edge bends at its end. `bulge` sets how long it
+     * holds each tangent; edges whose ends already meet are refused.
+     */
+    "occt.shapes.edge.blendBetweenEdges": {
+        /** The edge whose end the blend leaves from, along its tangent there. */
+        from: unknown | PipelineRef;
+        /** The edge whose start the blend arrives at, along its tangent there. */
+        to: unknown | PipelineRef;
+        /**
+         * False matches the tangents at both ends with a cubic curve; true also matches the curvature
+         * there, with a quintic curve.
+         */
+        matchCurvature?: boolean | PipelineRef;
+        /** How far the blend holds each tangent before it turns; larger values swing wider. */
+        bulge?: number | PipelineRef;
+    };
+    /**
+     * Draws every circle that touches three edges, or passes through the vertices among them, in the
+     * plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the edges is left out.
+     */
+    "occt.shapes.edge.circlesTangentToThree": {
+        /**
+         * Three edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         */
+        frame: unknown | PipelineRef;
+        /** How close lines and circles may come to touching and still count as tangent, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * When true, keeps only the circles that touch each edge within its ends; otherwise straight
+         * edges count as endless lines and arcs as whole circles.
+         */
+        onArgumentsOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Draws every circle centered on an edge that touches two other edges, or passes through the
+     * vertices among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles, the edge of centers too,
+     * unless `onArgumentsOnly` is set, which also keeps each center within `centerOn`. Other curves
+     * are touched within their ends.
+     */
+    "occt.shapes.edge.circlesTangentToTwoCenteredOn": {
+        /**
+         * Two edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         */
+        shapes: unknown[] | PipelineRef;
+        /** The edge in the plane that the center of every circle lies on. */
+        centerOn: unknown | PipelineRef;
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         */
+        frame: unknown | PipelineRef;
+        /** How close lines and circles may come to touching and still count as tangent, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * When true, keeps only the circles touching each edge within its ends and centered within
+         * `centerOn`; otherwise straight edges count as endless lines and arcs as whole circles.
+         */
+        onArgumentsOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Draws every circle of a given radius that touches two edges, or passes through the vertices
+     * among them, in the plane of a frame.
+     *
+     * Straight edges count as endless lines and arcs as whole circles unless `onArgumentsOnly` is
+     * set; other curves are touched within their ends. A circle that is one of the given edges is
+     * left out.
+     */
+    "occt.shapes.edge.circlesTangentToTwoWithRadius": {
+        /**
+         * Two edges or vertices lying in the plane: each circle touches every edge and passes through
+         * every vertex.
+         */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the circles are drawn in it
+         * too.
+         */
+        frame: unknown | PipelineRef;
+        /** The radius of every circle drawn, in model units. */
+        radius?: number | PipelineRef;
+        /** How close lines and circles may come to touching and still count as tangent, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * When true, keeps only the circles that touch each edge within its ends; otherwise straight
+         * edges count as endless lines and arcs as whole circles.
+         */
+        onArgumentsOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Draws the circles of a given radius that pass through a point and just touch a circle.
+     *
+     * `circlesTangentToTwoWithRadius` takes a vertex and a curve other than a circle too.
+     */
     "occt.shapes.edge.constraintTanCirclesOnCircleAndPnt": {
         /** The circle edge the new circles must touch. */
         circle: unknown | PipelineRef;
@@ -8901,7 +10365,11 @@ export interface OperationParams {
         /** The radius of the circles to draw, in model units. */
         radius?: number | PipelineRef;
     };
-    /** Draws the circles of a given radius that just touch two circles at once. */
+    /**
+     * Draws the circles of a given radius that just touch two circles at once.
+     *
+     * `circlesTangentToTwoWithRadius` draws such circles between curves other than circles too.
+     */
     "occt.shapes.edge.constraintTanCirclesOnTwoCircles": {
         /** The first circle edge the new circles must touch. */
         circle1: unknown | PipelineRef;
@@ -8916,7 +10384,8 @@ export interface OperationParams {
      * Draws the two straight lines from a point that just touch a circle.
      *
      * `positionResult` keeps the solution on one side of the circle or both, and `circleRemainder`
-     * adds the piece of the circle between the touching points.
+     * adds the piece of the circle between the touching points. `linesTangentToTwo` draws such
+     * lines to curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesFromPtToCircle": {
         /** The circle edge the lines must touch. */
@@ -8939,6 +10408,7 @@ export interface OperationParams {
      *
      * `positionResult` keeps the solutions on one side of the circle or all of them, and
      * `circleRemainder` adds the piece of the circle between the touching points.
+     * `linesTangentToTwo` draws such lines to curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesFromTwoPtsToCircle": {
         /** The circle edge the lines must touch. */
@@ -8962,7 +10432,7 @@ export interface OperationParams {
      *
      * `positionResult` keeps the lines on one side or all of them, and `circleRemainders` adds the
      * outside or inside pieces of the circles between the touching points, which completes the belt
-     * shape.
+     * shape. `linesTangentToTwo` draws such lines between curves other than circles too.
      */
     "occt.shapes.edge.constraintTanLinesOnTwoCircles": {
         /** The first circle edge the lines must touch. */
@@ -9121,6 +10591,21 @@ export interface OperationParams {
     "occt.shapes.edge.endPointsOnEdges": {
         /** The shapes to work on, in the order the results should come back. */
         shapes: unknown[] | PipelineRef;
+    };
+    /**
+     * Lengthens an edge before its start and past its end, carrying its curve on the way it runs.
+     *
+     * A line stays a line and an arc an arc, up to a full circle. Other curves become B-splines
+     * ending that far along the end's tangent, bending smoothly across the join; one still turning
+     * there gains a little more.
+     */
+    "occt.shapes.edge.extendEdge": {
+        /** The edge to lengthen; it stays as it is and a longer copy comes back. */
+        shape: unknown | PipelineRef;
+        /** How much length to add before the start, in model units. */
+        atStart?: number | PipelineRef;
+        /** How much length to add past the end, in model units. */
+        atEnd?: number | PipelineRef;
     };
     /**
      * Finds a frame on an edge at a length from its start, as `frameOnEdgeAtParam` finds it at a
@@ -9377,6 +10862,72 @@ export interface OperationParams {
         end?: [number, number, number] | PipelineRef;
     };
     /**
+     * Draws every straight line that touches a curved edge at an angle to a straight reference edge,
+     * in the plane of a frame.
+     *
+     * The angle, in degrees, turns counterclockwise about the frame's normal. Each line runs from its
+     * touch to the reference's line; a parallel one is centered on its touch, as long as the
+     * reference.
+     */
+    "occt.shapes.edge.linesTangentAtAngle": {
+        /** The curved edge the lines touch, lying in the plane. */
+        shape: unknown | PipelineRef;
+        /**
+         * The straight edge the angle is measured from, lying in the plane; each line runs from its touch
+         * to where it crosses this edge's line.
+         */
+        reference: unknown | PipelineRef;
+        /**
+         * A frame whose origin and normal give the plane the edges lie in; the angle turns about the
+         * normal.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * The angle from the reference's direction to the lines, in degrees, turning counterclockwise
+         * about the frame's normal.
+         */
+        angle?: number | PipelineRef;
+        /**
+         * The tolerance of the search for touching lines, in radians; an `angle` this close to 0, a
+         * right angle or a half turn is taken as exactly that.
+         */
+        angularTolerance?: number | PipelineRef;
+        /**
+         * When true, keeps only the lines that touch the curve within its ends and cross the reference
+         * within its ends, which leaves out lines parallel to it.
+         */
+        onArgumentsOnly?: boolean | PipelineRef;
+    };
+    /**
+     * Draws every straight line that touches two curved edges, or touches one and passes through a
+     * vertex, in the plane of a frame.
+     *
+     * Each line runs from the first shape to the second, like a belt between two wheels. Arcs count
+     * as whole circles unless `onArgumentsOnly` is set; straight edges and two vertices are refused.
+     */
+    "occt.shapes.edge.linesTangentToTwo": {
+        /**
+         * Two curved edges, or a curved edge and a vertex, lying in the plane; each line touches the
+         * edges and passes through the vertex.
+         */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * A frame whose origin and normal give the plane the shapes lie in; the lines are drawn in it
+         * too.
+         */
+        frame: unknown | PipelineRef;
+        /**
+         * How nearly a line must run along a curve where it touches to count as tangent, as the sine of
+         * the angle between them.
+         */
+        angularTolerance?: number | PipelineRef;
+        /**
+         * When true, keeps only the lines that touch each edge within its ends; otherwise arcs count as
+         * whole circles.
+         */
+        onArgumentsOnly?: boolean | PipelineRef;
+    };
+    /**
      * Makes an edge from a 2D curve laid onto a surface: the curve lives in the surface's UV space
      * and the edge follows it across the surface.
      */
@@ -9486,6 +11037,34 @@ export interface OperationParams {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
     };
+    /**
+     * Cuts an edge into pieces at places given as lengths along it from its start, in model units.
+     *
+     * Each piece runs along the edge's own curve and keeps its direction. Lengths at or past the
+     * ends and repeats are skipped, so n lengths inside the edge give n + 1 pieces.
+     */
+    "occt.shapes.edge.splitEdgeAtLengths": {
+        /** The edge or wire to evaluate; each method says which it takes. */
+        shape: unknown | PipelineRef;
+        /** The distances from the start along the wire, in model units, one point each. */
+        lengths: number[] | PipelineRef;
+    };
+    /**
+     * Cuts an edge into pieces at places given as fractions from 0 at its start to 1 at its end.
+     *
+     * The pieces keep the edge's curve and direction, so the pieces of an arc are arcs. Fractions
+     * follow the parameter, not the length; ends and repeats are skipped, so n places inside the edge
+     * give n + 1 pieces.
+     */
+    "occt.shapes.edge.splitEdgeAtParams": {
+        /** The edge or wire to read or cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * Places along the curve, each a fraction from 0 at the start to 1 at the end; each edge of a
+         * wire takes an equal share, as in `shapes.wire.pointOnWireAtParam`.
+         */
+        params: number[] | PipelineRef;
+    };
     /** Reads the point where an edge starts, in the edge's own direction. */
     "occt.shapes.edge.startPointOnEdge": {
         /** The shape to work on; it is not changed. */
@@ -9532,6 +11111,22 @@ export interface OperationParams {
         shapes: unknown[] | PipelineRef;
         /** Where to evaluate on every edge, as a fraction from 0 at the start to 1 at the end. */
         param?: number | PipelineRef;
+    };
+    /**
+     * Creates a B-spline face bounded by two, three or four edges.
+     *
+     * Four edges, in any order and direction, must close up. Of three, one must meet the other two,
+     * and a straight side closes their free ends. Two are opposite sides joined start to start; the
+     * curved style instead sweeps one along the other from a shared corner.
+     */
+    "occt.shapes.face.boundaryPatch": {
+        /**
+         * Two to four edges: four that close up, three of which one meets the other two, or two opposite
+         * sides, which share a corner in the curved style.
+         */
+        edges: unknown[] | PipelineRef;
+        /** How the patch fills between the edges. */
+        style?: "stretch" | "coons" | "curved" | PipelineRef;
     };
     /**
      * Creates a flat face shaped like a stylized Christmas tree: `nrSkirts` layers of branches,
@@ -10068,6 +11663,37 @@ export interface OperationParams {
         inside?: boolean | PipelineRef;
     };
     /**
+     * Creates a face that fills a closed loop of edges and passes near given points.
+     *
+     * The edges may come in any order and direction. Each continuity says whether the patch passes
+     * through its edge, meets the face beside it at a tangent, or also bends as it does; an edge that
+     * stores no face takes that face in `supports`.
+     */
+    "occt.shapes.face.fillPatch": {
+        /** The boundary edges, in any order and direction, that close into one loop. */
+        edges: unknown[] | PipelineRef;
+        /**
+         * How the patch meets each edge, one entry per edge in the order of `edges`; left out, the patch
+         * only passes through every edge.
+         */
+        continuities?: string | PipelineRef;
+        /**
+         * One face per edge, the face beside it, for tangent or curvature along an edge that stores none;
+         * an undefined entry, or leaving it out, gives no face.
+         */
+        supports?: unknown[] | PipelineRef;
+        /** Points inside the boundary the patch passes near; left out, none. */
+        points?: [number, number, number][] | PipelineRef;
+        /** The degree of the plate surface. */
+        degree?: number | PipelineRef;
+        /** How many points of each boundary edge the plate is fitted to. */
+        pointsOnCurves?: number | PipelineRef;
+        /** How many passes the fit makes; matching curvature may need more than two. */
+        iterations?: number | PipelineRef;
+        /** How far the patch may pass from the boundary and the points, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
      * Sorts points as inside a face, on its boundary or outside it, and keeps the chosen groups.
      *
      * `keepIn`, `keepOn`, `keepOut` and `keepUnknown` choose the groups; `tolerance` decides how
@@ -10216,6 +11842,42 @@ export interface OperationParams {
         triangle: unknown | PipelineRef;
     };
     /**
+     * Creates a B-spline face through a grid of points, or near them.
+     *
+     * The rows step along u and each row runs along v. Interpolating passes through every point at
+     * degree 3, closed in u when `periodic`; approximating keeps within `tolerance` at a degree from
+     * `degreeMin` to `degreeMax`. Neighbouring rows or columns holding the same points are refused.
+     */
+    "occt.shapes.face.fromPointGrid": {
+        /**
+         * Rows of equal length, at least two of two points each; the rows step along u and each row runs
+         * along v.
+         */
+        points: [number, number, number][] | PipelineRef;
+        /**
+         * True passes the face through every point at degree 3; false approximates the points within
+         * `tolerance`, smoothing what the tolerance allows.
+         */
+        interpolate?: boolean | PipelineRef;
+        /**
+         * Closes the face in u, joining the last row back to the first, which is not repeated; read only
+         * when interpolating.
+         */
+        periodic?: boolean | PipelineRef;
+        /** The lowest degree an approximation may use; read only when approximating. */
+        degreeMin?: number | PipelineRef;
+        /**
+         * The highest degree an approximation may use, at least `degreeMin`; read only when
+         * approximating.
+         */
+        degreeMax?: number | PipelineRef;
+        /**
+         * How far an approximation may pass from the points, in model units; read only when
+         * approximating.
+         */
+        tolerance?: number | PipelineRef;
+    };
+    /**
      * Picks one face out of a shape by its position, counting from 0, in the order the kernel walks
      * the shape.
      *
@@ -10349,6 +12011,20 @@ export interface OperationParams {
         inclusionPattern?: unknown[] | PipelineRef;
     };
     /**
+     * Finds a face's exact iso curves at fractions of its UV range, trimmed to the face.
+     *
+     * With `isU` true each curve holds u at its fraction and runs along v; false swaps them. A curve
+     * stops at a hole and goes on past it; 0 and 1 give the boundary, and values outside give none.
+     */
+    "occt.shapes.face.isoCurves": {
+        /** The face the wires are drawn on. */
+        shape: unknown | PipelineRef;
+        /** Where the wires sit, as fractions from 0 to 1 of the fixed direction's range, one wire each. */
+        params: number[] | PipelineRef;
+        /** When true each wire sits at a fixed U and runs across the V range; when false the roles swap. */
+        isU?: boolean | PipelineRef;
+    };
+    /**
      * Reparametrizes a face so equal steps in U or V give roughly equal distances on the surface.
      *
      * Many surfaces bunch their parameters up in places, so a UV grid over them looks uneven; this
@@ -10466,6 +12142,20 @@ export interface OperationParams {
     "occt.shapes.face.reversedFace": {
         /** The shape to work on; it is not changed. */
         shape: unknown | PipelineRef;
+    };
+    /**
+     * Creates the ruled surface between two edges, or two wires edge by edge: straight lines from one
+     * to the other.
+     *
+     * Each line joins the points at the same share of the two curves, so reversing one twists the
+     * surface. Wires need as many edges each, paired as each wire runs. The shapes given are left
+     * unchanged.
+     */
+    "occt.shapes.face.ruledBetween": {
+        /** The first shape, side A of the results. */
+        shapeA: unknown | PipelineRef;
+        /** The second shape, side B of the results. */
+        shapeB: unknown | PipelineRef;
     };
     /**
      * Places frames on a face in a grid, one at each point `subdivideToPoints` gives for the same
@@ -10901,6 +12591,20 @@ export interface OperationParams {
         removeEnd?: boolean | PipelineRef;
     };
     /**
+     * Lays a plane, cylinder or cone face out flat without stretching it, as the pattern a sheet is
+     * cut from.
+     *
+     * Lengths and areas are kept, holes and notches included, and a closed face opens along its seam.
+     * The flat face lies on the ground plane facing +Y, as the other flat shapes do, ready for a DXF
+     * export.
+     */
+    "occt.shapes.face.unroll": {
+        /** The face to lay flat: one on a plane, a cylinder or a cone. */
+        shape: unknown | PipelineRef;
+        /** How far the flat edges may stray from the exact development, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
      * Draws one wire across a face along a parameter line, following the surface.
      *
      * With `isU` true the wire sits at `param` (a fraction from 0 to 1 of the U range) and runs
@@ -10918,7 +12622,8 @@ export interface OperationParams {
      * Draws several wires across a face, one per parameter value, following the surface.
      *
      * With `isU` true each wire sits at its fraction of the U range and runs over the whole V
-     * range; with false the roles swap.
+     * range; with false the roles swap. The wires ignore the face's trims; `isoCurves` gives the
+     * exact curves trimmed to the face.
      */
     "occt.shapes.face.wiresAlongParams": {
         /** The face the wires are drawn on. */
@@ -12909,6 +14614,32 @@ export interface OperationParams {
         parameter?: number | PipelineRef;
     };
     /**
+     * Draws the offset of an open wire or an edge on one side of it, not the loop
+     * `operations.offset` draws around it.
+     *
+     * A positive distance lies to the right of the wire's direction, seen from the side `face` looks
+     * to, or from above on the ground plane. A straight wire needs a flat `face` to give it a plane.
+     */
+    "occt.shapes.wire.offsetOpen": {
+        /** The open wire or edge to offset, lying in a plane; a straight one needs `face` to give it one. */
+        shape: unknown | PipelineRef;
+        /**
+         * A flat face whose plane the offset lies in, seen from the side it looks to; leave it out to use
+         * the plane the wire lies in.
+         */
+        face?: unknown | PipelineRef;
+        /**
+         * How far the offset curve lies from the wire, in model units: positive to the right of the
+         * direction the wire runs, negative to the left.
+         */
+        distance?: number | PipelineRef;
+        /**
+         * How the offset pieces meet where the wire has a corner: `arc` rounds them, `intersection`
+         * extends them to a sharp corner, `tangent` keeps them tangent.
+         */
+        joinType?: "arc" | "intersection" | "tangent" | PipelineRef;
+    };
+    /**
      * Maps a flat wire drawn on the ground plane onto the surface of a face, as if the drawing were
      * wrapped around it.
      *
@@ -12980,7 +14711,7 @@ export interface OperationParams {
      * in model units.
      */
     "occt.shapes.wire.pointsOnWireAtLengths": {
-        /** The wire to evaluate. */
+        /** The edge or wire to evaluate; each method says which it takes. */
         shape: unknown | PipelineRef;
         /** The distances from the start along the wire, in model units, one point each. */
         lengths: number[] | PipelineRef;
@@ -13022,6 +14753,41 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** The direction each wire is cast along; only its direction matters. */
         direction?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Casts an edge or a wire onto the faces of a shape along the lines from a point through it, like
+     * the shadow a lamp throws.
+     *
+     * The result is a compound of the wires where those lines meet the shape, near side and far side
+     * alike; lines that miss give an empty compound.
+     */
+    "occt.shapes.wire.projectConical": {
+        /** The edge or wire to cast onto the shape. */
+        wire: unknown | PipelineRef;
+        /** The shape whose faces the curve lands on. */
+        shape: unknown | PipelineRef;
+        /** The point the curve is cast from, like a lamp throwing its shadow; it must not lie on the curve. */
+        from?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Lays edges or wires onto the faces of a shape along the surface's normals, rather than along one
+     * direction as `project` does.
+     *
+     * The pieces join into wires, one per loop or chain, within the faces' edges. `maxDistance` drops
+     * the parts landing farther than it; a projection that misses gives an empty compound.
+     */
+    "occt.shapes.wire.projectNormal": {
+        /** The edges or wires to lay onto the shape. */
+        wires: unknown[] | PipelineRef;
+        /** The shape whose faces the curves land on, within the faces' edges. */
+        shape: unknown | PipelineRef;
+        /** How far the fitted curves may stray from the exact projection, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * Drops the parts of the projection lying farther than this from the curves they come from, in
+         * model units; 0 keeps everything.
+         */
+        maxDistance?: number | PipelineRef;
     };
     /** Projects several wires onto a shape along one direction, as `project` does for one. */
     "occt.shapes.wire.projectWires": {
@@ -13087,6 +14853,35 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
         /** Where to cut; each point is moved to the closest place on the wire first. */
         points: [number, number, number][] | PipelineRef;
+    };
+    /**
+     * Cuts a wire into pieces at places given as lengths along it from its start, in model units.
+     *
+     * A piece running across a corner holds an edge on each side. Lengths at or past the ends and
+     * repeats are skipped, so n lengths inside give n + 1 pieces; an edge is cut as a wire of that one
+     * edge.
+     */
+    "occt.shapes.wire.splitWireAtLengths": {
+        /** The edge or wire to evaluate; each method says which it takes. */
+        shape: unknown | PipelineRef;
+        /** The distances from the start along the wire, in model units, one point each. */
+        lengths: number[] | PipelineRef;
+    };
+    /**
+     * Cuts a wire into pieces at places given as fractions from 0 at its start to 1 at its end, every
+     * edge an equal share.
+     *
+     * A piece running across a corner holds an edge on each side. Ends and repeats are skipped, so n
+     * places inside give n + 1 pieces; an edge is cut as a one-edge wire.
+     */
+    "occt.shapes.wire.splitWireAtParams": {
+        /** The edge or wire to read or cut. */
+        shape: unknown | PipelineRef;
+        /**
+         * Places along the curve, each a fraction from 0 at the start to 1 at the end; each edge of a
+         * wire takes an equal share, as in `shapes.wire.pointOnWireAtParam`.
+         */
+        params: number[] | PipelineRef;
     };
     /** Reads the point where a wire starts, in the wire's own direction. */
     "occt.shapes.wire.startPointOnWire": {
@@ -13207,7 +15002,28 @@ export interface OperationParams {
         /** Edges shorter than this, in model units, are traced with the minimum number of points. */
         minimumLength?: number | PipelineRef;
     };
-    /** Triangulates several shapes with the same settings, as `shapeToMesh` does for one. */
+    /**
+     * Wraps flat wires drawn on the ground plane around a plane, cylinder or cone face, keeping every
+     * length, as a label wraps a can.
+     *
+     * On a cylinder of radius r, X runs around it from the face's start, 2 pi r to a turn, and Z runs
+     * along its axis. The wires follow the surface past the face's edges.
+     */
+    "occt.shapes.wire.wrapWiresOnFace": {
+        /**
+         * The wires or edges drawn flat on the ground plane, where the face's development lies with X
+         * along its U direction and Z along V; Y is ignored.
+         */
+        wires: unknown[] | PipelineRef;
+        /** The plane, cylinder or cone face to wrap them around. */
+        face: unknown | PipelineRef;
+        /** How far the wrapped curves may stray from the exact wrap, in model units. */
+        tolerance?: number | PipelineRef;
+    };
+    /**
+     * Triangulates several shapes with the same settings, as `shapeToMesh` does for one, iso curves
+     * and surface analysis included.
+     */
     "occt.shapesToMeshes": {
         /** The shapes to triangulate, one mesh per shape. */
         shapes: unknown[] | PipelineRef;
@@ -13241,6 +15057,23 @@ export interface OperationParams {
          * cached.
          */
         forceFaceDeflection?: boolean | PipelineRef;
+        /**
+         * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+         * u range and trimmed to the face; 0 gives none.
+         */
+        isoCurvesU?: number | PipelineRef;
+        /**
+         * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+         * v range and trimmed to the face; 0 gives none.
+         */
+        isoCurvesV?: number | PipelineRef;
+        /**
+         * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+         * radius, or the draft angle in degrees. `none` leaves them out.
+         */
+        surfaceAnalysis?: "none" | "gaussian" | "mean" | "maxCurvature" | "minCurvature" | "minRadius" | "draftAngle" | PipelineRef;
+        /** The pull direction the draft angles are measured against; read only by `draftAngle`. */
+        draftDirection?: [number, number, number] | PipelineRef;
     };
     /**
      * Meshes a shape into one indexed triangle mesh whose faces share vertices where they meet, the
@@ -13263,9 +15096,9 @@ export interface OperationParams {
      * Triangulates a shape into a mesh for drawing: one entry per face with its vertices, normals,
      * UVs and triangle indexes, one per edge with its points, and the vertex points.
      *
-     * `precision` is the meshing tolerance in model units; smaller values follow curved surfaces
-     * more closely and cost more triangles. `adjustYtoZ` swaps Y and Z. A null shape gives empty
-     * lists.
+     * `precision` is the meshing tolerance in model units. `isoCurvesU` and `isoCurvesV` add each
+     * face's iso curves as polylines, and `surfaceAnalysis` a value per vertex. A null shape gives
+     * empty lists.
      */
     "occt.shapeToMesh": {
         /** The shape to triangulate. */
@@ -13300,6 +15133,23 @@ export interface OperationParams {
          * cached.
          */
         forceFaceDeflection?: boolean | PipelineRef;
+        /**
+         * How many iso curves of constant u each face gets in `isoCurveList`, spread evenly inside its
+         * u range and trimmed to the face; 0 gives none.
+         */
+        isoCurvesU?: number | PipelineRef;
+        /**
+         * How many iso curves of constant v each face gets in `isoCurveList`, spread evenly inside its
+         * v range and trimmed to the face; 0 gives none.
+         */
+        isoCurvesV?: number | PipelineRef;
+        /**
+         * What each face's `analysisValues` hold, one value per vertex: a curvature, the smallest bending
+         * radius, or the draft angle in degrees. `none` leaves them out.
+         */
+        surfaceAnalysis?: "none" | "gaussian" | "mean" | "maxCurvature" | "minCurvature" | "minRadius" | "draftAngle" | PipelineRef;
+        /** The pull direction the draft angles are measured against; read only by `draftAngle`. */
+        draftDirection?: [number, number, number] | PipelineRef;
     };
     /**
      * Parses an SVG document and builds every drawable element into one compound shape on the
