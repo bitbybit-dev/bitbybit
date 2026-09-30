@@ -98,6 +98,7 @@ Every part is priced individually, including each product an option links, so yo
 
 - ✅ **Everything native**: Shopify's own pricing, Markets, discounts and inventory apply untouched
 - ✅ Best choice when you sell internationally and want exact per-market prices
+- ⚠️ In a market that includes tax based on the shopper's country, checkout charges the per-country price but the configurator still shows your own country's total - see [Other currencies](./other-currencies#per-country-tax)
 - ✅ No helper products
 - ⚠️ Only possible when every priced choice is a **discrete option** - no formulas or sliders
 - ⚠️ Takes over the product's variants entirely, replacing what is there
@@ -116,7 +117,7 @@ The configured product is charged as one line whose price is set to the configur
 - ✅ The cleanest cart: one line, no helper products at all
 - ⚠️ Requires **Shopify Plus** (or a development store)
 - ⚠️ Requires the **Standard or Pro** 3D Bits plan
-- ⚠️ Overrides per-market price adjustments, so it suits single-currency stores better
+- ⚠️ Overrides per-market price adjustments and per-country tax, so it suits single-currency, single-country stores better
 
 **Pick this if** you are on Plus, sell in one currency, and want the tidiest possible cart.
 

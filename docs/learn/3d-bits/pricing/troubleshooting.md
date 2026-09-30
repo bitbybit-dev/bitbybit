@@ -64,7 +64,7 @@ tags: [shopify, 3d-bits, pricing, checkout, validation]
 
 **What to do.** This should never reach a shopper - publishing checks the whole range of configurations and refuses to go live when one of them breaches the floor. Seeing it means the product's own price in Shopify has been raised since you last published. Publish the project again: it will either succeed, or stop and name the price the product should carry. See [Linked products](./linked-products#which-changes-need-a-publish).
 
-**If it only happens in one market**, the cause is different: that market cannot be priced exactly, so the configuration was refused rather than charged at an amount that would not match what was shown. Giving the market a price list is the fix - see [Other currencies](./other-currencies#two-kinds-of-market).
+**If it only happens in one market**, the cause is different: that market cannot be priced exactly, so the configuration was refused rather than charged at an amount that would not match what was shown. Giving the market a price list is the fix - see [Other currencies](./other-currencies#two-kinds-of-market). If that market includes tax based on the shopper's country instead, Product lines charging can refuse configured products in countries whose tax rate differs from yours - see [Other currencies](./other-currencies#per-country-tax).
 
 ### "Your cart already has N customized products"
 
