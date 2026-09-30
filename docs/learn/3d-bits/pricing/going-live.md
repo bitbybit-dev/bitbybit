@@ -71,6 +71,7 @@ Run a shortened version of the checklist whenever you:
 - Add or remove an option
 - Change your theme, or update it
 - Add a market or change a market's currency
+- Change whether a market includes tax based on the shopper's country
 - Switch charging method
 
 Most of these need a publish before they take effect. The ones people forget are the two that happen in Shopify rather than in Composer: **a linked product's price changing**, and **the price of the product the configurator sits on changing**. Both are checked when you publish, and publishing is refused if the result could not be charged. See [Linked products](./linked-products#which-changes-need-a-publish).

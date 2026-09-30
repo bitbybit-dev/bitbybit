@@ -67,7 +67,7 @@ At checkout the configured product normally appears as a single line at the pric
 
 Configurator pricing decides **what the product costs**. Everything around that stays where it already is:
 
-- ✅ Taxes, shipping rates and discounts - Shopify, exactly as for any other product. The Price element can show the shopper the discounts Shopify gives their configuration before they add it - see [Layout](/learn/3d-bits/composer/gui/layout)
+- ✅ Taxes, shipping rates and discounts - Shopify. One exception: a market that includes tax based on the shopper's country does not re-price a configured product for that country - see [Other currencies](./other-currencies#per-country-tax). The Price element can show the shopper the discounts Shopify gives their configuration before they add it - see [Layout](/learn/3d-bits/composer/gui/layout)
 - ✅ Payment, fraud analysis and refunds - Shopify
 - ✅ Your existing variants for anything you do not configure - Shopify
 - ❌ 3D Bits never processes payments and never holds money

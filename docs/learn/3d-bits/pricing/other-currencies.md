@@ -60,11 +60,23 @@ When you publish, 3D Bits tells you which of your markets round, and how many li
 
 The Price element shows Shopify's discounts under the total only when Shopify's price for the configuration is exactly the total on screen. In your store currency it normally is. In a converted currency Shopify rounds each line of the order on its own, so its price usually lands a few cents away from the configurator's total, and the rows stay hidden rather than show a figure checkout would not charge. The discounts still apply at checkout, and a promo code chip still offers its code and applies it; it just does not state the saving.
 
-## Markets that include tax in the price
+## Tax that depends on the shopper's country {#per-country-tax}
 
-If a market shows prices with tax included **based on the shopper's country**, a configured total cannot follow that. The total is worked out from your store-currency prices, so the shopper pays your gross total wherever they are, and the difference between your tax rate and theirs is absorbed rather than shown.
+A Shopify market can include tax in prices **based on the shopper's country**. Shopify then re-prices every product for each country: it takes your own country's tax out and puts the shopper's in. For a shop in Germany (19% VAT), a product at 100.00 costs 101.68 in Spain (21%) and 98.32 in Luxembourg (17%), so what you keep is the same in every country.
 
-If the per-country amount has to be exact there, price that market with a price list, or switch it to adding tax at checkout instead.
+**Configured products do not follow this.** 3D Bits works the configured total out from the prices you set, which include your own country's tax, and does not re-price it for the shopper's country. This happens even when the shopper pays in your own currency - across the euro area, for example.
+
+What the shopper sees and pays in a country whose tax rate differs from yours depends on the [charging method](./charging-methods):
+
+| Charging method | Price shown | Price charged |
+|---|---|---|
+| **Single line**, **Bundled parts** | Your own country's total | Your own country's total. Only the tax inside it changes, so you keep less where the rate is higher than yours, and the shopper pays more than your other products suggest where it is lower |
+| **Product lines** | Your own country's total | Checkout can refuse the configured product |
+| **Variant matrix** | Your own country's total | Shopify's price for the shopper's country, so it differs from the price shown |
+
+When you publish, 3D Bits checks your markets and warns you when one of them includes tax based on the shopper's country and covers a country other than your own.
+
+A market that includes tax at **one price for every country** does not re-price anything, so configured products and your other products agree there. Switching to it changes what you keep on your other products too, so it is a business decision rather than a fix. Whatever you choose, place a test order from a country whose rate differs from yours before you sell there.
 
 ## Markets where the shopper chooses the currency
 
@@ -96,6 +108,7 @@ If you want certainty on one, compare it against your price list by hand.
 - [ ] Check the configurator total, the cart total and the checkout total against each other
 - [ ] Test a configuration with **several priced options**, not just one
 - [ ] Test a configuration driven by a **slider, number field or formula**, if your configurator has one
+- [ ] If the market includes tax **based on the shopper's country**, test from a country whose tax rate differs from yours - see [above](#per-country-tax)
 - [ ] Repeat after any change to that market in Shopify
 
 :::info Related
