@@ -87,8 +87,8 @@ API keys are purchased and managed through [**Bitbybit Studio**](https://studio.
 
 The [bitbybit.dev](https://bitbybit.dev) platform offers **Silver** and **Gold** subscription plans for users who want to go beyond the free tier. These subscriptions unlock:
 
-- **Private projects** - Save unlimited private projects to the cloud (free accounts have limits).
-- **Assets** - upload asset files to our cloud storage and use them in your 3D projects.
+- **Private projects** - Keep practically unlimited private projects in the cloud (free accounts have a smaller limit).
+- **More cloud storage** - Larger asset files, more files and scripts per project, and more storage in total. The plan page lists each plan's limits.
 - **Advanced algorithms** - Access proprietary algorithm namespaces (`bitbybit.advanced`, `bitbybit.things`, `bitbybit.asset`) within the online editors.
 - **Community content** - Silver and Gold subscribers can access scripts published by other community members at their respective tier levels.
 
