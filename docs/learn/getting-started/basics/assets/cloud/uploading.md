@@ -72,7 +72,7 @@ Let's focus on uploading via the editor:
 4.  **Upload the Asset:**
     Click the **"Upload"** button. The asset will begin uploading to your project's cloud storage.
     *   The form will close, and after a short processing time, you should see the asset appear in the list of your project's assets within the management panel.
-    *   **Processing Time & Quotas:** It might take a moment for the asset to appear. Our backend needs to process the file and verify that your account's storage quota allows for the upload. In the rare case that you've exceeded your quota (you typically shouldn't see the upload button if your quota is full), the uploaded file might be deleted, and the asset won't appear.
+    *   **Plan Limits:** Your plan's limits are checked before anything is uploaded. If the file is larger than your plan allows, or the project or your cloud storage is full, you are told which, and nothing is uploaded.
 
 5.  **Repeat for Other Assets:**
     Follow the same steps (3 and 4) to upload the `CalmCup.step` file.
