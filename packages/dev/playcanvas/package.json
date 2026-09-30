@@ -1,6 +1,6 @@
 {
     "name": "@bitbybit-dev/playcanvas",
-    "version": "1.4.0-rc.0",
+    "version": "1.4.0",
     "description": "Bit By Bit Developers PlayCanvas CAD Library to Program Geometry",
     "homepage": "https://docs.bitbybit.dev/modules/Bit",
     "main": "index.js",
@@ -118,11 +118,11 @@
     },
     "type": "module",
     "dependencies": {
-        "@bitbybit-dev/core": "1.4.0-rc.0",
-        "@bitbybit-dev/base": "1.4.0-rc.0",
-        "@bitbybit-dev/occt-worker": "1.4.0-rc.0",
-        "@bitbybit-dev/jscad-worker": "1.4.0-rc.0",
-        "@bitbybit-dev/manifold-worker": "1.4.0-rc.0",
+        "@bitbybit-dev/core": "1.4.0",
+        "@bitbybit-dev/base": "1.4.0",
+        "@bitbybit-dev/occt-worker": "1.4.0",
+        "@bitbybit-dev/jscad-worker": "1.4.0",
+        "@bitbybit-dev/manifold-worker": "1.4.0",
         "playcanvas": "2.22.2",
         "jsonpath-plus": "10.4.0",
         "verb-nurbs-web": "2.1.3"

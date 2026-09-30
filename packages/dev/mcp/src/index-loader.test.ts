@@ -29,7 +29,7 @@ describe("indexUrl", () => {
     it("addresses the index by exact version", () => {
         // Assert
         expect(indexUrl("1.2.5")).toBe("https://git-cdn.bitbybit.dev/v1.2.5/ai-context/index.json");
-        expect(indexUrl("1.4.0-rc.1")).toBe("https://git-cdn.bitbybit.dev/v1.4.0-rc.1/ai-context/index.json");
+        expect(indexUrl("1.2.6-rc.1")).toBe("https://git-cdn.bitbybit.dev/v1.2.6-rc.1/ai-context/index.json");
     });
 
     it("refuses a moving or partial version", () => {

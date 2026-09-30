@@ -12,10 +12,10 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@bitbybit-dev/threejs": "1.4.0-rc.0"
+    "@bitbybit-dev/threejs": "1.4.0"
   },
   "devDependencies": {
-    "@bitbybit-dev/occt": "1.4.0-rc.0",
+    "@bitbybit-dev/occt": "1.4.0",
     "@eslint/js": "10.0.1",
     "@types/node": "22.20.1",
     "@types/three": "0.186.0",
