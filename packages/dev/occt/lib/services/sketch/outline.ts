@@ -182,7 +182,7 @@ export function segmentsOf(names: readonly string[], pieces: readonly Piece[]): 
     });
 }
 
-type Corner = { kind: "fillet" | "chamfer"; size: number; owner: number };
+type Corner = { kind: "fillet" | "chamfer"; size: number; owner: number; label: string };
 
 const COMMAND_TYPES = [
     "line", "hLine", "vLine", "polarLine", "tangentLine", "threePointArc", "tangentArc", "sagittaArc", "bulgeArc",
@@ -205,6 +205,14 @@ export function outlineOf(commands: unknown, start: Vec2): { outline: Outline; n
     }
     const pen = new Pen(start);
     const names = commands.map((command: unknown, index) => pen.apply(command, index));
+    names.forEach((name, index) => {
+        const first = names.indexOf(name);
+        if (first !== index) {
+            const positional = String(index) === name ? index : first;
+            const named = positional === index ? first : index;
+            throw new InputError(`\`commands\` at position ${named} has the id \`${name}\`, the name the command at position ${positional} takes because it has no id; give that command an id, or use an id that is not a number.`, "commands");
+        }
+    });
     return { outline: pen.finish(), names };
 }
 
@@ -226,21 +234,21 @@ class Pen {
             throw new InputError(`\`commands\` at position ${index} is not a pen command.`, "commands");
         }
         const fields = command as Fields;
+        const type = fields["type"];
+        if (!isCommandType(type)) {
+            throw new InputError(`\`commands\` at position ${index} has the type ${JSON.stringify(type ?? null)}; a command is one of ${COMMAND_TYPES.join(", ")}.`, "commands");
+        }
         const given = fields["id"];
         if (given !== undefined && typeof given !== "string") {
-            throw new InputError(`\`commands\` at position ${index} has an \`id\` that is not text.`, "commands");
+            throw new InputError(`\`commands\` at position ${index} (a \`${type}\`) has an \`id\` that is not text.`, "commands");
         }
         const id = given === "" ? undefined : given;
-        this.label = id === undefined ? `\`commands\` at position ${index}` : `\`commands\` at position ${index} (\`${id}\`)`;
+        this.label = `\`commands\` at position ${index} (${id === undefined ? "" : `\`${id}\`, `}a \`${type}\`)`;
         if (id !== undefined) {
             if (this.ids.has(id)) {
                 this.refuse(`uses the id \`${id}\` a command before it already has`);
             }
             this.ids.add(id);
-        }
-        const type = fields["type"];
-        if (!isCommandType(type)) {
-            this.refuse(`has the type ${JSON.stringify(type ?? null)}; a command is one of ${COMMAND_TYPES.join(", ")}`);
         }
         if (this.closed && type !== "filletCorner" && type !== "chamferCorner") {
             this.refuse("comes after `close`; only a corner command may follow it");
@@ -254,7 +262,7 @@ class Pen {
             throw new InputError("`commands` draw nothing: the pen needs at least one segment.", "commands");
         }
         if (this.pending !== undefined) {
-            throw new InputError(`\`commands\` at position ${this.pending.owner} rounds or bevels a corner that has no segment after it.`, "commands");
+            throw new InputError(`${this.pending.label} has no segment after it, so there is no corner to round or bevel: a corner command goes between the two segments it joins, or after \`close\` for the corner at the start.`, "commands");
         }
         if (!this.closed && length(sub(this.cursor, this.start)) <= COINCIDENT && this.pieces.length > 1) {
             this.closed = true;
@@ -262,7 +270,7 @@ class Pen {
         if (this.wrap !== undefined) {
             const last = this.pieces[this.pieces.length - 1]!;
             const first = this.pieces[0]!;
-            const joined = cornerBetween(last, first, this.wrap, `\`commands\` at position ${this.wrap.owner}`);
+            const joined = cornerBetween(last, first, this.wrap, this.wrap.label);
             this.pieces[this.pieces.length - 1] = joined.before;
             this.pieces[0] = joined.after;
             this.pieces.push(joined.corner);
@@ -329,10 +337,10 @@ class Pen {
                 this.closed = true;
                 break;
             case "filletCorner":
-                this.corner({ kind: "fillet", size: this.positive(fields, "radius"), owner: index });
+                this.corner({ kind: "fillet", size: this.positive(fields, "radius"), owner: index, label: this.label });
                 break;
             default:
-                this.corner({ kind: "chamfer", size: this.positive(fields, "distance"), owner: index });
+                this.corner({ kind: "chamfer", size: this.positive(fields, "distance"), owner: index, label: this.label });
                 break;
         }
     }
@@ -384,7 +392,7 @@ class Pen {
 
     private corner(corner: Corner): void {
         if (this.pieces.length === 0) {
-            this.refuse("rounds or bevels a corner with no segment before it");
+            this.refuse("has no segment before it, so there is no corner to round or bevel");
         }
         if (this.pending !== undefined || this.wrap !== undefined) {
             this.refuse("follows another corner command; one corner takes one command");
@@ -399,7 +407,7 @@ class Pen {
     private push(piece: Piece): void {
         if (this.pending !== undefined) {
             const before = this.pieces[this.pieces.length - 1]!;
-            const joined = cornerBetween(before, piece, this.pending, `\`commands\` at position ${this.pending.owner}`);
+            const joined = cornerBetween(before, piece, this.pending, this.pending.label);
             this.pieces[this.pieces.length - 1] = joined.before;
             this.pieces.push(joined.corner);
             this.pieces.push(joined.after);

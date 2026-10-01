@@ -254,7 +254,7 @@ describe("sketch outline", () => {
     });
 
     describe("corners", () => {
-        const corner = (kind: "fillet" | "chamfer", size: number) => ({ kind, size, owner: 9 });
+        const corner = (kind: "fillet" | "chamfer", size: number) => ({ kind, size, owner: 9, label: "the corner" });
 
         it("should round the corner between two arcs with an arc touching both", () => {
             // Arrange
@@ -340,7 +340,7 @@ describe("sketch outline", () => {
             // Arrange
             const cases: [unknown, RegExp][] = [
                 [[42], /position 0 is not a pen command/],
-                [[{ type: "hLine", id: 5, length: 1 }], /position 0 has an `id` that is not text/],
+                [[{ type: "hLine", id: 5, length: 1 }], /position 0 \(a `hLine`\) has an `id` that is not text/],
                 [[{ type: "line", to: [1, 1], relative: "yes" }], /`relative` that is not true or false/],
                 [[{ type: "polarLine", length: 1, angle: "up" }], /`angle` that is not a finite number/],
                 [[{ type: "hLine", length: 1 }, { type: "tangentLine", length: -1 }], /must be above 0/],
@@ -348,7 +348,9 @@ describe("sketch outline", () => {
                 [[{ type: "sagittaArc", to: [0, 0], sagitta: 1 }], /ends where it starts/],
                 [[{ type: "sagittaArc", to: [5, 0], sagitta: 0 }], /stands no distance off/],
                 [[{ type: "quadratic", control: [1, 1], to: [0, 0] }], /curve that ends where it starts/],
-                [[{ type: "hLine", length: 5 }, { type: "close" }, { type: "filletCorner", radius: 1 }], /double back/],
+                [[{ type: "hLine", length: 5 }, { type: "close" }, { type: "filletCorner", radius: 1 }], /position 2 \(a `filletCorner`\) rounds or bevels a corner where the segments double back/],
+                [[{ type: "hLine", id: "2", length: 2 }, { type: "vLine", length: 2 }, { type: "hLine", length: 1 }], /position 0 has the id `2`, the name the command at position 2 takes because it has no id/],
+                [[{ type: "hLine", length: 2 }, { type: "vLine", length: 2 }, { type: "hLine", id: "0", length: 1 }], /position 2 has the id `0`, the name the command at position 0 takes because it has no id/],
                 [[{ type: "hLine", length: 5 }, { type: "vLine", length: 5 }, { type: "close" }, { type: "filletCorner", radius: 1 }, { type: "filletCorner", radius: 1 }], /follows another corner command/],
             ];
 
