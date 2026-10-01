@@ -11,3 +11,4 @@ export * from "./analysis/bucket";
 export * from "./sections/bucket";
 export * from "./repair/bucket";
 export * from "./io/bucket";
+export * from "./sketch/bucket";

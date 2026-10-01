@@ -306,6 +306,23 @@ const OCCT_ShapeTransformQueryDto: DtoConstraints = { shape: k.required(k.opaque
 const OCCT_ShapeWithToleranceDto: DtoConstraints = { shape: k.required(k.opaque), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SimpleAngularDimensionDto: DtoConstraints = { direction1: k.point3, direction2: k.point3, center: k.point3, radius: k.between(k.number, { min: 0 }), offsetFromCenter: k.number, extraSize: k.between(k.number, { min: 0 }), decimalPlaces: k.between(k.number, { min: 0 }), labelSuffix: k.string, labelSize: k.between(k.number, { min: 0, exclusiveMin: true }), labelOffset: k.number, radians: k.boolean, endType: k.oneOf(["none", "arrow"]), arrowSize: k.between(k.number, { min: 0 }), arrowAngle: k.between(k.number, { min: 0, max: 90 }), arrowsFlipped: k.boolean, labelRotation: k.number, labelFlipHorizontal: k.boolean, labelFlipVertical: k.boolean, labelOverwrite: k.string, removeTrailingZeros: k.boolean };
 const OCCT_SimpleLinearLengthDimensionDto: DtoConstraints = { start: k.required(k.point3), end: k.required(k.point3), direction: k.required(k.vector3), offsetFromPoints: k.number, crossingSize: k.between(k.number, { min: 0 }), decimalPlaces: k.between(k.number, { min: 0 }), labelSuffix: k.string, labelSize: k.between(k.number, { min: 0, exclusiveMin: true }), labelOffset: k.number, labelRotation: k.number, endType: k.oneOf(["none", "arrow"]), arrowSize: k.between(k.number, { min: 0 }), arrowAngle: k.between(k.number, { min: 0, max: 90 }), arrowsFlipped: k.boolean, labelFlipHorizontal: k.boolean, labelFlipVertical: k.boolean, labelOverwrite: k.string, removeTrailingZeros: k.boolean };
+const OCCT_SketchBulgeArcDto: DtoConstraints = { to: k.point2, bulge: k.number, relative: k.boolean, id: k.string };
+const OCCT_SketchChamferCornerDto: DtoConstraints = { distance: k.between(k.number, { min: 0, exclusiveMin: true }), id: k.string };
+const OCCT_SketchCloseDto: DtoConstraints = { id: k.string };
+const OCCT_SketchCubicDto: DtoConstraints = { control1: k.point2, control2: k.point2, to: k.point2, relative: k.boolean, id: k.string };
+const OCCT_SketchFilletCornerDto: DtoConstraints = { radius: k.between(k.number, { min: 0, exclusiveMin: true }), id: k.string };
+const OCCT_SketchHLineDto: DtoConstraints = { length: k.number, id: k.string };
+const OCCT_SketchHullDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), frame: k.opaque, makeFace: k.boolean };
+const OCCT_SketchLineDto: DtoConstraints = { to: k.point2, relative: k.boolean, id: k.string };
+const OCCT_SketchPenDto: DtoConstraints = { commands: k.required(k.list(k.opaque)), start: k.point2, frame: k.opaque, makeFace: k.boolean };
+const OCCT_SketchPolarLineDto: DtoConstraints = { length: k.number, angle: k.number, id: k.string };
+const OCCT_SketchQuadraticDto: DtoConstraints = { control: k.point2, to: k.point2, relative: k.boolean, id: k.string };
+const OCCT_SketchSagittaArcDto: DtoConstraints = { to: k.point2, sagitta: k.number, relative: k.boolean, id: k.string };
+const OCCT_SketchStrokeDto: DtoConstraints = { shape: k.required(k.opaque), width: k.between(k.number, { min: 0, exclusiveMin: true }), cap: k.oneOf(["flat", "round", "square"]), join: k.oneOf(["arc", "intersection", "tangent"]), frame: k.opaque, makeFace: k.boolean };
+const OCCT_SketchTangentArcDto: DtoConstraints = { to: k.point2, relative: k.boolean, id: k.string };
+const OCCT_SketchTangentLineDto: DtoConstraints = { length: k.between(k.number, { min: 0, exclusiveMin: true }), id: k.string };
+const OCCT_SketchThreePointArcDto: DtoConstraints = { through: k.point2, to: k.point2, relative: k.boolean, id: k.string };
+const OCCT_SketchVLineDto: DtoConstraints = { length: k.number, id: k.string };
 const OCCT_SliceByFramesDto: DtoConstraints = { shape: k.required(k.opaque), frames: k.required(k.list(k.opaque)), makeFaces: k.boolean, tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SliceDto: DtoConstraints = { shape: k.required(k.opaque), step: k.between(k.number, { min: 0 }), direction: k.vector3 };
 const OCCT_SliceInStepPatternDto: DtoConstraints = { shape: k.required(k.opaque), steps: k.list(k.number), direction: k.vector3 };
@@ -891,6 +908,24 @@ export const occtDtoRegistry: DtoRegistry = {
     "shapesToMeshes": { dto: Inputs.OCCT.ShapesToMeshesDto, constraints: OCCT_ShapesToMeshesDto },
     "shapeToManifoldMesh": { dto: Inputs.OCCT.ShapeToManifoldMeshDto, constraints: OCCT_ShapeToManifoldMeshDto },
     "shapeToMesh": { dto: Inputs.OCCT.ShapeToMeshDto, constraints: OCCT_ShapeToMeshDto },
+    "sketch.commands.bulgeArc": { dto: Inputs.OCCT.SketchBulgeArcDto, constraints: OCCT_SketchBulgeArcDto },
+    "sketch.commands.chamferCorner": { dto: Inputs.OCCT.SketchChamferCornerDto, constraints: OCCT_SketchChamferCornerDto },
+    "sketch.commands.close": { dto: Inputs.OCCT.SketchCloseDto, constraints: OCCT_SketchCloseDto },
+    "sketch.commands.cubic": { dto: Inputs.OCCT.SketchCubicDto, constraints: OCCT_SketchCubicDto },
+    "sketch.commands.filletCorner": { dto: Inputs.OCCT.SketchFilletCornerDto, constraints: OCCT_SketchFilletCornerDto },
+    "sketch.commands.hLine": { dto: Inputs.OCCT.SketchHLineDto, constraints: OCCT_SketchHLineDto },
+    "sketch.commands.line": { dto: Inputs.OCCT.SketchLineDto, constraints: OCCT_SketchLineDto },
+    "sketch.commands.polarLine": { dto: Inputs.OCCT.SketchPolarLineDto, constraints: OCCT_SketchPolarLineDto },
+    "sketch.commands.quadratic": { dto: Inputs.OCCT.SketchQuadraticDto, constraints: OCCT_SketchQuadraticDto },
+    "sketch.commands.sagittaArc": { dto: Inputs.OCCT.SketchSagittaArcDto, constraints: OCCT_SketchSagittaArcDto },
+    "sketch.commands.tangentArc": { dto: Inputs.OCCT.SketchTangentArcDto, constraints: OCCT_SketchTangentArcDto },
+    "sketch.commands.tangentLine": { dto: Inputs.OCCT.SketchTangentLineDto, constraints: OCCT_SketchTangentLineDto },
+    "sketch.commands.threePointArc": { dto: Inputs.OCCT.SketchThreePointArcDto, constraints: OCCT_SketchThreePointArcDto },
+    "sketch.commands.vLine": { dto: Inputs.OCCT.SketchVLineDto, constraints: OCCT_SketchVLineDto },
+    "sketch.hull": { dto: Inputs.OCCT.SketchHullDto, constraints: OCCT_SketchHullDto },
+    "sketch.pen": { dto: Inputs.OCCT.SketchPenDto, constraints: OCCT_SketchPenDto },
+    "sketch.penWithSegments": { dto: Inputs.OCCT.SketchPenDto, constraints: OCCT_SketchPenDto },
+    "sketch.stroke": { dto: Inputs.OCCT.SketchStrokeDto, constraints: OCCT_SketchStrokeDto },
     "svg.loadSVG": { dto: Inputs.OCCT.LoadSVGDto, constraints: OCCT_LoadSVGDto },
     "svg.loadSVGStructured": { dto: Inputs.OCCT.LoadSVGDto, constraints: OCCT_LoadSVGDto },
     "transforms.align": { dto: Inputs.OCCT.AlignDto, constraints: OCCT_AlignDto },
