@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { spawnSync } from "node:child_process";
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, mkdirSync, writeFileSync } from "node:fs";
+import { spawn, spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -99,6 +100,70 @@ const scaffold = (args: string[]): { status: number | null; output: string } => 
     });
     return { status: result.status, output: result.stdout + result.stderr };
 };
+
+const ARROW_DOWN = "\x1b[B";
+const ENTER = "\r";
+const PROMPT_TIMEOUT_MS = 20_000;
+const PROMPT_TEST_TIMEOUT_MS = 60_000;
+const APP_TYPES = ["frontend", "cloud", "app"] as const;
+const OCCT_ARCHITECTURES = ["32", "64", "64-mt"] as const;
+const INTERACTIVE_PROJECT = "prompted";
+const QUESTION = {
+    appType: /What type of application would you like to create\?/,
+    projectName: /What is your project name\?/,
+    engine: /Which 3D engine would you like to use\?/,
+    occtArchitecture: /Which OCCT worker architecture would you like to use\?/,
+    backend: /Which backend would you like to use\?/,
+    template: /Which app template would you like to start from\?/,
+    overwrite: /already exists\. Do you want to overwrite it\?/,
+} as const;
+
+type Answer = { question: RegExp; keys: string };
+type PromptRun = { status: number | null; output: string; answered: number };
+
+const pick = (question: RegExp, index: number): Answer => ({ question, keys: ARROW_DOWN.repeat(index) + ENTER });
+const type = (question: RegExp, text: string): Answer => ({ question, keys: text + ENTER });
+
+const answerPrompts = (cwd: string, args: string[], answers: Answer[]): Promise<PromptRun> =>
+    new Promise((resolve) => {
+        const child = spawn("node", [CLI, ...args], { cwd, env: { ...process.env, NO_COLOR: "1" } });
+        let output = "";
+        let searchFrom = 0;
+        let answered = 0;
+        const timer = setTimeout(() => child.kill(), PROMPT_TIMEOUT_MS);
+        const onData = (chunk: Buffer): void => {
+            output += chunk.toString();
+            const answer = answers[answered];
+            if (!answer) return;
+            const match = answer.question.exec(output.slice(searchFrom));
+            if (!match) return;
+            searchFrom += match.index + match[0].length;
+            answered += 1;
+            child.stdin.write(answer.keys);
+            if (answered === answers.length) child.stdin.end();
+        };
+        child.stdout.on("data", onData);
+        child.stderr.on("data", onData);
+        child.on("close", (status) => {
+            clearTimeout(timer);
+            resolve({ status, output, answered });
+        });
+    });
+
+const scaffoldIn = (cwd: string, args: string[]): { status: number | null; output: string } => {
+    const result = spawnSync("node", [CLI, ...args], {
+        cwd, encoding: "utf8", env: { ...process.env, CI: "1", NO_COLOR: "1" },
+    });
+    return { status: result.status, output: result.stdout + result.stderr };
+};
+
+const fingerprint = (dir: string): Record<string, string> =>
+    Object.fromEntries(walk(dir)
+        .filter((file) => statSync(file).isFile())
+        .map((file) => [path.relative(dir, file), createHash("sha256").update(readFileSync(file)).digest("hex")] as const)
+        .sort(([left], [right]) => left.localeCompare(right)));
+
+const freshDir = (label: string): string => mkdtempSync(path.join(work, `${label}-`));
 
 const manifestOf = (...segments: string[]): Manifest =>
     JSON.parse(readFileSync(path.join(work, ...segments, "package.json"), "utf8")) as Manifest;
@@ -437,6 +502,185 @@ describe("create-app", () => {
             }
             expect(readFileSync(path.join(REACT_TEMPLATE, "eslint.config.js"), "utf8")).toContain("reactHooks.configs.flat.recommended");
         });
+    });
+
+    describe("the interactive prompts", () => {
+        const MENU_LABELS: Record<(typeof APP_TYPES)[number], string[]> = {
+            frontend: ["Frontend App", "CAD Cloud App", "App Template", "Three.js", "Babylon.js", "PlayCanvas", "32-bit", "64-bit", "64-bit MT"],
+            cloud: ["Hono + SDK", "Hono + REST", "Node.js + SDK", "Node.js + REST", ".NET + REST"],
+            app: ["Product configurator", "Laser-cut box", "Sheet-metal unfold", "STEP to glTF command line", "Drone assembly"],
+        };
+        const DEFAULT_ANSWERS: Record<(typeof APP_TYPES)[number], Answer[]> = {
+            frontend: [pick(QUESTION.engine, 0), pick(QUESTION.occtArchitecture, 0)],
+            cloud: [pick(QUESTION.backend, 0)],
+            app: [pick(QUESTION.template, 0)],
+        };
+        const FRONTEND_VARIANTS = ENGINES.flatMap((engine, engineIndex) =>
+            OCCT_ARCHITECTURES.map((architecture, architectureIndex) => ({ engine, engineIndex, architecture, architectureIndex })));
+        const CLOUD_VARIANTS = CLOUD_BACKENDS.map((backend, backendIndex) => ({ backend, backendIndex }));
+        const APP_VARIANTS = APP_TEMPLATES.map((template, templateIndex) => ({ template, templateIndex }));
+        const LAST_ANSWERS: Record<(typeof APP_TYPES)[number], { answers: Answer[]; flags: string[] }> = {
+            frontend: {
+                answers: [pick(QUESTION.engine, ENGINES.length - 1), pick(QUESTION.occtArchitecture, OCCT_ARCHITECTURES.length - 1)],
+                flags: ["-t", "frontend", "-e", ENGINES[ENGINES.length - 1]!, "-o", OCCT_ARCHITECTURES[OCCT_ARCHITECTURES.length - 1]!],
+            },
+            cloud: {
+                answers: [pick(QUESTION.backend, CLOUD_BACKENDS.length - 1)],
+                flags: ["-t", "cloud", "-b", CLOUD_BACKENDS[CLOUD_BACKENDS.length - 1]!],
+            },
+            app: {
+                answers: [pick(QUESTION.template, APP_TEMPLATES.length - 1)],
+                flags: ["-T", APP_TEMPLATES[APP_TEMPLATES.length - 1]!],
+            },
+        };
+
+        const referenceProject = (flags: string[]): Record<string, string> => {
+            const dir = freshDir("flagged");
+            const reference = scaffoldIn(dir, [INTERACTIVE_PROJECT, ...flags]);
+            expect(reference.status, reference.output).toBe(0);
+            const files = fingerprint(path.join(dir, INTERACTIVE_PROJECT));
+            expect(Object.keys(files)).toContain("AGENTS.md");
+            return files;
+        };
+
+        const expectAnsweredAndScaffolded = (run: PromptRun, answers: Answer[]): void => {
+            expect(run.answered, run.output).toBe(answers.length);
+            expect(run.status, run.output).toBe(0);
+        };
+
+        it.each(APP_TYPES)("should list every choice of every %s menu, not fall back to a text answer", async (appType) => {
+            // Arrange
+            const answers = [pick(QUESTION.appType, APP_TYPES.indexOf(appType)), type(QUESTION.projectName, INTERACTIVE_PROJECT), ...DEFAULT_ANSWERS[appType]];
+
+            // Act
+            const run = await answerPrompts(freshDir("listed"), [], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            for (const label of [...MENU_LABELS.frontend.slice(0, APP_TYPES.length), ...MENU_LABELS[appType]]) {
+                expect(run.output).toContain(label);
+            }
+            expect(run.output).not.toMatch(/\(frontend\)/);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(FRONTEND_VARIANTS)("should scaffold the same $engine $architecture-bit project from the menus as from the flags", async ({ engine, engineIndex, architecture, architectureIndex }) => {
+            // Arrange
+            const expected = referenceProject(["-t", "frontend", "-e", engine, "-o", architecture]);
+            const answers = [
+                pick(QUESTION.appType, APP_TYPES.indexOf("frontend")),
+                type(QUESTION.projectName, INTERACTIVE_PROJECT),
+                pick(QUESTION.engine, engineIndex),
+                pick(QUESTION.occtArchitecture, architectureIndex),
+            ];
+            const dir = freshDir("prompted");
+
+            // Act
+            const run = await answerPrompts(dir, [], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(CLOUD_VARIANTS)("should scaffold the same $backend cloud project from the menus as from the flags", async ({ backend, backendIndex }) => {
+            // Arrange
+            const expected = referenceProject(["-t", "cloud", "-b", backend]);
+            const answers = [
+                pick(QUESTION.appType, APP_TYPES.indexOf("cloud")),
+                type(QUESTION.projectName, INTERACTIVE_PROJECT),
+                pick(QUESTION.backend, backendIndex),
+            ];
+            const dir = freshDir("prompted");
+
+            // Act
+            const run = await answerPrompts(dir, [], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(APP_VARIANTS)("should scaffold the same $template app template from the menus as from the flags", async ({ template, templateIndex }) => {
+            // Arrange
+            const expected = referenceProject(["-T", template]);
+            const answers = [
+                pick(QUESTION.appType, APP_TYPES.indexOf("app")),
+                type(QUESTION.projectName, INTERACTIVE_PROJECT),
+                pick(QUESTION.template, templateIndex),
+            ];
+            const dir = freshDir("prompted");
+
+            // Act
+            const run = await answerPrompts(dir, [], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(APP_TYPES)("should skip the name question for a %s project named on the command line", async (appType) => {
+            // Arrange
+            const { answers: rest, flags } = LAST_ANSWERS[appType];
+            const expected = referenceProject(flags);
+            const answers = [pick(QUESTION.appType, APP_TYPES.indexOf(appType)), ...rest];
+            const dir = freshDir("prompted");
+
+            // Act
+            const run = await answerPrompts(dir, [INTERACTIVE_PROJECT], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(run.output).not.toMatch(QUESTION.projectName);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(APP_TYPES)("should skip the type question when --type %s is given without a name", async (appType) => {
+            // Arrange
+            const { answers: rest, flags } = LAST_ANSWERS[appType];
+            const expected = referenceProject(flags);
+            const answers = [type(QUESTION.projectName, INTERACTIVE_PROJECT), ...rest];
+            const dir = freshDir("prompted");
+
+            // Act
+            const run = await answerPrompts(dir, ["-t", appType], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(run.output).not.toMatch(QUESTION.appType);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(APP_TYPES)("should keep an existing directory when overwriting a %s project is declined", async (appType) => {
+            // Arrange
+            const dir = freshDir("declined");
+            mkdirSync(path.join(dir, INTERACTIVE_PROJECT));
+            writeFileSync(path.join(dir, INTERACTIVE_PROJECT, "mine.txt"), "do not overwrite me");
+            const answers = [type(QUESTION.overwrite, "n")];
+
+            // Act
+            const run = await answerPrompts(dir, [INTERACTIVE_PROJECT, ...LAST_ANSWERS[appType].flags], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(readdirSync(path.join(dir, INTERACTIVE_PROJECT))).toEqual(["mine.txt"]);
+        }, PROMPT_TEST_TIMEOUT_MS);
+
+        it.each(APP_TYPES)("should replace an existing directory with the %s project when overwriting is accepted", async (appType) => {
+            // Arrange
+            const { flags } = LAST_ANSWERS[appType];
+            const expected = referenceProject(flags);
+            const dir = freshDir("accepted");
+            mkdirSync(path.join(dir, INTERACTIVE_PROJECT));
+            writeFileSync(path.join(dir, INTERACTIVE_PROJECT, "mine.txt"), "overwrite me");
+            const answers = [type(QUESTION.overwrite, "y")];
+
+            // Act
+            const run = await answerPrompts(dir, [INTERACTIVE_PROJECT, ...flags], answers);
+
+            // Assert
+            expectAnsweredAndScaffolded(run, answers);
+            expect(fingerprint(path.join(dir, INTERACTIVE_PROJECT))).toEqual(expected);
+        }, PROMPT_TEST_TIMEOUT_MS);
     });
 
     describe("when the arguments are wrong", () => {

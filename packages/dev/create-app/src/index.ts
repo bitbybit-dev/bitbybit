@@ -79,6 +79,8 @@ const APP_TEMPLATES: Record<AppTemplateId, AppTemplate> = {
 };
 
 const APP_TEMPLATE_IDS = Object.keys(APP_TEMPLATES) as AppTemplateId[];
+const NARROW_TERMINAL_LINES_PER_TEMPLATE_CHOICE = 3;
+const TEMPLATE_MENU_PAGE_SIZE = APP_TEMPLATE_IDS.length * NARROW_TERMINAL_LINES_PER_TEMPLATE_CHOICE;
 
 interface AppProjectOptions {
     projectName: string;
@@ -177,7 +179,7 @@ function displayWelcome(): void {
 async function promptAppType(): Promise<AppType> {
     const { appType } = await inquirer.prompt<{ appType: AppType }>([
         {
-            type: "list",
+            type: "select",
             name: "appType",
             message: chalk.cyan("🏗️  What type of application would you like to create?"),
             choices: [
@@ -205,7 +207,7 @@ async function promptAppType(): Promise<AppType> {
 
 async function promptCloudProjectOptions(projectNameArg?: string): Promise<CloudProjectOptions> {
     interface CloudAnswers {
-        projectName?: string;
+        projectName?: string | undefined;
         backend: BackendType;
     }
 
@@ -253,7 +255,7 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
                 }
             },
             {
-                type: "list",
+                type: "select",
                 name: "backend",
                 message: chalk.cyan("⚡ Which backend would you like to use?"),
                 choices: backendChoices,
@@ -263,7 +265,7 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
     } else {
         answers = await inquirer.prompt<CloudAnswers>([
             {
-                type: "list",
+                type: "select",
                 name: "backend",
                 message: chalk.cyan("⚡ Which backend would you like to use?"),
                 choices: backendChoices,
@@ -280,7 +282,7 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
 
 async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOptions> {
     interface AppAnswers {
-        projectName?: string;
+        projectName?: string | undefined;
         template: AppTemplateId;
     }
 
@@ -307,11 +309,12 @@ async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOpt
             }
         }]),
         {
-            type: "list" as const,
+            type: "select" as const,
             name: "template",
             message: chalk.cyan("🧩 Which app template would you like to start from?"),
             choices,
             default: APP_TEMPLATE_IDS[0],
+            pageSize: TEMPLATE_MENU_PAGE_SIZE,
         },
     ];
 
@@ -321,7 +324,7 @@ async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOpt
 
 async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOptions> {
     interface PromptAnswers {
-        projectName?: string;
+        projectName?: string | undefined;
         engine: EngineType;
         occtArchitecture: OcctArchitectureType;
     }
@@ -364,7 +367,7 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                 }
             },
             {
-                type: "list",
+                type: "select",
                 name: "engine",
                 message: chalk.cyan("🎮 Which 3D engine would you like to use?"),
                 choices: [
@@ -387,7 +390,7 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                 default: "threejs"
             },
             {
-                type: "list",
+                type: "select",
                 name: "occtArchitecture",
                 message: chalk.cyan("⚙️  Which OCCT worker architecture would you like to use?"),
                 choices: occtArchitectureChoices,
@@ -397,7 +400,7 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
     } else {
         answers = await inquirer.prompt<PromptAnswers>([
             {
-                type: "list",
+                type: "select",
                 name: "engine",
                 message: chalk.cyan("🎮 Which 3D engine would you like to use?"),
                 choices: [
@@ -420,7 +423,7 @@ async function promptProjectOptions(projectNameArg?: string): Promise<ProjectOpt
                 default: "threejs"
             },
             {
-                type: "list",
+                type: "select",
                 name: "occtArchitecture",
                 message: chalk.cyan("⚙️  Which OCCT worker architecture would you like to use?"),
                 choices: occtArchitectureChoices,

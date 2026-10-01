@@ -256,3 +256,8 @@ pdf:
   label: PDF
   permalink: /pdf
   description: PDF documents generated from a configuration for shoppers and workshops.
+
+mcp:
+  label: MCP
+  permalink: /mcp
+  description: Model Context Protocol servers that give AI coding agents the Bitbybit API and hosted CAD compute.

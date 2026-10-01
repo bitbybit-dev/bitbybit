@@ -434,6 +434,21 @@ describe("what the worker says when a call fails", () => {
         });
     });
 
+    describe("a call that arrives before any kernel was given", () => {
+        it("should be answered, so the host does not wait on it forever", async () => {
+            // Arrange
+            vi.resetModules();
+            const fresh = await import("./occ-worker");
+            const posted: unknown[] = [];
+
+            // Act
+            fresh.onMessageInput({ action: { functionName: "addOc", inputs: { plan: "silver" } }, uid: "early" }, (message: unknown) => posted.push(message));
+
+            // Assert
+            expect(posted).toContainEqual({ uid: "early", result: undefined });
+        });
+    });
+
     describe("dependencies added before the kernel could take them", () => {
         it("should hand them over once a kernel that takes plugins arrives", () => {
             // Arrange
