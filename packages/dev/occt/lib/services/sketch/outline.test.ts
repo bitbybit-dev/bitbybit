@@ -221,6 +221,17 @@ describe("sketch outline", () => {
             near(results[0]!.outline.pieces[2]!.to, [0, 0]);
         });
 
+        it("should name a command with an empty id by its position, as one without an id", () => {
+            // Arrange
+            const commands = [{ type: "hLine", id: "", length: 4 }, { type: "vLine", id: "", length: 4 }, { type: "close", id: "back" }];
+
+            // Act
+            const { names } = outlineOf(commands, [0, 0]);
+
+            // Assert
+            expect(names).toEqual(["0", "1", "back"]);
+        });
+
         it("should round a corner after close at the start point, trimming the first and last pieces", () => {
             // Arrange
             const commands = [{ type: "hLine", length: 10 }, { type: "vLine", length: 10 }, { type: "hLine", length: -10 }, { type: "close" }, { type: "filletCorner", radius: 2 }];

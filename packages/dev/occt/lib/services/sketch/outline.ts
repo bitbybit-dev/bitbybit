@@ -226,10 +226,11 @@ class Pen {
             throw new InputError(`\`commands\` at position ${index} is not a pen command.`, "commands");
         }
         const fields = command as Fields;
-        const id = fields["id"];
-        if (id !== undefined && typeof id !== "string") {
+        const given = fields["id"];
+        if (given !== undefined && typeof given !== "string") {
             throw new InputError(`\`commands\` at position ${index} has an \`id\` that is not text.`, "commands");
         }
+        const id = given === "" ? undefined : given;
         this.label = id === undefined ? `\`commands\` at position ${index}` : `\`commands\` at position ${index} (\`${id}\`)`;
         if (id !== undefined) {
             if (this.ids.has(id)) {

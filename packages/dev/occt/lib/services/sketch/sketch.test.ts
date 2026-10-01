@@ -271,6 +271,7 @@ describe("OCCT sketch", () => {
                 builders.quadratic({ control: [1, 1], to: [2, 0] }),
                 builders.cubic({ control1: [1, 1], control2: [2, 1], to: [3, 0], relative: true }),
                 builders.close({ id: "shut" }),
+                builders.hLine({ length: 3, id: "" }),
             ];
 
             // Assert
@@ -284,6 +285,7 @@ describe("OCCT sketch", () => {
                 { type: "quadratic", control: [1, 1], to: [2, 0], relative: false },
                 { type: "cubic", control1: [1, 1], control2: [2, 1], to: [3, 0], relative: true },
                 { type: "close", id: "shut" },
+                { type: "hLine", length: 3 },
             ]);
         });
     });

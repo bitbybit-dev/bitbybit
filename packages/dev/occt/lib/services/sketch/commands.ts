@@ -3,7 +3,7 @@ import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 import * as Resolved from "../../api/resolved-inputs";
 
-const named = <T extends Models.OCCT.SketchCommand>(command: T, id: string | undefined): T => id === undefined ? command : { ...command, id };
+const named = <T extends Models.OCCT.SketchCommand>(command: T, id: string | undefined): T => id === undefined || id === "" ? command : { ...command, id };
 
 /**
  * Making the commands `sketch.pen` draws, one at a time: lines, circular arcs, Bezier curves,
