@@ -35,7 +35,7 @@ npm run dev
 
 ## Build It With an AI Agent
 
-Bitbybit has 1901 functions across three CAD kernels - more than any model remembers, so an agent working from memory invents plausible names that do not exist. Give it the **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** instead and it looks up the exact signature, defaults, return type and examples for the version you have installed. It is free and needs no account:
+Bitbybit has 1919 functions across three CAD kernels - more than any model remembers, so an agent working from memory invents plausible names that do not exist. Give it the **[Bitbybit CAD MCP](https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp)** instead and it looks up the exact signature, defaults, return type and examples for the version you have installed. It is free and needs no account:
 
 ```bash
 claude mcp add --transport http bitbybit https://mcp.bitbybit.dev/mcp

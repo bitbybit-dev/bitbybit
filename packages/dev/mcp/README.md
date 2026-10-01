@@ -1,6 +1,6 @@
 # @bitbybit-dev/mcp: the Bitbybit CAD MCP server
 
-An [MCP](https://modelcontextprotocol.io) server that documents the [Bitbybit](https://bitbybit.dev) 3D CAD API for AI coding agents: every function, its parameters, defaults, return type and examples, for the exact version your project uses. Bitbybit has 1901 functions across three CAD kernels - more than any model holds in memory - so an agent working from memory invents plausible names that do not exist. An agent with this server looks each one up instead, and writes code that compiles the first time.
+An [MCP](https://modelcontextprotocol.io) server that documents the [Bitbybit](https://bitbybit.dev) 3D CAD API for AI coding agents: every function, its parameters, defaults, return type and examples, for the exact version your project uses. Bitbybit has 1919 functions across three CAD kernels - more than any model holds in memory - so an agent working from memory invents plausible names that do not exist. An agent with this server looks each one up instead, and writes code that compiles the first time.
 
 It answers from the API index Bitbybit publishes with every release (`https://git-cdn.bitbybit.dev/v<version>/ai-context/index.json`), never from memory, and never from a moving "latest".
 
