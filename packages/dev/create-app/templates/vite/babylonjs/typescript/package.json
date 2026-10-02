@@ -12,10 +12,10 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@bitbybit-dev/babylonjs": "1.4.0"
+    "@bitbybit-dev/babylonjs": "1.4.1"
   },
   "devDependencies": {
-    "@bitbybit-dev/occt": "1.4.0",
+    "@bitbybit-dev/occt": "1.4.1",
     "@eslint/js": "10.0.1",
     "@types/node": "22.20.1",
     "eslint": "10.10.0",
