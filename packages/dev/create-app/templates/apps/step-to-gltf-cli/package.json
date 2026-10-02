@@ -11,8 +11,8 @@
     "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
-    "@bitbybit-dev/cad-cloud-sdk": "1.4.0",
-    "@bitbybit-dev/occt": "1.4.0"
+    "@bitbybit-dev/cad-cloud-sdk": "1.4.1",
+    "@bitbybit-dev/occt": "1.4.1"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

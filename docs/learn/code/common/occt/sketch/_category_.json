@@ -1,0 +1,10 @@
+{
+    "label": "Sketch",
+    "position": 4,
+    "link": {
+        "type": "generated-index",
+        "title": "Sketching Outlines",
+        "description": "Sketching is how most parametric parts begin: a flat outline, drawn exactly, then extruded, revolved or swept into a solid. The sketch functions draw that outline with a pen - straight lines, circular arcs, Bezier curves, rounded and beveled corners - in any plane you choose, and give back one exact wire or a face. These pages cover the pen and its commands, how a sketch sits on a frame, how to find the edges each command drew, and the two helpers that outline a wire with a width and wrap shapes in their convex hull.",
+        "slug": "/code/common/occt/sketch"
+    }
+}

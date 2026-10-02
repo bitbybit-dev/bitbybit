@@ -230,7 +230,7 @@ export const onMessageInput = (
         return;
     }
     postMessage(WorkerMessages.BUSY);
-    (kernel as Partial<BitbybitOcctModule>).ProgressBeginCall?.();
+    (kernel as Partial<BitbybitOcctModule> | undefined)?.ProgressBeginCall?.();
 
     let result: unknown;
     let started = "";

@@ -20,6 +20,7 @@ import { OCCTSelect } from "./select/select";
 import { OCCTAnalysis } from "./analysis/analysis";
 import { OCCTIO } from "./io";
 import { OCCTPath } from "./path";
+import { OCCTSketch } from "./sketch/sketch";
 import { OCCTSVG } from "./svg";
 
 /**
@@ -28,9 +29,9 @@ import { OCCTSVG } from "./svg";
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
  * change shapes; `select` picks faces and edges by what they are and where they lie; `analysis`
  * answers questions about shapes with points and numbers; `geom` handles
- * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `assembly`,
- * `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology graphs,
- * machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
+ * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `sketch` draws flat
+ * outlines with a pen; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents,
+ * annotations, topology graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
  * drawing.
  */
 export class OCCT {
@@ -51,6 +52,7 @@ export class OCCT {
     public readonly analysis: OCCTAnalysis;
     public readonly io: OCCTIO;
     public readonly path: OCCTPath;
+    public readonly sketch: OCCTSketch;
     public readonly svg: OCCTSVG;
 
     constructor(
@@ -73,6 +75,7 @@ export class OCCT {
         this.analysis = new OCCTAnalysis(occWorkerManager);
         this.io = new OCCTIO(occWorkerManager);
         this.path = new OCCTPath(occWorkerManager);
+        this.sketch = new OCCTSketch(occWorkerManager);
         this.svg = new OCCTSVG(occWorkerManager);
     }
 

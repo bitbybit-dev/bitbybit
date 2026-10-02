@@ -1,15 +1,7 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-09-29",
+    "measured": "2026-10-01",
     "history": [
-        {
-            "measured": "2026-09-07",
-            "tests": 4008,
-            "lines": 68.39,
-            "branches": 52.14,
-            "functions": 58,
-            "statements": 65.69
-        },
         {
             "measured": "2026-09-08",
             "tests": 6981,
@@ -193,6 +185,14 @@
             "branches": 93.84,
             "functions": 99.14,
             "statements": 98.12
+        },
+        {
+            "measured": "2026-10-01",
+            "tests": 10919,
+            "lines": 98.21,
+            "branches": 93.87,
+            "functions": 99.14,
+            "statements": 98.13
         }
     ],
     "packages": {
@@ -234,7 +234,7 @@
         },
         "create-app": {
             "runner": "vitest",
-            "tests": 65,
+            "tests": 99,
             "suites": 2
         },
         "jscad": {
@@ -284,16 +284,16 @@
         },
         "occt": {
             "runner": "vitest",
-            "tests": 2739,
-            "suites": 74,
-            "lines": 97.04,
-            "branches": 89.87,
-            "functions": 98.45,
-            "statements": 97.01
+            "tests": 2798,
+            "suites": 77,
+            "lines": 97.14,
+            "branches": 90.55,
+            "functions": 98.52,
+            "statements": 97.11
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 1024,
+            "tests": 1043,
             "suites": 17,
             "lines": 100,
             "branches": 100,

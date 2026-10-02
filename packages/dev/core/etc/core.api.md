@@ -5894,6 +5894,111 @@ namespace OCCT {
         removeTrailingZeros?: boolean | undefined;
         start: Base_2.Point3;
     }
+    class SketchBulgeArcDto {
+        constructor(to?: Base_2.Point2, bulge?: number, relative?: boolean, id?: string);
+        bulge?: number | undefined;
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchChamferCornerDto {
+        constructor(distance?: number, id?: string);
+        distance?: number | undefined;
+        id?: string | undefined;
+    }
+    class SketchCloseDto {
+        constructor(id?: string);
+        id?: string | undefined;
+    }
+    class SketchCubicDto {
+        constructor(control1?: Base_2.Point2, control2?: Base_2.Point2, to?: Base_2.Point2, relative?: boolean, id?: string);
+        control1?: Base_2.Point2 | undefined;
+        control2?: Base_2.Point2 | undefined;
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchFilletCornerDto {
+        constructor(radius?: number, id?: string);
+        id?: string | undefined;
+        radius?: number | undefined;
+    }
+    class SketchHLineDto {
+        constructor(length?: number, id?: string);
+        id?: string | undefined;
+        length?: number | undefined;
+    }
+    class SketchHullDto<T> {
+        constructor(shapes?: T[], frame?: Base_2.Frame, makeFace?: boolean);
+        frame?: Base_2.Frame | undefined;
+        makeFace?: boolean | undefined;
+        shapes: T[];
+    }
+    class SketchLineDto {
+        constructor(to?: Base_2.Point2, relative?: boolean, id?: string);
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchPenDto {
+        constructor(commands?: Models.OCCT.SketchCommand[], start?: Base_2.Point2, frame?: Base_2.Frame, makeFace?: boolean);
+        commands: Models.OCCT.SketchCommand[];
+        frame?: Base_2.Frame | undefined;
+        makeFace?: boolean | undefined;
+        start?: Base_2.Point2 | undefined;
+    }
+    class SketchPolarLineDto {
+        constructor(length?: number, angle?: number, id?: string);
+        angle?: number | undefined;
+        id?: string | undefined;
+        length?: number | undefined;
+    }
+    class SketchQuadraticDto {
+        constructor(control?: Base_2.Point2, to?: Base_2.Point2, relative?: boolean, id?: string);
+        control?: Base_2.Point2 | undefined;
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchSagittaArcDto {
+        constructor(to?: Base_2.Point2, sagitta?: number, relative?: boolean, id?: string);
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        sagitta?: number | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchStrokeDto<T> {
+        constructor(shape?: T, width?: number, cap?: strokeCapEnum, join?: joinTypeEnum, frame?: Base_2.Frame, makeFace?: boolean);
+        cap?: strokeCapEnum | undefined;
+        frame?: Base_2.Frame | undefined;
+        join?: joinTypeEnum | undefined;
+        makeFace?: boolean | undefined;
+        shape: T;
+        width?: number | undefined;
+    }
+    class SketchTangentArcDto {
+        constructor(to?: Base_2.Point2, relative?: boolean, id?: string);
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchTangentLineDto {
+        constructor(length?: number, id?: string);
+        id?: string | undefined;
+        length?: number | undefined;
+    }
+    class SketchThreePointArcDto {
+        constructor(through?: Base_2.Point2, to?: Base_2.Point2, relative?: boolean, id?: string);
+        id?: string | undefined;
+        relative?: boolean | undefined;
+        through?: Base_2.Point2 | undefined;
+        to?: Base_2.Point2 | undefined;
+    }
+    class SketchVLineDto {
+        constructor(length?: number, id?: string);
+        id?: string | undefined;
+        length?: number | undefined;
+    }
     class SliceByFramesDto<T> {
         constructor(shape?: T, frames?: Base_2.Frame[], makeFaces?: boolean, tolerance?: number);
         frames: Base_2.Frame[];
@@ -5960,6 +6065,14 @@ namespace OCCT {
         constructor(outerRadius?: number, innerRadius?: number, numRays?: number, center?: Base_2.Point3, direction?: Base_2.Vector3, offsetOuterEdges?: number, half?: boolean, extrusionLengthFront?: number, extrusionLengthBack?: number);
         extrusionLengthBack?: number | undefined;
         extrusionLengthFront?: number | undefined;
+    }
+    enum strokeCapEnum {
+        // (undocumented)
+        flat = "flat",
+        // (undocumented)
+        round = "round",
+        // (undocumented)
+        square = "square"
     }
     enum surfaceAnalysisEnum {
         // (undocumented)
@@ -7020,6 +7133,40 @@ namespace OCCT_3 {
     type SimpleAngularDimensionDto = WithDefaults<Inputs_4.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
     // (undocumented)
     type SimpleLinearLengthDimensionDto = WithDefaults<Inputs_4.OCCT.SimpleLinearLengthDimensionDto, "offsetFromPoints" | "crossingSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "labelRotation" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    // (undocumented)
+    type SketchBulgeArcDto = WithDefaults<Inputs_4.OCCT.SketchBulgeArcDto, "to" | "bulge" | "relative">;
+    // (undocumented)
+    type SketchChamferCornerDto = WithDefaults<Inputs_4.OCCT.SketchChamferCornerDto, "distance">;
+    // (undocumented)
+    type SketchCloseDto = Inputs_4.OCCT.SketchCloseDto;
+    // (undocumented)
+    type SketchCubicDto = WithDefaults<Inputs_4.OCCT.SketchCubicDto, "control1" | "control2" | "to" | "relative">;
+    // (undocumented)
+    type SketchFilletCornerDto = WithDefaults<Inputs_4.OCCT.SketchFilletCornerDto, "radius">;
+    // (undocumented)
+    type SketchHLineDto = WithDefaults<Inputs_4.OCCT.SketchHLineDto, "length">;
+    // (undocumented)
+    type SketchHullDto<T> = WithDefaults<Inputs_4.OCCT.SketchHullDto<T>, "makeFace">;
+    // (undocumented)
+    type SketchLineDto = WithDefaults<Inputs_4.OCCT.SketchLineDto, "to" | "relative">;
+    // (undocumented)
+    type SketchPenDto = WithDefaults<Inputs_4.OCCT.SketchPenDto, "start" | "makeFace">;
+    // (undocumented)
+    type SketchPolarLineDto = WithDefaults<Inputs_4.OCCT.SketchPolarLineDto, "length" | "angle">;
+    // (undocumented)
+    type SketchQuadraticDto = WithDefaults<Inputs_4.OCCT.SketchQuadraticDto, "control" | "to" | "relative">;
+    // (undocumented)
+    type SketchSagittaArcDto = WithDefaults<Inputs_4.OCCT.SketchSagittaArcDto, "to" | "sagitta" | "relative">;
+    // (undocumented)
+    type SketchStrokeDto<T> = WithDefaults<Inputs_4.OCCT.SketchStrokeDto<T>, "width" | "cap" | "join" | "makeFace">;
+    // (undocumented)
+    type SketchTangentArcDto = WithDefaults<Inputs_4.OCCT.SketchTangentArcDto, "to" | "relative">;
+    // (undocumented)
+    type SketchTangentLineDto = WithDefaults<Inputs_4.OCCT.SketchTangentLineDto, "length">;
+    // (undocumented)
+    type SketchThreePointArcDto = WithDefaults<Inputs_4.OCCT.SketchThreePointArcDto, "through" | "to" | "relative">;
+    // (undocumented)
+    type SketchVLineDto = WithDefaults<Inputs_4.OCCT.SketchVLineDto, "length">;
     // (undocumented)
     type SliceByFramesDto<T> = WithDefaults<Inputs_4.OCCT.SliceByFramesDto<T>, "makeFaces" | "tolerance">;
     // (undocumented)

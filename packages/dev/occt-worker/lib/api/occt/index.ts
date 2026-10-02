@@ -16,5 +16,6 @@ export * from "./path";
 export * from "./select";
 export * from "./shape-fix";
 export * from "./shapes";
+export * from "./sketch";
 export * from "./svg";
 export * from "./transforms";
