@@ -1,0 +1,2996 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://git-cdn.bitbybit.dev/v1.4.1/schemas/design-document/experimental.json",
+    "title": "Design document (experimental: the format may change before its first stable version)",
+    "$ref": "#/$defs/DesignDocument",
+    "$defs": {
+        "DesignApis": {
+            "description": "The major version of each kernel API a document's `operation` features were written against, by\nkernel name. Left out, the operations mean what the runner's own API version gives them.",
+            "type": "object",
+            "properties": {
+                "occt": {
+                    "const": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "DesignAppearance": {
+            "description": "How a part or a material looks: `color` as `#rrggbb`, and `metallic`, `roughness` and `opacity`\nfrom 0 to 1. `emissive` is the colour the surface gives off, as `#rrggbb`, and `emissiveStrength`\nhow strongly, from 0, 1 when left out. `edgeColor` is the colour of its edges as `#rrggbb`. A colour\nmay be `{ \"expr\": \"...\" }`, computed from the parameters. On a part, `faces` colours the faces a\nreference names and `edges` the edges one names, so the colour follows them through rebuilds; a\nmaterial has neither, since it has no body to name them on.",
+            "type": "object",
+            "properties": {
+                "color": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "metallic": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "roughness": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "opacity": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "emissive": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "emissiveStrength": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "edgeColor": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "faces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignFaceAppearance"
+                    }
+                },
+                "edges": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignEdgeAppearance"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "DesignAssemblyConnector": {
+            "description": "A connector an assembly publishes, so an assembly that places it can join it and join to it:\nunder its own `id`, the `connector` of one of its `component`s, which may be a connector another\nsub-assembly publishes. Only published connectors are seen from outside, so the components inside\ncan change without breaking the assemblies that use it.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "component": {
+                    "type": "string"
+                },
+                "connector": {
+                    "type": "string"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "component",
+                "connector"
+            ],
+            "additionalProperties": false
+        },
+        "DesignAssemblyDocument": {
+            "description": "An assembly as data: named `parameters` and `configurations`, the `components` that place parts\nand other assemblies, each built from a document given to the build with values this assembly's\nparameters can drive, the `joints` that place them against each other, and the `connectors` it\npublishes for the assemblies that place it, and its own `properties`, such as its part number,\nevaluated over its parameters. Each component is moved by at most one joint, and joints form no\nclosed loop.",
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "const": 1
+                },
+                "kind": {
+                    "const": "assembly"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "units": {
+                    "$ref": "#/$defs/DesignUnits"
+                },
+                "up": {
+                    "type": "string",
+                    "enum": [
+                        "y",
+                        "z"
+                    ]
+                },
+                "meta": {
+                    "$ref": "#/$defs/DesignMeta"
+                },
+                "requires": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/DesignParameter"
+                            },
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "configurations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignConfiguration"
+                    }
+                },
+                "components": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignComponent"
+                    }
+                },
+                "joints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignJoint"
+                    }
+                },
+                "connectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignAssemblyConnector"
+                    }
+                },
+                "properties": {
+                    "$ref": "#/$defs/DesignProperties"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "schemaVersion",
+                "kind",
+                "components"
+            ],
+            "additionalProperties": false
+        },
+        "DesignAsset": {
+            "description": "A file the document uses, such as a STEP model it imports: where it is, `uri` relative to the\ndocument's own location in the store that keeps it (an absolute URL is allowed), and the SHA-256\nof its bytes, which an asset an import reads must carry, so the document's version pins the\ngeometry it reads and a changed file is refused. `mediaType` names the format; for OCCT's BREP it\nrecords the format version, such as `model/vnd.occt.brep; version=3`.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "uri": {
+                    "type": "string"
+                },
+                "sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "uri"
+            ],
+            "additionalProperties": false
+        },
+        "DesignBooleanFeature": {
+            "description": "Combines bodies: `body` goes on as the union, the difference or the intersection with `tools`,\nwhich are used up. Faces no input owned are named `new`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "boolean"
+                },
+                "operation": {
+                    "type": "string",
+                    "enum": [
+                        "difference",
+                        "intersection",
+                        "union"
+                    ]
+                },
+                "body": {
+                    "type": "string"
+                },
+                "tools": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "operation",
+                "body",
+                "tools",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignBossFeature": {
+            "description": "Raises a sketch drawn on a face of `body` out of that face: `distance` along the sketch's normal,\nor `until` the face a reference names. Its walls are named `side` (from each sketch command) and\nits top `end`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "boss"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "distance": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "until": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profile",
+                "body",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignChamferFeature": {
+            "description": "Bevels the edges `edges` names on `body`; the bevels are named `bevel`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "chamfer"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "edges": {
+                    "$ref": "#/$defs/DesignEdgeReference"
+                },
+                "distance": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "edges",
+                "distance",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignChoiceOption": {
+            "description": "One option of a choice parameter: its `value`, which expressions compare with, and its `label`.",
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                },
+                "label": {
+                    "$ref": "#/$defs/DesignLabel"
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "DesignCircleCommand": {
+            "description": "An exact circle, drawn as one closed edge around `centre`, in the sketch's coordinates, with\n`radius`. It is a loop by itself, so it is the only command of its pen or loop.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "circle"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                },
+                "centre": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "radius": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "type",
+                "centre",
+                "radius"
+            ],
+            "additionalProperties": false
+        },
+        "DesignComponent": {
+            "description": "One placed occurrence of a part or of another assembly: its `source`, and where it goes, `at` a\nframe (its own origin, X and Z axes moved onto the frame's origin, direction and normal), by the\njoint that moves it, or where its source has it when neither places it. `replicate` places it\ninstead once on every member of a connector set, each occurrence named `<id>.<member>` and\ncounted in the bill of materials. `suppressed` leaves it out, and `properties` describe this\noccurrence, such as a position code.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/$defs/DesignComponentSource"
+                },
+                "at": {
+                    "$ref": "#/$defs/DesignFrame"
+                },
+                "replicate": {
+                    "$ref": "#/$defs/DesignReplicate"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "properties": {
+                    "$ref": "#/$defs/DesignProperties"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "source"
+            ],
+            "additionalProperties": false
+        },
+        "DesignComponentSource": {
+            "description": "Where a component comes from: the `id` of a document given to the build beside this one, the\n`part` of it when it is a part document (an assembly document is placed whole), its\n`configuration`, and `parameters` replacing its values, each read by the kind of parameter it\nsets: for a number or boolean parameter, a number, a boolean or an expression over this assembly's\nparameters; for a text or choice parameter, text as it is written, or `{ \"expr\": \"...\" }` for text\nthis assembly's parameters compute. `version`, when given, pins the source: the document's\nversion (`design.versionOf`, the SHA-256 of its canonical JSON without what only editors and tools\nread) or the store revision in its `meta.revision`. A document with other contents is refused, and\nwhen several versions of one document are given, a component without a `version` is refused too.",
+            "type": "object",
+            "properties": {
+                "document": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "part": {
+                    "type": "string"
+                },
+                "configuration": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/DesignExpression"
+                            },
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "document"
+            ],
+            "additionalProperties": false
+        },
+        "DesignConfiguration": {
+            "description": "A named set of parameter values, such as one size of a product: each value replaces the\nparameter's own and is read the same way. A build picks one by `id`; expressions read the chosen id\nas `configuration`.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "$ref": "#/$defs/DesignLabel"
+                },
+                "values": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/DesignExpression"
+                            },
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "values"
+            ],
+            "additionalProperties": false
+        },
+        "DesignConnector": {
+            "description": "A named frame on a part, where an assembly fastens it to another: on the one flat face `on` names,\nfacing out of it, with its x axis along `direction` laid into the face. Its origin is where\n`origin`, or the document's origin when it is left out, meets the face's plane square on, so it\nstays on the face when a parameter moves the face; or where the axis of the cylindrical face\n`axis` names crosses the face, such as a hole's wall; or the centre of the circular edge `centre`\nnames, met square on. An `axis` that names the walls of a hole with no `from` makes a set: one\nconnector per position of the hole, named `<id>.<position id>`, which a component's `replicate`\nplaces on. `direction` may be left out on a face facing along a world axis (it is then X, or Y on a\nface facing along X), and is needed on any other. It follows the face through rebuilds as\nreferences do.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "origin": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "axis": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "centre": {
+                    "$ref": "#/$defs/DesignEdgeReference"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "on"
+            ],
+            "additionalProperties": false
+        },
+        "DesignCopy": {
+            "description": "Which copy a pattern or a mirror made, at one level of copying: the copier's id and the copy's\n`index` from 1, or `\"all\"` for every copy and the original.",
+            "type": "object",
+            "properties": {
+                "of": {
+                    "type": "string"
+                },
+                "index": {
+                    "anyOf": [
+                        {
+                            "const": "all"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "minimum": 1,
+                    "multipleOf": 1
+                }
+            },
+            "required": [
+                "of",
+                "index"
+            ],
+            "additionalProperties": false
+        },
+        "DesignDocument": {
+            "description": "A design document: a part document, which builds parts from features, or an assembly document,\nwhich places parts and other assemblies.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/DesignAssemblyDocument"
+                },
+                {
+                    "$ref": "#/$defs/DesignPartDocument"
+                }
+            ]
+        },
+        "DesignEdgeAppearance": {
+            "description": "The colour of the edges a reference names, as `#rrggbb`, over the edge colour of their part.",
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "$ref": "#/$defs/DesignEdgeReference"
+                },
+                "color": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                }
+            },
+            "required": [
+                "edges"
+            ],
+            "additionalProperties": false
+        },
+        "DesignEdgeReference": {
+            "description": "Edges named by the two sets of faces they lie between, narrowed by `filter` and checked against\n`count`.",
+            "type": "object",
+            "properties": {
+                "between": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignFaceReference"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignFaceReference"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "filter": {
+                    "$ref": "#/$defs/DesignFilter"
+                },
+                "count": {
+                    "type": "number",
+                    "minimum": 1,
+                    "multipleOf": 1
+                }
+            },
+            "required": [
+                "between",
+                "count"
+            ],
+            "additionalProperties": false
+        },
+        "DesignExpression": {
+            "description": "An expression where text is expected, such as `{ \"expr\": \"if(heavy, 'steel', 'aluminium')\" }`:\nwhere a value is text (a colour, a material, a text or choice parameter's value), a string is\ntaken as it is written, and this is how text is computed instead.",
+            "type": "object",
+            "properties": {
+                "expr": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "expr"
+            ],
+            "additionalProperties": false
+        },
+        "DesignExtrudeFeature": {
+            "description": "Sweeps a sketch's face `distance` along its normal, or along `direction`. Without `body` it starts\na body named by its id; with `body` it joins that body as `join` says, adding by default. Its\nfaces are named `start`, `end` and `side` (from each sketch command).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "extrude"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "distance": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "join": {
+                    "$ref": "#/$defs/DesignJoin"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profile",
+                "distance",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignFaceAppearance": {
+            "description": "How the faces a reference names look, over the appearance of their part.",
+            "type": "object",
+            "properties": {
+                "faces": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "color": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "metallic": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "roughness": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "opacity": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "emissive": {
+                    "$ref": "#/$defs/DesignText",
+                    "pattern": "^#[0-9a-fA-F]{6}$"
+                },
+                "emissiveStrength": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "faces"
+            ],
+            "additionalProperties": false
+        },
+        "DesignFaceHint": {
+            "description": "One face as a hint records it: its surface `type`, its `area` as a fraction of the body's, its\n`centre` as fractions of the body's bounding box, its unit `normal`, and the names of the faces next\nto it, sorted. Fractions keep a hint true when the body grows or shrinks with its parameters.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "area": {
+                    "type": "number"
+                },
+                "centre": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "minItems": 3,
+                    "maxItems": 3
+                },
+                "normal": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "minItems": 3,
+                    "maxItems": 3
+                },
+                "neighbours": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "area",
+                "centre",
+                "normal",
+                "neighbours"
+            ],
+            "additionalProperties": false
+        },
+        "DesignFaceReference": {
+            "description": "Faces named by the feature that made them: `of` is that feature's id, `role` what the feature made\nthem as (`start`, `end`, `side`, `round`, `bevel`, `new`, `face`, `inner`, `rim`, `wall`), and\n`from` the sketch command a side was swept from (`\"<sketch id>.<command id>\"`), the id of a hole's\nposition, or an imported face's index as text, such as `\"2\"`. `copy` picks copies a pattern or a\nmirror made: one `{ of, index }`, or a list with one per level when patterns copy copies; a level\nthe reference does not list means the original there. `filter` narrows what the lineage found and\n`count`, when given, is how many faces it must leave. `hint`, which tools write and the version\nleaves out, records what the faces were like, so a build can find them again by likeness when\ntheir names are lost.",
+            "type": "object",
+            "properties": {
+                "of": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "string"
+                },
+                "copy": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DesignCopy"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/$defs/DesignCopy"
+                            }
+                        }
+                    ]
+                },
+                "filter": {
+                    "$ref": "#/$defs/DesignFilter"
+                },
+                "count": {
+                    "type": "number",
+                    "minimum": 1,
+                    "multipleOf": 1
+                },
+                "hint": {
+                    "$ref": "#/$defs/DesignReferenceHint"
+                }
+            },
+            "required": [
+                "of",
+                "role"
+            ],
+            "additionalProperties": false
+        },
+        "DesignFeature": {
+            "description": "One feature of a design document.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/DesignBooleanFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignBossFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignChamferFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignExtrudeFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignFilletFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignHoleFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignImportFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignLinearPatternFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignLoftFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignMirrorFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignOperationFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignPocketFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignPolarPatternFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignRevolveFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignScriptFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignShellFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignSketchFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignSweepFeature"
+                }
+            ]
+        },
+        "DesignFilletFeature": {
+            "description": "Rounds the edges `edges` names on `body`; the rounds are named `round`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "fillet"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "edges": {
+                    "$ref": "#/$defs/DesignEdgeReference"
+                },
+                "radius": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "edges",
+                "radius",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignFilter": {
+            "description": "A selector applied to the faces or edges a reference's lineage found: `select` names a\n`select.faces` or `select.edges` method (`facing`, `extreme`, `ofType`, `nearest`, `bySize` and\nthe others) and the other properties are its inputs, without `shape` and `indexes`.",
+            "type": "object",
+            "properties": {
+                "select": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "select"
+            ],
+            "additionalProperties": {}
+        },
+        "DesignFrame": {
+            "description": "A coordinate frame: `origin`, the `normal` it faces along and the in-plane `direction` its x axis\nruns along.",
+            "type": "object",
+            "properties": {
+                "origin": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "normal": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                }
+            },
+            "required": [
+                "origin",
+                "normal",
+                "direction"
+            ],
+            "additionalProperties": false
+        },
+        "DesignHintBox": {
+            "description": "A body's bounding box when a hint was written, by its least and greatest corners.",
+            "type": "object",
+            "properties": {
+                "min": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "minItems": 3,
+                    "maxItems": 3
+                },
+                "max": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "minItems": 3,
+                    "maxItems": 3
+                }
+            },
+            "required": [
+                "min",
+                "max"
+            ],
+            "additionalProperties": false
+        },
+        "DesignHoleFeature": {
+            "description": "Drills holes into `body` through the flat face `on` names, at the points `at`, which are x and y\non that face as a sketch on it reads them (`origin` and `direction` as for a sketch on a face).\n`depth` 0, the default, drills through; `tipAngle` gives the bottom a drill point. A `counterbore`\nor a `countersink` widens each mouth. Every hole's faces are named `wall`, and a hole whose\nposition has an id, as `{ \"id\": \"left\", \"x\": -10, \"y\": 0 }`, also `wall` with that id, which a\nreference names it by; a position is never named by where it comes in `at`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "hole"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "origin": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "at": {
+                    "type": "array",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/DesignHolePosition"
+                            },
+                            {
+                                "type": "array",
+                                "prefixItems": [
+                                    {
+                                        "$ref": "#/$defs/DesignNumber"
+                                    },
+                                    {
+                                        "$ref": "#/$defs/DesignNumber"
+                                    }
+                                ],
+                                "minItems": 2,
+                                "maxItems": 2
+                            }
+                        ]
+                    }
+                },
+                "diameter": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "depth": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "tipAngle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "counterbore": {
+                    "type": "object",
+                    "properties": {
+                        "diameter": {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        "depth": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "diameter",
+                        "depth"
+                    ],
+                    "additionalProperties": false
+                },
+                "countersink": {
+                    "type": "object",
+                    "properties": {
+                        "diameter": {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        "angle": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "diameter",
+                        "angle"
+                    ],
+                    "additionalProperties": false
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "on",
+                "at",
+                "diameter",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignHolePosition": {
+            "description": "A hole's position on its face with the `id` a reference names its walls by: x and y as a sketch on\nthe face reads them.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "x": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "y": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "id",
+                "x",
+                "y"
+            ],
+            "additionalProperties": false
+        },
+        "DesignImportFeature": {
+            "description": "Starts a body from one of the document's `assets`: BREP as text (`brep`) or binary\n(`brep-binary`), STEP or IGES, read from the media type or the file extension when `format` is\nleft out. The shape is taken as the file has it. Its faces are named `face`, and `face` with\ntheir index from 0.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "import"
+                },
+                "asset": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string",
+                    "enum": [
+                        "brep",
+                        "brep-binary",
+                        "iges",
+                        "step"
+                    ]
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "asset",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignJoin": {
+            "description": "How a feature that makes a solid joins the body it names: added to it, cut from it, or\nintersected with it.",
+            "type": "string",
+            "enum": [
+                "add",
+                "cut",
+                "intersect"
+            ]
+        },
+        "DesignJoint": {
+            "description": "A joint of an assembly: it places `component` by one of its `connector`s against a connector of\nanother component or against a `frame`, the two faces meeting and facing each other with their x\naxes along each other. `flip` makes them face the same way, `angle` turns the component about the\nshared axis in degrees, and `offset` moves it along that axis, away from the face it meets. The\n`type` says which of the two may move, within `limits`. A part component's connectors are its\npart's; a sub-assembly's are the ones its document publishes.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "type": {
+                    "$ref": "#/$defs/DesignJointType"
+                },
+                "component": {
+                    "type": "string"
+                },
+                "connector": {
+                    "type": "string"
+                },
+                "to": {
+                    "anyOf": [
+                        {
+                            "type": "object",
+                            "properties": {
+                                "component": {
+                                    "type": "string"
+                                },
+                                "connector": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "component",
+                                "connector"
+                            ],
+                            "additionalProperties": false
+                        },
+                        {
+                            "type": "object",
+                            "properties": {
+                                "frame": {
+                                    "$ref": "#/$defs/DesignFrame"
+                                }
+                            },
+                            "required": [
+                                "frame"
+                            ],
+                            "additionalProperties": false
+                        }
+                    ]
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "offset": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "limits": {
+                    "$ref": "#/$defs/DesignJointLimits"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "type",
+                "component",
+                "connector",
+                "to"
+            ],
+            "additionalProperties": false
+        },
+        "DesignJointLimits": {
+            "description": "How far the values a joint lets move may go, each as `[least, most]`: the angle in degrees and\nthe offset in the document's length unit. A value outside its limits is refused.",
+            "type": "object",
+            "properties": {
+                "angle": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "offset": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                }
+            },
+            "additionalProperties": false
+        },
+        "DesignJointType": {
+            "description": "Which of a joint's `angle` and `offset` may move: none for `fastened`, the angle for `revolute`,\nthe offset for `slider`, and both for `cylindrical`. A value that may not move is still applied.",
+            "type": "string",
+            "enum": [
+                "cylindrical",
+                "fastened",
+                "revolute",
+                "slider"
+            ]
+        },
+        "DesignLabel": {
+            "description": "Text shown to people: one string, or one per language by locale code, such as\n`{ \"en\": \"Width\", \"de\": \"Breite\" }`.",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "DesignLinearPatternFeature": {
+            "description": "Repeats `body` `count` times, the original included, `spacing` apart along `direction`, and\nfuses the copies. Copy `i` (from 1) keeps its faces' names, picked with `copy`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "linearPattern"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "direction": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "spacing": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "count": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "direction",
+                "spacing",
+                "count",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignLoftFeature": {
+            "description": "Skins a surface through two or more sketches in order, closed into a solid unless `solid` is\nfalse. Bodies and joins as for `extrude`; its faces are named `start` (on the first profile),\n`end` (on the last) and `side` (from each profile's commands).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "loft"
+                },
+                "profiles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "solid": {
+                    "type": "boolean"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "join": {
+                    "$ref": "#/$defs/DesignJoin"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profiles",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignLoop": {
+            "description": "One closed outline of a sketch that draws several: where its pen starts and its commands.",
+            "type": "object",
+            "properties": {
+                "start": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "pen": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignPenCommand"
+                    }
+                }
+            },
+            "required": [
+                "pen"
+            ],
+            "additionalProperties": false
+        },
+        "DesignMaterial": {
+            "description": "A material: what it is made of, as a bill of materials and the mass need it. `density` is in\nkilograms per cubic metre; `standard` names the grade, such as `EN AW-6061`.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "density": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "standard": {
+                    "type": "string"
+                },
+                "appearance": {
+                    "$ref": "#/$defs/DesignAppearance"
+                },
+                "properties": {
+                    "$ref": "#/$defs/DesignProperties"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignMeta": {
+            "description": "What the document is and who made it, outside its version. `revision` is the id the store that\nkeeps the document gave this revision of it, which a component may pin as its source's `version`.",
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "authors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "license": {
+                    "type": "string"
+                },
+                "generator": {
+                    "type": "string"
+                },
+                "revision": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "DesignMirrorFeature": {
+            "description": "Mirrors `body` across the plane through `origin` facing `normal` and fuses the mirror image with\nit, unless `keepOriginal` is false. The image is copy 1.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "mirror"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "plane": {
+                    "type": "object",
+                    "properties": {
+                        "origin": {
+                            "$ref": "#/$defs/DesignPoint"
+                        },
+                        "normal": {
+                            "$ref": "#/$defs/DesignPoint"
+                        }
+                    },
+                    "required": [
+                        "origin",
+                        "normal"
+                    ],
+                    "additionalProperties": false
+                },
+                "keepOriginal": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "plane",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignNumber": {
+            "description": "A number in a design document: a number, or an expression over the document's parameters such as\n`\"width / 2 + 3\"`, with `+ - * / ^`, parentheses, the functions `min max abs sqrt sin cos tan asin\nacos atan atan2 round floor ceil` and the constant `pi`. Angles are in degrees. Comparisons\n(`< <= > >= == !=`) and `&&`, `||` and `!` give 1 or 0, `if(condition, a, b)` chooses, and quoted\ntext such as `'steel'` compares with text and choice parameters.",
+            "anyOf": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "DesignOperationFeature": {
+            "description": "Runs any operation of this package by its dotted path with the kernel first, such as\n`\"occt.operations.offset\"`, with `params` as its inputs. In `params`, `{ \"body\": \"<id>\" }` passes a\nbody's shape and `{ \"expr\": \"<expression>\" }` a number. With `body` the result goes on as that\nbody, otherwise it starts a body named by the feature's id. An operation with a history twin\n(`...WithHistory`) given bodies keeps the names of the faces it carries through, and names the\nfaces it makes of edges `round` (a fillet), `bevel` (a chamfer) or `side`, and its first and last\nfaces `start` and `end`; every other face is named `face`. An operation that makes a list of\nshapes, such as `occt.shapes.face.subdivideToHexagonHoles`, makes their compound.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "operation"
+                },
+                "operation": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "body": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "operation",
+                "params",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignParameter": {
+            "description": "A parameter with its kind and limits. `type` is `number` (the default, `value` a number or an\nexpression), `boolean`, `choice` (`value` one of `options`) or `text` (`value` taken as it is). A\nchoice or text value may be `{ \"expr\": \"...\" }`, computed from other parameters.\n`min`, `max` and `options` are enforced on every value a build uses; `unit`, `step`, `label`,\n`description` and `group` are for the people and tools that edit it. A number parameter's `unit`\nis the document's length unit, `deg`, or `none` for a count or a ratio.",
+            "type": "object",
+            "properties": {
+                "value": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/DesignExpression"
+                        },
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "boolean",
+                        "choice",
+                        "number",
+                        "text"
+                    ]
+                },
+                "unit": {
+                    "type": "string",
+                    "enum": [
+                        "cm",
+                        "deg",
+                        "in",
+                        "m",
+                        "mm",
+                        "none"
+                    ]
+                },
+                "min": {
+                    "type": "number"
+                },
+                "max": {
+                    "type": "number"
+                },
+                "step": {
+                    "type": "number"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignChoiceOption"
+                    }
+                },
+                "label": {
+                    "$ref": "#/$defs/DesignLabel"
+                },
+                "description": {
+                    "$ref": "#/$defs/DesignLabel"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "DesignPart": {
+            "description": "A product the document makes: the body it is, under a stable `id` that renaming keeps, with its\nmaterial, appearance and properties. A body no part names is construction geometry. `material` is\nthe id of one of the document's materials, or `{ \"expr\": \"...\" }` that gives one, so a parameter\ncan choose it.",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "material": {
+                    "$ref": "#/$defs/DesignText"
+                },
+                "appearance": {
+                    "$ref": "#/$defs/DesignAppearance"
+                },
+                "properties": {
+                    "$ref": "#/$defs/DesignProperties"
+                },
+                "connectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignConnector"
+                    }
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "id",
+                "body"
+            ],
+            "additionalProperties": false
+        },
+        "DesignPartDocument": {
+            "description": "A parametric part model as data: named `parameters` and `configurations`, an ordered list of\n`features` that build bodies, and the `parts` they are (every body that is not used up, when left\nout). `id` is a UUID that stays with the document for life; `units` default to millimetres and\n`up` to `y`; `apis` records the kernel API its operations were written against.",
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "type": "string"
+                },
+                "schemaVersion": {
+                    "const": 1
+                },
+                "kind": {
+                    "const": "part"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                },
+                "units": {
+                    "$ref": "#/$defs/DesignUnits"
+                },
+                "up": {
+                    "type": "string",
+                    "enum": [
+                        "y",
+                        "z"
+                    ]
+                },
+                "meta": {
+                    "$ref": "#/$defs/DesignMeta"
+                },
+                "requires": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "apis": {
+                    "$ref": "#/$defs/DesignApis"
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/DesignParameter"
+                            },
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                },
+                "configurations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignConfiguration"
+                    }
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignFeature"
+                    }
+                },
+                "parts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignPart"
+                    }
+                },
+                "materials": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignMaterial"
+                    }
+                },
+                "assets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignAsset"
+                    }
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "schemaVersion",
+                "features"
+            ],
+            "additionalProperties": false
+        },
+        "DesignPenCommand": {
+            "description": "A pen command of a sketch feature: a `sketch.pen` command whose numbers may be expressions, or a\n`circle`.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/DesignCircleCommand"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "bulgeArc"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "bulge": {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "to",
+                        "bulge"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "chamferCorner"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "distance": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "distance"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "close"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "cubic"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "control1": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "control2": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "control1",
+                        "control2",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "filletCorner"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "radius": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "radius"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "hLine"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "length": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "length"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "line"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "polarLine"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "length": {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        "angle": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "length",
+                        "angle"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "quadratic"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "control": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "control",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "sagittaArc"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "sagitta": {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "to",
+                        "sagitta"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "tangentArc"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "tangentLine"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "length": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "length"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "threePointArc"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "through": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "to": {
+                            "type": "array",
+                            "prefixItems": [
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                },
+                                {
+                                    "$ref": "#/$defs/DesignNumber"
+                                }
+                            ],
+                            "minItems": 2,
+                            "maxItems": 2
+                        },
+                        "relative": {
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "through",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "vLine"
+                        },
+                        "id": {
+                            "type": "string",
+                            "pattern": "^([A-Za-z_][A-Za-z0-9_-]*)?$"
+                        },
+                        "length": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "length"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "DesignPocketFeature": {
+            "description": "Sinks a sketch drawn on a face of `body` into it: `distance` deep, `until` the face a reference\nnames, or `through` the whole body. Its walls are named `side` (from each sketch command) and its\nfloor `end`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "pocket"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "distance": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "until": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "through": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profile",
+                "body",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignPoint": {
+            "description": "A point or a vector in a design document, each coordinate a number or an expression.",
+            "type": "array",
+            "prefixItems": [
+                {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            ],
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "DesignPolarPatternFeature": {
+            "description": "Repeats `body` `count` times, the original included, turned evenly through `angle` degrees (360\nby default) about `axis`, and fuses the copies. Copies are picked with `copy`, as for\n`linearPattern`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "polarPattern"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "axis": {
+                    "type": "object",
+                    "properties": {
+                        "origin": {
+                            "$ref": "#/$defs/DesignPoint"
+                        },
+                        "direction": {
+                            "$ref": "#/$defs/DesignPoint"
+                        }
+                    },
+                    "required": [
+                        "origin",
+                        "direction"
+                    ],
+                    "additionalProperties": false
+                },
+                "count": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "axis",
+                "count",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignProperties": {
+            "description": "Properties of a part, a material or an assembly by name. The names `partNumber`, `description`,\n`finish` and `unitOfMeasure` mean what they say to the bill of materials, and the STEP export\nwrites every property of a part or an assembly as a user-defined property of its product.\n`bomTreatment` is reserved for a later version of the format. Any other name is free, and a dotted\nprefix such as `acme.costCentre` keeps a tool's names apart; revisions and suppliers belong to the\nsystems that manage them.",
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/$defs/DesignPropertyValue"
+            }
+        },
+        "DesignPropertyValue": {
+            "description": "A value of a property: text, in which each `{expression}` is replaced by its value (`{{` and `}}`\nwrite braces), a number, a boolean, or `{ \"expr\": \"...\" }` for a computed number.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/DesignExpression"
+                },
+                {
+                    "type": "boolean"
+                },
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "DesignReferenceHint": {
+            "description": "What a reference's faces were like when a tool last resolved it (`design.withHints`): the body's\nbounding `box` then, and one entry per face. A build reads it only to find the faces again by\nlikeness when their names are lost.",
+            "type": "object",
+            "properties": {
+                "v": {
+                    "const": 1
+                },
+                "box": {
+                    "$ref": "#/$defs/DesignHintBox"
+                },
+                "faces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignFaceHint"
+                    }
+                }
+            },
+            "required": [
+                "v",
+                "box",
+                "faces"
+            ],
+            "additionalProperties": false
+        },
+        "DesignReplicate": {
+            "description": "How a component is placed once on every member of a connector set: its own `connector` fastened,\nas a fastened joint would, to each connector of the set `to.connector` names on `to.component`,\nsuch as a bolt on every hole of a flange, with the joint's `flip`, `angle` and `offset`. A\n`to.connector` that names one connector places one occurrence.",
+            "type": "object",
+            "properties": {
+                "connector": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "object",
+                    "properties": {
+                        "component": {
+                            "type": "string"
+                        },
+                        "connector": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "component",
+                        "connector"
+                    ],
+                    "additionalProperties": false
+                },
+                "flip": {
+                    "type": "boolean"
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "offset": {
+                    "$ref": "#/$defs/DesignNumber"
+                }
+            },
+            "required": [
+                "connector",
+                "to"
+            ],
+            "additionalProperties": false
+        },
+        "DesignRevolveFeature": {
+            "description": "Turns a sketch's face `angle` degrees (360 by default) about `axis`. Bodies and joins as for\n`extrude`; its faces are named `start`, `end` (none on a whole turn) and `side`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "revolve"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "axis": {
+                    "type": "object",
+                    "properties": {
+                        "origin": {
+                            "$ref": "#/$defs/DesignPoint"
+                        },
+                        "direction": {
+                            "$ref": "#/$defs/DesignPoint"
+                        }
+                    },
+                    "required": [
+                        "origin",
+                        "direction"
+                    ],
+                    "additionalProperties": false
+                },
+                "angle": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "join": {
+                    "$ref": "#/$defs/DesignJoin"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profile",
+                "axis",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignScriptFeature": {
+            "description": "Runs a script on the document's geometry: the code of the asset `script` names, pinned by its\nSHA-256, takes `params` as an operation does (`{ \"body\": \"<id>\" }` passes a body's shape and\n`{ \"expr\": \"<expression>\" }` a number), and `{ \"faces\": <face reference> }` and\n`{ \"edges\": <edge reference> }` pass the indexes a reference finds on the body it names. It\nreturns a shape and the roles its faces take, such as `{ shape, roles: { tooth: [3, 4] } }`, which\nname those faces as other features' roles do; every other face is named `face`. With `body` the\nresult goes on as that body, otherwise it starts a body named by the feature's id. A kernel runs\nno code: a build lists the feature under `pending`, and the caller that runs the script builds\nagain with its outcome.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "script"
+                },
+                "script": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "body": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "script",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignShellFeature": {
+            "description": "Hollows `body` into walls `thickness` thick, inward, or outward when it is negative, leaving open\nthe faces `open` names. The open faces become the `rim` and the walls offset from the others are\nnamed `inner`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "shell"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "thickness": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "open": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "thickness",
+                "open",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignSketchFeature": {
+            "description": "A sketch: pen commands on a placement, closed into a face unless `closed` is false; or `loops`,\nseveral closed outlines making one face, the first its outside and each further one a hole in it,\nsuch as a washer or a plate with cut-outs. Each command's `id`, distinct across the sketch's loops,\nnames the sides a later feature sweeps from it.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "sketch"
+                },
+                "on": {
+                    "$ref": "#/$defs/DesignSketchPlacement"
+                },
+                "start": {
+                    "type": "array",
+                    "prefixItems": [
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        },
+                        {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    ],
+                    "minItems": 2,
+                    "maxItems": 2
+                },
+                "pen": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignPenCommand"
+                    }
+                },
+                "loops": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/DesignLoop"
+                    }
+                },
+                "closed": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "on",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignSketchPlacement": {
+            "description": "Where a sketch lies: on one of the three planes through the origin, moved `offset` along its\nnormal; on a frame; or on a planar face of a body, placed as a connector is: at `origin`, or the\ndocument's origin, met square on with the face's plane, with its x axis along `direction`, which a\nface facing along a world axis may leave out.",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "face": {
+                            "$ref": "#/$defs/DesignFaceReference"
+                        },
+                        "origin": {
+                            "$ref": "#/$defs/DesignPoint"
+                        },
+                        "direction": {
+                            "$ref": "#/$defs/DesignPoint"
+                        }
+                    },
+                    "required": [
+                        "face"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "frame": {
+                            "$ref": "#/$defs/DesignFrame"
+                        }
+                    },
+                    "required": [
+                        "frame"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "plane": {
+                            "type": "string",
+                            "enum": [
+                                "XY",
+                                "XZ",
+                                "YZ"
+                            ]
+                        },
+                        "offset": {
+                            "$ref": "#/$defs/DesignNumber"
+                        }
+                    },
+                    "required": [
+                        "plane"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "DesignSweepFeature": {
+            "description": "Sweeps a sketch's outline along the outline of the sketch `path`, which should start where the\nprofile lies and cross it. Bodies and joins as for `extrude`; its faces are named `start`, `end`\nand `side` (from each profile command).",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "sweep"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "join": {
+                    "$ref": "#/$defs/DesignJoin"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "profile",
+                "path",
+                "id"
+            ],
+            "additionalProperties": false
+        },
+        "DesignText": {
+            "description": "Text in a design document: a string taken as it is written, or `{ \"expr\": \"...\" }` for text an\nexpression over the document's parameters computes.",
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/DesignExpression"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "DesignUnits": {
+            "description": "The units the document's numbers are in. Geometry is built from the numbers as they are; exports\nand masses read the units. Angles are in degrees. Every document an assembly places is in the\nassembly's length unit, so one build is in one unit.",
+            "type": "object",
+            "properties": {
+                "length": {
+                    "type": "string",
+                    "enum": [
+                        "cm",
+                        "in",
+                        "m",
+                        "mm"
+                    ]
+                },
+                "angle": {
+                    "const": "deg"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

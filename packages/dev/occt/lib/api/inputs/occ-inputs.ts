@@ -478,6 +478,24 @@ export namespace OCCT {
         throughAll = "throughAll",
     }
     /**
+     * Which axis of a model points up: z, as STEP files and most CAD models have it, or y, as glTF and
+     * the 3D engines have it.
+     */
+    export enum upAxisEnum {
+        y = "y",
+        z = "z",
+    }
+    /**
+     * What a design build does when a reference that carries a hint loses its faces: `never` fails the
+     * feature and offers the faces most like the hint as repairs, as a headless build should; `report`
+     * takes them when they stand clear of every other face and reports the feature `rebound`, as an
+     * editor wants.
+     */
+    export enum designRebindEnum {
+        never = "never",
+        report = "report",
+    }
+    /**
      * The triangle mesh of a shape as `shapeToMesh` returns it: one entry per face with its triangles,
      * one per edge with its points, and the vertex points, ready for drawing.
      */
@@ -1298,6 +1316,21 @@ export namespace OCCT {
          */
         precision?: number | undefined = 0.01;
         /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
+        /**
          * When true, each edge's index is written next to it, handy for picking edges to fillet.
          * @default false
          */
@@ -1433,7 +1466,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean) {
             super();
             if (shape !== undefined) { this.shape = shape; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1468,6 +1501,8 @@ export namespace OCCT {
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
             if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
             if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The shape to draw; it is meshed at `precision` first.
@@ -1485,7 +1520,7 @@ export namespace OCCT {
         /**
          * Provide options without default values
          */
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean) {
             super();
             if (shapes !== undefined) { this.shapes = shapes; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
@@ -1520,6 +1555,8 @@ export namespace OCCT {
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
             if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
             if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The shapes to draw with the same options.
@@ -8194,7 +8231,7 @@ export namespace OCCT {
      * add each face's iso curves and a surface analysis value at every vertex.
      */
     export class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8206,6 +8243,8 @@ export namespace OCCT {
             if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
             if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The shape to triangulate.
@@ -8222,6 +8261,21 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
@@ -8351,7 +8405,7 @@ export namespace OCCT {
      * settings, iso curves and surface analysis included.
      */
     export class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
             if (shapes !== undefined) { this.shapes = shapes; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8363,6 +8417,8 @@ export namespace OCCT {
             if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
             if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The shapes to triangulate, one mesh per shape.
@@ -8379,6 +8435,21 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
@@ -8444,7 +8515,7 @@ export namespace OCCT {
      * shapes into one mesh with the document's colors.
      */
     export class DocToMeshDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
             if (document !== undefined) { this.document = document; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8452,6 +8523,8 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The assembly document whose top-level shapes are meshed together; their face colors end up in
@@ -8469,6 +8542,21 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
@@ -8505,7 +8593,7 @@ export namespace OCCT {
      * shape into its own mesh with the document's colors.
      */
     export class DocToMeshesDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
             if (document !== undefined) { this.document = document; }
             if (precision !== undefined) { this.precision = precision; }
             if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -8513,6 +8601,8 @@ export namespace OCCT {
             if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
             if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
             if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
@@ -8530,6 +8620,21 @@ export namespace OCCT {
          * @step 0.001
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
@@ -9883,6 +9988,12 @@ export namespace OCCT {
          * @default false
          */
         forceUVExport?: boolean | undefined = false;
+        /**
+         * Which axis points up in the document. A z-up document is turned so that z becomes glTF's y;
+         * a y-up one is written as it is.
+         * @default z
+         */
+        up?: upAxisEnum | undefined = upAxisEnum.z;
         /**
          * The name the downloaded file gets; it should end in `.glb`.
          * @default assembly.glb
@@ -15061,10 +15172,11 @@ export namespace OCCT {
      * text format `io.loadBrep` reads back.
      */
     export class SaveBrepDto<T> {
-        constructor(shape?: T, fileName?: string, tryDownload?: boolean) {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean) {
             if (shape !== undefined) { this.shape = shape; }
             if (fileName !== undefined) { this.fileName = fileName; }
             if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (withTriangulation !== undefined) { this.withTriangulation = withTriangulation; }
         }
         /**
          * The shape written to the file.
@@ -15082,6 +15194,61 @@ export namespace OCCT {
          * @default true
          */
         tryDownload?: boolean | undefined = true;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         * @default true
+         */
+        withTriangulation?: boolean | undefined = true;
+    }
+
+    /**
+     * A shape and file options for `io.saveShapeBrepBinary`, which writes the shape as binary BREP: the
+     * same exact geometry and topology as the text form, in bytes `io.loadBrepBinary` reads back.
+     */
+    export class SaveBrepBinaryDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean) {
+            if (shape !== undefined) { this.shape = shape; }
+            if (fileName !== undefined) { this.fileName = fileName; }
+            if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+            if (withTriangulation !== undefined) { this.withTriangulation = withTriangulation; }
+        }
+        /**
+         * The shape written to the file.
+         * @default undefined
+         */
+        shape!: T;
+        /**
+         * The name the downloaded file gets.
+         * @default shape.bbrep
+         */
+        fileName?: string | undefined = "shape.bbrep";
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the bytes.
+         * @default true
+         */
+        tryDownload?: boolean | undefined = true;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         * @default true
+         */
+        withTriangulation?: boolean | undefined = true;
+    }
+
+    /**
+     * The bytes of a binary BREP file for `io.loadBrepBinary`.
+     */
+    export class LoadBrepBinaryDto {
+        constructor(brepData?: ArrayBuffer | Uint8Array | File | Blob) {
+            if (brepData !== undefined) { this.brepData = brepData; }
+        }
+        /**
+         * The binary BREP file's bytes, or a File or Blob that holds them.
+         * @default undefined
+         */
+        brepData!: ArrayBuffer | Uint8Array | File | Blob;
     }
 
     /**
@@ -15330,5 +15497,149 @@ export namespace OCCT {
          * @default false
          */
         tryDownload?: boolean | undefined = false;
+    }
+    /**
+     * A design document, with the documents an assembly places, for `design.validate`, which checks them
+     * without building anything.
+     */
+    export class DesignDocumentDto {
+        constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[]) {
+            if (document !== undefined) { this.document = document; }
+            if (documents !== undefined) { this.documents = documents; }
+        }
+        /**
+         * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
+         * document with its `components`.
+         * @default undefined
+         */
+        document!: Models.OCCT.DesignDocument;
+        /**
+         * The documents an assembly's components place, each with the `id` they name it by; their
+         * problems are listed under their position, such as `/documents/2`.
+         * @default undefined
+         * @optional true
+         */
+        documents?: Models.OCCT.DesignDocument[] | undefined;
+    }
+
+    /**
+     * A design document with the configuration, parameter values, asset contents and the documents an
+     * assembly places, for `design.build`, which builds it, and `design.toTypeScript`, which writes a part
+     * document as code.
+     */
+    export class DesignBuildDto<T> {
+        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[]) {
+            if (document !== undefined) { this.document = document; }
+            if (configuration !== undefined) { this.configuration = configuration; }
+            if (parameters !== undefined) { this.parameters = parameters; }
+            if (assets !== undefined) { this.assets = assets; }
+            if (documents !== undefined) { this.documents = documents; }
+            if (rebind !== undefined) { this.rebind = rebind; }
+            if (outcomes !== undefined) { this.outcomes = outcomes; }
+        }
+        /**
+         * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
+         * document with its `components`.
+         * @default undefined
+         */
+        document!: Models.OCCT.DesignDocument;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         * @default undefined
+         * @optional true
+         */
+        configuration?: string | undefined;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         * @default undefined
+         * @optional true
+         */
+        parameters?: Record<string, number | string | boolean> | undefined;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them; each is checked against the SHA-256 the document records.
+         * @default undefined
+         * @optional true
+         */
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        /**
+         * The documents an assembly's components place, each with the `id` they name it by.
+         * @default undefined
+         * @optional true
+         */
+        documents?: Models.OCCT.DesignDocument[] | undefined;
+        /**
+         * When a hinted reference loses its faces: `never` fails and offers the faces most like its hint
+         * as repairs; `report` takes them, if they stand clear, and reports `rebound`.
+         * @default undefined
+         * @optional true
+         */
+        rebind?: designRebindEnum | undefined;
+        /**
+         * Outcomes the caller made for features the build lists as `pending`, such as scripts, or kept from an
+         * earlier build, each under the hash of the feature it is for; the build takes them instead of
+         * making those features.
+         * @default undefined
+         * @optional true
+         * @ignore true
+         */
+        outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[] | undefined;
+    }
+
+    /**
+     * A part document with the configuration, parameter values and asset contents to build it with, the
+     * fillet or chamfer feature to probe and how many values to try, for `design.probeFillet`.
+     */
+    export class DesignProbeFilletDto {
+        constructor(document?: Models.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number) {
+            if (document !== undefined) { this.document = document; }
+            if (feature !== undefined) { this.feature = feature; }
+            if (configuration !== undefined) { this.configuration = configuration; }
+            if (parameters !== undefined) { this.parameters = parameters; }
+            if (assets !== undefined) { this.assets = assets; }
+            if (maxAttempts !== undefined) { this.maxAttempts = maxAttempts; }
+        }
+        /**
+         * The part document with its `parameters`, `features` and `parts`.
+         * @default undefined
+         */
+        document!: Models.OCCT.DesignDocument;
+        /**
+         * The id of the fillet or chamfer feature to probe.
+         * @default undefined
+         */
+        feature!: string;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         * @default undefined
+         * @optional true
+         */
+        configuration?: string | undefined;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         * @default undefined
+         * @optional true
+         */
+        parameters?: Record<string, number | string | boolean> | undefined;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them.
+         * @default undefined
+         * @optional true
+         */
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        /**
+         * How many radii or distances to try at most, from 1 to 64, starting with the document's own;
+         * each try makes the fillet or chamfer once.
+         * @default 16
+         * @minimum 1
+         * @maximum 64
+         * @step 1
+         */
+        maxAttempts?: number | undefined = 16;
     }
 }

@@ -17,6 +17,7 @@ export type OcctFailureDetails = {
     "occt.loft.failed": undefined;
     "occt.revolve.failed": undefined;
     "occt.pipe.failed": undefined;
+    "occt.pipe.notValid": { readonly trihedron: string };
 };
 
 /** The code of a failure an OCCT operation names, such as `occt.fillet.failedOnEdges`. */
@@ -40,6 +41,7 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.loft.failed": "The loft could not be built. The sections may not fit together, such as open and closed wires mixed, or may lie so that the surface through them crosses itself.",
     "occt.revolve.failed": "The revolve could not be built. The profile may cross or touch the axis, which makes the swept shape pass through itself; keep the whole profile on one side of the axis.",
     "occt.pipe.failed": "The pipe could not be built. The profile may be too large for the bends of the path, or the path may turn a corner the profile cannot follow.",
+    "occt.pipe.notValid": "The pipe came out as a shape that is not valid, part of its side missing. With the {trihedron} trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.",
 };
 
 /**

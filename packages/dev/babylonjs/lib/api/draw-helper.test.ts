@@ -4312,4 +4312,29 @@ describe("DrawHelper unit tests", () => {
             expect(helper.arrowAngles).toEqual([15]);
         });
     });
+
+    describe("the color of an OCCT shape's edges", () => {
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const lineColorOf = (drawn: BABYLON.Mesh): string => greasedLineOf(drawn.getChildMeshes()[0]).greasedLineMaterial!.color!.toHexString();
+
+        it("should take the face color moved by the edge contrast in place of the edge color", async () => {
+            // Act
+            const plain = await drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), {});
+            const contrasted = await drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), { edgeContrast: 0.4 });
+            const individually = await drawHelper.handleDecomposedMeshIndividually({ drawFaces: false, faceColour: "#000000" }, oneEdge(), { edgeContrast: 1 });
+
+            // Assert
+            expect(lineColorOf(plain)).toBe("#00ff00");
+            expect(lineColorOf(contrasted)).toBe("#999999");
+            expect(lineColorOf(individually)).toBe("#ffffff");
+        });
+    });
 });

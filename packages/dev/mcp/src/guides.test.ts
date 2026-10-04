@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { slugify, splitGuides } from "./guides-split.js";
+import { slugify, splitGuidePages, splitGuides } from "./guides-split.js";
 import { GUIDES, GUIDE_PAGE_URL } from "./guides.generated.js";
 import { GUIDE_ALIASES } from "./tools/get-guide.js";
 
-const page = (): string => readFileSync(new URL("../../../../docs/learn/using-ai-with-bitbybit/agentic-cad.md", import.meta.url), "utf8");
+const LEARN = "https://learn.bitbybit.dev/learn/using-ai-with-bitbybit";
+
+const page = (name: string): string => readFileSync(new URL(`../../../../docs/learn/using-ai-with-bitbybit/${name}.md`, import.meta.url), "utf8");
 
 describe("splitGuides", () => {
     it("drops the frontmatter and the text before the first heading", () => {
@@ -37,14 +39,42 @@ describe("splitGuides", () => {
     });
 });
 
-describe("the generated guides", () => {
-    it("equal the sections of the published page", () => {
+describe("splitGuidePages", () => {
+    it("marks each section with the page it comes from, in the order of the pages", () => {
+        // Arrange
+        const pages = [{ url: "https://example.test/a", markdown: "## One\n\nA." }, { url: "https://example.test/b", markdown: "## Two\n\nB." }];
+
         // Act
-        const fromPage = splitGuides(page());
+        const sections = splitGuidePages(pages);
 
         // Assert
-        expect(GUIDES).toEqual(fromPage);
-        expect(GUIDE_PAGE_URL).toBe("https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/agentic-cad");
+        expect(sections).toEqual([
+            { id: "one", title: "One", level: 2, body: "A.", page: "https://example.test/a" },
+            { id: "two", title: "Two", level: 2, body: "B.", page: "https://example.test/b" },
+        ]);
+    });
+
+    it("refuses two sections with one id, even on different pages", () => {
+        // Arrange
+        const pages = [{ url: "https://example.test/a", markdown: "## Get started\n\nA." }, { url: "https://example.test/b", markdown: "## Get started\n\nB." }];
+
+        // Act
+        const split = (): unknown => splitGuidePages(pages);
+
+        // Assert
+        expect(split).toThrow(/share the id "get-started"/);
+    });
+});
+
+describe("the generated guides", () => {
+    it("equal the sections of the published pages, the integration guide first", () => {
+        // Act
+        const fromPages = splitGuidePages(["agentic-cad", "design-documents"].map((name) => ({ url: `${LEARN}/${name}`, markdown: page(name) })));
+
+        // Assert
+        expect(GUIDES).toEqual(fromPages);
+        expect(GUIDE_PAGE_URL).toBe(`${LEARN}/agentic-cad`);
+        expect(GUIDES.find((section) => section.id === "what-a-design-document-is")?.page).toBe(`${LEARN}/design-documents`);
     });
 
     it("cover every alias the guide tool offers", () => {

@@ -314,6 +314,8 @@ Using AI assistants with Bitbybit for enhanced coding workflows. Bitbybit does n
 - Bitbybit CAD MCP (first party, free, version-exact API answers): https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/bitbybit-mcp
 - Bitbybit CAD Cloud MCP (first party, API key, runs geometry on CAD Cloud): https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/cad-cloud-mcp
 - Agentic CAD, where geometry should run when an agent writes the code: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/agentic-cad
+- Design documents, parametric models as JSON that agents write and occt.design builds: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/design-documents
+- Design document JSON Schema: https://git-cdn.bitbybit.dev/v{{VERSION}}/schemas/design-document/experimental.json
 - Context7 MCP Integration: https://learn.bitbybit.dev/learn/using-ai-with-bitbybit/mcp/context-7
 
 Context7 provides live AI context with always up-to-date documentation:

@@ -85,6 +85,7 @@ describe("OCCT_FAILURES", () => {
         expect(Object.fromEntries(placeholders.filter(([, names]) => names!.length > 0))).toEqual({
             "occt.fillet.failedOnEdges": ["edges"],
             "occt.fillet.failedAtCorners": ["corners"],
+            "occt.pipe.notValid": ["trihedron"],
         });
     });
 });

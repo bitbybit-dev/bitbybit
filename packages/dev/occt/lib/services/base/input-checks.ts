@@ -9,7 +9,8 @@ type Vec3 = Inputs.Base.Vector3;
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
-const isShape = (value: unknown): value is TopoDS_Shape => {
+/** Whether `value` is a kernel shape that holds something. */
+export const isShape = (value: unknown): value is TopoDS_Shape => {
     const candidate = value as { IsNull?: unknown } | null | undefined;
     return candidate !== null && candidate !== undefined && typeof candidate.IsNull === "function" && !(value as TopoDS_Shape).IsNull();
 };

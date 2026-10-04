@@ -96,7 +96,7 @@ const stem = (w) => w.replace(/(ies)$/, "y").replace(/(es|s)$/, "").replace(/(in
 const nameTokens = (name) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/[_.]/g, " ").toLowerCase().split(/\s+/).filter(Boolean).map(stem);
 const proseTokens = (text) => words(text).map((w) => w.toLowerCase().replace(/[^a-z0-9]/g, "")).filter((w) => w && !STOP.has(w) && !VENDOR.has(w)).map(stem);
 
-const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws"]);
+const KNOWN_TAGS = new Set(["param", "returns", "typeParam", "group", "shortname", "drawable", "ignore", "optional", "default", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "step", "link", "image", "disposableOutput", "example", "deprecated", "remarks", "see", "throws", "beta"]);
 const BOOLEAN_TAGS = new Set(["drawable", "optional", "ignore", "disposableOutput", "exclusiveMinimum", "exclusiveMaximum"]);
 const NUMERIC_TAGS = new Set(["minimum", "maximum", "step"]);
 

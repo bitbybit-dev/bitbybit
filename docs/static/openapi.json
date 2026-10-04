@@ -2009,7 +2009,7 @@
             "items": {
               "$ref": "#/components/schemas/PipelineOutputFormat"
             },
-            "description": "Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf)."
+            "description": "Output formats to generate. Supports standard CAD formats (step, stpz, gltf, decomposed-mesh) plus pipeline-specific formats (json, csv, stl, 3mf, brep, brep-binary)."
           },
           "meshPrecision": {
             "description": "Tessellation precision for mesh-based outputs (decomposed-mesh and gltf). Lower values produce denser meshes.",
@@ -2032,7 +2032,7 @@
           "formats"
         ],
         "additionalProperties": false,
-        "description": "Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf) beyond standard model outputs."
+        "description": "Controls which output formats are generated for pipeline results. Supports additional formats (json, csv, stl, 3mf, brep, brep-binary) beyond standard model outputs."
       },
       "PipelineOutputFormat": {
         "type": "string",
@@ -2044,9 +2044,11 @@
           "json",
           "csv",
           "stl",
-          "3mf"
+          "3mf",
+          "brep",
+          "brep-binary"
         ],
-        "description": "Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only)."
+        "description": "Pipeline output file format. Includes all standard formats plus: 'json' (JSON data), 'csv' (CSV text), 'stl' (binary STL mesh - Manifold/JSCAD only), '3mf' (3MF mesh package - Manifold/JSCAD only), 'brep' (OpenCascade BREP as text, which OCCT-based tools such as FreeCAD read) and 'brep-binary' (OpenCascade binary BREP, the smallest and fastest exact form, which keeps the numbering of faces and edges; read back with occt.io.loadBrepBinary) - both OCCT only, without triangulation."
       },
       "MeshPrecision": {
         "type": "number",

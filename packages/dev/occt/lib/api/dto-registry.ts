@@ -86,12 +86,15 @@ const OCCT_DataOnGeometryesAtLengthDto: DtoConstraints = { shapes: k.required(k.
 const OCCT_DataOnGeometryesAtParamDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DataOnUVDto: DtoConstraints = { shape: k.required(k.opaque), paramU: k.between(k.number, { min: 0, max: 1 }), paramV: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DataOnUVsDto: DtoConstraints = { shape: k.required(k.opaque), paramsUV: k.list(k.opaque) };
+const OCCT_DesignBuildDto: DtoConstraints = { document: k.required(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, documents: k.list(k.opaque), rebind: k.oneOf(["never", "report"]), outcomes: k.list(k.opaque) };
+const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque) };
+const OCCT_DesignProbeFilletDto: DtoConstraints = { document: k.required(k.opaque), feature: k.required(k.string), configuration: k.string, parameters: k.opaque, assets: k.opaque, maxAttempts: k.between(k.number, { min: 1, max: 64 }) };
 const OCCT_DifferenceDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
 const OCCT_DihedralAngleDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }), param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DivideDto: DtoConstraints = { shape: k.required(k.opaque), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
 const OCCT_DivideShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
-const OCCT_DocToMeshDto: DtoConstraints = { document: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
-const OCCT_DocToMeshesDto: DtoConstraints = { document: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
+const OCCT_DocToMeshDto: DtoConstraints = { document: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), angularDeflection: k.between(k.number, { min: 0.001, max: 3.14159 }), relativeDeflection: k.boolean, adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
+const OCCT_DocToMeshesDto: DtoConstraints = { document: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), angularDeflection: k.between(k.number, { min: 0.001, max: 3.14159 }), relativeDeflection: k.boolean, adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean };
 const OCCT_DocumentLabelQueryDto: DtoConstraints = { document: k.required(k.opaque), label: k.required(k.string) };
 const OCCT_DocumentQueryDto: DtoConstraints = { document: k.required(k.opaque) };
 const OCCT_DraftAngleDto: DtoConstraints = { shape: k.required(k.opaque), faces: k.required(k.list(k.opaque)), direction: k.vector3, angle: k.number, neutralPlaneOrigin: k.point3, neutralPlaneDirection: k.vector3, flag: k.boolean };
@@ -100,8 +103,8 @@ const OCCT_DxfPathsWithLayerDto: DtoConstraints = { paths: k.required(k.list(k.o
 const OCCT_EdgeIndexDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }) };
 const OCCT_EdgesToPointsDto: DtoConstraints = { shape: k.required(k.opaque), angularDeflection: k.between(k.number, { min: 0 }), curvatureDeflection: k.between(k.number, { min: 0 }), minimumOfPoints: k.between(k.number, { min: 0 }), uTolerance: k.between(k.number, { min: 0 }), minimumLength: k.between(k.number, { min: 0 }) };
 const OCCT_EllipseDto: DtoConstraints = { center: k.point3, direction: k.vector3, radiusMinor: k.between(k.number, { min: 0 }), radiusMajor: k.between(k.number, { min: 0 }) };
-const OCCT_ExportDocumentToGltfDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, fileName: k.string, tryDownload: k.boolean };
-const OCCT_ExportDocumentToGltfWithDracoDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, fileName: k.string, tryDownload: k.boolean, useDraco: k.boolean, dracoCompressionLevel: k.between(k.number, { min: 0, max: 10 }), dracoQuantizePositionBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeNormalBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeTexcoordBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeColorBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeGenericBits: k.between(k.number, { min: 0, max: 31 }), dracoUnifiedQuantization: k.boolean };
+const OCCT_ExportDocumentToGltfDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), fileName: k.string, tryDownload: k.boolean };
+const OCCT_ExportDocumentToGltfWithDracoDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.number, meshAngle: k.number, internalVerticesMode: k.boolean, controlSurfaceDeflection: k.boolean, mergeFaces: k.boolean, forceUVExport: k.boolean, up: k.oneOf(["y", "z"]), fileName: k.string, tryDownload: k.boolean, useDraco: k.boolean, dracoCompressionLevel: k.between(k.number, { min: 0, max: 10 }), dracoQuantizePositionBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeNormalBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeTexcoordBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeColorBits: k.between(k.number, { min: 0, max: 31 }), dracoQuantizeGenericBits: k.between(k.number, { min: 0, max: 31 }), dracoUnifiedQuantization: k.boolean };
 const OCCT_ExportDocumentToObjDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.between(k.number, { min: 1e-7 }), fileName: k.string, tryDownload: k.boolean };
 const OCCT_ExportDocumentToPlyDto: DtoConstraints = { document: k.required(k.opaque), meshDeflection: k.between(k.number, { min: 1e-7 }), fileName: k.string, tryDownload: k.boolean };
 const OCCT_ExportDocumentToStepDto: DtoConstraints = { document: k.required(k.opaque), fileName: k.string, author: k.string, organization: k.string, compress: k.boolean, tryDownload: k.boolean };
@@ -182,6 +185,7 @@ const OCCT_LinesDto: DtoConstraints = { lines: k.required(k.list(k.opaque)), ret
 const OCCT_LinesTangentAtAngleDto: DtoConstraints = { shape: k.required(k.opaque), reference: k.required(k.opaque), frame: k.required(k.opaque), angle: k.number, angularTolerance: k.between(k.number, { min: 0, exclusiveMin: true }), onArgumentsOnly: k.boolean };
 const OCCT_LinesTangentToTwoDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), frame: k.required(k.opaque), angularTolerance: k.between(k.number, { min: 0, exclusiveMin: true }), onArgumentsOnly: k.boolean };
 const OCCT_LineWithExtensionsDto: DtoConstraints = { start: k.point3, end: k.point3, extensionStart: k.number, extensionEnd: k.number };
+const OCCT_LoadBrepBinaryDto: DtoConstraints = { brepData: k.required(k.opaque) };
 const OCCT_LoadBrepDto: DtoConstraints = { brepData: k.required(k.opaque) };
 const OCCT_LoadGltfToDocDto: DtoConstraints = { gltfData: k.required(k.opaque) };
 const OCCT_LoadObjToDocDto: DtoConstraints = { objData: k.required(k.opaque) };
@@ -257,7 +261,8 @@ const OCCT_RotateDto: DtoConstraints = { shape: k.required(k.opaque), axis: k.ve
 const OCCT_RotateShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), axes: k.list(k.vector3), angles: k.list(k.number) };
 const OCCT_RotationAxisAngleToMatrixDto: DtoConstraints = { axis: k.vector3, angle: k.number, center: k.point3 };
 const OCCT_RotationExtrudeDto: DtoConstraints = { shape: k.required(k.opaque), height: k.between(k.number, { min: 0 }), angle: k.number, makeSolid: k.boolean };
-const OCCT_SaveBrepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, tryDownload: k.boolean };
+const OCCT_SaveBrepBinaryDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, tryDownload: k.boolean, withTriangulation: k.boolean };
+const OCCT_SaveBrepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, tryDownload: k.boolean, withTriangulation: k.boolean };
 const OCCT_SaveObjDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, precision: k.between(k.number, { min: 1e-7 }), adjustYtoZ: k.boolean, tryDownload: k.boolean };
 const OCCT_SavePlyDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, precision: k.between(k.number, { min: 1e-7 }), adjustYtoZ: k.boolean, tryDownload: k.boolean };
 const OCCT_SaveStepDto: DtoConstraints = { shape: k.required(k.opaque), fileName: k.string, adjustYtoZ: k.boolean, fromRightHanded: k.boolean, tryDownload: k.boolean };
@@ -298,10 +303,10 @@ const OCCT_ShapeFromPathDto: DtoConstraints = { subpaths: k.required(k.list(k.op
 const OCCT_ShapeIndexDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }) };
 const OCCT_ShapesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)) };
 const OCCT_ShapeShapesDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)) };
-const OCCT_ShapesToMeshesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean, isoCurvesU: k.between(k.number, { min: 0, max: 1000 }), isoCurvesV: k.between(k.number, { min: 0, max: 1000 }), surfaceAnalysis: k.oneOf(["none", "gaussian", "mean", "maxCurvature", "minCurvature", "minRadius", "draftAngle"]), draftDirection: k.vector3 };
+const OCCT_ShapesToMeshesDto: DtoConstraints = { shapes: k.required(k.list(k.opaque)), precision: k.between(k.number, { min: 0, exclusiveMin: true }), angularDeflection: k.between(k.number, { min: 0.001, max: 3.14159 }), relativeDeflection: k.boolean, adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean, isoCurvesU: k.between(k.number, { min: 0, max: 1000 }), isoCurvesV: k.between(k.number, { min: 0, max: 1000 }), surfaceAnalysis: k.oneOf(["none", "gaussian", "mean", "maxCurvature", "minCurvature", "minRadius", "draftAngle"]), draftDirection: k.vector3 };
 const OCCT_ShapeToDxfPathsDto: DtoConstraints = { shape: k.required(k.opaque), angularDeflection: k.between(k.number, { min: 0 }), curvatureDeflection: k.between(k.number, { min: 0 }), minimumOfPoints: k.between(k.number, { min: 0 }), uTolerance: k.between(k.number, { min: 0 }), minimumLength: k.between(k.number, { min: 0 }) };
 const OCCT_ShapeToManifoldMeshDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }) };
-const OCCT_ShapeToMeshDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean, isoCurvesU: k.between(k.number, { min: 0, max: 1000 }), isoCurvesV: k.between(k.number, { min: 0, max: 1000 }), surfaceAnalysis: k.oneOf(["none", "gaussian", "mean", "maxCurvature", "minCurvature", "minRadius", "draftAngle"]), draftDirection: k.vector3 };
+const OCCT_ShapeToMeshDto: DtoConstraints = { shape: k.required(k.opaque), precision: k.between(k.number, { min: 0, exclusiveMin: true }), angularDeflection: k.between(k.number, { min: 0.001, max: 3.14159 }), relativeDeflection: k.boolean, adjustYtoZ: k.boolean, computeMetadata: k.boolean, keepMeshData: k.boolean, allowQualityDecrease: k.boolean, forceFaceDeflection: k.boolean, isoCurvesU: k.between(k.number, { min: 0, max: 1000 }), isoCurvesV: k.between(k.number, { min: 0, max: 1000 }), surfaceAnalysis: k.oneOf(["none", "gaussian", "mean", "maxCurvature", "minCurvature", "minRadius", "draftAngle"]), draftDirection: k.vector3 };
 const OCCT_ShapeTransformQueryDto: DtoConstraints = { shape: k.required(k.opaque) };
 const OCCT_ShapeWithToleranceDto: DtoConstraints = { shape: k.required(k.opaque), tolerance: k.between(k.number, { min: 0 }) };
 const OCCT_SimpleAngularDimensionDto: DtoConstraints = { direction1: k.point3, direction2: k.point3, center: k.point3, radius: k.between(k.number, { min: 0 }), offsetFromCenter: k.number, extraSize: k.between(k.number, { min: 0 }), decimalPlaces: k.between(k.number, { min: 0 }), labelSuffix: k.string, labelSize: k.between(k.number, { min: 0, exclusiveMin: true }), labelOffset: k.number, radians: k.boolean, endType: k.oneOf(["none", "arrow"]), arrowSize: k.between(k.number, { min: 0 }), arrowAngle: k.between(k.number, { min: 0, max: 90 }), arrowsFlipped: k.boolean, labelRotation: k.number, labelFlipHorizontal: k.boolean, labelFlipVertical: k.boolean, labelOverwrite: k.string, removeTrailingZeros: k.boolean };
@@ -396,6 +401,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "analysis.measure.orientedBoundingBox": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "analysis.measure.principalFrame": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "analysis.measure.tightBoundingBox": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
+    "analysis.signatures": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
     "analysis.surfaces.closestPoints": { dto: Inputs.OCCT.ClosestPointsOnShapeFromPointsDto, constraints: OCCT_ClosestPointsOnShapeFromPointsDto },
     "analysis.surfaces.curvaturesOnUVs": { dto: Inputs.OCCT.DataOnUVsDto, constraints: OCCT_DataOnUVsDto },
     "analysis.surfaces.surfaceType": { dto: Inputs.OCCT.ShapeDto, constraints: OCCT_ShapeDto },
@@ -426,6 +432,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "booleans.difference": { dto: Inputs.OCCT.DifferenceDto, constraints: OCCT_DifferenceDto },
     "booleans.differenceWithHistory": { dto: Inputs.OCCT.DifferenceDto, constraints: OCCT_DifferenceDto },
     "booleans.intersection": { dto: Inputs.OCCT.IntersectionDto, constraints: OCCT_IntersectionDto },
+    "booleans.intersectionWithHistory": { dto: Inputs.OCCT.IntersectionDto, constraints: OCCT_IntersectionDto },
     "booleans.meshMeshIntersectionOfShapesPoints": { dto: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, constraints: OCCT_MeshMeshesIntersectionOfShapesDto },
     "booleans.meshMeshIntersectionOfShapesWires": { dto: Inputs.OCCT.MeshMeshesIntersectionOfShapesDto, constraints: OCCT_MeshMeshesIntersectionOfShapesDto },
     "booleans.meshMeshIntersectionPoints": { dto: Inputs.OCCT.MeshMeshIntersectionTwoShapesDto, constraints: OCCT_MeshMeshIntersectionTwoShapesDto },
@@ -449,6 +456,12 @@ export const occtDtoRegistry: DtoRegistry = {
     "corners.classifyCornerByPoint": { dto: Inputs.OCCT.ClassifyCornerByPointDto, constraints: OCCT_ClassifyCornerByPointDto },
     "corners.cornerByPointReport": { dto: Inputs.OCCT.FilletCornerByPointDto, constraints: OCCT_FilletCornerByPointDto },
     "corners.filletCornerByPoint": { dto: Inputs.OCCT.FilletCornerByPointDto, constraints: OCCT_FilletCornerByPointDto },
+    "design.build": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
+    "design.probeFillet": { dto: Inputs.OCCT.DesignProbeFilletDto, constraints: OCCT_DesignProbeFilletDto },
+    "design.toTypeScript": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
+    "design.validate": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },
+    "design.versionOf": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },
+    "design.withHints": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
     "dimensions.pinWithLabel": { dto: Inputs.OCCT.PinWithLabelDto, constraints: OCCT_PinWithLabelDto },
     "dimensions.simpleAngularDimension": { dto: Inputs.OCCT.SimpleAngularDimensionDto, constraints: OCCT_SimpleAngularDimensionDto },
     "dimensions.simpleLinearLengthDimension": { dto: Inputs.OCCT.SimpleLinearLengthDimensionDto, constraints: OCCT_SimpleLinearLengthDimensionDto },
@@ -458,11 +471,16 @@ export const occtDtoRegistry: DtoRegistry = {
     "draft.makeDraft": { dto: Inputs.OCCT.MakeDraftDto, constraints: OCCT_MakeDraftDto },
     "draft.makeDraftToShape": { dto: Inputs.OCCT.MakeDraftToShapeDto, constraints: OCCT_MakeDraftToShapeDto },
     "features.boss": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
+    "features.bossWithHistory": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
     "features.counterboredHoles": { dto: Inputs.OCCT.CounterboredHolesDto, constraints: OCCT_CounterboredHolesDto },
+    "features.counterboredHolesWithHistory": { dto: Inputs.OCCT.CounterboredHolesDto, constraints: OCCT_CounterboredHolesDto },
     "features.countersunkHoles": { dto: Inputs.OCCT.CountersunkHolesDto, constraints: OCCT_CountersunkHolesDto },
+    "features.countersunkHolesWithHistory": { dto: Inputs.OCCT.CountersunkHolesDto, constraints: OCCT_CountersunkHolesDto },
     "features.groove": { dto: Inputs.OCCT.RibFeatureDto, constraints: OCCT_RibFeatureDto },
     "features.holes": { dto: Inputs.OCCT.HolesDto, constraints: OCCT_HolesDto },
+    "features.holesWithHistory": { dto: Inputs.OCCT.HolesDto, constraints: OCCT_HolesDto },
     "features.pocket": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
+    "features.pocketWithHistory": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
     "features.pushPullFaces": { dto: Inputs.OCCT.PushPullFacesDto, constraints: OCCT_PushPullFacesDto },
     "features.removeFaces": { dto: Inputs.OCCT.RemoveFacesDto, constraints: OCCT_RemoveFacesDto },
     "features.revolvedBoss": { dto: Inputs.OCCT.RevolvedFeatureDto, constraints: OCCT_RevolvedFeatureDto },
@@ -508,10 +526,12 @@ export const occtDtoRegistry: DtoRegistry = {
     "io.dxfCreate": { dto: Inputs.OCCT.DxfPathsPartsListDto, constraints: OCCT_DxfPathsPartsListDto },
     "io.dxfPathsWithLayer": { dto: Inputs.OCCT.DxfPathsWithLayerDto, constraints: OCCT_DxfPathsWithLayerDto },
     "io.loadBrep": { dto: Inputs.OCCT.LoadBrepDto, constraints: OCCT_LoadBrepDto },
+    "io.loadBrepBinary": { dto: Inputs.OCCT.LoadBrepBinaryDto, constraints: OCCT_LoadBrepBinaryDto },
     "io.loadSTEPorIGES": { dto: Inputs.OCCT.LoadStepOrIgesDto, constraints: OCCT_LoadStepOrIgesDto },
     "io.loadStl": { dto: Inputs.OCCT.LoadStlDto, constraints: OCCT_LoadStlDto },
     "io.parseStepToJson": { dto: Inputs.OCCT.ParseStepAssemblyToJsonDto, constraints: OCCT_ParseStepAssemblyToJsonDto },
     "io.saveShapeBrep": { dto: Inputs.OCCT.SaveBrepDto, constraints: OCCT_SaveBrepDto },
+    "io.saveShapeBrepBinary": { dto: Inputs.OCCT.SaveBrepBinaryDto, constraints: OCCT_SaveBrepBinaryDto },
     "io.saveShapeObj": { dto: Inputs.OCCT.SaveObjDto, constraints: OCCT_SaveObjDto },
     "io.saveShapePly": { dto: Inputs.OCCT.SavePlyDto, constraints: OCCT_SavePlyDto },
     "io.saveShapeSTEP": { dto: Inputs.OCCT.SaveStepDto, constraints: OCCT_SaveStepDto },
@@ -538,8 +558,12 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.hiddenLines": { dto: Inputs.OCCT.HiddenLinesDto, constraints: OCCT_HiddenLinesDto },
     "operations.loft": { dto: Inputs.OCCT.LoftDto, constraints: OCCT_LoftDto },
     "operations.loftAdvanced": { dto: Inputs.OCCT.LoftAdvancedDto, constraints: OCCT_LoftAdvancedDto },
+    "operations.loftAdvancedWithHistory": { dto: Inputs.OCCT.LoftAdvancedDto, constraints: OCCT_LoftAdvancedDto },
+    "operations.loftWithHistory": { dto: Inputs.OCCT.LoftDto, constraints: OCCT_LoftDto },
     "operations.makeThickSolidByJoin": { dto: Inputs.OCCT.ThickSolidByJoinDto, constraints: OCCT_ThickSolidByJoinDto },
+    "operations.makeThickSolidByJoinWithHistory": { dto: Inputs.OCCT.ThickSolidByJoinDto, constraints: OCCT_ThickSolidByJoinDto },
     "operations.makeThickSolidSimple": { dto: Inputs.OCCT.ThisckSolidSimpleDto, constraints: OCCT_ThisckSolidSimpleDto },
+    "operations.makeThickSolidSimpleWithHistory": { dto: Inputs.OCCT.ThisckSolidSimpleDto, constraints: OCCT_ThisckSolidSimpleDto },
     "operations.offset": { dto: Inputs.OCCT.OffsetDto, constraints: OCCT_OffsetDto },
     "operations.offset3DWire": { dto: Inputs.OCCT.Offset3DWireDto, constraints: OCCT_Offset3DWireDto },
     "operations.offsetAdv": { dto: Inputs.OCCT.OffsetAdvancedDto, constraints: OCCT_OffsetAdvancedDto },
@@ -547,6 +571,7 @@ export const occtDtoRegistry: DtoRegistry = {
     "operations.pipePolylineWireNGon": { dto: Inputs.OCCT.PipePolygonWireNGonDto, constraints: OCCT_PipePolygonWireNGonDto },
     "operations.pipeWireCylindrical": { dto: Inputs.OCCT.PipeWireCylindricalDto, constraints: OCCT_PipeWireCylindricalDto },
     "operations.pipeWiresCylindrical": { dto: Inputs.OCCT.PipeWiresCylindricalDto, constraints: OCCT_PipeWiresCylindricalDto },
+    "operations.pipeWithHistory": { dto: Inputs.OCCT.ShapeShapesDto, constraints: OCCT_ShapeShapesDto },
     "operations.pipeWithScaling": { dto: Inputs.OCCT.PipeWithScalingDto, constraints: OCCT_PipeWithScalingDto },
     "operations.revolve": { dto: Inputs.OCCT.RevolveDto, constraints: OCCT_RevolveDto },
     "operations.revolveWithHistory": { dto: Inputs.OCCT.RevolveDto, constraints: OCCT_RevolveDto },

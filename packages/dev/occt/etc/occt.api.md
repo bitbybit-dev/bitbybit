@@ -84,6 +84,7 @@ interface AssemblyNodeDef {
     name: string;
     parentId?: string | undefined;
     partId?: string | undefined;
+    properties?: Record<string, string | number | boolean> | undefined;
     rotation?: Base.Vector3 | undefined;
     scale?: number | undefined;
     translation?: Base.Point3 | undefined;
@@ -108,8 +109,15 @@ interface AssemblyNodeJson {
 // @public
 interface AssemblyPartDef<T> {
     colorRgba?: Base.ColorRGBA | undefined;
+    edgeColorRgba?: Base.ColorRGBA | undefined;
+    edgeColors?: AssemblySubShapeColor[] | undefined;
+    emissiveRgb?: Base.ColorRGB | undefined;
+    faceColors?: AssemblySubShapeColor[] | undefined;
     id: string;
+    metallic?: number | undefined;
     name: string;
+    properties?: Record<string, string | number | boolean> | undefined;
+    roughness?: number | undefined;
     shape: T;
 }
 
@@ -124,11 +132,21 @@ interface AssemblyPartUpdateDef<T> {
 // @public
 interface AssemblyStructureDef<T> {
     clearDocument: boolean;
+    lengthUnit?: "mm" | "cm" | "m" | "in" | undefined;
     loadedParts?: AssemblyLoadedPartDef[] | undefined;
     nodes: AssemblyNodeDef[];
     parts: AssemblyPartDef<T>[];
     partUpdates?: AssemblyPartUpdateDef<T>[] | undefined;
     removals?: string[] | undefined;
+}
+
+// @public
+interface AssemblySubShapeColor {
+    colorRgba: Base.ColorRGBA;
+    emissiveRgb?: Base.ColorRGB | undefined;
+    indexes: number[];
+    metallic?: number | undefined;
+    roughness?: number | undefined;
 }
 
 // @public
@@ -1866,6 +1884,1100 @@ export type DerivativesResult = {
 };
 
 // @public
+interface DesignApis {
+    // (undocumented)
+    occt?: 1;
+}
+
+// @public
+interface DesignAppearance {
+    // (undocumented)
+    color?: DesignText;
+    // (undocumented)
+    edgeColor?: DesignText;
+    // (undocumented)
+    edges?: DesignEdgeAppearance[];
+    // (undocumented)
+    emissive?: DesignText;
+    // (undocumented)
+    emissiveStrength?: DesignNumber;
+    // (undocumented)
+    faces?: DesignFaceAppearance[];
+    // (undocumented)
+    metallic?: DesignNumber;
+    // (undocumented)
+    opacity?: DesignNumber;
+    // (undocumented)
+    roughness?: DesignNumber;
+}
+
+// @public
+interface DesignAssemblyConnector extends DesignExtensible {
+    // (undocumented)
+    component: string;
+    // (undocumented)
+    connector: string;
+    // (undocumented)
+    id: string;
+}
+
+// @public
+interface DesignAssemblyDocument extends DesignExtensible {
+    // (undocumented)
+    $schema?: string;
+    // (undocumented)
+    components: DesignComponent[];
+    // (undocumented)
+    configurations?: DesignConfiguration[];
+    // (undocumented)
+    connectors?: DesignAssemblyConnector[];
+    // (undocumented)
+    id?: string;
+    // (undocumented)
+    joints?: DesignJoint[];
+    // (undocumented)
+    kind: "assembly";
+    // (undocumented)
+    meta?: DesignMeta;
+    // (undocumented)
+    parameters?: Record<string, DesignNumber | boolean | DesignParameter>;
+    // (undocumented)
+    properties?: DesignProperties;
+    // (undocumented)
+    requires?: string[];
+    // (undocumented)
+    schemaVersion: 1;
+    // (undocumented)
+    units?: DesignUnits;
+    // (undocumented)
+    up?: "y" | "z";
+}
+
+// @public
+interface DesignAsset extends DesignExtensible {
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    mediaType?: string;
+    // (undocumented)
+    sha256?: string;
+    // (undocumented)
+    uri: string;
+}
+
+// @public
+interface DesignBomLine {
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    part: string;
+    // (undocumented)
+    properties: Record<string, string | number | boolean>;
+    // (undocumented)
+    quantity: number;
+}
+
+// @public
+interface DesignBooleanFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    operation: "union" | "difference" | "intersection";
+    // (undocumented)
+    tools: string[];
+    // (undocumented)
+    type: "boolean";
+}
+
+// @public
+interface DesignBossFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    distance?: DesignNumber;
+    // (undocumented)
+    profile: string;
+    // (undocumented)
+    type: "boss";
+    // (undocumented)
+    until?: DesignFaceReference;
+}
+
+// @public
+interface DesignBuildResult<T> {
+    // (undocumented)
+    bom?: DesignBomLine[];
+    // (undocumented)
+    components?: DesignBuiltComponent[];
+    // (undocumented)
+    configuration?: string;
+    // (undocumented)
+    issues: DesignIssue[];
+    // (undocumented)
+    joints?: DesignBuiltJoint[];
+    // (undocumented)
+    parameters: Record<string, number | string>;
+    // (undocumented)
+    parts: DesignBuiltPart<T>[];
+    // (undocumented)
+    pending?: DesignPendingScript<T>[];
+    // (undocumented)
+    properties?: Record<string, string | number | boolean>;
+    // (undocumented)
+    report: DesignFeatureReport[];
+    // (undocumented)
+    structure?: AssemblyStructureDef<T>;
+    // (undocumented)
+    units: Required<DesignUnits>;
+    // (undocumented)
+    up: "y" | "z";
+}
+
+// @public
+interface DesignBuiltAppearance {
+    // (undocumented)
+    color?: string;
+    // (undocumented)
+    edgeColor?: string;
+    // (undocumented)
+    edges?: DesignBuiltEdgeAppearance[];
+    // (undocumented)
+    emissive?: string;
+    // (undocumented)
+    emissiveStrength?: number;
+    // (undocumented)
+    faces: DesignBuiltFaceAppearance[];
+    // (undocumented)
+    metallic?: number;
+    // (undocumented)
+    opacity?: number;
+    // (undocumented)
+    roughness?: number;
+}
+
+// @public
+interface DesignBuiltComponent {
+    // (undocumented)
+    assembly?: boolean;
+    // (undocumented)
+    matrix: Base.TransformMatrix;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    parent?: string;
+    // (undocumented)
+    part?: string;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    properties: Record<string, string | number | boolean>;
+    // (undocumented)
+    world: Base.TransformMatrix;
+}
+
+// @public
+interface DesignBuiltConnector {
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    id: string;
+}
+
+// @public
+interface DesignBuiltEdgeAppearance {
+    // (undocumented)
+    color?: string;
+    // (undocumented)
+    indexes: number[];
+}
+
+// @public
+interface DesignBuiltFaceAppearance {
+    // (undocumented)
+    color?: string;
+    // (undocumented)
+    emissive?: string;
+    // (undocumented)
+    emissiveStrength?: number;
+    // (undocumented)
+    indexes: number[];
+    // (undocumented)
+    metallic?: number;
+    // (undocumented)
+    opacity?: number;
+    // (undocumented)
+    roughness?: number;
+}
+
+// @public
+interface DesignBuiltJoint {
+    // (undocumented)
+    angle: number;
+    // (undocumented)
+    component: string;
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    limits: {
+        angle?: [number, number];
+        offset?: [number, number];
+    };
+    // (undocumented)
+    offset: number;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    to?: string;
+    // (undocumented)
+    type: DesignJointType;
+}
+
+// @public
+interface DesignBuiltMaterial {
+    // (undocumented)
+    density?: number;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    properties: Record<string, string | number | boolean>;
+    // (undocumented)
+    standard?: string;
+}
+
+// @public
+interface DesignBuiltPart<T> {
+    // (undocumented)
+    appearance?: DesignBuiltAppearance;
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    buildKey: string;
+    // (undocumented)
+    connectors: DesignBuiltConnector[];
+    // (undocumented)
+    document?: string;
+    // (undocumented)
+    faceNames: string[][];
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    itemKey: string;
+    // (undocumented)
+    mass?: number;
+    // (undocumented)
+    material?: DesignBuiltMaterial;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    parameters: Record<string, number | string>;
+    // (undocumented)
+    properties: Record<string, string | number | boolean>;
+    // (undocumented)
+    shape: T;
+    // (undocumented)
+    shapeHash: string;
+    // (undocumented)
+    volume?: number;
+}
+
+// @public
+interface DesignChamferFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    distance: DesignNumber;
+    // (undocumented)
+    edges: DesignEdgeReference;
+    // (undocumented)
+    type: "chamfer";
+}
+
+// @public
+interface DesignChoiceOption {
+    // (undocumented)
+    label?: DesignLabel;
+    // (undocumented)
+    value: string;
+}
+
+// @public
+interface DesignCircleCommand {
+    // (undocumented)
+    centre: [DesignNumber, DesignNumber];
+    // (undocumented)
+    id?: string;
+    // (undocumented)
+    radius: DesignNumber;
+    // (undocumented)
+    type: "circle";
+}
+
+// @public
+interface DesignComponent extends DesignExtensible {
+    // (undocumented)
+    at?: DesignFrame;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    properties?: DesignProperties;
+    // (undocumented)
+    replicate?: DesignReplicate;
+    // (undocumented)
+    source: DesignComponentSource;
+    // (undocumented)
+    suppressed?: boolean | DesignNumber;
+}
+
+// @public
+interface DesignComponentSource {
+    // (undocumented)
+    configuration?: string;
+    // (undocumented)
+    document: string;
+    // (undocumented)
+    parameters?: Record<string, DesignNumber | boolean | DesignExpression>;
+    // (undocumented)
+    part?: string;
+    // (undocumented)
+    version?: string;
+}
+
+// @public
+interface DesignConfiguration extends DesignExtensible {
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name?: DesignLabel;
+    // (undocumented)
+    values: Record<string, DesignNumber | boolean | DesignExpression>;
+}
+
+// @public
+interface DesignConnector extends DesignExtensible {
+    // (undocumented)
+    axis?: DesignFaceReference;
+    // (undocumented)
+    centre?: DesignEdgeReference;
+    // (undocumented)
+    direction?: DesignPoint;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    on: DesignFaceReference;
+    // (undocumented)
+    origin?: DesignPoint;
+}
+
+// @public
+interface DesignCopy {
+    // (undocumented)
+    index: number | "all";
+    // (undocumented)
+    of: string;
+}
+
+// @public
+type DesignDocument = DesignPartDocument | DesignAssemblyDocument;
+
+// @public
+interface DesignEdgeAppearance {
+    // (undocumented)
+    color?: DesignText;
+    // (undocumented)
+    edges: DesignEdgeReference;
+}
+
+// @public
+interface DesignEdgeReference {
+    // (undocumented)
+    between: [DesignFaceReference, DesignFaceReference];
+    // (undocumented)
+    count: number;
+    // (undocumented)
+    filter?: DesignFilter;
+}
+
+// @public
+interface DesignExpression {
+    // (undocumented)
+    expr: string;
+}
+
+// @public
+type DesignExpressions<T> = T extends number ? DesignNumber : T extends object ? {
+    [K in keyof T]: DesignExpressions<T[K]>;
+} : T;
+
+// @public
+interface DesignExtensible {
+    // (undocumented)
+    extensions?: Record<string, unknown>;
+    // (undocumented)
+    extras?: unknown;
+}
+
+// @public
+interface DesignExtrudeFeature extends DesignFeatureBase {
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    direction?: DesignPoint;
+    // (undocumented)
+    distance: DesignNumber;
+    // (undocumented)
+    join?: DesignJoin;
+    // (undocumented)
+    profile: string;
+    // (undocumented)
+    type: "extrude";
+}
+
+// @public
+interface DesignFaceAppearance {
+    // (undocumented)
+    color?: DesignText;
+    // (undocumented)
+    emissive?: DesignText;
+    // (undocumented)
+    emissiveStrength?: DesignNumber;
+    // (undocumented)
+    faces: DesignFaceReference;
+    // (undocumented)
+    metallic?: DesignNumber;
+    // (undocumented)
+    opacity?: DesignNumber;
+    // (undocumented)
+    roughness?: DesignNumber;
+}
+
+// @public
+interface DesignFaceHint {
+    // (undocumented)
+    area: number;
+    // (undocumented)
+    centre: [number, number, number];
+    // (undocumented)
+    neighbours: string[];
+    // (undocumented)
+    normal: [number, number, number];
+    // (undocumented)
+    type: string;
+}
+
+// @public
+interface DesignFaceReference {
+    // (undocumented)
+    copy?: DesignCopy | DesignCopy[];
+    // (undocumented)
+    count?: number;
+    // (undocumented)
+    filter?: DesignFilter;
+    // (undocumented)
+    from?: string;
+    // (undocumented)
+    hint?: DesignReferenceHint;
+    // (undocumented)
+    of: string;
+    // (undocumented)
+    role: string;
+}
+
+// @public
+type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
+
+// @public
+interface DesignFeatureBase extends DesignExtensible {
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    suppressed?: boolean | DesignNumber;
+}
+
+// @public
+interface DesignFeatureReport {
+    // (undocumented)
+    cached: boolean;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    messages: string[];
+    // (undocumented)
+    ms: number;
+    // (undocumented)
+    repairs?: DesignRepair[];
+    // (undocumented)
+    status: "ok" | "failed" | "skipped" | "suppressed" | "rebound" | "pending";
+    // (undocumented)
+    type: string;
+}
+
+// @public
+interface DesignFilletFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    edges: DesignEdgeReference;
+    // (undocumented)
+    radius: DesignNumber;
+    // (undocumented)
+    type: "fillet";
+}
+
+// @public
+interface DesignFilletProbe {
+    // (undocumented)
+    attempts: DesignProbeAttempt[];
+    // (undocumented)
+    between: [number[], number[]];
+    // (undocumented)
+    builds: boolean;
+    // (undocumented)
+    count: number;
+    // (undocumented)
+    edges: EdgeSignature[];
+    // (undocumented)
+    feature: string;
+    // (undocumented)
+    largest?: number;
+    // (undocumented)
+    messages: string[];
+    // (undocumented)
+    smallestFailing?: number;
+    // (undocumented)
+    type: "fillet" | "chamfer";
+    // (undocumented)
+    value?: number;
+}
+
+// @public
+interface DesignFilter {
+    // (undocumented)
+    [input: string]: unknown;
+    // (undocumented)
+    select: string;
+}
+
+// @public
+interface DesignFrame {
+    // (undocumented)
+    direction: DesignPoint;
+    // (undocumented)
+    normal: DesignPoint;
+    // (undocumented)
+    origin: DesignPoint;
+}
+
+// @public
+interface DesignHintBox {
+    // (undocumented)
+    max: [number, number, number];
+    // (undocumented)
+    min: [number, number, number];
+}
+
+// @public
+interface DesignHoleFeature extends DesignFeatureBase {
+    // (undocumented)
+    at: (DesignHolePosition | [DesignNumber, DesignNumber])[];
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    counterbore?: {
+        diameter: DesignNumber;
+        depth: DesignNumber;
+    };
+    // (undocumented)
+    countersink?: {
+        diameter: DesignNumber;
+        angle: DesignNumber;
+    };
+    // (undocumented)
+    depth?: DesignNumber;
+    // (undocumented)
+    diameter: DesignNumber;
+    // (undocumented)
+    direction?: DesignPoint;
+    // (undocumented)
+    on: DesignFaceReference;
+    // (undocumented)
+    origin?: DesignPoint;
+    // (undocumented)
+    tipAngle?: DesignNumber;
+    // (undocumented)
+    type: "hole";
+}
+
+// @public
+interface DesignHolePosition {
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    x: DesignNumber;
+    // (undocumented)
+    y: DesignNumber;
+}
+
+// @public
+interface DesignImportFeature extends DesignFeatureBase {
+    // (undocumented)
+    asset: string;
+    // (undocumented)
+    format?: "brep" | "brep-binary" | "step" | "iges";
+    // (undocumented)
+    type: "import";
+}
+
+// @public
+interface DesignIssue {
+    // (undocumented)
+    message: string;
+    // (undocumented)
+    path: string;
+}
+
+// @public
+type DesignJoin = "add" | "cut" | "intersect";
+
+// @public
+interface DesignJoint extends DesignExtensible {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    component: string;
+    // (undocumented)
+    connector: string;
+    // (undocumented)
+    flip?: boolean;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    limits?: DesignJointLimits;
+    // (undocumented)
+    offset?: DesignNumber;
+    // (undocumented)
+    to: {
+        component: string;
+        connector: string;
+    } | {
+        frame: DesignFrame;
+    };
+    // (undocumented)
+    type: DesignJointType;
+}
+
+// @public
+interface DesignJointLimits {
+    // (undocumented)
+    angle?: [DesignNumber, DesignNumber];
+    // (undocumented)
+    offset?: [DesignNumber, DesignNumber];
+}
+
+// @public
+type DesignJointType = "fastened" | "revolute" | "slider" | "cylindrical";
+
+// @public
+type DesignLabel = string | Record<string, string>;
+
+// @public
+interface DesignLinearPatternFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    count: DesignNumber;
+    // (undocumented)
+    direction: DesignPoint;
+    // (undocumented)
+    spacing: DesignNumber;
+    // (undocumented)
+    type: "linearPattern";
+}
+
+// @public
+interface DesignLoftFeature extends DesignFeatureBase {
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    join?: DesignJoin;
+    // (undocumented)
+    profiles: string[];
+    // (undocumented)
+    solid?: boolean;
+    // (undocumented)
+    type: "loft";
+}
+
+// @public
+interface DesignLoop {
+    // (undocumented)
+    pen: DesignPenCommand[];
+    // (undocumented)
+    start?: [DesignNumber, DesignNumber];
+}
+
+// @public
+interface DesignMaterial extends DesignExtensible {
+    // (undocumented)
+    appearance?: DesignAppearance;
+    // (undocumented)
+    density?: DesignNumber;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    properties?: DesignProperties;
+    // (undocumented)
+    standard?: string;
+}
+
+// @public
+interface DesignMeta {
+    // (undocumented)
+    authors?: string[];
+    // (undocumented)
+    description?: string;
+    // (undocumented)
+    generator?: string;
+    // (undocumented)
+    license?: string;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    revision?: string;
+}
+
+// @public
+interface DesignMirrorFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    keepOriginal?: boolean;
+    // (undocumented)
+    plane: {
+        origin: DesignPoint;
+        normal: DesignPoint;
+    };
+    // (undocumented)
+    type: "mirror";
+}
+
+// @public
+type DesignNumber = number | string;
+
+// @public
+interface DesignOperationFeature extends DesignFeatureBase {
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    operation: string;
+    // (undocumented)
+    params: Record<string, unknown>;
+    // (undocumented)
+    type: "operation";
+}
+
+// @public
+interface DesignParameter extends DesignExtensible {
+    // (undocumented)
+    description?: DesignLabel;
+    // (undocumented)
+    group?: string;
+    // (undocumented)
+    label?: DesignLabel;
+    // (undocumented)
+    max?: number;
+    // (undocumented)
+    min?: number;
+    // (undocumented)
+    options?: DesignChoiceOption[];
+    // (undocumented)
+    step?: number;
+    // (undocumented)
+    type?: "number" | "boolean" | "choice" | "text";
+    // (undocumented)
+    unit?: "mm" | "cm" | "m" | "in" | "deg" | "none";
+    // (undocumented)
+    value: DesignNumber | boolean | DesignExpression;
+}
+
+// @public
+interface DesignPart extends DesignExtensible {
+    // (undocumented)
+    appearance?: DesignAppearance;
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    connectors?: DesignConnector[];
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    material?: DesignText;
+    // (undocumented)
+    name?: string;
+    // (undocumented)
+    properties?: DesignProperties;
+}
+
+// @public
+interface DesignPartDocument extends DesignExtensible {
+    // (undocumented)
+    $schema?: string;
+    // (undocumented)
+    apis?: DesignApis;
+    // (undocumented)
+    assets?: DesignAsset[];
+    // (undocumented)
+    configurations?: DesignConfiguration[];
+    // (undocumented)
+    features: DesignFeature[];
+    // (undocumented)
+    id?: string;
+    // (undocumented)
+    kind?: "part";
+    // (undocumented)
+    materials?: DesignMaterial[];
+    // (undocumented)
+    meta?: DesignMeta;
+    // (undocumented)
+    parameters?: Record<string, DesignNumber | boolean | DesignParameter>;
+    // (undocumented)
+    parts?: DesignPart[];
+    // (undocumented)
+    requires?: string[];
+    // (undocumented)
+    schemaVersion: 1;
+    // (undocumented)
+    units?: DesignUnits;
+    // (undocumented)
+    up?: "y" | "z";
+}
+
+// @public
+type DesignPenCommand = DesignExpressions<SketchCommand> | DesignCircleCommand;
+
+// @public
+interface DesignPendingScript<T> {
+    // (undocumented)
+    hash: string;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    inputs: Record<string, T | number | number[] | unknown>;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    script: string;
+}
+
+// @public
+interface DesignPocketFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    distance?: DesignNumber;
+    // (undocumented)
+    profile: string;
+    // (undocumented)
+    through?: boolean;
+    // (undocumented)
+    type: "pocket";
+    // (undocumented)
+    until?: DesignFaceReference;
+}
+
+// @public
+type DesignPoint = [DesignNumber, DesignNumber, DesignNumber];
+
+// @public
+interface DesignPolarPatternFeature extends DesignFeatureBase {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    axis: {
+        origin: DesignPoint;
+        direction: DesignPoint;
+    };
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    count: DesignNumber;
+    // (undocumented)
+    type: "polarPattern";
+}
+
+// @public
+interface DesignProbeAttempt {
+    // (undocumented)
+    builds: boolean;
+    // (undocumented)
+    message?: string;
+    // (undocumented)
+    ms: number;
+    // (undocumented)
+    value: number;
+}
+
+// @public
+type DesignProperties = Record<string, DesignPropertyValue>;
+
+// @public
+type DesignPropertyValue = string | number | boolean | DesignExpression;
+
+// @public
+interface DesignReferenceHint {
+    // (undocumented)
+    box: DesignHintBox;
+    // (undocumented)
+    faces: DesignFaceHint[];
+    // (undocumented)
+    v: 1;
+}
+
+// @public
+interface DesignRepair {
+    // (undocumented)
+    clear: boolean;
+    // (undocumented)
+    faces: number[];
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    score: number;
+}
+
+// @public
+interface DesignReplicate {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    connector: string;
+    // (undocumented)
+    flip?: boolean;
+    // (undocumented)
+    offset?: DesignNumber;
+    // (undocumented)
+    to: {
+        component: string;
+        connector: string;
+    };
+}
+
+// @public
+interface DesignRevolveFeature extends DesignFeatureBase {
+    // (undocumented)
+    angle?: DesignNumber;
+    // (undocumented)
+    axis: {
+        origin: DesignPoint;
+        direction: DesignPoint;
+    };
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    join?: DesignJoin;
+    // (undocumented)
+    profile: string;
+    // (undocumented)
+    type: "revolve";
+}
+
+// @public
+interface DesignScriptFeature extends DesignFeatureBase {
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    params?: Record<string, unknown>;
+    // (undocumented)
+    script: string;
+    // (undocumented)
+    type: "script";
+}
+
+// @public
+interface DesignShellFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    open: DesignFaceReference;
+    // (undocumented)
+    thickness: DesignNumber;
+    // (undocumented)
+    type: "shell";
+}
+
+// @public
+interface DesignSketchFeature extends DesignFeatureBase {
+    // (undocumented)
+    closed?: boolean;
+    // (undocumented)
+    loops?: DesignLoop[];
+    // (undocumented)
+    on: DesignSketchPlacement;
+    // (undocumented)
+    pen?: DesignPenCommand[];
+    // (undocumented)
+    start?: [DesignNumber, DesignNumber];
+    // (undocumented)
+    type: "sketch";
+}
+
+// @public
+type DesignSketchPlacement = {
+    plane: "XY" | "XZ" | "YZ";
+    offset?: DesignNumber;
+} | {
+    frame: DesignFrame;
+} | {
+    face: DesignFaceReference;
+    origin?: DesignPoint;
+    direction?: DesignPoint;
+};
+
+// @public
+interface DesignSuppliedOutcome<T> {
+    // (undocumented)
+    hash: string;
+    // (undocumented)
+    names?: string[][];
+    // (undocumented)
+    roles?: Record<string, number[]>;
+    // (undocumented)
+    shape: T;
+}
+
+// @public
+interface DesignSweepFeature extends DesignFeatureBase {
+    // (undocumented)
+    body?: string;
+    // (undocumented)
+    join?: DesignJoin;
+    // (undocumented)
+    path: string;
+    // (undocumented)
+    profile: string;
+    // (undocumented)
+    type: "sweep";
+}
+
+// @public
+type DesignText = string | DesignExpression;
+
+// @public
+interface DesignUnits {
+    // (undocumented)
+    angle?: "deg";
+    // (undocumented)
+    length?: "mm" | "cm" | "m" | "in";
+}
+
+// @public
 interface DihedralAngle {
     // (undocumented)
     angle: number;
@@ -1946,6 +3058,22 @@ interface EdgeDebugInfo {
     valid: boolean;
 }
 
+// @public
+interface EdgeSignature {
+    // (undocumented)
+    index: number;
+    // (undocumented)
+    isDegenerate: boolean;
+    // (undocumented)
+    length: number;
+    // (undocumented)
+    midpoint: Base.Point3;
+    // (undocumented)
+    tangent: Base.Vector3;
+    // (undocumented)
+    type: OCCT.curveTypeEnum;
+}
+
 // @public (undocumented)
 export interface EmbindEnumValue<T extends number = number> { // (undocumented)
     value: T; }
@@ -1977,15 +3105,17 @@ export interface EmbindModule {
     // (undocumented)
     BooleanCommon(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string };
     // (undocumented)
-    BooleanCommonWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    BooleanCommonEachWithHistory(_0: TopoDS_Shape, _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    // (undocumented)
+    BooleanCommonWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     BooleanCut(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
     // (undocumented)
-    BooleanCutWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    BooleanCutWithHistory(_0: TopoDS_Shape[], _1: TopoDS_Shape[], _2: boolean, _3: number, _4: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     BooleanFuse(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string };
     // (undocumented)
-    BooleanFuseWithHistory(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    BooleanFuseWithHistory(_0: TopoDS_Shape[], _1: boolean, _2: number, _3: BitbybitBool_Strategy): { shape: TopoDS_Shape | null; errorAlerts: string; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     BOPAlgo_Builder: {
         new(): BOPAlgo_Builder;
@@ -2484,13 +3614,15 @@ export interface EmbindModule {
     // (undocumented)
     DocumentPmiJson(_0: Handle_TDocStd_Document): string;
     // (undocumented)
-    DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): MeshBuffers;
+    DocumentToMeshBuffers(_0: TDocStd_Document | null, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number, _9: boolean): MeshBuffers;
     // (undocumented)
     DocumentToMeshesJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
     DocumentToMeshJson(_0: TDocStd_Document | null, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
     DrillHoles(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): TopoDS_Shape;
+    // (undocumented)
+    DrillHolesWithHistory(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: number, _3: number, _4: number, _5: number, _6: number, _7: number, _8: number): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     DxfPathsOf(_0: TopoDS_Shape, _1: number, _2: number, _3: number, _4: number, _5: number): Float64Array;
     // (undocumented)
@@ -2514,9 +3646,9 @@ export interface EmbindModule {
     // (undocumented)
     EvaluateWireAtParam(_0: TopoDS_Wire, _1: number): CurvePointResult;
     // (undocumented)
-    ExportDocumentToGltf(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean): any;
+    ExportDocumentToGltf(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean): any;
     // (undocumented)
-    ExportDocumentToGltfWithDraco(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number, _9: number, _10: number, _11: number, _12: number, _13: number, _14: boolean): any;
+    ExportDocumentToGltfWithDraco(_0: Handle_TDocStd_Document, _1: number, _2: number, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: boolean, _8: number, _9: number, _10: number, _11: number, _12: number, _13: number, _14: boolean, _15: boolean): any;
     // (undocumented)
     ExportDocumentToObj(_0: Handle_TDocStd_Document, _1: number, _2: EmbindString): { obj: string; mtl: string };
     // (undocumented)
@@ -2552,9 +3684,13 @@ export interface EmbindModule {
     // (undocumented)
     FeatureBoss(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
     // (undocumented)
+    FeatureBossWithHistory(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    // (undocumented)
     FeatureGroove(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: ArrayLike<number>, _3: ArrayLike<number>, _4: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
     FeaturePocket(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): TopoDS_Shape;
+    // (undocumented)
+    FeaturePocketWithHistory(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: number, _5: number, _6: boolean): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     FeatureRevolved(_0: TopoDS_Shape, _1: TopoDS_Shape, _2: number, _3: ArrayLike<number>, _4: ArrayLike<number>, _5: boolean, _6: number): TopoDS_Shape;
     // (undocumented)
@@ -2933,15 +4069,19 @@ export interface EmbindModule {
     // (undocumented)
     HiddenLines(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: boolean, _3: boolean, _4: boolean, _5: number, _6: number): { visible: TopoDS_Compound; hidden: TopoDS_Compound };
     // (undocumented)
-    HistoryOfChamfer(_0: BRepFilletAPI_MakeChamfer, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    HistoryOfChamfer(_0: BRepFilletAPI_MakeChamfer, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
     // (undocumented)
-    HistoryOfFillet(_0: BRepFilletAPI_MakeFillet, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    HistoryOfFillet(_0: BRepFilletAPI_MakeFillet, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
     // (undocumented)
-    HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    HistoryOfLoft(_0: BRepOffsetAPI_ThruSections, _1: TopoDS_Shape[], _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[];
     // (undocumented)
-    HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    HistoryOfPipeShell(_0: BRepOffsetAPI_MakePipeShell, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
     // (undocumented)
-    HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    HistoryOfPrism(_0: BRepPrimAPI_MakePrism, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfRevol(_0: BRepPrimAPI_MakeRevol, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
+    // (undocumented)
+    HistoryOfThickSolid(_0: BRepOffsetAPI_MakeThickSolid, _1: TopoDS_Shape, _2: TopoDS_Shape): { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array };
     // (undocumented)
     IFSelect_ReturnStatus: {RetVoid: IFSelect_ReturnStatusValue<number>, RetDone: IFSelect_ReturnStatusValue<number>, RetError: IFSelect_ReturnStatusValue<number>, RetFail: IFSelect_ReturnStatusValue<number>, RetStop: IFSelect_ReturnStatusValue<number>};
     // (undocumented)
@@ -3174,6 +4314,8 @@ export interface EmbindModule {
     // (undocumented)
     Quantity_TypeOfColor: {Quantity_TOC_RGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_sRGB: Quantity_TypeOfColorValue<number>, Quantity_TOC_HLS: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELab: Quantity_TypeOfColorValue<number>, Quantity_TOC_CIELch: Quantity_TypeOfColorValue<number>};
     // (undocumented)
+    ReadBREPFromBytes(_0: ArrayLike<number>): TopoDS_Shape;
+    // (undocumented)
     ReadBREPFromString(_0: EmbindString): TopoDS_Shape;
     // (undocumented)
     ReadGltfToDoc(_0: ArrayLike<number>, _1: boolean): Handle_TDocStd_Document;
@@ -3292,9 +4434,11 @@ export interface EmbindModule {
     // (undocumented)
     ShapeIsValid(_0: TopoDS_Shape): boolean;
     // (undocumented)
+    ShapeSignatures(_0: TopoDS_Shape): { faceTypes: Int32Array; faceAreas: Float64Array; faceCentres: Float64Array; faceNormals: Float64Array; faceBoxes: Float64Array; edgeTypes: Int32Array; edgeLengths: Float64Array; edgeMidpoints: Float64Array; edgeTangents: Float64Array };
+    // (undocumented)
     ShapeToManifoldMesh(_0: TopoDS_Shape, _1: number): { numProp: number; vertProperties: Float32Array; triVerts: Uint32Array } | null;
     // (undocumented)
-    ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): MeshBuffers;
+    ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: number, _8: boolean): MeshBuffers;
     // (undocumented)
     ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
     // (undocumented)
@@ -3519,7 +4663,9 @@ export interface EmbindModule {
     // (undocumented)
     WrapOnFace(_0: TopoDS_Shape[], _1: TopoDS_Shape, _2: number): TopoDS_Wire[];
     // (undocumented)
-    WriteBREPToString(_0: TopoDS_Shape): string;
+    WriteBREPToBytes(_0: TopoDS_Shape, _1: boolean): Uint8Array;
+    // (undocumented)
+    WriteBREPToString(_0: TopoDS_Shape, _1: boolean): string;
     // (undocumented)
     WriteIGESToString(_0: TopoDS_Shape): string;
     // (undocumented)
@@ -3687,6 +4833,25 @@ interface FaceDebugInfo {
     vPeriodic?: boolean | undefined;
     // (undocumented)
     vRational?: boolean | undefined;
+}
+
+// @public
+interface FaceSignature {
+    // (undocumented)
+    area: number;
+    // (undocumented)
+    box: {
+        min: Base.Point3;
+        max: Base.Point3;
+    };
+    // (undocumented)
+    centre: Base.Point3;
+    // (undocumented)
+    index: number;
+    // (undocumented)
+    normal: Base.Vector3;
+    // (undocumented)
+    type: OCCT.surfaceTypeEnum;
 }
 
 // @public (undocumented)
@@ -6874,6 +8039,36 @@ namespace OCCT {
         isoCurveList?: Base.Point3[][] | undefined;
         pointsList: Base.Point3[];
     }
+    class DesignBuildDto<T> {
+        constructor(document?: Models_2.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models_2.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[]);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        configuration?: string | undefined;
+        document: Models_2.OCCT.DesignDocument;
+        documents?: Models_2.OCCT.DesignDocument[] | undefined;
+        outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[] | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
+        rebind?: designRebindEnum | undefined;
+    }
+    class DesignDocumentDto {
+        constructor(document?: Models_2.OCCT.DesignDocument, documents?: Models_2.OCCT.DesignDocument[]);
+        document: Models_2.OCCT.DesignDocument;
+        documents?: Models_2.OCCT.DesignDocument[] | undefined;
+    }
+    class DesignProbeFilletDto {
+        constructor(document?: Models_2.OCCT.DesignDocument, feature?: string, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, maxAttempts?: number);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        configuration?: string | undefined;
+        document: Models_2.OCCT.DesignDocument;
+        feature: string;
+        maxAttempts?: number | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
+    }
+    enum designRebindEnum {
+        // (undocumented)
+        never = "never",
+        // (undocumented)
+        report = "report"
+    }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
         keepEdges?: boolean | undefined;
@@ -6915,24 +8110,28 @@ namespace OCCT {
         removeStartPoint?: boolean | undefined;
     }
     class DocToMeshDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
+        angularDeflection?: number | undefined;
         computeMetadata?: boolean | undefined;
         document: U;
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        relativeDeflection?: boolean | undefined;
     }
     class DocToMeshesDto<U> {
-        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean);
+        constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
+        angularDeflection?: number | undefined;
         computeMetadata?: boolean | undefined;
         document: U;
         forceFaceDeflection?: boolean | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        relativeDeflection?: boolean | undefined;
     }
     class DocumentLabelQueryDto<T> {
         constructor(document?: T, label?: string);
@@ -6954,17 +8153,18 @@ namespace OCCT {
         shape: T;
     }
     class DrawShapeDto<T> extends DrawShapeSharedDto {
-        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number);
+        constructor(shape?: T, faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean);
         shape?: T | undefined;
     }
     class DrawShapesDto<T> extends DrawShapeSharedDto {
-        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number);
+        constructor(shapes?: T[], faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, angularDeflection?: number, relativeDeflection?: boolean);
         shapes: T[];
     }
     abstract class DrawShapeSharedDto {
         allowQualityDecrease?: boolean | undefined;
         analysisMax?: number | undefined;
         analysisMin?: number | undefined;
+        angularDeflection?: number | undefined;
         backFaceColour?: Base.Color | undefined;
         backFaceOpacity?: number | undefined;
         draftDirection?: Base.Vector3 | undefined;
@@ -6991,6 +8191,7 @@ namespace OCCT {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        relativeDeflection?: boolean | undefined;
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
         vertexColour?: string | undefined;
         vertexSize?: number | undefined;
@@ -7053,6 +8254,7 @@ namespace OCCT {
         meshAngle?: number | undefined;
         meshDeflection?: number | undefined;
         tryDownload?: boolean | undefined;
+        up?: upAxisEnum | undefined;
     }
     class ExportDocumentToGltfWithDracoDto<T> extends ExportDocumentToGltfDto<T> {
         constructor(document?: T, meshDeflection?: number, meshAngle?: number, mergeFaces?: boolean, forceUVExport?: boolean, fileName?: string, tryDownload?: boolean);
@@ -7799,6 +9001,10 @@ namespace OCCT {
         extensionStart?: number | undefined;
         start?: Base.Point3 | undefined;
     }
+    class LoadBrepBinaryDto {
+        constructor(brepData?: ArrayBuffer | Uint8Array | File | Blob);
+        brepData: ArrayBuffer | Uint8Array | File | Blob;
+    }
     class LoadBrepDto {
         constructor(brepData?: string | File | Blob);
         brepData: string | File | Blob;
@@ -8356,11 +9562,19 @@ namespace OCCT {
         makeSolid?: boolean | undefined;
         shape: T;
     }
-    class SaveBrepDto<T> {
-        constructor(shape?: T, fileName?: string, tryDownload?: boolean);
+    class SaveBrepBinaryDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean);
         fileName?: string | undefined;
         shape: T;
         tryDownload?: boolean | undefined;
+        withTriangulation?: boolean | undefined;
+    }
+    class SaveBrepDto<T> {
+        constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean);
+        fileName?: string | undefined;
+        shape: T;
+        tryDownload?: boolean | undefined;
+        withTriangulation?: boolean | undefined;
     }
     class SaveObjDto<T> {
         constructor(shape?: T, fileName?: string, precision?: number, adjustYtoZ?: boolean, tryDownload?: boolean);
@@ -8616,9 +9830,10 @@ namespace OCCT {
         shapes: U[];
     }
     class ShapesToMeshesDto<T> {
-        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3);
+        constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
+        angularDeflection?: number | undefined;
         computeMetadata?: boolean | undefined;
         draftDirection?: Base.Vector3 | undefined;
         forceFaceDeflection?: boolean | undefined;
@@ -8626,6 +9841,7 @@ namespace OCCT {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        relativeDeflection?: boolean | undefined;
         shapes: T[];
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
     }
@@ -8644,9 +9860,10 @@ namespace OCCT {
         shape: T;
     }
     class ShapeToMeshDto<T> {
-        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3);
+        constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean);
         adjustYtoZ?: boolean | undefined;
         allowQualityDecrease?: boolean | undefined;
+        angularDeflection?: number | undefined;
         computeMetadata?: boolean | undefined;
         draftDirection?: Base.Vector3 | undefined;
         forceFaceDeflection?: boolean | undefined;
@@ -8654,6 +9871,7 @@ namespace OCCT {
         isoCurvesV?: number | undefined;
         keepMeshData?: boolean | undefined;
         precision?: number | undefined;
+        relativeDeflection?: boolean | undefined;
         shape: T;
         surfaceAnalysis?: surfaceAnalysisEnum | undefined;
     }
@@ -9239,6 +10457,12 @@ namespace OCCT {
         shape: T;
         tolerance?: number | undefined;
     }
+    enum upAxisEnum {
+        // (undocumented)
+        y = "y",
+        // (undocumented)
+        z = "z"
+    }
     class WireAlongParamDto<T> {
         constructor(shape?: T, isU?: boolean, param?: number);
         isU?: boolean | undefined;
@@ -9333,6 +10557,7 @@ declare namespace OCCT_2 {
         AssemblyStructureDef,
         AssemblyNodeDef,
         AssemblyPartDef,
+        AssemblySubShapeColor,
         AssemblyPartUpdateDef,
         AssemblyLoadedPartDef,
         AssemblyNodeJson,
@@ -9402,6 +10627,9 @@ declare namespace OCCT_2 {
         DihedralAngle,
         MinCurvatureRadius,
         Clash,
+        FaceSignature,
+        EdgeSignature,
+        ShapeSignatures,
         SplitByFrameResult,
         HiddenLinesResult,
         ValidityFault,
@@ -9429,7 +10657,90 @@ declare namespace OCCT_2 {
         SketchChamferCornerCommand,
         SketchCommand,
         SketchSegment,
-        SketchWithSegments
+        SketchWithSegments,
+        DesignNumber,
+        DesignExpression,
+        DesignText,
+        DesignExtensible,
+        DesignLabel,
+        DesignChoiceOption,
+        DesignParameter,
+        DesignConfiguration,
+        DesignFeatureBase,
+        DesignPoint,
+        DesignExpressions,
+        DesignCircleCommand,
+        DesignPenCommand,
+        DesignLoop,
+        DesignFrame,
+        DesignFilter,
+        DesignCopy,
+        DesignFaceReference,
+        DesignReferenceHint,
+        DesignHintBox,
+        DesignFaceHint,
+        DesignEdgeReference,
+        DesignJoin,
+        DesignSketchPlacement,
+        DesignSketchFeature,
+        DesignExtrudeFeature,
+        DesignRevolveFeature,
+        DesignBooleanFeature,
+        DesignFilletFeature,
+        DesignChamferFeature,
+        DesignLinearPatternFeature,
+        DesignPolarPatternFeature,
+        DesignMirrorFeature,
+        DesignSweepFeature,
+        DesignLoftFeature,
+        DesignShellFeature,
+        DesignHolePosition,
+        DesignHoleFeature,
+        DesignBossFeature,
+        DesignPocketFeature,
+        DesignImportFeature,
+        DesignOperationFeature,
+        DesignScriptFeature,
+        DesignFeature,
+        DesignAppearance,
+        DesignEdgeAppearance,
+        DesignFaceAppearance,
+        DesignPropertyValue,
+        DesignProperties,
+        DesignMaterial,
+        DesignPart,
+        DesignConnector,
+        DesignAsset,
+        DesignUnits,
+        DesignMeta,
+        DesignApis,
+        DesignPartDocument,
+        DesignComponentSource,
+        DesignJointType,
+        DesignJointLimits,
+        DesignJoint,
+        DesignReplicate,
+        DesignComponent,
+        DesignAssemblyDocument,
+        DesignAssemblyConnector,
+        DesignDocument,
+        DesignIssue,
+        DesignFeatureReport,
+        DesignRepair,
+        DesignBuiltFaceAppearance,
+        DesignBuiltAppearance,
+        DesignBuiltEdgeAppearance,
+        DesignBuiltMaterial,
+        DesignBuiltPart,
+        DesignBuiltConnector,
+        DesignBuiltComponent,
+        DesignBuiltJoint,
+        DesignBomLine,
+        DesignSuppliedOutcome,
+        DesignPendingScript,
+        DesignBuildResult,
+        DesignProbeAttempt,
+        DesignFilletProbe
     }
 }
 
@@ -9616,6 +10927,12 @@ namespace OCCT_3 {
     // (undocumented)
     type DecomposedMeshDto = Inputs_2.OCCT.DecomposedMeshDto;
     // (undocumented)
+    type DesignBuildDto<T> = Inputs_2.OCCT.DesignBuildDto<T>;
+    // (undocumented)
+    type DesignDocumentDto = Inputs_2.OCCT.DesignDocumentDto;
+    // (undocumented)
+    type DesignProbeFilletDto = WithDefaults<Inputs_2.OCCT.DesignProbeFilletDto, "maxAttempts">;
+    // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
     type DihedralAngleDto<T> = WithDefaults<Inputs_2.OCCT.DihedralAngleDto<T>, "index" | "param">;
@@ -9626,9 +10943,9 @@ namespace OCCT_3 {
     // (undocumented)
     type DivideSharedDto = WithDefaults<Inputs_2.OCCT.DivideSharedDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
-    type DocToMeshDto<U> = WithDefaults<Inputs_2.OCCT.DocToMeshDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    type DocToMeshDto<U> = WithDefaults<Inputs_2.OCCT.DocToMeshDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
-    type DocToMeshesDto<U> = WithDefaults<Inputs_2.OCCT.DocToMeshesDto<U>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    type DocToMeshesDto<U> = WithDefaults<Inputs_2.OCCT.DocToMeshesDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
     type DocumentLabelQueryDto<T> = Inputs_2.OCCT.DocumentLabelQueryDto<T>;
     // (undocumented)
@@ -9636,11 +10953,11 @@ namespace OCCT_3 {
     // (undocumented)
     type DraftAngleDto<T, U> = WithDefaults<Inputs_2.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
     // (undocumented)
-    type DrawShapeDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapeDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DrawShapesDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapesDto<T> = WithDefaults<Inputs_2.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DrawShapeSharedDto = WithDefaults<Inputs_2.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapeSharedDto = WithDefaults<Inputs_2.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type DxfPathsPartsListDto = WithDefaults<Inputs_2.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
     // (undocumented)
@@ -9652,9 +10969,9 @@ namespace OCCT_3 {
     // (undocumented)
     type EllipseDto = WithDefaults<Inputs_2.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
     // (undocumented)
-    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_2.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload">;
+    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_2.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload">;
     // (undocumented)
-    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_2.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_2.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     // (undocumented)
     type ExportDocumentToObjDto<T> = WithDefaults<Inputs_2.OCCT.ExportDocumentToObjDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
     // (undocumented)
@@ -9826,6 +11143,8 @@ namespace OCCT_3 {
     // (undocumented)
     type LineWithExtensionsDto = WithDefaults<Inputs_2.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
     // (undocumented)
+    type LoadBrepBinaryDto = Inputs_2.OCCT.LoadBrepBinaryDto;
+    // (undocumented)
     type LoadBrepDto = Inputs_2.OCCT.LoadBrepDto;
     // (undocumented)
     type LoadGltfToDocDto = Inputs_2.OCCT.LoadGltfToDocDto;
@@ -9992,7 +11311,9 @@ namespace OCCT_3 {
     // (undocumented)
     type RotationExtrudeDto<T> = WithDefaults<Inputs_2.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
     // (undocumented)
-    type SaveBrepDto<T> = WithDefaults<Inputs_2.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload">;
+    type SaveBrepBinaryDto<T> = WithDefaults<Inputs_2.OCCT.SaveBrepBinaryDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
+    // (undocumented)
+    type SaveBrepDto<T> = WithDefaults<Inputs_2.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     // (undocumented)
     type SaveObjDto<T> = WithDefaults<Inputs_2.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     // (undocumented)
@@ -10074,13 +11395,13 @@ namespace OCCT_3 {
     // (undocumented)
     type ShapeShapesDto<T, U> = Inputs_2.OCCT.ShapeShapesDto<T, U>;
     // (undocumented)
-    type ShapesToMeshesDto<T> = WithDefaults<Inputs_2.OCCT.ShapesToMeshesDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapesToMeshesDto<T> = WithDefaults<Inputs_2.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     // (undocumented)
     type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     // (undocumented)
-    type ShapeToMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToMeshDto<T>, "precision" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapeToMeshDto<T> = WithDefaults<Inputs_2.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
     type ShapeTransformQueryDto<T> = Inputs_2.OCCT.ShapeTransformQueryDto<T>;
     // (undocumented)
@@ -10271,6 +11592,7 @@ export class OCCTBooleans {
     difference(inputs: Inputs_2.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape;
     differenceWithHistory(inputs: Inputs_2.OCCT.DifferenceDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
     intersection(inputs: Inputs_2.OCCT.IntersectionDto<TopoDS_Shape>): TopoDS_Shape;
+    intersectionWithHistory(inputs: Inputs_2.OCCT.IntersectionDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
     meshMeshIntersectionOfShapesPoints(inputs: Inputs_2.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
     meshMeshIntersectionOfShapesWires(inputs: Inputs_2.OCCT.MeshMeshesIntersectionOfShapesDto<TopoDS_Shape>): TopoDS_Wire[];
     meshMeshIntersectionPoints(inputs: Inputs_2.OCCT.MeshMeshIntersectionTwoShapesDto<TopoDS_Shape>): Inputs_2.Base.Point3[][];
@@ -10497,6 +11819,9 @@ export type OcctFailureDetails = {
     "occt.loft.failed": undefined;
     "occt.revolve.failed": undefined;
     "occt.pipe.failed": undefined;
+    "occt.pipe.notValid": {
+        readonly trihedron: string;
+    };
 };
 
 // @public
@@ -10545,10 +11870,12 @@ export class OCCTIO {
     dxfCreate(inputs: Inputs_2.OCCT.DxfPathsPartsListDto): string;
     dxfPathsWithLayer(inputs: Inputs_2.OCCT.DxfPathsWithLayerDto): IO.DxfPathsPartDto;
     loadBrep(inputs: Inputs_2.OCCT.LoadBrepDto): TopoDS_Shape;
+    loadBrepBinary(inputs: Inputs_2.OCCT.LoadBrepBinaryDto): TopoDS_Shape;
     loadSTEPorIGES(inputs: Inputs_2.OCCT.LoadStepOrIgesDto): TopoDS_Shape | undefined;
     loadStl(inputs: Inputs_2.OCCT.LoadStlDto): TopoDS_Shape;
     parseStepToJson(inputs: Inputs_2.OCCT.ParseStepAssemblyToJsonDto): Models_2.OCCT.AssemblyJsonResult;
     saveShapeBrep(inputs: Inputs_2.OCCT.SaveBrepDto<TopoDS_Shape>): string;
+    saveShapeBrepBinary(inputs: Inputs_2.OCCT.SaveBrepBinaryDto<TopoDS_Shape>): Uint8Array;
     saveShapeObj(inputs: Inputs_2.OCCT.SaveObjDto<TopoDS_Shape>): Models_2.OCCT.ObjFiles;
     saveShapePly(inputs: Inputs_2.OCCT.SavePlyDto<TopoDS_Shape>): string;
     saveShapeSTEP(inputs: Inputs_2.OCCT.SaveStepDto<TopoDS_Shape>): string;
@@ -10594,8 +11921,12 @@ export class OCCTOperations {
     hiddenLines(inputs: Inputs_2.OCCT.HiddenLinesDto<TopoDS_Shape>): Models_2.OCCT.HiddenLinesResult<TopoDS_Compound>;
     loft(inputs: Inputs_2.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
     loftAdvanced(inputs: Inputs_2.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
+    loftAdvancedWithHistory(inputs: Inputs_2.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
+    loftWithHistory(inputs: Inputs_2.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
     makeThickSolidByJoin(inputs: Inputs_2.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape;
+    makeThickSolidByJoinWithHistory(inputs: Inputs_2.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     makeThickSolidSimple(inputs: Inputs_2.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape;
+    makeThickSolidSimpleWithHistory(inputs: Inputs_2.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
     offset(inputs: Inputs_2.OCCT.OffsetDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
     offset3DWire(inputs: Inputs_2.OCCT.Offset3DWireDto<TopoDS_Wire>): TopoDS_Wire | TopoDS_Edge[];
     offsetAdv(inputs: Inputs_2.OCCT.OffsetAdvancedDto<TopoDS_Shape, TopoDS_Face>): TopoDS_Shape;
@@ -10603,6 +11934,7 @@ export class OCCTOperations {
     pipePolylineWireNGon(inputs: Inputs_2.OCCT.PipePolygonWireNGonDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWireCylindrical(inputs: Inputs_2.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape;
     pipeWiresCylindrical(inputs: Inputs_2.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[];
+    pipeWithHistory(inputs: Inputs_2.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): Models_2.OCCT.ShapeWithHistories<TopoDS_Shape>;
     pipeWithScaling(inputs: Inputs_2.OCCT.PipeWithScalingDto<TopoDS_Wire | TopoDS_Edge, TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape;
     revolve(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): TopoDS_Shape;
     revolveWithHistory(inputs: Inputs_2.OCCT.RevolveDto<TopoDS_Shape>): Models_2.OCCT.ShapeWithHistory<TopoDS_Shape>;
@@ -10636,6 +11968,10 @@ export class OCCTService {
     //
     // (undocumented)
     readonly corners: OCCTCorners;
+    // Warning: (ae-forgotten-export) The symbol "OCCTDesign" needs to be exported by the entry point index.d.ts
+    //
+    // @beta
+    readonly design: OCCTDesign;
     // Warning: (ae-forgotten-export) The symbol "OCCTDimensions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -12052,11 +13388,15 @@ interface ShapeHistory {
     // (undocumented)
     edges: number[][];
     // (undocumented)
+    edgesFromFaces: number[][];
+    // (undocumented)
     edgesFromVertices: number[][];
     // (undocumented)
     faces: number[][];
     // (undocumented)
     facesFromEdges: number[][];
+    // (undocumented)
+    facesFromFaces: number[][];
     // (undocumented)
     facesFromVertices: number[][];
     // (undocumented)
@@ -12119,6 +13459,14 @@ export class ShapesHelperService {
     polygonLMiddle(widthFirst: number, lengthFirst: number, widthSecond: number, lengthSecond: number): Base.Point3[];
     // (undocumented)
     starLines(innerRadius: number, outerRadius: number, numRays: number, half: boolean, offsetOuterEdges: number): Base.Line3[];
+}
+
+// @public
+interface ShapeSignatures {
+    // (undocumented)
+    edges: EdgeSignature[];
+    // (undocumented)
+    faces: FaceSignature[];
 }
 
 // @public

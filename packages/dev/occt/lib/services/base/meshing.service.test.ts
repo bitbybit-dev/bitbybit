@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import * as Inputs from "../../api/inputs";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -137,6 +138,83 @@ describe("MeshingService.shapeToMesh", () => {
         expect(mesh).toEqual({ error: "ShapeToMeshJson: the precision must be a finite number of at least 1e-7" });
     });
 
+    function triangles(mesh: Inputs.OCCT.DecomposedMeshDto): number {
+        return mesh.faceList.reduce((count, face) => count + face.triIndexes.length / 3, 0);
+    }
+
+    it("meshes a curved face finer at a smaller angular deflection, and at 0.5 radians by default", () => {
+        // Arrange
+        const cylinder = service.shapes.solid.createCylinder({ radius: 10, height: 10, center: [0, 0, 0], direction: [0, 1, 0] });
+
+        // Act
+        const plain = service.shapeToMesh({ shape: cylinder, precision: 5 });
+        const half = service.shapeToMesh({ shape: cylinder, precision: 5, angularDeflection: 0.5 });
+        const tenth = service.shapeToMesh({ shape: cylinder, precision: 5, angularDeflection: 0.1 });
+
+        // Assert
+        expect(triangles(half)).toBe(triangles(plain));
+        expect(triangles(tenth)).toBeGreaterThan(3 * triangles(half));
+    });
+
+    it("meshes a small and a large sphere alike with a relative deflection", () => {
+        // Arrange
+        const small = service.shapes.solid.createSphere({ radius: 1, center: [0, 0, 0] });
+        const large = service.shapes.solid.createSphere({ radius: 20, center: [0, 0, 0] });
+
+        // Act
+        const smallRelative = service.shapeToMesh({ shape: small, precision: 0.01, relativeDeflection: true });
+        const largeRelative = service.shapeToMesh({ shape: large, precision: 0.01, relativeDeflection: true });
+        const smallAbsolute = service.shapeToMesh({ shape: small, precision: 0.01 });
+        const largeAbsolute = service.shapeToMesh({ shape: large, precision: 0.01 });
+
+        // Assert
+        expect(triangles(largeRelative)).toBe(triangles(smallRelative));
+        expect(triangles(largeAbsolute)).toBeGreaterThan(10 * triangles(smallAbsolute));
+    });
+
+    it.each([0, 0.0005, 4, Number.NaN])("refuses an angular deflection of %s before meshing", (angularDeflection) => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        const act = (): Inputs.OCCT.DecomposedMeshDto => service.shapeToMesh({ shape: box(), precision: 0.1, angularDeflection });
+
+        // Assert
+        expect(act).toThrow(`\`angularDeflection\` must be a finite number from 0.001 to ${Math.PI}; it is ${String(angularDeflection)}.`);
+        expect(buffers).not.toHaveBeenCalled();
+    });
+
+    it("passes the angle and the relative deflection on for each of several shapes", () => {
+        // Arrange
+        const buffers = vi.spyOn(occt, "ShapeToMeshBuffers");
+
+        // Act
+        service.shapesToMeshes({ shapes: [box(), box()], precision: 0.1, angularDeflection: 0.2, relativeDeflection: true });
+
+        // Assert
+        expect(buffers.mock.calls.map(call => call.slice(7))).toEqual([[0.2, true], [0.2, true]]);
+    });
+
+    it("asks a kernel whose buffer call predates the angle for seven arguments only", () => {
+        // Arrange
+        const original = occt.ShapeToMeshBuffers.bind(occt);
+        const received: number[] = [];
+        const older = Object.defineProperty((...args: unknown[]): MeshBuffers => {
+            received.push(args.length);
+            return (original as (...all: unknown[]) => MeshBuffers)(...args, 0.5, false);
+        }, "length", { value: 7 });
+        const kept: unknown = Reflect.get(occt, "ShapeToMeshBuffers");
+        Reflect.set(occt, "ShapeToMeshBuffers", older);
+        restores.push(() => Reflect.set(occt, "ShapeToMeshBuffers", kept));
+
+        // Act
+        const mesh = service.shapeToMesh({ shape: box(), precision: 0.1, angularDeflection: 0.2 });
+
+        // Assert
+        expect(received).toEqual([7]);
+        expect(mesh.faceList).toHaveLength(6);
+    });
+
     it("meshes through the kernel's JSON when the kernel predates document and metadata buffers", () => {
         // Arrange
         const original: unknown = Reflect.get(occt, "DocumentToMeshBuffers");
@@ -198,13 +276,13 @@ describe("MeshingService.shapeToMesh", () => {
         const shape = box();
 
         // Act
-        service.shapeToMesh({ shape, precision: 0.3, adjustYtoZ: true, computeMetadata: false, keepMeshData: false, allowQualityDecrease: false, forceFaceDeflection: true });
+        service.shapeToMesh({ shape, precision: 0.3, adjustYtoZ: true, computeMetadata: false, keepMeshData: false, allowQualityDecrease: false, forceFaceDeflection: true, angularDeflection: 0.25, relativeDeflection: true });
         service.shapeToMesh({ shape, precision: 0.4, adjustYtoZ: false, computeMetadata: true, keepMeshData: true, allowQualityDecrease: true, forceFaceDeflection: false });
 
         // Assert
         expect(buffers.mock.calls).toEqual([
-            [shape, 0.3, true, false, false, false, true],
-            [shape, 0.4, false, true, true, true, false],
+            [shape, 0.3, true, false, false, false, true, 0.25, true],
+            [shape, 0.4, false, true, true, true, false, 0.5, false],
         ]);
     });
 
@@ -351,9 +429,25 @@ describe("MeshingService documents", () => {
         // Assert
         const count = occt.DocumentFreeShapeCount(document.get());
         expect(buffers.mock.calls.map(call => call.slice(1))).toEqual([
-            [-1, 0.2, true, true, false, false, true],
-            ...Array.from({ length: count }, (_, index) => [index, 0.3, false, false, false, true, false]),
+            [-1, 0.2, true, true, false, false, true, 0.5, false],
+            ...Array.from({ length: count }, (_, index) => [index, 0.3, false, false, false, true, false, 0.5, false]),
         ]);
+    });
+
+    it("meshes a document at the angular deflection and relative deflection given", () => {
+        // Arrange
+        const document = twoPartDocument();
+        const buffers = vi.spyOn(occt, "DocumentToMeshBuffers");
+
+        // Act
+        const coarse = service.docToMesh({ document, precision: 1 });
+        const fine = service.docToMesh({ document, precision: 1, angularDeflection: 0.1, relativeDeflection: true });
+
+        // Assert
+        const count = (mesh: Inputs.OCCT.DecomposedMeshDto): number => mesh.faceList.reduce((sum, face) => sum + face.triIndexes.length / 3, 0);
+        expect(count(fine)).toBeGreaterThan(count(coarse));
+        expect(buffers.mock.calls.map(call => call.slice(8))).toEqual([[0.5, false], [0.1, true]]);
+        expect(() => service.docToMeshes({ document, precision: 1, angularDeflection: 0 })).toThrow("`angularDeflection` must be a finite number from 0.001");
     });
 
     it("falls back to the kernel's JSON when meshing a document into buffers fails, and still deletes the result", () => {

@@ -9,6 +9,7 @@ import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
 import * as Inputs from "../../api/inputs";
+import { OCCTService } from "../../occ-service";
 
 const MISSING: unknown = undefined;
 const GLB_HEADER_BYTES = 12;
@@ -319,6 +320,106 @@ describe("OCCT assembly documents read from STEP, glTF and OBJ files and written
 
             // Assert
             expect(act).toThrow(new InputError("`document` is missing or empty, as a load or a build that failed can leave it.", "document"));
+        });
+    });
+
+    describe("units, up axes and colours on export", () => {
+        const GREY: Inputs.Base.ColorRGBA = { r: 0x80 / 255, g: 0x80 / 255, b: 0x80 / 255, a: 1 };
+        const linear = (channel: number): number => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
+
+        const gltfJsonOf = (glb: Uint8Array): { materials?: { pbrMetallicRoughness?: { baseColorFactor?: number[] } }[] } => {
+            const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength);
+            const jsonLength = view.getUint32(GLB_HEADER_BYTES, true);
+            const jsonStart = GLB_HEADER_BYTES + GLB_CHUNK_HEADER_BYTES;
+            return JSON.parse(new TextDecoder().decode(glb.subarray(jsonStart, jsonStart + jsonLength))) as { materials?: { pbrMetallicRoughness?: { baseColorFactor?: number[] } }[] };
+        };
+
+        it("should write a y-up document to glTF as it stands, where a z-up one is turned", () => {
+            // Arrange
+            const source = brickDocument();
+
+            // Act
+            const zUp = manager.loadGltfToDoc({ gltfData: manager.exportDocumentToGltf({ document: source, meshDeflection: 0.1 }) });
+            const yUp = manager.loadGltfToDoc({ gltfData: manager.exportDocumentToGltf({ document: source, meshDeflection: 0.1, up: Inputs.OCCT.upAxisEnum.y }) });
+            const yUpDraco = manager.loadGltfToDoc({ gltfData: manager.exportDocumentToGltfWithDraco({ document: source, meshDeflection: 0.1, useDraco: false, up: Inputs.OCCT.upAxisEnum.y }) });
+
+            // Assert
+            expect(boundsOf(onlyPartShape(zUp))).toEqual({ min: [0, 0, 0], max: [10, 20, 30] });
+            expect(boundsOf(onlyPartShape(yUp))).toEqual({ min: [0, -30, 0], max: [10, 0, 20] });
+            expect(boundsOf(onlyPartShape(yUpDraco))).toEqual({ min: [0, -30, 0], max: [10, 0, 20] });
+            [source, zUp, yUp, yUpDraco].forEach(document => document.delete());
+        });
+
+        it("should refuse a y-up export on a kernel that writes every document as z-up, and pass a z-up one", () => {
+            // Arrange
+            const source = brickDocument();
+            const received: number[] = [];
+            const original = occt.ExportDocumentToGltf.bind(occt) as (...args: unknown[]) => Uint8Array;
+            const older = Object.defineProperty((...args: unknown[]): Uint8Array => {
+                received.push(args.length);
+                return original(...args, false);
+            }, "length", { value: 7 });
+            const kept: unknown = Reflect.get(occt, "ExportDocumentToGltf");
+            Reflect.set(occt, "ExportDocumentToGltf", older);
+
+            // Act
+            let refusal: unknown;
+            try {
+                manager.exportDocumentToGltf({ document: source, meshDeflection: 0.1, up: Inputs.OCCT.upAxisEnum.y });
+            } catch (thrown) {
+                refusal = thrown;
+            }
+            const zUp = manager.exportDocumentToGltf({ document: source, meshDeflection: 0.1 });
+            Reflect.set(occt, "ExportDocumentToGltf", kept);
+
+            // Assert
+            expect(refusal).toEqual(new InputError("this kernel writes every document as z-up; a newer kernel writes a y-up one", "up"));
+            expect(received).toEqual([7]);
+            expect(zUp.length).toBeGreaterThan(GLB_HEADER_BYTES);
+            source.delete();
+        });
+
+        it("should write the length unit a structure states into STEP, so a reader in millimetres scales it", () => {
+            // Arrange
+            const brick = solid.createBox({ width: 10, height: 20, length: 30, center: [5, 10, 15] });
+            const part = manager.createPart({ id: "brick", shape: brick, name: "Brick" });
+            const structure = manager.combineStructure({ parts: [part], nodes: [], clearDocument: false });
+            const inCentimetres = manager.buildAssemblyDocument({ structure: { ...structure, lengthUnit: "cm" } });
+            const unstated = manager.buildAssemblyDocument({ structure });
+
+            // Act
+            const stepOf = (document: Handle_TDocStd_Document): string => new TextDecoder().decode(manager.exportDocumentToStep({ document, fileName: "brick.step", author: "", organization: "", compress: false, tryDownload: false }));
+            const readCentimetres = manager.loadStepToDoc({ stepData: stepOf(inCentimetres) });
+            const readUnstated = manager.loadStepToDoc({ stepData: stepOf(unstated) });
+
+            // Assert
+            expect(boundsOf(onlyPartShape(readCentimetres))).toEqual({ min: [0, 0, 0], max: [100, 200, 300] });
+            expect(boundsOf(onlyPartShape(readUnstated))).toEqual({ min: [0, 0, 0], max: [10, 20, 30] });
+            [inCentimetres, unstated, readCentimetres, readUnstated].forEach(document => document.delete());
+        });
+
+        it("should write a colour into STEP as it is given and into glTF in linear light, and read either back as given", () => {
+            // Arrange
+            const source = brickDocument(GREY);
+
+            // Act
+            const step = new TextDecoder().decode(manager.exportDocumentToStep({ document: source, fileName: "brick.step", author: "", organization: "", compress: false, tryDownload: false }));
+            const fromStep = manager.loadStepToDoc({ stepData: step });
+            const glb = manager.exportDocumentToGltf({ document: source, meshDeflection: 0.1 });
+            const fromGltf = manager.loadGltfToDoc({ gltfData: glb });
+            const service = new OCCTService(occt, occHelper);
+            const coloursOf = (document: Handle_TDocStd_Document): string[] => Object.keys(service.docToMesh({ document, precision: 1 }).colorGroups ?? {});
+
+            // Assert
+            const stepChannels = [...step.matchAll(/COLOUR_RGB\('[^']*',([^,]+),([^,]+),([^)]+)\)/g)].map(match => [match[1], match[2], match[3]].map(Number));
+            expect(stepChannels.length).toBeGreaterThan(0);
+            stepChannels.flat().forEach(channel => expect(channel).toBeCloseTo(0x80 / 255, 5));
+            const baseColor = gltfJsonOf(glb).materials![0]!.pbrMetallicRoughness!.baseColorFactor!;
+            baseColor.slice(0, 3).forEach(channel => expect(channel).toBeCloseTo(linear(0x80 / 255), 5));
+            expect(coloursOf(source)).toEqual(["#808080ff"]);
+            expect(coloursOf(fromStep)).toEqual(["#808080ff"]);
+            expect(coloursOf(fromGltf)).toEqual(["#808080ff"]);
+            [source, fromStep, fromGltf].forEach(document => document.delete());
         });
     });
 });

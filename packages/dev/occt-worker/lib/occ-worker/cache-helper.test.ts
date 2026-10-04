@@ -20,7 +20,7 @@ describe("CacheHelper unit tests", () => {
     });
 
     beforeEach(() => {
-        cacheHelper = new CacheHelper(occt);
+        cacheHelper = new CacheHelper();
     });
 
     describe("isOCCTObject", () => {
@@ -1272,6 +1272,44 @@ describe("CacheHelper unit tests", () => {
             expect(result.handles[0].hash).toBeUndefined();
         });
 
+        it("should digest a payload nested anywhere in the inputs, so different bytes give different keys", () => {
+            // Arrange
+            const of = (bytes: number[]) => ({ functionName: "design.build", inputs: { document: { schemaVersion: 1 }, assets: { file: new Uint8Array(bytes).buffer } } });
+
+            // Act
+            const hashable = cacheHelper.toHashableArgs(of([1, 2, 3]));
+
+            // Assert
+            expect(hashable.inputs.assets.file).toMatchObject({ byteLength: 3 });
+            expect(cacheHelper.computeHash(of([1, 2, 3]))).not.toBe(cacheHelper.computeHash(of([1, 2, 4])));
+            expect(cacheHelper.computeHash(of([1, 2, 3]))).toBe(cacheHelper.computeHash(of([1, 2, 3])));
+        });
+
+        it("should digest a large typed array nested in the inputs rather than writing it out byte by byte", () => {
+            // Arrange
+            const bytes = new Uint8Array(8 * 1024 * 1024).fill(200);
+            const args = { functionName: "design.build", inputs: { assets: { file: bytes } } };
+
+            // Act
+            const raw = cacheHelper.computeHash(args, true) as string;
+
+            // Assert
+            expect(raw.length).toBeLessThan(500);
+            expect(raw).toContain(String(bytes.byteLength));
+        });
+
+        it("should leave a kernel handle nested in the inputs as it is", () => {
+            // Arrange
+            const handle = { $$: {}, hash: 7 };
+            const args = { functionName: "test", inputs: { nested: { shape: handle } } };
+
+            // Act
+            const hashable = cacheHelper.toHashableArgs(args);
+
+            // Assert
+            expect(hashable).toBe(args);
+        });
+
         it("should digest every payload the arguments carry, not only the first", () => {
             // Arrange
             const large = "x".repeat(CacheHelper.LARGE_STRING_THRESHOLD + 1);
@@ -1323,7 +1361,7 @@ describe("CacheHelper unit tests", () => {
             expect(fresh[1]!.delete).not.toHaveBeenCalled();
         });
 
-        it("should free the shapes it replaces the way every cleanup does, triangulation first", () => {
+        it("should free the shapes it replaces by deleting their handles, stripping nothing from what they share", () => {
             // Arrange
             const makeShape = () => {
                 const point = new occt.gp_Pnt(0, 0, 0);
@@ -1337,14 +1375,17 @@ describe("CacheHelper unit tests", () => {
             const first = cacheHelper.cacheOp(args, () => old);
             cacheHelper.cleanCacheForHash(String(first[0].hash));
             const clean = vi.spyOn(occt, "BRepTools_Clean_Force");
+            const cleanGeometry = vi.spyOn(occt, "BRepTools_CleanGeometry");
 
             // Act
             cacheHelper.cacheOp(args, () => [makeShape(), makeShape()]);
 
             // Assert
-            expect(clean).toHaveBeenCalledWith(old[1], true);
+            expect(clean).not.toHaveBeenCalled();
+            expect(cleanGeometry).not.toHaveBeenCalled();
             expect(() => old[1]!.IsNull()).toThrow();
             clean.mockRestore();
+            cleanGeometry.mockRestore();
         });
 
         it("should not free an object the list computed again hands back", () => {
@@ -1395,6 +1436,55 @@ describe("CacheHelper unit tests", () => {
             // Assert
             expect(computeHash).toHaveBeenCalledTimes(1);
             expect(cacheHelper.checkCache(loaded.document.hash)).toBe(loaded.document);
+        });
+
+        it("should serve an answer holding shapes in a structure again while every one of them is alive", () => {
+            // Arrange
+            const shapeOf = () => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() });
+            const build = vi.fn(() => ({ parts: [{ id: "a", shape: shapeOf() }], report: ["ok"] }));
+            const first = cacheHelper.cacheOp(args, build);
+
+            // Act
+            const second = cacheHelper.cacheOp(args, build);
+
+            // Assert
+            expect(build).toHaveBeenCalledTimes(1);
+            expect(second).toBe(first);
+        });
+
+        it("should serve an answer holding bytes and a shape again without walking the bytes", () => {
+            // Arrange
+            const shapeOf = () => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() });
+            const bytes = new Uint8Array(4 * 1024 * 1024);
+            const save = vi.fn(() => ({ bytes, buffer: bytes.buffer, shape: shapeOf() }));
+            const first = cacheHelper.cacheOp(args, save);
+
+            // Act
+            const second = cacheHelper.cacheOp(args, save);
+
+            // Assert
+            expect(save).toHaveBeenCalledTimes(1);
+            expect(second).toBe(first);
+        });
+
+        it("should compute an answer again once a shape nested in it has been deleted, and free the nested shapes it replaces", () => {
+            // Arrange
+            const shapeOf = (): { $$: object; ShapeType: () => number; IsNull: () => boolean; delete: () => void; hash?: number } => ({ $$: {}, ShapeType: (): number => 7, IsNull: (): boolean => false, delete: vi.fn() });
+            const old = { parts: [{ id: "a", shape: shapeOf() }, { id: "b", shape: shapeOf() }] };
+            cacheHelper.cacheOp(args, () => old);
+            cacheHelper.cleanCacheForHash(String(old.parts[0]!.shape.hash));
+            const fresh = { parts: [{ id: "a", shape: shapeOf() }, { id: "b", shape: shapeOf() }] };
+            const build = vi.fn(() => fresh);
+
+            // Act
+            const second = cacheHelper.cacheOp(args, build);
+
+            // Assert
+            expect(build).toHaveBeenCalledTimes(1);
+            expect(second).toBe(fresh);
+            expect(old.parts[1]!.shape.delete).toHaveBeenCalledTimes(1);
+            expect(fresh.parts[1]!.shape.delete).not.toHaveBeenCalled();
+            expect(cacheHelper.checkCache(fresh.parts[1]!.shape.hash!)).toBe(fresh.parts[1]!.shape);
         });
 
         it("should key the shapes nested in an answer from the call's own key", () => {

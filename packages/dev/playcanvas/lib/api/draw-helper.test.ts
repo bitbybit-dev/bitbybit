@@ -3211,4 +3211,35 @@ describe("DrawHelper unit tests", () => {
             expect(helper.arrowAngles).toEqual([15]);
         });
     });
+
+    describe("the color of an OCCT shape's edges", () => {
+        const oneEdge = (): Inputs.OCCT.DecomposedMeshDto => {
+            const edge = new Inputs.OCCT.DecomposedEdgeDto();
+            edge.edgeIndex = 0;
+            edge.vertexCoord = [[0, 0, 0], [1, 0, 0]];
+            edge.middlePoint = [0.5, 0, 0];
+            const mesh = new Inputs.OCCT.DecomposedMeshDto([], [edge]);
+            mesh.pointsList = [];
+            return mesh;
+        };
+        const firstVertexColor = async (draw: () => Promise<pc.Entity>): Promise<number[]> => {
+            const setColors32 = vi.spyOn(pc.Mesh.prototype, "setColors32");
+            await draw();
+            const colors = setColors32.mock.calls[0]![0] as number[];
+            setColors32.mockRestore();
+            return Array.from(colors).slice(0, 3);
+        };
+
+        it("should take the face color moved by the edge contrast in place of the edge color", async () => {
+            // Act
+            const plain = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), {}));
+            const contrasted = await firstVertexColor(() => drawHelper.handleDecomposedMesh({ drawFaces: false, faceColour: "#ffffff", edgeColour: "#00ff00" }, oneEdge(), { edgeContrast: 0.4 }));
+            const individually = await firstVertexColor(() => drawHelper.handleDecomposedMeshIndividually({ drawFaces: false, faceColour: "#000000" }, oneEdge(), { edgeContrast: 1 }));
+
+            // Assert
+            expect(plain).toEqual([0, 255, 0]);
+            expect(contrasted).toEqual([153, 153, 153]);
+            expect(individually).toEqual([255, 255, 255]);
+        });
+    });
 });

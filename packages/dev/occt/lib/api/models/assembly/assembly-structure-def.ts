@@ -43,6 +43,12 @@ export interface AssemblyStructureDef<T> {
      */
     loadedParts?: AssemblyLoadedPartDef[] | undefined;
     /**
+     * The length unit the shapes' numbers are in, which the STEP export writes into the file. Left
+     * out, a new document states none and the STEP export takes millimetres; an existing document
+     * keeps its own.
+     */
+    lengthUnit?: "mm" | "cm" | "m" | "in" | undefined;
+    /**
      * Whether to clear the existing document before adding new content.
      * Only relevant when an existingDocument is provided.
      * 

@@ -9,7 +9,7 @@ import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEn
  * add each face's iso curves and a surface analysis value at every vertex.
  */
 export class ShapeToMeshDto<T> {
-    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+    constructor(shape?: T, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -21,6 +21,8 @@ export class ShapeToMeshDto<T> {
         if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
         if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The shape to triangulate.
@@ -37,6 +39,21 @@ export class ShapeToMeshDto<T> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
     /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
@@ -166,7 +183,7 @@ export class ShapeToManifoldMeshDto<T> {
  * settings, iso curves and surface analysis included.
  */
 export class ShapesToMeshesDto<T> {
-    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3) {
+    constructor(shapes?: T[], precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, isoCurvesU?: number, isoCurvesV?: number, surfaceAnalysis?: surfaceAnalysisEnum, draftDirection?: Base.Vector3, angularDeflection?: number, relativeDeflection?: boolean) {
         if (shapes !== undefined) { this.shapes = shapes; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -178,6 +195,8 @@ export class ShapesToMeshesDto<T> {
         if (isoCurvesV !== undefined) { this.isoCurvesV = isoCurvesV; }
         if (surfaceAnalysis !== undefined) { this.surfaceAnalysis = surfaceAnalysis; }
         if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The shapes to triangulate, one mesh per shape.
@@ -194,6 +213,21 @@ export class ShapesToMeshesDto<T> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
     /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.
@@ -259,7 +293,7 @@ export class ShapesToMeshesDto<T> {
  * shapes into one mesh with the document's colors.
  */
 export class DocToMeshDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -267,6 +301,8 @@ export class DocToMeshDto<U> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The assembly document whose top-level shapes are meshed together; their face colors end up in
@@ -284,6 +320,21 @@ export class DocToMeshDto<U> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
     /**
      * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
      * up.
@@ -320,7 +371,7 @@ export class DocToMeshDto<U> {
  * shape into its own mesh with the document's colors.
  */
 export class DocToMeshesDto<U> {
-    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean) {
+    constructor(document?: U, precision?: number, adjustYtoZ?: boolean, computeMetadata?: boolean, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, angularDeflection?: number, relativeDeflection?: boolean) {
         if (document !== undefined) { this.document = document; }
         if (precision !== undefined) { this.precision = precision; }
         if (adjustYtoZ !== undefined) { this.adjustYtoZ = adjustYtoZ; }
@@ -328,6 +379,8 @@ export class DocToMeshesDto<U> {
         if (keepMeshData !== undefined) { this.keepMeshData = keepMeshData; }
         if (allowQualityDecrease !== undefined) { this.allowQualityDecrease = allowQualityDecrease; }
         if (forceFaceDeflection !== undefined) { this.forceFaceDeflection = forceFaceDeflection; }
+        if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+        if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
     }
     /**
      * The assembly document whose top-level shapes are meshed one by one; each shape's face colors
@@ -345,6 +398,21 @@ export class DocToMeshesDto<U> {
      * @step 0.001
      */
     precision?: number | undefined = 0.01;
+    /**
+     * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+     * follows curvature more closely with more triangles.
+     * @default 0.5
+     * @minimum 0.001
+     * @maximum 3.14159
+     * @step 0.05
+     */
+    angularDeflection?: number | undefined = 0.5;
+    /**
+     * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+     * small and large parts get triangles in proportion to their size.
+     * @default false
+     */
+    relativeDeflection?: boolean | undefined = false;
     /**
      * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
      * as up.

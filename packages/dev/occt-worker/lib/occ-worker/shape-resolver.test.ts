@@ -2,9 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
 import { SHAPE_TYPE_IDENTIFIER, isShapeReference, createShapeReference } from "./constants";
 import { CacheHelper } from "./cache-helper";
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
-const NO_MODULE: BitbybitOcctModule = {} as BitbybitOcctModule;
 
 function createMockFn<T = unknown>(): { fn: (...args: unknown[]) => T; calls: unknown[][]; returnValue: T | undefined; mockReturnValue: (val: T) => void; mockImplementation: (impl: (...args: unknown[]) => T) => void } {
     let returnValue: T | undefined;
@@ -219,6 +217,19 @@ describe("Shape Resolver Unit Tests", () => {
             expect(result).toEqual({ shapes: [] });
         });
 
+        it("should keep a `__proto__` key an own property, never the prototype of the object it is in", () => {
+            // Arrange
+            const inputs = JSON.parse("{\"feature\":{\"id\":\"block\",\"__proto__\":{\"distance\":5}}}") as Record<string, unknown>;
+
+            // Act
+            const resolved = shapeResolver.resolveShapeReferences(inputs) as { feature: Record<string, unknown> };
+
+            // Assert
+            expect(Object.keys(resolved.feature)).toEqual(["id", "__proto__"]);
+            expect(Object.getPrototypeOf(resolved.feature)).toBe(Object.prototype);
+            expect(resolved.feature["distance"]).toBeUndefined();
+        });
+
         it("should preserve empty objects", () => {
             const input = { config: {} };
             const result = shapeResolver.resolveShapeReferences(input);
@@ -395,6 +406,19 @@ describe("Result Serializer Unit Tests", () => {
             });
         });
 
+        it("should keep a `__proto__` key of a result an own property", () => {
+            // Arrange
+            mockIsOCCTObject.mockReturnValue(false);
+            const result = JSON.parse("{\"properties\":{\"__proto__\":\"kept\",\"code\":\"A1\"}}") as Record<string, unknown>;
+
+            // Act
+            const serialized = resultSerializer.serializeResult(result) as { properties: Record<string, unknown> };
+
+            // Assert
+            expect(Object.keys(serialized.properties)).toEqual(["__proto__", "code"]);
+            expect(Object.getPrototypeOf(serialized.properties)).toBe(Object.prototype);
+        });
+
         it("should preserve null and undefined values during recursive serialization", () => {
             mockIsOCCTObject.mockReturnValue(false);
             
@@ -559,7 +583,7 @@ describe("Shape Resolver edge cases", () => {
     let cacheHelper: CacheHelper;
 
     beforeEach(() => {
-        cacheHelper = new CacheHelper(NO_MODULE);
+        cacheHelper = new CacheHelper();
     });
 
     describe("resolveShapeReferences", () => {

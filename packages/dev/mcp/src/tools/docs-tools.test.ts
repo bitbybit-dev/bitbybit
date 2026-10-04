@@ -323,6 +323,17 @@ describe("get_guide", () => {
         expect(structured(result)["id"]).toBe("browser-apps");
     });
 
+    it("links a section of another page to that page, and lists the sections page by page", async () => {
+        // Act
+        const design = await call("get_guide", { topic: "design" });
+        const listing = await call("get_guide", {});
+
+        // Assert
+        expect(structured(design)["url"]).toBe("https://example.test/design#what-a-design-document-is");
+        expect(structured(listing)["pages"]).toEqual([GUIDE_URL, "https://example.test/design"]);
+        expect(listing.text).toContain("Sections of https://example.test/design:\n- what-a-design-document-is: What a design document is");
+    });
+
     it("names the sections when nothing matches", async () => {
         // Act
         const result = await call("get_guide", { topic: "kitchen" });

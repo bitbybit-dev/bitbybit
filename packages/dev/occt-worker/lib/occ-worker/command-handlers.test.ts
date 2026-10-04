@@ -39,7 +39,7 @@ describe("the reserved command handlers", () => {
     });
 
     beforeEach(() => {
-        cacheHelper = new CacheHelper(occt);
+        cacheHelper = new CacheHelper();
         pending = [];
         openCascade.plugins = { dependencies: {} };
         context = {

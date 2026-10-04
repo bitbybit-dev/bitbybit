@@ -3,11 +3,11 @@ import {
 } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../api/resolved-inputs";
 import * as Models from "../api/models";
 import { numbersOfFrames } from "./base/frames";
-import { historyFromKernel } from "./base/history";
+import { historiesFromKernel, historyFromKernel } from "./base/history";
 import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
 
 /**
@@ -52,6 +52,31 @@ export class OCCTOperations {
     }
 
     /**
+     * Lofts as `loft` does, and reports one history per section: `facesFromEdges` holds the skin
+     * along each section edge, the first section's `firstFaces` and the last's `lastFaces` the caps
+     * of a solid.
+     * @param inputs - The section wires or edges and whether to make a solid
+     * @returns The lofted shell or solid and one history per section
+     * @group lofts
+     * @shortname loft with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.operations.loftWithHistory({ shapes: [bottom, upper], makeSolid: true });
+     * const bottomCap = histories[0].firstFaces;
+     * ```
+     */
+    loftWithHistory(inputs: Inputs.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.LoftDto, inputs) as Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>;
+        checkedShapes(resolved.shapes);
+        let histories: Models.OCCT.ShapeHistory[] = [];
+        const shape = this.och.operationsService.loft(resolved, (maker, result) => {
+            histories = historiesFromKernel(this.och.occ.HistoryOfLoft(maker, resolved.shapes, result));
+        });
+        return { shape, histories };
+    }
+
+    /**
      * Builds a surface through a series of wires like `loft`, with control over how the skin is
      * fitted.
      *
@@ -83,6 +108,48 @@ export class OCCTOperations {
     loftAdvanced(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.LoftAdvancedDto, inputs) as Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>;
         return this.och.operationsService.loftAdvanced(resolved);
+    }
+
+    /**
+     * Lofts as `loftAdvanced` does, and reports what each section in `shapes` became, as
+     * `loftWithHistory` does: the sides along each section edge, and the caps at the start and end
+     * of a solid.
+     *
+     * A `periodic` loft runs through curves resampled from the sections rather than the sections
+     * themselves, so it has no history to report and is refused.
+     * @param inputs - The section wires or edges, whether to make a solid, the closing and smoothing options and optional end points
+     * @returns The lofted shell or solid and one history per section in `shapes`
+     * @group lofts
+     * @shortname loft adv. with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.operations.loftAdvancedWithHistory({
+     *     shapes: [circleBottom, circleMiddle],
+     *     makeSolid: true,
+     *     closed: false,
+     *     periodic: false,
+     *     straight: false,
+     *     nrPeriodicSections: 10,
+     *     useSmoothing: false,
+     *     maxUDegree: 3,
+     *     tolerance: 1e-7,
+     *     parType: Bit.Inputs.OCCT.approxParametrizationTypeEnum.approxCentripetal,
+     * });
+     * const side = histories[0].facesFromEdges[0];
+     * ```
+     */
+    loftAdvancedWithHistory(inputs: Inputs.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.LoftAdvancedDto, inputs) as Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>;
+        if (resolved.periodic) {
+            throw new InputError("A `periodic` loft runs through curves resampled from its sections, not through the sections, so it has no history; use `loftAdvanced`.", "periodic");
+        }
+        checkedShapes(resolved.shapes);
+        let histories: Models.OCCT.ShapeHistory[] = [];
+        const shape = this.och.operationsService.loftAdvanced(resolved, (maker, result) => {
+            histories = historiesFromKernel(this.och.occ.HistoryOfLoft(maker, resolved.shapes, result));
+        });
+        return { shape, histories };
     }
 
     /**
@@ -560,12 +627,35 @@ export class OCCTOperations {
     }
 
     /**
-     * Sweeps a regular polygon along a wire, giving a tube with `nrCorners` flat sides, for
-     * instance a hexagonal bar along a path.
+     * Sweeps profiles along a path as `pipe` does, and reports what each profile became, one
+     * history per profile in the order given: `facesFromEdges` holds the side each profile edge
+     * swept, `firstFaces` and `lastFaces` the caps at the two ends of the path.
+     * @param inputs - The path wire and the profiles to sweep along it
+     * @returns The swept solid and one history per profile
+     * @group pipeing
+     * @shortname pipe with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.operations.pipeWithHistory({ shape: pathWire, shapes: [profileAtStart] });
+     * const endCap = histories[0].lastFaces;
+     * ```
+     */
+    pipeWithHistory(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        checkedShapes(inputs.shapes);
+        let histories: Models.OCCT.ShapeHistory[] = [];
+        const shape = this.och.operationsService.pipe(inputs, (maker, result) => {
+            histories = inputs.shapes.map(profile => historyFromKernel(this.och.occ.HistoryOfPipeShell(maker, profile, result)));
+        });
+        return { shape, histories };
+    }
+
+    /**
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
      *
-     * The polygon of `radius` is placed at the start of the wire, perpendicular to it. `makeSolid`
-     * gives a solid instead of a shell, `trihedronEnum` chooses how the profile turns along the
-     * path, and `forceApproxC1` smooths the result.
+     * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
+     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
+     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
      * @param inputs - The path wire, the polygon radius and corner count, and the sweep options
      * @returns The swept solid or shell
      * @group pipeing
@@ -615,9 +705,9 @@ export class OCCTOperations {
     /**
      * Sweeps a circle along a wire, giving a round tube of the given radius that follows the path.
      *
-     * The circle is placed at the start of the wire, perpendicular to it. `makeSolid` gives a solid
-     * instead of a shell, `trihedronEnum` chooses how the profile turns as it follows the path, and
-     * `forceApproxC1` smooths the result.
+     * The circle starts perpendicular to the wire. `makeSolid` gives a solid instead of a shell,
+     * `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result. An invalid
+     * tube is refused; on a nearly straight path, use the discrete trihedron.
      * @param inputs - The path wire, the radius and the sweep options
      * @returns The tube as a solid or shell
      * @group pipeing
@@ -760,6 +850,31 @@ export class OCCTOperations {
     }
 
     /**
+     * Thickens a shape as `makeThickSolidSimple` does, and reports what became of its faces and
+     * edges: each face stays where it was (`faces`) and gains its offset copy (`facesFromFaces`),
+     * and each free edge raises the wall between the two (`facesFromEdges`).
+     * @param inputs - The shape to thicken and the thickness
+     * @returns The thickened solid and its history
+     * @group offsets
+     * @shortname thicken with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.makeThickSolidSimpleWithHistory({ shape: plateFace, offset: 2 });
+     * const top = history.facesFromFaces[0];
+     * ```
+     */
+    makeThickSolidSimpleWithHistory(inputs: Inputs.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.ThisckSolidSimpleDto, inputs) as Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>;
+        checkedShape(resolved.shape);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.operationsService.makeThickSolidSimple(resolved, (maker, result) => {
+            history = historyFromKernel(this.och.occ.HistoryOfThickSolid(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
+    }
+
+    /**
      * Hollows a solid into a shell of the given wall thickness by removing the listed faces and
      * offsetting the rest.
      *
@@ -790,6 +905,40 @@ export class OCCTOperations {
     makeThickSolidByJoin(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.ThickSolidByJoinDto, inputs) as Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>;
         return this.och.operationsService.makeThickSolidByJoin(resolved);
+    }
+
+    /**
+     * Hollows a solid as `makeThickSolidByJoin` does, and reports what became of its faces: each
+     * kept face stays (`faces`) and gains the inner wall offset from it (`facesFromFaces`), and each
+     * removed face becomes the rim left where it was.
+     * @param inputs - The solid, the faces to remove, the wall thickness, the tolerance and the join options
+     * @returns The hollowed solid and its history
+     * @group offsets
+     * @shortname joined thicken with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, history } = await bitbybit.occt.operations.makeThickSolidByJoinWithHistory({
+     *     shape: box,
+     *     shapes: [top],
+     *     offset: -1,
+     *     tolerance: 1e-3,
+     *     intersection: false,
+     *     selfIntersection: false,
+     *     joinType: Bit.Inputs.OCCT.joinTypeEnum.arc,
+     *     removeIntEdges: false,
+     * });
+     * const innerWalls = history.facesFromFaces.flat();
+     * ```
+     */
+    makeThickSolidByJoinWithHistory(inputs: Inputs.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistory<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.ThickSolidByJoinDto, inputs) as Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>;
+        checkedShape(resolved.shape);
+        let history: Models.OCCT.ShapeHistory | undefined;
+        const shape = this.och.operationsService.makeThickSolidByJoin(resolved, (maker, result) => {
+            history = historyFromKernel(this.och.occ.HistoryOfThickSolid(maker, resolved.shape, result));
+        });
+        return { shape, history: history! };
     }
 
     /**

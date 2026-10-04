@@ -28,4 +28,6 @@ export interface AssemblyNodeDef {
     matrix?: Base.TransformMatrix | Base.TransformMatrixes | undefined;
     /** Optional color override for this instance */
     colorRgba?: Base.ColorRGBA | undefined;
+    /** Optional properties of an assembly node, such as its part number, which the STEP export writes as user-defined properties of its product; an instance's are not written */
+    properties?: Record<string, string | number | boolean> | undefined;
 }

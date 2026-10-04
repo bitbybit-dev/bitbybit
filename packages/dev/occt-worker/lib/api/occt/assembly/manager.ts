@@ -155,10 +155,10 @@ export class OCCTAssemblyManager {
      * Builds an assembly document from a structure, or applies the structure to an existing
      * document.
      *
-     * With `existingDocument` the labels in `removals` are dropped first, the `partUpdates`
-     * applied, then the new parts and nodes added; a structure with neither clears the document
-     * unless `clearDocument` is false. `sourceDocuments` supplies the documents imported parts copy
-     * from. The document stays in memory until deleted.
+     * With `existingDocument`, `removals` go first, then `partUpdates`, then new parts and nodes;
+     * with neither, the document is cleared unless `clearDocument` is false. `sourceDocuments` feeds
+     * imported parts; a placed root assembly goes under a top "Assembly". The document stays in
+     * memory until deleted.
      * @param inputs - The structure, an optional document to update and the optional source documents
      * @returns The document handle, new or updated
      * @throws Error if assembly building fails

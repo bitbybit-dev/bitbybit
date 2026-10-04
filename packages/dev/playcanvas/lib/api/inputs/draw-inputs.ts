@@ -3,6 +3,7 @@
 import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 import * as pc from "playcanvas";
+import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 // tslint:disable-next-line: no-namespace
 /**
@@ -14,11 +15,31 @@ export namespace Draw {
 
     export type DrawOptions = DrawOcctShapeOptions | DrawBasicGeometryOptions | DrawManifoldOrCrossSectionOptions | DrawFrameOptions;
     /**
+     * A kernel shape with the looks to draw it in: a base look for the whole shape and groups of
+     * faces that override it, by the face indexes `shapes.face.getFaces` gives, with the colors of
+     * its edges. A part that `occt.design.build` returns is one already; drawn, the shape becomes
+     * one mesh.
+     */
+    export interface ShapeWithAppearance {
+        /** The shape to draw, as the OCCT kernel returns it. */
+        shape: Inputs.OCCT.TopoDSShapePointer;
+        /**
+         * How the shape looks. Each `faces` entry gives its values to the faces it lists, `edgeColor`
+         * colors the edges and each `edges` entry the edges it lists, by the indexes
+         * `shapes.edge.getEdges` gives; left out, the shape takes the colors of the options.
+         */
+        appearance?: Models.OCCT.DesignBuiltAppearance | undefined;
+    }
+    /**
      * Everything a draw call will accept: points, lines, segments and polylines; Verb curves and
-     * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; tags; whatever a layer
-     * above these packages has taught the call to draw; and a list of any one of them. This union is
-     * what makes one draw call able to render anything these packages produce without you having to
-     * say which kind it is.
+     * surfaces; the handles the OCCT, Manifold and JSCAD kernels return; kernel shapes with their
+     * appearance and what `occt.design.build` returns; tags; whatever a layer above these packages
+     * has taught the call to draw; and a list of any one of them. This union is what makes one draw
+     * call able to render anything these packages produce without you having to say which kind it is.
+     *
+     * A design build draws every placement as a hardware instance. Drawn again into the entity it
+     * returned, passed as `group`, with the same parts at the same component paths, it only moves
+     * them, so animating from joint values never meshes again.
      *
      * The list arms are one per kind rather than a single list of the union, because that is what is
      * true: drawing a list applies one set of options to one kind of thing, and every plural handler
@@ -43,6 +64,8 @@ export namespace Draw {
         | Base.VerbCurve
         | Base.VerbSurface
         | Inputs.OCCT.TopoDSShapePointer
+        | ShapeWithAppearance
+        | Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>
         | Inputs.OCCT.DecomposedMeshDto
         | Inputs.Manifold.ManifoldPointer
         | Inputs.Manifold.CrossSectionPointer
@@ -58,6 +81,7 @@ export namespace Draw {
         | Base.VerbCurve[]
         | Base.VerbSurface[]
         | Inputs.OCCT.TopoDSShapePointer[]
+        | ShapeWithAppearance[]
         | Inputs.OCCT.DecomposedMeshDto[]
         | Inputs.Manifold.ManifoldPointer[]
         | Inputs.Manifold.CrossSectionPointer[]
@@ -269,7 +293,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number) {
+        constructor(faceOpacity?: number, edgeOpacity?: number, edgeColour?: Base.Color, faceMaterial?: Base.Material, faceColour?: Base.Color, edgeWidth?: number, drawEdges?: boolean, drawFaces?: boolean, drawVertices?: boolean, vertexColour?: Base.Color, vertexSize?: number, precision?: number, drawEdgeIndexes?: boolean, edgeIndexHeight?: number, edgeIndexColour?: Base.Color, drawFaceIndexes?: boolean, faceIndexHeight?: number, faceIndexColour?: Base.Color, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, edgeArrowSize?: number, edgeArrowAngle?: number, keepMeshData?: boolean, allowQualityDecrease?: boolean, forceFaceDeflection?: boolean, drawIsoCurves?: boolean, isoCurvesU?: number, isoCurvesV?: number, isoCurvesColour?: Base.Color, surfaceAnalysis?: Inputs.OCCT.surfaceAnalysisEnum, draftDirection?: Base.Vector3, analysisMin?: number, analysisMax?: number, edgeContrast?: number, angularDeflection?: number, relativeDeflection?: boolean) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (edgeOpacity !== undefined) { this.edgeOpacity = edgeOpacity; }
             if (edgeColour !== undefined) { this.edgeColour = edgeColour; }
@@ -304,6 +328,9 @@ export namespace Draw {
             if (draftDirection !== undefined) { this.draftDirection = draftDirection; }
             if (analysisMin !== undefined) { this.analysisMin = analysisMin; }
             if (analysisMax !== undefined) { this.analysisMax = analysisMax; }
+            if (edgeContrast !== undefined) { this.edgeContrast = edgeContrast; }
+            if (angularDeflection !== undefined) { this.angularDeflection = angularDeflection; }
+            if (relativeDeflection !== undefined) { this.relativeDeflection = relativeDeflection; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -326,6 +353,16 @@ export namespace Draw {
          * @default #ffffff
          */
         edgeColour?: Base.Color | undefined = "#ffffff";
+        /**
+         * Edges take their faces' color moved toward black, or toward white on dark faces, by this
+         * amount from 0 to 1, instead of `edgeColour`. Appearance edge colors still win.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum 1
+         * @step 0.05
+         */
+        edgeContrast?: number | undefined;
         /**
          * Hex color string for face color
          * @default #ff0000
@@ -381,6 +418,21 @@ export namespace Draw {
          * @step 0.01
          */
         precision?: number | undefined = 0.01;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         * @default 0.5
+         * @minimum 0.001
+         * @maximum 3.14159
+         * @step 0.05
+         */
+        angularDeflection?: number | undefined = 0.5;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         * @default false
+         */
+        relativeDeflection?: boolean | undefined = false;
         /**
          * Draw index of edges in space
          * @default false

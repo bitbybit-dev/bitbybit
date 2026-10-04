@@ -39,6 +39,15 @@ export class BooleansService {
         return intersectionResults;
     }
 
+    intersectionWithHistory(inputs: Resolved.OCCT.IntersectionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        if (inputs.shapes.length < 2) {
+            throw new InputError(`An intersection needs at least two shapes, and got ${inputs.shapes.length}.`, "shapes");
+        }
+        checkedShapes(inputs.shapes);
+        const result = this.occ.BooleanCommonEachWithHistory(inputs.shapes[0]!, inputs.shapes.slice(1), !inputs.keepEdges, 0);
+        return { shape: this.resultOf(result), histories: result.histories.map(historyFromKernel) };
+    }
+
     difference(inputs: Resolved.OCCT.DifferenceDto<TopoDS_Shape>): TopoDS_Shape {
         checkedShape(inputs.shape);
         if (inputs.shapes.length === 0) {

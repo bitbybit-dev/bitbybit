@@ -130,6 +130,38 @@ export class OCCTIO {
         return text;
     }
 
+    // replaces io.saveShapeBrepBinary
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and starts a browser download of the file.
+     *
+     * `io.loadBrepBinary` reads the file back into the same shape. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapeBrepBinaryAndReturn` gives the bytes instead.
+     * @param inputs - The shape, the file name, the download option and whether to keep the mesh
+     * @returns Nothing; the download starts when the file is ready
+     * @group io
+     * @shortname save brep binary
+     * @drawable false
+     * @example
+     * ```typescript
+     * await bitbybit.occt.io.saveShapeBrepBinary({ shape: box, fileName: "box.bbrep", tryDownload: true, withTriangulation: false });
+     * ```
+     */
+    async saveShapeBrepBinary(inputs: Inputs.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>): Promise<void> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>;
+        await this.saveShapeBrepBinaryAndReturn(resolved);
+    }
+
+    // replaces io.saveShapeBrepBinary
+    async saveShapeBrepBinaryAndReturn(inputs: Inputs.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Uint8Array> {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<Inputs.OCCT.TopoDSShapePointer>;
+        const bytes = await this.occWorkerManager.genericCallToWorkerPromise<Uint8Array>("io.saveShapeBrepBinary", resolved);
+        if (resolved.tryDownload) {
+            this.downloadFile(bytes, resolved.fileName, "application/octet-stream");
+        }
+        return bytes;
+    }
+
     // replaces io.saveShapeObj
     /**
      * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
@@ -263,6 +295,12 @@ export class OCCTIO {
     async loadBrep(inputs: Inputs.OCCT.LoadBrepDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
         const brepData = await this.occWorkerManager.prepareStepData(inputs.brepData);
         return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrep", { ...inputs, brepData });
+    }
+
+    // replaces io.loadBrepBinary
+    async loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): Promise<Inputs.OCCT.TopoDSShapePointer> {
+        const brepData = await this.occWorkerManager.prepareStepData(inputs.brepData);
+        return this.occWorkerManager.genericCallToWorkerPromise("io.loadBrepBinary", { ...inputs, brepData });
     }
 
     // replaces io.dxfCreate

@@ -1,5 +1,5 @@
 import {
-    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue,
+    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakePipeShell, BRepOffsetAPI_MakeThickSolid, BRepOffsetAPI_ThruSections, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue,
     BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
 } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -44,7 +44,10 @@ export class OperationsService {
         private readonly solidsService: SolidsService,
     ) { }
 
-    loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the loft maker and its result before the maker is released.
+     */
+    loftAdvanced(inputs: Resolved.OCCT.LoftAdvancedDto<TopoDS_Wire | TopoDS_Edge>, read?: (maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape) => void): TopoDS_Shape {
         checkedShapes(inputs.shapes);
         if (inputs.periodic && !inputs.closed) {
             throw new Error("Cant construct periodic non closed loft.");
@@ -117,6 +120,9 @@ export class OperationsService {
         pipe.Build();
         const built = pipe.IsDone();
         const pipeShape = built ? pipe.Shape() : undefined;
+        if (pipeShape && read) {
+            this.readThenRelease(() => read(pipe, pipeShape), pipeShape, pipe);
+        }
         pipe.delete();
         wires.forEach(w => w.delete());
         vertices.forEach(v => v.delete());
@@ -206,7 +212,10 @@ export class OperationsService {
         });
     }
 
-    loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the loft maker and its result before the maker is released.
+     */
+    loft(inputs: Resolved.OCCT.LoftDto<TopoDS_Wire | TopoDS_Edge>, read?: (maker: BRepOffsetAPI_ThruSections, result: TopoDS_Shape) => void): TopoDS_Shape {
         checkedShapes(inputs.shapes);
         if (inputs.shapes.length < 2) {
             throw new InputError(`A loft needs at least two sections, and got ${inputs.shapes.length}.`, "shapes");
@@ -222,6 +231,9 @@ export class OperationsService {
         pipe.Build();
         const built = pipe.IsDone();
         const pipeShape = built ? pipe.Shape() : undefined;
+        if (pipeShape && read) {
+            this.readThenRelease(() => read(pipe, pipeShape), pipeShape, pipe);
+        }
         pipe.delete();
         if (!pipeShape) {
             throw occtFailure("occt.loft.failed");
@@ -482,7 +494,10 @@ export class OperationsService {
         return result;
     }
 
-    pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the pipe maker and its result before the maker is released.
+     */
+    pipe(inputs: Inputs.OCCT.ShapeShapesDto<TopoDS_Wire, TopoDS_Shape>, read?: (maker: BRepOffsetAPI_MakePipeShell, result: TopoDS_Shape) => void): TopoDS_Shape {
         checkedShapes(inputs.shapes);
         const pipe = new this.occ.BRepOffsetAPI_MakePipeShell(inputs.shape);
         inputs.shapes.forEach(sh => {
@@ -495,6 +510,9 @@ export class OperationsService {
         }
         pipe.MakeSolid();
         const pipeShape = pipe.Shape();
+        if (read) {
+            this.readThenRelease(() => read(pipe, pipeShape), pipeShape, pipe);
+        }
         const result = this.converterService.getActualTypeOfShape(pipeShape);
         pipeShape.delete();
         pipe.delete();
@@ -544,7 +562,7 @@ export class OperationsService {
         pipe.delete();
         ngon.delete();
         reversedNgon.delete();
-        return result;
+        return this.validPipe(result, inputs.trihedronEnum);
     }
 
     pipeWireCylindrical(inputs: Resolved.OCCT.PipeWireCylindricalDto<TopoDS_Wire>): TopoDS_Shape {
@@ -579,7 +597,15 @@ export class OperationsService {
         pipe.delete();
         circle.delete();
 
-        return result;
+        return this.validPipe(result, inputs.trihedronEnum);
+    }
+
+    private validPipe(pipe: TopoDS_Shape, trihedron: Inputs.OCCT.geomFillTrihedronEnum): TopoDS_Shape {
+        if (!this.occ.ShapeIsValid(pipe)) {
+            pipe.delete();
+            throw occtFailure("occt.pipe.notValid", { trihedron });
+        }
+        return pipe;
     }
 
     pipeWiresCylindrical(inputs: Resolved.OCCT.PipeWiresCylindricalDto<TopoDS_Wire>): TopoDS_Shape[] {
@@ -589,7 +615,10 @@ export class OperationsService {
         });
     }
 
-    makeThickSolidSimple(inputs: Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the thick solid maker and its result before the maker is released.
+     */
+    makeThickSolidSimple(inputs: Resolved.OCCT.ThisckSolidSimpleDto<TopoDS_Shape>, read?: (maker: BRepOffsetAPI_MakeThickSolid, result: TopoDS_Shape) => void): TopoDS_Shape {
         const maker = new this.occ.BRepOffsetAPI_MakeThickSolid();
         maker.MakeThickSolidBySimple(inputs.shape, inputs.offset);
         maker.Build();
@@ -599,6 +628,9 @@ export class OperationsService {
         }
         const makerShape = maker.Shape();
         const outward = inputs.offset > 0 ? makerShape.Reversed() : makerShape;
+        if (read) {
+            this.readThenRelease(() => read(maker, outward), ...(outward !== makerShape ? [outward] : []), maker, makerShape);
+        }
         const result = this.converterService.getActualTypeOfShape(outward);
         if (outward !== makerShape) {
             outward.delete();
@@ -608,7 +640,10 @@ export class OperationsService {
         return result;
     }
 
-    makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>): TopoDS_Shape {
+    /**
+     * `read`, when given, sees the thick solid maker and its result before the maker is released.
+     */
+    makeThickSolidByJoin(inputs: Resolved.OCCT.ThickSolidByJoinDto<TopoDS_Shape>, read?: (maker: BRepOffsetAPI_MakeThickSolid, result: TopoDS_Shape) => void): TopoDS_Shape {
         checkedShapes(inputs.shapes);
         const facesToRemove = new this.occ.TopTools_ListOfShape();
         inputs.shapes.forEach(shape => {
@@ -633,11 +668,24 @@ export class OperationsService {
             throw occtFailure("occt.thickSolid.failed");
         }
         const makeThick = myBody.Shape();
+        if (read) {
+            this.readThenRelease(() => read(myBody, makeThick), makeThick, myBody, facesToRemove);
+        }
         const result = this.converterService.getActualTypeOfShape(makeThick);
         makeThick.delete();
         myBody.delete();
         facesToRemove.delete();
         return result;
+    }
+
+    /** Runs `read`; when it throws, releases the kernel objects the caller would have released and rethrows. */
+    private readThenRelease(read: () => void, ...objects: { delete(): void }[]): void {
+        try {
+            read();
+        } catch (error) {
+            objects.forEach(object => object.delete());
+            throw error;
+        }
     }
 
     private getJoinType(jointType: Inputs.OCCT.joinTypeEnum): EmbindEnumValue {

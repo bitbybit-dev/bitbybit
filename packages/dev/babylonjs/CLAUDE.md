@@ -45,3 +45,15 @@ The shared draw rules live in `core`'s `CLAUDE.md`. What Babylon itself forces:
   names minted in another tab, a worker, or an older file being imported back. The name contains **no
   dot**, because a glTF importer that reads a trailing dot-and-digits as a duplicate marker can parse a
   long digit run into a fixed-width integer and abort.
+- **A shape with its appearance is one mesh with a sub-mesh and a material per look**: a
+  `MultiMaterial` over the cached look materials when there is more than one look, the cached material
+  itself when there is one. Each triangle is written reversed, which is what `flipFaces(false)` does
+  to the plain kernel meshes; calling `flipFaces` instead sets the indices again, and Babylon then
+  replaces the sub-meshes with one. `metadata.faceRanges` says where each face's triangles sit.
+- **A design build is one mesh and one greased line per part, both thin-instanced** from one matrix
+  buffer per part, so a placement adds no node. The line follows the instances because the greased
+  line's camera-facing vertex code places vertices through `finalWorld`, which carries the thin
+  instance matrix on the PBR material type the lines use. A pose writes that buffer, calls
+  `thinInstanceBufferUpdated` and refreshes the bounding info. A redraw disposes the part meshes,
+  their `MultiMaterial` and the lines with their own materials, never the cached look materials.
+  `draw-appearance.test.ts` runs all of it on the `NullEngine`, not the engine mock.

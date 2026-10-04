@@ -56,6 +56,7 @@ export const targets = [
             "surface-analysis-and-measurement",
             "sections-features-and-sweeps",
             "repair-and-files",
+            "design-documents",
         ],
     },
     {

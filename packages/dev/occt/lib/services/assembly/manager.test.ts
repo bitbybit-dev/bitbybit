@@ -347,6 +347,45 @@ describe("OCCTAssemblyManager unit tests", () => {
             expect(document.IsNull()).toBe(false);
         });
 
+        it("should place a root sub-assembly where its matrix or translation puts it, under a top assembly", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
+            shapesToClean.push(box);
+            const part = manager.createPart({ id: "box", shape: box, name: "Box" });
+            const sub = manager.createAssemblyNode({ id: "sub", name: "Sub", matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 100, 0, 0, 1] });
+            const inside = manager.createInstanceNode({ id: "inside", partId: "box", name: "Inside", parentId: "sub" });
+            const loose = manager.createInstanceNode({ id: "loose", partId: "box", name: "Loose", translation: [0, 50, 0] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [sub, inside, loose], clearDocument: false });
+
+            // Act
+            document = manager.buildAssemblyDocument({ structure });
+            const hierarchy = query.getAssemblyHierarchy({ document });
+
+            // Assert
+            const named = (name: string): Models.OCCT.AssemblyHierarchyNode => hierarchy.nodes.find(node => node.name === name)!;
+            expect(hierarchy.nodes.filter(node => node.depth === 0).map(node => node.name)).toEqual(["Assembly"]);
+            expect(named("Sub").transform![12]).toBeCloseTo(100, 9);
+            expect(named("Loose").transform![13]).toBeCloseTo(50, 9);
+            expect(named("Sub").parentId).toBe(named("Loose").parentId);
+        });
+
+        it("should leave a structure whose roots are not placed as it was, with no top assembly added", () => {
+            // Arrange
+            const box = solid.createBox({ width: 2, height: 2, length: 2, center: [1, 1, 1] });
+            shapesToClean.push(box);
+            const part = manager.createPart({ id: "box", shape: box, name: "Box" });
+            const root = manager.createAssemblyNode({ id: "root", name: "Root", matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1] });
+            const inside = manager.createInstanceNode({ id: "inside", partId: "box", name: "Inside", parentId: "root", translation: [5, 0, 0] });
+            const structure = manager.combineStructure({ parts: [part], nodes: [root, inside], clearDocument: false });
+
+            // Act
+            document = manager.buildAssemblyDocument({ structure });
+            const hierarchy = query.getAssemblyHierarchy({ document });
+
+            // Assert
+            expect(hierarchy.nodes.filter(node => node.depth === 0).map(node => node.name)).toEqual(["Root"]);
+        });
+
         it("should build a document with multiple parts", () => {
             // Arrange
             const box = solid.createBox({ width: 10, height: 10, length: 10, center: [0, 0, 0] });

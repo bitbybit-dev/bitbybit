@@ -160,12 +160,13 @@ for (const { dir, fromDist } of [...distProjects, ...rootProjects]) {
     if (manifest.name === "@bitbybit-dev/occt") {
         const kernels = JSON.parse(readFileSync(join(dir, "kernels.json"), "utf8")).kernels;
         subpaths.push(...kernels.flatMap((k) => [`${k.dir}/${k.dir}`, `${k.dir}/cdn`]));
+        const schemas = readdirSync(join(dir, "schemas/design-document")).filter((file) => file.endsWith(".json")).map((file) => `schemas/design-document/${file}`);
         const required = [
-            "NOTICE", "licenses/LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt", "licenses/Draco-Apache-2.0.txt",
+            "NOTICE", "licenses/LGPL-2.1.txt", "licenses/OCCT-LGPL-exception.txt", "licenses/Draco-Apache-2.0.txt", ...schemas,
             ...kernels.flatMap((k) => [`${k.dir}/${k.file}`, `${k.dir}/${k.dir}.js`, `${k.dir}/${k.dir}.d.ts`, `${k.dir}/index.js`, `${k.dir}/index.d.ts`, `${k.dir}/cdn.js`]),
         ];
         const missing = required.filter((f) => !shipped.includes(f));
-        if (missing.length) fail(`${manifest.name} tarball lacks ${missing.join(", ")} - the kernels, their typings and the license notices must ship`);
+        if (missing.length) fail(`${manifest.name} tarball lacks ${missing.join(", ")} - the kernels, their typings, the license notices and the design document schemas must ship`);
         const stray = shipped.filter((f) => /\.wasm$/.test(f) && !kernels.some((k) => f === `${k.dir}/${k.file}`));
         if (stray.length) fail(`${manifest.name} tarball ships kernels kernels.json does not list: ${stray.join(", ")}`);
     }

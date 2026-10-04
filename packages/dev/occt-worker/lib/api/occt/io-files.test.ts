@@ -8,6 +8,7 @@ const A_SHAPE: Inputs.OCCT.TopoDSShapePointer = { hash: 1, type: "occ-shape" };
 const A_VIEW: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };
 const STL_BYTES = new Uint8Array([83, 84, 76, 0, 1, 2]);
 const BREP_TEXT = "CASCADE Topology V3";
+const BREP_BYTES = new Uint8Array([79, 112, 101, 110, 0, 7]);
 const PLY_TEXT = "ply";
 const SVG_TEXT = "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>";
 const OBJ_WITH_LIBRARY: Models.OCCT.ObjFiles = { obj: "mtllib brick.mtl\ng brick\nv 0 0 0\n", mtl: "newmtl red\nKd 1 0 0\n" };
@@ -27,6 +28,7 @@ describe("OCCTIO hand-written file members", () => {
         manager.setOccWorker(worker);
         worker.answers.set("io.saveShapeStl", STL_BYTES);
         worker.answers.set("io.saveShapeBrep", BREP_TEXT);
+        worker.answers.set("io.saveShapeBrepBinary", BREP_BYTES);
         worker.answers.set("io.saveShapeObj", OBJ_WITH_LIBRARY);
         worker.answers.set("io.saveShapePly", PLY_TEXT);
         worker.answers.set("io.saveShapeSvg", SVG_TEXT);
@@ -78,6 +80,37 @@ describe("OCCTIO hand-written file members", () => {
             // Assert
             expect(anchors.map(anchor => anchor.download)).toEqual(["shape.brep"]);
             await expect(blobs[0]!.text()).resolves.toBe(BREP_TEXT);
+        });
+    });
+
+    describe("saveShapeBrepBinary", () => {
+        it("should post the binary save path with the defaults of its DTO and hand back the bytes", async () => {
+            // Act
+            const result = await io.saveShapeBrepBinaryAndReturn({ shape: A_SHAPE, tryDownload: false });
+
+            // Assert
+            expect(worker.paths()).toEqual(["io.saveShapeBrepBinary"]);
+            expect(sentInputs()).toEqual({ ...new Inputs.OCCT.SaveBrepBinaryDto(A_SHAPE), tryDownload: false });
+            expect(result).toEqual(BREP_BYTES);
+            expect(anchors).toEqual([]);
+        });
+
+        it("should send the caller's choice to leave the mesh out", async () => {
+            // Act
+            await io.saveShapeBrepBinaryAndReturn({ shape: A_SHAPE, tryDownload: false, withTriangulation: false });
+
+            // Assert
+            expect(sentInputs()["withTriangulation"]).toBe(false);
+        });
+
+        it("should download the bytes as a binary file under the default name of its DTO", async () => {
+            // Act
+            await io.saveShapeBrepBinary({ shape: A_SHAPE });
+
+            // Assert
+            expect(anchors.map(anchor => anchor.download)).toEqual(["shape.bbrep"]);
+            expect(blobs[0]!.type).toBe("application/octet-stream");
+            expect(new Uint8Array(await blobs[0]!.arrayBuffer())).toEqual(BREP_BYTES);
         });
     });
 
@@ -183,6 +216,28 @@ describe("OCCTIO hand-written file members", () => {
             // Assert
             expect(worker.paths()).toEqual(["io.loadBrep"]);
             expect(sentInputs()["brepData"]).toEqual(new TextEncoder().encode(BREP_TEXT));
+        });
+    });
+
+    describe("loadBrepBinary", () => {
+        it("should send a Blob as the bytes it holds", async () => {
+            // Arrange
+            const blob = new Blob([BREP_BYTES]);
+
+            // Act
+            await io.loadBrepBinary({ brepData: blob });
+
+            // Assert
+            expect(worker.paths()).toEqual(["io.loadBrepBinary"]);
+            expect(sentInputs()["brepData"]).toEqual(BREP_BYTES);
+        });
+
+        it("should send an ArrayBuffer as the bytes it holds", async () => {
+            // Act
+            await io.loadBrepBinary({ brepData: BREP_BYTES.slice().buffer });
+
+            // Assert
+            expect(sentInputs()["brepData"]).toEqual(BREP_BYTES);
         });
     });
 

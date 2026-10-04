@@ -1,7 +1,9 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, MeshData } from "@bitbybit-dev/core";
+import { DrawHelperCore, MeshData, defaultEdgeColor, designMeshKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
+import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement } from "@bitbybit-dev/core";
+import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
 import { Vector, resolveDto } from "@bitbybit-dev/base";
 import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
@@ -13,6 +15,38 @@ import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeome
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 import * as Resolved from "./resolved-inputs";
+import { batchedLineShader, matricesTexture, writeMatrices } from "./batched-lines";
+
+interface DesignInstance {
+    id: number;
+    part: string;
+    index: number;
+}
+
+interface DesignBatch {
+    mesh: THREEJS.BatchedMesh;
+    instances: DesignInstance[];
+}
+
+interface DesignEdges {
+    line: LineSegments2;
+    texture: THREEJS.DataTexture;
+    order: { part: string; index: number }[];
+}
+
+interface DesignDrawState {
+    placements: Map<string, PartPlacement[]>;
+    meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
+    signature: string;
+    precision: number;
+    batches: DesignBatch[];
+    edges: DesignEdges | undefined;
+}
+
+interface LookSlot {
+    look: FaceLook;
+    entries: { part: string; mesh: LookMesh }[];
+}
 
 export class DrawHelper extends DrawHelperCore {
 
@@ -20,6 +54,9 @@ export class DrawHelper extends DrawHelperCore {
 
     private readonly unlitMaterialCache = new Map<string, THREEJS.MeshBasicMaterial>();
     private readonly lineMaterialCache = new Map<string, LineMaterial>();
+
+    private readonly designStates = new WeakMap<THREEJS.Group, DesignDrawState>();
+    private readonly scratchMatrix = new THREEJS.Matrix4();
 
     private entityIdCounter = 0;
     private readonly instanceId = `three-${Date.now()}`;
@@ -152,6 +189,383 @@ export class DrawHelper extends DrawHelperCore {
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
             throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+        }
+    }
+
+    /**
+     * Draws a kernel shape in its appearance: one mesh whose faces take their looks, its back faces
+     * when asked, and its edges once.
+     * @param entity - The shape with its appearance
+     * @param options - The drawing options; the face color is the color of faces no look colors
+     * @returns The group holding the shape, added to the scene
+     */
+    async drawShapeWithAppearance(entity: Inputs.Draw.ShapeWithAppearance, options: Inputs.Draw.DrawOcctShapeOptions): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        const [mesh] = await this.meshShapesForLooks([entity.shape], resolved);
+        return this.lookedShapeGroup(mesh!, entity.appearance, resolved);
+    }
+
+    /**
+     * Draws kernel shapes in their appearance, all meshed in one call to the worker, each as
+     * `drawShapeWithAppearance` draws one.
+     * @param entities - The shapes with their appearance
+     * @param options - The drawing options; the face color is the color of faces no look colors
+     * @returns A group holding one group per shape, in order, added to the scene
+     */
+    async drawShapesWithAppearance(entities: readonly Inputs.Draw.ShapeWithAppearance[], options: Inputs.Draw.DrawOcctShapeOptions): Promise<THREEJS.Group> {
+        const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, options) as Resolved.Draw.DrawOcctShapeOptions;
+        const meshes = await this.meshShapesForLooks(entities.map(entity => entity.shape), resolved);
+        const container = new THREEJS.Group();
+        container.name = this.generateEntityId("shapesWithAppearanceContainer");
+        this.context.scene.add(container);
+        entities.forEach((entity, index) => {
+            container.add(this.lookedShapeGroup(meshes[index]!, entity.appearance, resolved));
+        });
+        return container;
+    }
+
+    /**
+     * Draws what `occt.design.build` returns. Every part is meshed once, in one call to the worker;
+     * every placement is a GPU instance, in one `BatchedMesh` per look; and every edge goes into one
+     * batched line. Given the group an earlier build drew, it redraws in place: when the same parts
+     * sit at the same paths, it only moves them, and otherwise it meshes only the parts it has not.
+     * @param build - The build to draw
+     * @param options - The drawing options; the face color is the color of faces no look colors
+     * @param previous - The group an earlier build drew, to redraw in place
+     * @returns The group holding the build: `previous` when given, else a new group added to the scene
+     */
+    async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: THREEJS.Group): Promise<THREEJS.Group> {
+        const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
+        const placements = partPlacementsOf(build);
+        const parts = new Map(build.parts.map(part => [part.id, part]));
+        const placed = [...placements.keys()].filter(id => parts.has(id));
+        const state = previous ? this.designStates.get(previous) : undefined;
+        const signature = designSignatureOf(parts, placed, options);
+        if (previous && state && state.precision === options.precision && state.signature === signature && samePlacements(state.placements, placements)) {
+            this.poseDesign(state, placements);
+            return previous;
+        }
+        const meshes = new Map<string, Inputs.OCCT.DecomposedMeshDto>();
+        const keys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
+        if (state && state.precision === options.precision) {
+            for (const id of placed) {
+                const kept = state.meshes.get(keys.get(id)!);
+                if (kept) {
+                    meshes.set(id, kept);
+                }
+            }
+        }
+        const missing = placed.filter(id => !meshes.has(id));
+        if (missing.length > 0) {
+            const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
+            missing.forEach((id, index) => meshes.set(id, made[index]!));
+        }
+        const target = previous && state ? previous : this.newDesignGroup();
+        if (state && target === previous) {
+            this.clearDesign(target, state);
+        }
+        const filled = this.fillDesign(target, parts, placements, placed, meshes, options, signature);
+        filled.meshes = new Map(placed.map(id => [keys.get(id)!, meshes.get(id)!]));
+        this.designStates.set(target, filled);
+        return target;
+    }
+
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+        const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, options) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
+        const meshing = this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+        const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
+        if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
+            throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
+        }
+        return meshes;
+    }
+
+    private isMeshOfFacesAndEdges(mesh: unknown): mesh is Inputs.OCCT.DecomposedMeshDto {
+        return typeof mesh === "object" && mesh !== null && Array.isArray((mesh as Record<string, unknown>)["faceList"]) && Array.isArray((mesh as Record<string, unknown>)["edgeList"]);
+    }
+
+    private lookedShapeGroup(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): THREEJS.Group {
+        const shapeGroup = new THREEJS.Group();
+        shapeGroup.name = this.generateEntityId("brepMeshWithAppearance");
+        this.context.scene.add(shapeGroup);
+        const zOffset = options.drawEdges ? 2 : 0;
+        if (options.drawFaces && mesh.faceList.length > 0) {
+            const looks = lookGroupsOf(appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour);
+            shapeGroup.add(this.lookedMesh(lookMeshesOf(mesh, looks), options.faceOpacity, zOffset));
+            if (options.drawTwoSided) {
+                const meshData: MeshData[] = mesh.faceList.map(face => ({ positions: face.vertexCoord, normals: face.normalCoord, indices: face.triIndexes }));
+                shapeGroup.add(this.createBackFaceMesh(meshData, options.backFaceColour || DEFAULT_COLORS.BACK_FACE, options.backFaceOpacity, zOffset));
+            }
+        }
+        if (options.drawEdges && mesh.edgeList.length > 0) {
+            const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), this.partEdgeColour(appearance, options));
+            const line = this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors);
+            if (line) {
+                shapeGroup.add(line);
+            }
+        }
+        return shapeGroup;
+    }
+
+    /** The color of a part's edges that its appearance colors none of: from the part's color under `edgeContrast`. */
+    private partEdgeColour(appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): string {
+        return defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
+    }
+
+    /**
+     * One mesh holding the faces of every look, with one geometry group and one material per look,
+     * and in `userData.faceRanges` where each face's triangles sit in its index buffer.
+     */
+    private lookedMesh(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): THREEJS.Mesh {
+        const drawn = lookMeshes.filter(look => look.indices.length > 0);
+        let vertexCount = 0;
+        let indexCount = 0;
+        for (const look of drawn) {
+            vertexCount += look.positions.length / 3;
+            indexCount += look.indices.length;
+        }
+        const positions = new Float32Array(vertexCount * 3);
+        const normals = new Float32Array(vertexCount * 3);
+        const indices = new Uint32Array(indexCount);
+        const geometry = new THREEJS.BufferGeometry();
+        const faceRanges: FaceRange[] = [];
+        let vertexOffset = 0;
+        let indexOffset = 0;
+        drawn.forEach((look, materialIndex) => {
+            positions.set(look.positions, vertexOffset * 3);
+            normals.set(look.normals, vertexOffset * 3);
+            for (let i = 0; i < look.indices.length; i++) {
+                indices[indexOffset + i] = look.indices[i]! + vertexOffset;
+            }
+            geometry.addGroup(indexOffset, look.indices.length, materialIndex);
+            for (const range of look.faceRanges) {
+                faceRanges.push({ face: range.face, start: range.start + indexOffset, count: range.count });
+            }
+            vertexOffset += look.positions.length / 3;
+            indexOffset += look.indices.length;
+        });
+        geometry.setAttribute("position", new THREEJS.BufferAttribute(positions, 3));
+        geometry.setAttribute("normal", new THREEJS.BufferAttribute(normals, 3));
+        geometry.setIndex(new THREEJS.BufferAttribute(indices, 1));
+        const mesh = new THREEJS.Mesh(geometry, drawn.map(look => this.lookMaterial(look.group.look, faceOpacity, zOffset)));
+        mesh.name = this.generateEntityId("lookedSurface");
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        mesh.userData = { faceRanges };
+        return mesh;
+    }
+
+    /** The material of a look, its opacity times `faceOpacity`, cached like the plain face materials. */
+    private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): THREEJS.MeshPhysicalMaterial {
+        const opacity = look.opacity * faceOpacity;
+        return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
+            const material = new THREEJS.MeshPhysicalMaterial();
+            material.name = this.generateEntityId("lookMaterial");
+            material.color = new THREEJS.Color(look.color);
+            material.metalness = look.metallic ?? MATERIAL_DEFAULTS.METALNESS.OCCT;
+            material.roughness = look.roughness ?? MATERIAL_DEFAULTS.ROUGHNESS.OCCT;
+            if (look.emissive !== undefined) {
+                material.emissive = new THREEJS.Color(look.emissive);
+                material.emissiveIntensity = look.emissiveStrength ?? 1;
+            }
+            if (opacity < 1) {
+                material.transparent = true;
+                material.opacity = opacity;
+                material.depthWrite = false;
+            }
+            material.polygonOffset = true;
+            material.polygonOffsetFactor = zOffset;
+            return material;
+        });
+    }
+
+    private newDesignGroup(): THREEJS.Group {
+        const group = new THREEJS.Group();
+        group.name = this.generateEntityId("designBuild");
+        this.context.scene.add(group);
+        return group;
+    }
+
+    private fillDesign(target: THREEJS.Group, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, signature: string): DesignDrawState {
+        const zOffset = options.drawEdges ? 2 : 0;
+        const batches: DesignBatch[] = [];
+        if (options.drawFaces) {
+            const slots = new Map<string, LookSlot>();
+            for (const id of placed) {
+                const mesh = meshes.get(id)!;
+                const looks: LookGroup[] = lookGroupsOf(parts.get(id)!.appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour);
+                for (const lookMesh of lookMeshesOf(mesh, looks)) {
+                    if (lookMesh.indices.length === 0) {
+                        continue;
+                    }
+                    const slot = slots.get(lookMesh.group.key);
+                    if (slot) {
+                        slot.entries.push({ part: id, mesh: lookMesh });
+                    } else {
+                        slots.set(lookMesh.group.key, { look: lookMesh.group.look, entries: [{ part: id, mesh: lookMesh }] });
+                    }
+                }
+            }
+            for (const slot of slots.values()) {
+                const batch = this.lookBatch(slot, placements, options.faceOpacity, zOffset);
+                target.add(batch.mesh);
+                batches.push(batch);
+            }
+        }
+        const edges = options.drawEdges ? this.edgeBatch(placed, parts, meshes, placements, options) : undefined;
+        if (edges) {
+            target.add(edges.line);
+        }
+        return { placements, meshes, signature, precision: options.precision, batches, edges };
+    }
+
+    /**
+     * One `BatchedMesh` for a look: each part's faces of that look added once as a geometry and each
+     * placement of the part an instance of it. Its `userData` gives the component path of each
+     * instance and, per geometry, the part, where its indices start and where each face's are.
+     */
+    private lookBatch(slot: LookSlot, placements: ReadonlyMap<string, readonly PartPlacement[]>, faceOpacity: number, zOffset: number): DesignBatch {
+        let instanceCount = 0;
+        let vertexCount = 0;
+        let indexCount = 0;
+        for (const entry of slot.entries) {
+            instanceCount += placements.get(entry.part)!.length;
+            vertexCount += entry.mesh.positions.length / 3;
+            indexCount += entry.mesh.indices.length;
+        }
+        const mesh = new THREEJS.BatchedMesh(instanceCount, vertexCount, indexCount, this.lookMaterial(slot.look, faceOpacity, zOffset));
+        mesh.name = this.generateEntityId("designBatch");
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        const instances: DesignInstance[] = [];
+        const instancePaths: string[] = [];
+        const geometries: { part: string; indexStart: number; faceRanges: FaceRange[] }[] = [];
+        for (const entry of slot.entries) {
+            const geometry = new THREEJS.BufferGeometry();
+            geometry.setAttribute("position", new THREEJS.BufferAttribute(entry.mesh.positions, 3));
+            geometry.setAttribute("normal", new THREEJS.BufferAttribute(entry.mesh.normals, 3));
+            geometry.setIndex(new THREEJS.BufferAttribute(entry.mesh.indices, 1));
+            const geometryId = mesh.addGeometry(geometry);
+            geometry.dispose();
+            geometries[geometryId] = { part: entry.part, indexStart: mesh.getGeometryRangeAt(geometryId)!.indexStart, faceRanges: entry.mesh.faceRanges };
+            placements.get(entry.part)!.forEach((placement, index) => {
+                const id = mesh.addInstance(geometryId);
+                mesh.setMatrixAt(id, this.scratchMatrix.fromArray(placement.world));
+                instances.push({ id, part: entry.part, index });
+                instancePaths[id] = placement.path;
+            });
+        }
+        mesh.userData = { instancePaths, geometries };
+        return { mesh, instances };
+    }
+
+    /**
+     * Every edge of every placement in one `LineSegments2`: each part's segments copied once per
+     * placement in the part's own coordinates, each copy moved by its placement's matrix in the
+     * shader, and colored per segment as the part's appearance colors its edges. Its `userData`
+     * gives, per placement, the component path and where its segments start, and per part where
+     * each edge's segments are.
+     */
+    private edgeBatch(placed: readonly string[], parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, placements: ReadonlyMap<string, readonly PartPlacement[]>, options: Resolved.Draw.DrawOcctShapeOptions): DesignEdges | undefined {
+        const segments = new Map(placed.map(id => [id, edgeSegmentsOf(meshes.get(id)!)]));
+        const colors = new Map(placed.map(id => [id, this.segmentColors(segments.get(id)!, parts.get(id)!.appearance, options)]));
+        const order: { part: string; index: number }[] = [];
+        let total = 0;
+        for (const id of placed) {
+            const count = segments.get(id)!.positions.length / 6;
+            placements.get(id)!.forEach((_, index) => {
+                order.push({ part: id, index });
+                total += count;
+            });
+        }
+        if (total === 0) {
+            return undefined;
+        }
+        const positions = new Float32Array(total * 6);
+        const segmentColors = new Float32Array(total * 6);
+        const batchIds = new Float32Array(total);
+        const segmentStarts: number[] = [];
+        let offset = 0;
+        order.forEach((slot, batch) => {
+            const part = segments.get(slot.part)!;
+            const count = part.positions.length / 6;
+            positions.set(part.positions, offset * 6);
+            segmentColors.set(colors.get(slot.part)!, offset * 6);
+            batchIds.fill(batch, offset, offset + count);
+            segmentStarts.push(offset);
+            offset += count;
+        });
+        const geometry = new LineSegmentsGeometry();
+        geometry.setPositions(positions);
+        geometry.setColors(segmentColors);
+        geometry.setAttribute("instanceBatch", new THREEJS.InstancedBufferAttribute(batchIds, 1));
+        const texture = matricesTexture(order.length);
+        writeMatrices(texture, order.map(slot => placements.get(slot.part)![slot.index]!.world));
+        const material = new LineMaterial({
+            color: 0xffffff,
+            vertexColors: true,
+            linewidth: Math.max(DrawHelper.LINE_WIDTH_MIN_PX, options.edgeWidth * DrawHelper.LINE_WIDTH_PER_SIZE),
+            transparent: options.edgeOpacity < 1,
+            opacity: options.edgeOpacity,
+        });
+        material.uniforms["batchMatrices"] = { value: texture };
+        material.onBeforeCompile = (shader) => {
+            shader.vertexShader = batchedLineShader(shader.vertexShader);
+        };
+        material.customProgramCacheKey = () => "bitbybit-batched-line";
+        const line = new LineSegments2(geometry, material);
+        line.name = this.generateEntityId("designEdges");
+        line.frustumCulled = false;
+        line.raycast = () => undefined;
+        const edgeRanges: Record<string, EdgeRange[]> = {};
+        for (const id of placed) {
+            edgeRanges[id] = segments.get(id)!.edgeRanges;
+        }
+        line.userData = {
+            paths: order.map(slot => placements.get(slot.part)![slot.index]!.path),
+            parts: order.map(slot => slot.part),
+            segmentStarts,
+            edgeRanges,
+        };
+        return { line, texture, order };
+    }
+
+    /** Six color channels per segment of a part, the start's then the end's, each edge in its color. */
+    private segmentColors(segments: EdgeSegments, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): Float32Array {
+        const edgeColors = edgeColorsOf(appearance, segments.edgeRanges.map(range => range.edge), this.partEdgeColour(appearance, options));
+        const channels = new Float32Array(segments.positions.length);
+        const color = new THREEJS.Color();
+        segments.edgeRanges.forEach((range, index) => {
+            color.set(edgeColors[index]!);
+            for (let segment = range.start; segment < range.start + range.count; segment++) {
+                channels.set([color.r, color.g, color.b, color.r, color.g, color.b], segment * 6);
+            }
+        });
+        return channels;
+    }
+
+    private poseDesign(state: DesignDrawState, placements: Map<string, PartPlacement[]>): void {
+        for (const batch of state.batches) {
+            for (const instance of batch.instances) {
+                batch.mesh.setMatrixAt(instance.id, this.scratchMatrix.fromArray(placements.get(instance.part)![instance.index]!.world));
+            }
+        }
+        if (state.edges) {
+            writeMatrices(state.edges.texture, state.edges.order.map(slot => placements.get(slot.part)![slot.index]!.world));
+        }
+        state.placements = placements;
+    }
+
+    private clearDesign(target: THREEJS.Group, state: DesignDrawState): void {
+        for (const batch of state.batches) {
+            target.remove(batch.mesh);
+            batch.mesh.dispose();
+        }
+        if (state.edges) {
+            target.remove(state.edges.line);
+            state.edges.line.geometry.dispose();
+            state.edges.line.material.dispose();
+            state.edges.texture.dispose();
         }
     }
 
@@ -710,10 +1124,10 @@ export class DrawHelper extends DrawHelperCore {
         const dummy = undefined;
         const linesOnFaces = resolved.drawEdges || resolved.drawIsoCurves;
 
+        const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
 
             let pbr: THREEJS.MeshPhysicalMaterial;
-            const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
             const alpha = resolved.faceOpacity;
             const zOffset = linesOnFaces ? 2 : 0;
             const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 3);
@@ -746,8 +1160,14 @@ export class DrawHelper extends DrawHelperCore {
                 };
             });
 
-            const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
-            shapeGroup.add(mesh);
+            const colorGroups = decomposedMesh.colorGroups;
+            if (!analysisColors && !resolved.faceMaterial && colorGroups && Object.keys(colorGroups).length > 0) {
+                const looks = lookGroupsOfColors(colorGroups, decomposedMesh.faceList.map(face => face.faceIndex), hex);
+                shapeGroup.add(this.lookedMesh(lookMeshesOf(decomposedMesh, looks), alpha, zOffset));
+            } else {
+                const mesh = this.createOrUpdateSurfacesMesh(meshData, dummy, false, pbr, true, false);
+                shapeGroup.add(mesh);
+            }
 
             if (resolved.drawTwoSided !== false) {
                 const backFaceMesh = this.createBackFaceMesh(
@@ -772,7 +1192,7 @@ export class DrawHelper extends DrawHelperCore {
                 false, 
                 resolved.edgeWidth, 
                 resolved.edgeOpacity, 
-                resolved.edgeColour,
+                defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast),
                 Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                 resolvedOptions.edgeArrowSize,
                 resolvedOptions.edgeArrowAngle
@@ -866,8 +1286,8 @@ export class DrawHelper extends DrawHelperCore {
         this.context.scene.add(shapeGroup);
         const dummy = undefined;
 
+        const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
         if (resolved.drawFaces && decomposedMesh && decomposedMesh.faceList && decomposedMesh.faceList.length) {
-            const hex = Array.isArray(resolved.faceColour) ? resolved.faceColour[0] : resolved.faceColour;
             const alpha = resolved.faceOpacity;
             const zOffset = resolved.drawEdges || resolved.drawIsoCurves ? 2 : 0;
             const analysisColors = this.surfaceAnalysisColors(decomposedMesh, hex, resolved.analysisMin, resolved.analysisMax, 3);
@@ -918,6 +1338,7 @@ export class DrawHelper extends DrawHelperCore {
         }
 
         if (resolved.drawEdges && decomposedMesh && decomposedMesh.edgeList && decomposedMesh.edgeList.length) {
+            const edgeColour = defaultEdgeColor(hex, resolved.edgeColour, resolvedOptions.edgeContrast);
             decomposedMesh.edgeList.forEach(edge => {
                 const ev = edge.vertexCoord.filter(s => s !== undefined);
                 const mesh = this.drawPolylines(
@@ -926,7 +1347,7 @@ export class DrawHelper extends DrawHelperCore {
                     false,
                     resolved.edgeWidth,
                     resolved.edgeOpacity,
-                    resolved.edgeColour,
+                    edgeColour,
                     Inputs.Base.colorMapStrategyEnum.lastColorRemainder,
                     resolvedOptions.edgeArrowSize,
                     resolvedOptions.edgeArrowAngle

@@ -6,7 +6,7 @@ import { InputError } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, decodePolylines, type MeshArrays, type MeshContents } from "./mesh-arrays";
-import { checkedChoice, checkedDirection, checkedShapes, checkedWhole } from "./input-checks";
+import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
 
 const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
     Inputs.OCCT.surfaceAnalysisEnum.none,
@@ -21,6 +21,14 @@ const SURFACE_ANALYSES: readonly Inputs.OCCT.surfaceAnalysisEnum[] = [
 const MOST_ISO_CURVES = 1000;
 
 const DEGREES_PER_RADIAN = 180 / Math.PI;
+
+const LEAST_ANGULAR_DEFLECTION = 0.001;
+
+/** How a mesh call is told how fine to mesh beyond its precision: the angle between triangles and whether the precision is relative to each edge's size. */
+interface Fineness {
+    angularDeflection: number;
+    relativeDeflection: boolean;
+}
 
 /** The pull direction handed to the kernel for the analyses that read none, since it refuses a zero one whatever it measures. */
 const UNREAD_PULL: Inputs.Base.Vector3 = [0, 1, 0];
@@ -95,6 +103,8 @@ export class MeshingService {
         return inputs.shapes.map(shape => this.shapeToMesh({
             shape,
             precision: inputs.precision,
+            angularDeflection: inputs.angularDeflection,
+            relativeDeflection: inputs.relativeDeflection,
             adjustYtoZ: inputs.adjustYtoZ,
             computeMetadata: inputs.computeMetadata,
             keepMeshData: inputs.keepMeshData,
@@ -120,13 +130,15 @@ export class MeshingService {
         if (!resolved.shape || resolved.shape.IsNull()) {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
+        const fineness = this.checkedFineness(resolved);
         const isoCurvesU = checkedWhole(resolved.isoCurvesU, "isoCurvesU", 0, MOST_ISO_CURVES);
         const isoCurvesV = checkedWhole(resolved.isoCurvesV, "isoCurvesV", 0, MOST_ISO_CURVES);
         const analysis = this.nodeAnalysis(resolved.shape, resolved.surfaceAnalysis, resolved.draftDirection);
 
         if (this.kernelHasMeshBuffers()) {
             const contents: MeshContents = { colors: false, metadata: resolved.computeMetadata, analysis: analysis !== undefined };
-            const arrays = this.meshArrays(this.occ.ShapeToMeshBuffers(
+            const meshCall = this.occ.ShapeToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;
+            const arrays = this.meshArrays(meshCall(
                 resolved.shape,
                 resolved.precision,
                 resolved.adjustYtoZ,
@@ -134,6 +146,7 @@ export class MeshingService {
                 resolved.keepMeshData,
                 resolved.allowQualityDecrease,
                 resolved.forceFaceDeflection,
+                ...this.finenessFor(meshCall, 7, fineness),
             ), contents, analysis);
             if (arrays) {
                 const mesh = decodeMeshArrays(arrays, contents);
@@ -154,6 +167,27 @@ export class MeshingService {
             resolved.forceFaceDeflection,
         );
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
+    }
+
+    /**
+     * The angular deflection, checked to lie from 0.001 to pi radians, and whether the precision is
+     * relative; a kernel refuses an angle outside that range, and the JSON path it would fall back to
+     * meshes at 0.5 rad, so a wrong angle is stopped here.
+     */
+    private checkedFineness(inputs: Fineness): Fineness {
+        return {
+            angularDeflection: checkedNumber(inputs.angularDeflection, "angularDeflection", LEAST_ANGULAR_DEFLECTION, Math.PI),
+            relativeDeflection: inputs.relativeDeflection === true,
+        };
+    }
+
+    /**
+     * The trailing arguments that tell a buffer mesh call how fine to mesh, for a kernel whose call
+     * takes them; none for a kernel built before them, recognised by the call taking only
+     * `olderArity` arguments, which meshes at 0.5 rad with an absolute precision.
+     */
+    private finenessFor(meshCall: (...args: unknown[]) => MeshBuffers, olderArity: number, fineness: Fineness): [number, boolean] | [] {
+        return meshCall.length === olderArity ? [] : [fineness.angularDeflection, fineness.relativeDeflection];
     }
 
     /**
@@ -241,9 +275,10 @@ export class MeshingService {
      * Meshes one free shape of a document, or all of them as one mesh when `index` is -1, with the
      * colour groups the document gives its faces; undefined when meshing failed.
      */
-    private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number): Inputs.OCCT.DecomposedMeshDto | undefined {
+    private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number, fineness: Fineness): Inputs.OCCT.DecomposedMeshDto | undefined {
         const contents = { colors: true, metadata: inputs.computeMetadata };
-        const arrays = this.meshArrays(this.occ.DocumentToMeshBuffers(
+        const meshCall = this.occ.DocumentToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;
+        const arrays = this.meshArrays(meshCall(
             inputs.document.get(),
             index,
             inputs.precision,
@@ -252,6 +287,7 @@ export class MeshingService {
             inputs.keepMeshData,
             inputs.allowQualityDecrease,
             inputs.forceFaceDeflection,
+            ...this.finenessFor(meshCall, 8, fineness),
         ), contents);
         return arrays ? decodeMeshArrays(arrays, contents) : undefined;
     }
@@ -262,11 +298,12 @@ export class MeshingService {
             return [];
         }
     
+        const fineness = this.checkedFineness(inputs);
         if (this.kernelHasMeshBuffers()) {
             const count = this.occ.DocumentFreeShapeCount(doc.get());
             const meshes: Inputs.OCCT.DecomposedMeshDto[] = [];
             for (let index = 0; index < count; index++) {
-                const mesh = this.documentMesh(inputs, index);
+                const mesh = this.documentMesh(inputs, index, fineness);
                 if (!mesh) {
                     break;
                 }
@@ -294,8 +331,9 @@ export class MeshingService {
             return { faceList: [], edgeList: [], pointsList: [] };
         }
        
+        const fineness = this.checkedFineness(inputs);
         if (this.kernelHasMeshBuffers()) {
-            const mesh = this.documentMesh(inputs, -1);
+            const mesh = this.documentMesh(inputs, -1, fineness);
             if (mesh) {
                 return mesh;
             }

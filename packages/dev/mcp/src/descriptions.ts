@@ -38,10 +38,11 @@ export const DESCRIPTIONS: Readonly<Record<ToolName, { title: string; descriptio
             "Examples are written for the API version the server holds.",
     },
     get_guide: {
-        title: "Read the integration guide",
+        title: "Read the guides",
         description:
-            "Sections of the public guide on building with Bitbybit: what runs in the browser, on a server, on a lightweight backend, and what needs CAD Cloud. " +
-            "Without a topic it lists the sections. Read \"integrate\" before recommending where geometry should run: the npm packages are the default, and CAD Cloud is for algorithms that exist only there or compute the caller cannot provide.",
+            "Sections of the public guides: building with Bitbybit (what runs in the browser, on a server, on a lightweight backend, and what needs CAD Cloud), and writing design documents (parametric models as JSON: parameters, sketches, features, references, parts and assemblies). " +
+            "Without a topic it lists the sections. Read \"integrate\" before recommending where geometry should run: the npm packages are the default, and CAD Cloud is for algorithms that exist only there or compute the caller cannot provide. " +
+            "Read \"design\" before writing a design document.",
     },
     search: {
         title: "Search",
@@ -59,4 +60,5 @@ export const SERVER_INSTRUCTIONS =
     "This is the Bitbybit CAD MCP: it documents the Bitbybit 3D CAD API (OpenCascade, JSCAD and Manifold kernels, with Babylon.js, three.js and PlayCanvas renderers) for one exact version. " +
     "Always describe a member before using it: names, parameters and defaults come from the index, not from memory. " +
     "Tiers matter: oss members are in the MIT npm packages and run anywhere; platform-pro members exist only inside bitbybit.dev; cloud-pro members run only on Bitbybit CAD Cloud with an API key. " +
-    "When asked where geometry should run, read get_guide(\"integrate\") first: the packages alone are the default, and CAD Cloud is the answer only for algorithms that exist only there or for compute the caller cannot provide.";
+    "When asked where geometry should run, read get_guide(\"integrate\") first: the packages alone are the default, and CAD Cloud is the answer only for algorithms that exist only there or for compute the caller cannot provide. " +
+    "Before writing a design document, a parametric model as JSON that occt.design builds, read get_guide(\"design\") and the sections it lists.";

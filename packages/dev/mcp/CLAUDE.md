@@ -32,9 +32,11 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
   only `index-loader.ts`, `installed-version.ts` and `stdio.ts` may, and the dependency test holds
   that line. `src/index-reader.ts` is the lookup, search and
   nearest-path logic; `src/render.ts` turns a record into the markdown a model reads.
-- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md`
-  by `npm run sync:guides`; `npm run check:guides` and `src/guides.test.ts` fail when the page and
-  the file disagree. Edit the page, then regenerate.
+- `src/guides.generated.ts` is generated from `docs/learn/using-ai-with-bitbybit/agentic-cad.md` and
+  `design-documents.md` beside it by `npm run sync:guides`; `npm run check:guides` and
+  `src/guides.test.ts` fail when the pages and the file disagree. Edit a page, then regenerate.
+  Each section carries the URL of its page, `GUIDE_PAGE_URL` stays the first page's, and a section
+  id may be used once across all the pages: the sync refuses a repeat, so retitle one.
 
 ## What the code does not say
 
@@ -66,7 +68,7 @@ or a line here is where an explanation goes.
   form is what a list shows.
 - `search` and `fetch` are the shapes ChatGPT's connectors require: results of id, title and url;
   one document with id, title, text, url and metadata.
-- `guides-split.ts` splits the guide page into its `##` and `###` sections; a `##` body runs to
+- `guides-split.ts` splits each guide page into its `##` and `###` sections; a `##` body runs to
   the next `##` and so contains its subsections, the frontmatter and anything before the first
   heading are dropped, and a heading becomes its id as lower-case words joined by dashes.
   `get-guide.ts` maps the short names agents reach for onto those ids.

@@ -126,6 +126,27 @@ export class OCCTBooleans {
     }
 
     /**
+     * Intersects shapes as `intersection` does, and reports what became of every shape's faces,
+     * edges and vertices, in the order given, as indexes into the compound it returns.
+     *
+     * A shape that does not touch the first adds no piece and maps to nothing.
+     * @param inputs - The shapes, the first being the one intersected with the rest, and whether to keep the seam edges
+     * @returns A compound of the shared parts and one history per shape given
+     * @group booleans
+     * @shortname intersection with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const { shape, histories } = await bitbybit.occt.booleans.intersectionWithHistory({ shapes: [box, sphere], keepEdges: false });
+     * const fromSphere = histories[1].faces.flat();
+     * ```
+     */
+    intersectionWithHistory(inputs: Inputs.OCCT.IntersectionDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.IntersectionDto, inputs) as Resolved.OCCT.IntersectionDto<TopoDS_Shape>;
+        return this.och.booleansService.intersectionWithHistory(resolved);
+    }
+
+    /**
      * Finds where the surfaces of two shapes cross by triangulating both and intersecting the
      * triangles, and returns the crossing lines as wires.
      *

@@ -39,4 +39,5 @@ The scaffolder gives you a working app on the packages for three.js, Babylon.js 
 - [AI introduction](../using-ai-with-bitbybit/intro)
 - [Bitbybit CAD MCP](../using-ai-with-bitbybit/mcp/bitbybit-mcp)
 - [Bitbybit CAD Cloud MCP](../using-ai-with-bitbybit/mcp/cad-cloud-mcp)
+- [Design documents](../using-ai-with-bitbybit/design-documents), parametric models as JSON an agent can write and check
 - [CAD Cloud API reference](/api/cloud-api) for the backend you may write yourself

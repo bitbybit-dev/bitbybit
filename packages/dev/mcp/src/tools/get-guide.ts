@@ -25,12 +25,22 @@ export const GUIDE_ALIASES: Readonly<Record<string, string>> = {
     layers: "three-layers-you-can-use",
     trust: "trust",
     companies: "for-companies",
+    design: "what-a-design-document-is",
+    "design-document": "what-a-design-document-is",
+    "design-documents": "what-a-design-document-is",
+    documents: "what-a-design-document-is",
+    "build-loop": "the-loop-an-agent-should-follow",
+    validate: "the-loop-an-agent-should-follow",
+    references: "references-naming-faces-and-edges",
+    sketch: "sketches",
+    assembly: "assemblies",
+    mistakes: "mistakes-to-avoid",
 };
 
 const MAX_TOPIC_LENGTH = 128;
 
 const input = z.object({
-    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start; omit to list the sections"),
+    topic: z.string().max(MAX_TOPIC_LENGTH).optional().describe("A section id or a short name such as integrate, browser, backend, server-side, pro, start, design, references, assembly; omit to list the sections"),
 });
 
 function findSection(guides: readonly GuideSection[], topic: string): GuideSection | undefined {
@@ -54,16 +64,18 @@ export const getGuide: ToolDefinition<typeof input, DocsContext> = {
     input,
     where: "server",
     handler: (args, context) => {
-        const sections = context.guides.map((section) => ({ id: section.id, title: section.title, level: section.level }));
+        const pageOf = (section: GuideSection): string => section.page ?? context.guideUrl;
+        const sections = context.guides.map((section) => ({ id: section.id, title: section.title, level: section.level, page: pageOf(section) }));
         if (args.topic === undefined) {
-            const text = [`Sections of the guide (${context.guideUrl}):`, ...context.guides.map((section) => `- ${section.id}: ${section.title}`)].join("\n");
-            return ok(text, { url: context.guideUrl, sections });
+            const pages = [...new Set(context.guides.map(pageOf))];
+            const text = pages.flatMap((page) => [`Sections of ${page}:`, ...context.guides.filter((section) => pageOf(section) === page).map((section) => `- ${section.id}: ${section.title}`)]).join("\n");
+            return ok(text, { url: context.guideUrl, pages, sections });
         }
         const section = findSection(context.guides, args.topic);
         if (!section) {
             return ok(`No guide section matches "${args.topic}". Sections: ${context.guides.map((candidate) => candidate.id).join(", ")}.`, { url: context.guideUrl, notFound: args.topic, sections });
         }
-        const url = `${context.guideUrl}#${section.id}`;
+        const url = `${pageOf(section)}#${section.id}`;
         return ok(`${"#".repeat(section.level)} ${section.title}\n\n${section.body}\n\nSource: ${url}`, { url, id: section.id, title: section.title, body: section.body });
     },
 };

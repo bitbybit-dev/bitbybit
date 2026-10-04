@@ -163,7 +163,29 @@ export class OCCTIO {
      */
     saveShapeBrep(inputs: Inputs.OCCT.SaveBrepDto<TopoDS_Shape>): string {
         const resolved = resolveDto(Inputs.OCCT.SaveBrepDto, inputs) as Resolved.OCCT.SaveBrepDto<TopoDS_Shape>;
-        return this.occ.WriteBREPToString(checkedShape(resolved.shape));
+        return this.occ.WriteBREPToString(checkedShape(resolved.shape), resolved.withTriangulation);
+    }
+
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and returns them.
+     *
+     * `io.loadBrepBinary` reads them back with every face and edge at the same index.
+     * `withTriangulation` false leaves out the mesh.
+     * @param inputs - The shape, the file name, the download option and whether to keep the mesh
+     * @returns The binary BREP file's bytes
+     * @group io
+     * @shortname save brep binary and return
+     * @drawable false
+     * @example
+     * ```typescript
+     * const bytes = await bitbybit.occt.io.saveShapeBrepBinaryAndReturn({ shape: box, fileName: "box.bbrep", tryDownload: false, withTriangulation: false });
+     * const copy = await bitbybit.occt.io.loadBrepBinary({ brepData: bytes });
+     * ```
+     */
+    saveShapeBrepBinary(inputs: Inputs.OCCT.SaveBrepBinaryDto<TopoDS_Shape>): Uint8Array {
+        const resolved = resolveDto(Inputs.OCCT.SaveBrepBinaryDto, inputs) as Resolved.OCCT.SaveBrepBinaryDto<TopoDS_Shape>;
+        return this.occ.WriteBREPToBytes(checkedShape(resolved.shape), resolved.withTriangulation);
     }
 
     /**
@@ -400,6 +422,37 @@ export class OCCTIO {
             throw new InputError("`brepData` holds no shape a BREP reader can build.", "brepData");
         }
         return shape;
+    }
+
+    /**
+     * Reads a binary BREP file, the bytes `io.saveShapeBrepBinary` writes, back into the shape it
+     * holds, with its faces and edges in the same order.
+     *
+     * The bytes are checked first: damaged ones, or ones not in version 4, are refused, saying where.
+     * @param inputs - The binary BREP file
+     * @returns The shape the file holds
+     * @group io
+     * @shortname load brep binary
+     * @drawable true
+     * @example
+     * ```typescript
+     * const bytes = await bitbybit.occt.io.saveShapeBrepBinaryAndReturn({ shape: box, fileName: "box.bbrep", tryDownload: false, withTriangulation: true });
+     * const copy = await bitbybit.occt.io.loadBrepBinary({ brepData: bytes });
+     * ```
+     */
+    loadBrepBinary(inputs: Inputs.OCCT.LoadBrepBinaryDto): TopoDS_Shape {
+        const resolved = resolveDto(Inputs.OCCT.LoadBrepBinaryDto, inputs);
+        const bytes = bytesOfFile(resolved.brepData, "brepData");
+        try {
+            return this.occ.ReadBREPFromBytes(bytes);
+        } catch (thrown) {
+            const read = readKernelException(this.occ, thrown);
+            const refusal = read instanceof Error ? /ReadBREPFromBytes: (?:the binary BREP data is damaged: )?(.+)$/.exec(read.message) : null;
+            if (refusal === null) {
+                throw read;
+            }
+            throw new InputError(`\`brepData\` is damaged: ${refusal[1]}.`, "brepData");
+        }
     }
 
     /** The kernel's reading of BREP text; text the kernel finds damaged is refused as an input error saying where. */

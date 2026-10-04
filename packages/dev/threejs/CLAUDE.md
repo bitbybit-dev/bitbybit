@@ -62,3 +62,24 @@ The engine is an ordinary dependency here, not a peer as it is in `babylonjs`.
   which made a 600-unit scene jump a third of the distance per wheel notch; `scene-helper.test.ts`
   pins the defaults reaching the controller unchanged. The BabylonJS helper does scale
   `wheelPrecision` and `panningSensibility`, correctly, because those work in absolute world units.
+- **A shape with its appearance is one mesh**: one geometry group and one material per look, the
+  materials cached by look like the plain face materials, each look's opacity times `faceOpacity`.
+  `mesh.userData.faceRanges` says where each face's triangles sit in the index buffer. A mesh made
+  from an assembly document draws its `colorGroups` the same way.
+- **A design build is one `BatchedMesh` per look**, each part's faces of that look added once as a
+  geometry and every placement an instance of it. `userData.instancePaths[instanceId]` is the
+  component path and `userData.geometries[geometryId]` the part, its `indexStart` and its face
+  ranges: what picking a face will read. Drawn again into the same group with the same parts, shapes
+  and looks at the same paths, it only calls `setMatrixAt`; a part whose `shapeHash` changed is meshed
+  again, alone. The state behind that is a `WeakMap` in the helper, not
+  `userData`, so serialising or cloning the group never carries meshes.
+- **Its edges are one `LineSegments2` for every placement.** Each part's segments are copied once
+  per placement in the part's own coordinates, with an `instanceBatch` attribute and a colour per
+  segment from the part's appearance (its material is white with `vertexColors`), and the shader
+  moves each by the matrix at that index in the `batchMatrices` texture. `batched-lines.ts` patches
+  the two lines of `LineMaterial`'s vertex shader that place a segment, and throws when a three.js
+  upgrade has moved them; `batched-lines.test.ts` pins the patch against the installed shader. The
+  line owns its material and texture, unlike the cached line materials, so clearing a design
+  disposes both. It is not frustum culled, since its bounds are the parts' own, and it does not
+  raycast until edge picking lands.
+

@@ -20,6 +20,7 @@ import { OCCTShapeFix } from "./services/shape-fix";
 import { OCCTPath } from "./services/path";
 import { OCCTSVG } from "./services/svg";
 import { OCCTSketch } from "./services/sketch/sketch";
+import { OCCTDesign } from "./services/design/design";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "./api/resolved-inputs";
 
@@ -28,11 +29,11 @@ import * as Resolved from "./api/resolved-inputs";
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
  * change shapes; `select` picks faces and edges by what they are and where they lie; `analysis`
- * answers questions about shapes with points and numbers; `geom` handles
- * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `sketch` draws flat
- * outlines with a pen; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents,
- * annotations, topology graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
- * drawing.
+ * measures shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and
+ * other files; `sketch` draws flat outlines with a pen; `design` builds models kept as data;
+ * `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology
+ * graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle
+ * meshes for drawing.
  */
 export class OCCTService {
     public readonly shapes: OCCTShapes;
@@ -54,6 +55,8 @@ export class OCCTService {
     public readonly path: OCCTPath;
     public readonly sketch: OCCTSketch;
     public readonly svg: OCCTSVG;
+    /** Experimental: parametric parts and assemblies kept as data, whose format may still change. @beta */
+    public readonly design: OCCTDesign;
     public plugins?: { dependencies: { [key: string]: unknown }, [key: string]: unknown };
 
     constructor(
@@ -79,6 +82,7 @@ export class OCCTService {
         this.path = new OCCTPath(occ, och);
         this.sketch = new OCCTSketch(occ, och, this.shapes, this.operations, this.booleans);
         this.svg = new OCCTSVG(occ, och);
+        this.design = new OCCTDesign(occ, () => this);
     }
 
     /**

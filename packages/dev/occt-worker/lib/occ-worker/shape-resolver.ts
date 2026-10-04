@@ -67,11 +67,7 @@ export class ShapeResolver {
             return value.map(item => this.resolveRecursively(item));
         }
 
-        const resolved: Record<string, unknown> = {};
-        for (const key of Object.keys(value)) {
-            resolved[key] = this.resolveRecursively((value as Record<string, unknown>)[key]);
-        }
-        return resolved;
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.resolveRecursively(item)]));
     }
 
     /**
@@ -160,11 +156,7 @@ export class ResultSerializer {
             return this.serializeObjectDefinition(value);
         }
 
-        const serialized: Record<string, unknown> = {};
-        for (const key of Object.keys(value)) {
-            serialized[key] = this.serializeRecursively((value as Record<string, unknown>)[key]);
-        }
-        return serialized;
+        return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.serializeRecursively(item)]));
     }
 
     /**

@@ -1212,6 +1212,45 @@ describe("OCCT operations unit tests", () => {
         res.forEach(s => s.delete());
     });
 
+    it("should refuse a tube OCCT builds without its side along a straight path, naming the trihedron", () => {
+        // Arrange
+        const straight = wire.interpolatePoints({ points: [[0, 0, 0], [30, 40, 0], [60, 80, 0]], tolerance: 1e-7, periodic: false, startTangent: [0.6, 0.8, 0], endTangent: [0.6, 0.8, 0] });
+
+        // Act
+        const act = (): TopoDS_Shape => operations.pipeWireCylindrical({ shape: straight, radius: 3, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isFrenet });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.notValid", details: { trihedron: "isFrenet" } }));
+        expect(act).toThrow("With the isFrenet trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.");
+        straight.delete();
+    });
+
+    it("should build the same straight path as a valid tube with the discrete trihedron", () => {
+        // Arrange
+        const straight = wire.interpolatePoints({ points: [[0, 0, 0], [30, 40, 0], [60, 80, 0]], tolerance: 1e-7, periodic: false, startTangent: [0.6, 0.8, 0], endTangent: [0.6, 0.8, 0] });
+
+        // Act
+        const tube = operations.pipeWireCylindrical({ shape: straight, radius: 3, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isDiscreteTrihedron });
+
+        // Assert
+        expect(face.getFaces({ shape: tube })).toHaveLength(3);
+        expect(solid.getSolidVolume({ shape: tube })).toBeCloseTo(Math.PI * 9 * 100, 3);
+        straight.delete();
+        tube.delete();
+    });
+
+    it("should refuse a polygon bar OCCT builds without its sides along a straight path", () => {
+        // Arrange
+        const straight = wire.interpolatePoints({ points: [[0, 0, 0], [30, 40, 0], [60, 80, 0]], tolerance: 1e-7, periodic: false, startTangent: [0.6, 0.8, 0], endTangent: [0.6, 0.8, 0] });
+
+        // Act
+        const act = (): TopoDS_Shape => operations.pipePolylineWireNGon({ shape: straight, radius: 3, nrCorners: 6, makeSolid: true, forceApproxC1: false, trihedronEnum: Inputs.OCCT.geomFillTrihedronEnum.isFrenet });
+
+        // Assert
+        expect(act).toThrow(expect.objectContaining({ name: "KernelOperationError", code: "occt.pipe.notValid", details: { trihedron: "isFrenet" } }));
+        straight.delete();
+    });
+
     it("should make thick solid simple", () => {
         const box = occHelper.entitiesService.bRepPrimAPIMakeBox(1, 2, 3, [0, 0, 0]);
         const boxFaces = face.getFaces({ shape: box });

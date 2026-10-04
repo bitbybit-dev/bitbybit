@@ -4,6 +4,7 @@ export * from "./assembly";
 export * from "./booleans";
 export * from "./brep-graph";
 export * from "./corners";
+export * from "./design";
 export * from "./dimensions";
 export * from "./draft";
 export * from "./features";

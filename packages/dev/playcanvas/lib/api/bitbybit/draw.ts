@@ -7,6 +7,7 @@ import { DrawHelper } from "../draw-helper";
 import { GEOMETRY_DEFAULTS, DEFAULT_COLORS } from "../constants";
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../resolved-inputs";
+import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 type BitByBitEntity = Inputs.Draw.BitByBitEntity;
 
@@ -48,8 +49,8 @@ export class Draw extends DrawCore {
 
     /**
      * Draws any entity the library produces into the scene and gives back the drawn object: kernel
-     * shapes from OCCT, JSCAD and Manifold, points, lines, polylines, frames, curves, meshes, tags
-     * and nodes.
+     * shapes, alone or with their appearance, design builds, points, lines, polylines, frames,
+     * curves, meshes, tags and nodes.
      *
      * The options are matched to the entity, with defaults when none are given; pass the previous
      * result back in the update slot to redraw in place.
@@ -111,6 +112,9 @@ export class Draw extends DrawCore {
             jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
             occtShape: (i) => this.handleOcctShape(i),
             occtShapes: (i) => this.handleOcctShapes(i),
+            occtShapeWithAppearance: (i) => this.handleShapeWithAppearance(i),
+            occtShapesWithAppearance: (i) => this.handleShapesWithAppearance(i),
+            designBuild: (i) => this.handleDesignBuild(i),
             jscadMeshes: (i, e) => this.detectJscadMeshes(e) ? this.handleJscadMeshes(i, e) : Promise.resolve(undefined),
             manifoldShape: (i) => this.handleManifoldShape(i),
             manifoldShapes: (i) => this.handleManifoldShapes(i),
@@ -506,6 +510,24 @@ export class Draw extends DrawCore {
                 shape: inputs.entity as Inputs.OCCT.TopoDSShapePointer,
             });
         }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleShapeWithAppearance(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawShapeWithAppearance(inputs.entity as Inputs.Draw.ShapeWithAppearance, this.occtOptions(options));
+        }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleShapesWithAppearance(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawShapesWithAppearance(inputs.entity as Inputs.Draw.ShapeWithAppearance[], this.occtOptions(options));
+        }, Inputs.Draw.drawingTypes.occtShapes);
+    }
+
+    private handleDesignBuild(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawOcctShapeOptions(), (options) => {
+            return this.drawHelper.drawDesignBuild(inputs.entity as Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, this.occtOptions(options), inputs.group);
+        }, Inputs.Draw.drawingTypes.occtShapes);
     }
 
     private handleOcctShapes(inputs: Inputs.Draw.DrawAny<pc.Entity>): Promise<pc.Entity> {

@@ -105,7 +105,7 @@ export const initializationComplete = (
     kernelGeneration++;
     lostKernel = undefined;
     restartKernel = restart;
-    cacheHelper = new CacheHelper(occ);
+    cacheHelper = new CacheHelper();
 
     const vecService = new VectorHelperService();
     const shapesService = new ShapesHelperService();

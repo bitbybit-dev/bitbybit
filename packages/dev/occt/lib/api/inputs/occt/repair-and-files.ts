@@ -83,10 +83,11 @@ export class LoadBrepDto {
  * text format `io.loadBrep` reads back.
  */
 export class SaveBrepDto<T> {
-    constructor(shape?: T, fileName?: string, tryDownload?: boolean) {
+    constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean) {
         if (shape !== undefined) { this.shape = shape; }
         if (fileName !== undefined) { this.fileName = fileName; }
         if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (withTriangulation !== undefined) { this.withTriangulation = withTriangulation; }
     }
     /**
      * The shape written to the file.
@@ -104,6 +105,61 @@ export class SaveBrepDto<T> {
      * @default true
      */
     tryDownload?: boolean | undefined = true;
+    /**
+     * When true, the mesh a shape carries is written with it, so a shape read back draws without
+     * meshing again; false writes only the exact geometry.
+     * @default true
+     */
+    withTriangulation?: boolean | undefined = true;
+}
+
+/**
+ * A shape and file options for `io.saveShapeBrepBinary`, which writes the shape as binary BREP: the
+ * same exact geometry and topology as the text form, in bytes `io.loadBrepBinary` reads back.
+ */
+export class SaveBrepBinaryDto<T> {
+    constructor(shape?: T, fileName?: string, tryDownload?: boolean, withTriangulation?: boolean) {
+        if (shape !== undefined) { this.shape = shape; }
+        if (fileName !== undefined) { this.fileName = fileName; }
+        if (tryDownload !== undefined) { this.tryDownload = tryDownload; }
+        if (withTriangulation !== undefined) { this.withTriangulation = withTriangulation; }
+    }
+    /**
+     * The shape written to the file.
+     * @default undefined
+     */
+    shape!: T;
+    /**
+     * The name the downloaded file gets.
+     * @default shape.bbrep
+     */
+    fileName?: string | undefined = "shape.bbrep";
+    /**
+     * When true, a browser download of the file is started where that is possible; the kernel
+     * itself only returns the bytes.
+     * @default true
+     */
+    tryDownload?: boolean | undefined = true;
+    /**
+     * When true, the mesh a shape carries is written with it, so a shape read back draws without
+     * meshing again; false writes only the exact geometry.
+     * @default true
+     */
+    withTriangulation?: boolean | undefined = true;
+}
+
+/**
+ * The bytes of a binary BREP file for `io.loadBrepBinary`.
+ */
+export class LoadBrepBinaryDto {
+    constructor(brepData?: ArrayBuffer | Uint8Array | File | Blob) {
+        if (brepData !== undefined) { this.brepData = brepData; }
+    }
+    /**
+     * The binary BREP file's bytes, or a File or Blob that holds them.
+     * @default undefined
+     */
+    brepData!: ArrayBuffer | Uint8Array | File | Blob;
 }
 
 /**

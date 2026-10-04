@@ -369,6 +369,7 @@ export type OperationPath =
     | "occt.analysis.measure.orientedBoundingBox"
     | "occt.analysis.measure.principalFrame"
     | "occt.analysis.measure.tightBoundingBox"
+    | "occt.analysis.signatures"
     | "occt.analysis.surfaces.closestPoints"
     | "occt.analysis.surfaces.curvaturesOnUVs"
     | "occt.analysis.surfaces.surfaceType"
@@ -400,6 +401,7 @@ export type OperationPath =
     | "occt.booleans.difference"
     | "occt.booleans.differenceWithHistory"
     | "occt.booleans.intersection"
+    | "occt.booleans.intersectionWithHistory"
     | "occt.booleans.meshMeshIntersectionOfShapesPoints"
     | "occt.booleans.meshMeshIntersectionOfShapesWires"
     | "occt.booleans.meshMeshIntersectionPoints"
@@ -426,6 +428,9 @@ export type OperationPath =
     | "occt.corners.filletCornerByPoint"
     | "occt.deleteShape"
     | "occt.deleteShapes"
+    | "occt.design.build"
+    | "occt.design.validate"
+    | "occt.design.versionOf"
     | "occt.dimensions.pinWithLabel"
     | "occt.dimensions.simpleAngularDimension"
     | "occt.dimensions.simpleLinearLengthDimension"
@@ -435,11 +440,16 @@ export type OperationPath =
     | "occt.draft.makeDraft"
     | "occt.draft.makeDraftToShape"
     | "occt.features.boss"
+    | "occt.features.bossWithHistory"
     | "occt.features.counterboredHoles"
+    | "occt.features.counterboredHolesWithHistory"
     | "occt.features.countersunkHoles"
+    | "occt.features.countersunkHolesWithHistory"
     | "occt.features.groove"
     | "occt.features.holes"
+    | "occt.features.holesWithHistory"
     | "occt.features.pocket"
+    | "occt.features.pocketWithHistory"
     | "occt.features.pushPullFaces"
     | "occt.features.removeFaces"
     | "occt.features.revolvedBoss"
@@ -484,11 +494,14 @@ export type OperationPath =
     | "occt.io.dxfCreate"
     | "occt.io.dxfPathsWithLayer"
     | "occt.io.loadBrep"
+    | "occt.io.loadBrepBinary"
     | "occt.io.loadSTEPorIGES"
     | "occt.io.loadStl"
     | "occt.io.parseStepToJson"
     | "occt.io.saveShapeBrep"
     | "occt.io.saveShapeBrepAndReturn"
+    | "occt.io.saveShapeBrepBinary"
+    | "occt.io.saveShapeBrepBinaryAndReturn"
     | "occt.io.saveShapeObj"
     | "occt.io.saveShapeObjAndReturn"
     | "occt.io.saveShapePly"
@@ -520,8 +533,12 @@ export type OperationPath =
     | "occt.operations.hiddenLines"
     | "occt.operations.loft"
     | "occt.operations.loftAdvanced"
+    | "occt.operations.loftAdvancedWithHistory"
+    | "occt.operations.loftWithHistory"
     | "occt.operations.makeThickSolidByJoin"
+    | "occt.operations.makeThickSolidByJoinWithHistory"
     | "occt.operations.makeThickSolidSimple"
+    | "occt.operations.makeThickSolidSimpleWithHistory"
     | "occt.operations.offset"
     | "occt.operations.offset3DWire"
     | "occt.operations.offsetAdv"
@@ -529,6 +546,7 @@ export type OperationPath =
     | "occt.operations.pipePolylineWireNGon"
     | "occt.operations.pipeWireCylindrical"
     | "occt.operations.pipeWiresCylindrical"
+    | "occt.operations.pipeWithHistory"
     | "occt.operations.pipeWithScaling"
     | "occt.operations.revolve"
     | "occt.operations.revolveWithHistory"
@@ -5859,6 +5877,17 @@ export interface OperationParams {
         shape: unknown | PipelineRef;
     };
     /**
+     * Describes every face and edge of a shape in one pass: each face's surface kind, area, centre,
+     * outward normal and box, and each edge's curve kind, length, midpoint and direction there.
+     *
+     * The numbering and the measures are the selectors' own, so a kept description finds the same
+     * face again after a rebuild.
+     */
+    "occt.analysis.signatures": {
+        /** The shape to work on; it is not changed. */
+        shape: unknown | PipelineRef;
+    };
+    /**
      * Finds the point of a face nearest each given point, with its (u, v) and the face's normal there.
      *
      * The face is bounded, so a point beyond its edges comes to its boundary, which `isOnBoundary`
@@ -5902,10 +5931,10 @@ export interface OperationParams {
      * Builds an assembly document from a structure, or applies the structure to an existing
      * document.
      *
-     * With `existingDocument` the labels in `removals` are dropped first, the `partUpdates`
-     * applied, then the new parts and nodes added; a structure with neither clears the document
-     * unless `clearDocument` is false. `sourceDocuments` supplies the documents imported parts copy
-     * from. The document stays in memory until deleted.
+     * With `existingDocument`, `removals` go first, then `partUpdates`, then new parts and nodes;
+     * with neither, the document is cleared unless `clearDocument` is false. `sourceDocuments` feeds
+     * imported parts; a placed root assembly goes under a top "Assembly". The document stays in
+     * memory until deleted.
      */
     "occt.assembly.manager.buildAssemblyDocument": {
         /** The parts, nodes and updates to build, from `combineStructure`. */
@@ -6123,6 +6152,11 @@ export interface OperationParams {
         mergeFaces?: boolean | PipelineRef;
         /** When true, texture coordinates are written even for meshes without textures. */
         forceUVExport?: boolean | PipelineRef;
+        /**
+         * Which axis points up in the document. A z-up document is turned so that z becomes glTF's y;
+         * a y-up one is written as it is.
+         */
+        up?: "y" | "z" | PipelineRef;
         /** The name the downloaded file gets; it should end in `.glb`. */
         fileName?: string | PipelineRef;
         /**
@@ -6166,6 +6200,11 @@ export interface OperationParams {
         mergeFaces?: boolean | PipelineRef;
         /** When true, texture coordinates are written even for meshes without textures. */
         forceUVExport?: boolean | PipelineRef;
+        /**
+         * Which axis points up in the document. A z-up document is turned so that z becomes glTF's y;
+         * a y-up one is written as it is.
+         */
+        up?: "y" | "z" | PipelineRef;
         /** The name the downloaded file gets; it should end in `.glb`. */
         fileName?: string | PipelineRef;
         /**
@@ -6472,6 +6511,21 @@ export interface OperationParams {
      * the third, not of all three. Fewer than two shapes throw.
      */
     "occt.booleans.intersection": {
+        /** The shapes; the first is intersected with every other one in turn. */
+        shapes: unknown[] | PipelineRef;
+        /**
+         * When false, faces on one surface are merged and their seams removed; when true every edge
+         * stays.
+         */
+        keepEdges?: boolean | PipelineRef;
+    };
+    /**
+     * Intersects shapes as `intersection` does, and reports what became of every shape's faces,
+     * edges and vertices, in the order given, as indexes into the compound it returns.
+     *
+     * A shape that does not touch the first adds no piece and maps to nothing.
+     */
+    "occt.booleans.intersectionWithHistory": {
         /** The shapes; the first is intersected with every other one in turn. */
         shapes: unknown[] | PipelineRef;
         /**
@@ -6882,6 +6936,88 @@ export interface OperationParams {
         shapes: unknown[] | PipelineRef;
     };
     /**
+     * Builds the parts of a design document, with a configuration's values and then `parameters`
+     * replacing the document's own.
+     *
+     * A document `validate` faults is refused. A failed feature is reported and what uses it
+     * skipped; unchanged features are reused. `structure` exports the parts to STEP and glTF through
+     * `assembly.manager.buildAssemblyDocument`; an assembly adds components and a bill of materials.
+     */
+    "occt.design.build": {
+        /**
+         * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
+         * document with its `components`.
+         */
+        document: unknown | PipelineRef;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         */
+        configuration?: string | PipelineRef;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         */
+        parameters?: unknown | PipelineRef;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them; each is checked against the SHA-256 the document records.
+         */
+        assets?: unknown | PipelineRef;
+        /** The documents an assembly's components place, each with the `id` they name it by. */
+        documents?: unknown[] | PipelineRef;
+        /**
+         * When a hinted reference loses its faces: `never` fails and offers the faces most like its hint
+         * as repairs; `report` takes them, if they stand clear, and reports `rebound`.
+         */
+        rebind?: "never" | "report" | PipelineRef;
+        /**
+         * Outcomes the caller made for features the build lists as `pending`, such as scripts, or kept from an
+         * earlier build, each under the hash of the feature it is for; the build takes them instead of
+         * making those features.
+         */
+        outcomes?: unknown[] | PipelineRef;
+    };
+    /**
+     * Checks a design document without building it and lists every problem found.
+     *
+     * Each problem carries the JSON pointer of the value it is about, such as `/features/2/radius`,
+     * and a message. An assembly is checked with the `documents` it places, whose problems come
+     * under their position, such as `/documents/2`. Undefined properties and bad expressions count.
+     */
+    "occt.design.validate": {
+        /**
+         * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
+         * document with its `components`.
+         */
+        document: unknown | PipelineRef;
+        /**
+         * The documents an assembly's components place, each with the `id` they name it by; their
+         * problems are listed under their position, such as `/documents/2`.
+         */
+        documents?: unknown[] | PipelineRef;
+    };
+    /**
+     * Works out the version of a design document, the value a component's `version` pins its source
+     * with.
+     *
+     * The version is the SHA-256 of the document's canonical JSON (RFC 8785) without what only
+     * editors and tools read, such as `meta` but its name, `extras`, labels, descriptions and
+     * reference hints, so editing those keeps it.
+     */
+    "occt.design.versionOf": {
+        /**
+         * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
+         * document with its `components`.
+         */
+        document: unknown | PipelineRef;
+        /**
+         * The documents an assembly's components place, each with the `id` they name it by; their
+         * problems are listed under their position, such as `/documents/2`.
+         */
+        documents?: unknown[] | PipelineRef;
+    };
+    /**
      * Draws a pin, a line from a start point to an end point with a text label at the end, for
      * pointing at a spot on a model and naming it.
      *
@@ -7042,6 +7178,16 @@ export interface OperationParams {
          */
         precision?: number | PipelineRef;
         /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         */
+        angularDeflection?: number | PipelineRef;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         */
+        relativeDeflection?: boolean | PipelineRef;
+        /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
          */
@@ -7082,6 +7228,16 @@ export interface OperationParams {
          * with more triangles.
          */
         precision?: number | PipelineRef;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         */
+        angularDeflection?: number | PipelineRef;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         */
+        relativeDeflection?: boolean | PipelineRef;
         /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
@@ -7209,6 +7365,35 @@ export interface OperationParams {
         untilFaceIndex?: number | PipelineRef;
     };
     /**
+     * Grows a boss as `boss` does, and reports two histories: the base's, then the profile's, whose
+     * `facesFromEdges` holds the side each profile edge swept and `lastFaces` the far end.
+     *
+     * A face the kernel leaves unreported is found from where it lies, and left out when it could
+     * belong to more than one input.
+     */
+    "occt.features.bossWithHistory": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** The direction the profile travels in: away from the base for a boss, into it for a pocket. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the profile travels when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
      * Drills holes as `holes` does, each with a wider, flat-bottomed counterbore at its mouth that
      * sinks a screw head below the surface.
      *
@@ -7244,6 +7429,40 @@ export interface OperationParams {
         counterboreDepth?: number | PipelineRef;
     };
     /**
+     * Drills holes as `counterboredHoles` does, and reports a history for the shape, then one per hole in the
+     * order of `frames`.
+     *
+     * `histories[i + 1].faces.flat()` lists every face hole `i` left in the shape.
+     */
+    "occt.features.counterboredHolesWithHistory": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+        /** The diameter of the counterbore, in model units; it must be wider than `diameter`. */
+        counterboreDiameter?: number | PipelineRef;
+        /**
+         * How deep the counterbore goes from the hole's entry, in model units; it must stay shallower
+         * than a hole of a given `depth`.
+         */
+        counterboreDepth?: number | PipelineRef;
+    };
+    /**
      * Drills holes as `holes` does, each with a cone-shaped countersink at its mouth that sinks a
      * flat screw head flush with the surface.
      *
@@ -7251,6 +7470,43 @@ export interface OperationParams {
      * hole and end above the bottom of a hole of a given `depth`.
      */
     "occt.features.countersunkHoles": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+        /**
+         * The diameter of the countersink where it meets the surface, in model units; it must be wider
+         * than `diameter`.
+         */
+        countersinkDiameter?: number | PipelineRef;
+        /**
+         * The full angle of the countersink cone, in degrees, such as 90 or 82 for common flat head
+         * screws.
+         */
+        countersinkAngle?: number | PipelineRef;
+    };
+    /**
+     * Drills holes as `countersunkHoles` does, and reports a history for the shape, then one per hole in the
+     * order of `frames`.
+     *
+     * `histories[i + 1].faces.flat()` lists every face hole `i` left in the shape.
+     */
+    "occt.features.countersunkHolesWithHistory": {
         /** The shape to drill into. */
         shape: unknown | PipelineRef;
         /**
@@ -7341,6 +7597,33 @@ export interface OperationParams {
         tipAngle?: number | PipelineRef;
     };
     /**
+     * Drills holes as `holes` does, and reports a history for the shape, then one per hole in the
+     * order of `frames`.
+     *
+     * `histories[i + 1].faces.flat()` lists every face hole `i` left in the shape.
+     */
+    "occt.features.holesWithHistory": {
+        /** The shape to drill into. */
+        shape: unknown | PipelineRef;
+        /**
+         * One hole per frame: the origin is where the hole enters and the normal points out of the
+         * material, so the hole runs against it.
+         */
+        frames: unknown[] | PipelineRef;
+        /** The diameter of each hole, in model units. */
+        diameter?: number | PipelineRef;
+        /**
+         * How deep each hole goes from its entry, in model units, not counting a drill point; 0 drills
+         * through the whole shape.
+         */
+        depth?: number | PipelineRef;
+        /**
+         * The full angle of the drill point at the bottom of a hole, in degrees: 0 leaves a flat
+         * bottom, and 118 is the point of a twist drill.
+         */
+        tipAngle?: number | PipelineRef;
+    };
+    /**
      * Cuts a pocket into a base by sweeping a profile face that lies on one of its faces along
      * `direction`, which points into the base.
      *
@@ -7348,6 +7631,35 @@ export interface OperationParams {
      * void or the far side of the base, or through all of it.
      */
     "occt.features.pocket": {
+        /** The base shape the feature is built on. */
+        shape: unknown | PipelineRef;
+        /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
+        profile: unknown | PipelineRef;
+        /** The face of the base the profile lies on, counted from 0 as `shapes.face.getFaces` lists them. */
+        sketchFaceIndex?: number | PipelineRef;
+        /** The direction the profile travels in: away from the base for a boss, into it for a pocket. */
+        direction?: [number, number, number] | PipelineRef;
+        /**
+         * Where the feature stops: after `length`, at the face `untilFaceIndex` names, or once it has
+         * passed through the whole base.
+         */
+        extent?: "length" | "untilFace" | "throughAll" | PipelineRef;
+        /** How far the profile travels when `extent` is `length`, in model units. */
+        length?: number | PipelineRef;
+        /**
+         * The face the feature stops at when `extent` is `untilFace`: one the profile meets on its way,
+         * such as the underside of an overhang or a void's ceiling.
+         */
+        untilFaceIndex?: number | PipelineRef;
+    };
+    /**
+     * Cuts a pocket as `pocket` does, and reports two histories: the base's, then the profile's,
+     * whose `facesFromEdges` holds the wall each profile edge swept and `lastFaces` the floor.
+     *
+     * A face the kernel leaves unreported is found from where it lies, and left out when it could
+     * belong to more than one input.
+     */
+    "occt.features.pocketWithHistory": {
         /** The base shape the feature is built on. */
         shape: unknown | PipelineRef;
         /** The face to sweep; it must lie on the face of the base that `sketchFaceIndex` names. */
@@ -8453,6 +8765,16 @@ export interface OperationParams {
         /** The BREP file's text, or a File or Blob that holds it. */
         brepData: unknown | PipelineRef;
     };
+    /**
+     * Reads a binary BREP file, the bytes `io.saveShapeBrepBinary` writes, back into the shape it
+     * holds, with its faces and edges in the same order.
+     *
+     * The bytes are checked first: damaged ones, or ones not in version 4, are refused, saying where.
+     */
+    "occt.io.loadBrepBinary": {
+        /** The binary BREP file's bytes, or a File or Blob that holds them. */
+        brepData: unknown | PipelineRef;
+    };
     /** Loads a STEP or IGES file into an OCCT shape. Pass file content as text (for .step/.stp/.iges/.igs) or ArrayBuffer (for .stpz/.igz). */
     "occt.io.loadSTEPorIGES": {
         /** File content: string for plain text files (.step, .stp, .iges, .igs), or base64-encoded ArrayBuffer for compressed files (.stpz, .igz). */
@@ -8516,6 +8838,11 @@ export interface OperationParams {
          * itself only returns the text.
          */
         tryDownload?: boolean | PipelineRef;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         */
+        withTriangulation?: boolean | PipelineRef;
     };
     /**
      * Writes a shape as BREP, the text format that keeps its exact geometry and topology, and
@@ -8534,6 +8861,57 @@ export interface OperationParams {
          * itself only returns the text.
          */
         tryDownload?: boolean | PipelineRef;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         */
+        withTriangulation?: boolean | PipelineRef;
+    };
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and starts a browser download of the file.
+     *
+     * `io.loadBrepBinary` reads the file back into the same shape. `fileName` names the download and
+     * `tryDownload` false skips it; `saveShapeBrepBinaryAndReturn` gives the bytes instead.
+     */
+    "occt.io.saveShapeBrepBinary": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the bytes.
+         */
+        tryDownload?: boolean | PipelineRef;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         */
+        withTriangulation?: boolean | PipelineRef;
+    };
+    /**
+     * Writes a shape as binary BREP, the exact geometry and topology `saveShapeBrep` writes as text,
+     * in bytes, and returns them.
+     *
+     * `io.loadBrepBinary` reads them back with every face and edge at the same index.
+     * `withTriangulation` false leaves out the mesh.
+     */
+    "occt.io.saveShapeBrepBinaryAndReturn": {
+        /** The shape written to the file. */
+        shape: unknown | PipelineRef;
+        /** The name the downloaded file gets. */
+        fileName?: string | PipelineRef;
+        /**
+         * When true, a browser download of the file is started where that is possible; the kernel
+         * itself only returns the bytes.
+         */
+        tryDownload?: boolean | PipelineRef;
+        /**
+         * When true, the mesh a shape carries is written with it, so a shape read back draws without
+         * meshing again; false writes only the exact geometry.
+         */
+        withTriangulation?: boolean | PipelineRef;
     };
     /**
      * Triangulates a shape, writes it as OBJ, the mesh format most 3D programs read, and starts a
@@ -9142,6 +9520,66 @@ export interface OperationParams {
         endVertex?: [number, number, number] | PipelineRef;
     };
     /**
+     * Lofts as `loftAdvanced` does, and reports what each section in `shapes` became, as
+     * `loftWithHistory` does: the sides along each section edge, and the caps at the start and end
+     * of a solid.
+     *
+     * A `periodic` loft runs through curves resampled from the sections rather than the sections
+     * themselves, so it has no history to report and is refused.
+     */
+    "occt.operations.loftAdvancedWithHistory": {
+        /** The section wires, or edges, in the order the surface passes through them. */
+        shapes: unknown[] | PipelineRef;
+        /** When true, the loft is capped into a solid; the sections must be closed for that. */
+        makeSolid?: boolean | PipelineRef;
+        /** When true, the surface loops from the last section back to the first. */
+        closed?: boolean | PipelineRef;
+        /**
+         * When true, the closed loop is made smooth across the seam by resampling the sections; needs
+         * `closed`.
+         */
+        periodic?: boolean | PipelineRef;
+        /**
+         * When true, the patches between sections are ruled surfaces with straight lines instead of a
+         * smooth blend.
+         */
+        straight?: boolean | PipelineRef;
+        /** How many points each section is resampled into for a periodic loft. */
+        nrPeriodicSections?: number | PipelineRef;
+        /** When true, the kernel smooths the fitted surface. */
+        useSmoothing?: boolean | PipelineRef;
+        /** The highest polynomial degree the surface may use across the sections. */
+        maxUDegree?: number | PipelineRef;
+        /** How far the fitted surface may stray from the sections, in model units. */
+        tolerance?: number | PipelineRef;
+        /**
+         * How the sections are parametrized before fitting: by chord length, centripetal, or
+         * isoparametric; centripetal handles uneven sections best.
+         */
+        parType?: "approxChordLength" | "approxCentripetal" | "approxIsoParametric" | PipelineRef;
+        /**
+         * A point the loft closes to before the first section, making a pointed end; leave it out for
+         * an open end.
+         */
+        startVertex?: [number, number, number] | PipelineRef;
+        /**
+         * A point the loft closes to after the last section, making a pointed end; leave it out for an
+         * open end.
+         */
+        endVertex?: [number, number, number] | PipelineRef;
+    };
+    /**
+     * Lofts as `loft` does, and reports one history per section: `facesFromEdges` holds the skin
+     * along each section edge, the first section's `firstFaces` and the last's `lastFaces` the caps
+     * of a solid.
+     */
+    "occt.operations.loftWithHistory": {
+        /** The section wires, or edges, in the order the surface passes through them. */
+        shapes: unknown[] | PipelineRef;
+        /** When true, the loft is capped into a solid; the sections must be closed for that. */
+        makeSolid?: boolean | PipelineRef;
+    };
+    /**
      * Hollows a solid into a shell of the given wall thickness by removing the listed faces and
      * offsetting the rest.
      *
@@ -9180,6 +9618,41 @@ export interface OperationParams {
         removeIntEdges?: boolean | PipelineRef;
     };
     /**
+     * Hollows a solid as `makeThickSolidByJoin` does, and reports what became of its faces: each
+     * kept face stays (`faces`) and gains the inner wall offset from it (`facesFromFaces`), and each
+     * removed face becomes the rim left where it was.
+     */
+    "occt.operations.makeThickSolidByJoinWithHistory": {
+        /** The solid to hollow out. */
+        shape: unknown | PipelineRef;
+        /** The faces of the solid to remove, leaving the openings of the shell. */
+        shapes: unknown[] | PipelineRef;
+        /** The wall thickness in model units; negative grows the wall inward. */
+        offset?: number | PipelineRef;
+        /**
+         * How close two points must be to count as the same when the offset walls are joined, in model
+         * units.
+         */
+        tolerance?: number | PipelineRef;
+        /**
+         * When true, the offset faces are intersected with each other rather than joined by their
+         * parallels; the kernel's default is false.
+         */
+        intersection?: boolean | PipelineRef;
+        /**
+         * Whether the kernel should look for self-intersections in the result; not implemented by the
+         * kernel, so leave it false.
+         */
+        selfIntersection?: boolean | PipelineRef;
+        /**
+         * How the offset walls meet at corners: `arc` rounds them, `intersection` extends them to a
+         * sharp corner, `tangent` keeps them tangent.
+         */
+        joinType?: "arc" | "intersection" | "tangent" | PipelineRef;
+        /** When true, the internal edges the offset can leave on the walls are removed from the result. */
+        removeIntEdges?: boolean | PipelineRef;
+    };
+    /**
      * Gives a face or shell a thickness, turning it into a solid slab or wall of the given
      * `offset`.
      *
@@ -9188,6 +9661,20 @@ export interface OperationParams {
      * bridged by tolerance.
      */
     "occt.operations.makeThickSolidSimple": {
+        /** The face or shell to give a thickness to. */
+        shape: unknown | PipelineRef;
+        /**
+         * The thickness in model units, along the surface normal for a positive value and the other way
+         * for a negative one.
+         */
+        offset?: number | PipelineRef;
+    };
+    /**
+     * Thickens a shape as `makeThickSolidSimple` does, and reports what became of its faces and
+     * edges: each face stays where it was (`faces`) and gains its offset copy (`facesFromFaces`),
+     * and each free edge raises the wall between the two (`facesFromEdges`).
+     */
+    "occt.operations.makeThickSolidSimpleWithHistory": {
         /** The face or shell to give a thickness to. */
         shape: unknown | PipelineRef;
         /**
@@ -9282,12 +9769,11 @@ export interface OperationParams {
         shapes: unknown[] | PipelineRef;
     };
     /**
-     * Sweeps a regular polygon along a wire, giving a tube with `nrCorners` flat sides, for
-     * instance a hexagonal bar along a path.
+     * Sweeps a regular polygon along a wire, giving a bar with `nrCorners` flat sides.
      *
-     * The polygon of `radius` is placed at the start of the wire, perpendicular to it. `makeSolid`
-     * gives a solid instead of a shell, `trihedronEnum` chooses how the profile turns along the
-     * path, and `forceApproxC1` smooths the result.
+     * The polygon of `radius` starts perpendicular to the wire. `makeSolid` gives a solid instead of
+     * a shell, `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result.
+     * An invalid bar is refused; on a nearly straight path, use the discrete trihedron.
      */
     "occt.operations.pipePolylineWireNGon": {
         /** The path wire the tube follows. */
@@ -9309,9 +9795,9 @@ export interface OperationParams {
     /**
      * Sweeps a circle along a wire, giving a round tube of the given radius that follows the path.
      *
-     * The circle is placed at the start of the wire, perpendicular to it. `makeSolid` gives a solid
-     * instead of a shell, `trihedronEnum` chooses how the profile turns as it follows the path, and
-     * `forceApproxC1` smooths the result.
+     * The circle starts perpendicular to the wire. `makeSolid` gives a solid instead of a shell,
+     * `trihedronEnum` sets how the profile turns, and `forceApproxC1` smooths the result. An invalid
+     * tube is refused; on a nearly straight path, use the discrete trihedron.
      */
     "occt.operations.pipeWireCylindrical": {
         /** The path wire the tube follows. */
@@ -9346,6 +9832,17 @@ export interface OperationParams {
         trihedronEnum?: "isCorrectedFrenet" | "isFixed" | "isFrenet" | "isConstantNormal" | "isDarboux" | "isGuideAC" | "isGuidePlan" | "isGuideACWithContact" | "isGuidePlanWithContact" | "isDiscreteTrihedron" | PipelineRef;
         /** When true, a swept surface that came out with kinks is refitted to be smooth. */
         forceApproxC1?: boolean | PipelineRef;
+    };
+    /**
+     * Sweeps profiles along a path as `pipe` does, and reports what each profile became, one
+     * history per profile in the order given: `facesFromEdges` holds the side each profile edge
+     * swept, `firstFaces` and `lastFaces` the caps at the two ends of the path.
+     */
+    "occt.operations.pipeWithHistory": {
+        /** The main shape: the path wire for a pipe, the wire to extend when adding edges. */
+        shape: unknown | PipelineRef;
+        /** The other shapes: the profiles placed on the path, or the edges and wires to add. */
+        shapes: unknown[] | PipelineRef;
     };
     /**
      * Sweeps a profile along a spine while scaling it, such as a tube that widens toward one end.
@@ -15086,6 +15583,16 @@ export interface OperationParams {
          */
         precision?: number | PipelineRef;
         /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         */
+        angularDeflection?: number | PipelineRef;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         */
+        relativeDeflection?: boolean | PipelineRef;
+        /**
          * When true, the meshes are turned so this library's Y-up becomes Z-up, for tools that treat Z
          * as up.
          */
@@ -15161,6 +15668,16 @@ export interface OperationParams {
          * with more triangles.
          */
         precision?: number | PipelineRef;
+        /**
+         * The largest angle, in radians, a curved face may turn between neighbouring triangles; smaller
+         * follows curvature more closely with more triangles.
+         */
+        angularDeflection?: number | PipelineRef;
+        /**
+         * When true, `precision` is a fraction of each edge's and face's size instead of model units, so
+         * small and large parts get triangles in proportion to their size.
+         */
+        relativeDeflection?: boolean | PipelineRef;
         /**
          * When true, the mesh is turned so this library's Y-up becomes Z-up, for tools that treat Z as
          * up.
@@ -17835,7 +18352,7 @@ export interface TypedChoiceStep {
 export type TypedPipelineAnyStep = TypedStep | TypedMapStep | TypedChoiceStep;
 
 /** Pipeline output format. */
-export type TypedPipelineOutputFormat = "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf";
+export type TypedPipelineOutputFormat = "step" | "stpz" | "decomposed-mesh" | "gltf" | "json" | "csv" | "stl" | "3mf" | "brep" | "brep-binary";
 
 /** Output options for a typed pipeline. */
 export interface TypedPipelineOutputOptions {

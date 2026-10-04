@@ -1,5 +1,7 @@
 import * as Inputs from "./inputs";
+import type * as Models from "./models";
 import { isFrameShaped, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { ShapeWithAppearance } from "./draw-appearance";
 
 /**
  * Base interface for draw options - engine-specific implementations extend this
@@ -74,6 +76,9 @@ export class DrawCore {
             { kind: "jscadMesh", phase: "async", matches: (e) => this.detectJscadMesh(e) },
             { kind: "occtShape", phase: "async", matches: (e) => this.detectOcctShape(e) },
             { kind: "occtShapes", phase: "async", matches: (e) => this.detectOcctShapes(e) },
+            { kind: "occtShapeWithAppearance", phase: "async", matches: (e) => this.detectShapeWithAppearance(e) },
+            { kind: "occtShapesWithAppearance", phase: "async", matches: (e) => this.detectShapesWithAppearance(e) },
+            { kind: "designBuild", phase: "async", matches: (e) => this.detectDesignBuild(e) },
             { kind: "jscadMeshes", phase: "async", matches: (e) => this.detectJscadMeshes(e) },
             { kind: "manifoldShape", phase: "async", matches: (e) => this.detectManifoldShape(e) },
             { kind: "manifoldShapes", phase: "async", matches: (e) => this.detectManifoldShapes(e) },
@@ -358,6 +363,32 @@ export class DrawCore {
         return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectManifoldShape(el));
     }
 
+    /**
+     * Whether the entity is a kernel shape with an appearance to draw it in: a `shape` the OCCT
+     * kernel returned and, when given, an `appearance` whose `faces` and `edges` entries each list
+     * integer indexes, with colors given as strings.
+     */
+    detectShapeWithAppearance(entity: unknown): entity is ShapeWithAppearance {
+        if (!isRecord(entity)) return false;
+        return this.detectOcctShape(entity["shape"]) && (entity["appearance"] === undefined || isAppearance(entity["appearance"]));
+    }
+
+    detectShapesWithAppearance(entity: unknown): entity is ShapeWithAppearance[] {
+        return Array.isArray(entity) && entity.length > 0 && entity.every(el => this.detectShapeWithAppearance(el));
+    }
+
+    /**
+     * Whether the entity is what `occt.design.build` returns: a `report` list and `parts` that each
+     * carry an `id` and a kernel `shape` with an optional appearance, and, for an assembly,
+     * `components` that each carry a `path`, an optional `part` and a 4 x 4 `world` matrix.
+     */
+    detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> {
+        if (!isRecord(entity) || !Array.isArray(entity["report"]) || !Array.isArray(entity["parts"])) return false;
+        const partsDrawable = entity["parts"].every(part => isRecord(part) && typeof part["id"] === "string" && this.detectShapeWithAppearance(part));
+        const components = entity["components"];
+        return partsDrawable && (components === undefined || (Array.isArray(components) && components.every(isPlacedComponent)));
+    }
+
     detectDecomposedMesh(entity: unknown): entity is Inputs.OCCT.DecomposedMeshDto {
         if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
         const obj = entity as Record<string, unknown>;
@@ -434,4 +465,38 @@ export class DrawCore {
                value.length > 0 && 
                this.isTagDto(value[0]);
     }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isFiniteNumber(value: unknown): value is number {
+    return typeof value === "number" && Number.isFinite(value);
+}
+
+function isLookValues(value: Record<string, unknown>): boolean {
+    return ["color", "emissive"].every(key => value[key] === undefined || typeof value[key] === "string")
+        && ["metallic", "roughness", "opacity", "emissiveStrength"].every(key => value[key] === undefined || isFiniteNumber(value[key]));
+}
+
+function isIndexList(value: unknown): boolean {
+    return Array.isArray(value) && value.every(index => Number.isInteger(index));
+}
+
+function isEntryList(value: unknown, isEntry: (entry: Record<string, unknown>) => boolean): boolean {
+    return value === undefined || (Array.isArray(value) && value.every(entry => isRecord(entry) && isIndexList(entry["indexes"]) && isEntry(entry)));
+}
+
+function isAppearance(value: unknown): boolean {
+    return isRecord(value) && isLookValues(value)
+        && (value["edgeColor"] === undefined || typeof value["edgeColor"] === "string")
+        && isEntryList(value["faces"], isLookValues)
+        && isEntryList(value["edges"], entry => entry["color"] === undefined || typeof entry["color"] === "string");
+}
+
+function isPlacedComponent(value: unknown): boolean {
+    return isRecord(value) && typeof value["path"] === "string"
+        && (value["part"] === undefined || typeof value["part"] === "string")
+        && Array.isArray(value["world"]) && value["world"].length === 16 && value["world"].every(isFiniteNumber);
 }

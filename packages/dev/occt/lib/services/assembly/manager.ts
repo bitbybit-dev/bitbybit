@@ -2,10 +2,12 @@ import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../..
 import { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
-import { resolveDto } from "@bitbybit-dev/base";
+import { InputError, resolveDto } from "@bitbybit-dev/base";
 import * as Resolved from "../../api/resolved-inputs";
 import { checkedNumber } from "../base/input-checks";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, checkedDocument, objNameOf } from "../base/file-data";
+
+type GltfExportCall = (...args: unknown[]) => Uint8Array | undefined;
 
 export type { Handle_TDocStd_Document };
 
@@ -208,10 +210,10 @@ export class OCCTAssemblyManager {
      * Builds an assembly document from a structure, or applies the structure to an existing
      * document.
      *
-     * With `existingDocument` the labels in `removals` are dropped first, the `partUpdates`
-     * applied, then the new parts and nodes added; a structure with neither clears the document
-     * unless `clearDocument` is false. `sourceDocuments` supplies the documents imported parts copy
-     * from. The document stays in memory until deleted.
+     * With `existingDocument`, `removals` go first, then `partUpdates`, then new parts and nodes;
+     * with neither, the document is cleared unless `clearDocument` is false. `sourceDocuments` feeds
+     * imported parts; a placed root assembly goes under a top "Assembly". The document stays in
+     * memory until deleted.
      * @param inputs - The structure, an optional document to update and the optional source documents
      * @returns The document handle, new or updated
      * @throws Error if assembly building fails
@@ -229,14 +231,21 @@ export class OCCTAssemblyManager {
         const { structure, existingDocument, sourceDocuments } = inputs;
         
         const shapes: TopoDS_Shape[] = [];
-        const partsJson: { id: string; shapeIndex: number; name: string; colorRgba?: Inputs.Base.ColorRGBA | undefined }[] = [];
+        const partsJson: (Omit<Models.OCCT.AssemblyPartDef<TopoDS_Shape>, "shape"> & { shapeIndex: number })[] = [];
         
         for (const part of structure.parts) {
             partsJson.push({
                 id: part.id,
                 shapeIndex: shapes.length,
                 name: part.name,
-                colorRgba: part.colorRgba
+                colorRgba: part.colorRgba,
+                edgeColorRgba: part.edgeColorRgba,
+                metallic: part.metallic,
+                roughness: part.roughness,
+                emissiveRgb: part.emissiveRgb,
+                faceColors: part.faceColors,
+                edgeColors: part.edgeColors,
+                properties: part.properties
             });
             shapes.push(part.shape);
         }
@@ -271,7 +280,7 @@ export class OCCTAssemblyManager {
             }))
             : undefined;
 
-        const nodesJson = structure.nodes.map(node => {
+        const nodesJson = this.withPlacedRoots(structure.nodes).map(node => {
             if (node.matrix === undefined || node.matrix === null) {
                 return node;
             }
@@ -285,7 +294,8 @@ export class OCCTAssemblyManager {
             removals: structure.removals,
             partUpdates: partUpdatesJson.length > 0 ? partUpdatesJson : undefined,
             clearDocument: structure.clearDocument,
-            loadedParts: loadedPartsJson
+            loadedParts: loadedPartsJson,
+            lengthUnit: structure.lengthUnit
         });
         
         const document = this.occ.BuildAssemblyDocument(
@@ -300,6 +310,43 @@ export class OCCTAssemblyManager {
         }
         
         return document;
+    }
+
+    /**
+     * The nodes as the document builder needs them to honour every placement. A root of the document
+     * cannot be placed, so when a root assembly node carries a placement other than the identity,
+     * every root node is put under one top assembly, named "Assembly" as the builder names the one it
+     * makes for loose instances, and the placement is kept relative to it. Nodes whose roots are not
+     * placed come back as they are.
+     */
+    /**
+     * The trailing argument that tells a glTF export call whether the document is y-up, for a kernel
+     * whose call takes it; none for a kernel built before it, recognised by the call taking only
+     * `olderArity` arguments, which turns every document as a z-up one and so cannot write y-up.
+     */
+    private upFor(exportCall: GltfExportCall, olderArity: number, up: Inputs.OCCT.upAxisEnum): [boolean] | [] {
+        if (exportCall.length !== olderArity) {
+            return [up === Inputs.OCCT.upAxisEnum.y];
+        }
+        if (up === Inputs.OCCT.upAxisEnum.y) {
+            throw new InputError("this kernel writes every document as z-up; a newer kernel writes a y-up one", "up");
+        }
+        return [];
+    }
+
+    private withPlacedRoots(nodes: Models.OCCT.AssemblyNodeDef[]): Models.OCCT.AssemblyNodeDef[] {
+        const identity = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0];
+        const placed = (node: Models.OCCT.AssemblyNodeDef): boolean => {
+            if (node.matrix !== undefined && node.matrix !== null) {
+                return this.och.transformsService.foldToRowMajor12(node.matrix).some((value, index) => Math.abs(value - identity[index]!) > 1e-12);
+            }
+            return (node.translation?.some(value => value !== 0) ?? false) || (node.rotation?.some(value => value !== 0) ?? false) || (node.scale !== undefined && node.scale !== 1);
+        };
+        if (!nodes.some(node => node.type === "assembly" && !node.parentId && placed(node))) {
+            return nodes;
+        }
+        const top = "__root__";
+        return [{ id: top, type: "assembly", name: "Assembly" }, ...nodes.map(node => node.parentId ? node : { ...node, parentId: top })];
     }
 
     /**
@@ -461,14 +508,16 @@ export class OCCTAssemblyManager {
      */
     exportDocumentToGltf(inputs: Inputs.OCCT.ExportDocumentToGltfDto<Handle_TDocStd_Document>): Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfDto, inputs) as Resolved.OCCT.ExportDocumentToGltfDto<Handle_TDocStd_Document>;
-        const result = this.occ.ExportDocumentToGltf(
+        const exportCall = this.occ.ExportDocumentToGltf.bind(this.occ) as GltfExportCall;
+        const result = exportCall(
             resolved.document,
             resolved.meshDeflection,
             resolved.meshAngle,
             resolved.internalVerticesMode,
             resolved.controlSurfaceDeflection,
             resolved.mergeFaces,
-            resolved.forceUVExport
+            resolved.forceUVExport,
+            ...this.upFor(exportCall, 7, resolved.up)
         );
         
         if (!result) {
@@ -500,7 +549,8 @@ export class OCCTAssemblyManager {
      */
     exportDocumentToGltfWithDraco(inputs: Inputs.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>): Uint8Array {
         const resolved = resolveDto(Inputs.OCCT.ExportDocumentToGltfWithDracoDto, inputs) as Resolved.OCCT.ExportDocumentToGltfWithDracoDto<Handle_TDocStd_Document>;
-        const result = this.occ.ExportDocumentToGltfWithDraco(
+        const exportCall = this.occ.ExportDocumentToGltfWithDraco.bind(this.occ) as GltfExportCall;
+        const result = exportCall(
             resolved.document,
             resolved.meshDeflection,
             resolved.meshAngle,
@@ -515,7 +565,8 @@ export class OCCTAssemblyManager {
             resolved.dracoQuantizeTexcoordBits,
             resolved.dracoQuantizeColorBits,
             resolved.dracoQuantizeGenericBits,
-            resolved.dracoUnifiedQuantization
+            resolved.dracoUnifiedQuantization,
+            ...this.upFor(exportCall, 15, resolved.up)
         );
 
         if (!result) {

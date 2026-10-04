@@ -102,6 +102,129 @@ describe("DrawCore entity detection", () => {
     });
 });
 
+describe("shapes with their appearance and design builds are told apart", () => {
+    let core: DrawCore;
+    let probe: ProbeCore;
+    const shape: Inputs.OCCT.TopoDSShapePointer = { hash: 7, type: "occ-shape" };
+    const appearance = { color: "#ffffff", metallic: 0.5, faces: [{ indexes: [0, 2], color: "#000000" }] };
+    const world = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 10, 0, 0, 1];
+    const build = {
+        parts: [{ id: "post-1a", name: "Post", shape, appearance }],
+        report: [],
+        components: [{ path: "post", part: "post-1a", world }, { path: "frame", assembly: true, world }],
+    };
+
+    beforeEach(() => {
+        core = new DrawCore();
+        probe = new ProbeCore();
+    });
+
+    it("should detect a shape with an appearance, and one without", () => {
+        // Act
+        const withLooks = core.detectShapeWithAppearance({ shape, appearance });
+        const plain = core.detectShapeWithAppearance({ shape });
+
+        // Assert
+        expect(withLooks).toBe(true);
+        expect(plain).toBe(true);
+    });
+
+    it("should refuse an appearance whose faces are not listed by integer indexes", () => {
+        // Act
+        const notAList = core.detectShapeWithAppearance({ shape, appearance: { faces: { indexes: [0] } } });
+        const fractional = core.detectShapeWithAppearance({ shape, appearance: { faces: [{ indexes: [0.5] }] } });
+        const textOpacity = core.detectShapeWithAppearance({ shape, appearance: { opacity: "0.5" } });
+
+        // Assert
+        expect(notAList).toBe(false);
+        expect(fractional).toBe(false);
+        expect(textOpacity).toBe(false);
+    });
+
+    it("should take edge colors listed by integer indexes and refuse others", () => {
+        // Act
+        const colored = core.detectShapeWithAppearance({ shape, appearance: { edgeColor: "#333333", edges: [{ indexes: [0, 3], color: "#ff0000" }, { indexes: [1] }] } });
+        const fractional = core.detectShapeWithAppearance({ shape, appearance: { edges: [{ indexes: [1.5] }] } });
+        const notAList = core.detectShapeWithAppearance({ shape, appearance: { edges: { indexes: [0] } } });
+        const numberColor = core.detectShapeWithAppearance({ shape, appearance: { edges: [{ indexes: [0], color: 255 }] } });
+        const numberEdgeColor = core.detectShapeWithAppearance({ shape, appearance: { edgeColor: 0 } });
+        const numberEmissive = core.detectShapeWithAppearance({ shape, appearance: { emissive: 1 } });
+        const textStrength = core.detectShapeWithAppearance({ shape, appearance: { faces: [{ indexes: [0], emissiveStrength: "2" }] } });
+        const glowing = core.detectShapeWithAppearance({ shape, appearance: { emissive: "#3cf2ff", emissiveStrength: 2.6, faces: [{ indexes: [0], emissive: "#ffffff" }] } });
+
+        // Assert
+        expect(colored).toBe(true);
+        expect([fractional, notAList, numberColor, numberEdgeColor, numberEmissive, textStrength]).toEqual([false, false, false, false, false, false]);
+        expect(glowing).toBe(true);
+    });
+
+    it("should not take a bare shape or a mesh for a shape with an appearance", () => {
+        // Act
+        const bare = core.detectShapeWithAppearance(shape);
+        const mesh = core.detectShapeWithAppearance({ faceList: [], edgeList: [] });
+
+        // Assert
+        expect(bare).toBe(false);
+        expect(mesh).toBe(false);
+    });
+
+    it("should detect a list of shapes with their appearance only when every one is", () => {
+        // Act
+        const all = core.detectShapesWithAppearance([{ shape }, { shape, appearance }]);
+        const mixed = core.detectShapesWithAppearance([{ shape }, shape]);
+        const empty = core.detectShapesWithAppearance([]);
+
+        // Assert
+        expect(all).toBe(true);
+        expect(mixed).toBe(false);
+        expect(empty).toBe(false);
+    });
+
+    it("should detect a design build, with components or without", () => {
+        // Arrange
+        const partDocumentBuild = { parts: build.parts, report: [] };
+
+        // Act
+        const assembly = core.detectDesignBuild(build);
+        const partDocument = core.detectDesignBuild(partDocumentBuild);
+
+        // Assert
+        expect(assembly).toBe(true);
+        expect(partDocument).toBe(true);
+    });
+
+    it("should refuse a design build whose parts or components cannot be drawn", () => {
+        // Act
+        const noReport = core.detectDesignBuild({ parts: build.parts });
+        const partWithoutId = core.detectDesignBuild({ parts: [{ shape }], report: [] });
+        const shortMatrix = core.detectDesignBuild({ ...build, components: [{ path: "post", part: "post-1a", world: [1, 0, 0] }] });
+        const pathless = core.detectDesignBuild({ ...build, components: [{ part: "post-1a", world }] });
+
+        // Assert
+        expect(noReport).toBe(false);
+        expect(partWithoutId).toBe(false);
+        expect(shortMatrix).toBe(false);
+        expect(pathless).toBe(false);
+    });
+
+    it("should resolve each of them to its own kind in the asynchronous call", () => {
+        // Arrange
+        const every = probe.kinds().map(k => k.kind);
+
+        // Act
+        const one = probe.resolve({ shape, appearance }, "async", every);
+        const many = probe.resolve([{ shape }, { shape }], "async", every);
+        const assembly = probe.resolve(build, "async", every);
+        const plainShape = probe.resolve(shape, "async", every);
+
+        // Assert
+        expect(one).toBe("occtShapeWithAppearance");
+        expect(many).toBe("occtShapesWithAppearance");
+        expect(assembly).toBe("designBuild");
+        expect(plainShape).toBe("occtShape");
+    });
+});
+
 describe("a frame is drawn as a frame", () => {
     let probe: ProbeCore;
     const frame: Inputs.Base.Frame = { origin: [1, 2, 3], normal: [0, 1, 0], direction: [0, 0, 1] };
@@ -219,7 +342,8 @@ describe("the order a draw call tries kinds in", () => {
 
     it("should be this exact list, because order is what decides the ambiguous cases", () => {
         expect(probe.kinds().map(k => k.kind)).toEqual([
-            "jscadMesh", "occtShape", "occtShapes", "jscadMeshes",
+            "jscadMesh", "occtShape", "occtShapes",
+            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
             "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh",
             "line", "point", "jscadPath", "polyline", "frame", "node", "verbCurve", "verbSurface",
             "jscadPaths", "polylines", "frames", "lines", "points", "nodes",
@@ -229,7 +353,8 @@ describe("the order a draw call tries kinds in", () => {
 
     it("should reach a kernel shape only from the asynchronous call", () => {
         const async = probe.kinds().filter(k => k.phase === "async").map(k => k.kind);
-        expect(async).toEqual(["jscadMesh", "occtShape", "occtShapes", "jscadMeshes",
+        expect(async).toEqual(["jscadMesh", "occtShape", "occtShapes",
+            "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
             "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh"]);
     });
 

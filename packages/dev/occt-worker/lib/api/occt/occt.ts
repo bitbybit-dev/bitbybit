@@ -22,17 +22,18 @@ import { OCCTIO } from "./io";
 import { OCCTPath } from "./path";
 import { OCCTSketch } from "./sketch/sketch";
 import { OCCTSVG } from "./svg";
+import { OCCTDesign } from "./design";
 
 /**
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
  * properties. `shapes` builds and reads vertices, edges, wires, faces, shells, solids and
  * compounds; `operations`, `booleans`, `fillets`, `transforms`, `corners`, `draft` and `features`
  * change shapes; `select` picks faces and edges by what they are and where they lie; `analysis`
- * answers questions about shapes with points and numbers; `geom` handles
- * curves and surfaces; `io` reads and writes STEP, IGES, STL and other files; `sketch` draws flat
- * outlines with a pen; `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents,
- * annotations, topology graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle meshes for
- * drawing.
+ * measures shapes; `geom` handles curves and surfaces; `io` reads and writes STEP, IGES, STL and
+ * other files; `sketch` draws flat outlines with a pen; `design` builds models kept as data;
+ * `assembly`, `dimensions`, `brepGraph`, `path` and `svg` cover documents, annotations, topology
+ * graphs, machining paths and SVG. The methods on the service itself turn shapes into triangle
+ * meshes for drawing.
  */
 export class OCCT {
     public readonly shapes: OCCTShapes;
@@ -54,6 +55,7 @@ export class OCCT {
     public readonly path: OCCTPath;
     public readonly sketch: OCCTSketch;
     public readonly svg: OCCTSVG;
+    public readonly design: OCCTDesign;
 
     constructor(
         public readonly occWorkerManager: OCCTWorkerManager
@@ -77,6 +79,7 @@ export class OCCT {
         this.path = new OCCTPath(occWorkerManager);
         this.sketch = new OCCTSketch(occWorkerManager);
         this.svg = new OCCTSVG(occWorkerManager);
+        this.design = new OCCTDesign(occWorkerManager);
     }
 
     /**

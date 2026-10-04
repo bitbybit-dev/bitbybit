@@ -62,6 +62,8 @@ radians" on every angle, read from the service (`degToRad` there means the publi
   "Distance in model units"), no trailing period on either.
 - The generator tags (`@group`, `@shortname`, `@drawable`, `@disposableOutput`, `@ignore`) keep
   their values and order exactly; they are structured metadata, not prose.
+- `@beta` marks an API whose shape may still change before it is declared stable; api-extractor
+  carries it into the API report. Say in the description what may change.
 - `@example` last. Examples are the default, not the exception: a method goes without one only when
   the DTO already says everything (a getter, a setter of one value, a pass-through). An example
   stands alone: three to ten lines, the call itself first, real values that show the interesting
