@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 /**
  * Parameters for creating and working with points: single points, points spread along a line or a

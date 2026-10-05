@@ -1,6 +1,7 @@
-import { DtoRules, custom, defineRules, sameLength } from "@bitbybit-dev/base";
+import type { DtoRules } from "@bitbybit-dev/base";
+import { custom, defineRules, sameLength } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 const notZero = (factor: number): boolean => factor !== 0;
 

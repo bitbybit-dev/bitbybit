@@ -1,4 +1,5 @@
-import { ArcPiece, COINCIDENT, Outline, Piece, Vec2 } from "./outline";
+import type { ArcPiece, Outline, Piece, Vec2 } from "./outline";
+import { COINCIDENT } from "./outline";
 
 /**
  * Something the hull wraps: a point, or a disc of `radius` about `center` whose rim counts only
@@ -47,11 +48,6 @@ function touch(part: HullPart, angle: number): Vec2 {
     return [center[0] + radius * Math.cos(angle), center[1] + radius * Math.sin(angle)];
 }
 
-/**
- * The angle, after `angle`, at which `next` starts to reach further than `current`: where the two
- * share an outer tangent with `next` ahead, or undefined when that never happens while `next` takes
- * part.
- */
 function overtakesAt(current: HullPart, next: HullPart, angle: number): number | undefined {
     const between: Vec2 = [centerOf(next)[0] - centerOf(current)[0], centerOf(next)[1] - centerOf(current)[1]];
     const distance = Math.hypot(between[0], between[1]);
@@ -65,7 +61,6 @@ function overtakesAt(current: HullPart, next: HullPart, angle: number): number |
     return covers(next, angle + turned) ? turned : undefined;
 }
 
-/** A stretch of the hull carried by one part, from one outward angle to another. */
 type Run = { part: HullPart; from: number; to: number };
 
 /**

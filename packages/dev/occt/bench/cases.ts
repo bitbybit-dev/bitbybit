@@ -1,6 +1,6 @@
-import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OCCTService } from "../lib/occ-service";
-import * as Inputs from "../lib/api/inputs";
+import type { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OCCTService } from "../lib/occ-service";
+import type * as Inputs from "../lib/api/inputs";
 
 /**
  * A measured workload. It builds its shapes through the public API, as a script would, and returns

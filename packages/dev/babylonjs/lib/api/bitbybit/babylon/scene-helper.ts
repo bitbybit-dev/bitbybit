@@ -1,8 +1,9 @@
 import * as BABYLON from "@babylonjs/core";
-import { BabylonJSScene, InitBabylonJSResult } from "../../inputs/babylon-scene-helper-inputs";
+import type { InitBabylonJSResult } from "../../inputs/babylon-scene-helper-inputs";
+import { BabylonJSScene } from "../../inputs/babylon-scene-helper-inputs";
 import { BabylonCamera } from "../../inputs/babylon-camera-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Helper function to initialize a basic BabylonJS scene with lights, shadows, and optional ground plane.

@@ -7,7 +7,7 @@ import { Transforms } from "./transforms";
 import { Vector } from "./vector";
 import * as Inputs from "../inputs";
 import { Lists } from "./lists";
-import { VectorFont } from "../models/simplex";
+import type { VectorFont } from "../models/simplex";
 
 
 const SIMPLEX_LINE_SPACING = 2.142857142857143;
@@ -52,7 +52,9 @@ describe("Text unit tests", () => {
         expected: Inputs.Base.Point3 | Inputs.Base.Vector3
     ) => {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         expect(received.length).toEqual(expected.length);
         expect(received[0]).toBeCloseTo(expected[0], TOLERANCE);
         expect(received[1]).toBeCloseTo(expected[1], TOLERANCE);

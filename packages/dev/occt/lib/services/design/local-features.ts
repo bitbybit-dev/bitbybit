@@ -1,19 +1,22 @@
-import { TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { messageOf } from "@bitbybit-dev/base";
+import type { TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import { DesignOutcome, hashBytes, hashText, release, stableJson } from "./cache";
+import type * as Models from "../../api/models";
+import type { DesignOutcome } from "./cache";
+import { hashBytes, hashText, release, stableJson } from "./cache";
 import { sha256 } from "./digest";
-import { Vector, bodyOf, contextOf, cross, faceCount, faceFrame, faceSignatures, profileNames, scaled } from "./helpers";
+import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, profileNames } from "./helpers";
+import { tripleOf } from "./placement";
 import { carryNames, give, nameOf } from "./names";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 import { resolveFaces } from "./references";
-import { DesignPlan, DesignRun, bodyKey, sketchKey } from "./state";
+import type { DesignPlan, DesignRun } from "./state";
+import { bodyKey, sketchKey } from "./state";
 import { ownValue } from "./structure";
 import { numberOf } from "./values";
 
 type Prism = Models.OCCT.DesignBossFeature | Models.OCCT.DesignPocketFeature;
 
-/** The one face a reference names on a body, or a problem saying how many it found. */
 function oneFace(reference: Models.OCCT.DesignFaceReference, body: string, run: DesignRun, path: string): number {
     const faces = resolveFaces(reference, contextOf(bodyOf(body, run), run), path);
     if (faces.length !== 1) {
@@ -44,13 +47,12 @@ function shelled(feature: Models.OCCT.DesignShellFeature, path: string, run: Des
 
 const SHELL_JOINS = [Inputs.OCCT.joinTypeEnum.arc, Inputs.OCCT.joinTypeEnum.intersection] as const;
 
-/**
- * Hollows a shape with arc joins, OCCT's default, and with intersection joins when those fail,
- * build an invalid solid or hollow nothing: neither is right everywhere (a filleted block opened at
- * its top is valid only with intersection joins, one opened at its bottom only with arc joins), and
- * a thickness well past what the shape allows comes back as the shape itself, with no inner wall.
- */
-function hollowed(shape: TopoDS_Shape, faces: TopoDS_Shape[], offset: number, path: string, run: DesignRun): { made: Models.OCCT.ShapeWithHistory<TopoDS_Shape>; join: string } {
+interface Hollowed {
+    made: Models.OCCT.ShapeWithHistory<TopoDS_Shape>;
+    join: string;
+}
+
+function hollowed(shape: TopoDS_Shape, faces: TopoDS_Shape[], offset: number, path: string, run: DesignRun): Hollowed {
     const reasons: string[] = [];
     for (const joinType of SHELL_JOINS) {
         try {
@@ -65,7 +67,7 @@ function hollowed(shape: TopoDS_Shape, faces: TopoDS_Shape[], offset: number, pa
             if (isKernelTrap(error)) {
                 throw error;
             }
-            reasons.push(`with ${joinType} joins: ${error instanceof Error ? error.message : String(error)}`);
+            reasons.push(`with ${joinType} joins: ${messageOf(error)}`);
         }
     }
     throw new DesignProblem(path, `the shell could not be built (${reasons.join("; ")})`);
@@ -75,12 +77,10 @@ function drilled(feature: Models.OCCT.DesignHoleFeature, path: string, run: Desi
     const body = bodyOf(feature.body, run);
     const frame = faceFrame(feature.on, feature.origin, feature.direction, body, path, "on", run);
     run.trace?.set(path, { frame });
-    const across = cross(frame.normal, frame.direction);
     const frames = feature.at.map((position, index): Inputs.Base.Frame => {
         const x = Array.isArray(position) ? numberOf(position[0], run.parameters, pointer(path, "at", index, 0)) : numberOf(position.x, run.parameters, pointer(path, "at", index, "x"));
         const y = Array.isArray(position) ? numberOf(position[1], run.parameters, pointer(path, "at", index, 1)) : numberOf(position.y, run.parameters, pointer(path, "at", index, "y"));
-        const origin: Vector = [0, 1, 2].map(axis => frame.origin[axis]! + x * frame.direction[axis]! + y * across[axis]!) as Vector;
-        return { origin, normal: frame.normal, direction: frame.direction };
+        return { origin: run.base.frame.pointToWorld({ frame, point: [x, y, 0] }), normal: frame.normal, direction: frame.direction };
     });
     const common = {
         shape: body.shape,
@@ -129,7 +129,7 @@ function prismed(feature: Prism, path: string, run: DesignRun): DesignOutcome {
     const body = bodyOf(feature.body, run);
     const sketch = run.sketches.get(feature.profile)!;
     const sketchFaceIndex = oneFace(sketch.face!, feature.body, run, pointer(path, "profile"));
-    const direction = feature.type === "boss" ? sketch.normal : scaled(sketch.normal, -1);
+    const direction = feature.type === "boss" ? sketch.normal : tripleOf(run.base.vector.neg({ vector: sketch.normal }));
     const extent = extentOf(feature, path, run);
     run.trace?.set(path, { sketchFace: sketchFaceIndex, ...(extent.untilFaceIndex === undefined ? {} : { untilFace: extent.untilFaceIndex }) });
     const inputs: Inputs.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face> = { shape: body.shape, profile: sketch.shape, sketchFaceIndex, direction, ...extent };
@@ -150,7 +150,7 @@ function pushedOrPulled(feature: Models.OCCT.DesignPushPullFeature, path: string
         throw new DesignProblem(pointer(path, "distance"), "the distance is not 0: above 0 pulls the face out, below 0 pushes it in");
     }
     const pull = distance > 0;
-    const direction = pull ? signature.normal : scaled(signature.normal, -1);
+    const direction = pull ? signature.normal : tripleOf(run.base.vector.neg({ vector: signature.normal }));
     run.trace?.set(path, { sketchFace: index, pull, frame: { origin: signature.centre, normal: direction, direction: [1, 0, 0] } });
     const face = run.occt.shapes.face.getFace({ shape: body.shape, index });
     try {

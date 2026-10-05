@@ -1,4 +1,5 @@
-import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
+import type { DataInput } from "./jscad-worker";
+import { initializationComplete, onMessageInput } from "./jscad-worker";
 
 export class JSCADWorkerMock {
     initializationComplete = (jscad: unknown, plugins: any, doNotPost?: boolean) => { initializationComplete(jscad, plugins, doNotPost); };

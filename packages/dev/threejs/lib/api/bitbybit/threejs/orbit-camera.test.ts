@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { ThreeJSOrbitCamera, OrbitCameraController, createOrbitCamera } from "./orbit-camera";
-import { Context } from "../../context";
-import * as Inputs from "../../inputs";
+import type { OrbitCameraController } from "./orbit-camera";
+import { ThreeJSOrbitCamera, createOrbitCamera } from "./orbit-camera";
+import type { Context } from "../../context";
+import type * as Inputs from "../../inputs";
 import * as THREEJS from "three";
 import { createMockContext, createSimpleMockContext, createMockDOMElement } from "../../__mocks__/test-helpers";
 

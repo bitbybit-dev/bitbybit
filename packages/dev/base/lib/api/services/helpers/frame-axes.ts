@@ -1,4 +1,4 @@
-import * as Inputs from "../../inputs";
+import type * as Inputs from "../../inputs";
 
 type Vec3 = Inputs.Base.Vector3;
 

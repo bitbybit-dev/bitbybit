@@ -1,11 +1,3 @@
-// Finds the examples, and says what each one is. Both lanes over this directory read it: the
-// verification lane (examples.mjs), which installs every example from the registry the way a user
-// does, and the local lane (local.mjs), which points them at this repository's own packages
-// instead. One walker means the two lanes can never disagree about what an example is.
-//
-// An example is any directory here with a package.json, generated output and node_modules aside.
-// verify.config.json names the ones to skip, each with a reason, and the frameworks whose builds
-// are too heavy to run every time.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,10 +9,15 @@ export const config = JSON.parse(readFileSync(path.join(ROOT, "verify.config.jso
 
 export function discover(dir = ROOT, out = []) {
     for (const entry of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
-        if (!entry.isDirectory() || SKIP_DIRS.has(entry.name)) continue;
+        if (!entry.isDirectory() || SKIP_DIRS.has(entry.name)) {
+            continue;
+        }
         const full = path.join(dir, entry.name);
-        if (existsSync(path.join(full, "package.json"))) out.push(path.relative(ROOT, full));
-        else discover(full, out);
+        if (existsSync(path.join(full, "package.json"))) {
+            out.push(path.relative(ROOT, full));
+        } else {
+            discover(full, out);
+        }
     }
     return out;
 }
@@ -42,8 +39,6 @@ export function describe(rel) {
     };
 }
 
-// The command-line shape both lanes share: `--only <part>` keeps the examples whose path contains
-// that text, so `--only vite/threejs` is a directory and `--only cup` is every example named one.
 export function selected(args, map = describe) {
     const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
     return discover().map(map).filter((e) => !only || e.path.includes(only));

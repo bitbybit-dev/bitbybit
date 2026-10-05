@@ -4,7 +4,6 @@ import { ContextBase } from "../context";
 import { VerbCurve } from "../bitbybit/verb/curve";
 import { VerbSurface } from "../bitbybit/verb/surface";
 
-// The verb services reach the library through the context, exactly as they do in an application.
 export function verbCurve(): VerbCurve {
     const context = new ContextBase();
     context.verb = verb;

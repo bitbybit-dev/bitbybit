@@ -1,6 +1,6 @@
 
-import * as Inputs from "../inputs/jscad-inputs";
-import * as JSCAD from "@jscad/modeling";
+import type * as Inputs from "../inputs/jscad-inputs";
+import type * as JSCAD from "@jscad/modeling";
 import { asKind, asSolid } from "./entity-narrowing";
 
 /**

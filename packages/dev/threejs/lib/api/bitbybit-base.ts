@@ -1,34 +1,18 @@
-import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
-import {
-    Verb,
-    Tag,
-    Time,
-    OCCTW,
-    Asset,
-    JSONBitByBit,
-    CSVBitByBit,
-} from "@bitbybit-dev/core";
-import { JSCAD } from "@bitbybit-dev/jscad-worker";
-import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
-import {
-    Vector,
-    Point,
-    Frame,
-    Line,
-    Polyline, TextBitByBit, Color,
-    MathBitByBit,
-    Lists, Logic, Transforms, Dates, MeshBitByBit
-} from "@bitbybit-dev/base";
+import type { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
+import type { JSCAD } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
+import type { Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit, Lists, Logic, Transforms, Dates, MeshBitByBit } from "@bitbybit-dev/base";
 import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
-import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 import { ThreeJS } from "./bitbybit/threejs";
-import * as THREEJS from "three";
+import type * as THREEJS from "three";
 
 /**
  * The whole library behind one object for a Three.js scene: `occt`, `jscad` and `manifold` for the

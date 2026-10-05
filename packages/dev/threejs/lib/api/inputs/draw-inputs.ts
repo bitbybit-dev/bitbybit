@@ -4,7 +4,6 @@ import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Options for drawing geometry into a Three.js scene: color, opacity, size, and the per-kind settings
  * that control how points, lines, polylines, meshes, surfaces and kernel shapes become renderer

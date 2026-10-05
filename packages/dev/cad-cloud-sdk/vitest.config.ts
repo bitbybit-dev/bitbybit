@@ -5,8 +5,6 @@ export default defineConfig({
         globals: false,
         include: ["src/**/*.test.ts"],
         testTimeout: 10_000,
-        // Results as JSON for the repository's test report; on GitHub Actions the annotations stay and
-        // the runner's own job summary yields to that report.
         reporters: process.env.GITHUB_ACTIONS === "true" ? ["default", "json", ["github-actions", { jobSummary: { enabled: false } }]] : ["default", "json"],
         outputFile: { json: "test-results/vitest.json" },
         coverage: {

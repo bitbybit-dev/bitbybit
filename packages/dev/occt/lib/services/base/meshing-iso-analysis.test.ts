@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
@@ -23,7 +24,9 @@ describe("MeshingService iso curves and surface analysis", () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
-        while (restores.length) restores.pop()!();
+        while (restores.length) {
+            restores.pop()!();
+        }
     });
 
     const cube = (): TopoDS_Shape => service.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [0, 0, 0] });

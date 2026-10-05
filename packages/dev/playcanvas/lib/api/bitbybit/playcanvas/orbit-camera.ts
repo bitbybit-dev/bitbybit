@@ -1,8 +1,8 @@
 import * as pc from "playcanvas";
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import * as Inputs from "../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 interface OrbitCameraInstance {
     autoRender: boolean;
@@ -426,7 +426,9 @@ export class PlayCanvasOrbitCamera {
     }
 
     private createMouseInput(entity: pc.Entity, orbitCamera: OrbitCameraInstance, options: { orbitSensitivity: number; distanceSensitivity: number }): InputHandler | null {
-        if (!this.context.app?.mouse) return null;
+        if (!this.context.app?.mouse) {
+            return null;
+        }
 
         const mouse = this.context.app.mouse;
         let lookButtonDown = false;
@@ -439,7 +441,9 @@ export class PlayCanvasOrbitCamera {
 
         const pan = (screenPoint: { x: number; y: number }): void => {
             const camera = entity.camera;
-            if (!camera) return;
+            if (!camera) {
+                return;
+            }
 
             const distance = orbitCamera.distance;
             camera.screenToWorld(screenPoint.x, screenPoint.y, distance, fromWorldPoint);
@@ -511,7 +515,9 @@ export class PlayCanvasOrbitCamera {
     }
 
     private createTouchInput(entity: pc.Entity, orbitCamera: OrbitCameraInstance, options: { orbitSensitivity: number; distanceSensitivity: number }): InputHandler | null {
-        if (!this.context.app?.touch) return null;
+        if (!this.context.app?.touch) {
+            return null;
+        }
 
         const touch = this.context.app.touch;
         const lastTouchPoint = new pc.Vec2();
@@ -538,7 +544,9 @@ export class PlayCanvasOrbitCamera {
 
         const pan = (midPoint: pc.Vec2): void => {
             const camera = entity.camera;
-            if (!camera) return;
+            if (!camera) {
+                return;
+            }
 
             const distance = orbitCamera.distance;
             camera.screenToWorld(midPoint.x, midPoint.y, distance, fromWorldPoint);

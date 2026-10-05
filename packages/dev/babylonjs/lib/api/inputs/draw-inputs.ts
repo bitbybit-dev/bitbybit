@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 import * as Inputs from "./index";
 import { Base } from "./base-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Options for drawing geometry into a BabylonJS scene: color, opacity, size, whether the result is
  * pickable, and the per-kind settings that control how points, lines, polylines, meshes, surfaces and

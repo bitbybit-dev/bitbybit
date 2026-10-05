@@ -1,5 +1,6 @@
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { DataInput } from "./occ-worker";
+import { initializationComplete, onMessageInput } from "./occ-worker";
 
 export class OCCTWorkerMock {
     initializationComplete = (occ: BitbybitOcctModule, plugins: any, doNotPost?: boolean, restart?: () => unknown) => { initializationComplete(occ, plugins, doNotPost, restart); };

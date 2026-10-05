@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { HullPart, hullOf } from "./hull";
-import { ArcPiece, signedArea } from "./outline";
+import type { HullPart } from "./hull";
+import { hullOf } from "./hull";
+import type { ArcPiece } from "./outline";
+import { signedArea } from "./outline";
 
 const point = (x: number, y: number): HullPart => ({ kind: "point", at: [x, y] });
 const disc = (x: number, y: number, radius: number): HullPart => ({ kind: "disc", center: [x, y], radius });

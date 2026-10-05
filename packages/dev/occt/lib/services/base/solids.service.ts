@@ -1,13 +1,13 @@
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { ShapeGettersService } from "./shape-getters";
-import { EntitiesService } from "./entities.service";
-import { EnumService } from "./enum.service";
-import { ConverterService } from "./converter.service";
-import { TransformsService } from "./transforms.service";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type { Base } from "../../api/inputs";
+import type { ShapeGettersService } from "./shape-getters";
+import type { EntitiesService } from "./entities.service";
+import type { EnumService } from "./enum.service";
+import type { ConverterService } from "./converter.service";
+import type { TransformsService } from "./transforms.service";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { coordinatesOf, massesAndCentres } from "./kernel-arrays";
 import { checkedShapes } from "./input-checks";
 

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { createHeadlessScene, HeadlessScene } from "../../__test__/headless";
+import type { HeadlessScene } from "../../__test__/headless";
+import { createHeadlessScene } from "../../__test__/headless";
 import { BabylonEngine } from "./engine";
 
 describe("BabylonEngine", () => {

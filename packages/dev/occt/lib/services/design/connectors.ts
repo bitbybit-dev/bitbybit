@@ -1,5 +1,5 @@
-import * as Models from "../../api/models";
-import { isRecord } from "./structure";
+import { isRecord } from "@bitbybit-dev/base";
+import type * as Models from "../../api/models";
 
 /** One connector a declaration makes: its id and the declaration that places it alone. */
 export interface ConnectorMember {

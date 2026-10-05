@@ -1,40 +1,16 @@
-import { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { OCCT as BaseOCCT, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { JSONPath } from "jsonpath-plus";
 import { Babylon } from "./bitbybit/babylon/babylon";
-import {
-    Verb,
-    Tag,
-    Time,
-    OCCTW,
-    Asset,
-    JSONBitByBit,
-    CSVBitByBit,
-} from "@bitbybit-dev/core";
-import {
-    Vector,
-    Point,
-    Frame,
-    Line,
-    Polyline,
-    TextBitByBit,
-    Color,
-    MathBitByBit,
-    Lists,
-    Logic,
-    Transforms,
-    Dates,
-    MeshBitByBit,
-} from "@bitbybit-dev/base";
-import {
-    JSCAD
-} from "@bitbybit-dev/jscad-worker";
-import { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
+import type { Verb, Tag, Time, OCCTW, Asset, JSONBitByBit, CSVBitByBit } from "@bitbybit-dev/core";
+import type { Vector, Point, Frame, Line, Polyline, TextBitByBit, Color, MathBitByBit, Lists, Logic, Transforms, Dates, MeshBitByBit } from "@bitbybit-dev/base";
+import type { JSCAD } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldBitByBit } from "@bitbybit-dev/manifold-worker";
 import { createSharedServices } from "@bitbybit-dev/core/lib/api/shared-services";
 import { Draw } from "./bitbybit/draw";
 import { Context } from "./context";
-import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import * as BABYLON from "@babylonjs/core";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type * as BABYLON from "@babylonjs/core";
 import * as vrb from "verb-nurbs-web";
 import { DrawHelper } from "./draw-helper";
 

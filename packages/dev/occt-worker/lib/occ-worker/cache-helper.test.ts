@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, beforeEach, vi } from "vitest";
-import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
 
 function javaStringHash(str: string): number {

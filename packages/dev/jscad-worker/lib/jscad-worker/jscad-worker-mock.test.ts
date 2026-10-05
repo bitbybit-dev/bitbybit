@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
-import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
+import type { DataInput } from "./jscad-worker";
+import { initializationComplete, onMessageInput } from "./jscad-worker";
 
 vi.mock("./jscad-worker", () => ({
     initializationComplete: vi.fn(),

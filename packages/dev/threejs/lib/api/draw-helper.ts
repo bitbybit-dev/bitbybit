@@ -1,20 +1,21 @@
 
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, MeshData, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
-import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement } from "@bitbybit-dev/core";
+import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf } from "@bitbybit-dev/core";
+import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement, MeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
-import { JSCADText } from "@bitbybit-dev/jscad-worker";
-import { Vector, resolveDto } from "@bitbybit-dev/base";
-import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { JSCADText } from "@bitbybit-dev/jscad-worker";
+import type { Vector } from "@bitbybit-dev/base";
+import { messageOf, resolveDto } from "@bitbybit-dev/base";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as THREEJS from "three";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
-import * as Resolved from "./resolved-inputs";
+import type * as Resolved from "./resolved-inputs";
 import { batchedLineShader, matricesTexture, writeMatrices } from "./batched-lines";
 
 interface DesignInstance {
@@ -141,7 +142,7 @@ export class DrawHelper extends DrawHelperCore {
             return manifoldMeshContainer;
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
-            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw manifolds or cross sections: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -156,7 +157,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
-            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw manifold or cross section: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -171,7 +172,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
-            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw OCCT shape: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -191,7 +192,7 @@ export class DrawHelper extends DrawHelperCore {
             return shapesMeshContainer;
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
-            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw OCCT shapes: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -239,52 +240,19 @@ export class DrawHelper extends DrawHelperCore {
      */
     async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: THREEJS.Group): Promise<THREEJS.Group> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
-        const placements = partPlacementsOf(build);
-        const parts = new Map(build.parts.map(part => [part.id, part]));
-        const placed = [...placements.keys()].filter(id => parts.has(id));
         const state = previous ? this.designStates.get(previous) : undefined;
-        const signature = designSignatureOf(parts, placed, options);
-        if (previous && state && state.precision === options.precision && state.signature === signature && samePlacements(state.placements, placements)) {
-            this.poseDesign(state, placements);
+        const plan = designDrawPlanOf(build, options, state);
+        if (previous && state && plan.posesOnly) {
+            this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = new Map<string, Inputs.OCCT.DecomposedMeshDto>();
-        const keys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
-        if (state && state.precision === options.precision) {
-            for (const id of placed) {
-                const kept = state.meshes.get(keys.get(id)!);
-                if (kept) {
-                    meshes.set(id, kept);
-                }
-            }
-        }
-        const meshing = this.meshingTextOf(options);
-        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
-        for (const id of placed) {
-            const cacheKey = cacheKeys.get(id);
-            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
-            if (cached) {
-                meshes.set(id, cached);
-            }
-        }
-        const missing = placed.filter(id => !meshes.has(id));
-        if (missing.length > 0) {
-            const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => {
-                const mesh = made[index]!;
-                const cacheKey = cacheKeys.get(id);
-                meshes.set(id, mesh);
-                if (cacheKey !== undefined) {
-                    this.designMeshes.set(cacheKey, mesh);
-                }
-            });
-        }
+        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const target = previous && state ? previous : this.newDesignGroup();
         if (state && target === previous) {
             this.clearDesign(target, state);
         }
-        const filled = this.fillDesign(target, parts, placements, placed, meshes, options, signature);
-        filled.meshes = new Map(placed.map(id => [keys.get(id)!, meshes.get(id)!]));
+        const filled = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, plan.signature);
+        filled.meshes = meshesByKeyOf(plan, meshes);
         this.designStates.set(target, filled);
         return target;
     }
@@ -334,15 +302,10 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    /** The color of a part's edges that its appearance colors none of: from the part's color under `edgeContrast`. */
     private partEdgeColour(appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): string {
         return defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
     }
 
-    /**
-     * One mesh holding the faces of every look, with one geometry group and one material per look,
-     * and in `userData.faceRanges` where each face's triangles sit in its index buffer.
-     */
     private lookedMesh(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): THREEJS.Mesh {
         const drawn = lookMeshes.filter(look => look.indices.length > 0);
         let vertexCount = 0;
@@ -382,7 +345,6 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
 
-    /** The material of a look, its opacity times `faceOpacity`, cached like the plain face materials. */
     private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): THREEJS.MeshPhysicalMaterial {
         const opacity = look.opacity * faceOpacity;
         return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
@@ -446,11 +408,6 @@ export class DrawHelper extends DrawHelperCore {
         return { placements, meshes, signature, precision: options.precision, batches, edges };
     }
 
-    /**
-     * One `BatchedMesh` for a look: each part's faces of that look added once as a geometry and each
-     * placement of the part an instance of it. Its `userData` gives the component path of each
-     * instance and, per geometry, the part, where its indices start and where each face's are.
-     */
     private lookBatch(slot: LookSlot, placements: ReadonlyMap<string, readonly PartPlacement[]>, faceOpacity: number, zOffset: number): DesignBatch {
         let instanceCount = 0;
         let vertexCount = 0;
@@ -486,13 +443,6 @@ export class DrawHelper extends DrawHelperCore {
         return { mesh, instances };
     }
 
-    /**
-     * Every edge of every placement in one `LineSegments2`: each part's segments copied once per
-     * placement in the part's own coordinates, each copy moved by its placement's matrix in the
-     * shader, and colored per segment as the part's appearance colors its edges. Its `userData`
-     * gives, per placement, the component path and where its segments start, and per part where
-     * each edge's segments are.
-     */
     private edgeBatch(placed: readonly string[], parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, placements: ReadonlyMap<string, readonly PartPlacement[]>, options: Resolved.Draw.DrawOcctShapeOptions): DesignEdges | undefined {
         const segments = new Map(placed.map(id => [id, edgeSegmentsOf(meshes.get(id)!)]));
         const colors = new Map(placed.map(id => [id, this.segmentColors(segments.get(id)!, parts.get(id)!.appearance, options)]));
@@ -557,7 +507,6 @@ export class DrawHelper extends DrawHelperCore {
         return { line, texture, order };
     }
 
-    /** Six color channels per segment of a part, the start's then the end's, each edge in its color. */
     private segmentColors(segments: EdgeSegments, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): Float32Array {
         const edgeColors = edgeColorsOf(appearance, segments.edgeRanges.map(range => range.edge), this.partEdgeColour(appearance, options));
         const channels = new Float32Array(segments.positions.length);
@@ -642,7 +591,7 @@ export class DrawHelper extends DrawHelperCore {
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
-            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw JSCAD mesh: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -697,7 +646,7 @@ export class DrawHelper extends DrawHelperCore {
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
-            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw JSCAD meshes: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -1470,13 +1419,6 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    /**
-     * Compute per-vertex colors for polylines based on color mapping strategy
-     * @param colors - Single color or array of colors
-     * @param polylineSegmentCounts - Number of line segments per polyline
-     * @param colorMapStrategy - Strategy for mapping colors to polylines
-     * @returns Flat array of RGB values for each vertex
-     */
     private computePolylineColors(
         colours: string | string[], 
         polylineSegmentCounts: number[], 
@@ -1497,12 +1439,6 @@ export class DrawHelper extends DrawHelperCore {
         return lineColors;
     }
 
-    /**
-     * Compute per-vertex colors for polylines using an explicit color array
-     * @param polylineSegmentCounts - Number of line segments per polyline/arrow line
-     * @param explicitColors - Array of colors, one per polyline/arrow line
-     * @returns Flat array of RGB values for each vertex
-     */
     private computePolylineColorsWithExplicit(
         polylineSegmentCounts: number[],
         explicitColors: string[]
@@ -1551,73 +1487,18 @@ export class DrawHelper extends DrawHelperCore {
         return line;
     }
 
-    /** What a `size` of 1 is worth in pixels of line width, chosen to match the BabylonJS layer. */
     private static readonly LINE_WIDTH_PER_SIZE = 1 / 3;
 
-    /**
-     * The narrowest a drawn line is allowed to get, in pixels.
-     *
-     * Below one pixel the ribbon `LineSegments2` builds stops covering a pixel center reliably and
-     * the line comes out broken or gone, because this material discards a fragment outside the
-     * ribbon rather than fading it - there is no coverage mask to resolve a partial pixel. That
-     * regime is easy to reach without meaning to: the library's own defaults scale to well under a
-     * pixel, `size` at 0.1 to a thirtieth of one.
-     *
-     * The floor is one pixel because that is what these lines were before they could carry a width
-     * at all - `LineBasicMaterial` ignores `linewidth` and WebGL draws every line exactly one pixel
-     * wide - so no scene drawn at a default gets thinner than it used to be, and a `size` set high
-     * enough to ask for more still gets it.
-     */
     private static readonly LINE_WIDTH_MIN_PX = 1;
 
-    /**
-     * Decimal places a line width is rounded to for its cache key.
-     *
-     * The width is a float, so an unrounded key gives two widths that differ only in the last binary
-     * digit two materials that never hit. Rounding bounds the key space to the widths a scene can
-     * actually tell apart, which is what lets this cache have no eviction: a cached line material is
-     * referenced by every line drawn at that width, and nothing here tracks those, so freeing one on
-     * eviction would blank lines still in the scene. `dispose()` is the single owner instead.
-     */
     private static readonly LINE_WIDTH_PRECISION = 3;
 
-    /**
-     * The flat position array `LineSegmentsGeometry` wants, from the vertices the polyline paths build.
-     * Written once because the create and update paths must lay out the same geometry - built twice,
-     * one of them drifts and the update silently writes a different shape than the draw did.
-     */
     private static flattenVertices(lineVertices: THREEJS.Vector3[]): number[] {
         const positions: number[] = [];
         lineVertices.forEach((v) => positions.push(v.x, v.y, v.z));
         return positions;
     }
 
-    /**
-     * The material a drawn line gets its width from.
-     *
-     * `LineBasicMaterial` cannot carry a width: WebGL renders GL lines one pixel wide whatever
-     * `linewidth` says. Drawing through `LineSegments2` builds the line as ribbon geometry instead,
-     * which can be any width - so `size` finally means something here.
-     *
-     * The width is in pixels, scaled so the default reads like the same script drawn through the
-     * BabylonJS layer, and floored so it never lands in the sub-pixel regime `LINE_WIDTH_MIN_PX`
-     * describes. Matching that layer's units instead - world units at a hundredth of `size`, which
-     * is what it uses - was tried and does not survive: a hundredth of a small `size` is well under
-     * a pixel across, and Three draws a sub-pixel ribbon either broken or, with the coverage mask
-     * resolving it, so faint it disappears. BabylonJS's line shader holds a thin line together where
-     * this one cannot, so the weight is matched here rather than the unit.
-     *
-     * A pixel width also stays readable at any zoom, which is what an edge on a CAD model is for.
-     * The trade is that it does not thin out as a scene grows the way a world-unit width does.
-     *
-     * The viewport the width is measured against is not set here. `LineSegments2` writes the
-     * renderer's own viewport into the material before every frame, so a line is correct in a canvas
-     * that is not the window and stays correct across a resize without anything being redrawn.
-     * Setting it here as well would be overwritten before it was ever read.
-     *
-     * Color comes from the geometry rather than the material, so one material serves every line of
-     * a given width and is cached and disposed with the rest.
-     */
     private getOrCreateLineMaterial(size: number): LineMaterial {
         const width = Math.max(DrawHelper.LINE_WIDTH_MIN_PX, size * DrawHelper.LINE_WIDTH_PER_SIZE);
         const key = `line-${width.toFixed(DrawHelper.LINE_WIDTH_PRECISION)}`;
@@ -1736,10 +1617,6 @@ export class DrawHelper extends DrawHelperCore {
         return safeOptions;
     }
 
-    /**
-     * What the worker meshes a shape with: the options it can receive, with the iso curve counts
-     * only when the iso curves are drawn and the surface analysis only when the faces are.
-     */
     private getMeshingOptions<T extends Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">>(inputs: T): Omit<T, "faceMaterial"> {
         return {
             ...this.getSafeWorkerOptions(inputs),
@@ -1749,10 +1626,6 @@ export class DrawHelper extends DrawHelperCore {
         };
     }
 
-    /**
-     * The material of faces colored by a surface analysis: the OCCT face material in white and reading
-     * vertex colors, so each vertex shows its own color, cached like the plain face materials.
-     */
     private getOrCreateAnalysisMaterial(alpha: number, zOffset: number): THREEJS.MeshPhysicalMaterial {
         return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
             const pbmat = new THREEJS.MeshPhysicalMaterial();
@@ -1768,27 +1641,11 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
-    /**
-     * Generate a unique entity ID with semantic naming
-     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
-     * @param parentId - Optional parent ID for hierarchical naming
-     * @returns Unique entity ID string
-     */
     private generateEntityId(type: string, parentId?: string): string {
         const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
         return parentId ? `${parentId}/${id}` : id;
     }
 
-    /**
-     * Get or create a cached material with the specified properties
-     * Implements LRU-like eviction when cache is full
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param zOffset - Z-offset value
-     * @param createFn - Function to create new material if not cached
-     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
-     * @returns Cached or newly created material
-     */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
@@ -1818,14 +1675,6 @@ export class DrawHelper extends DrawHelperCore {
         return material;
     }
 
-    /**
-     * Get or create a cached unlit material (MeshBasicMaterial) for points and lines.
-     * Uses a separate cache from MeshPhysicalMaterial since these have different types.
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param createFn - Function to create new material if not cached
-     * @returns Cached or newly created MeshBasicMaterial
-     */
     private getOrCreateUnlitMaterial(
         hex: string,
         alpha: number,
@@ -1853,15 +1702,6 @@ export class DrawHelper extends DrawHelperCore {
         return material;
     }
 
-    /**
-     * Create a back face mesh with flipped normals and reversed winding order
-     * This is used for two-sided rendering of CAD geometries
-     * @param meshDataConverted - Original mesh data
-     * @param backFaceColour - Color for the back face
-     * @param backFaceOpacity - Opacity for the back face
-     * @param zOffset - Depth bias to prevent z-fighting
-     * @returns Group containing the back face mesh
-     */
     private createBackFaceMesh(
         meshDataConverted: MeshData[],
         backFaceColour: string,
@@ -1931,7 +1771,9 @@ export class DrawHelper extends DrawHelperCore {
 
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
-            if (pointCount === 0) return;
+            if (pointCount === 0) {
+                return;
+            }
 
             const segments = pointCount > 1000 ? 1 : 6;
             const geom = new THREEJS.SphereGeometry(size / 2, segments, segments);

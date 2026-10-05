@@ -1,9 +1,10 @@
-import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
+import type { GeometryHelper } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-import { MathBitByBit } from "@bitbybit-dev/base";
-import * as JSCAD from "@jscad/modeling";
+import type { MathBitByBit } from "@bitbybit-dev/base";
+import type * as JSCAD from "@jscad/modeling";
 import { asPath } from "./entity-narrowing";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Building flat JSCAD shapes, the filled 2D regions that booleans combine and extrusions turn into

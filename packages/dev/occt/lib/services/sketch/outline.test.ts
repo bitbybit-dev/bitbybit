@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { InputError } from "@bitbybit-dev/base";
-import { ArcPiece, CubicPiece, LinePiece, Piece, QuadraticPiece, Vec2, arcThrough, cornerBetween, endTangent, outlineOf, segmentsOf, signedArea, startTangent, subpathOf } from "./outline";
+import type { ArcPiece, CubicPiece, LinePiece, Piece, QuadraticPiece, Vec2 } from "./outline";
+import { arcThrough, cornerBetween, endTangent, outlineOf, segmentsOf, signedArea, startTangent, subpathOf } from "./outline";
 
 const near = (actual: Vec2, expected: Vec2): void => {
     expect(Math.hypot(actual[0] - expected[0], actual[1] - expected[1])).toBeLessThan(1e-9);

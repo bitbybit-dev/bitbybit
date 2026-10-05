@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * Definition for updating an existing part in a document.

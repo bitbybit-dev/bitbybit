@@ -26,10 +26,18 @@ export class TasksEndpoint {
     /** List tasks with optional filters. */
     async list(query?: TaskListQuery): Promise<TaskList> {
         const params = new URLSearchParams();
-        if (query?.page != null) params.set("page", String(query.page));
-        if (query?.limit != null) params.set("limit", String(query.limit));
-        if (query?.status) params.set("status", query.status);
-        if (query?.kind) params.set("kind", query.kind);
+        if (query?.page != null) {
+            params.set("page", String(query.page));
+        }
+        if (query?.limit != null) {
+            params.set("limit", String(query.limit));
+        }
+        if (query?.status) {
+            params.set("status", query.status);
+        }
+        if (query?.kind) {
+            params.set("kind", query.kind);
+        }
         const qs = params.toString();
         return unwrap(await this.fetch("GET", `/api/v1/tasks${qs ? `?${qs}` : ""}`));
     }

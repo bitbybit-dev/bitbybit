@@ -6,86 +6,94 @@ import { targets } from "./scripts/inputs.config.mjs";
 import noDoubleAssertion from "./eslint-rules/no-double-assertion.mjs";
 import noLooseComments from "./eslint-rules/no-loose-comments.mjs";
 import noInputWrites from "./eslint-rules/no-input-writes.mjs";
-
-// The lint of this repository, self-contained: it runs from a bare clone with nothing above it.
-//
-// What is deliberately NOT here: eslint-plugin-no-comments. The JSDoc on the public API is a
-// functional input - tooling reads its tags (@default, @optional, @step and the rest, thousands of
-// them) to generate from - and that rule is auto-fixable with an allow-list that REPLACES its
-// defaults, so one --fix run with it pointed at packages/dev would delete the corpus. The ban on
-// free-form comments that it would have provided is here all the same, as the local
-// `bitbybit/no-loose-comments` below: it allows JSDoc and tool directives, reports the rest, and has
-// no fixer at all, so nothing it says can rewrite a file. In a test it allows the three step markers
-// of arrange, act and assert as well, and nothing else.
-//
-// The rule set is the recommended sets - including the type-aware one, which reads the type graph
-// rather than one file at a time - plus the house style the packages already followed. Every
-// finding that existed when each landed is recorded in eslint-suppressions.json, written by
-// `eslint --suppress-all` from this directory; ESLint fails on a NEW finding and on a suppression
-// that is no longer needed, so the count only goes down. Regenerate that file only to record a
-// deliberate fix, never to hide a new finding.
+import noInlineObjectTypes from "./eslint-rules/no-inline-object-types.mjs";
 
 const HOUSE_STYLE = {
     "quotes": ["error", "double", { avoidEscape: true, allowTemplateLiterals: true }],
     "semi": ["error", "always"],
+    "eqeqeq": ["error", "always", { null: "ignore" }],
+    "curly": ["error", "all"],
 };
 
 const UNDERSCORE_TOLERANT_UNUSED_VARS = ["error", {
     argsIgnorePattern: "^_",
     varsIgnorePattern: "^_",
-    // Caught errors default to "all", and without this the underscore convention stops at the catch
-    // clause: a swallowed error could only satisfy the rule by losing its name entirely.
     caughtErrorsIgnorePattern: "^_",
     ignoreRestSiblings: true,
 }];
+
+const LOCAL_RULES = { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments, "no-input-writes": noInputWrites, "no-inline-object-types": noInlineObjectTypes } };
+const MAGIC_NUMBERS = ["error", {
+    ignore: [-1, 0, 1, 2, 1024],
+    ignoreArrayIndexes: true,
+    ignoreDefaultValues: true,
+    ignoreClassFieldInitialValues: true,
+    ignoreEnums: true,
+    ignoreNumericLiteralTypes: true,
+    ignoreReadonlyClassProperties: true,
+    ignoreTypeIndexes: true,
+}];
+const PLACEMENT_MARKER = "^ (replaces|after) [\\w.]+$|^ (first|last)$";
+const NO_JSDOC = { jsDoc: "none" };
+
+const GENERATED = [
+    "packages/dev/*-worker/lib/api/**",
+    "packages/dev/*/lib/api/dto-registry.ts",
+    "packages/dev/*/lib/api/resolved-inputs/**",
+    "packages/dev/cad-cloud-sdk/src/types/schema-exports.ts",
+    "packages/dev/cad-cloud-sdk/src/types/pipeline-operations.ts",
+    "packages/dev/cad-cloud-sdk/src/types/generated.ts",
+    "packages/dev/cad-cloud-sdk/src/validation/request-schemas.ts",
+    "packages/dev/mcp/src/guides.generated.ts",
+];
+const TESTS = ["**/*.test.ts", "**/*.test.mjs"];
+const STAND_INS = ["**/__mocks__/**", "**/__test__/**"];
+const VITEST_CONFIGS = ["**/vitest.config.ts", "packages/dev/vitest.shared.ts"];
 
 export default defineConfig([
     globalIgnores([
         "**/node_modules/",
         "**/dist/",
         "**/coverage/",
-        "docs/",
-        "examples/",
+        "docs/*",
+        "!docs/scripts/",
+        "examples/*",
+        "!examples/scripts/",
         "packages/dev/create-app/templates/",
         "packages/dev/create-app/.local/",
         "packages/dev/occt/bitbybit-dev-occt*/",
         "packages/dev/*/etc/",
         "**/*.d.ts",
         ...targets.map((t) => t.out),
-    ], "build output, the documentation site and the examples (their own tooling), scaffold templates that ship to users and the projects its smoke lanes keep under .local for running by hand, generated and vendored code, declaration files - every .d.ts here is generated or vendored typings, and a build artifact left in a package root would otherwise be linted and baselined - and the assembled inputs namespaces, whose fragments under lib/api/inputs/ are the linted source"),
+    ], "outputs, the docs site and example apps, templates, generated and vendored files"),
     {
         files: ["**/*.{js,mjs,cjs,ts}"],
         extends: [eslint.configs.recommended],
         languageOptions: {
             globals: { ...globals.browser, ...globals.node },
         },
-        rules: { ...HOUSE_STYLE, "no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS },
+        plugins: { bitbybit: LOCAL_RULES },
+        rules: {
+            ...HOUSE_STYLE,
+            "no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS,
+            "no-empty": ["error", { allowEmptyCatch: true }],
+            "bitbybit/no-loose-comments": ["error", NO_JSDOC],
+        },
     },
     {
         files: ["**/*.ts"],
         extends: [...tseslint.configs.recommended],
-        plugins: { bitbybit: { rules: { "no-double-assertion": noDoubleAssertion, "no-loose-comments": noLooseComments, "no-input-writes": noInputWrites } } },
         rules: {
             "@typescript-eslint/no-unused-vars": UNDERSCORE_TOLERANT_UNUSED_VARS,
-            // A local rule rather than a no-restricted-syntax selector, so that the suppression file
-            // budgets it under a name of its own: a shared rule id would let a later selector's
-            // findings hide inside a count recorded for this one.
+            "@typescript-eslint/consistent-type-imports": "error",
             "bitbybit/no-double-assertion": "error",
         },
     },
-    // Type-aware linting. The rules above read one file at a time; these read the type graph, which
-    // is what catches a promise nobody awaited, a method that lost its `this`, or an assertion that
-    // was never doing anything. It needs a project per file, and every package now has a tsconfig
-    // that names its sources and its specs, so the service can place them all.
     {
         files: ["**/*.ts"],
         extends: [...tseslint.configs.recommendedTypeChecked],
         languageOptions: {
             parserOptions: {
-                // Four tooling files sit in no package's compilation: the shared vitest factory,
-                // and the three configs of the packages whose tsconfig covers `src` alone. Every
-                // other vitest config is already inside its package's project, and naming one here
-                // that the service can place is itself an error - so this list is exact, not a glob.
                 projectService: {
                     allowDefaultProject: [
                         "packages/dev/vitest.shared.ts",
@@ -98,19 +106,6 @@ export default defineConfig([
             },
         },
         rules: {
-            // A caution on no-unnecessary-type-assertion, which is part of this set: the service
-            // above places each file in its package's tsconfig.json, and that is the loose project.
-            // `typecheck:strict` compiles the generated strict overlay instead, and under its extra
-            // flags an assertion this rule calls unnecessary can be load-bearing - an index read is
-            // `T | undefined` there and plain `T` here. Five of them were removed on this rule's
-            // advice and broke the strict build. So take a removal it suggests, then run
-            // `npm run typecheck:strict` before believing it.
-            // These six fire wherever an `any` flows, so they measure the debt that
-            // `no-explicit-any` already counts - and they measure it about ten times over, because
-            // one `any` is re-reported at every member read, call, argument and return downstream of
-            // it. Recording thousands of them would bury the findings that say something new, and
-            // none of them can be fixed except by removing the `any` that causes them. They come on
-            // as that count comes down; the ratchet on `no-explicit-any` is what drives it.
             "@typescript-eslint/no-unsafe-assignment": "off",
             "@typescript-eslint/no-unsafe-member-access": "off",
             "@typescript-eslint/no-unsafe-call": "off",
@@ -119,67 +114,45 @@ export default defineConfig([
             "@typescript-eslint/no-redundant-type-constituents": "off",
         },
     },
-    // The JSON API is the one place `any` is the answer rather than the debt. Its methods return a
-    // value parsed or queried out of an arbitrary structure, and the caller is the only one who knows
-    // its shape - `parse` is TypeScript's own `JSON.parse` with a path expression, and that returns
-    // `any` for the same reason. Returning `unknown` instead would compile here and break every
-    // script that reads a property off the result. Named and scoped, so it stays a decision: the
-    // inputs of these same methods are `unknown`, and that is where narrowing belongs.
     {
         files: ["packages/dev/core/lib/api/bitbybit/json.ts"],
         rules: { "@typescript-eslint/no-explicit-any": "off" },
     },
-    // Comments in the packages' own source. JSDoc stays - tooling reads its tags, so it is an input
-    // rather than commentary - and so do tool directives; a free-form note beside the logic does not,
-    // because it is a second description that nothing checks and it drifts away from the code it sits
-    // next to. The rule carries no fixer, so no `--fix` can reach that JSDoc.
-    //
-    // The trees below are out of its way. A test is not: it is covered by the block at the end of
-    // this file, which allows the three step markers and nothing else. The rest here are not
-    // commentary at all but input or output: a worker package's lib/api is emitted by
-    // scripts/gen-worker-api.mjs and check:worker-api compares it byte for byte, so an edit there is
-    // undone by the next regeneration and fails a gate in the meantime; a kernel's lib/api/dto-registry.ts
-    // and a package's lib/api/resolved-inputs are emitted by scripts/gen-dto-meta.mjs and held by
-    // check:dto-meta the same way. The SDK's generated types and
-    // request schemas are written by the API's own generators, and their banner is not a note but a
-    // record: it carries the catalog version that the release version registry checks for. The marker
-    // line above every member of a worker API fragment
-    // (`// replaces <path>`, `// after <path>`, `// first`, `// last`) is what places that member in
-    // the generated class, and the run of `//` lines that opens an inputs fragment is the header the
-    // assembler strips. Reporting either would invite someone to delete it.
+    {
+        files: ["packages/dev/base/lib/api/services/logic.ts"],
+        rules: { "eqeqeq": "off" },
+    },
     {
         files: ["packages/dev/**/*.ts"],
-        ignores: [
-            "**/*.test.ts",
-            "**/__mocks__/**",
-            "**/__test__/**",
-            "**/lib/api-hand/**",
-            "**/lib/api/inputs/**",
-            "packages/dev/*-worker/lib/api/**",
-            "packages/dev/*/lib/api/dto-registry.ts",
-            "packages/dev/*/lib/api/resolved-inputs/**",
-            "packages/dev/cad-cloud-sdk/src/types/schema-exports.ts",
-            "packages/dev/cad-cloud-sdk/src/types/pipeline-operations.ts",
-            "packages/dev/cad-cloud-sdk/src/types/generated.ts",
-            "packages/dev/cad-cloud-sdk/src/validation/request-schemas.ts",
-            "**/vitest.config.ts",
-            "packages/dev/vitest.shared.ts",
-        ],
-        rules: { "bitbybit/no-loose-comments": "error" },
+        ignores: [...TESTS, ...STAND_INS, ...VITEST_CONFIGS, "packages/dev/mcp/**"],
+        rules: { "bitbybit/no-loose-comments": ["error", { jsDoc: "public-api" }] },
     },
-    // The MCP server package carries no JSDoc at all. Nothing reads a comment there: no generator
-    // derives a component or a catalog from it, and no saved script persists a value it names, so a
-    // JSDoc block would be ordinary prose beside the logic. What the code cannot say goes to the
-    // CLAUDE.md of the package. Its generated guides file is the text of the docs page, not source.
     {
-        files: ["packages/dev/mcp/src/**/*.ts"],
-        ignores: ["**/*.test.ts", "packages/dev/mcp/src/guides.generated.ts"],
-        rules: { "bitbybit/no-loose-comments": ["error", { allowJsDoc: false }] },
+        files: ["packages/dev/*/lib/api-hand/**/*.ts"],
+        rules: { "bitbybit/no-loose-comments": ["error", { jsDoc: "public-api", allowLines: [PLACEMENT_MARKER] }] },
     },
-    // A kernel service is called again and again on the same parameter object, so it never writes
-    // into it: a default goes into a local or a spread copy. The renderers' draw helpers are not
-    // held to this - writing the created mesh back onto `inputs.linesMesh` is their documented
-    // updatable-mesh handle - and neither is a test, which owns the objects it builds.
+    {
+        files: ["packages/dev/*/lib/api/inputs/*/namespace.ts"],
+        rules: { "bitbybit/no-loose-comments": ["error", { jsDoc: "public-api", documentsAssembledDeclaration: true }] },
+    },
+    {
+        files: ["packages/dev/**/*.ts"],
+        ignores: [...TESTS, ...STAND_INS, ...VITEST_CONFIGS],
+        rules: {
+            "bitbybit/no-inline-object-types": "error",
+            "@typescript-eslint/explicit-function-return-type": ["error", { allowExpressions: true, allowTypedFunctionExpressions: true, allowHigherOrderFunctions: true }],
+            "max-lines": ["error", { max: 600, skipBlankLines: true, skipComments: true }],
+            "@typescript-eslint/no-magic-numbers": MAGIC_NUMBERS,
+        },
+    },
+    {
+        files: ["packages/dev/**/constants.ts", "packages/dev/**/*.constants.ts", "packages/dev/occt/lib/services/design/digest.ts"],
+        rules: { "@typescript-eslint/no-magic-numbers": "off" },
+    },
+    {
+        files: GENERATED,
+        rules: { "bitbybit/no-loose-comments": "off", "bitbybit/no-inline-object-types": "off", "curly": "off", "eqeqeq": "off", "@typescript-eslint/consistent-type-imports": "off", "@typescript-eslint/explicit-function-return-type": "off", "max-lines": "off", "@typescript-eslint/no-magic-numbers": "off" },
+    },
     {
         files: [
             "packages/dev/occt/lib/services/**/*.ts",
@@ -187,25 +160,21 @@ export default defineConfig([
             "packages/dev/manifold/lib/api/services/**/*.ts",
             "packages/dev/base/lib/api/services/**/*.ts",
         ],
-        ignores: ["**/*.test.ts"],
+        ignores: TESTS,
         rules: { "bitbybit/no-input-writes": "error" },
     },
     {
-        files: ["**/*.test.ts", "**/__mocks__/**"],
+        files: [...TESTS, ...STAND_INS],
         languageOptions: {
             globals: { ...globals.vitest },
         },
     },
-    // A test says what it is about in the name of its `it`, and marks which step each line belongs to
-    // with `// Arrange`, `// Act` and `// Assert`. Those markers are structure, and they are all a
-    // test may carry: a note explaining a value belongs in the name of that value, and a note
-    // explaining what a suite covers belongs in the names of the tests that cover it. The mocks are
-    // out of scope here - they are stand-ins with no steps to mark, and the ordinary rule above
-    // already ignores them.
     {
-        files: ["packages/dev/**/*.test.ts"],
-        rules: {
-            "bitbybit/no-loose-comments": ["error", { allowArrangeActAssert: true }],
-        },
+        files: [...TESTS, ...STAND_INS].filter((glob) => !glob.endsWith(".mjs")),
+        rules: { "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }] },
+    },
+    {
+        files: TESTS,
+        rules: { "bitbybit/no-loose-comments": ["error", { ...NO_JSDOC, allowArrangeActAssert: true }] },
     },
 ]);

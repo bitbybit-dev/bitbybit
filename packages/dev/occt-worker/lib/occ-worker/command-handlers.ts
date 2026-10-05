@@ -1,8 +1,9 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { CacheHelper } from "./cache-helper";
-import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, MeshRetention } from "./constants";
-import { ShapeResolver } from "./shape-resolver";
-import { OCCTService } from "@bitbybit-dev/occt";
+import type { CacheHelper } from "./cache-helper";
+import type { MeshRetention } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
+import type { ShapeResolver } from "./shape-resolver";
+import type { OCCTService } from "@bitbybit-dev/occt";
 
 const meshRetentionOf = (kernel: BitbybitOcctModule): MeshRetention => ({
     budget: kernel.MeshRetentionBudget(),

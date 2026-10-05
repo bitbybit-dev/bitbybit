@@ -1,10 +1,10 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import { SkyMaterial } from "@babylonjs/materials";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * A procedural daytime sky computed from atmosphere settings rather than an image: where the sun

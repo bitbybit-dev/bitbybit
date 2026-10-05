@@ -1,7 +1,5 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
-import { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
+import type { Base } from "@bitbybit-dev/base";
+import type { IO } from "@bitbybit-dev/base/lib/api/inputs/io-inputs";
 import { dxfAcadVersionEnum, dxfColorFormatEnum, fileTypeEnum, surfaceAnalysisEnum } from "./enums";
 
 /**
@@ -920,8 +918,6 @@ export class ConvertStepToGltfAdvancedDto {
      */
     stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 
-    // ==================== STEP Reading Options ====================
-
     /**
      * When true, colors are read from the file; needed for a colored glTF.
      * @default true
@@ -952,8 +948,6 @@ export class ConvertStepToGltfAdvancedDto {
      * @default false
      */
     readProps?: boolean | undefined = false;
-
-    // ==================== Mesh Options ====================
 
     /**
      * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
@@ -1012,8 +1006,6 @@ export class ConvertStepToGltfAdvancedDto {
      */
     controlSurfaceDeflection?: boolean | undefined = false;
 
-    // ==================== glTF Writer Options ====================
-
     /**
      * When true, the faces of a part are joined into one mesh, which makes a smaller file.
      * @default true
@@ -1062,8 +1054,6 @@ export class ConvertStepToGltfAdvancedDto {
      * @default compact
      */
     transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
-
-    // ==================== Coordinate System Options ====================
 
     /**
      * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
@@ -1151,10 +1141,4 @@ export class ConvertStepToGltfAdvancedWithDracoDto extends ConvertStepToGltfAdva
      */
     dracoUnifiedQuantization?: boolean | undefined = false;
 }
-
-// =====================================================
-// Document-based Assembly API DTOs
-// These DTOs work with document handles directly instead of docId strings.
-// The caller is responsible for managing document lifetime via document.delete().
-// =====================================================
 

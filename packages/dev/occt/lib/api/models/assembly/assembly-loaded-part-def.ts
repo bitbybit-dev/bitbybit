@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * Imported part definition for cross-document reuse.

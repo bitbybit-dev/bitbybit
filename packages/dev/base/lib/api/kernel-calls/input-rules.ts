@@ -1,4 +1,4 @@
-import { DtoRules, InputIssue, InputRule, RuleTarget } from "./input-validation";
+import type { DtoRules, InputIssue, InputRule, RuleTarget } from "./input-validation";
 
 type Key<T> = keyof T & string;
 
@@ -55,7 +55,9 @@ export function lessThan<T>(property: Key<T>, limit: Key<T> | ((inputs: T) => nu
         check: (inputs) => {
             const value = numberAt(inputs, property);
             const bound = limitOf(inputs);
-            if (value === undefined || bound === undefined || value < bound) return undefined;
+            if (value === undefined || bound === undefined || value < bound) {
+                return undefined;
+            }
             return { property, code: "less-than", params: { limit: bound }, message: message ?? `must be less than ${typeof limit === "function" ? bound : limit}` };
         },
     };
@@ -73,7 +75,9 @@ export function sameLength<T>(property: Key<T>, other: Key<T>): InputRule<T> {
         check: (inputs) => {
             const list = listAt(inputs, property);
             const partner = listAt(inputs, other);
-            if (!list || !partner || list.length === partner.length) return undefined;
+            if (!list || !partner || list.length === partner.length) {
+                return undefined;
+            }
             return { property, code: "same-length", params: { expected: partner.length, actual: list.length }, message: `must have as many items as ${other} (${partner.length}), not ${list.length}` };
         },
     };
@@ -91,7 +95,9 @@ export function distinct<T>(property: Key<T>, other: Key<T>): InputRule<T> {
         check: (inputs) => {
             const a = listAt(inputs, property);
             const b = listAt(inputs, other);
-            if (!a || !b || a.length !== b.length || a.some((value, index) => value !== b[index])) return undefined;
+            if (!a || !b || a.length !== b.length || a.some((value, index) => value !== b[index])) {
+                return undefined;
+            }
             return { property, code: "distinct", message: `must differ from ${other}` };
         },
     };
@@ -107,7 +113,9 @@ export function notZeroVector<T>(property: Key<T>): InputRule<T> {
         reads: [property],
         check: (inputs) => {
             const vector = listAt(inputs, property);
-            if (!vector || vector.some((value) => value !== 0)) return undefined;
+            if (!vector || vector.some((value) => value !== 0)) {
+                return undefined;
+            }
             return { property, code: "zero-vector", message: "must not be a zero vector" };
         },
     };
@@ -125,7 +133,9 @@ export function atLeastOne<T>(property: Key<T>, holds: (item: unknown) => boolea
         reads: [property],
         check: (inputs) => {
             const list = listAt(inputs, property);
-            if (!list || list.some(holds)) return undefined;
+            if (!list || list.some(holds)) {
+                return undefined;
+            }
             return { property, code: "at-least-one", message };
         },
     };

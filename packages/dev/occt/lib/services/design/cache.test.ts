@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { DesignCache, DesignOutcome, hashText, release, stableJson } from "./cache";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { DesignOutcome } from "./cache";
+import { DesignCache, hashBytes, hashText, release, stableJson } from "./cache";
 
 describe("design cache", () => {
     let kernel: BitbybitOcctModule;
@@ -86,13 +88,13 @@ describe("design cache", () => {
         expect(stableJson(undefined)).toBe("null");
     });
 
-    it("should hash the same text the same way and different text differently", () => {
+    it("should hash text to its cyrb53 number in base 36, and bytes as the text they spell", () => {
         // Act
         const hashes = [hashText("plate"), hashText("plate"), hashText("plates"), hashText("")];
+        const fromBytes = hashBytes(new TextEncoder().encode("plate"));
 
         // Assert
-        expect(hashes[0]).toBe(hashes[1]);
-        expect(new Set(hashes).size).toBe(3);
-        hashes.forEach(hash => expect(hash).toMatch(/^[0-9a-z]+$/));
+        expect(hashes).toEqual(["20hqibyscq0", "20hqibyscq0", "29kns1zival", "wvjl67o803"]);
+        expect(fromBytes).toBe("20hqibyscq0");
     });
 });

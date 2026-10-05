@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "../../gui-enriched-babylon";
+import type * as BABYLON from "../../gui-enriched-babylon";
 import { BabylonTexture } from "./babylon-texture-inputs";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for the in-scene 2D interface: buttons, sliders, checkboxes, color pickers, text blocks,
  * input fields, images and the containers that lay them out. Use it for controls that live inside the

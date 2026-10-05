@@ -1,4 +1,5 @@
-import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
+import type { DataInput } from "./manifold-worker";
+import { initializationComplete, onMessageInput } from "./manifold-worker";
 
 export class ManifoldWorkerMock {
     initializationComplete = (jscad: unknown, plugins: any, doNotPost?: boolean) => { initializationComplete(jscad, plugins, doNotPost); };

@@ -1,9 +1,4 @@
 /**
- * Constants for OCCT worker communication and shape handling.
- * These constants define the protocol between the main thread and the worker.
- */
-
-/**
  * Shape reference type identifier used in serialized shape objects.
  * When shapes are passed between main thread and worker, they are serialized
  * as objects with this type identifier and a hash reference.

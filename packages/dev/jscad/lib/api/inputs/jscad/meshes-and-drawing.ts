@@ -1,6 +1,4 @@
-// A fragment of the JSCAD inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
-import { JSCADEntity } from "./entities-and-enums";
+import type { JSCADEntity } from "./entities-and-enums";
 
 /**
  * Feeds `toPolygonPoints` and `shapeToMesh` on the JSCAD service with the one entity to turn into

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import * as BABYLON from "../../../../gui-enriched-babylon";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type * as BABYLON from "../../../../gui-enriched-babylon";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonGuiButton } from "./button";
 import * as Inputs from "../../../inputs";
 

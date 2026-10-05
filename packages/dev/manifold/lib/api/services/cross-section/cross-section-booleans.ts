@@ -1,5 +1,5 @@
-import * as Inputs from "../../inputs/manifold-inputs";
-import * as Manifold3D from "manifold-3d";
+import type * as Inputs from "../../inputs/manifold-inputs";
+import type * as Manifold3D from "manifold-3d";
 
 /**
  * Combining Manifold cross-sections: fusing, cutting and intersecting two or many flat outlines at

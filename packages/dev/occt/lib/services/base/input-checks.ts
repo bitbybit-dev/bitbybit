@@ -1,9 +1,10 @@
 import { InputError } from "@bitbybit-dev/base";
 import { isFrameShaped, isTriple, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import { composed, isTransformMatrix } from "@bitbybit-dev/base/lib/api/services/helpers/matrices";
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { KernelExceptionReader, readKernelException } from "../../kernel-exception";
-import * as Inputs from "../../api/inputs";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { KernelExceptionReader } from "../../kernel-exception";
+import { readKernelException } from "../../kernel-exception";
+import type * as Inputs from "../../api/inputs";
 
 type Vec3 = Inputs.Base.Vector3;
 
@@ -204,7 +205,6 @@ export function checkedFrames(value: unknown, property: string): Inputs.Base.Fra
     });
 }
 
-/** The matrices of a placement, however deep the lists hold them, in order. */
 const matricesOf = (value: unknown): unknown[] =>
     isTransformMatrix(value) ? [value] : Array.isArray(value) ? value.flatMap(matricesOf) : [value];
 

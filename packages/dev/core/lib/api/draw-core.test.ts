@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { DrawCore, DrawableKind, FrameMarkerLines, FrameMarkerStyle } from "./draw-core";
-import * as Inputs from "./inputs";
+import type { DrawableKind, FrameMarkerLines, FrameMarkerStyle } from "./draw-core";
+import { DrawCore } from "./draw-core";
+import type * as Inputs from "./inputs";
 
 class ProbeCore extends DrawCore {
     kinds(): readonly DrawableKind[] { return this.drawableKinds(); }

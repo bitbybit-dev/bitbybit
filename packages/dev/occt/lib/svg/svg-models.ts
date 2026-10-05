@@ -1,22 +1,4 @@
-/**
- * Internal, framework-agnostic model produced by the SVG parser/normalizer.
- *
- * The whole point of this layer is to "understand" SVG entirely in TypeScript
- * (XML structure, the `d` mini-language, transforms, the style cascade and units)
- * and reduce it to a tiny, exact geometric vocabulary that the OCCT layer can
- * turn into wires/faces without knowing anything about SVG.
- *
- * The vocabulary is intentionally the *complete* closed set of curve families
- * expressible in SVG path data: line, quadratic bezier, cubic bezier and
- * elliptical arc. Every other SVG construct (rect, circle, ellipse, polyline,
- * polygon, rounded corners, smooth-curve shorthands) reduces to these.
- *
- * Coordinates here are still in SVG user space (Y points down). The conversion
- * to CAD space (Y up, scaling, target plane) happens later, in the builder, so
- * that the normalizer stays a pure, easily-testable SVG concern.
- */
-
-import { Base } from "@bitbybit-dev/base";
+import type { Base } from "@bitbybit-dev/base";
 
 export type SvgSegment =
     | SvgLineSegment

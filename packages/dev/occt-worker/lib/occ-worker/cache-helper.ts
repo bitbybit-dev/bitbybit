@@ -1,14 +1,5 @@
-import { Models } from "@bitbybit-dev/occt";
-
-/** Finishes a cyrb53 hash: the two 32-bit lanes are avalanched into each other and 21 bits of one
- * are stacked above the 32 bits of the other, giving a non-negative safe integer below 2^53. */
-function foldHashLanes(lane1: number, lane2: number): number {
-    let h1 = Math.imul(lane1 ^ (lane1 >>> 16), 2246822507);
-    h1 ^= Math.imul(lane2 ^ (lane2 >>> 13), 3266489909);
-    let h2 = Math.imul(lane2 ^ (lane2 >>> 16), 2246822507);
-    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
+import { hashOfBytes, hashOfText } from "@bitbybit-dev/base";
+import type { Models } from "@bitbybit-dev/occt";
 
 type ItemList = { itemHashes: (string | number)[] };
 
@@ -98,7 +89,7 @@ export class CacheHelper {
                 return check;
             }
             if (!isItemList(check)) {
-                if (this.alive(check.value)) {
+                if (this.allKernelObjectsStillCached(check.value)) {
                     return check.value;
                 }
             } else {
@@ -137,9 +128,6 @@ export class CacheHelper {
         return this.stringToHash(`${callHash}:${position}`);
     }
 
-    /** Stores the kernel objects of one result, each under its key. A kernel object a key held before
-     * is freed unless the result hands it back again, so a result computed anew never leaves the one
-     * it replaces alive. */
     private storeItems(items: readonly (readonly [string | number, unknown])[]): void {
         const kept = new Set(items.map(([, object]) => object));
         for (const [hash, object] of items) {
@@ -151,22 +139,14 @@ export class CacheHelper {
         }
     }
 
-    /**
-     * Frees one kernel object by deleting its handle. The kernel counts references, so a shape's
-     * data goes with its last handle. Nothing is stripped from the shape first: a face taken from a
-     * solid, a copy, or a body a design keeps for its next build shares that data, and stripping its
-     * geometry or mesh would strip them from every live shape that shares it.
-     */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private free(object: any): void {
         try {
             object.delete();
         } catch {
-            // An object that is already gone has nothing left to free.
         }
     }
 
-    /** Frees what one cache entry holds: a kernel object, or each of a list of them. */
     private freeEntry(entry: unknown): void {
         if (!this.isOCCTObject(entry)) {
             return;
@@ -178,8 +158,6 @@ export class CacheHelper {
         }
     }
 
-    /** Stores a kernel object under a key, freeing the different object the key held before: an
-     * answer computed anew replaces the one it was cached as, and references reach it by key. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private replace(hash: string | number, object: any): void {
         const previous: unknown = this.argCache[hash];
@@ -189,9 +167,8 @@ export class CacheHelper {
         this.addToCache(hash, object);
     }
 
-    /** Whether every kernel object inside a cached answer is still the live object its key holds. */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private alive(value: any): boolean {
+    private allKernelObjectsStillCached(value: any): boolean {
         if (value === null || typeof value !== "object") {
             return true;
         }
@@ -202,10 +179,9 @@ export class CacheHelper {
             return true;
         }
         const items: unknown[] = Array.isArray(value) ? value : Object.values(value);
-        return items.every(item => this.alive(item));
+        return items.every(item => this.allKernelObjectsStillCached(item));
     }
 
-    /** The kernel objects a cached list holds, or undefined when any of them is no longer in the cache. */
     private cachedItems(itemHashes: readonly (string | number)[]): unknown[] | undefined {
         const items: unknown[] = [];
         for (const hash of itemHashes) {
@@ -332,18 +308,32 @@ export class CacheHelper {
         const inputs = (args && typeof args === "object" && args.inputs && typeof args.inputs === "object")
             ? args.inputs
             : args;
-        if (!inputs || typeof inputs !== "object") return false;
+        if (!inputs || typeof inputs !== "object") {
+            return false;
+        }
         for (const key of Object.keys(inputs)) {
             const v = inputs[key];
-            if (v === null || v === undefined) continue;
-            if (typeof v === "string") {
-                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) return true;
+            if (v === null || v === undefined) {
                 continue;
             }
-            if (typeof v !== "object") continue;
-            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) return true;
-            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) return true;
-            if (typeof Blob !== "undefined" && v instanceof Blob) return true;
+            if (typeof v === "string") {
+                if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) {
+                    return true;
+                }
+                continue;
+            }
+            if (typeof v !== "object") {
+                continue;
+            }
+            if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) {
+                return true;
+            }
+            if (ArrayBuffer.isView && ArrayBuffer.isView(v as ArrayBufferView)) {
+                return true;
+            }
+            if (typeof Blob !== "undefined" && v instanceof Blob) {
+                return true;
+            }
         }
         return false;
     }
@@ -389,14 +379,18 @@ export class CacheHelper {
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     digestIfLargeOrBinary(v: any): any {
-        if (v === null || v === undefined) return undefined;
+        if (v === null || v === undefined) {
+            return undefined;
+        }
         if (typeof v === "string") {
             if (v.length > CacheHelper.LARGE_STRING_THRESHOLD) {
                 return { __largeStringDigest__: this.stringToHash(v), length: v.length };
             }
             return undefined;
         }
-        if (typeof v !== "object") return undefined;
+        if (typeof v !== "object") {
+            return undefined;
+        }
         if (typeof ArrayBuffer !== "undefined" && v instanceof ArrayBuffer) {
             return { __binaryDigest__: this.bytesToHash(new Uint8Array(v)), byteLength: v.byteLength };
         }
@@ -420,27 +414,13 @@ export class CacheHelper {
     /** Hashes raw bytes the way `stringToHash` hashes code units, so ASCII text digests to the same
      * number whether it arrives as a string or as bytes. */
     bytesToHash(bytes: Uint8Array): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < bytes.length; i++) {
-            const byte = bytes[i]!;
-            h1 = Math.imul(h1 ^ byte, 2654435761);
-            h2 = Math.imul(h2 ^ byte, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfBytes(bytes);
     }
 
     /** Hashes a string to a non-negative 53-bit safe integer with cyrb53. Both lanes are mixed with
      * `Math.imul`, so the result is the same on every JavaScript engine. */
     stringToHash(str: string): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            h1 = Math.imul(h1 ^ char, 2654435761);
-            h2 = Math.imul(h2 ^ char, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfText(str);
     }
 
 }

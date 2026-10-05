@@ -1,9 +1,9 @@
 import * as BABYLON from "@babylonjs/core";
 import { uniqueName } from "../../../unique-name";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The flying camera: it sits at a position, looks at a target and moves freely with the keyboard

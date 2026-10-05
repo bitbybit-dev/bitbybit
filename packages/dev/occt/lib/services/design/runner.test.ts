@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { DesignCache } from "./cache";
-import { runDesign } from "./runner";
+import { runDesign, runFeatures } from "./runner";
+import { BaseBitByBit } from "../../base";
+
+const base = new BaseBitByBit();
 
 const withPurge = (id: string): Models.OCCT.DesignPartDocument => ({
     schemaVersion: 1,
@@ -30,11 +34,11 @@ describe("design runner", () => {
     it("should keep its own handle on a shape an operation hands back unchanged, so freeing one outcome never frees another", () => {
         // Arrange
         const cache = new DesignCache(0);
-        runDesign(withPurge("first"), {}, { occt, occ: kernel, cache });
+        runDesign(withPurge("first"), {}, { occt, occ: kernel, base, cache });
 
         // Act
-        const second = runDesign(withPurge("second"), {}, { occt, occ: kernel, cache });
-        const third = runDesign(withPurge("third"), {}, { occt, occ: kernel, cache });
+        const second = runDesign(withPurge("second"), {}, { occt, occ: kernel, base, cache });
+        const third = runDesign(withPurge("third"), {}, { occt, occ: kernel, base, cache });
 
         // Assert
         expect(second.report.map(entry => [entry.status, entry.cached])).toEqual([["ok", true], ["ok", true], ["ok", false]]);
@@ -43,13 +47,36 @@ describe("design runner", () => {
         expect(cache.size).toBe(3);
     });
 
+    it("should face a sketch of loops along its normal, whichever way round its loops are drawn", () => {
+        // Arrange
+        const square = (half: number, clockwise: boolean): Models.OCCT.DesignLoop => ({
+            start: [-half, -half],
+            pen: clockwise
+                ? [{ type: "vLine", length: 2 * half }, { type: "hLine", length: 2 * half }, { type: "vLine", length: -2 * half }, { type: "close" }]
+                : [{ type: "hLine", length: 2 * half }, { type: "vLine", length: 2 * half }, { type: "hLine", length: -2 * half }, { type: "close" }],
+        });
+        const framed = (clockwise: boolean): Models.OCCT.DesignPartDocument => ({
+            schemaVersion: 1,
+            features: [{ id: "s", type: "sketch", on: { plane: "XY" }, loops: [square(10, clockwise), square(2, !clockwise)] }],
+        });
+
+        // Act
+        const normals = [true, false].map(clockwise => {
+            const { run } = runFeatures(framed(clockwise), {}, { occt, occ: kernel, base, cache: new DesignCache(0) });
+            return occt.analysis.signatures({ shape: run.sketches.get("s")!.shape }).faces.map(face => face.normal.map(value => value + 0));
+        });
+
+        // Assert
+        expect(normals).toEqual([[[0, 0, 1]], [[0, 0, 1]]]);
+    });
+
     it("should free what the last build did not use beyond the capacity", () => {
         // Arrange
         const cache = new DesignCache(0);
-        runDesign(withPurge("first"), {}, { occt, occ: kernel, cache });
+        runDesign(withPurge("first"), {}, { occt, occ: kernel, base, cache });
 
         // Act
-        runDesign({ schemaVersion: 1, features: [] }, {}, { occt, occ: kernel, cache });
+        runDesign({ schemaVersion: 1, features: [] }, {}, { occt, occ: kernel, base, cache });
 
         // Assert
         expect(cache.size).toBe(0);

@@ -112,10 +112,10 @@ npm run lint
   the successor release ships none at all. It is also not a kernel like OCCT, JSCAD or Manifold -
   there is no `@bitbybit-dev/verb` package and no worker, just an API class in `core` calling a
   library the renderer packages inject into `Context`. Its entry points and its eleven API classes
-  carry `@deprecated`, which reaches the TypeScript editor and changes nothing else: the tag is not
-  one the component generators read, so the visual components and every saved script are untouched
-  until the removal. Until then, **do not invest in it** - it holds two thirds of the `any` in the
-  published declarations, and typing those would mint sockets for an area that is going away. Drawing
+  carry `@deprecated`, which reaches the TypeScript editor and changes nothing else: every caller's
+  code keeps working until the removal. Until then, **do not invest in it** - it holds two thirds of
+  the `any` in the published declarations, and typing those would add public types for an area
+  that is going away. Drawing
   does not depend on the library: `Base.VerbCurve` and `Base.VerbSurface` are `{ tessellate }`
   structural types, so anything that tessellates still draws.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
@@ -142,7 +142,7 @@ consumer: a guard against a state the producer cannot emit protects nothing and 
 case is possible.
 
 **Nothing consumes what it was given.** Helpers here are called repeatedly on the same data - a
-configurator redraws on every parameter change - so a function that appends to or pops from a
+caller may redraw on every parameter change - so a function that appends to or pops from a
 caller's array makes its own result depend on how many times it has run. Read by index, and build new
 arrays rather than mutating the one you were handed.
 

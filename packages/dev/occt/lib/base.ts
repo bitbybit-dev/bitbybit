@@ -3,7 +3,8 @@ import {
     Point, GeometryHelper,
     Transforms, Vector, MathBitByBit,
     MeshBitByBit, Polyline,
-    Line, Lists, IoBitByBit
+    Line, Lists, IoBitByBit,
+    Frame, Color
 } from "@bitbybit-dev/base";
 
 export class BaseBitByBit {
@@ -19,6 +20,8 @@ export class BaseBitByBit {
     readonly mesh: MeshBitByBit;
     readonly textService: TextBitByBit;
     readonly io: IoBitByBit;
+    readonly frame: Frame;
+    readonly color: Color;
 
     constructor() {
         this.geometryHelper = new GeometryHelper();
@@ -32,6 +35,8 @@ export class BaseBitByBit {
         this.textService = new TextBitByBit(this.point);
         this.mesh = new MeshBitByBit(this.vector, this.polyline);
         this.io = new IoBitByBit();
+        this.frame = new Frame(this.vector, this.math, this.geometryHelper);
+        this.color = new Color(this.math);
     }
 
 }

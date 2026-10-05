@@ -1,5 +1,5 @@
-import { Base } from "../inputs";
-import { TextWiresCharShapePart } from "./text-wires-char-shape-part";
+import type { Base } from "../inputs";
+import type { TextWiresCharShapePart } from "./text-wires-char-shape-part";
 
 /**
  * The wire outlines of a whole text run, character by character, along with the layout that

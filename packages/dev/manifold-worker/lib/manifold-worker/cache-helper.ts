@@ -1,3 +1,4 @@
+import { hashOfBytes, hashOfText } from "@bitbybit-dev/base";
 export declare class ManifoldWithId<U> {
     id: string;
     manifold: U;
@@ -8,26 +9,12 @@ export declare class ObjectDefinition<M, U> {
     data?: M;
 }
 
-/** Finishes a cyrb53 hash: the two 32-bit lanes are avalanched into each other and 21 bits of one
- * are stacked above the 32 bits of the other, giving a non-negative safe integer below 2^53. */
-function foldHashLanes(lane1: number, lane2: number): number {
-    let h1 = Math.imul(lane1 ^ (lane1 >>> 16), 2246822507);
-    h1 ^= Math.imul(lane2 ^ (lane2 >>> 13), 3266489909);
-    let h2 = Math.imul(lane2 ^ (lane2 >>> 16), 2246822507);
-    h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    return 4294967296 * (2097151 & h2) + (h1 >>> 0);
-}
-
 type ItemList = { itemHashes: (string | number)[] };
 
 const isItemList = (entry: unknown): entry is ItemList => typeof entry === "object" && entry !== null && "itemHashes" in entry && Array.isArray(entry.itemHashes);
 
 const holdsNoObject = (list: readonly unknown[]): boolean => list.every((item) => item === null || typeof item !== "object");
 
-/** The arguments with every ArrayBuffer and view in them, at any depth, replaced by a digest of its
- * bytes and its length. Only the objects and lists on the way to one are copied, so arguments without
- * binary data come back as they are; a list of plain values - a point, a long list of numbers - is
- * passed over without a copy, and a structure that refers to itself is left for JSON to refuse. */
 function toHashable(value: unknown, digest: (bytes: Uint8Array) => number, ancestors = new Set<object>()): unknown {
     if (value === null || typeof value !== "object") {
         return value;
@@ -93,7 +80,6 @@ export class CacheHelper {
                                 try {
                                     manifold.delete();
                                 } catch {
-                                    // Ignore errors for already deleted manifolds
                                 }
                             });
                         } else {
@@ -102,7 +88,6 @@ export class CacheHelper {
                     }
                 }
                 catch {
-                    // Ignore errors when cleaning manifolds that may already be deleted
                 }
             }
         });
@@ -122,7 +107,6 @@ export class CacheHelper {
                             try {
                                 manifold.delete();
                             } catch {
-                                // Ignore errors for already deleted manifolds
                             }
                         });
                     } else {
@@ -131,7 +115,6 @@ export class CacheHelper {
                 }
             }
             catch {
-                // Ignore errors when cleaning manifolds that may already be deleted
             }
         }
         delete this.argCache[hash];
@@ -195,9 +178,6 @@ export class CacheHelper {
         return this.stringToHash(`${callHash}:${position}`);
     }
 
-    /** Stores the kernel objects of one result, each under its key and as a used hash of this run. A
-     * kernel object a key held before is deleted unless the result hands it back again, so a result
-     * computed anew never leaves the one it replaces alive. */
     private storeItems(items: readonly (readonly [string | number, unknown])[]): void {
         const kept = new Set(items.map(([, object]) => object));
         for (const [hash, object] of items) {
@@ -206,7 +186,6 @@ export class CacheHelper {
                 try {
                     (previous as { delete: () => void }).delete();
                 } catch {
-                    // An object that is already gone has nothing left to free.
                 }
             }
             this.addToCache(hash, object);
@@ -214,7 +193,6 @@ export class CacheHelper {
         }
     }
 
-    /** The kernel objects a cached list holds, or undefined when any of them is no longer in the cache. */
     private cachedItems(itemHashes: readonly (string | number)[]): unknown[] | undefined {
         const items: unknown[] = [];
         for (const hash of itemHashes) {
@@ -291,27 +269,13 @@ export class CacheHelper {
     /** Hashes raw bytes the way `stringToHash` hashes code units, so ASCII text digests to the same
      * number whether it arrives as a string or as bytes. */
     bytesToHash(bytes: Uint8Array): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < bytes.length; i++) {
-            const byte = bytes[i]!;
-            h1 = Math.imul(h1 ^ byte, 2654435761);
-            h2 = Math.imul(h2 ^ byte, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfBytes(bytes);
     }
 
     /** Hashes a string to a non-negative 53-bit safe integer with cyrb53. Both lanes are mixed with
      * `Math.imul`, so the result is the same on every JavaScript engine. */
     stringToHash(str: string): number {
-        let h1 = 0xdeadbeef;
-        let h2 = 0x41c6ce57;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            h1 = Math.imul(h1 ^ char, 2654435761);
-            h2 = Math.imul(h2 ^ char, 1597334677);
-        }
-        return foldHashLanes(h1, h2);
+        return hashOfText(str);
     }
 
 }

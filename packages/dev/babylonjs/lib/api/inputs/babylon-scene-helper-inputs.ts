@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as BABYLON from "@babylonjs/core";
-import { Base } from "./base-inputs";
-import { BabylonCamera } from "./babylon-camera-inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
+import type { BabylonCamera } from "./babylon-camera-inputs";
 
 /**
  * Result object returned by initBabylonJS helper function.

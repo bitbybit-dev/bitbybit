@@ -1,14 +1,13 @@
-import { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { framesOnCurve, numbersOfFrames } from "../base/frames";
 import { checkedFlag, checkedFrame, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
 import { RADIANS_PER_DEGREE, checkedShapeCount, tangentEdges } from "../base/curve-analysis";
 
-/** The edge to cut or lengthen, refused as an input error when it is a wire or another shape. */
 const checkedEdge = (occ: BitbybitOcctModule, shape: unknown, property: string): TopoDS_Shape => {
     const edge = checkedShape(shape, property);
     if (edge.ShapeType() !== occ.TopAbs_ShapeEnum.EDGE) {

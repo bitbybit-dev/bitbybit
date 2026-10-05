@@ -1,12 +1,4 @@
 #!/usr/bin/env node
-// Holds every package at zero strict errors. Each package typechecks with tsconfig.strict.json - its build
-// config, whose shared base carries the whole strict set, with nothing emitted. While the packages were
-// being ratcheted, each carried a .tsc-baseline.json recorded by tsc-baseline (`--ignoreMessages`: a
-// message can embed an absolute path into the pnpm store, which would tie the hash to one machine), and
-// this script held that baseline to the code in both directions: a fresh save had to match the committed
-// file byte for byte, so the count could only go down. No package has a baseline any more, so the check
-// reduces to "no errors": a package with errors and no baseline fails, and a baseline that reappears is
-// still held to the code the same way, so the ratchet can restart for a single package if it ever must.
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -17,11 +9,6 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const noComments = (text) => text.split("\n").filter((line) => !line.trimStart().startsWith("//")).join("\n");
 const projects = JSON.parse(noComments(readFileSync(join(ROOT, "tsconfig.build.json"), "utf8"))).references
     .map((r) => join(ROOT, dirname(r.path)));
-// Each package typechecks with `tsc -p`, which resolves its siblings through `paths` into their built
-// dist rather than building them, so it answers about whatever those siblings last emitted. A signature
-// changed in a worker and not rebuilt gave a clean pass here while the real build failed on a call the
-// new signature rejects. The reference graph is therefore built first, and the check then reads dists
-// that match the sources it is checking.
 execFileSync(join(ROOT, "node_modules", ".bin", "tsc"), ["-b", "tsconfig.build.json"], { cwd: ROOT, stdio: "inherit" });
 
 const scratch = mkdtempSync(join(tmpdir(), "bitbybit-strict-baselines-"));
@@ -36,11 +23,12 @@ for (const dir of projects) {
     const fresh = join(scratch, `${name}.json`);
     execFileSync(join(ROOT, "node_modules", ".bin", "tsc-baseline"), ["--ignoreMessages", "save", "-p", fresh], { cwd: dir, input: tsc.stdout, stdio: ["pipe", "ignore", "inherit"] });
     const count = (b) => Object.values(b.errors).reduce((n, e) => n + e.count, 0);
-    // tsc-baseline writes nothing for a clean package: no errors means no file.
     const after = existsSync(fresh) ? JSON.parse(readFileSync(fresh, "utf8")) : { errors: {} };
     total += count(after);
     if (!existsSync(committed)) {
-        if (count(after) === 0) continue;
+        if (count(after) === 0) {
+            continue;
+        }
         stale.push(`${name}: ${count(after)} strict errors and no .tsc-baseline.json - restart its ratchet with \`tsc -p tsconfig.strict.json --pretty false | tsc-baseline --ignoreMessages save\` there`);
         continue;
     }

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { SkyMaterial } from "@babylonjs/materials";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonMaterialSky } from "./sky-material";
 import * as Inputs from "../../../inputs";
 

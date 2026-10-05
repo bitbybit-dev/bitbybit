@@ -2,11 +2,11 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
  
  
 import { PlayCanvasOrbitCamera } from "./orbit-camera";
-import { Context } from "../../context";
-import * as Inputs from "../../inputs";
+import type { Context } from "../../context";
+import type * as Inputs from "../../inputs";
 import * as pc from "playcanvas";
 import { createOrbitCameraMocks } from "../../__mocks__/test-helpers";
-import { MockApp } from "../../__mocks__/playcanvas.mock";
+import type { MockApp } from "../../__mocks__/playcanvas.mock";
 
 vi.mock("playcanvas", async () => {
     const { createPlayCanvasMock } = await vi.importActual<typeof import("../../__mocks__/playcanvas.mock")>("../../__mocks__/playcanvas.mock");

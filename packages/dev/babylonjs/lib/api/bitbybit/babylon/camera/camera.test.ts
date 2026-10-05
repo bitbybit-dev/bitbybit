@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as BABYLON from "@babylonjs/core";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonCamera } from "./camera";
 import { BabylonFreeCamera } from "./free-camera";
 import { BabylonArcRotateCamera } from "./arc-rotate-camera";

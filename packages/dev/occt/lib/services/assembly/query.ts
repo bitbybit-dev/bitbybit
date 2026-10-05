@@ -1,12 +1,11 @@
-import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedDocument } from "../base/file-data";
 
-/** A dimension as the kernel writes it, a value it cannot hold in JSON written as null. */
 type KernelPmiDimension = {
     entry: string;
     type: string;
@@ -20,14 +19,12 @@ type KernelPmiDimension = {
     otherShapes: string[];
 };
 
-/** The product manufacturing information as the kernel writes it. */
 type KernelPmi = {
     dimensions: KernelPmiDimension[];
     tolerances: { entry: string; type: string; name: string; value: number | null; shapes: string[]; datums: string[] }[];
     datums: { entry: string; name: string; shapes: string[] }[];
 };
 
-/** A number the kernel wrote, with the null it writes for an infinite or undefined value read as NaN. */
 const finiteOrNaN = (value: number | null): number => value ?? NaN;
 
 /**

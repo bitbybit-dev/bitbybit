@@ -31,14 +31,18 @@ function buildIsStale(): boolean {
 }
 
 beforeAll(() => {
-    if (buildIsStale()) execFileSync("npx", ["tsc", "-p", "tsconfig.build.json"], { cwd: PACKAGE_DIRECTORY, stdio: "ignore", timeout: BUILD_TIMEOUT_MS });
+    if (buildIsStale()) {
+        execFileSync("npx", ["tsc", "-p", "tsconfig.build.json"], { cwd: PACKAGE_DIRECTORY, stdio: "ignore", timeout: BUILD_TIMEOUT_MS });
+    }
     cacheHome = mkdtempSync(join(tmpdir(), "bitbybit-mcp-stdio-"));
     mkdirSync(join(cacheHome, "bitbybit-mcp"), { recursive: true });
     writeFileSync(join(cacheHome, "bitbybit-mcp", `index-v${FIXTURE_VERSION}.json`), JSON.stringify(fixtureIndex()), "utf8");
 }, BUILD_TIMEOUT_MS);
 
 afterAll(() => {
-    if (cacheHome) rmSync(cacheHome, { recursive: true, force: true });
+    if (cacheHome) {
+        rmSync(cacheHome, { recursive: true, force: true });
+    }
 });
 
 function run(args: string[], messages: object[]): Promise<Session> {
@@ -55,10 +59,16 @@ function run(args: string[], messages: object[]): Promise<Session> {
         let answered = 0;
         child.stdout.on("data", () => {
             answered = out.split("\n").filter((line) => line.includes("\"result\"")).length;
-            if (answered >= expected) child.stdin.end();
+            if (answered >= expected) {
+                child.stdin.end();
+            }
         });
-        for (const message of messages) child.stdin.write(`${JSON.stringify(message)}\n`);
-        if (expected === 0) child.stdin.end();
+        for (const message of messages) {
+            child.stdin.write(`${JSON.stringify(message)}\n`);
+        }
+        if (expected === 0) {
+            child.stdin.end();
+        }
     });
 }
 

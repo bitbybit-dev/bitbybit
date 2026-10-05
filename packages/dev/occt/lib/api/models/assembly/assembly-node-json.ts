@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * Assembly node from native JSON parsing.

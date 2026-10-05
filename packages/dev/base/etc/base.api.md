@@ -726,6 +726,12 @@ export class GlobalCDNProvider {
 }
 
 // @public
+export function hashOfBytes(bytes: Uint8Array): number;
+
+// @public
+export function hashOfText(text: string): number;
+
+// @public
 export class InputError extends Error {
     constructor(message: string, property?: string);
     readonly property: string | undefined;
@@ -849,6 +855,9 @@ export class IoBitByBit {
     // (undocumented)
     dxf: Dxf;
 }
+
+// @public
+export function isRecord(value: unknown): value is Record<string, unknown>;
 
 // @public
 export function isRegisteredOperation(registry: DtoRegistry, path: string): boolean;
@@ -1022,6 +1031,9 @@ namespace Line_3 {
     // (undocumented)
     type TransformsLinesDto = Inputs_2.Line.TransformsLinesDto;
 }
+
+// @public
+export function linearToSrgb(channel: number): number;
 
 // @public
 export class Lists {
@@ -1764,6 +1776,9 @@ export class MeshBitByBit {
 }
 
 // @public
+export function messageOf(thrown: unknown): string;
+
+// @public
 export function notZeroVector<T>(property: Key<T>): InputRule<T>;
 
 // @public
@@ -2223,6 +2238,9 @@ export function sameLength<T>(property: Key<T>, other: Key<T>): InputRule<T>;
 
 // @public
 export function setInputIssueSink(next?: (report: InputIssueReport) => void): void;
+
+// @public
+export function srgbToLinear(channel: number): number;
 
 // @public
 namespace Text_2 {

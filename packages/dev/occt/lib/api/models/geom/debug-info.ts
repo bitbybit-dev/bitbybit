@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * The name of a curve's underlying type - line, circle, ellipse, hyperbola, parabola, Bezier,

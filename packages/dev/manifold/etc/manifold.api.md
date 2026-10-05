@@ -4,7 +4,7 @@
 
 ```ts
 
-import * as Manifold3D from 'manifold-3d';
+import type * as Manifold3D from 'manifold-3d';
 
 // @public
 export namespace Base {

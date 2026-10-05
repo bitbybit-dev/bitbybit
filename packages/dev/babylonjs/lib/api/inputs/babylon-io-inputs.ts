@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for engine-level import and export: the objects to write, the target format, and the
  * settings applied when reading a file back into the scene.

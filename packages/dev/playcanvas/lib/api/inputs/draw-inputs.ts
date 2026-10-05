@@ -2,10 +2,9 @@
 
 import * as Inputs from "./index";
 import { Base } from "./base-inputs";
-import * as pc from "playcanvas";
+import type * as pc from "playcanvas";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
-// tslint:disable-next-line: no-namespace
 /**
  * Options for drawing geometry into a PlayCanvas scene: color, opacity, size, and the per-kind
  * settings that control how points, lines, polylines, meshes, surfaces and kernel shapes become

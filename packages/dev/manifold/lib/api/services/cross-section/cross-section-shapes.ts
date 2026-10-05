@@ -1,7 +1,7 @@
 import * as Inputs from "../../inputs/manifold-inputs";
-import * as Manifold3D from "manifold-3d";
+import type * as Manifold3D from "manifold-3d";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Building Manifold cross-sections, the flat outlines that become solids: squares, rectangles,

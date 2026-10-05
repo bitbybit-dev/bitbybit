@@ -6,7 +6,7 @@ import { Line } from "./line";
 import { Lists } from "./lists";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
-import * as Inputs from "../inputs";
+import type * as Inputs from "../inputs";
 import { UnitTestHelper } from "../unit-test-helper";
 
 describe("Line unit tests", () => {

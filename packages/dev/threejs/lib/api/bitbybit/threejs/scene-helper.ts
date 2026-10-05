@@ -1,9 +1,11 @@
 import * as THREEJS from "three";
-import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
-import { OrbitCameraController, ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
+import type { InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
+import { ThreeJSScene } from "../../inputs/threejs-scene-inputs";
+import type { OrbitCameraController } from "../../inputs/threejs-camera-inputs";
+import { ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
 import { createOrbitCamera } from "./orbit-camera";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 const SIXTY_HZ_FRAMES_PER_SECOND = 60;
 const FIRST_FRAME_DELTA_SECONDS = 1 / SIXTY_HZ_FRAMES_PER_SECOND;

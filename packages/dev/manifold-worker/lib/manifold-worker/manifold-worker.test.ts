@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { InputError, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./manifold-worker";
+import { initializationComplete, onMessageInput } from "./manifold-worker";
 
 const { FakeCacheHelper, latest, kernelCalls, failure } = vi.hoisted(() => {
     class FakeCacheHelper {

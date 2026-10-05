@@ -1,6 +1,7 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import { linearToSrgb, srgbToLinear } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
 import { stableJson } from "./cache";
 
 type Part = Models.OCCT.DesignBuiltPart<TopoDS_Shape>;
@@ -8,9 +9,18 @@ type Part = Models.OCCT.DesignBuiltPart<TopoDS_Shape>;
 /** The id of the structure node that stands for the document built, which the top-level parts or components sit under; no component path can be it. */
 export const ROOT_NODE = "/";
 
+const HEX_RADIX = 16;
+
+const CHANNEL_MAX = 255;
+
+const HEX_DIGITS_PER_CHANNEL = 2;
+
 function rgbaOf(hex: string, opacity: number): Inputs.Base.ColorRGBA {
-    const channel = (start: number): number => parseInt(hex.slice(start, start + 2), 16) / 255;
-    return { r: channel(1), g: channel(3), b: channel(5), a: opacity };
+    const channel = (index: number): number => {
+        const start = 1 + index * HEX_DIGITS_PER_CHANNEL;
+        return parseInt(hex.slice(start, start + HEX_DIGITS_PER_CHANNEL), HEX_RADIX) / CHANNEL_MAX;
+    };
+    return { r: channel(0), g: channel(1), b: channel(2), a: opacity };
 }
 
 export function colourOf(part: Part): Inputs.Base.ColorRGBA | undefined {
@@ -22,22 +32,21 @@ type StructureLook = Omit<Models.OCCT.AssemblySubShapeColor, "indexes">;
 
 type Finish = Pick<StructureLook, "metallic" | "roughness" | "emissiveRgb">;
 
-/** An sRGB channel scaled in linear light, as light adds up, and written back as sRGB. */
 function dimmed(channel: number, strength: number): number {
     if (strength === 1) {
         return channel;
     }
-    const linear = channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4;
-    const scaled = linear * strength;
-    return scaled <= 0.0031308 ? scaled * 12.92 : 1.055 * scaled ** (1 / 2.4) - 0.055;
+    return linearToSrgb(srgbToLinear(channel) * strength);
 }
 
-/**
- * The finish a look gives a PBR material: its metallic, its roughness and the light it gives off, the
- * emissive colour times its strength in linear light, at most 1, which is as far as glTF's core
- * emissive factor goes. Colours stay sRGB, as the kernel takes them.
- */
-function finishOf(look: { metallic?: number | undefined; roughness?: number | undefined; emissive?: string | undefined; emissiveStrength?: number | undefined }): Finish {
+interface FinishSource {
+    metallic?: number | undefined;
+    roughness?: number | undefined;
+    emissive?: string | undefined;
+    emissiveStrength?: number | undefined;
+}
+
+function finishOf(look: FinishSource): Finish {
     const strength = Math.min(look.emissiveStrength ?? 1, 1);
     const glow = look.emissive === undefined ? undefined : rgbaOf(look.emissive, 1);
     return {
@@ -118,7 +127,15 @@ export function structureLookOf(part: Part): Pick<Models.OCCT.AssemblyPartDef<To
     };
 }
 
-const withProperties = (values: Record<string, string | number | boolean> | undefined): { properties?: Record<string, string | number | boolean> } => values === undefined || Object.keys(values).length === 0 ? {} : { properties: values };
+type PropertyValues = Record<string, string | number | boolean>;
+
+interface CarriedProperties {
+    properties?: PropertyValues;
+}
+
+export function withProperties(values: PropertyValues | undefined): CarriedProperties {
+    return values === undefined || Object.keys(values).length === 0 ? {} : { properties: values };
+}
 
 /** A built part as the assembly builders take it: a new handle on its shape, its name, its colours and finish, and its properties. */
 export function structurePartOf(part: Part): Models.OCCT.AssemblyPartDef<TopoDS_Shape> {

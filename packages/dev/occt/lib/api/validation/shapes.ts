@@ -1,6 +1,7 @@
-import { DtoRules, custom, defineRules, distinct } from "@bitbybit-dev/base";
+import type { DtoRules } from "@bitbybit-dev/base";
+import { custom, defineRules, distinct } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 const extrudedEitherWay = <T extends { extrusionLengthFront: number; extrusionLengthBack: number }>() =>
     custom<T>("extrusionLengthFront", (inputs) => inputs.extrusionLengthFront > 0 || inputs.extrusionLengthBack > 0, "or extrusionLengthBack must be above 0, or the profile has no thickness", ["extrusionLengthFront", "extrusionLengthBack"]);

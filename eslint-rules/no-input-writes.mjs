@@ -1,17 +1,5 @@
-// A service method receives its caller's parameter object and must not write into it. The
-// packages' one rule that holds everywhere - "nothing consumes what it was given" - exists because a
-// configurator calls the same method again and again on the same object: a default written back
-// onto `inputs` makes the second call differ from the first, and a caller who reuses the object gets
-// a value it never set. The default belongs in a local (`const corners = inputs.corners ?? round`)
-// or in a spread copy (`{ ...inputs, tolerance: inputs.tolerance ?? 1e-4 }`).
-//
-// Only a direct property of the parameter is reported (`inputs.x = ...`, `inputs.x ??= ...`). A
-// write deeper down (`inputs.mesh.position = ...`) is the method doing its job on an engine object
-// the caller handed over to be changed, and is left alone.
-
 const PARAMETER_NAME = "inputs";
 
-/** @type {import("eslint").Rule.RuleModule} */
 export default {
     meta: {
         type: "problem",

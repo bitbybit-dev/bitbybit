@@ -1,8 +1,8 @@
 # CLAUDE.md - the bitbybit open-source monorepo
 
 MIT-licensed, and the source of truth for the CAD algorithms and the published `@bitbybit-dev/*` npm
-packages. It is consumed as a git submodule elsewhere, but it stands alone: everything here builds and
-tests without it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
+packages. It stands alone: everything here builds and tests from a bare clone with nothing
+above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before opening a PR.
 
 ## Layout
 
@@ -67,15 +67,14 @@ your machine and nowhere else, which is how one reached CI.
 
 ## Lint and the strictness ratchet
 
-`npm run lint` is ESLint 10 from one self-contained `eslint.config.mjs`: the recommended sets, the
-type-aware set (it reads the type graph, so it sees an unawaited promise), the house style, and two
-local rules in `eslint-rules/`, neither with a fixer - `no-double-assertion` (`x as unknown as T`
-widens until nothing is checked; use a type predicate) and `no-loose-comments` (JSDoc and directives
-stay, free-form comments do not; a `*.test.ts` may carry `// Arrange`, `// Act` and `// Assert`, each
-on its own, and nothing else; the MCP server package runs it with `allowJsDoc: false`, since nothing
-reads a comment there, and keeps what the code cannot say in its `CLAUDE.md`). Findings that predate
-a rule sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count
-only falls. Never load `eslint-plugin-no-comments`: its fixer would delete that JSDoc corpus.
+`npm run lint` is ESLint 10 from one self-contained `eslint.config.mjs`: the recommended and
+type-aware sets, the house style, and four local rules in `eslint-rules/`, none with a fixer, each
+with a `RuleTester` suite. **The code carries no comments** but the public API's JSDoc (DTOs and
+models included), tool directives, notices and a test's bare `// Arrange` / `// Act` / `// Assert`;
+what a comment would say goes into a name, a constant, the package's `ARCHITECTURE.md` or
+`scripts/README.md`. `LINT.md` holds the policy and every rule's reasons. Findings that predate a rule
+sit in `eslint-suppressions.json`; a new one fails, as does a stale suppression, so the count only
+falls. Never load `eslint-plugin-no-comments`: its fixer would delete the public API's JSDoc.
 
 Every package builds and typechecks under the whole strict set, and the flags live in one place:
 `tsconfig.base.cad.json`, which every package's `tsconfig.json` (the editor and test view) and
@@ -132,7 +131,7 @@ Two of those checks carry committed state. `api:check` runs api-extractor in eve
 carry a report - all but `occt-worker`, whose `BitbybitOcctModule` comes from emscripten glue it
 cannot follow, and which `check:worker-api` and `check:worker-parity` pin harder instead - against its
 built `dist/index.d.ts`, and fails when the public surface differs from the report in that package's
-`etc/`: the dotted API is persisted in users' saved scripts, so a change lands only with a deliberate
+`etc/`: the dotted API is persisted in users' scripts, so a change lands only with a deliberate
 `npm run api:update` and the report diff in the same commit. `check:tarballs` packs all fourteen,
 installs the library ones into an empty project and probes each as a consumer would, then reads what
 every tarball carries: a credential, an absolute build path, a source map naming excluded sources.
@@ -156,8 +155,8 @@ of `scripts/worker-parity.allow.json`, one list for the generator and the parity
 
 The four inputs namespaces - `occ-inputs.ts` (some 300 DTOs), `jscad-inputs.ts`,
 `manifold-inputs.ts`, `verb-inputs.ts` - are assembled the same way. Each has to stay one compilation
-unit, because TypeScript does not merge a namespace across modules and the declarations the visual
-editors are generated from read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
+unit, because TypeScript does not merge a namespace across modules and tools that read the published
+declarations read each as a whole, so `scripts/gen-inputs.mjs` writes it from the
 fragments beside it, each a slice of the namespace body written as an ordinary module.
 `scripts/inputs.config.mjs` names the four and their fragment order - the order of the emitted
 declarations - and fails on a fragment nothing names. Edit a fragment and run `npm run gen:inputs`;
@@ -168,7 +167,7 @@ generators' and checkers' own `node --test` suites, `scripts/**/*.test.mjs`). Ea
 mirrors its kernel by dotted path, and `scripts/worker-parity.mjs` fails when a worker sends a path the kernel lacks, when a kernel method
 has no mirror outside the allow-list, when signatures disagree, when the JSDoc on a mirrored method
 or class reads differently on the two sides, or when the worker's path set differs from the committed
-snapshot (those paths are persisted in users' saved scripts). A deliberate surface change is accepted
+snapshot (those paths are persisted in users' scripts). A deliberate surface change is accepted
 with `--update`; a doc change is made on the kernel and regenerated into the worker.
 
 Every runner writes its results as JSON into `test-results/` next to the code it tested

@@ -1,9 +1,9 @@
-import { GeometryHelper } from "./geometry-helper";
+import type { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
-import { Point } from "./point";
-import { Vector } from "./vector";
+import type { Point } from "./point";
+import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Straight lines between two points, held as plain objects of the form `{ start, end }`, and the

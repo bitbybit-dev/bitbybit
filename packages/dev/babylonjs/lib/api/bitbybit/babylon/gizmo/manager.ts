@@ -1,8 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The gizmo manager owns the on-screen manipulators for one attached mesh at a time and, by

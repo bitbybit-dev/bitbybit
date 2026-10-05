@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, vi, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -18,7 +19,9 @@ describe("MeshingService.shapeToMesh", () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
-        while (restores.length) restores.pop()!();
+        while (restores.length) {
+            restores.pop()!();
+        }
     });
 
     function kernelJson(shape: TopoDS_Shape, precision: number, adjustYtoZ: boolean, computeMetadata = false): unknown {
@@ -327,7 +330,9 @@ describe("MeshingService documents", () => {
 
     afterEach(() => {
         vi.restoreAllMocks();
-        while (documents.length) documents.pop()!.delete();
+        while (documents.length) {
+            documents.pop()!.delete();
+        }
     });
 
     function twoPartDocument(): Handle_TDocStd_Document {

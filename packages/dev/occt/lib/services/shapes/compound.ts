@@ -1,6 +1,6 @@
-import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
-import * as Inputs from "../../api/inputs";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
+import type * as Inputs from "../../api/inputs";
 
 /**
  * Compounds in OpenCascade: a loose collection of shapes of any kind kept together as one shape, so

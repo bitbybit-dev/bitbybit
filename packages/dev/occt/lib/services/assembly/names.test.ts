@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -8,7 +9,7 @@ import { OCCTAssemblyQuery } from "./query";
 import { OCCTIO } from "../io";
 import { OCCTSolid } from "../shapes";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 
 describe("assembly names", () => {
     let occt: BitbybitOcctModule;

@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 
 /**
  * Part definition for assembly structure.

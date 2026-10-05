@@ -1,15 +1,13 @@
-const RADIANS_PER_DEGREE = Math.PI / 180;
+import { FULL_TURN, HALF_TURN, QUARTER_SINES, RIGHT_ANGLE } from "./constants";
 
-const QUARTER_SINES = new Map<number, number>([[0, 0], [30, 0.5], [45, Math.SQRT1_2], [60, Math.sqrt(3) / 2], [90, 1]]);
+const RADIANS_PER_DEGREE = Math.PI / HALF_TURN;
 
-/** The sine of the angles from 0 to 360 degrees that are multiples of 30 or 45, exactly as their closed forms give them. */
 const EXACT_SINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, sine]) => [
-    [angle, sine], [180 - angle, sine], [180 + angle, sine === 0 ? 0 : -sine], [(360 - angle) % 360, sine === 0 ? 0 : -sine],
+    [angle, sine], [HALF_TURN - angle, sine], [HALF_TURN + angle, sine === 0 ? 0 : -sine], [(FULL_TURN - angle) % FULL_TURN, sine === 0 ? 0 : -sine],
 ]));
 
-/** The angle in [0, 360) that `degrees` turns to; the remainder is exact, so folding loses nothing. */
 function folded(degrees: number): number {
-    return ((degrees % 360) + 360) % 360 + 0;
+    return ((degrees % FULL_TURN) + FULL_TURN) % FULL_TURN + 0;
 }
 
 function sine(degrees: number): number {
@@ -18,26 +16,29 @@ function sine(degrees: number): number {
 }
 
 function cosine(degrees: number): number {
-    return sine(degrees + 90);
+    return sine(degrees + RIGHT_ANGLE);
 }
 
-/** The angle whose sine or cosine is an exact table value, or the library's answer for any other. */
 function inverse(value: number, exact: ReadonlyMap<number, number>, fallback: (value: number) => number): number {
     return exact.get(value) ?? fallback(value) / RADIANS_PER_DEGREE;
 }
 
 const EXACT_ARCSINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, value]) => [[value, angle], [-value, angle === 0 ? 0 : -angle]]));
 
-const EXACT_ARCCOSINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, value]) => [[value, 90 - angle], [-value, 90 + angle]]));
+const EXACT_ARCCOSINES = new Map<number, number>([...QUARTER_SINES].flatMap(([angle, value]) => [[value, RIGHT_ANGLE - angle], [-value, RIGHT_ANGLE + angle]]));
 
-/** Rounds half away from zero, as people round: 2.5 to 3 and -2.5 to -3. */
 function rounded(value: number): number {
     return Math.sign(value) * Math.round(Math.abs(value)) + 0;
 }
 
-/** A function of expressions: how many values it takes (`atLeast` one or more for a list) and what it gives. */
+const IF_ARITY = 3;
+
+interface LeastArity {
+    atLeast: number;
+}
+
 interface ExpressionFunction {
-    arity: number | { atLeast: number };
+    arity: number | LeastArity;
     apply: (...values: number[]) => number;
 }
 
@@ -60,7 +61,6 @@ const FUNCTIONS = new Map<string, ExpressionFunction>(Object.entries({
 
 const CONSTANTS = new Map<string, number>([["pi", Math.PI], ["tau", 2 * Math.PI], ["e", Math.E], ["true", 1], ["false", 0]]);
 
-/** Names kept back from parameters and given no value, so a later version may define them without changing what a document means. */
 const RESERVED_NAMES = new Set(["inf", "nan"]);
 
 /** Every name a parameter may not take: the constants, the reserved words, `if`, and `configuration`, which holds the configuration in use. */
@@ -223,7 +223,7 @@ export function parseExpression(text: string): ExpressionNode {
             }
         }
         expect(")");
-        const arity = name === "if" ? 3 : FUNCTIONS.get(name)?.arity;
+        const arity = name === "if" ? IF_ARITY : FUNCTIONS.get(name)?.arity;
         if (arity === undefined) {
             throw new ExpressionError(`"${name}" is not a function expressions know`, at);
         }

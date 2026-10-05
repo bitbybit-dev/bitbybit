@@ -1,5 +1,5 @@
 import { callByPath } from "@bitbybit-dev/base";
-import { CacheHelper } from "./cache-helper";
+import type { CacheHelper } from "./cache-helper";
 import { isShapeReference, isEntityReference, createShapeReference, createEntityReference } from "./constants";
 
 /**
@@ -26,14 +26,6 @@ export class ShapeResolver {
         return this.resolveRecursively(value) as T;
     }
 
-    /**
-     * Internal recursive resolution method.
-     * Handles all cases: primitives, shape references, document references, arrays, and objects.
-     * 
-     * NOTE: This method is synchronous. File/Blob objects that slip through from the main thread
-     * cannot be converted here (would require async). They should be converted on the API side
-     * using prepareStepData() before being sent to the worker.
-     */
     private resolveRecursively(value: unknown): unknown {
         if (value === null || value === undefined) {
             return value;
@@ -70,14 +62,6 @@ export class ShapeResolver {
         return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.resolveRecursively(item)]));
     }
 
-    /**
-     * Retrieves an object from the cache by its hash.
-     * 
-     * @param hash - The hash identifier of the cached object
-     * @param type - The type of object ("shape" or "entity")
-     * @returns The cached object
-     * @throws Error if the object is not found in cache
-     */
     private resolveFromCache(hash: number | string, type: "shape" | "entity"): unknown {
         const cached = this.cacheHelper.checkCache(hash);
         if (!cached) {
@@ -121,9 +105,6 @@ export class ResultSerializer {
         return this.serializeRecursively(result);
     }
 
-    /**
-     * Recursively serializes a value, converting OCCT objects to references.
-     */
     private serializeRecursively(value: unknown): unknown {
         if (value === null || value === undefined) {
             return value;
@@ -159,12 +140,6 @@ export class ResultSerializer {
         return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, this.serializeRecursively(item)]));
     }
 
-    /**
-     * Type guard to check if value is an ObjectDefinition.
-     * ObjectDefinition has compound, data, and shapes properties.
-     * Reached only from serializeRecursively, which has already established that the value is a
-     * non-null object, so there is nothing left here to check but the shape of it.
-     */
     private isObjectDefinition(value: unknown): value is ObjectDefinitionLike {
         const obj = value as Record<string, unknown>;
         return (
@@ -176,10 +151,6 @@ export class ResultSerializer {
         );
     }
 
-    /**
-     * Serializes an ObjectDefinition structure.
-     * Converts the compound and individual shapes to references while preserving data.
-     */
     private serializeObjectDefinition(objDef: ObjectDefinitionLike): ObjectDefinitionLike {
         return {
             ...objDef,
@@ -192,9 +163,6 @@ export class ResultSerializer {
     }
 }
 
-/**
- * Type for ObjectDefinition-like structures.
- */
 interface ObjectDefinitionLike {
     compound: unknown;
     data: unknown;

@@ -9,7 +9,7 @@ import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 import { Draw } from "./draw";
 
 type Build = Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>;
@@ -297,10 +297,11 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(surfacesOf(box!)[0]!.instancingData!.vertexBuffer).toBe(linesOf(box!)[0]!.instancingData!.vertexBuffer);
         });
 
-        it("should only move the instances when redrawn with the same parts at the same paths", async () => {
+        it("should only move the instances when redrawn with the same parts at the same paths, leaving each part's label as it was", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
             const parts = partEntitiesOf(drawn);
+            const labels = parts.map(part => part.designPart);
 
             // Act
             const redrawn = await draw.drawAnyAsync({ entity: buildOf([5, 15], [25]), options, group: drawn });
@@ -309,6 +310,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(1);
             expect(partEntitiesOf(redrawn)).toEqual(parts);
+            expect(partEntitiesOf(redrawn).every((part, index) => part.designPart === labels[index])).toBe(true);
             expect(instanceMatrices(surfacesOf(parts[0]!)[0]!)[1]).toEqual(at(15));
             expect(instanceMatrices(linesOf(parts[1]!)[0]!)[0]).toEqual(at(25));
         });

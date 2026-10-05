@@ -1,6 +1,8 @@
 import * as Inputs from "../../../inputs";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 import { resolveDto } from "../../../kernel-calls";
+
+const CLOSED_POLYLINE_TOLERANCE = 1e-10;
 
 export class DxfGenerator {
     private entityHandle = 256;
@@ -30,9 +32,6 @@ export class DxfGenerator {
         return dxfContent.join("\n");
     }
 
-    /**
-     * Generate DXF header section
-     */
     private generateHeader(): string[] {
         const header = [
             "0",
@@ -77,9 +76,6 @@ export class DxfGenerator {
         return header;
     }
 
-    /**
-     * Generate DXF tables section (layers, line types, etc.)
-     */
     private generateTables(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const tables: string[] = [
             "0",
@@ -109,9 +105,6 @@ export class DxfGenerator {
         return tables;
     }
 
-    /**
-     * Generate line type table
-     */
     private generateLineTypeTable(): string[] {
         const ltype: string[] = [
             "0",
@@ -151,9 +144,6 @@ export class DxfGenerator {
         return ltype;
     }
 
-    /**
-     * Generate text style table
-     */
     private generateStyleTable(): string[] {
         const style: string[] = [
             "0",
@@ -199,9 +189,6 @@ export class DxfGenerator {
         return style;
     }
 
-    /**
-     * Generate VPORT table (viewport configuration)
-     */
     private generateVportTable(): string[] {
         return [
             "0",
@@ -287,9 +274,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate VIEW table (empty but required for AC1009)
-     */
     private generateViewTable(): string[] {
         return [
             "0",
@@ -303,9 +287,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate UCS table (user coordinate system - empty but required for AC1009)
-     */
     private generateUcsTable(): string[] {
         return [
             "0",
@@ -319,9 +300,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate APPID table (application ID - required for AC1009)
-     */
     private generateAppidTable(): string[] {
         return [
             "0",
@@ -341,9 +319,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate DIMSTYLE table (dimension style - empty but required for AC1009)
-     */
     private generateDimstyleTable(): string[] {
         return [
             "0",
@@ -357,9 +332,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate blocks section (empty but required)
-     */
     private generateBlocks(): string[] {
         return [
             "0",
@@ -371,9 +343,6 @@ export class DxfGenerator {
         ];
     }
 
-    /**
-     * Generate layer table based on unique layers in all parts
-     */
     private generateLayerTable(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const layers = new Set<string>();
 
@@ -427,9 +396,6 @@ export class DxfGenerator {
         return layerTable;
     }
 
-    /**
-     * Generate DXF entities section with all path segments
-     */
     private generateEntities(dxfInputs: Resolved.IO.DxfModelDto): string[] {
         const entities: string[] = [
             "0",
@@ -457,9 +423,6 @@ export class DxfGenerator {
         return entities;
     }
 
-    /**
-     * Generate entity for a single segment based on its type
-     */
     private generateSegmentEntity(
         segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto,
         part: Resolved.IO.DxfPathsPartDto
@@ -478,44 +441,26 @@ export class DxfGenerator {
         return [];
     }
 
-    /**
-     * Type guard for line segments
-     */
     private isLineSegment(segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto): segment is Inputs.IO.DxfLineSegmentDto {
         return (segment as Inputs.IO.DxfLineSegmentDto).start !== undefined && (segment as Inputs.IO.DxfLineSegmentDto).end !== undefined && (segment as Inputs.IO.DxfCircleSegmentDto).radius === undefined;
     }
 
-    /**
-     * Type guard for arc segments
-     */
     private isArcSegment(segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto): segment is Inputs.IO.DxfArcSegmentDto {
         return (segment as Inputs.IO.DxfArcSegmentDto).center !== undefined && (segment as Inputs.IO.DxfArcSegmentDto).radius !== undefined && (segment as Inputs.IO.DxfArcSegmentDto).startAngle !== undefined && (segment as Inputs.IO.DxfArcSegmentDto).endAngle !== undefined;
     }
 
-    /**
-     * Type guard for circle segments
-     */
     private isCircleSegment(segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto): segment is Inputs.IO.DxfCircleSegmentDto {
         return (segment as Inputs.IO.DxfCircleSegmentDto).center !== undefined && (segment as Inputs.IO.DxfCircleSegmentDto).radius !== undefined && (segment as Inputs.IO.DxfArcSegmentDto).startAngle === undefined;
     }
 
-    /**
-     * Type guard for polyline segments
-     */
     private isPolylineSegment(segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto): segment is Inputs.IO.DxfPolylineSegmentDto {
         return (segment as Inputs.IO.DxfPolylineSegmentDto).points !== undefined && Array.isArray((segment as Inputs.IO.DxfPolylineSegmentDto).points);
     }
 
-    /**
-     * Type guard for spline segments
-     */
     private isSplineSegment(segment: Inputs.IO.DxfLineSegmentDto | Inputs.IO.DxfArcSegmentDto | Inputs.IO.DxfCircleSegmentDto | Inputs.IO.DxfPolylineSegmentDto | Inputs.IO.DxfSplineSegmentDto): segment is Inputs.IO.DxfSplineSegmentDto {
         return (segment as Inputs.IO.DxfSplineSegmentDto).controlPoints !== undefined && Array.isArray((segment as Inputs.IO.DxfSplineSegmentDto).controlPoints);
     }
 
-    /**
-     * Generate a LINE entity
-     */
     private generateLineEntity(line: Inputs.IO.DxfLineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
@@ -551,9 +496,6 @@ export class DxfGenerator {
         return entity;
     }
 
-    /**
-     * Generate a CIRCLE entity
-     */
     private generateCircleEntity(circle: Inputs.IO.DxfCircleSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
@@ -585,9 +527,6 @@ export class DxfGenerator {
         return entity;
     }
 
-    /**
-     * Generate an ARC entity
-     */
     private generateArcEntity(arc: Inputs.IO.DxfArcSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const entity: string[] = [
             "0",
@@ -629,9 +568,6 @@ export class DxfGenerator {
         return entity;
     }
 
-    /**
-     * Generate a LWPOLYLINE entity
-     */
     private generatePolylineEntity(segment: Inputs.IO.DxfPolylineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const polyline = resolveDto(Inputs.IO.DxfPolylineSegmentDto, segment) as Resolved.IO.DxfPolylineSegmentDto;
         const entity: string[] = [
@@ -678,9 +614,6 @@ export class DxfGenerator {
         return entity;
     }
 
-    /**
-     * Generate a SPLINE entity
-     */
     private generateSplineEntity(segment: Inputs.IO.DxfSplineSegmentDto, part: Resolved.IO.DxfPathsPartDto): string[] {
         const spline = resolveDto(Inputs.IO.DxfSplineSegmentDto, segment) as Resolved.IO.DxfSplineSegmentDto;
         const entity: string[] = [
@@ -742,30 +675,22 @@ export class DxfGenerator {
         return entity;
     }
 
-    /**
-     * Check if polyline should be closed (first and last points are the same)
-     */
     private isClosedPolyline(points: number[][]): boolean {
-        if (points.length < 3) return false;
+        if (points.length < 3) {
+            return false;
+        }
 
         const first = points[0]!;
         const last = points[points.length - 1]!;
 
-        return Math.abs(first[0]! - last[0]!) < 1e-10 &&
-            Math.abs(first[1]! - last[1]!) < 1e-10;
+        return Math.abs(first[0]! - last[0]!) < CLOSED_POLYLINE_TOLERANCE &&
+            Math.abs(first[1]! - last[1]!) < CLOSED_POLYLINE_TOLERANCE;
     }
 
-    /**
-     * Get next entity handle as hex string
-     */
     private getNextHandle(): string {
         return (++this.entityHandle).toString(16).toUpperCase();
     }
 
-    /**
-     * Convert a hex color (#RRGGBB) to DXF color codes, as the nearest ACI index or as true color
-     * depending on the colorFormat setting; anything else is written as ACI 7
-     */
     private convertColorToDxf(color: Inputs.Base.Color): { code: string, value: string }[] {
         if (color.startsWith("#")) {
             const hex = color.substring(1);
@@ -790,10 +715,6 @@ export class DxfGenerator {
         return [{ code: "62", value: "7" }];
     }
 
-    /**
-     * Convert RGB values to nearest AutoCAD Color Index (ACI)
-     * Uses a simplified mapping to standard ACI colors
-     */
     private rgbToAciColorIndex(r: number, g: number, b: number): number {
         const aciColors: { [key: number]: [number, number, number] } = {
             1: [255, 0, 0],

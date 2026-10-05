@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, CurvePointResult, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, CurvePointResult, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Pnt } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTEdge } from "./edge";
 import { OccHelper } from "../../occ-helper";
 import { OCCTWire } from "./wire";

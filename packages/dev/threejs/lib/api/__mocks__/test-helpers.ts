@@ -1,29 +1,16 @@
 import { vi, type Mock } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-/**
- * Test helper functions for creating mock contexts and objects for Three.js
- */
-
 import { Context } from "../context";
 import * as THREEJS from "three";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
-import * as Inputs from "../inputs";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
+import type * as Inputs from "../inputs";
 
-/**
- * A test double implements the part of `T` that the test actually exercises. The assertion is
- * single and from `Partial<T>`, not through `unknown`, so every member supplied is checked against
- * the real type: one that is renamed or retyped upstream fails here, instead of passing through an
- * assertion that had erased it.
- */
 export const partialMock = <T>(members: Partial<T>): T => members as T;
 
-/**
- * Creates a basic mock context with scene
- */
 export function createMockContext(): Context {
     const mockScene = new THREEJS.Scene();
     return {
@@ -31,9 +18,6 @@ export function createMockContext(): Context {
     } as Context;
 }
 
-/**
- * Creates a simple mock context without scene
- */
 export function createSimpleMockContext(): Context {
     return new Context();
 }
@@ -54,10 +38,6 @@ export interface DrawHelperMocks extends MockWorkerManagers {
     mockScene: THREEJS.Scene;
 }
 
-/**
- * Creates mock worker managers for testing, with the mock behind each manager's
- * `genericCallToWorkerPromise` alongside it, so a suite asserts on the mock itself
- */
 export function createMockWorkerManagers(): MockWorkerManagers {
     const jscadWorkerCall = vi.fn().mockResolvedValue({
         positions: [],
@@ -97,18 +77,12 @@ export function createMockWorkerManagers(): MockWorkerManagers {
     };
 }
 
-/**
- * Creates a mock JSCADText service
- */
 export function createMockJSCADText(): JSCADText {
     return partialMock<JSCADText>({
         createVectorText: vi.fn().mockResolvedValue([])
     });
 }
 
-/**
- * Creates a mock Vector service
- */
 export function createMockVector(): Vector {
     return partialMock<Vector>({
         add: vi.fn().mockReturnValue([0, 0, 0]),
@@ -122,9 +96,6 @@ export function createMockVector(): Vector {
     });
 }
 
-/**
- * Creates a complete set of mocks for DrawHelper tests
- */
 export function createDrawHelperMocks(): DrawHelperMocks {
     const mockContext = createMockContext();
     const mockSolidText = createMockJSCADText();
@@ -140,14 +111,9 @@ export function createDrawHelperMocks(): DrawHelperMocks {
     };
 }
 
-/**
- * Converts hex color string to RGB object with values 0-1
- * @param hex - Hex color string (e.g., "#ff0000" or "#f00")
- * @returns RGB object with r, g, b values between 0 and 1
- */
 export function hexToRgb(hex: string): { r: number; g: number; b: number } {
-    // Handle 3-digit hex colors
-    if (hex.length === 4) {
+    const isThreeDigitHex = hex.length === 4;
+    if (isThreeDigitHex) {
         hex = "#" + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
     }
 
@@ -163,36 +129,20 @@ export function hexToRgb(hex: string): { r: number; g: number; b: number } {
     };
 }
 
-/**
- * Checks if two colors are approximately equal within a tolerance
- * @param color1 - THREE.Color object
- * @param color2 - RGB object with r, g, b values
- * @param tolerance - Maximum difference per channel (default 0.01)
- * @returns true if colors are within tolerance
- */
 export function colorsAreEqual(color1: THREEJS.Color, color2: { r: number; g: number; b: number }, tolerance = 0.01): boolean {
     return Math.abs(color1.r - color2.r) < tolerance &&
         Math.abs(color1.g - color2.g) < tolerance &&
         Math.abs(color1.b - color2.b) < tolerance;
 }
 
-/**
- * Extracts material from a Three.js mesh or line segments
- * @param mesh - Three.js Mesh or LineSegments object
- * @returns Material object or undefined
- */
 export function getMaterialFromMesh(mesh: THREEJS.Mesh | THREEJS.LineSegments | THREEJS.Points): THREEJS.Material | THREEJS.Material[] | undefined {
-    if (!mesh || !mesh.material) return undefined;
+    if (!mesh || !mesh.material) {
+        return undefined;
+    }
     return mesh.material;
 }
 
-/**
- * Creates mock JSCAD mesh data for testing
- */
 export function createMockJSCADMesh(overrides: Partial<Inputs.JSCAD.JSCADGeom3> = {}): Inputs.JSCAD.JSCADGeom3 {
-    // A minimal JSCAD solid. These suites mock the worker manager, so nothing reads the geometry -
-    // but it should be the shape the API says it is. What stood here was `{ type: "occ-shape" }`,
-    // which is an OCCT pointer's shape, not a JSCAD one.
     return {
         polygons: [],
         transforms: [
@@ -205,9 +155,6 @@ export function createMockJSCADMesh(overrides: Partial<Inputs.JSCAD.JSCADGeom3> 
     };
 }
 
-/**
- * Creates mock OCCT shape data for testing
- */
 export function createMockOCCTShape(overrides = {}) {
     return {
         hash: 123,
@@ -216,16 +163,12 @@ export function createMockOCCTShape(overrides = {}) {
     };
 }
 
-/**
- * Simulates worker error for testing error handling
- */
 export function mockWorkerError(workerManager: any, method: string, error: Error) {
     (workerManager.genericCallToWorkerPromise as Mock)
         .mockImplementation((methodName) => {
             if (methodName === method) {
                 return Promise.reject(error);
             }
-            // Return default mock for other methods
             return Promise.resolve({
                 positions: [],
                 normals: [],
@@ -235,9 +178,6 @@ export function mockWorkerError(workerManager: any, method: string, error: Error
         });
 }
 
-/**
- * Creates a mock window object for testing
- */
 export function mockWindow() {
     (globalThis as any).window = {
         addEventListener: vi.fn(),
@@ -247,10 +187,6 @@ export function mockWindow() {
     };
 }
 
-/**
- * Creates a mock DOM element for testing orbit camera inputs.
- * Supports event listener tracking for simulating user interactions.
- */
 export function createMockDOMElement(): HTMLElement {
     const listeners: { [key: string]: Array<(...args: unknown[]) => void> } = {};
     return partialMock<HTMLElement>({
@@ -284,9 +220,6 @@ export function createMockDOMElement(): HTMLElement {
     });
 }
 
-/**
- * Creates mock app and scene for orbit camera tests
- */
 export function createOrbitCameraMocks() {
     mockWindow();
     const mockScene = new THREEJS.Scene();
@@ -302,13 +235,6 @@ export function createOrbitCameraMocks() {
     };
 }
 
-/**
- * The flat numbers behind a geometry attribute, whichever kind it is.
- *
- * A wide line is drawn through LineSegmentsGeometry, which keeps a line's positions and colours in
- * interleaved instance attributes rather than plain buffers - so what a test wants to compare sits
- * one level further in, behind `data`.
- */
 export function flatOf(attribute: THREEJS.BufferAttribute | THREEJS.InterleavedBufferAttribute): number[] {
     return Array.from("data" in attribute ? attribute.data.array : attribute.array);
 }

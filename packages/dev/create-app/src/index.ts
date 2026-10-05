@@ -249,8 +249,12 @@ async function promptCloudProjectOptions(projectNameArg?: string): Promise<Cloud
                 message: chalk.cyan("📁 What is your project name?"),
                 default: "my-bitbybit-cloud-app",
                 validate: (input: string) => {
-                    if (!input.trim()) return "Project name is required";
-                    if (!/^[a-z0-9-_]+$/i.test(input)) return "Project name can only contain letters, numbers, hyphens, and underscores";
+                    if (!input.trim()) {
+                        return "Project name is required";
+                    }
+                    if (!/^[a-z0-9-_]+$/i.test(input)) {
+                        return "Project name can only contain letters, numbers, hyphens, and underscores";
+                    }
                     return true;
                 }
             },
@@ -303,8 +307,12 @@ async function promptAppTemplate(projectNameArg?: string): Promise<AppProjectOpt
             message: chalk.cyan("📁 What is your project name?"),
             default: "my-bitbybit-app",
             validate: (input: string) => {
-                if (!input.trim()) return "Project name is required";
-                if (!/^[a-z0-9-_]+$/i.test(input)) return "Project name can only contain letters, numbers, hyphens, and underscores";
+                if (!input.trim()) {
+                    return "Project name is required";
+                }
+                if (!/^[a-z0-9-_]+$/i.test(input)) {
+                    return "Project name can only contain letters, numbers, hyphens, and underscores";
+                }
                 return true;
             }
         }]),
@@ -956,16 +964,15 @@ async function createCloudProject(options: CloudProjectOptions): Promise<void> {
     }
 }
 
-/**
- * A template that needs a secret ships an .env.example beside the code that reads it; the scaffold
- * gets an .env copied from it so the first run finds the file and the variable, empty. The same
- * probe the cloud templates use, for any depth.
- */
 async function writeEnvFromExamples(dir: string): Promise<void> {
     for (const example of await listFiles(dir)) {
-        if (path.basename(example) !== ".env.example") continue;
+        if (path.basename(example) !== ".env.example") {
+            continue;
+        }
         const env = path.join(path.dirname(example), ".env");
-        if (!(await fs.pathExists(env))) await fs.copy(example, env);
+        if (!(await fs.pathExists(env))) {
+            await fs.copy(example, env);
+        }
     }
 }
 
@@ -1117,7 +1124,9 @@ async function main(): Promise<void> {
                     appOptions = { projectName, template: cmdOptions.template as AppTemplateId };
                 } else {
                     appOptions = await promptAppTemplate(projectName);
-                    if (cmdOptions.template) appOptions.template = cmdOptions.template as AppTemplateId;
+                    if (cmdOptions.template) {
+                        appOptions.template = cmdOptions.template as AppTemplateId;
+                    }
                 }
                 await createAppProject(appOptions);
             } else if (appType === "cloud") {

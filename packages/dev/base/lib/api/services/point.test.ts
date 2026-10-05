@@ -1148,10 +1148,18 @@ describe("Point unit tests", () => {
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             result.hexagons.forEach(hex => {
                 hex.forEach(vertex => {
-                    if (vertex[0] < minX) minX = vertex[0];
-                    if (vertex[0] > maxX) maxX = vertex[0];
-                    if (vertex[1] < minY) minY = vertex[1];
-                    if (vertex[1] > maxY) maxY = vertex[1];
+                    if (vertex[0] < minX) {
+                        minX = vertex[0];
+                    }
+                    if (vertex[0] > maxX) {
+                        maxX = vertex[0];
+                    }
+                    if (vertex[1] < minY) {
+                        minY = vertex[1];
+                    }
+                    if (vertex[1] > maxY) {
+                        maxY = vertex[1];
+                    }
                 });
             });
 
@@ -1193,10 +1201,18 @@ describe("Point unit tests", () => {
             let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
             result.hexagons.forEach(hex => {
                 hex.forEach(vertex => {
-                    if (vertex[0] < minX) minX = vertex[0];
-                    if (vertex[0] > maxX) maxX = vertex[0];
-                    if (vertex[1] < minY) minY = vertex[1];
-                    if (vertex[1] > maxY) maxY = vertex[1];
+                    if (vertex[0] < minX) {
+                        minX = vertex[0];
+                    }
+                    if (vertex[0] > maxX) {
+                        maxX = vertex[0];
+                    }
+                    if (vertex[1] < minY) {
+                        minY = vertex[1];
+                    }
+                    if (vertex[1] > maxY) {
+                        maxY = vertex[1];
+                    }
                 });
             });
 
@@ -1440,10 +1456,18 @@ describe("Point unit tests", () => {
                 let maxYNormal = -Infinity;
                 let maxYExtended = -Infinity;
                 resultNormal.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[1] > maxYNormal) maxYNormal = v[1]; });
+                    hex.forEach(v => {
+                        if (v[1] > maxYNormal) {
+                            maxYNormal = v[1];
+                        }
+                    });
                 });
                 resultExtended.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[1] > maxYExtended) maxYExtended = v[1]; });
+                    hex.forEach(v => {
+                        if (v[1] > maxYExtended) {
+                            maxYExtended = v[1];
+                        }
+                    });
                 });
 
                 expect(maxYExtended).toBeGreaterThan(maxYNormal);
@@ -1468,10 +1492,18 @@ describe("Point unit tests", () => {
                 let minYNormal = Infinity;
                 let minYExtended = Infinity;
                 resultNormal.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[1] < minYNormal) minYNormal = v[1]; });
+                    hex.forEach(v => {
+                        if (v[1] < minYNormal) {
+                            minYNormal = v[1];
+                        }
+                    });
                 });
                 resultExtended.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[1] < minYExtended) minYExtended = v[1]; });
+                    hex.forEach(v => {
+                        if (v[1] < minYExtended) {
+                            minYExtended = v[1];
+                        }
+                    });
                 });
 
                 expect(minYExtended).toBeLessThan(minYNormal);
@@ -1496,10 +1528,18 @@ describe("Point unit tests", () => {
                 let minXNormal = Infinity;
                 let minXExtended = Infinity;
                 resultNormal.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[0] < minXNormal) minXNormal = v[0]; });
+                    hex.forEach(v => {
+                        if (v[0] < minXNormal) {
+                            minXNormal = v[0];
+                        }
+                    });
                 });
                 resultExtended.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[0] < minXExtended) minXExtended = v[0]; });
+                    hex.forEach(v => {
+                        if (v[0] < minXExtended) {
+                            minXExtended = v[0];
+                        }
+                    });
                 });
 
                 expect(minXExtended).toBeLessThan(minXNormal);
@@ -1524,10 +1564,18 @@ describe("Point unit tests", () => {
                 let maxXNormal = -Infinity;
                 let maxXExtended = -Infinity;
                 resultNormal.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[0] > maxXNormal) maxXNormal = v[0]; });
+                    hex.forEach(v => {
+                        if (v[0] > maxXNormal) {
+                            maxXNormal = v[0];
+                        }
+                    });
                 });
                 resultExtended.hexagons.forEach(hex => {
-                    hex.forEach(v => { if (v[0] > maxXExtended) maxXExtended = v[0]; });
+                    hex.forEach(v => {
+                        if (v[0] > maxXExtended) {
+                            maxXExtended = v[0];
+                        }
+                    });
                 });
 
                 expect(maxXExtended).toBeGreaterThan(maxXNormal);
@@ -1553,14 +1601,22 @@ describe("Point unit tests", () => {
                 let minYExtended = Infinity, maxYExtended = -Infinity;
                 resultNormal.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[1] < minYNormal) minYNormal = v[1];
-                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                        if (v[1] < minYNormal) {
+                            minYNormal = v[1];
+                        }
+                        if (v[1] > maxYNormal) {
+                            maxYNormal = v[1];
+                        }
                     });
                 });
                 resultExtended.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[1] < minYExtended) minYExtended = v[1];
-                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                        if (v[1] < minYExtended) {
+                            minYExtended = v[1];
+                        }
+                        if (v[1] > maxYExtended) {
+                            maxYExtended = v[1];
+                        }
                     });
                 });
 
@@ -1588,14 +1644,22 @@ describe("Point unit tests", () => {
                 let minXExtended = Infinity, maxXExtended = -Infinity;
                 resultNormal.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] < minXNormal) minXNormal = v[0];
-                        if (v[0] > maxXNormal) maxXNormal = v[0];
+                        if (v[0] < minXNormal) {
+                            minXNormal = v[0];
+                        }
+                        if (v[0] > maxXNormal) {
+                            maxXNormal = v[0];
+                        }
                     });
                 });
                 resultExtended.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] < minXExtended) minXExtended = v[0];
-                        if (v[0] > maxXExtended) maxXExtended = v[0];
+                        if (v[0] < minXExtended) {
+                            minXExtended = v[0];
+                        }
+                        if (v[0] > maxXExtended) {
+                            maxXExtended = v[0];
+                        }
                     });
                 });
 
@@ -1628,18 +1692,34 @@ describe("Point unit tests", () => {
 
                 resultNormal.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] < minXNormal) minXNormal = v[0];
-                        if (v[0] > maxXNormal) maxXNormal = v[0];
-                        if (v[1] < minYNormal) minYNormal = v[1];
-                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                        if (v[0] < minXNormal) {
+                            minXNormal = v[0];
+                        }
+                        if (v[0] > maxXNormal) {
+                            maxXNormal = v[0];
+                        }
+                        if (v[1] < minYNormal) {
+                            minYNormal = v[1];
+                        }
+                        if (v[1] > maxYNormal) {
+                            maxYNormal = v[1];
+                        }
                     });
                 });
                 resultExtended.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] < minXExtended) minXExtended = v[0];
-                        if (v[0] > maxXExtended) maxXExtended = v[0];
-                        if (v[1] < minYExtended) minYExtended = v[1];
-                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                        if (v[0] < minXExtended) {
+                            minXExtended = v[0];
+                        }
+                        if (v[0] > maxXExtended) {
+                            maxXExtended = v[0];
+                        }
+                        if (v[1] < minYExtended) {
+                            minYExtended = v[1];
+                        }
+                        if (v[1] > maxYExtended) {
+                            maxYExtended = v[1];
+                        }
                     });
                 });
 
@@ -1693,14 +1773,22 @@ describe("Point unit tests", () => {
                 let maxXExtended = -Infinity, maxYExtended = -Infinity;
                 resultNormal.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] > maxXNormal) maxXNormal = v[0];
-                        if (v[1] > maxYNormal) maxYNormal = v[1];
+                        if (v[0] > maxXNormal) {
+                            maxXNormal = v[0];
+                        }
+                        if (v[1] > maxYNormal) {
+                            maxYNormal = v[1];
+                        }
                     });
                 });
                 resultExtended.hexagons.forEach(hex => {
                     hex.forEach(v => {
-                        if (v[0] > maxXExtended) maxXExtended = v[0];
-                        if (v[1] > maxYExtended) maxYExtended = v[1];
+                        if (v[0] > maxXExtended) {
+                            maxXExtended = v[0];
+                        }
+                        if (v[1] > maxYExtended) {
+                            maxYExtended = v[1];
+                        }
                     });
                 });
 

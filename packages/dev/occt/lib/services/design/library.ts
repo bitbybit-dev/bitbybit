@@ -1,7 +1,7 @@
-import * as Models from "../../api/models";
+import { isRecord } from "@bitbybit-dev/base";
+import type * as Models from "../../api/models";
 import { versionOf } from "./identity";
 import { DesignProblem, pointer } from "./problems";
-import { isRecord } from "./structure";
 
 /** A document given beside the one checked or built: the document and its position in the list it came in. */
 export interface LibraryEntry<D extends object = Record<string, unknown>> {
@@ -19,10 +19,15 @@ export function versionIn(entry: LibraryEntry<object>): string {
     return entry.version ??= versionOf(entry.document);
 }
 
-/** The revision id the store that keeps a document stamped into its `meta`, when it did. */
 function revisionOf(document: object): string | undefined {
     const meta = isRecord(document) ? document["meta"] : undefined;
     return isRecord(meta) && typeof meta["revision"] === "string" ? meta["revision"] : undefined;
+}
+
+/** The documents of a library by id, each id's versions together, and what was wrong with the list given. */
+export interface LibraryOutcome<D extends object> {
+    library: Map<string, LibraryEntry<D>[]>;
+    issues: Models.OCCT.DesignIssue[];
 }
 
 /**
@@ -30,7 +35,7 @@ function revisionOf(document: object): string | undefined {
  * versions of one document may be given, so that two components place two revisions of it; the same
  * version twice is a problem.
  */
-export function libraryOf<D extends object = Record<string, unknown>>(documents: readonly D[] | unknown): { library: Map<string, LibraryEntry<D>[]>; issues: Models.OCCT.DesignIssue[] } {
+export function libraryOf<D extends object = Record<string, unknown>>(documents: readonly D[] | unknown): LibraryOutcome<D> {
     const library = new Map<string, LibraryEntry<D>[]>();
     const issues: Models.OCCT.DesignIssue[] = [];
     if (documents === undefined) {

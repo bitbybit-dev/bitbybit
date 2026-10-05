@@ -1,11 +1,13 @@
-import * as Models from "../../api/models";
-import { DtoRegistry, unknownProperties } from "@bitbybit-dev/base";
+import type * as Models from "../../api/models";
+import type { DtoRegistry } from "@bitbybit-dev/base";
+import { isRecord, unknownProperties } from "@bitbybit-dev/base";
 import { namesIn } from "./expressions";
 import { OPERATION_API_MAJOR, OPERATION_KERNEL, operationPathOf, versionProblem } from "./format";
 import { holePositionIds, setHoleOf } from "./connectors";
 import { DesignProblem, pointer } from "./problems";
-import { checkIdList, checkKeys, checkLabel, checkObject, checkText, isRecord } from "./structure";
+import { checkIdList, checkKeys, checkLabel, checkObject, checkText } from "./structure";
 import { isExpressionObject, parameterTypeOf, parameterValues, parsed, templatePieces } from "./values";
+import { DIMENSIONS } from "./constants";
 
 const FEATURE_ID = /^[A-Za-z_][A-Za-z0-9_-]*$/;
 const UUID = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
@@ -134,7 +136,7 @@ export const checkSwitch: Check = (value, path, known) => {
 };
 
 export const checkPoint: Check = (value, path, known) => {
-    if (!Array.isArray(value) || value.length !== 3) {
+    if (!Array.isArray(value) || value.length !== DIMENSIONS) {
         throw new DesignProblem(path, "a point or vector is three numbers or expressions");
     }
     value.forEach((coordinate, index) => checkNumber(coordinate, pointer(path, index), known));
@@ -185,15 +187,8 @@ function checkCount(value: unknown, path: string, required: boolean): void {
 
 const WHOLE_NUMBER = /^(0|[1-9][0-9]*)$/;
 
-/** An id that becomes part of a face's name: a command's or a hole position's, never a bare number, and never holding the `.`, `:`, `@` or `#` the name grammar splits on. */
 const NAME_ID = /^[A-Za-z_][A-Za-z0-9_-]*$/;
 
-/**
- * What a reference's `from` names, always by an id the document gives and never by a position, so
- * inserting an item never turns a reference to another face: a sketch command by its id, a hole by
- * the id of its position in `at`, and an imported face by its index only when the asset is pinned by
- * its SHA-256, which fixes the order of its faces.
- */
 function checkFrom(from: unknown, of: string, path: string, known: Known): void {
     const type = known.features.get(of);
     if (type === "hole") {
@@ -265,9 +260,8 @@ export const checkFaces: Check = (value, path, known) => {
     }
 };
 
-const isFinite3 = (value: unknown): value is [number, number, number] => Array.isArray(value) && value.length === 3 && value.every(item => typeof item === "number" && Number.isFinite(item));
+const isFinite3 = (value: unknown): value is [number, number, number] => Array.isArray(value) && value.length === DIMENSIONS && value.every(item => typeof item === "number" && Number.isFinite(item));
 
-/** A hint as a tool writes it: version 1, and what each face was like. */
 function checkHint(value: unknown, path: string): void {
     const hint = checkObject(value, ["v", "box", "faces"], path, false, "a hint { v: 1, box, faces }");
     if (hint["v"] !== 1) {
@@ -372,7 +366,6 @@ function checkPen(value: unknown, path: string, known: Known, ids = new Set<stri
     return ids;
 }
 
-/** Checks a sketch's loops: closed outlines, the first the outside and the others holes, with command ids distinct across them. */
 function checkLoops(feature: Record<string, unknown>, path: string, known: Known): Set<string> {
     for (const key of ["pen", "start"]) {
         if (feature[key] !== undefined) {
@@ -448,7 +441,6 @@ const checkFaceProfile: Check = (value, path, known) => {
 };
 
 
-/** The ids a hole's positions give, each distinct; a position without one is `[x, y]`. */
 function positionIds(value: unknown): Set<string> {
     return new Set((Array.isArray(value) ? value : []).flatMap(position => isRecord(position) && typeof position["id"] === "string" ? [position["id"]] : []));
 }
@@ -478,7 +470,6 @@ const checkPositions: Check = (value, path, known) => {
     });
 };
 
-/** A reference a feature acts on, whose count must be given, so a change that finds other faces is caught. */
 const checkCountedFaces: Check = (value, path, known) => {
     checkFaces(value, path, known);
     checkCount(isRecord(value) ? value["count"] : undefined, pointer(path, "count"), true);
@@ -860,7 +851,6 @@ function checkLook(value: Record<string, unknown>, path: string, known: Known): 
     }
 }
 
-/** A colour as `#rrggbb`, or `{ "expr": "..." }` over known names, whose colour the build checks. */
 function checkColor(value: unknown, path: string, known: Known): void {
     if (isExpressionObject(value)) {
         checkTextExpression(value.expr, pointer(path, "expr"), known);
@@ -869,7 +859,6 @@ function checkColor(value: unknown, path: string, known: Known): void {
     }
 }
 
-/** An expression where text is expected: it must parse and read only known names; what it gives is checked when it is built. */
 function checkTextExpression(text: string, path: string, known: Known): void {
     checkNames(parsed(text, path), path, known);
 }

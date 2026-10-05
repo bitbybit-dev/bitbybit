@@ -1,7 +1,6 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
-import { continuityEnum, fillingStyleEnum } from "./enums";
+import type { Base } from "@bitbybit-dev/base";
+import type { continuityEnum } from "./enums";
+import { fillingStyleEnum } from "./enums";
 
 /**
  * Two shapes for `shapes.face.ruledBetween`, `analysis.measure.extrema` and

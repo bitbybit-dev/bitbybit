@@ -1,9 +1,9 @@
 
 import * as Inputs from "../inputs";
-import { GeometryHelper } from "./geometry-helper";
-import { MathBitByBit } from "./math";
+import type { GeometryHelper } from "./geometry-helper";
+import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Vector maths on plain number arrays. A vector is an array of numbers; in 3D it is `[x, y, z]`

@@ -5,11 +5,10 @@ import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 
 const GUIDE = new URL("../../../../../../docs/learn/using-ai-with-bitbybit/design-documents.md", import.meta.url);
 
-/** The documents the guide shows, by the file name each code block is titled with. */
 function guideDocuments(): Map<string, Models.OCCT.DesignDocument> {
     const text = readFileSync(GUIDE, "utf8");
     const blocks = [...text.matchAll(/```json title="([^"]+\.design\.json)"\n([\s\S]*?)\n```/g)];

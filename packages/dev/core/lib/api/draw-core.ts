@@ -1,4 +1,5 @@
-import * as Inputs from "./inputs";
+import { isRecord } from "@bitbybit-dev/base";
+import type * as Inputs from "./inputs";
 import type * as Models from "./models";
 import { isFrameShaped, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import type { ShapeWithAppearance } from "./draw-appearance";
@@ -55,20 +56,6 @@ export interface DrawableKind {
  */
 export class DrawCore {
 
-    /**
-     * Every kind a draw call can resolve, in the order it tries them.
-     *
-     * The order is the answer to questions the checks cannot answer alone, and it is one list rather
-     * than a chain written out in each renderer because those copies had already drifted. Two cases
-     * make it load-bearing. A two-element list of points is also a segment - `Base.Segment3` is
-     * `[Point3, Point3]` - so `line` before `points` is what decides that a pair of points draws as
-     * a segment. And a JSCAD path carries `points` like a polyline does, so `jscadPath` comes before
-     * `polyline`; that one is now decided by the check as well, but the order still states it.
-     *
-     * A renderer resolves only the kinds it registered a handler for. A renderer with no node concept
-     * skips those entries rather than declaring a check it cannot honour.
-     * @ignore true
-     */
     private cachedDrawableKinds: readonly DrawableKind[] | undefined;
 
     protected drawableKinds(): readonly DrawableKind[] {
@@ -117,7 +104,6 @@ export class DrawCore {
         return found?.kind;
     }
 
-
     detectPoint(entity: unknown): entity is Inputs.Base.Point3 {
         return (Array.isArray(entity) && entity.length === 3 && this.checkIfElementsInArrayAreNumbers(entity));
     }
@@ -131,7 +117,9 @@ export class DrawCore {
     }
 
     detectLine(entity: unknown): entity is Inputs.Base.Line3 | Inputs.Base.Segment3 {
-        if (!entity || typeof entity !== "object") return false;
+        if (!entity || typeof entity !== "object") {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return !!(obj["start"] && obj["end"] && Array.isArray(obj["start"]) && Array.isArray(obj["end"])) || 
                (Array.isArray(entity) && entity.length === 2 && 
@@ -188,7 +176,9 @@ export class DrawCore {
      * does, so the pair identifies a path and nothing else.
      */
     detectJscadPath(entity: unknown): entity is Inputs.JSCAD.JSCADPath2 {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         return "isClosed" in entity
             && "transforms" in entity
             && Array.isArray((entity as Record<string, unknown>)["points"]);
@@ -210,8 +200,12 @@ export class DrawCore {
      * worse than a boolean that is wrong, because the compiler believes it.
      */
     detectPolyline(entity: unknown): boolean {
-        if (!entity || typeof entity !== "object") return false;
-        if (this.detectJscadPath(entity)) return false;
+        if (!entity || typeof entity !== "object") {
+            return false;
+        }
+        if (this.detectJscadPath(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return obj["points"] !== undefined && Array.isArray(obj["points"]);
     }
@@ -286,7 +280,9 @@ export class DrawCore {
      * renderer rather than here.
      */
     detectNode(entity: unknown): boolean {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return typeof obj["id"] === "string" && obj["id"].includes("node");
     }
@@ -305,7 +301,9 @@ export class DrawCore {
      * growing types for an area that comes out in the next major.
      */
     detectVerbCurve(entity: unknown): boolean {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         const data = obj["_data"] as Record<string, unknown> | undefined;
         return data !== undefined && data["controlPoints"] !== undefined && data["knots"] !== undefined && data["degree"] !== undefined;
@@ -317,7 +315,9 @@ export class DrawCore {
      * Deliberately not a type predicate, for the reason given on the curve check above.
      */
     detectVerbSurface(entity: unknown): boolean {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         const data = obj["_data"] as Record<string, unknown> | undefined;
         return data !== undefined && data["controlPoints"] !== undefined && 
@@ -334,7 +334,9 @@ export class DrawCore {
     }
 
     detectJscadMesh(entity: unknown): entity is Inputs.JSCAD.JSCADGeom2 | Inputs.JSCAD.JSCADGeom3 {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return obj["sides"] !== undefined || obj["polygons"] !== undefined;
     }
@@ -344,7 +346,9 @@ export class DrawCore {
     }
 
     detectOcctShape(entity: unknown): entity is Inputs.OCCT.TopoDSShapePointer {
-        if (!entity || typeof entity !== "object") return false;
+        if (!entity || typeof entity !== "object") {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return obj["type"] === "occ-shape";
     }
@@ -354,7 +358,9 @@ export class DrawCore {
     }
 
     detectManifoldShape(entity: unknown): entity is Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer {
-        if (!entity || typeof entity !== "object") return false;
+        if (!entity || typeof entity !== "object") {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return obj["type"] === "manifold-shape";
     }
@@ -369,7 +375,9 @@ export class DrawCore {
      * integer indexes, with colors given as strings.
      */
     detectShapeWithAppearance(entity: unknown): entity is ShapeWithAppearance {
-        if (!isRecord(entity)) return false;
+        if (!isRecord(entity)) {
+            return false;
+        }
         return this.detectOcctShape(entity["shape"]) && (entity["appearance"] === undefined || isAppearance(entity["appearance"]));
     }
 
@@ -383,16 +391,22 @@ export class DrawCore {
      * `components` that each carry a `path`, an optional `part` and a 4 x 4 `world` matrix.
      */
     detectDesignBuild(entity: unknown): entity is Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer> {
-        if (!isRecord(entity) || !Array.isArray(entity["report"]) || !Array.isArray(entity["parts"])) return false;
+        if (!isRecord(entity) || !Array.isArray(entity["report"]) || !Array.isArray(entity["parts"])) {
+            return false;
+        }
         const partsDrawable = entity["parts"].every(part => isRecord(part) && typeof part["id"] === "string" && this.detectShapeWithAppearance(part));
         const components = entity["components"];
         return partsDrawable && (components === undefined || (Array.isArray(components) && components.every(isPlacedComponent)));
     }
 
     detectDecomposedMesh(entity: unknown): entity is Inputs.OCCT.DecomposedMeshDto {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
-        if (obj["type"] === "occ-shape" || obj["type"] === "manifold-shape") return false;
+        if (obj["type"] === "occ-shape" || obj["type"] === "manifold-shape") {
+            return false;
+        }
         return Array.isArray(obj["faceList"]) || Array.isArray(obj["edgeList"]) || Array.isArray(obj["pointsList"]);
     }
 
@@ -401,7 +415,9 @@ export class DrawCore {
     }
 
     detectTag(entity: unknown): entity is Inputs.Tag.TagDto {
-        if (!entity || typeof entity !== "object" || Array.isArray(entity)) return false;
+        if (!entity || typeof entity !== "object" || Array.isArray(entity)) {
+            return false;
+        }
         const obj = entity as Record<string, unknown>;
         return obj["text"] !== undefined;
     }
@@ -465,10 +481,6 @@ export class DrawCore {
                value.length > 0 && 
                this.isTagDto(value[0]);
     }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function isFiniteNumber(value: unknown): value is number {

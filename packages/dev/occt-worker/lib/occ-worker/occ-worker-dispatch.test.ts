@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
-import { CacheHelper } from "./cache-helper";
-import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { InputError, setInputIssueSink } from "@bitbybit-dev/base";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { CacheHelper } from "./cache-helper";
+import type { DataInput } from "./occ-worker";
+import { initializationComplete, onMessageInput } from "./occ-worker";
 import { NON_CACHEABLE_FUNCTIONS } from "./constants";
 
 const { failure, kernelCalls } = vi.hoisted(() => {

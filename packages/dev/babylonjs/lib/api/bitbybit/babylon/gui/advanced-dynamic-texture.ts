@@ -1,9 +1,9 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The surface GUI controls are drawn on: a full-screen layer over the canvas, or a texture wrapped

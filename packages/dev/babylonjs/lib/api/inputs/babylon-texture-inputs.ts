@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for textures: the image source, UV scaling and offset, wrapping mode, and the sampling
  * settings that decide how a texture is filtered.

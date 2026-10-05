@@ -1,4 +1,4 @@
-import * as Inputs from "../inputs/jscad-inputs";
+import type * as Inputs from "../inputs/jscad-inputs";
 
 /**
  * Reads an input that the kernel accepts either singly or as a list. The published type says one

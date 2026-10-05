@@ -1,9 +1,9 @@
-import { BitbybitAnalysis_SurfaceQuantity, BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitAnalysis_SurfaceQuantity, BitbybitOcctModule, Handle_TDocStd_Document, MeshBuffers, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { WiresService } from "./wires.service";
-import { BaseBitByBit } from "../../base";
+import type { WiresService } from "./wires.service";
+import type { BaseBitByBit } from "../../base";
 import { InputError } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import { decodeMeshArrays, decodePolylines, type MeshArrays, type MeshContents } from "./mesh-arrays";
 import { checkedChoice, checkedDirection, checkedNumber, checkedShapes, checkedWhole } from "./input-checks";
@@ -24,16 +24,13 @@ const DEGREES_PER_RADIAN = 180 / Math.PI;
 
 const LEAST_ANGULAR_DEFLECTION = 0.001;
 
-/** How a mesh call is told how fine to mesh beyond its precision: the angle between triangles and whether the precision is relative to each edge's size. */
 interface Fineness {
     angularDeflection: number;
     relativeDeflection: boolean;
 }
 
-/** The pull direction handed to the kernel for the analyses that read none, since it refuses a zero one whatever it measures. */
 const UNREAD_PULL: Inputs.Base.Vector3 = [0, 1, 0];
 
-/** The values of a surface analysis at the nodes of the mesh held in `buffers`, in the order of its positions. */
 type NodeAnalysis = (buffers: MeshBuffers) => Float64Array;
 
 function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new (length: number): T; name: string }): T {
@@ -43,7 +40,6 @@ function copied<T extends Float64Array | Int32Array>(view: unknown, kind: { new 
     return view.slice() as T;
 }
 
-/** The kernel's value for a surface analysis other than none. */
 function surfaceQuantity(occ: BitbybitOcctModule, analysis: Inputs.OCCT.surfaceAnalysisEnum): BitbybitAnalysis_SurfaceQuantity {
     switch (analysis) {
         case Inputs.OCCT.surfaceAnalysisEnum.gaussian:
@@ -169,11 +165,6 @@ export class MeshingService {
         return JSON.parse(json) as Inputs.OCCT.DecomposedMeshDto;
     }
 
-    /**
-     * The angular deflection, checked to lie from 0.001 to pi radians, and whether the precision is
-     * relative; a kernel refuses an angle outside that range, and the JSON path it would fall back to
-     * meshes at 0.5 rad, so a wrong angle is stopped here.
-     */
     private checkedFineness(inputs: Fineness): Fineness {
         return {
             angularDeflection: checkedNumber(inputs.angularDeflection, "angularDeflection", LEAST_ANGULAR_DEFLECTION, Math.PI),
@@ -181,37 +172,18 @@ export class MeshingService {
         };
     }
 
-    /**
-     * The trailing arguments that tell a buffer mesh call how fine to mesh, for a kernel whose call
-     * takes them; none for a kernel built before them, recognised by the call taking only
-     * `olderArity` arguments, which meshes at 0.5 rad with an absolute precision.
-     */
     private finenessFor(meshCall: (...args: unknown[]) => MeshBuffers, olderArity: number, fineness: Fineness): [number, boolean] | [] {
         return meshCall.length === olderArity ? [] : [fineness.angularDeflection, fineness.relativeDeflection];
     }
 
-    /**
-     * Whether the loaded kernel can hand its mesh over as buffers, with metadata and for documents. A
-     * kernel built before `DocumentToMeshBuffers` existed, such as a pinned or custom build, is meshed
-     * through its JSON instead, which carries no iso curves and no surface analysis.
-     */
     private kernelHasMeshBuffers(): boolean {
         return typeof (this.occ as Partial<BitbybitOcctModule>).DocumentToMeshBuffers === "function";
     }
 
-    /**
-     * Whether the loaded kernel has the function `name`. A kernel built before it, such as a pinned or
-     * custom build, gives a mesh without what that function adds.
-     */
     private kernelHas(name: "IsoCurvePolylines" | "SurfaceAnalysisAtMeshNodes"): boolean {
         return typeof (this.occ as Partial<BitbybitOcctModule>)[name] === "function";
     }
 
-    /**
-     * What reads `surfaceAnalysis` of `shape` at the nodes of its mesh, draft angles in degrees, after
-     * checking the analysis and, for draft angles, the pull direction; undefined for none, and on a
-     * kernel without it.
-     */
     private nodeAnalysis(shape: TopoDS_Shape, surfaceAnalysis: unknown, draftDirection: unknown): NodeAnalysis | undefined {
         const analysis = checkedChoice(surfaceAnalysis, SURFACE_ANALYSES, "surfaceAnalysis");
         if (analysis === Inputs.OCCT.surfaceAnalysisEnum.none) {
@@ -229,11 +201,6 @@ export class MeshingService {
         };
     }
 
-    /**
-     * Copies a mesh out of the kernel's memory, with the values of `analysis` at its nodes when one is
-     * given, and frees the kernel's copy; undefined when meshing failed, so the caller can report the
-     * failure the way the JSON path does.
-     */
     private meshArrays(buffers: MeshBuffers, contents: MeshContents, analysis?: NodeAnalysis): MeshArrays | undefined {
         try {
             if (!buffers.IsValid) {
@@ -271,10 +238,6 @@ export class MeshingService {
         }
     }
 
-    /**
-     * Meshes one free shape of a document, or all of them as one mesh when `index` is -1, with the
-     * colour groups the document gives its faces; undefined when meshing failed.
-     */
     private documentMesh(inputs: Resolved.OCCT.DocToMeshDto<Handle_TDocStd_Document>, index: number, fineness: Fineness): Inputs.OCCT.DecomposedMeshDto | undefined {
         const contents = { colors: true, metadata: inputs.computeMetadata };
         const meshCall = this.occ.DocumentToMeshBuffers.bind(this.occ) as (...args: unknown[]) => MeshBuffers;

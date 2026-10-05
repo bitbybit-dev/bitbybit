@@ -1,19 +1,5 @@
-/**
- * SVG `transform` attribute parsing and exact affine application.
- *
- * A matrix is stored as the 6-tuple [a, b, c, d, e, f] matching SVG's
- * matrix(a b c d e f), i.e.
- *     x' = a*x + c*y + e
- *     y' = b*x + d*y + f
- *
- * Lines and beziers transform exactly by mapping their control points. Arcs are
- * handled exactly too: the unit-circle-to-ellipse matrix is rebuilt and
- * re-decomposed (2x2 SVD) so a transformed circle/ellipse arc remains an exact
- * (possibly rotated) ellipse arc, with sweep orientation flipped on reflection.
- */
-
-import { Base } from "@bitbybit-dev/base";
-import { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
+import type { Base } from "@bitbybit-dev/base";
+import type { SvgArcSegment, SvgSegment, SvgSubpath } from "./svg-models";
 
 export type Matrix = [number, number, number, number, number, number];
 
@@ -93,31 +79,6 @@ export function parseTransform(value: string | undefined | null): Matrix {
     return m;
 }
 
-/**
- * Exact affine transform of a center-parametrized elliptical arc.
- *
- * An ellipse under an affine map is still an ellipse, but its radii and tilt are not the originals
- * transformed one at a time - they have to be recovered from the combined matrix. This is a closed-form
- * 2x2 singular value decomposition, written out because nobody reading the bare arithmetic below would
- * recognise it as one.
- *
- * Treat the arc as `M = L * Rot(phi) * diag(rx, ry)`, where `L` is the incoming linear part
- * `[[a, c], [b, d]]`. Decomposing `M` into `Rot(theta) * diag(sx, sy) * Rot(psi)` gives the new radii
- * as the singular values and the new tilt as the left rotation:
- *
- *     e = (m00 + m11) / 2      f = (m00 - m11) / 2
- *     g = (m10 + m01) / 2      h = (m10 - m01) / 2
- *     q = hypot(e, h)          r = hypot(f, g)
- *     sx = q + r               sy = |q - r|
- *     theta = (atan2(h, e) - atan2(g, f)) / 2
- *
- * A reflection, meaning a negative determinant, reverses the direction of sweep while leaving its
- * magnitude alone. Approximating the arc instead - flattening it to segments and transforming those -
- * loses the exactness that makes the imported geometry usable as CAD input.
- * @param m the affine transform to apply
- * @param arc the arc in center parametrization
- * @returns the transformed arc, still exact
- */
 function transformArc(m: Matrix, arc: SvgArcSegment): SvgArcSegment {
     const [a, b, c, d] = m;
     const cosP = Math.cos(arc.xAxisRotation);

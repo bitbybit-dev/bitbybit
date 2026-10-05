@@ -1,13 +1,15 @@
 import { describe, it, expect, beforeAll } from "vitest";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
-import { REBIND_MARGIN, REBIND_SCORE, hintedDocument, rebindOf, recordHint } from "./hints";
+import { BaseBitByBit } from "../../base";
+import { REBIND_MARGIN, REBIND_SCORE, candidatesOf, hintedDocument, rebindOf, recordHint, referenceHintOf } from "./hints";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -23,7 +25,6 @@ const A_TOP: Models.OCCT.DesignFaceReference = { of: "a", role: "end", count: 1 
 
 const DENT_FACE = "/features/6/on/face";
 
-/** Two blocks joined side by side, which share one top, then merged by an operation that keeps no history when `merged`, with a pocket sketched on the first block's top. */
 const mergedTops = (): Document => ({
     schemaVersion: 1,
     parameters: { merged: false },
@@ -89,6 +90,50 @@ describe("design hints", () => {
             // Assert
             expect(written).toEqual({ features: [{ on: { face: { of: "a", hint: hint([0, 0, 1]) } } }], parts: [{ "a/b": { of: "b", hint: hint([1, 0, 1]) }, "c~d": { of: "c" }, plain: { value: 1 } }] });
             expect(document.features[0]!.on.face).toEqual({ of: "a" });
+        });
+    });
+
+    describe("recording and scoring a face", () => {
+        const AXES = ["x", "y", "z"];
+        const nameOfNormal = (normal: readonly number[]): string => {
+            const axis = normal.findIndex(component => Math.abs(component) > 0.5);
+            return `${normal[axis]! > 0 ? "+" : "-"}${AXES[axis]}`;
+        };
+        const offsetCube = (): { shape: TopoDS_Shape; names: string[][]; plusX: number } => {
+            const shape = occt.shapes.solid.createBox({ width: 2, length: 2, height: 2, center: [10, 20, 30], originOnCenter: true });
+            const names = occt.analysis.signatures({ shape }).faces.map(face => [nameOfNormal(face.normal)]);
+            return { shape, names, plusX: names.findIndex(name => name[0] === "+x") };
+        };
+
+        it("should record a face's surface, its share of the area, its centre within the body's box, its normal and its neighbours", () => {
+            // Arrange
+            const { shape, names, plusX } = offsetCube();
+
+            // Act
+            const recorded = referenceHintOf([plusX], shape, names, { occt, base: new BaseBitByBit() });
+
+            // Assert
+            expect(recorded).toEqual({
+                v: 1,
+                box: { min: [9, 19, 29], max: [11, 21, 31] },
+                faces: [{ type: "plane", area: 0.166667, centre: [1, 0.5, 0.5], normal: [1, 0, 0], neighbours: ["+y", "+z", "-y", "-z"] }],
+            });
+        });
+
+        it("should score a face by how near it lies to the hint's centre in both the body's proportions and its size, and by how alike its normal, area and neighbours are", () => {
+            // Arrange
+            const { shape, names, plusX } = offsetCube();
+            const leaning: Models.OCCT.DesignReferenceHint = {
+                v: 1,
+                box: { min: [9, 19, 29], max: [11, 21, 31] },
+                faces: [{ type: "plane", area: 0.166667, centre: [1.1, 1.1, 0.5], normal: [0, 1, 0], neighbours: ["+y", "+z", "-y", "-z"] }],
+            };
+
+            // Act
+            const scores = candidatesOf(leaning, shape, names, { occt, base: new BaseBitByBit() });
+
+            // Assert
+            expect(scores.find(candidate => candidate.face === plusX)).toEqual({ face: plusX, score: 0.35831 });
         });
     });
 

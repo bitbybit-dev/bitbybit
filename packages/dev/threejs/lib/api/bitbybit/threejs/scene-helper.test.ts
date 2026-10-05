@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-import { ThreeJSScene, InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
+import type { InitThreeJSResult } from "../../inputs/threejs-scene-inputs";
+import { ThreeJSScene } from "../../inputs/threejs-scene-inputs";
 import { hexToRgb } from "../../__mocks__/test-helpers";
 import { MockMaterial, MockPlaneGeometry, instanceOf } from "../../__mocks__/threejs.mock";
 vi.mock("three", async () => {
@@ -18,7 +19,7 @@ vi.mock("./orbit-camera", async () => {
 import { initThreeJS } from "./scene-helper";
 import { createOrbitCamera } from "./orbit-camera";
 import { ThreeJSCamera } from "../../inputs/threejs-camera-inputs";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 
 describe("initThreeJS unit tests", () => {

@@ -1,12 +1,13 @@
 import * as pc from "playcanvas";
-import { DrawCore, Tag } from "@bitbybit-dev/core";
+import type { Tag } from "@bitbybit-dev/core";
+import { DrawCore } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
-import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
-import { Context } from "../context";
-import { DrawHelper } from "../draw-helper";
+import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
+import type { Context } from "../context";
+import type { DrawHelper } from "../draw-helper";
 import { GEOMETRY_DEFAULTS, DEFAULT_COLORS } from "../constants";
-import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import { messageOf, resolveDto } from "@bitbybit-dev/base";
+import type * as Resolved from "../resolved-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 type BitByBitEntity = Inputs.Draw.BitByBitEntity;
@@ -71,11 +72,6 @@ export class Draw extends DrawCore {
 
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>) => Inputs.Draw.DrawnEntity> | undefined;
 
-    /**
-     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
-     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
-     * @ignore true
-     */
     private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>) => Inputs.Draw.DrawnEntity> {
         return this.cachedSyncHandlers ??= {
             line: (i) => this.handleLine(i),
@@ -99,14 +95,6 @@ export class Draw extends DrawCore {
 
     private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>, entity: unknown) => Promise<Inputs.Draw.DrawnEntity>> | undefined;
 
-    /**
-     * The same for the kinds that have to cross to a worker and back.
-     *
-     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
-     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
-     * cheaper than a cast that could be wrong.
-     * @ignore true
-     */
     private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<pc.Entity>, entity: unknown) => Promise<Inputs.Draw.DrawnEntity>> {
         return this.cachedAsyncHandlers ??= {
             jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
@@ -406,13 +394,6 @@ export class Draw extends DrawCore {
         return mat;
     }
 
-    /**
-     * Applies UV transformation data from a texture to the corresponding material properties.
-     * PlayCanvas handles UV transforms at the material level per texture slot.
-     * @param mat - The material to apply transforms to
-     * @param texture - The texture with potential transform metadata
-     * @param mapType - The type of texture map (e.g., "diffuseMap", "normalMap")
-     */
     private applyTextureTransform(
         mat: pc.StandardMaterial, 
         texture: TextureWithTransform, 
@@ -450,9 +431,6 @@ export class Draw extends DrawCore {
         mat[`${prefix}Rotation` as const] = transform.wAng;
     }
 
-    /**
-     * Helper method to convert hex color string to RGB values (0-1 range)
-     */
     private hexToRgb(hex: string): { r: number; g: number; b: number } {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         if (result) {
@@ -566,13 +544,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.point);
     }
 
-    /**
-     * A JSCAD path drawn as the polyline it is.
-     *
-     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
-     * both are resolved before the polyline handler sees it - which then applies the same options,
-     * metadata and update handling every other polyline gets.
-     */
     private handleJscadPath(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity {
         const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
         return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
@@ -614,12 +585,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
-    /**
-     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
-     * frame in the list go into the same draw call, however long the list is. Whether it is one
-     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
-     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
-     */
     private handleFrames(inputs: Inputs.Draw.DrawAny<pc.Entity>): pc.Entity | undefined {
         const options = this.resolveDrawOptions(inputs, this.defaultFrameOptions);
         const style = resolveDto(Inputs.Draw.DrawFrameOptions, options) as Resolved.Draw.DrawFrameOptions;
@@ -800,10 +765,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    /**
-     * The options a draw call was given, laid over the defaults of the options class for the kind
-     * being drawn: a partial object gets the same values the matching `options` method would give it.
-     */
     private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
         return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
     }
@@ -816,14 +777,6 @@ export class Draw extends DrawCore {
         return resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
     }
 
-    /**
-     * Handle synchronous drawing operations with proper option resolution
-     * @param inputs - Draw inputs
-     * @param defaultOptions - Default options for this geometry type
-     * @param action - Function that performs the actual drawing
-     * @param type - Geometry type for metadata
-     * @returns Drawn entity
-     */
     private handle(
         inputs: Inputs.Draw.DrawAny<pc.Entity>, 
         defaultOptions: Inputs.Draw.DrawOptions, 
@@ -846,14 +799,6 @@ export class Draw extends DrawCore {
         }
     }
 
-    /**
-     * Handle async drawing operations with proper error handling
-     * @param inputs - Draw inputs
-     * @param defaultOptions - Default options for this geometry type
-     * @param action - Async function that performs the actual drawing
-     * @param type - Geometry type for metadata
-     * @returns Promise resolving to drawn entity
-     */
     private async handleAsync<T extends pc.Entity | undefined>(
         inputs: Inputs.Draw.DrawAny<pc.Entity>, 
         defaultOptions: Inputs.Draw.DrawOptions, 
@@ -875,7 +820,7 @@ export class Draw extends DrawCore {
             const typeName = Inputs.Draw.drawingTypes[type];
             console.error(`Error in async draw operation for ${typeName}:`, error);
             
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`Failed to draw ${typeName}: ${errorMessage}`, { cause: error });
         }
     }
@@ -888,12 +833,6 @@ export class Draw extends DrawCore {
         }
     }
 
-    /**
-     * Extract options from inputs with proper fallback chain
-     * @param inputs - Draw inputs
-     * @param defaultOptions - Default options to use as fallback
-     * @returns Resolved options
-     */
     private resolveDrawOptions(
         inputs: Inputs.Draw.DrawAny<pc.Entity>,
         defaultOptions: Inputs.Draw.DrawOptions
@@ -910,13 +849,6 @@ export class Draw extends DrawCore {
         return defaultOptions;
     }
 
-    /**
-     * Attach BitByBit metadata to a drawn tag
-     * @param tag - Tag the tag API drew
-     * @param type - Drawing type
-     * @param options - Draw options
-     * @returns Tag with attached metadata
-     */
     private attachTagMetadata(
         tag: Inputs.Tag.TagDto,
         type: Inputs.Draw.drawingTypes,

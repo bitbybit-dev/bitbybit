@@ -2,13 +2,14 @@
 import { uniqueName } from "../unique-name";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../inputs";
-import { BabylonNode } from "./babylon/node";
-import { Tag, DrawCore } from "@bitbybit-dev/core";
-import { Context } from "../context";
+import type { BabylonNode } from "./babylon/node";
+import type { Tag } from "@bitbybit-dev/core";
+import { DrawCore } from "@bitbybit-dev/core";
+import type { Context } from "../context";
 import { GridMaterial } from "@babylonjs/materials";
-import { DrawHelper } from "../draw-helper";
+import type { DrawHelper } from "../draw-helper";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 /**
@@ -127,10 +128,6 @@ export class Draw extends DrawCore {
         return this.occtOptions(options);
     }
 
-    /**
-     * The options a draw call was given, laid over the defaults of the options class for the kind
-     * being drawn: a partial object gets the same values the matching `options` method would give it.
-     */
     private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
         return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
     }
@@ -278,11 +275,6 @@ export class Draw extends DrawCore {
 
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny) => Inputs.Draw.DrawnAny<BABYLON.Mesh>> | undefined;
 
-    /**
-     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
-     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
-     * @ignore true
-     */
     private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny) => Inputs.Draw.DrawnAny<BABYLON.Mesh>> {
         return this.cachedSyncHandlers ??= {
             line: (i) => this.handleLine(i),
@@ -308,14 +300,6 @@ export class Draw extends DrawCore {
 
     private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny, entity: unknown) => Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>> | undefined;
 
-    /**
-     * The same for the kinds that have to cross to a worker and back.
-     *
-     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
-     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
-     * cheaper than a cast that could be wrong.
-     * @ignore true
-     */
     private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny, entity: unknown) => Promise<Inputs.Draw.DrawnAny<BABYLON.Mesh>>> {
         return this.cachedAsyncHandlers ??= {
             jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
@@ -790,12 +774,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    /**
-     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
-     * frame in the list go into the same draw call, however long the list is. Whether it is one
-     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
-     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
-     */
     private handleFrames(inputs: Inputs.Draw.DrawAny) {
         let options = inputs.options ? inputs.options : this.defaultFrameOptions;
         if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
@@ -883,13 +861,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    /**
-     * A JSCAD path drawn as the polyline it is.
-     *
-     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
-     * both are resolved before the polyline handler sees it - which then applies the same options,
-     * metadata and update handling every other polyline gets.
-     */
     private handleJscadPath(inputs: Inputs.Draw.DrawAny) {
         const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
         return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
@@ -1060,20 +1031,6 @@ export class Draw extends DrawCore {
         });
     }
 
-    /**
-     * The settings a drawn node can carry, which is not the set a drawn mesh can.
-     *
-     * Drawing a node parents an axis triad to it: the node itself is not geometry, so pickability,
-     * casting shadows and receiving them belong to the lines the triad is made of rather than to the
-     * node. Sending a node through the mesh path instead writes members onto an object that has none
-     * and registers a non-mesh as a shadow caster, which the shadow map then walks as geometry.
-     *
-     * The settings reach the triad only, which is why the caller passes it rather than letting this
-     * ask the node for its meshes. Any transform node can be drawn - a loaded model hangs its whole
-     * mesh tree off one - and asking the node would take the model with it, making every mesh in it
-     * unpickable and re-registering all of them as shadow casters, because a draw call was made
-     * about the node they happen to be parented to.
-     */
     private applyNodeSettingsAndMetadata(type: Inputs.Draw.drawingTypes, options: Inputs.Draw.DrawOptions, node: BABYLON.TransformNode, meshes: BABYLON.AbstractMesh[]) {
         const typemeta = { type, options };
         const sgs = this.context.scene.metadata.shadowGenerators as BABYLON.ShadowGenerator[];

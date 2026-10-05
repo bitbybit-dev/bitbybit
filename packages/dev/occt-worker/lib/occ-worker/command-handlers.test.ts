@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
-import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
-import { CommandContext, getCommandHandler, hasCommandHandler } from "./command-handlers";
+import type { CommandContext } from "./command-handlers";
+import { getCommandHandler, hasCommandHandler } from "./command-handlers";
 import { CacheHelper } from "./cache-helper";
 import { ShapeResolver } from "./shape-resolver";
 import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";

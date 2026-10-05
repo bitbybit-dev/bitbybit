@@ -1,14 +1,15 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTAssemblyManager } from "./manager";
 import { OCCTAssemblyQuery } from "./query";
 import { OCCTSolid } from "../shapes";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 describe("OCCTAssemblyManager unit tests", () => {
     let occt: BitbybitOcctModule;
@@ -790,7 +791,9 @@ describe("OCCTAssemblyManager unit tests", () => {
                         foundMatchingVolume = true;
                     }
                     partShape.delete();
-                    if (foundMatchingVolume) break;
+                    if (foundMatchingVolume) {
+                        break;
+                    }
                 }
             }
             expect(foundMatchingVolume).toBe(true);

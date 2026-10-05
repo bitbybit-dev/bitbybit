@@ -1,7 +1,7 @@
-import { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitBool_Strategy, BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import * as Resolved from "../../api/resolved-inputs";
-import * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
 import { historyFromKernel } from "./history";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
@@ -57,10 +57,6 @@ export class BooleansService {
         return this.loneSolidOf(this.resultOf(this.occ.BooleanCut([inputs.shape], inputs.shapes, !inputs.keepEdges, 0, this.strategyOf(inputs.strategy))));
     }
 
-    /**
-     * The solid of a compound that holds nothing but that one solid, or the shape as it is: a
-     * compound that also holds a face or a wire keeps them.
-     */
     private loneSolidOf(shape: TopoDS_Shape): TopoDS_Shape {
         let current: TopoDS_Shape = shape.clone();
         while (current.ShapeType() === this.occ.TopAbs_ShapeEnum.COMPOUND) {

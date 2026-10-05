@@ -1,6 +1,6 @@
+import { isRecord } from "@bitbybit-dev/base";
 import { stableJson } from "./cache";
 import { sha256 } from "./digest";
-import { isRecord } from "./structure";
 
 const EDITOR_TEXT = {
     parameter: ["label", "description", "group", "step", "unit"],

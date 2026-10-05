@@ -1,10 +1,10 @@
 
 import { uniqueName } from "../../../unique-name";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * Sticking images onto meshes, the way a label or a logo sits on a product. A geometry decal is a

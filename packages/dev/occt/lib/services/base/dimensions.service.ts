@@ -1,15 +1,12 @@
-import {
-    TopoDS_Compound,
-    TopoDS_Shape,
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { TopoDS_Compound, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { TransformsService } from "./transforms.service";
-import { ConverterService } from "./converter.service";
-import { WiresService } from "./wires.service";
-import { BaseBitByBit } from "../../base";
-import { EdgesService } from "./edges.service";
-import { EntitiesService } from "./entities.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { TransformsService } from "./transforms.service";
+import type { ConverterService } from "./converter.service";
+import type { WiresService } from "./wires.service";
+import type { BaseBitByBit } from "../../base";
+import type { EdgesService } from "./edges.service";
+import type { EntitiesService } from "./entities.service";
+import type * as Resolved from "../../api/resolved-inputs";
 
 export class DimensionsService {
 
@@ -22,14 +19,6 @@ export class DimensionsService {
         private readonly wiresService: WiresService
     ) { }
 
-    /**
-     * Evaluates a mathematical expression or template string with a given value
-     * @param expression The expression to evaluate (can contain 'val' placeholder)
-     * @param value The numeric value to substitute for 'val'
-     * @param decimalPlaces Number of decimal places to format the result
-     * @param removeTrailingZeros Whether to remove trailing zeros from the result
-     * @returns The evaluated expression as a formatted string
-     */
     private evaluateExpression(expression: string, value: number, decimalPlaces: number, removeTrailingZeros = false): string {
         try {
             const evaluatedExpression = expression.replace(/val/g, value.toString());
@@ -53,15 +42,6 @@ export class DimensionsService {
         }
     }
 
-    /**
-     * Formats dimension label text with optional expression evaluation
-     * @param value The numeric value to display
-     * @param labelOverwrite Optional expression to evaluate instead of raw value
-     * @param decimalPlaces Number of decimal places for formatting
-     * @param labelSuffix Suffix to append to the text
-     * @param removeTrailingZeros Whether to remove trailing zeros from the result
-     * @returns Formatted dimension label text
-     */
     private formatDimensionLabel(
         value: number,
         labelOverwrite: string | undefined,

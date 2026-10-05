@@ -1,7 +1,7 @@
 import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
 
 const named = <T extends Models.OCCT.SketchCommand>(command: T, id: string | undefined): T => id === undefined || id === "" ? command : { ...command, id };
 

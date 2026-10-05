@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as BABYLON from "@babylonjs/core";
-import { createHeadlessScene, HeadlessScene } from "../../__test__/headless";
+import type { HeadlessScene } from "../../__test__/headless";
+import { createHeadlessScene } from "../../__test__/headless";
 import { BabylonNode } from "./node";
 import { DrawHelper } from "../../draw-helper";
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import * as Inputs from "../../inputs";
 
 const drawHelperFor = (context: Context): DrawHelper =>

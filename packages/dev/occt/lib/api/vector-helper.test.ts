@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Inputs } from ".";
+import type { Inputs } from ".";
 import { VectorHelperService } from "./vector-helper.service";
 
 const removeAllDuplicateVectorsQuadraticOracle = (

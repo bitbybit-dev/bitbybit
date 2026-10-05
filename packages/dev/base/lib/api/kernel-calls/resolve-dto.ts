@@ -1,4 +1,5 @@
-import { DtoConstraints } from "./constraints";
+import type { DtoConstraints } from "./constraints";
+import { isRecord } from "./unknown-values";
 
 /**
  * A DTO class that can be constructed with no arguments, which gives every defaulted property its
@@ -28,12 +29,10 @@ export type DtoRegistry = Readonly<Record<string, DtoEntry>>;
  */
 export type WithDefaults<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: Exclude<T[P], undefined> };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === "object" && !Array.isArray(value);
-
 /**
  * Builds the DTO a service reads from what a caller passed: the defaults a new `Dto` holds, with the
  * caller's properties laid over them. A property the caller set to undefined keeps its default, and
- * so does one the caller set to null when the DTO has a default for it - a visual editor or a JSON
+ * so does one the caller set to null when the DTO has a default for it - a form or a JSON
  * payload spells "not set" as null - while null on a property with no default stays null. A caller
  * that passed nothing gets the defaults alone. The result is a new plain object - a DTO carries data
  * and no behaviour, and a plain object is what crosses a worker boundary and what a walk over the

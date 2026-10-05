@@ -1,19 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
-/**
- * Writes static/build-id.json: the identity of the site build, shown in the footer and served
- * at /build-id.json so a deployment can be told apart from the previous one.
- *
- *   { "buildId": "<short commit>.<yyyymmdd>", "version": "<package.json version>" }
- *
- * BUILD_ID in the environment wins, so a deploy pipeline can hand the same identity to every
- * artifact of one run; otherwise it is derived from this repository's HEAD. No dirty marker:
- * the build regenerates tracked API pages before this runs, so the tree is never clean here.
- *
- * Run this script as part of the build process:
- * node scripts/build-id.js
- */
-
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");

@@ -5,7 +5,7 @@ import { Point } from "./point";
 import { Polyline } from "./polyline";
 import { Transforms } from "./transforms";
 import { Vector } from "./vector";
-import * as Inputs from "../inputs";
+import type * as Inputs from "../inputs";
 import { TOLERANCE, UnitTestHelper } from "../unit-test-helper";
 import { Line } from "./line";
 import { Lists } from "./lists";

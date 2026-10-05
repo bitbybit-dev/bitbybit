@@ -7,12 +7,12 @@ vi.mock("@babylonjs/core", async () => {
 import { createDrawHelperMocks, partialMock } from "./__mocks__/test-helpers";
 import { MockGreasedLineMesh, MockLinesMesh, MockPBRMetallicRoughnessMaterial, instanceOf, type MockScene } from "./__mocks__/babylonjs.mock";
 import { DrawHelper } from "./draw-helper";
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
 import * as BABYLON from "@babylonjs/core";
 
 const IDENTITY_TRANSFORM: Inputs.JSCAD.JSCADMat4 = [

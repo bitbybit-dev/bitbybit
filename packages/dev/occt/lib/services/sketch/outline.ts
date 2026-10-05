@@ -1,6 +1,6 @@
 import { InputError } from "@bitbybit-dev/base";
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
 
 /** A point or a direction in the sketch's plane. */
 export type Vec2 = [number, number];
@@ -73,7 +73,6 @@ function firstApart(point: Vec2, candidates: Vec2[]): Vec2 {
     return candidates.find(candidate => length(sub(candidate, point)) > COINCIDENT) ?? candidates[candidates.length - 1]!;
 }
 
-/** How long a line or an arc is. */
 function pieceLength(piece: LinePiece | ArcPiece): number {
     return piece.kind === "line" ? length(sub(piece.to, piece.from)) : piece.radius * Math.abs(piece.sweep);
 }
@@ -97,7 +96,6 @@ export function arcThrough(from: Vec2, through: Vec2, to: Vec2, owner: number): 
     return arcAbout(center, from, to, counterclockwise, owner);
 }
 
-/** The arc about `center` from `from` to `to`, counterclockwise or clockwise. */
 function arcAbout(center: Vec2, from: Vec2, to: Vec2, counterclockwise: boolean, owner: number): ArcPiece {
     const start = angleOf(sub(from, center));
     const end = angleOf(sub(to, center));
@@ -468,7 +466,6 @@ class Pen {
     }
 }
 
-/** Where a circle centered on the corner's inner side sits against a line or an arc. */
 type Locus = { kind: "line"; through: Vec2; direction: Vec2 } | { kind: "circle"; center: Vec2; radius: number };
 
 /**
@@ -590,7 +587,6 @@ function touchPoint(piece: LinePiece | ArcPiece, center: Vec2): Vec2 {
     return add(piece.center, scale(unit(sub(center, piece.center)), piece.radius));
 }
 
-/** How far along a line or an arc a point on it lies from the piece's start. */
 function travelled(piece: LinePiece | ArcPiece, point: Vec2): number {
     if (piece.kind === "line") {
         return dot(sub(point, piece.from), unit(sub(piece.to, piece.from)));

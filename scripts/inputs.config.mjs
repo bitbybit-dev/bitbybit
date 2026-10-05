@@ -1,20 +1,3 @@
-/**
- * Which inputs namespaces are assembled from fragments, and in what order.
- *
- * Each kernel's parameter objects are one `export namespace`, and TypeScript cannot merge a
- * namespace across modules - so however many DTOs it holds, it has to stay one compilation unit.
- * What is split is the authoring: the namespace body lives as a directory of ordinary modules and
- * `scripts/gen-inputs.mjs` writes them back into the namespace.
- *
- * `order` is the assembled order, and it is explicit on purpose. The emitted .d.ts follows it, so it
- * is part of what consumers read; leaving it to the file system would mean a rename silently
- * reordering a published declaration file.
- *
- * A fragment named here must exist and a fragment in the directory must be named here - the
- * generator fails on either, so a new file cannot be quietly left out of the namespace.
- */
-
-/** The comment every fragment carries, so a reader who opens one knows it is not the whole story. */
 const fragmentNote = (dir) => [
     `// A fragment of the inputs namespace: scripts/gen-inputs.mjs assembles every file in this`,
     `// directory, in the order set by scripts/inputs.config.mjs, into ../${dir}. Edit here, then regenerate.`,

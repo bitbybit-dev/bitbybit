@@ -1,6 +1,6 @@
 import { InputError } from "@bitbybit-dev/base";
-import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 
 /** Radians in one degree: the public API takes and gives degrees, the kernel radians. */
 export const RADIANS_PER_DEGREE = Math.PI / 180;

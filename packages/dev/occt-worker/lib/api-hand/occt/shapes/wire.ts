@@ -1,10 +1,8 @@
-// Hand-written members of the generated class of the same name (see scripts/gen-worker-api.mjs).
-// Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
-// when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
-import { Inputs, Models, Resolved } from "@bitbybit-dev/occt";
+import type { Models, Resolved } from "@bitbybit-dev/occt";
+import { Inputs } from "@bitbybit-dev/occt";
 import { resolveDto } from "@bitbybit-dev/base";
 import { ShapeParser } from "../../../shape-parser";
-import { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
+import type { OCCTWorkerManager } from "../../../occ-worker/occ-worker-manager";
 
 export class OCCTWire {
     constructor(private readonly occWorkerManager: OCCTWorkerManager) { }

@@ -1,7 +1,7 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedChoice, checkedCount, checkedDirection, checkedIndexes, checkedNumber, checkedPoint, checkedShape, withIndexesInRange } from "../base/input-checks";
 
 const CURVE_TYPES: readonly Inputs.OCCT.curveTypeEnum[] = [
@@ -361,11 +361,6 @@ export class OCCTSelectEdges {
         return this.chosen<Int32Array[]>(resolved.indexes, [], among => this.occ.SelectEdgesGroupedAlong(shape, among, direction, tolerance)).map(group => Array.from(group));
     }
 
-    /**
-     * What a selector chooses among `indexes`: every edge when it is left out, none when it is
-     * empty, and an index past the last edge refused as an input error.
-     * @ignore true
-     */
     private chosen<T>(indexes: number[] | undefined, nothing: T, choose: (among: number[]) => T): T {
         if (indexes === undefined) {
             return withIndexesInRange(this.occ, "edges", {}, () => choose([]));

@@ -1,18 +1,19 @@
 import * as Inputs from "../inputs";
 import { InputError, resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
-import { GeometryHelper } from "./geometry-helper";
-import { MathBitByBit } from "./math";
-import { Vector } from "./vector";
-import { FrameAxes, isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./helpers/frame-axes";
+import type * as Resolved from "../resolved-inputs";
+import type { GeometryHelper } from "./geometry-helper";
+import type { MathBitByBit } from "./math";
+import type { Vector } from "./vector";
+import type { FrameAxes } from "./helpers/frame-axes";
+import { isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./helpers/frame-axes";
 import { composed, symmetricEigen } from "./helpers/matrices";
 
 type Vec3 = Inputs.Base.Vector3;
 type Axes = FrameAxes;
 
 const WORLD: Axes = { origin: [0, 0, 0], x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
+const EQUAL_COMPONENT_TOLERANCE = 1e-12;
 
-/** The largest absolute coordinate in a list of vectors, by a loop, so a long list cannot overflow the call stack. */
 const reachOf = (vectors: readonly Vec3[]): number => {
     let reach = 0;
     for (const vector of vectors) {
@@ -843,11 +844,6 @@ export class Frame {
         return frames;
     }
 
-    /**
-     * The widest spread's axis, pointing toward the first point, or with its largest component
-     * positive when the first point lies across it.
-     * @ignore true
-     */
     private alongWidest(widest: Vec3, first: Vec3, spread: number): Vec3 {
         const toFirst = this.vector.dot({ first, second: widest });
         if (!(Math.abs(toFirst) > 1e-9 * Math.sqrt(spread))) {
@@ -856,35 +852,20 @@ export class Frame {
         return toFirst < 0 ? this.vector.neg({ vector: widest }) as Vec3 : widest;
     }
 
-    /**
-     * Where the first point lies from the center, in the fitted plane, or the next point that does
-     * not sit on the center: the X axis of points that spread evenly every way in their plane.
-     * @ignore true
-     */
     private towardFirstPoint(offsets: readonly Vec3[], normal: Vec3, spread: number): Vec3 | undefined {
         return offsets
             .map(offset => this.vector.sub({ first: offset, second: this.vector.mul({ vector: normal, scalar: this.vector.dot({ first: offset, second: normal }) }) }) as Vec3)
             .find(inPlane => this.vector.length({ vector: inPlane }) > 1e-9 * Math.sqrt(spread));
     }
 
-    /**
-     * @ignore true
-     */
     private translated(axes: Axes, translation: Vec3): Inputs.Base.Frame {
         return this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: translation }) as Vec3 });
     }
 
-    /**
-     * @ignore true
-     */
     private offsetBy(axes: Axes, distance: number): Inputs.Base.Frame {
         return this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.vector.mul({ vector: axes.z, scalar: distance }) }) as Vec3 });
     }
 
-    /**
-     * The axes turned about one of their own by `angle` radians, through their origin.
-     * @ignore true
-     */
     private turned(axes: Axes, axis: Inputs.Frame.frameAxisEnum, angle: number): Inputs.Base.Frame {
         const c = Math.cos(angle);
         const s = Math.sin(angle);
@@ -905,16 +886,10 @@ export class Frame {
         }
     }
 
-    /**
-     * @ignore true
-     */
     private flipped(axes: Axes): Inputs.Base.Frame {
         return this.frameOf({ origin: axes.origin, x: axes.x, y: this.vector.neg({ vector: axes.y }) as Vec3, z: this.vector.neg({ vector: axes.z }) as Vec3 });
     }
 
-    /**
-     * @ignore true
-     */
     private childToWorld(parent: Axes, child: Axes): Inputs.Base.Frame {
         return this.frameOf({
             origin: this.vector.add({ first: parent.origin, second: this.along(parent, ...child.origin) }) as Vec3,
@@ -924,9 +899,6 @@ export class Frame {
         });
     }
 
-    /**
-     * @ignore true
-     */
     private childToLocal(parent: Axes, child: Axes): Inputs.Base.Frame {
         return this.frameOf({
             origin: this.against(parent, this.vector.sub({ first: child.origin, second: parent.origin }) as Vec3),
@@ -936,51 +908,28 @@ export class Frame {
         });
     }
 
-    /**
-     * The vector `u` along `x`, `v` along `y` and `w` along `z` of the axes, from their origin.
-     * @ignore true
-     */
     private along(axes: Axes, u: number, v: number, w: number): Vec3 {
         return this.vector.add({ first: this.combined(axes.x, u, axes.y, v), second: this.vector.mul({ vector: axes.z, scalar: w }) }) as Vec3;
     }
 
-    /**
-     * The same vector read against the axes: its components along `x`, `y` and `z`.
-     * @ignore true
-     */
     private against(axes: Axes, vector: Vec3): Vec3 {
         return [this.vector.dot({ first: vector, second: axes.x }), this.vector.dot({ first: vector, second: axes.y }), this.vector.dot({ first: vector, second: axes.z })];
     }
 
-    /**
-     * `first` scaled by `a` plus `second` scaled by `b`.
-     * @ignore true
-     */
     private combined(first: Vec3, a: number, second: Vec3, b: number): Vec3 {
         return this.vector.add({ first: this.vector.mul({ vector: first, scalar: a }), second: this.vector.mul({ vector: second, scalar: b }) }) as Vec3;
     }
 
-    /**
-     * Flips a unit vector whose largest component is negative, so a sign the data leaves open is
-     * decided the same way every time. Components within 1e-12 of each other count as equal and the
-     * first of them decides, so rounding cannot tip the choice; OCCT's frames break the tie the
-     * same way.
-     * @ignore true
-     */
     private withLargestPositive(vector: Vec3): Vec3 {
         let largest = 0;
         for (let i = 1; i < 3; i++) {
-            if (Math.abs(vector[i]!) > Math.abs(vector[largest]!) + 1e-12) {
+            if (Math.abs(vector[i]!) > Math.abs(vector[largest]!) + EQUAL_COMPONENT_TOLERANCE) {
                 largest = i;
             }
         }
         return vector[largest]! < 0 ? this.vector.neg({ vector }) as Vec3 : vector;
     }
 
-    /**
-     * The column-major matrix carrying the `from` axes onto the `to` axes.
-     * @ignore true
-     */
     private matrixBetween(from: Axes, to: Axes): Inputs.Base.TransformMatrix {
         const columns = [0, 1, 2].map(i => this.along(to, from.x[i]!, from.y[i]!, from.z[i]!));
         const origin = this.vector.add({ first: to.origin, second: this.along(to, ...this.vector.neg({ vector: this.against(from, from.origin) }) as Vec3) }) as Vec3;
@@ -992,10 +941,6 @@ export class Frame {
         ] as Inputs.Base.TransformMatrix;
     }
 
-    /**
-     * The axes of a frame a caller handed in, squared, or an error naming the input at fault.
-     * @ignore true
-     */
     private axesOf(frame: unknown, property: string, subject = `\`${property}\``): Axes {
         if (!isFrameShaped(frame)) {
             throw new InputError(`${subject} is not a frame: it needs \`origin\`, \`normal\` and \`direction\`, three finite numbers each.`, property);
@@ -1007,11 +952,6 @@ export class Frame {
         });
     }
 
-    /**
-     * The axes of every frame in a list a caller handed in, or an error naming the list and the
-     * position at fault.
-     * @ignore true
-     */
     private axesOfEach(frames: unknown, property: string): Axes[] {
         if (!Array.isArray(frames)) {
             throw new InputError(`\`${property}\` is not a list of frames.`, property);
@@ -1019,9 +959,6 @@ export class Frame {
         return frames.map((frame, index) => this.axesOf(frame, property, `\`${property}\` at position ${index}`));
     }
 
-    /**
-     * @ignore true
-     */
     private axisOf(axis: unknown): Inputs.Frame.frameAxisEnum {
         if (axis !== Inputs.Frame.frameAxisEnum.x && axis !== Inputs.Frame.frameAxisEnum.y && axis !== Inputs.Frame.frameAxisEnum.z) {
             throw new InputError(`\`axis\` must be x, y or z; it is ${String(axis)}.`, "axis");
@@ -1029,11 +966,6 @@ export class Frame {
         return axis;
     }
 
-    /**
-     * An origin with a unit normal and a unit X axis square to it, or an error with the message for
-     * the part that cannot be squared, naming `property`, or that part when none is given.
-     * @ignore true
-     */
     private squared(origin: Vec3, normal: Vec3, direction: Vec3, faults: { normal: string, direction: string, property?: string }): Axes {
         const axes = squareFrame(origin, normal, direction);
         if (typeof axes === "string") {
@@ -1042,17 +974,10 @@ export class Frame {
         return axes;
     }
 
-    /**
-     * The frame the axes describe, as new arrays.
-     * @ignore true
-     */
     private frameOf(axes: Axes): Inputs.Base.Frame {
         return { origin: [...axes.origin], normal: [...axes.z], direction: [...axes.x] };
     }
 
-    /**
-     * @ignore true
-     */
     private pointOf(value: unknown, property: string): Vec3 {
         if (!isTriple(value)) {
             throw new InputError(`\`${property}\` is not a point: it needs three finite numbers.`, property);
@@ -1060,9 +985,6 @@ export class Frame {
         return [...value];
     }
 
-    /**
-     * @ignore true
-     */
     private vectorOf(value: unknown, property: string): Vec3 {
         if (!isTriple(value)) {
             throw new InputError(`\`${property}\` is not a vector: it needs three finite numbers.`, property);
@@ -1070,9 +992,6 @@ export class Frame {
         return [...value];
     }
 
-    /**
-     * @ignore true
-     */
     private pointsOf(value: unknown, property: string): Vec3[] {
         if (!Array.isArray(value)) {
             throw new InputError(`\`${property}\` is not a list of points.`, property);
@@ -1084,9 +1003,6 @@ export class Frame {
         return value.map(point => [...point as Vec3]);
     }
 
-    /**
-     * @ignore true
-     */
     private numberOf(value: unknown, property: string): number {
         if (typeof value !== "number" || !Number.isFinite(value)) {
             throw new InputError(`\`${property}\` is not a finite number.`, property);
@@ -1094,9 +1010,6 @@ export class Frame {
         return value;
     }
 
-    /**
-     * @ignore true
-     */
     private countOf(value: unknown, property: string): number {
         if (typeof value !== "number" || !Number.isInteger(value) || value < 1) {
             throw new InputError(`\`${property}\` must be a whole number of at least 1.`, property);

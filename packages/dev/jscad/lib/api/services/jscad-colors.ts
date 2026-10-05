@@ -1,7 +1,7 @@
 import * as Inputs from "../inputs/jscad-inputs";
-import * as JSCAD from "@jscad/modeling";
+import type * as JSCAD from "@jscad/modeling";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Giving JSCAD geometry a color of its own. A colored entity is always drawn in that color, ahead

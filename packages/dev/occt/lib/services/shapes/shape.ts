@@ -1,8 +1,8 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Questions and repairs that apply to any OpenCascade shape whatever its kind: what type it is,

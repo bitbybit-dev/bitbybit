@@ -7,12 +7,12 @@ vi.mock("playcanvas", async () => {
 import { createDrawHelperMocks } from "./__mocks__/test-helpers";
 
 import { DrawHelper } from "./draw-helper";
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
 
 import * as pc from "playcanvas";
 

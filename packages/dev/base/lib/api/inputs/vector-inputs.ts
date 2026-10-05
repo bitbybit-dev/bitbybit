@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 import { Math } from "./math-inputs";
 
 /**

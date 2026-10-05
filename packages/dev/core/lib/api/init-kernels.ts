@@ -1,6 +1,9 @@
-import { OccStateEnum, OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { JscadStateEnum, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldStateEnum, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { OccStateEnum } from "@bitbybit-dev/occt-worker";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import { JscadStateEnum } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import { ManifoldStateEnum } from "@bitbybit-dev/manifold-worker";
 import { firstValueFrom, first, map } from "rxjs";
 import type { WorkerInstances, WorkerOptions } from "./worker-utils";
 import { createWorkersFromCDN } from "./worker-utils";

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";

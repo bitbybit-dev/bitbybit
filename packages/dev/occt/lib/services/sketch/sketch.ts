@@ -1,19 +1,22 @@
-import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import { FrameAxes, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
-import { OccHelper } from "../../occ-helper";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
 import { PathBuilder } from "../../svg/path-builder";
-import { OCCTShapes } from "../shapes/shapes";
-import { OCCTOperations } from "../operations";
-import { OCCTBooleans } from "../booleans";
+import type { OCCTShapes } from "../shapes/shapes";
+import type { OCCTOperations } from "../operations";
+import type { OCCTBooleans } from "../booleans";
 import { checkedChoice, checkedFlag, checkedFrame, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
 import { numbersOfFrames } from "../base/frames";
 import { OCCTSketchCommands } from "./commands";
-import { COINCIDENT, Outline, Vec2, outlineOf, segmentsOf, signedArea, subpathOf } from "./outline";
-import { HullPart, hullOf } from "./hull";
+import type { Outline, Vec2 } from "./outline";
+import { COINCIDENT, outlineOf, segmentsOf, signedArea, subpathOf } from "./outline";
+import type { HullPart } from "./hull";
+import { hullOf } from "./hull";
 
 type Vec3 = Inputs.Base.Vector3;
 
@@ -206,7 +209,6 @@ export class OCCTSketch {
         return frame === undefined ? GROUND_FRAME : checkedFrame(frame, "frame");
     }
 
-    /** The outline as one wire, or a face facing along the frame's normal, placed on the frame. */
     private built(outline: Outline, frame: Inputs.Base.Frame, makeFace: boolean, property: string): TopoDS_Shape {
         if (makeFace && !outline.closed) {
             throw new InputError("`makeFace` needs a closed outline: end the commands with `close`, or back at `start`.", "makeFace");
@@ -242,7 +244,6 @@ export class OCCTSketch {
         return placed;
     }
 
-    /** A planar face bounded by the wire, built from the wire turned around when it runs clockwise. */
     private faceOf(wire: TopoDS_Wire, clockwise: boolean, property: string): TopoDS_Face {
         const reversed = clockwise ? wire.Reversed() : undefined;
         const source = reversed === undefined ? wire : this.och.converterService.getActualTypeOfShape(reversed);
@@ -260,7 +261,6 @@ export class OCCTSketch {
         return face;
     }
 
-    /** The shape moved rigidly from one frame onto another, its geometry rewritten exactly rather than located. */
     private placed(shape: TopoDS_Shape, from: Inputs.Base.Frame, to: Inputs.Base.Frame): TopoDS_Shape {
         const transformation = new this.occ.gp_Trsf();
         const source = this.och.entitiesService.gpAx3_3(from.origin, from.normal, from.direction);
@@ -282,7 +282,6 @@ export class OCCTSketch {
         }
     }
 
-    /** Refuses a shape that does not lie in the frame's plane. */
     private inPlane(shape: TopoDS_Shape, frame: Inputs.Base.Frame, property: string): void {
         const box = this.occ.BoundingBoxInFrame(shape, numbersOfFrames([frame]));
         if (!box.IsValid || Math.abs(box.ZMin) > IN_PLANE || Math.abs(box.ZMax) > IN_PLANE) {
@@ -290,7 +289,6 @@ export class OCCTSketch {
         }
     }
 
-    /** The two offsets of a closed wire, grown and shrunk in its own plane, as a ring face or the two wires. */
     private ring(wire: TopoDS_Wire, plane: TopoDS_Face, width: number, join: Inputs.OCCT.joinTypeEnum, makeFace: boolean): TopoDS_Shape {
         const offset = (distance: number): TopoDS_Wire => this.onlyWire(this.operations.offsetAdv({ shape: wire, distance, tolerance: COINCIDENT, joinType: join, removeIntEdges: false }));
         const outer = offset(width / 2);
@@ -322,7 +320,6 @@ export class OCCTSketch {
         }
     }
 
-    /** The one wire an offset made, refused as too wide when it made none or several. */
     private onlyWire(shape: TopoDS_Shape): TopoDS_Wire {
         const wires = this.shapes.wire.getWires({ shape });
         shape.delete();
@@ -334,7 +331,6 @@ export class OCCTSketch {
         return wire;
     }
 
-    /** The outline around an open wire: its right offset, the end cap, its left offset back and the start cap. */
     private band(wire: TopoDS_Wire, plane: TopoDS_Face, width: number, cap: Inputs.OCCT.strokeCapEnum, join: Inputs.OCCT.joinTypeEnum, makeFace: boolean): TopoDS_Shape {
         const half = width / 2;
         const right = this.shapes.wire.offsetOpen({ shape: wire, face: plane, distance: half, joinType: join });
@@ -370,7 +366,6 @@ export class OCCTSketch {
         }
     }
 
-    /** The edges that close one end of a stroke, from `from` round to `to` about the wire's end. */
     private cap(from: Vec3, to: Vec3, end: Vec3, outward: Vec3, half: number, cap: Inputs.OCCT.strokeCapEnum): TopoDS_Edge[] {
         if (cap === Inputs.OCCT.strokeCapEnum.round) {
             return [this.shapes.edge.arcThroughThreePoints({ start: from, middle: plus(end, times(outward, half)), end: to })];
@@ -383,7 +378,6 @@ export class OCCTSketch {
         return [this.shapes.edge.line({ start: from, end: fromOut }), this.shapes.edge.line({ start: fromOut, end: toOut }), this.shapes.edge.line({ start: toOut, end: to })];
     }
 
-    /** The face turned to face the way the plane face does. */
     private facingAlong(face: TopoDS_Face, plane: TopoDS_Face): TopoDS_Face {
         const normal = this.shapes.face.normalOnUV({ shape: plane, paramU: 0.5, paramV: 0.5 });
         const facing = this.shapes.face.normalOnUV({ shape: face, paramU: 0.5, paramV: 0.5 });
@@ -399,7 +393,6 @@ export class OCCTSketch {
         return typed;
     }
 
-    /** The points, discs and arcs of one shape, in the frame's 2D coordinates. */
     private hullParts(shape: TopoDS_Shape, index: number, axes: FrameAxes): HullPart[] {
         const property = "shapes";
         const flat = (point: Vec3): Vec2 => {
@@ -455,7 +448,6 @@ function unit3(vector: Vec3): Vec3 {
     return times(vector, 1 / Math.hypot(vector[0], vector[1], vector[2]));
 }
 
-/** The outward directions an arc covers, counterclockwise from where it starts, whichever way it runs. */
 function arcRange(center: Vec2, start: Vec2, middle: Vec2, end: Vec2): { from: number; span: number } {
     const angle = (point: Vec2): number => Math.atan2(point[1] - center[1], point[0] - center[0]);
     const turn = (from: number, to: number): number => ((to - from) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);

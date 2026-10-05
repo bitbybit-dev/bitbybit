@@ -1,20 +1,25 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import { callByPath, resolveInputs, validateInputs } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
+import { callByPath, isRecord, resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import { occtDtoRegistry } from "../../api/dto-registry";
 import { occtDtoRules } from "../../api/validation";
 import { isShape } from "../base/input-checks";
-import { DesignOutcome, release, releasedOnError } from "./cache";
-import { FaceNames, NamedSource, carryNames, copyNames, give, nameOf } from "./names";
+import type { DesignOutcome } from "./cache";
+import { release, releasedOnError } from "./cache";
+import type { FaceNames, NamedSource } from "./names";
+import { carryNames, copyNames, give, nameOf } from "./names";
 import { resolveEdges } from "./references";
-import { BodyState, DesignPlan, DesignRun, SketchState, bodyKey, sketchKey } from "./state";
+import type { BodyState, DesignPlan, DesignRun, SketchState } from "./state";
+import { bodyKey, sketchKey } from "./state";
 import { operationPathOf } from "./format";
 import { DesignProblem, pointer } from "./problems";
-import { DesignValues, MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
-import { ProfileHistory, Vector, bodyOf, contextOf, cross, faceCount, faceFrame, inPlane, ownerOf, profileNames, scaled, unit } from "./helpers";
-import { isRecord } from "./structure";
-import { rigidMotion } from "./motion";
+import type { DesignValues } from "./values";
+import { MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
+import type { ProfileHistory } from "./helpers";
+import { bodyOf, contextOf, faceCount, faceFrame, ownerOf, profileNames } from "./helpers";
+import { squaredFrame, tripleOf, unitVector } from "./placement";
+import { FULL_TURN } from "./constants";
 
 type Join = Models.OCCT.DesignJoin;
 
@@ -36,7 +41,12 @@ function commandOf(command: Models.OCCT.DesignPenCommand, path: string, paramete
     return { type, ...(id === undefined ? {} : { id }), ...(evaluatedIn(rest, path, parameters) as Record<string, unknown>) } as Models.OCCT.SketchCommand;
 }
 
-const PLANES: Record<"XY" | "XZ" | "YZ", { normal: Vector; direction: Vector }> = {
+interface PlaneAxes {
+    normal: Inputs.Base.Vector3;
+    direction: Inputs.Base.Vector3;
+}
+
+const PLANES: Record<"XY" | "XZ" | "YZ", PlaneAxes> = {
     XY: { normal: [0, 0, 1], direction: [1, 0, 0] },
     XZ: { normal: [0, 1, 0], direction: [1, 0, 0] },
     YZ: { normal: [1, 0, 0], direction: [0, 1, 0] },
@@ -46,7 +56,7 @@ function frameOf(on: Models.OCCT.DesignSketchPlacement, host: string | undefined
     if ("plane" in on) {
         const offset = on.offset === undefined ? 0 : numberOf(on.offset, run.parameters, pointer(path, "offset"));
         const plane = PLANES[on.plane];
-        return { origin: scaled(plane.normal, offset), normal: plane.normal, direction: plane.direction };
+        return { origin: tripleOf(run.base.vector.mul({ vector: plane.normal, scalar: offset })), normal: plane.normal, direction: plane.direction };
     }
     if ("frame" in on) {
         const framePath = pointer(path, "frame");
@@ -65,8 +75,14 @@ function isCircle(command: Models.OCCT.DesignPenCommand): command is Models.OCCT
     return command.type === "circle";
 }
 
-/** One loop drawn as a wire, with the edges each of its commands drew, numbered on the wire. */
-function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: DesignRun): { wire: TopoDS_Shape; segments: { command: number; edges: number[] }[] } {
+type LoopSegment = Pick<Models.OCCT.SketchSegment, "command" | "edges">;
+
+interface DrawnLoop {
+    wire: TopoDS_Shape;
+    segments: LoopSegment[];
+}
+
+function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: DesignRun): DrawnLoop {
     const first = loop.pen[0]!;
     if (isCircle(first)) {
         const at = pointer(path, "pen", 0);
@@ -74,16 +90,14 @@ function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: Desi
         if (!(radius > 0)) {
             throw new DesignProblem(pointer(at, "radius"), "a circle's radius is more than 0");
         }
-        const normal = unit(frame.normal);
-        const across = inPlane(unit(frame.direction), normal);
-        if (across === undefined) {
+        const squared = squaredFrame(frame.origin, frame.normal, frame.direction, run.base);
+        if (squared === undefined) {
             throw new DesignProblem(path, "the sketch's direction runs along its normal");
         }
-        const up = cross(normal, across);
         const x = numberOf(first.centre[0], run.parameters, pointer(at, "centre", 0));
         const y = numberOf(first.centre[1], run.parameters, pointer(at, "centre", 1));
-        const center: Vector = [0, 1, 2].map(axis => frame.origin[axis]! + x * across[axis]! + y * up[axis]!) as Vector;
-        return { wire: run.occt.shapes.wire.createCircleWire({ radius, center, direction: normal }), segments: [{ command: 0, edges: [0] }] };
+        const center = run.base.frame.pointToWorld({ frame: squared, point: [x, y, 0] });
+        return { wire: run.occt.shapes.wire.createCircleWire({ radius, center, direction: squared.normal }), segments: [{ command: 0, edges: [0] }] };
     }
     const commands = loop.pen.map((command, index) => commandOf(command, pointer(path, "pen", index), run.parameters));
     const start: Inputs.Base.Point2 | undefined = loop.start === undefined ? undefined : [numberOf(loop.start[0], run.parameters, pointer(path, "start", 0)), numberOf(loop.start[1], run.parameters, pointer(path, "start", 1))];
@@ -91,24 +105,18 @@ function drawnLoop(loop: Loop, frame: Inputs.Base.Frame, path: string, run: Desi
     return { wire: drawn.shape, segments: drawn.segments };
 }
 
-/** Whether a wire, made into a face, faces along `normal`: it runs anticlockwise seen from the normal's tip. */
-function anticlockwise(wire: TopoDS_Shape, normal: Vector, run: DesignRun): boolean {
+function anticlockwise(wire: TopoDS_Shape, normal: Inputs.Base.Vector3, run: DesignRun): boolean {
     const face = run.occt.shapes.face.createFaceFromWire({ shape: wire, planar: true });
     try {
         const facing = run.occt.analysis.signatures({ shape: face }).faces[0]!.normal;
-        return facing[0] * normal[0] + facing[1] * normal[1] + facing[2] * normal[2] > 0;
+        return run.base.vector.dot({ first: facing, second: normal }) > 0;
     } finally {
         release(face);
     }
 }
 
-/**
- * Draws a sketch of loops, or of a circle, as one face: the first loop turned anticlockwise about the
- * sketch's normal and the others clockwise, so they are its holes; each face edge remembers the
- * command that drew it. A sketch left open is its one loop's wire.
- */
 function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly Loop[], frame: Inputs.Base.Frame, path: string, run: DesignRun): DesignOutcome {
-    const normal = unit(frame.normal);
+    const normal = unitVector(frame.normal, path, run.base);
     const pathOf = (index: number): string => feature.loops === undefined ? path : pointer(path, "loops", index);
     const drawn: ReturnType<typeof drawnLoop>[] = [];
     const owned: TopoDS_Shape[] = [];
@@ -175,7 +183,7 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
             run.trace?.set(path, { frame });
             if (feature.loops === undefined && pen.length === 0) {
                 run.trace?.set(path, { frame, face: false });
-                return { kind: "sketch", shape: run.occt.shapes.compound.makeCompound({ shapes: [] }), commands: [], normal: unit(frame.normal), frame };
+                return { kind: "sketch", shape: run.occt.shapes.compound.makeCompound({ shapes: [] }), commands: [], normal: unitVector(frame.normal, path, run.base), frame };
             }
             if (feature.loops !== undefined || pen.some(isCircle)) {
                 run.trace?.set(path, { frame, face: feature.face !== false });
@@ -199,7 +207,7 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
                     byEdge[edge] = id === undefined || id === "" ? undefined : `${feature.id}.${id}`;
                 });
             });
-            return { kind: "sketch", shape: drawn.shape, commands: byEdge, normal: unit(frame.normal), frame };
+            return { kind: "sketch", shape: drawn.shape, commands: byEdge, normal: unitVector(frame.normal, path, run.base), frame };
         },
     };
 }
@@ -208,7 +216,12 @@ function sweptNames(feature: string, shape: TopoDS_Shape, history: Models.OCCT.S
     return carryNames(faceCount(shape, run), [], profileNames(feature, [{ history, commands }]));
 }
 
-function outlineOf(sketch: SketchState, run: DesignRun): { wire: TopoDS_Shape; owned: boolean } {
+interface Outline {
+    wire: TopoDS_Shape;
+    owned: boolean;
+}
+
+function outlineOf(sketch: SketchState, run: DesignRun): Outline {
     if (run.occ.CountSubShapes(sketch.shape, run.occ.TopAbs_ShapeEnum.FACE, false) === 0) {
         return { wire: sketch.shape, owned: false };
     }
@@ -257,8 +270,8 @@ function extruded(feature: Models.OCCT.DesignExtrudeFeature, path: string, run: 
     if (distance === 0) {
         throw new DesignProblem(pointer(path, "distance"), "the distance is 0");
     }
-    const along = feature.direction === undefined ? sketch.normal : unit(directionOf(feature.direction, run.parameters, pointer(path, "direction")));
-    const made = run.occt.operations.extrudeWithHistory({ shape: sketch.shape, direction: scaled(along, distance) });
+    const along = feature.direction === undefined ? sketch.normal : unitVector(directionOf(feature.direction, run.parameters, pointer(path, "direction")), pointer(path, "direction"), run.base);
+    const made = run.occt.operations.extrudeWithHistory({ shape: sketch.shape, direction: tripleOf(run.base.vector.mul({ vector: along, scalar: distance })) });
     const names = releasedOnError(made.shape, () => sweptNames(feature.id, made.shape, made.history, sketch.commands, run));
     return joined(feature, made.shape, names, run);
 }
@@ -267,12 +280,12 @@ function revolved(feature: Models.OCCT.DesignRevolveFeature, path: string, run: 
     const sketch = run.sketches.get(feature.profile)!;
     const origin = pointOf(feature.axis.origin, run.parameters, pointer(path, "axis", "origin"));
     const direction = directionOf(feature.axis.direction, run.parameters, pointer(path, "axis", "direction"));
-    const angle = feature.angle === undefined ? 360 : numberOf(feature.angle, run.parameters, pointer(path, "angle"));
-    if (angle === 0 || Math.abs(angle) > 360) {
-        throw new DesignProblem(pointer(path, "angle"), `the angle is not 0 and at most 360 either way, not ${angle}`);
+    const angle = feature.angle === undefined ? FULL_TURN : numberOf(feature.angle, run.parameters, pointer(path, "angle"));
+    if (angle === 0 || Math.abs(angle) > FULL_TURN) {
+        throw new DesignProblem(pointer(path, "angle"), `the angle is not 0 and at most ${FULL_TURN} either way, not ${angle}`);
     }
     const atOrigin = origin.every(coordinate => coordinate === 0);
-    const moved = atOrigin ? sketch.shape : run.occt.transforms.translate({ shape: sketch.shape, translation: scaled(origin, -1) });
+    const moved = atOrigin ? sketch.shape : run.occt.transforms.translate({ shape: sketch.shape, translation: tripleOf(run.base.vector.neg({ vector: origin })) });
     try {
         const made = run.occt.operations.revolveWithHistory({ shape: moved, angle, direction, copy: false });
         let shape = made.shape;
@@ -382,8 +395,8 @@ function linearPattern(feature: Models.OCCT.DesignLinearPatternFeature, path: st
     const body = bodyOf(feature.body, run);
     const count = countOf(feature.count, run.parameters, pointer(path, "count"), 2, MAX_PATTERN_COUNT);
     const spacing = numberOf(feature.spacing, run.parameters, pointer(path, "spacing"));
-    const along = unit(directionOf(feature.direction, run.parameters, pointer(path, "direction")));
-    const copies = copiesOf(count, index => run.occt.transforms.translate({ shape: body.shape, translation: scaled(along, spacing * index) }));
+    const along = unitVector(directionOf(feature.direction, run.parameters, pointer(path, "direction")), pointer(path, "direction"), run.base);
+    const copies = copiesOf(count, index => run.occt.transforms.translate({ shape: body.shape, translation: tripleOf(run.base.vector.mul({ vector: along, scalar: spacing * index })) }));
     return fusedWithCopies(feature.id, body, copies, run);
 }
 
@@ -392,11 +405,11 @@ function polarPattern(feature: Models.OCCT.DesignPolarPatternFeature, path: stri
     const count = countOf(feature.count, run.parameters, pointer(path, "count"), 2, MAX_PATTERN_COUNT);
     const center = pointOf(feature.axis.origin, run.parameters, pointer(path, "axis", "origin"));
     const axis = directionOf(feature.axis.direction, run.parameters, pointer(path, "axis", "direction"));
-    const angle = feature.angle === undefined ? 360 : numberOf(feature.angle, run.parameters, pointer(path, "angle"));
-    if (angle === 0 || Math.abs(angle) > 360) {
-        throw new DesignProblem(pointer(path, "angle"), `the angle is not 0 and at most 360 either way, not ${angle}`);
+    const angle = feature.angle === undefined ? FULL_TURN : numberOf(feature.angle, run.parameters, pointer(path, "angle"));
+    if (angle === 0 || Math.abs(angle) > FULL_TURN) {
+        throw new DesignProblem(pointer(path, "angle"), `the angle is not 0 and at most ${FULL_TURN} either way, not ${angle}`);
     }
-    const step = Math.abs(angle) === 360 ? angle / count : angle / (count - 1);
+    const step = Math.abs(angle) === FULL_TURN ? angle / count : angle / (count - 1);
     const copies = copiesOf(count, index => run.occt.transforms.rotateAroundCenter({ shape: body.shape, angle: step * index, center, axis }));
     return fusedWithCopies(feature.id, body, copies, run);
 }
@@ -414,9 +427,17 @@ function mirrored(feature: Models.OCCT.DesignMirrorFeature, path: string, run: D
 
 function transformed(feature: Models.OCCT.DesignTransformFeature, path: string, run: DesignRun): DesignOutcome {
     const body = bodyOf(feature.body, run);
-    const point = (value: Models.OCCT.DesignPoint | undefined, key: string): Vector => value === undefined ? [0, 0, 0] : pointOf(value, run.parameters, pointer(path, key));
-    const motion = rigidMotion(point(feature.rotate, "rotate"), point(feature.pivot, "pivot"), point(feature.translate, "translate"));
-    const shape = run.occt.transforms.transform({ shape: body.shape, rotationAxis: motion.turn.axis, rotationAngle: motion.turn.angle, translation: motion.shift, scaleFactor: 1 });
+    const point = (value: Models.OCCT.DesignPoint | undefined, key: string): Inputs.Base.Point3 => value === undefined ? [0, 0, 0] : pointOf(value, run.parameters, pointer(path, key));
+    const [x, y, z] = point(feature.rotate, "rotate");
+    const center = point(feature.pivot, "pivot");
+    const matrices = run.base.transforms;
+    const transformation = [
+        ...matrices.rotationCenterX({ center, angle: x }),
+        ...matrices.rotationCenterY({ center, angle: y }),
+        ...matrices.rotationCenterZ({ center, angle: z }),
+        ...matrices.translationXYZ({ translation: point(feature.translate, "translate") }),
+    ];
+    const shape = run.occt.transforms.transformByMatrix({ shape: body.shape, transformation });
     return { kind: "body", shape, names: body.names.map(list => [...list]) };
 }
 
@@ -443,11 +464,19 @@ export function bodyPlan(feature: BodyChange, path: string, run: DesignRun): Des
     }
 }
 
-function isBodyValue(value: unknown): value is { body: string } {
+interface BodyValue {
+    body: string;
+}
+
+interface UncheckedExpression {
+    expr: unknown;
+}
+
+function isBodyValue(value: unknown): value is BodyValue {
     return isRecord(value) && Object.keys(value).length === 1 && typeof value["body"] === "string";
 }
 
-function isExpressionValue(value: unknown): value is { expr: unknown } {
+function isExpressionValue(value: unknown): value is UncheckedExpression {
     return isRecord(value) && Object.keys(value).length === 1 && "expr" in value;
 }
 
@@ -491,11 +520,6 @@ function releaseShapesIn(value: unknown, keep: readonly TopoDS_Shape[]): void {
     }
 }
 
-/**
- * The shape an operation made, owned by the feature: the shape itself, a compound of a list of
- * shapes, or undefined when the result is neither. An input handed back gets its own handle, and the
- * items of a list are freed once their compound holds them.
- */
 function madeShape(result: unknown, inputs: readonly TopoDS_Shape[], run: DesignRun): TopoDS_Shape | undefined {
     if (isShape(result)) {
         return inputs.includes(result) ? result.clone() : result;
@@ -512,13 +536,8 @@ function madeShape(result: unknown, inputs: readonly TopoDS_Shape[], run: Design
     return compound;
 }
 
-/** The roles new faces take from what an operation made them of, by the operation: a fillet's rounds, a chamfer's bevels, a sweep's sides. */
 const EDGE_FACE_ROLES: Readonly<Record<string, string>> = { "fillets.filletEdges": "round", "fillets.chamferEdges": "bevel" };
 
-/**
- * Operations that move, turn, mirror or scale one shape and keep its topology as it was, so face
- * `i` of the result is face `i` of the shape and keeps its names.
- */
 const FACE_KEEPING: ReadonlySet<string> = new Set([
     "transforms.transform", "transforms.rotate", "transforms.rotateAroundCenter", "transforms.rotateByQuaternion",
     "transforms.align", "transforms.alignNormAndAxis", "transforms.alignAndTranslate", "transforms.orient",
@@ -526,7 +545,6 @@ const FACE_KEEPING: ReadonlySet<string> = new Set([
     "transforms.mirror", "transforms.mirrorAlongNormal", "transforms.mirrorAboutPoint", "transforms.transformByMatrix",
 ]);
 
-/** The names of the body an operation that keeps faces was given, when the shape it made has as many faces. */
 function keptNames(operation: string, inputs: unknown, shape: TopoDS_Shape, run: DesignRun): FaceNames | undefined {
     const given = isRecord(inputs) ? inputs["shape"] : undefined;
     if (!FACE_KEEPING.has(operation) || !isShape(given)) {
@@ -540,12 +558,6 @@ function isHistoried(result: unknown): result is Models.OCCT.ShapeWithHistory<To
     return isRecord(result) && isShape(result["shape"]) && (isRecord(result["history"]) || Array.isArray(result["histories"]));
 }
 
-/**
- * Runs an operation's history twin, when it has one and is given bodies, and names the faces it made:
- * each face a body's face became keeps that face's names, faces made of a body's edges take the
- * operation's role for them (`round`, `bevel`, or `side`), its first and last faces `start` and `end`,
- * and any other face `face`. The histories follow the inputs in the order given: `shape`, then `shapes`.
- */
 function operatedWithHistory(feature: Models.OCCT.DesignOperationFeature, operation: string, inputs: unknown, shapes: readonly TopoDS_Shape[], run: DesignRun): DesignOutcome | undefined {
     const twin = `${operation}WithHistory`;
     if (shapes.length === 0 || occtDtoRegistry[twin] === undefined || !isRecord(inputs)) {

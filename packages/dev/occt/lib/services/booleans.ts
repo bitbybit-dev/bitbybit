@@ -1,9 +1,9 @@
-import { BitbybitOcctModule, TopoDS_Shape,TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
-import * as Models from "../api/models";
+import type * as Resolved from "../api/resolved-inputs";
+import type * as Models from "../api/models";
 
 /**
  * Combining OpenCascade shapes with each other: union fuses them into one, difference cuts one away

@@ -1,8 +1,8 @@
 
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import * as BABYLON from "@babylonjs/core";
-import * as Inputs from "../../inputs";
-import { Base } from "../../inputs";
+import type * as Inputs from "../../inputs";
+import type { Base } from "../../inputs";
 
 
 /**

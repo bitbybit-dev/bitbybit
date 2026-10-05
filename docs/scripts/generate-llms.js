@@ -1,13 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable no-undef */
-/**
- * Script to generate llms.txt from llms.template.txt
- * Replaces {{VERSION}} placeholders with the version from package.json
- * 
- * Run this script as part of the build process:
- * node scripts/generate-llms.js
- */
-
 const fs = require("fs");
 const path = require("path");
 

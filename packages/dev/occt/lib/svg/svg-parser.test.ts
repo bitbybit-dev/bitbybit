@@ -4,7 +4,7 @@ import { applyToPoint, parseTransform, transformSegment } from "./svg-transform"
 import { shapeToSubpaths } from "./svg-shapes";
 import { parseXml } from "./svg-xml";
 import { normalizeSvg } from "./svg-normalizer";
-import { SvgArcSegment, SvgCubicSegment, SvgQuadSegment } from "./svg-models";
+import type { SvgArcSegment, SvgCubicSegment, SvgQuadSegment } from "./svg-models";
 
 const near = (a: number, b: number, eps = 1e-9): boolean => Math.abs(a - b) < eps;
 

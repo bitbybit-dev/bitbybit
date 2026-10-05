@@ -72,11 +72,11 @@ describe("the worker protocol constants", () => {
     });
 
     describe("the type identifiers", () => {
-        it("should name a shape as saved scripts spell it", () => {
+        it("should name a shape as users' scripts spell it", () => {
             expect(SHAPE_TYPE_IDENTIFIER).toBe("occ-shape");
         });
 
-        it("should name an entity as saved scripts spell it", () => {
+        it("should name an entity as users' scripts spell it", () => {
             expect(ENTITY_TYPE_IDENTIFIER).toBe("occ-entity");
         });
     });

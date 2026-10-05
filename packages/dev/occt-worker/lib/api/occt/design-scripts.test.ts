@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { Inputs, Models } from "@bitbybit-dev/occt";
+import type { Inputs, Models } from "@bitbybit-dev/occt";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
-import { AnsweringWorker, PostedCall } from "../__mocks__/test-helpers";
+import type { PostedCall } from "../__mocks__/test-helpers";
+import { AnsweringWorker } from "../__mocks__/test-helpers";
 import { OCCTDesign } from "./design";
 
 type Result = Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>;

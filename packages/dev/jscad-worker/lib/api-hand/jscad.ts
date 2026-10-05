@@ -1,10 +1,7 @@
-// Hand-written members of the generated class of the same name (see scripts/gen-worker-api.mjs).
-// Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
-// when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
 import * as Inputs from "@bitbybit-dev/jscad/lib/api/inputs";
-import * as Resolved from "@bitbybit-dev/jscad/lib/api/resolved-inputs";
+import type * as Resolved from "@bitbybit-dev/jscad/lib/api/resolved-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
+import type { JSCADWorkerManager } from "../jscad-worker/jscad-worker-manager";
 
 export class JSCAD {
     constructor(private readonly jscadWorkerManager: JSCADWorkerManager) { }

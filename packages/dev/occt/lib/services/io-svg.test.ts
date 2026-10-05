@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../occ-helper";
 import { VectorHelperService } from "../api/vector-helper.service";
@@ -7,7 +8,7 @@ import { ShapesHelperService } from "../api/shapes-helper.service";
 import { OCCTSolid } from "./shapes";
 import { OCCTIO } from "./io";
 import { svgOfDrawing } from "./base/svg-drawing";
-import * as Inputs from "../api/inputs";
+import type * as Inputs from "../api/inputs";
 
 const MISSING: unknown = undefined;
 const FROM_ABOVE: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };

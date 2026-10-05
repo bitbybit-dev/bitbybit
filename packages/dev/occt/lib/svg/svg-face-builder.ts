@@ -1,22 +1,7 @@
-/**
- * Turns the closed outline wires of one filled SVG element into face(s).
- *
- * SVG fill is region-based, not "largest wire = outer, rest = holes": an element's
- * path can contain several disjoint filled regions, holes, and even solids nested
- * inside holes (depth > 1). Which regions are solid is decided by a fill-rule
- * (`nonzero` / `evenodd`), and SVG does NOT constrain the winding direction of the
- * subpaths - so we cannot trust the source orientation.
- *
- * This builder therefore classifies the wires by containment (nesting depth) and
- * builds one face per solid region, adding that region's immediate non-solid
- * children as holes with explicitly forced opposite winding (outer CCW, holes CW),
- * which is what OCCT needs to cut a hole. It runs entirely on the planar (XY, z
- * constant) wires that come back from the path builder, before any 3D placement.
- */
-
-import { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
-import * as Inputs from "../api/inputs";
+import type { BitbybitOcctModule, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
+import type * as Inputs from "../api/inputs";
+import { deleteQuietly } from "./path-builder";
 
 /** Concrete rule resolved from the public strategy (auto is resolved per element earlier). */
 export type SvgFaceRule = "nonzero" | "evenOdd" | "perSubpath";
@@ -64,43 +49,32 @@ export class SvgFaceBuilder {
             if (faces.length === 1) { return { shape: faces[0]!, isFace: true }; }
 
             const compound = this.och.converterService.makeCompound({ shapes: faces });
-            faces.forEach((f) => { try { f.delete(); } catch { /* shared into compound */ } });
+            faces.forEach((f) => deleteQuietly(f));
             return { shape: compound, isFace: true };
         } catch (e) {
             warnings.push(`SVG face building failed for an element (${(e as Error)?.message ?? e}); returning its outline wires.`);
             return { shape: this.och.converterService.makeCompound({ shapes: wires }), isFace: false };
         } finally {
-            created.forEach((s) => { try { s.delete(); } catch { /* noop */ } });
+            created.forEach((s) => deleteQuietly(s));
         }
     }
 
-    /** Each closed wire becomes its own independent face (no hole detection). */
     private buildPerSubpath(ccw: TopoDS_Wire[]): TopoDS_Face[] {
         const faces: TopoDS_Face[] = [];
         for (const w of ccw) {
-            try { faces.push(this.och.facesService.createFaceFromWire({ shape: w, planar: true })); } catch { /* skip */ }
+            faces.push(...this.faceOrNone(() => this.och.facesService.createFaceFromWire({ shape: w, planar: true })));
         }
         return faces;
     }
 
-    /**
-     * Containment-based reconstruction shared by nonzero and even-odd: classify each wire's nesting
-     * depth, decide which regions are solid, and emit a face per solid region with its immediate
-     * non-solid children as holes (forced to CW so OCCT subtracts them).
-     *
-     * Containment needs two tests, not one. A point-in-face test alone cannot order two wires drawn
-     * around the same centre, because each contains the other's centroid, and the nesting depth then
-     * comes out wrong for both. Requiring the enclosing wire to have the strictly larger absolute area
-     * as well is what breaks that tie, and concentric outlines are ordinary in real drawings - a ring,
-     * a washer, any letter with a counter.
-     * @param ccw every wire, normalised to counter-clockwise
-     * @param centroids one centroid per wire
-     * @param areas one signed area per wire
-     * @param sign the original winding of each wire
-     * @param classFaces a face per wire, used only for the point-in-face test
-     * @param rule the fill rule that decides which depths are solid
-     * @returns one face per solid region, holes already subtracted
-     */
+    private faceOrNone(build: () => TopoDS_Face): TopoDS_Face[] {
+        try {
+            return [build()];
+        } catch {
+            return [];
+        }
+    }
+
     private buildNested(
         ccw: TopoDS_Wire[],
         centroids: Inputs.Base.Point3[],
@@ -142,13 +116,10 @@ export class SvgFaceBuilder {
                     holeWires.push(holeCw);
                 }
             }
-            try {
-                const face = holeWires.length > 0
-                    ? this.och.facesService.createFaceFromWires({ shapes: [ccw[i]!, ...holeWires], planar: true })
-                    : this.och.facesService.createFaceFromWire({ shape: ccw[i]!, planar: true });
-                faces.push(face);
-            } catch { /* skip this region */ }
-            createdHoles.forEach((w) => { try { w.delete(); } catch { /* noop */ } });
+            faces.push(...this.faceOrNone(() => holeWires.length > 0
+                ? this.och.facesService.createFaceFromWires({ shapes: [ccw[i]!, ...holeWires], planar: true })
+                : this.och.facesService.createFaceFromWire({ shape: ccw[i]!, planar: true })));
+            createdHoles.forEach((w) => deleteQuietly(w));
         }
         return faces;
     }
@@ -162,7 +133,6 @@ export class SvgFaceBuilder {
         });
     }
 
-    /** Shoelace signed area in the XY plane; sign encodes the wire's winding. */
     private signedAreaXY(pts: Inputs.Base.Point3[]): number {
         let area = 0;
         for (let i = 0; i < pts.length; i++) {
@@ -173,7 +143,6 @@ export class SvgFaceBuilder {
         return area / 2;
     }
 
-    /** Polygon centroid in XY (strictly interior for simple loops); falls back to the mean. */
     private centroidXY(pts: Inputs.Base.Point3[], area: number): Inputs.Base.Point3 {
         const z = pts.length > 0 ? pts[0]![2] : 0;
         if (Math.abs(area) < 1e-12 || pts.length === 0) {

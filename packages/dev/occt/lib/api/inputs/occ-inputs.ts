@@ -1824,10 +1824,6 @@ export namespace OCCT {
          * @step 1
          */
         nrHexagonsV?: number | undefined = 10;
-        // /**
-        //  * If true, we will create hexagons with flat tops on U direction
-        //  * @default false
-        //  */
         /**
          * When true, the hexagons turn a flat side toward the U direction; when false a corner points
          * that way.
@@ -1948,10 +1944,6 @@ export namespace OCCT {
          * @step 1
          */
         nrHexagonsV?: number | undefined = 10;
-        // /**
-        //  * If true, we will create hexagons with flat tops on U direction
-        //  * @default false
-        //  */
         /**
          * When true, the hexagons turn a flat side toward the U direction; when false a corner points
          * that way.
@@ -6621,7 +6613,6 @@ export namespace OCCT {
          */
         makeSolid?: boolean | undefined = true;
     }
-    // Threading : Create Surfaces
     /**
      * A solid, the faces to remove and a wall thickness for `operations.makeThickSolidByJoin`, which
      * hollows the solid into a shell of that thickness.
@@ -7540,10 +7531,6 @@ export namespace OCCT {
          */
         centers?: Base.Point3[] | undefined = [[0, 0, 0]];
     }
-    // Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
-    // matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
-    // A point transforms as p' = M * p; a list (Base.TransformMatrixes) is applied in
-    // order (first matrix first).
     /**
      * A shape and a matrix, or a list of matrices, for `transforms.transformByMatrix`.
      */
@@ -9142,8 +9129,6 @@ export namespace OCCT {
          */
         stepData!: string | ArrayBuffer | Uint8Array | File | Blob;
 
-        // ==================== STEP Reading Options ====================
-
         /**
          * When true, colors are read from the file; needed for a colored glTF.
          * @default true
@@ -9174,8 +9159,6 @@ export namespace OCCT {
          * @default false
          */
         readProps?: boolean | undefined = false;
-
-        // ==================== Mesh Options ====================
 
         /**
          * How closely triangles follow curved surfaces: with `meshRelative` true a fraction of each
@@ -9234,8 +9217,6 @@ export namespace OCCT {
          */
         controlSurfaceDeflection?: boolean | undefined = false;
 
-        // ==================== glTF Writer Options ====================
-
         /**
          * When true, the faces of a part are joined into one mesh, which makes a smaller file.
          * @default true
@@ -9284,8 +9265,6 @@ export namespace OCCT {
          * @default compact
          */
         transformFormat?: gltfTransformFormatEnum | undefined = gltfTransformFormatEnum.compact;
-
-        // ==================== Coordinate System Options ====================
 
         /**
          * When true, the file's Z-up is turned into glTF's Y-up; false keeps Z up.
@@ -9373,12 +9352,6 @@ export namespace OCCT {
          */
         dracoUnifiedQuantization?: boolean | undefined = false;
     }
-
-    // =====================================================
-    // Document-based Assembly API DTOs
-    // These DTOs work with document handles directly instead of docId strings.
-    // The caller is responsible for managing document lifetime via document.delete().
-    // =====================================================
 
     /**
      * A structure, an optional document to update and optional source documents for

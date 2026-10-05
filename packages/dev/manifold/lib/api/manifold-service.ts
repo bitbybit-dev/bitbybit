@@ -1,5 +1,5 @@
-import * as Manifold3D from "manifold-3d";
-import * as Inputs from "./inputs";
+import type * as Manifold3D from "manifold-3d";
+import type * as Inputs from "./inputs";
 import { Manifold } from "./services/manifold/manifold";
 import { CrossSection } from "./services/cross-section/cross-section";
 import { Mesh } from "./services/mesh/mesh";

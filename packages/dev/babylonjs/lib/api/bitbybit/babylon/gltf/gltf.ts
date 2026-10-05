@@ -1,11 +1,19 @@
 
 import "@babylonjs/loaders";
 import { KHR_materials_variants } from "@babylonjs/loaders/glTF/2.0/Extensions/KHR_materials_variants";
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
+
+function receiveShadowsWhereSupported(mesh: BABYLON.AbstractMesh): void {
+    try {
+        mesh.receiveShadows = true;
+    } catch {
+        return;
+    }
+}
 
 /**
  * Advanced glTF/glb tooling on top of the basic import/export in io. It keeps the rich asset container
@@ -163,9 +171,7 @@ export class BabylonGltf {
                 mesh.isVisible = false;
             }
             if (sgs && sgs.length > 0) {
-                try {
-                    mesh.receiveShadows = true;
-                } catch { /* some meshes do not support receiving shadows */ }
+                receiveShadowsWhereSupported(mesh);
                 sgs.forEach(sg => sg.addShadowCaster(mesh));
             }
         });

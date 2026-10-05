@@ -1,11 +1,12 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OCCTService } from "../../occ-service";
-import { DesignCache, DesignOutcome } from "./cache";
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import { FaceNames } from "./names";
-import { DesignValues } from "./values";
+import type { DesignCache, DesignOutcome } from "./cache";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
+import type { FaceNames } from "./names";
+import type { DesignValues } from "./values";
 import type { Rebinding } from "./hints";
+import type { BaseBitByBit } from "../../base";
 
 /** A body as the build holds it: its face names, the hash of the feature that made it as it is, and the parameters what made it read. */
 export interface BodyState {
@@ -45,6 +46,7 @@ export type DesignAssetData = Readonly<Record<string, string | Uint8Array | Arra
 export interface DesignRun {
     occt: OCCTService;
     occ: BitbybitOcctModule;
+    base: BaseBitByBit;
     cache: DesignCache;
     parameters: DesignValues;
     derived: ReadonlyMap<string, readonly string[]>;
@@ -74,6 +76,7 @@ export interface DesignPlan {
 export interface DesignRunContext {
     occt: OCCTService;
     occ: BitbybitOcctModule;
+    base: BaseBitByBit;
     cache: DesignCache;
     assets?: DesignAssetData | undefined;
     /** The outcomes a larger build has used so far, when a run is one part of it: the run adds to them, and the larger build trims the cache once, at its end. */
@@ -88,12 +91,31 @@ export interface DesignRunContext {
     sketches?: boolean | undefined;
 }
 
+const BODY_KEY_PREFIX = "body:";
+
+const SKETCH_KEY_PREFIX = "sketch:";
+
 /** The key a body is read and written by. */
 export function bodyKey(name: string): string {
-    return `body:${name}`;
+    return `${BODY_KEY_PREFIX}${name}`;
 }
 
 /** The key a sketch is read and written by. */
 export function sketchKey(id: string): string {
-    return `sketch:${id}`;
+    return `${SKETCH_KEY_PREFIX}${id}`;
+}
+
+/** Whether a key is a body's. */
+export function isBodyKey(key: string): boolean {
+    return key.startsWith(BODY_KEY_PREFIX);
+}
+
+/** Whether a key is a sketch's. */
+export function isSketchKey(key: string): boolean {
+    return key.startsWith(SKETCH_KEY_PREFIX);
+}
+
+/** The body name or sketch id a key is made of. */
+export function nameInKey(key: string): string {
+    return key.slice(isBodyKey(key) ? BODY_KEY_PREFIX.length : SKETCH_KEY_PREFIX.length);
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 /**
  * Parameters for frames: the origin, normal and direction a frame is built from, the frames, points

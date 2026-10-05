@@ -690,6 +690,18 @@ export type DefaultColors = typeof DEFAULT_COLORS;
 export function defaultEdgeColor(faceColor: string, edgeColour: string, edgeContrast: number | undefined): string;
 
 // @public
+export interface DesignDrawMemory<T extends DesignMesh> {
+    // (undocumented)
+    meshes: ReadonlyMap<string, T>;
+    // (undocumented)
+    placements: ReadonlyMap<string, readonly PartPlacement[]>;
+    // (undocumented)
+    precision: number;
+    // (undocumented)
+    signature: string;
+}
+
+// @public
 export interface DesignDrawnPart {
     // Warning: (ae-forgotten-export) The symbol "Models_3" needs to be exported by the entry point index.d.ts
     //
@@ -702,6 +714,29 @@ export interface DesignDrawnPart {
     // (undocumented)
     shapeHash?: string | undefined;
 }
+
+// @public
+export interface DesignDrawPlan<P extends DesignDrawnPart> {
+    // (undocumented)
+    meshKeys: Map<string, string>;
+    // (undocumented)
+    parts: Map<string, P>;
+    // (undocumented)
+    placed: string[];
+    // (undocumented)
+    placements: Map<string, PartPlacement[]>;
+    posesOnly: boolean;
+    // (undocumented)
+    signature: string;
+}
+
+// @public
+export function designDrawPlanOf<P extends DesignDrawnPart & {
+    id: string;
+}>(build: {
+    parts: readonly P[];
+    components?: PlacementSource["components"];
+}, options: DesignPlanOptions, memory: DesignDrawMemory<DesignMesh> | undefined): DesignDrawPlan<P>;
 
 // @public
 export interface DesignLookOptions {
@@ -742,6 +777,9 @@ export class DesignMeshCache<T extends DesignMesh> {
 export function designMeshCacheKeyOf(part: DesignDrawnPart, meshing: string): string | undefined;
 
 // @public
+export function designMeshesOf<T extends DesignMesh, P extends DesignDrawnPart>(plan: DesignDrawPlan<P>, options: DesignPlanOptions, memory: DesignDrawMemory<T> | undefined, meshing: string, cache: DesignMeshCache<T>, mesh: (parts: P[]) => Promise<T[]>): Promise<Map<string, T>>;
+
+// @public
 export function designMeshKeyOf(part: DesignDrawnPart): string;
 
 // @public
@@ -749,6 +787,12 @@ export function designOptionsKeyOf(options: DesignLookOptions): string;
 
 // @public
 export function designPartKeyOf(part: DesignDrawnPart): string;
+
+// @public
+export interface DesignPlanOptions extends DesignLookOptions {
+    // (undocumented)
+    precision: number;
+}
 
 // @public
 export function designSignatureOf(parts: ReadonlyMap<string, DesignDrawnPart>, placed: readonly string[], options: DesignLookOptions): string;
@@ -3453,6 +3497,9 @@ export interface MeshData {
     // (undocumented)
     uvs?: number[] | undefined;
 }
+
+// @public
+export function meshesByKeyOf<T extends DesignMesh, P extends DesignDrawnPart>(plan: DesignDrawPlan<P>, meshes: ReadonlyMap<string, T>): Map<string, T>;
 
 // @public
 export function meshNumbersOf(mesh: DesignMesh): number;

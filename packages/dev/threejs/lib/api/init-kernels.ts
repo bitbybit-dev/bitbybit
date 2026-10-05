@@ -1,11 +1,6 @@
-import { Scene } from "three";
-import { BitByBitBase } from "./bitbybit-base";
-import {
-    type InitBitByBitOptions,
-    type InitKernelsResult,
-    getOrCreateWorkers,
-    waitForKernelInitialization,
-} from "@bitbybit-dev/core";
+import type { Scene } from "three";
+import type { BitByBitBase } from "./bitbybit-base";
+import { type InitBitByBitOptions, type InitKernelsResult, getOrCreateWorkers, waitForKernelInitialization } from "@bitbybit-dev/core";
 
 export { type InitBitByBitOptions, type InitKernelsResult } from "@bitbybit-dev/core";
 

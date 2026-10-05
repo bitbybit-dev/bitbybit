@@ -1,4 +1,5 @@
-import { DtoRegistry, isRegisteredOperation, resolveInputs } from "./resolve-dto";
+import type { DtoRegistry } from "./resolve-dto";
+import { isRegisteredOperation, resolveInputs } from "./resolve-dto";
 
 /**
  * A kernel used in the same thread, whose operations lay a caller's inputs over the defaults of the

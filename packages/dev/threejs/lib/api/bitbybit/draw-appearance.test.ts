@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi, type Mock } from "vitest";
-import { BatchedMesh, Color, Group, InstancedBufferAttribute, Matrix4, Mesh, MeshPhysicalMaterial, Raycaster, Scene, type Intersection, type WebGLRenderer } from "three";
+import type { InstancedBufferAttribute, MeshPhysicalMaterial } from "three";
+import { BatchedMesh, Color, Group, Matrix4, Mesh, Raycaster, Scene, type Intersection, type WebGLRenderer } from "three";
 import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { Tag } from "@bitbybit-dev/core";
@@ -13,7 +14,7 @@ import { partialMock } from "../__mocks__/test-helpers";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 import { Draw } from "./draw";
 
 type Build = Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>;

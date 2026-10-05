@@ -1,8 +1,8 @@
-import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
+import type * as BABYLON from "@babylonjs/core";
+import type { Context } from "../../../context";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * The position gizmo: three arrows that drag the attached mesh along X, Y or Z, plus optional

@@ -1,4 +1,4 @@
-import { AssemblyNodeJson } from "./assembly-node-json";
+import type { AssemblyNodeJson } from "./assembly-node-json";
 /**
  * Result from native STEP assembly parsing.
  * Includes hierarchy and instance/definition tracking.

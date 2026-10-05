@@ -1,7 +1,7 @@
 import { GUI3DManager, NearMenu, TextBlock, TouchHolographicButton } from "@babylonjs/gui";
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../../context";
-import * as Inputs from "../../../inputs";
+import type { Context } from "../../../context";
+import type * as Inputs from "../../../inputs";
 
 /**
  * One-call entry points into virtual and augmented reality on a WebXR-capable browser and headset:

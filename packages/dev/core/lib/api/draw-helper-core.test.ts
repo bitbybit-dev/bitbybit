@@ -128,12 +128,17 @@ describe("DrawHelperCore surface analysis colors", () => {
         expect(triples(colors![0]!)).toEqual([BLUE, RED, RED, BLUE, GREEN]);
     });
 
-    it("should keep the fallback color for NaN, for a value that is not a number and for a face without values", () => {
+    it("should keep the fallback color, in linear light, for NaN, for a value that is not a number and for a face without values", () => {
+        // Arrange
+        const grey = Math.pow((128 / 255 + 0.055) / 1.055, 2.4);
+
         // Act
         const colors = painter().paint({ faceList: [face([0, NaN, 4, loose<number>(null)]), face(undefined, 2)] }, "#ff00ff");
+        const greyed = painter().paint({ faceList: [face([NaN, 3])] }, "#808080");
 
         // Assert
         expect(colors!.map(triples)).toEqual([[BLUE, MAGENTA, RED, MAGENTA], [MAGENTA, MAGENTA]]);
+        expect(greyed![0]!.slice(0, 3).map(channel => Number(channel.toFixed(12)))).toEqual([grey, grey, grey].map(channel => Number(channel.toFixed(12))));
     });
 
     it("should take the lowest and highest finite values of every face when no range is given", () => {

@@ -69,7 +69,9 @@ export function bindRegistry<TContext>(
     const bound: string[] = [];
     for (const definition of registry.list()) {
         const { handler } = definition;
-        if (!handler || (filter && !filter(definition))) continue;
+        if (!handler || (filter && !filter(definition))) {
+            continue;
+        }
         const { annotations } = definition;
         server.registerTool(
             definition.name,
@@ -104,7 +106,9 @@ function carrying<TContext>(context: TContext): AuthInfo {
 
 function carried<TContext>(authInfo: AuthInfo | undefined): TContext {
     const context = authInfo?.extra?.[REQUEST_CONTEXT];
-    if (context === undefined) throw new Error("The request carries no context; serve it through the request handler's own fetch");
+    if (context === undefined) {
+        throw new Error("The request carries no context; serve it through the request handler's own fetch");
+    }
     return context as TContext;
 }
 

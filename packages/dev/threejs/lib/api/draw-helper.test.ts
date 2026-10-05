@@ -2,12 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi, type Mock } from "vite
 import { createDrawHelperMocks, partialMock, flatOf, hexToRgb, colorsAreEqual, getMaterialFromMesh, createMockJSCADMesh, createMockOCCTShape, mockWorkerError } from "./__mocks__/test-helpers";
 import { mockOCCTBoxDecomposedMesh } from "./__mocks__/test-data";
 import { DrawHelper } from "./draw-helper";
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { Vector } from "@bitbybit-dev/base";
+import type { JSCADText, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
 import * as THREEJS from "three";
 import { LineSegments2 } from "three/examples/jsm/lines/LineSegments2.js";
 import { LineSegmentsGeometry } from "three/examples/jsm/lines/LineSegmentsGeometry.js";

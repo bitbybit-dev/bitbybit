@@ -1,13 +1,8 @@
-import { CacheHelper, ObjectDefinition } from "./cache-helper";
+import type { ObjectDefinition } from "./cache-helper";
+import { CacheHelper } from "./cache-helper";
 import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
 import { callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
 
-/**
- * Maximum number of cached hashes before a run triggers a full cache cleanup. This is the only bound
- * on WASM memory growth across a long editing session, and what it bounds is a count of hashes rather
- * than anything measured from memory. Matches the threshold the other kernel workers use, and is local to this module
- * rather than exported, because nothing outside it sets the bound.
- */
 const CACHE_THRESHOLD = 10000;
 
 
@@ -37,7 +32,6 @@ type HashedManifold = { hash: string | number };
 
 const MANIFOLD_REFERENCE = "manifold-shape";
 
-/** Commands the worker answers itself rather than by calling a kernel method. */
 const WORKER_COMMANDS = new Set([
     "deleteManifoldOrCrossSection", "deleteManifoldsOrCrossSections",
     "manifoldToMeshPointer", "startedTheRun", "cleanAllCache", "addManifoldPluginDependency",
@@ -80,16 +74,8 @@ const serializeResult = (res: unknown): unknown => {
     return { hash: (res as Hashed).hash, type: MANIFOLD_REFERENCE };
 };
 
-/** What the worker answers when a call failed and even its failure could not be sent back. */
 const UNREPORTABLE_FAILURE = "Manifold computation failed, and the failure could not be reported.";
 
-/**
- * Runs one kernel operation: the inputs are laid over the defaults of the DTO it takes and the result
- * is cached under them, before any reference is replaced. Only a call that is not in the cache
- * reports what its inputs would be rejected for, has the references in them replaced by the
- * manifolds they stand for, and calls the dotted path on the kernel. Every manifold in the result goes
- * back as a reference.
- */
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const call = prepareKernelCall("Manifold", manifoldDtoRegistry, action.functionName, action.inputs);
     return serializeResult(cacheHelper.cacheOp({ functionName: action.functionName, inputs: call.inputs }, () => {

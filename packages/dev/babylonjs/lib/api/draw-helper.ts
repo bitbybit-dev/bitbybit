@@ -1,15 +1,16 @@
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, MeshData, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
-import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
+import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf } from "@bitbybit-dev/core";
+import type { FaceLook, FaceRange, LookMesh, PartPlacement, MeshData } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
-import { Vector, resolveDto } from "@bitbybit-dev/base";
-import { JSCADWorkerManager, JSCADText } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { Vector } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
+import type { JSCADWorkerManager, JSCADText } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
-import * as Resolved from "./resolved-inputs";
+import type * as Resolved from "./resolved-inputs";
 
 interface DesignPartDrawn {
     part: string;
@@ -99,27 +100,11 @@ export class DrawHelper extends DrawHelperCore {
         console.log("DrawHelper disposed successfully");
     }
 
-    /**
-     * Generate a unique entity ID with semantic naming
-     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
-     * @param parentId - Optional parent ID for hierarchical naming
-     * @returns Unique entity ID string
-     */
     private generateEntityId(type: string, parentId?: string): string {
         const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
         return parentId ? `${parentId}/${id}` : id;
     }
 
-    /**
-     * Get or create a cached material with the specified properties
-     * Implements LRU-like eviction when cache is full
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param zOffset - Z-offset value
-     * @param createFn - Function to create new material if not cached
-     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
-     * @returns Cached or newly created material
-     */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
@@ -152,14 +137,6 @@ export class DrawHelper extends DrawHelperCore {
         return material;
     }
 
-    /**
-     * Get or create a cached unlit material (StandardMaterial) for points and lines.
-     * Uses a separate cache from PBR materials since these have different types.
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param createFn - Function to create new material if not cached
-     * @returns Cached or newly created StandardMaterial
-     */
     private getOrCreateUnlitMaterial(
         hex: string,
         alpha: number,
@@ -190,17 +167,6 @@ export class DrawHelper extends DrawHelperCore {
         return material;
     }
 
-    /**
-     * Create a back face mesh with flipped normals and optionally reversed winding order
-     * This is used for two-sided rendering of CAD geometries
-     * @param meshDataConverted - Original mesh data
-     * @param backFaceColour - Color for the back face
-     * @param backFaceOpacity - Opacity for the back face
-     * @param zOffset - Depth bias to prevent z-fighting
-     * @param useClockWiseSideOrientation - Whether to set sideOrientation to ClockWise (default true, false for JSCAD)
-     * @param skipWindingReversal - Whether to skip reversing winding order (default false, true for JSCAD in left-handed scenes)
-     * @returns Mesh containing the back face geometry
-     */
     private createBackFaceMesh(
         meshDataConverted: MeshData[],
         backFaceColour: string,
@@ -254,10 +220,6 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
     
-    /**
-     * Prepare back face mesh data by only flipping normals (no winding reversal)
-     * Used for JSCAD geometry which is right-handed
-     */
     private prepareBackFaceMeshDataNoWindingReversal(meshDataArray: MeshData[]): MeshData {
         const totalPositions: number[] = [];
         const totalNormals: number[] = [];
@@ -691,11 +653,6 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    /**
-     * Whether a line drawn before can take new lines in place: the same number of lines, each with
-     * the same number of points, colored the same way (one color, or a color per point). Anything
-     * else rebuilds the line, since its color texture is laid out per point.
-     */
     private canRestyleGreasedPolylines(mesh: BABYLON.GreasedLineMesh, lines: number[][], colors: BABYLON.Color3[]): boolean {
         const previous: number[] | undefined = mesh.metadata?.linesForRenderLengths;
         return previous !== undefined
@@ -705,7 +662,6 @@ export class DrawHelper extends DrawHelperCore {
             && mesh.greasedLineMaterial.useColors === this.hasMultipleGreasedColors(lines, colors);
     }
 
-    /** Applies the width, the colors and the opacity of a redraw to a line updated in place. */
     private restyleGreasedPolylines(mesh: BABYLON.GreasedLineMesh, lines: number[][], width: number, colors: BABYLON.Color3[], visibility: number): void {
         const material = mesh.greasedLineMaterial!;
         material.width = width;
@@ -721,7 +677,6 @@ export class DrawHelper extends DrawHelperCore {
         return colors.length > 1 || (colors.length === 1 && lines.length > 1);
     }
 
-    /** One color per point: every point of a line takes that line's color, the first when a line has none. */
     private expandedGreasedColors(lines: number[][], colors: BABYLON.Color3[]): BABYLON.Color3[] {
         const expandedColors: BABYLON.Color3[] = [];
         lines.forEach((line, lineIndex) => {
@@ -964,7 +919,9 @@ export class DrawHelper extends DrawHelperCore {
         
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
-            if (pointCount === 0) return;
+            if (pointCount === 0) {
+                return;
+            }
             
             const segments = pointCount > 1000 ? 1 : 6;
             
@@ -1222,60 +1179,23 @@ export class DrawHelper extends DrawHelperCore {
      */
     async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: BABYLON.Mesh): Promise<BABYLON.Mesh> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
-        const placements = partPlacementsOf(build);
-        const parts = new Map(build.parts.map(part => [part.id, part]));
-        const placed = [...placements.keys()].filter(id => parts.has(id));
         const state = previous ? this.designStates.get(previous) : undefined;
-        const signature = designSignatureOf(parts, placed, options);
-        if (previous && state && state.precision === options.precision && state.signature === signature && samePlacements(state.placements, placements)) {
-            this.poseDesign(state, placements);
+        const plan = designDrawPlanOf(build, options, state);
+        if (previous && state && plan.posesOnly) {
+            this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = new Map<string, Inputs.OCCT.DecomposedMeshDto>();
-        const keys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
-        if (state && state.precision === options.precision) {
-            for (const id of placed) {
-                const kept = state.meshes.get(keys.get(id)!);
-                if (kept) {
-                    meshes.set(id, kept);
-                }
-            }
-        }
-        const meshing = this.meshingTextOf(options);
-        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
-        for (const id of placed) {
-            const cacheKey = cacheKeys.get(id);
-            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
-            if (cached) {
-                meshes.set(id, cached);
-            }
-        }
+        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const looks = designOptionsKeyOf(options);
         const kept = new Map(state && state.looks === looks && state.precision === options.precision
-            ? state.parts.filter(drawn => parts.has(drawn.part) && placements.has(drawn.part) && drawn.key === designPartKeyOf(parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
+            ? state.parts.filter(drawn => plan.parts.has(drawn.part) && plan.placements.has(drawn.part) && drawn.key === designPartKeyOf(plan.parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
             : []);
-        const missing = placed.filter(id => !meshes.has(id));
-        if (missing.length > 0) {
-            const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => {
-                const mesh = made[index]!;
-                const cacheKey = cacheKeys.get(id);
-                meshes.set(id, mesh);
-                if (cacheKey !== undefined) {
-                    this.designMeshes.set(cacheKey, mesh);
-                }
-            });
-        }
         const target = previous && state ? previous : this.newDesignRoot();
         if (state && target === previous) {
             this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
-        const drawnParts = this.fillDesign(target, parts, placements, placed, meshes, options, kept);
-        const keptMeshes = new Map(placed.flatMap(id => {
-            const mesh = meshes.get(id);
-            return mesh ? [[keys.get(id)!, mesh] as const] : [];
-        }));
-        this.designStates.set(target, { placements, meshes: keptMeshes, signature, looks, precision: options.precision, parts: drawnParts });
+        const drawnParts = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, kept);
+        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, parts: drawnParts });
         return target;
     }
 
@@ -1319,7 +1239,6 @@ export class DrawHelper extends DrawHelperCore {
         return shapeMesh;
     }
 
-    /** The edges of a part as one line, each edge in the color its appearance gives it; the part has edges. */
     private partEdges(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.GreasedLineMesh {
         const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
         const edgeIndexes = mesh.edgeList.map(edge => edge.edgeIndex);
@@ -1329,12 +1248,6 @@ export class DrawHelper extends DrawHelperCore {
         return line;
     }
 
-    /**
-     * One mesh holding the faces of every look, with one sub-mesh and one material per look, and in
-     * `metadata.faceRanges` where each face's triangles sit in its index buffer. Each triangle is
-     * written reversed, as `flipFaces` writes the kernel's other meshes, because `flipFaces` would
-     * set the indices again and drop the sub-meshes.
-     */
     private lookedMesh(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): BABYLON.Mesh {
         const drawn = lookMeshes.filter(look => look.indices.length > 0);
         let vertexCount = 0;
@@ -1386,7 +1299,6 @@ export class DrawHelper extends DrawHelperCore {
         return mesh;
     }
 
-    /** The material of a look, its opacity times `faceOpacity`, cached like the plain face materials. */
     private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): BABYLON.PBRMetallicRoughnessMaterial {
         const opacity = look.opacity * faceOpacity;
         return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
@@ -1412,13 +1324,6 @@ export class DrawHelper extends DrawHelperCore {
         return root;
     }
 
-    /**
-     * Each placed part as one faces mesh and one edges line, both thin-instanced once per placement
-     * from one matrix buffer, the `kept` ones as they were drawn. Their `metadata` gives the part and
-     * the component path of each thin instance, the faces mesh where each face's triangles are, and
-     * the edges line the edge each of its `points` lines draws, as `shapes.edge.getEdges` numbers
-     * them, in `edgeIndexes`.
-     */
     private fillDesign(target: BABYLON.Mesh, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
         return placed.map((id): DesignPartDrawn => {
@@ -1741,10 +1646,6 @@ export class DrawHelper extends DrawHelperCore {
         return shapeMesh;
     }
 
-    /**
-     * The material of faces colored by a surface analysis: the OCCT face material in white, so each
-     * vertex shows its own color, cached like the plain face materials.
-     */
     private getOrCreateAnalysisMaterial(alpha: number, zOffset: number): BABYLON.PBRMetallicRoughnessMaterial {
         return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
             const pbmat = new BABYLON.PBRMetallicRoughnessMaterial(this.generateEntityId("brepAnalysisMaterial"), this.context.scene);
@@ -1912,10 +1813,6 @@ export class DrawHelper extends DrawHelperCore {
         return safeOptions;
     }
 
-    /**
-     * What the worker meshes a shape with: the options it can receive, with the iso curve counts
-     * only when the iso curves are drawn and the surface analysis only when the faces are.
-     */
     private getMeshingOptions<T extends Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">>(inputs: T): Omit<T, "faceMaterial"> {
         return {
             ...this.getSafeWorkerOptions(inputs),

@@ -1,11 +1,4 @@
 #!/usr/bin/env node
-// Regenerates src/guides.generated.ts from the public guide pages, so `get_guide` serves the words
-// the pages show and nothing else. `--check` compares instead of writing; the test beside the
-// generated file asserts the same equality, so a page edit without a regeneration fails twice.
-// Section ids must be unique across the pages; the splitter refuses a repeated one.
-//
-//   npm run sync:guides          (builds first: the splitter is shared with the package)
-//   npm run check:guides
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

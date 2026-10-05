@@ -1,4 +1,4 @@
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 
 /** Per face of a shape, in `shapes.face.getFaces` order, the names references find it by, sorted. */
 export type FaceNames = string[][];
@@ -51,12 +51,18 @@ export function give(given: Map<number, string[]>, faces: readonly number[], ...
     }
 }
 
+/** A face name without its copy marks, and the copy each pattern level marks it with. */
+export interface NameParts {
+    base: string;
+    copies: Map<string, number>;
+}
+
 /**
  * A face name taken apart, by the grammar `feature:role[:from]` followed by one `@copier#index` for
  * each pattern or mirror that copied the face, in the order they ran: the base and, by copier, the
  * index of the copy.
  */
-export function nameParts(name: string): { base: string; copies: Map<string, number> } {
+export function nameParts(name: string): NameParts {
     const [base, ...tags] = name.split("@");
     return {
         base: base!,

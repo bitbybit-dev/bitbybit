@@ -1,13 +1,14 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 describe("OCCT history twins", () => {
     let occt: OCCTService;

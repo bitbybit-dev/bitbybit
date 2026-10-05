@@ -10,7 +10,7 @@ import { Color3 } from '@babylonjs/core';
 import * as GUI from '@babylonjs/gui';
 import { GUI3DManager } from '@babylonjs/gui';
 import type { JSONPath } from 'jsonpath-plus';
-import * as MATERIALS from '@babylonjs/materials';
+import type * as MATERIALS from '@babylonjs/materials';
 import { NearMenu } from '@babylonjs/gui';
 import { SkyMaterial } from '@babylonjs/materials';
 import { Subject } from 'rxjs';

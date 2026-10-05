@@ -1,9 +1,12 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
-import { callByPath } from "@bitbybit-dev/base";
-import { FaceNames, facesCopied, nameOf } from "./names";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
+import { callByPath, messageOf } from "@bitbybit-dev/base";
+import type { FaceNames } from "./names";
+import { facesCopied, nameOf } from "./names";
 import type { OCCTService } from "../../occ-service";
-import { Rebinding, candidatesOf, rebindOf, recordHint, referenceHintOf } from "./hints";
+import type { BaseBitByBit } from "../../base";
+import type { Rebinding } from "./hints";
+import { candidatesOf, rebindOf, recordHint, referenceHintOf } from "./hints";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 
 /**
@@ -14,6 +17,7 @@ export interface ResolveContext {
     shape: TopoDS_Shape;
     names: FaceNames;
     occt: OCCTService;
+    base: BaseBitByBit;
     suppressed: ReadonlySet<string>;
     rebinding?: Rebinding | undefined;
 }
@@ -29,7 +33,7 @@ function filtered(kind: "faces" | "edges", found: number[], filter: Models.OCCT.
         if (isKernelTrap(error)) {
             throw error;
         }
-        throw new DesignProblem(pointer(path, "filter"), `the filter failed: ${error instanceof Error ? error.message : String(error)}`);
+        throw new DesignProblem(pointer(path, "filter"), `the filter failed: ${messageOf(error)}`);
     }
 }
 
@@ -75,12 +79,12 @@ export function resolveFaces(reference: Models.OCCT.DesignFaceReference, context
     const rebinding = context.rebinding;
     if (problem === undefined) {
         if (rebinding?.hints !== undefined) {
-            recordHint(rebinding.hints, path, referenceHintOf(found, context.shape, context.names, context.occt));
+            recordHint(rebinding.hints, path, referenceHintOf(found, context.shape, context.names, context));
         }
         return found;
     }
     if (rebinding !== undefined && reference.hint !== undefined) {
-        const candidates = candidatesOf(reference.hint, context.shape, context.names, context.occt);
+        const candidates = candidatesOf(reference.hint, context.shape, context.names, context);
         const needed = reference.count ?? reference.hint.faces.length;
         const rebound = rebindOf(candidates, needed);
         if (rebound !== undefined && rebinding.mode === "report") {

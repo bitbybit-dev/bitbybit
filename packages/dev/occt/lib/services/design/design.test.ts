@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
@@ -634,6 +635,20 @@ describe("OCCT design documents", () => {
             ]);
         });
 
+        it("should fail a circle sketched on a frame whose direction runs along its normal", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [{ id: "s", type: "sketch", on: { frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [0, 0, 3] } }, pen: [{ type: "circle", centre: [0, 0], radius: 1 }] }],
+            };
+
+            // Act
+            const report = occt.design.build({ document }).report;
+
+            // Assert
+            expect(report.map(entry => [entry.status, entry.messages])).toEqual([["failed", ["/features/0: the sketch's direction runs along its normal"]]]);
+        });
+
         it("should fail a sketch the pen cannot draw and skip the sweep that reads it", () => {
             // Arrange
             const document: Document = {
@@ -1180,6 +1195,19 @@ describe("OCCT design documents", () => {
             expect(refusedDocument).toThrow("The design document has a problem: /features/2/body: \"nothing\" is not a body made by an earlier feature, or it was used up.");
             expect(refusedOverride).toThrow(InputError);
             expect(refusedOverride).toThrow("/parameters/nope: \"nope\" is not a parameter of this document.");
+        });
+
+        it("should list the first five problems of a document and say there are more", () => {
+            // Arrange
+            const rounding = (index: number): Models.OCCT.DesignFeature => ({ id: `round${index}`, type: "fillet", body: `nothing${index}`, radius: 1, edges: { between: [{ of: "plate", role: "end" }, { of: "plate", role: "side" }], count: 4 } });
+            const broken = plate([0, 1, 2, 3, 4, 5].map(rounding));
+
+            // Act
+            const refused = (): unknown => occt.design.build({ document: broken });
+
+            // Assert
+            expect(refused).toThrow(/^The design document has 6 problems: \/features\/2\/body: .*\/features\/6\/body: [^;]*; and more\.$/);
+            expect(refused).not.toThrow(/\/features\/7\//);
         });
     });
 

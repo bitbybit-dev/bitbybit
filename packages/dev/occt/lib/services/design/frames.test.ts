@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -91,7 +92,7 @@ describe("frames on faces", () => {
         ]);
     });
 
-    it("should ask for a direction on a face that is not square to a world axis, and take one given", () => {
+    it("should ask for a direction on a face that is not square to a world axis, and take one given, laid into the face", () => {
         // Arrange
         const wedge = (direction?: Models.OCCT.DesignPoint): Document => ({
             schemaVersion: 1,
@@ -105,11 +106,13 @@ describe("frames on faces", () => {
         // Act
         const without = occt.design.build({ document: wedge() });
         const given = occt.design.build({ document: wedge([0, 0, 1]) });
+        const leaning = occt.design.build({ document: wedge([1, 1, 1]) });
 
         // Assert
         expect(without.issues).toEqual([{ path: "/parts/0/connectors/0/direction", message: "the face is not square to a world axis, so its frame needs a direction" }]);
         expect(without.parts[0]!.connectors).toEqual([]);
         expect(given.parts[0]!.connectors[0]!.frame.direction).toEqual([0, 0, 1]);
+        expect(leaning.parts[0]!.connectors[0]!.frame.direction.map(value => Math.round(value * 1e9) / 1e9 + 0)).toEqual([0, 0, 1]);
         expect(given.parts[0]!.connectors[0]!.frame.origin.map(value => Math.round(value * 1e9) / 1e9)).toEqual([5, 5, 0]);
     });
 
@@ -172,18 +175,21 @@ describe("frames on faces", () => {
             expect(drilled.map(connector => rounded(connector.frame.origin))).toEqual([[10, 5, 10], [30, 5, 10]]);
         });
 
-        it("should report an axis on a face that is not a cylinder, and refuse two sources of an origin and a set over positions without ids", () => {
+        it("should report an axis on a face that is not a cylinder or that runs along the face it should cross, and refuse two sources of an origin and a set over positions without ids", () => {
             // Arrange
             const flat = plate([{ id: "bad", on: top, axis: { of: "plate", role: "start", count: 1 } }], [holes]);
+            const alongFront = plate([{ id: "front", on: { of: "plate", role: "side", from: "base.front", count: 1 }, axis: { of: "holes", role: "wall", from: "left", count: 1 } }], [holes]);
             const unnamed: Models.OCCT.DesignFeature = { ...holes, at: [[10, 5], { id: "right", x: 30, y: 5 }] };
 
             // Act
             const built = occt.design.build({ document: flat });
+            const along = occt.design.build({ document: alongFront });
             const both = occt.design.validate({ document: plate([{ id: "two", on: top, origin: [0, 0, 0], axis: { of: "holes", role: "wall", from: "left", count: 1 } }], [holes]) });
             const loose = occt.design.validate({ document: plate([{ id: "set", on: top, axis: { of: "holes", role: "wall" } }], [unnamed]) });
 
             // Assert
             expect(built.issues).toEqual([{ path: "/parts/0/connectors/0/axis", message: "a cylindrical face is needed here, and this one is a plane" }]);
+            expect(along.issues).toEqual([{ path: "/parts/0/connectors/0/axis", message: "the axis runs along the face it should cross" }]);
             expect(both).toEqual([{ path: "/parts/0/connectors/0/axis", message: "a connector's origin comes from one of origin, axis and centre" }]);
             expect(loose).toEqual([{ path: "/parts/0/connectors/0/axis", message: "a connector on every wall of \"holes\" is named by the ids of its positions: give each position of \"holes\" one" }]);
         });

@@ -1,4 +1,4 @@
-import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "./api/inputs";
 import { OCCTBooleans } from "./services/booleans";
 import { OCCTGeom } from "./services/geom/geom";
@@ -15,14 +15,14 @@ import { OCCTDraft } from "./services/draft/draft";
 import { OCCTSelect } from "./services/select/select";
 import { OCCTAnalysis } from "./services/analysis/analysis";
 import { OCCTFeatures } from "./services/features/features";
-import { OccHelper } from "./occ-helper";
+import type { OccHelper } from "./occ-helper";
 import { OCCTShapeFix } from "./services/shape-fix";
 import { OCCTPath } from "./services/path";
 import { OCCTSVG } from "./services/svg";
 import { OCCTSketch } from "./services/sketch/sketch";
 import { OCCTDesign } from "./services/design/design";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "./api/resolved-inputs";
+import type * as Resolved from "./api/resolved-inputs";
 
 /**
  * The entry point to the OpenCascade kernel: every OCCT feature is reached through one of its
@@ -82,7 +82,7 @@ export class OCCTService {
         this.path = new OCCTPath(occ, och);
         this.sketch = new OCCTSketch(occ, och, this.shapes, this.operations, this.booleans);
         this.svg = new OCCTSVG(occ, och);
-        this.design = new OCCTDesign(occ, () => this);
+        this.design = new OCCTDesign(occ, () => this, och.base);
     }
 
     /**

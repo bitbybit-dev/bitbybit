@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { carryNames, copyNameOf, copyNames, facesCopied, facesNamed, give, nameOf, nameParts } from "./names";
 
 const historyOf = (faces: number[][]): Models.OCCT.ShapeHistory => ({

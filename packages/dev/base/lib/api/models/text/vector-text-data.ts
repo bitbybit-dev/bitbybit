@@ -1,5 +1,5 @@
 
-import { VectorCharData } from "./vector-char-data";
+import type { VectorCharData } from "./vector-char-data";
 
 export class VectorTextData {
     constructor(width?: number, height?: number, chars?: VectorCharData[]) {

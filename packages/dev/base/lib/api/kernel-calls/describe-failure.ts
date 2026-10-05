@@ -1,4 +1,4 @@
-import { KernelFailureDetail, KernelFailureDetails, KernelFailureKind } from "./errors";
+import type { KernelFailureDetail, KernelFailureDetails, KernelFailureKind } from "./errors";
 
 /**
  * What a kernel worker reports when a call fails: the message a caller reads, whether the inputs
@@ -100,15 +100,10 @@ function inputText(key: string, value: unknown): string {
     }
 }
 
-/** Whether a thrown value is a WebAssembly trap, which leaves the kernel's memory in an unknown state. */
-function isTrap(error: unknown): boolean {
+function isWebAssemblyTrap(error: unknown): boolean {
     return error instanceof Error && error.name === "RuntimeError";
 }
 
-/**
- * The code and details of a `KernelOperationError`, whichever copy of the class threw it; undefined
- * for any other error, and for one whose code is not a string.
- */
 function namedFailure(error: unknown): { code: string; details: KernelFailureDetails | undefined } | undefined {
     if (!(error instanceof Error) || error.name !== "KernelOperationError") {
         return undefined;
@@ -124,10 +119,6 @@ function isDetail(value: unknown): value is KernelFailureDetail {
     return Array.isArray(value) && (value.every((item: unknown) => typeof item === "number") || value.every((item: unknown) => typeof item === "string"));
 }
 
-/**
- * A failure's details, when they are a plain record of strings, numbers, booleans and lists of
- * either, which is all that crosses to another thread and fills a template.
- */
 function checkedDetails(details: unknown): KernelFailureDetails | undefined {
     if (details === null || typeof details !== "object" || Array.isArray(details)) {
         return undefined;
@@ -142,8 +133,7 @@ function checkedDetails(details: unknown): KernelFailureDetails | undefined {
     return checked;
 }
 
-/** Ends a sentence with a full stop unless it already ends with one. */
-function sentence(text: string): string {
+function withFullStop(text: string): string {
     return /[.!?]$/.test(text) ? text : `${text}.`;
 }
 
@@ -174,12 +164,12 @@ export function describeKernelFailure(kernel: string, functionName: string, inpu
         const where = functionName ? ` while executing function '${functionName}'` : "";
         const entries = inputs !== null && typeof inputs === "object" && binaryText(inputs) === undefined ? Object.entries(inputs) : [];
         const props = entries.length > 0 ? ` Input values were: {${entries.map(([key, value]) => inputText(key, value)).join(", ")}}.` : "";
-        if (isTrap(error)) {
-            return { message: `${kernel} crashed${where}: ${sentence(errorText(error))}${props}`, kind: "crash", code: undefined, details: undefined, stack };
+        if (isWebAssemblyTrap(error)) {
+            return { message: `${kernel} crashed${where}: ${withFullStop(errorText(error))}${props}`, kind: "crash", code: undefined, details: undefined, stack };
         }
         const named = namedFailure(error);
         const text = named !== undefined && error instanceof Error ? error.message : errorText(error);
-        return { message: `${kernel} computation failed${where}: ${sentence(text)}${props}`, kind: "kernel", code: named?.code, details: named?.details, stack };
+        return { message: `${kernel} computation failed${where}: ${withFullStop(text)}${props}`, kind: "kernel", code: named?.code, details: named?.details, stack };
     } catch {
         const where = typeof functionName === "string" && functionName !== "" ? ` while executing function '${functionName}'` : "";
         return { message: `${kernel} computation failed${where}, and the failure could not be described.`, kind: "kernel", code: undefined, details: undefined, stack: undefined };

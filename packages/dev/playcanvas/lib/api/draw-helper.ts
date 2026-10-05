@@ -1,22 +1,19 @@
 
-import { Context } from "./context";
+import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
+import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf } from "@bitbybit-dev/core";
 import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
-import { JSCADText } from "@bitbybit-dev/jscad-worker";
-import { Vector, resolveDto } from "@bitbybit-dev/base";
-import { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
-import { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
-import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import type { JSCADText } from "@bitbybit-dev/jscad-worker";
+import type { Vector } from "@bitbybit-dev/base";
+import { messageOf, resolveDto } from "@bitbybit-dev/base";
+import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
+import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import * as pc from "playcanvas";
 import { DEFAULT_COLORS, CACHE_CONFIG } from "./constants";
-import * as Resolved from "./resolved-inputs";
+import type * as Resolved from "./resolved-inputs";
 
-/**
- * A float view over locked vertex buffer storage. PlayCanvas hands back either the raw buffer or
- * a typed view over it; both are read and written through one Float32Array on the same bytes.
- */
 function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
     if (ArrayBuffer.isView(locked)) {
         return new Float32Array(locked.buffer, locked.byteOffset, locked.byteLength / Float32Array.BYTES_PER_ELEMENT);
@@ -26,10 +23,8 @@ function float32ViewOf(locked: ArrayBuffer | ArrayBufferView): Float32Array {
 
 type PolylineEntity = Inputs.Draw.PolylineEntity;
 
-/** An entity drawn from looks, with where each face's triangles sit in each look's mesh, in render order. */
 type LookedEntity = pc.Entity & { faceRanges?: FaceRange[][] };
 
-/** A part of a design build, with the component path of each hardware instance. */
 type DesignPartEntity = pc.Entity & { designPart?: { part: string; paths: string[] } };
 
 interface DesignPartDrawn {
@@ -97,7 +92,7 @@ export class DrawHelper extends DrawHelperCore {
             return manifoldMeshContainer;
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
-            throw new Error(`Failed to draw manifolds or cross sections: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw manifolds or cross sections: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -109,7 +104,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
-            throw new Error(`Failed to draw manifold or cross section: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw manifold or cross section: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -121,7 +116,7 @@ export class DrawHelper extends DrawHelperCore {
             return this.handleDecomposedMesh(resolved, decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing OCCT shape:", error);
-            throw new Error(`Failed to draw OCCT shape: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw OCCT shape: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -141,7 +136,7 @@ export class DrawHelper extends DrawHelperCore {
             return shapesMeshContainer;
         } catch (error) {
             console.error("Error drawing OCCT shapes:", error);
-            throw new Error(`Failed to draw OCCT shapes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw OCCT shapes: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -182,7 +177,7 @@ export class DrawHelper extends DrawHelperCore {
             return s;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon mesh:", error);
-            throw new Error(`Failed to draw JSCAD mesh: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw JSCAD mesh: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -235,7 +230,7 @@ export class DrawHelper extends DrawHelperCore {
             return localOrigin;
         } catch (error) {
             console.error("Error drawing JSCAD solid or polygon meshes:", error);
-            throw new Error(`Failed to draw JSCAD meshes: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+            throw new Error(`Failed to draw JSCAD meshes: ${messageOf(error)}`, { cause: error });
         }
     }
 
@@ -513,15 +508,6 @@ export class DrawHelper extends DrawHelperCore {
         return group;
     }
 
-    /**
-     * Create a back face mesh with flipped normals and reversed winding order
-     * This is used for two-sided rendering where back faces have a different color
-     * @param meshDataConverted - Original mesh data
-     * @param backFaceColour - Color for the back face
-     * @param backFaceOpacity - Opacity for the back face
-     * @param zOffset - Depth bias to prevent z-fighting
-     * @returns Entity containing the back face mesh
-     */
     private createBackFaceMesh(
         meshDataConverted: { positions: number[]; indices: number[]; normals: number[]; uvs?: number[] | undefined }[],
         backFaceColour: string,
@@ -754,60 +740,23 @@ export class DrawHelper extends DrawHelperCore {
      */
     async drawDesignBuild(build: Models.OCCT.DesignBuildResult<Inputs.OCCT.TopoDSShapePointer>, drawOptions: Inputs.Draw.DrawOcctShapeOptions, previous?: pc.Entity): Promise<pc.Entity> {
         const options = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
-        const placements = partPlacementsOf(build);
-        const parts = new Map(build.parts.map(part => [part.id, part]));
-        const placed = [...placements.keys()].filter(id => parts.has(id));
         const state = previous ? this.designStates.get(previous) : undefined;
-        const signature = designSignatureOf(parts, placed, options);
-        if (previous && state && state.precision === options.precision && state.signature === signature && samePlacements(state.placements, placements)) {
-            this.poseDesign(state, placements);
+        const plan = designDrawPlanOf(build, options, state);
+        if (previous && state && plan.posesOnly) {
+            this.poseDesign(state, plan.placements);
             return previous;
         }
-        const meshes = new Map<string, Inputs.OCCT.DecomposedMeshDto>();
-        const keys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
-        if (state && state.precision === options.precision) {
-            for (const id of placed) {
-                const kept = state.meshes.get(keys.get(id)!);
-                if (kept) {
-                    meshes.set(id, kept);
-                }
-            }
-        }
-        const meshing = this.meshingTextOf(options);
-        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
-        for (const id of placed) {
-            const cacheKey = cacheKeys.get(id);
-            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
-            if (cached) {
-                meshes.set(id, cached);
-            }
-        }
+        const meshes = await designMeshesOf(plan, options, state, this.meshingTextOf(options), this.designMeshes, parts => this.meshShapesForLooks(parts.map(part => part.shape), options));
         const looks = designOptionsKeyOf(options);
         const kept = new Map(state && state.looks === looks && state.precision === options.precision
-            ? state.parts.filter(drawn => parts.has(drawn.part) && placements.has(drawn.part) && drawn.key === designPartKeyOf(parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
+            ? state.parts.filter(drawn => plan.parts.has(drawn.part) && plan.placements.has(drawn.part) && drawn.key === designPartKeyOf(plan.parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
             : []);
-        const missing = placed.filter(id => !meshes.has(id));
-        if (missing.length > 0) {
-            const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => {
-                const mesh = made[index]!;
-                const cacheKey = cacheKeys.get(id);
-                meshes.set(id, mesh);
-                if (cacheKey !== undefined) {
-                    this.designMeshes.set(cacheKey, mesh);
-                }
-            });
-        }
         const target = previous && state ? previous : this.newDesignRoot();
         if (state && target === previous) {
             this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
-        const drawnParts = this.fillDesign(target, parts, placements, placed, meshes, options, kept);
-        const keptMeshes = new Map(placed.flatMap(id => {
-            const mesh = meshes.get(id);
-            return mesh ? [[keys.get(id)!, mesh] as const] : [];
-        }));
-        this.designStates.set(target, { placements, meshes: keptMeshes, signature, looks, precision: options.precision, parts: drawnParts });
+        const drawnParts = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, kept);
+        this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, parts: drawnParts });
         return target;
     }
 
@@ -853,17 +802,12 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    /** The edges of a part as one line entity, each edge in the color its appearance gives it. */
     private partEdges(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): pc.Entity | undefined {
         const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
         const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), fallback);
         return this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors);
     }
 
-    /**
-     * One entity holding the faces of every look, one mesh and one mesh instance per look, and in
-     * `faceRanges` where each face's triangles sit in each look's index buffer.
-     */
     private lookedEntity(lookMeshes: readonly LookMesh[], faceOpacity: number, zOffset: number): pc.Entity {
         const drawn = lookMeshes.filter(look => look.indices.length > 0);
         const entity: LookedEntity = new pc.Entity(this.generateEntityId("lookedSurface"));
@@ -881,10 +825,6 @@ export class DrawHelper extends DrawHelperCore {
         return entity;
     }
 
-    /**
-     * The material of a look, its opacity times `faceOpacity`, cached like the plain face materials.
-     * Without a metalness or roughness of its own a look keeps the plain faces' finish.
-     */
     private lookMaterial(look: FaceLook, faceOpacity: number, zOffset: number): pc.StandardMaterial {
         const opacity = look.opacity * faceOpacity;
         return this.getOrCreateMaterial(`look:${look.color}:${look.metallic ?? "-"}:${look.roughness ?? "-"}:${look.emissive ?? "-"}:${look.emissiveStrength ?? "-"}`, opacity, zOffset, () => {
@@ -915,12 +855,6 @@ export class DrawHelper extends DrawHelperCore {
         return root;
     }
 
-    /**
-     * Each placed part as one entity whose looks and edges are mesh instances, all hardware
-     * instanced once per placement from one buffer of matrices, the `kept` ones as they were drawn.
-     * Each part entity's `designPart` gives the part and the component path of each instance, and
-     * its faces entity's `faceRanges` where each face's triangles are.
-     */
     private fillDesign(target: pc.Entity, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
         const device = this.context.app.graphicsDevice;
@@ -1246,13 +1180,6 @@ export class DrawHelper extends DrawHelperCore {
         return shapeGroup;
     }
 
-    /**
-     * Check if a polyline entity can be updated with new point data
-     * @param entity - Entity to check
-     * @param polylinePoints - New polyline points
-     * @param updatable - Whether updates are allowed
-     * @returns True if entity can be updated
-     */
     private canUpdatePolylineEntity(
         entity: pc.Entity | undefined, 
         polylinePoints: Inputs.Base.Vector3[][],
@@ -1269,13 +1196,6 @@ export class DrawHelper extends DrawHelperCore {
         return oldSignature === newSignature;
     }
 
-    /**
-     * Update an existing polyline entity with new positions and vertex colors
-     * @param entity - Entity to update
-     * @param linePositions - New line positions
-     * @param vertexColors - New colors, four bytes per vertex
-     * @returns True if update succeeded, false otherwise
-     */
     private updatePolylineEntityPositions(
         entity: pc.Entity, 
         linePositions: number[],
@@ -1299,11 +1219,6 @@ export class DrawHelper extends DrawHelperCore {
         }
     }
 
-    /**
-     * Compute line positions array from polyline points
-     * @param polylinesPoints - Array of polylines
-     * @returns Object containing flat array of line positions and segment counts per polyline
-     */
     private computeLinePositionsWithSegmentCounts(polylinesPoints: Inputs.Base.Vector3[][]): {
         positions: number[];
         segmentCounts: number[];
@@ -1327,22 +1242,6 @@ export class DrawHelper extends DrawHelperCore {
         return { positions: linePositions, segmentCounts };
     }
 
-    /**
-     * Create a new polyline entity with explicit colors (for arrow support)
-     *
-     * The width is accepted and not applied. A polyline here is drawn as `pc.PRIMITIVE_LINES`, and
-     * WebGL renders a GL line one pixel wide whatever width is asked for - so the parameter is
-     * carried to keep this path's signature the same as its siblings', and named to say it is unused
-     * rather than to imply an effect. Honouring a width would mean building the line as
-     * camera-facing ribbon geometry with a shader to expand it, which PlayCanvas has no equivalent
-     * of; `packages/dev/playcanvas/CLAUDE.md` records what that would take.
-     * @param linePositions - Line positions array
-     * @param _size - Line width, not applied; see above
-     * @param polylinePoints - Original polyline points for signature
-     * @param segmentCounts - Number of segments per polyline/arrow
-     * @param explicitColors - Explicit color for each polyline/arrow segment
-     * @returns New polyline entity with metadata
-     */
     private createPolylineEntityWithExplicitColors(
         linePositions: number[],
         _size: number,
@@ -1357,12 +1256,6 @@ export class DrawHelper extends DrawHelperCore {
         return entity;
     }
 
-    /**
-     * Compute per-vertex colors using explicit color array
-     * @param segmentCounts - Number of line segments per polyline/arrow
-     * @param explicitColors - Explicit color for each polyline/arrow
-     * @returns Flat array of RGBA values (0-255) for each vertex
-     */
     private computePolylineColorsWithExplicit(
         segmentCounts: number[],
         explicitColors: string[]
@@ -1386,13 +1279,6 @@ export class DrawHelper extends DrawHelperCore {
         return lineColors;
     }
 
-    /**
-     * Create line entity with explicit colors
-     * @param linePositions - Line positions array
-     * @param segmentCounts - Number of segments per polyline
-     * @param explicitColors - Explicit color for each segment group
-     * @returns Entity containing lines
-     */
     private createLineEntityWithExplicitColors(
         linePositions: number[],
         segmentCounts: number[],
@@ -1424,17 +1310,6 @@ export class DrawHelper extends DrawHelperCore {
         return lineEntity;
     }
 
-    /**
-     * Draw multiple polylines using PlayCanvas line primitives
-     * @param existingEntity - Optional existing entity to update
-     * @param polylinesPoints - Array of polylines
-     * @param updatable - Whether to attempt updates
-     * @param size - Line width. Not applied: a GL line is one pixel wide whatever this says.
-     * @param opacity - Line opacity
-     * @param colors - Line colors
-     * @param colorMapStrategy - Strategy for mapping colors to polylines
-     * @returns Entity containing rendered polylines, or undefined
-     */
     private drawPolylines(
         existingEntity: pc.Entity | undefined, 
         polylinesPoints: Inputs.Base.Vector3[][], 
@@ -1658,10 +1533,6 @@ export class DrawHelper extends DrawHelperCore {
         return safeOptions;
     }
 
-    /**
-     * What the worker meshes a shape with: the options it can receive, with the iso curve counts
-     * only when the iso curves are drawn and the surface analysis only when the faces are.
-     */
     private getMeshingOptions<T extends Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">>(inputs: T): Omit<T, "faceMaterial"> {
         return {
             ...this.getSafeWorkerOptions(inputs),
@@ -1671,10 +1542,6 @@ export class DrawHelper extends DrawHelperCore {
         };
     }
 
-    /**
-     * The material of faces colored by a surface analysis: the OCCT face material in white and reading
-     * vertex colors, so each vertex shows its own color, cached like the plain face materials.
-     */
     private getOrCreateAnalysisMaterial(alpha: number, zOffset: number): pc.StandardMaterial {
         return this.getOrCreateMaterial("#ffffff-analysis", alpha, zOffset, () => {
             const pbmat = new pc.StandardMaterial();
@@ -1690,27 +1557,11 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
-    /**
-     * Generate a unique entity ID with semantic naming
-     * @param type - The type of entity (e.g., 'manifoldMeshContainer', 'jscadMesh')
-     * @param parentId - Optional parent ID for hierarchical naming
-     * @returns Unique entity ID string
-     */
     private generateEntityId(type: string, parentId?: string): string {
         const id = `${this.instanceId}-${type}-${++this.entityIdCounter}`;
         return parentId ? `${parentId}/${id}` : id;
     }
 
-    /**
-     * Get or create a cached material with the specified properties
-     * Implements LRU-like eviction when cache is full
-     * @param hex - Hex color string
-     * @param alpha - Alpha value (0-1)
-     * @param zOffset - Z-offset value
-     * @param createFn - Function to create new material if not cached
-     * @param unlit - Whether the material is unlit (no lighting, for points/lines)
-     * @returns Cached or newly created material
-     */
     private getOrCreateMaterial(
         hex: string,
         alpha: number,
@@ -1762,13 +1613,6 @@ export class DrawHelper extends DrawHelperCore {
         console.log("DrawHelper disposed successfully");
     }
 
-    /**
-     * Wrap a polyline entity in a group container
-     * @param polylineEntity - The polyline entity to wrap
-     * @param existingGroup - Optional existing group for updates
-     * @param updatable - Whether this is an update operation
-     * @returns Group entity containing the polyline
-     */
     private wrapPolylineInGroup(
         polylineEntity: pc.Entity, 
         existingGroup?: pc.Entity,
@@ -1827,7 +1671,9 @@ export class DrawHelper extends DrawHelperCore {
         
         materialSet.forEach(ms => {
             const pointCount = ms.positions.length;
-            if (pointCount === 0) return;
+            if (pointCount === 0) {
+                return;
+            }
             
             const segments = pointCount > 1000 ? 4 : 8;
             
@@ -1846,10 +1692,6 @@ export class DrawHelper extends DrawHelperCore {
         return pointsGroup;
     }
 
-    /**
-     * Creates an instanced mesh for rendering multiple spheres with a single draw call.
-     * Uses PlayCanvas GPU hardware instancing via setInstancing().
-     */
     private createInstancedSphereMesh(
         name: string,
         positions: { position: Inputs.Base.Point3; index: number }[],
@@ -1916,9 +1758,6 @@ export class DrawHelper extends DrawHelperCore {
         return entity;
     }
 
-    /**
-     * Fallback method when graphics device is not available
-     */
     private createFallbackPointsMesh(
         name: string,
         positions: Inputs.Base.Point3[],

@@ -41,7 +41,7 @@ package outside the browser bundle conventions of `packages/dev/CLAUDE.md`:
 ## What the code does not say
 
 The source carries no comments, JSDoc included: `bitbybit/no-loose-comments` runs here with
-`allowJsDoc: false`, because nothing reads a comment in this package. A name, an extracted function
+`jsDoc: "none"`, because nothing reads a comment in this package. A name, an extracted function
 or a line here is where an explanation goes.
 
 - The index is addressed by exact version only, never by `latest`: `index-url.ts` refuses

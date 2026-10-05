@@ -7,7 +7,7 @@ import { VerbCurve } from "./curve";
 import { VerbSurface } from "./surface";
 import { MathBitByBit } from "@bitbybit-dev/base";
 import * as Inputs from "../../inputs";
-import { BaseTypes } from "../base-types";
+import type { BaseTypes } from "../base-types";
 
 const CROSSING: Inputs.Base.Point3[] = [[-5, 0, 0], [5, 0, 0]];
 const CROSSED: Inputs.Base.Point3[] = [[0, -5, 0], [0, 5, 0]];

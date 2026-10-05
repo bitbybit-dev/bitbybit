@@ -1,5 +1,3 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
 
 /**
  * A face and a grid of divisions for `shapes.face.subdivideToPoints`, `subdivideToNormals` and
@@ -261,10 +259,6 @@ export class FaceSubdivideToHexagonWiresDto<T> {
      * @step 1
      */
     nrHexagonsV?: number | undefined = 10;
-    // /**
-    //  * If true, we will create hexagons with flat tops on U direction
-    //  * @default false
-    //  */
     /**
      * When true, the hexagons turn a flat side toward the U direction; when false a corner points
      * that way.
@@ -385,10 +379,6 @@ export class FaceSubdivideToHexagonHolesDto<T> {
      * @step 1
      */
     nrHexagonsV?: number | undefined = 10;
-    // /**
-    //  * If true, we will create hexagons with flat tops on U direction
-    //  * @default false
-    //  */
     /**
      * When true, the hexagons turn a flat side toward the U direction; when false a corner points
      * that way.

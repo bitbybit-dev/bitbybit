@@ -1,10 +1,11 @@
-import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
-import { Base } from "../inputs";
+import type { GeometryHelper } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
+import type { Base } from "../inputs";
 import * as Inputs from "../inputs/jscad-inputs";
-import { MathBitByBit } from "@bitbybit-dev/base";
-import * as JSCAD from "@jscad/modeling";
+import type { MathBitByBit } from "@bitbybit-dev/base";
+import type * as JSCAD from "@jscad/modeling";
 import { asPath } from "./entity-narrowing";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Building JSCAD paths, the 2D polylines that walls are extruded along, offsets follow and filled

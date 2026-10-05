@@ -1,10 +1,11 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import { FrameAxes, squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
+import { squareFrame } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import { readKernelException } from "../../kernel-exception";
 import { checkedFrame, checkedNumber, checkedShape, checkedWhole } from "../base/input-checks";
 import { framesFromNumbers, numbersOfFrames } from "../base/frames";
@@ -257,11 +258,6 @@ export class OCCTAnalysisMeasure {
         return { radius: found.radius, point: found.point, support: supportType(found.support), index: found.index };
     }
 
-    /**
-     * Runs a kernel call that reads edge `index` of `shape`, turning an index past the shape's last
-     * edge into an input error that says how many edges there are.
-     * @ignore true
-     */
     private withEdgeInRange<T>(shape: TopoDS_Shape, index: number, call: () => T): T {
         try {
             return call();

@@ -1,25 +1,16 @@
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
-import * as GUI from "@babylonjs/gui";
+import type * as GUI from "@babylonjs/gui";
 import * as Inputs from "../../inputs";
 import { GlobalCDNProvider, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 type SkyboxMeshInputs = Pick<Resolved.BabylonScene.SkyboxFromTextureDto,
     "size" | "blur" | "environmentIntensity" | "hideSkybox" | "enableGroundProjection" | "projectedGroundRadius" | "projectedGroundHeight">;
 
-/**
- * A projected ground only reads lights for their shadows, yet every scene light takes one of the
- * material's light slots; the default of four drops the shadow of the fifth light.
- */
 const PROJECTED_GROUND_MAX_LIGHTS = 8;
 
-/**
- * The PBR skybox BabylonJS's `scene.createDefaultSkybox(texture, true, size, blur)` builds, made here
- * so a skybox does not need that helper: it is registered together with the VR and XR experience
- * helpers, which a bundle that only views models would otherwise have to ship.
- */
 function createPbrSkybox(scene: BABYLON.Scene, texture: BABYLON.BaseTexture | undefined, inputs: SkyboxMeshInputs): BABYLON.Mesh | null {
     if (!texture) {
         BABYLON.Logger.Warn("Can not create default skybox without environment texture.");

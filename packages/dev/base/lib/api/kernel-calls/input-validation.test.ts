@@ -1,8 +1,10 @@
 import { describe, it, expect, afterEach, beforeEach, vi } from "vitest";
-import { constraintKinds as k, DtoConstraints, NumberBounds } from "./constraints";
-import { checkStructure, InputIssue, InputIssueReport, prepareKernelCall, reportInputIssues, ruleBook, setInputIssueSink, unknownProperties, validateInputs } from "./input-validation";
+import type { DtoConstraints, NumberBounds } from "./constraints";
+import { constraintKinds as k } from "./constraints";
+import type { InputIssue, InputIssueReport } from "./input-validation";
+import { checkStructure, prepareKernelCall, reportInputIssues, ruleBook, setInputIssueSink, unknownProperties, validateInputs } from "./input-validation";
 import { custom, defineRules, lessThan } from "./input-rules";
-import { DtoRegistry } from "./resolve-dto";
+import type { DtoRegistry } from "./resolve-dto";
 
 class BoxDto {
     width?: number | undefined = 1;

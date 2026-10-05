@@ -1,14 +1,12 @@
-import { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
-import * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
 import { historiesFromKernel } from "../base/history";
 import { numbersOfFrames } from "../base/frames";
-import {
-    checkedChoice, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedWhole, checkedWithin,
-} from "../base/input-checks";
+import { checkedChoice, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedWhole, checkedWithin } from "../base/input-checks";
 
 const RADIANS_PER_DEGREE = Math.PI / 180;
 
@@ -18,14 +16,11 @@ const EXTENTS: readonly Inputs.OCCT.featureExtentEnum[] = [
     Inputs.OCCT.featureExtentEnum.throughAll,
 ];
 
-/** How far a prism runs, as the kernel takes it: a length, a face to reach, or through all, one of them set. */
 type KernelExtent = [length: number, untilFace: number, throughAll: boolean];
 
-/** What the kernel's hole drilling takes, in its order. */
 type DrillArguments = [shape: TopoDS_Shape, frames: number[], diameter: number, depth: number,
     counterboreDiameter: number, counterboreDepth: number, countersinkDiameter: number, countersinkAngle: number, tipAngle: number];
 
-/** What the kernel's boss and pocket take, in their order. */
 type PrismArguments = [shape: TopoDS_Shape, profile: TopoDS_Shape, sketchFace: number, direction: Inputs.Base.Vector3,
     length: number, untilFace: number, throughAll: boolean];
 
@@ -542,7 +537,6 @@ export class OCCTFeatures {
         return { shape: this.actual(made.shape), histories: historiesFromKernel(made.histories) };
     }
 
-    /** The kernel's arguments for drilling, each checked. */
     private drillArguments(inputs: Resolved.OCCT.HolesDto<TopoDS_Shape>, mouth: () => [number, number, number, number]): DrillArguments {
         const shape = checkedShape(inputs.shape);
         const frames = checkedFrames(inputs.frames, "frames");
@@ -565,7 +559,6 @@ export class OCCTFeatures {
         return { shape: this.actual(made.shape), histories: historiesFromKernel(made.histories) };
     }
 
-    /** The kernel's arguments for a boss or a pocket, each checked. */
     private prismArguments(inputs: Resolved.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face>): PrismArguments {
         const shape = checkedShape(inputs.shape);
         const profile = checkedShape(inputs.profile, "profile");
@@ -618,7 +611,6 @@ export class OCCTFeatures {
         }
     }
 
-    /** The kernel's three extent arguments for the extent the caller chose, the value it needs checked. */
     private extentOf(inputs: { extent: unknown; length: unknown; untilFaceIndex: unknown }): KernelExtent {
         switch (checkedChoice(inputs.extent, EXTENTS, "extent")) {
             case Inputs.OCCT.featureExtentEnum.untilFace:
@@ -630,10 +622,6 @@ export class OCCTFeatures {
         }
     }
 
-    /**
-     * The kernel's result as the kind of shape it is, or the solid of a compound that holds nothing
-     * but that solid, as the booleans give it; the kernel's handle is released.
-     */
     private actual(made: TopoDS_Shape): TopoDS_Shape {
         const solid = this.loneSolidOf(made);
         const shape = this.och.converterService.getActualTypeOfShape(solid ?? made);
@@ -642,7 +630,6 @@ export class OCCTFeatures {
         return shape;
     }
 
-    /** The one solid a compound holds, however deeply nested, when it holds nothing else. */
     private loneSolidOf(made: TopoDS_Shape): TopoDS_Shape | undefined {
         let child: TopoDS_Shape | undefined;
         let parent = made;

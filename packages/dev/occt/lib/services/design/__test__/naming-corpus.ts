@@ -1,5 +1,5 @@
-import * as Models from "../../../api/models";
-import type { BenchmarkCase, FaceIntent } from "./benchmark";
+import type * as Models from "../../../api/models";
+import type { BenchmarkCase, FaceIntent } from "./naming-benchmark";
 
 type Part = Models.OCCT.DesignPartDocument;
 type Feature = Models.OCCT.DesignFeature;
@@ -439,7 +439,6 @@ const turnedAndMoved: BenchmarkCase = {
     ],
 };
 
-/** The corpus: each case a scenario from the literature on persistent naming or a known failure mode, rebuilt as a document. */
 export const NAMING_CORPUS: readonly BenchmarkCase[] = [
     bossOnPad,
     splitBySlot,

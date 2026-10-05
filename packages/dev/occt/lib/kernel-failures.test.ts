@@ -1,11 +1,13 @@
 import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import { KernelOperationError } from "@bitbybit-dev/base";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Wire } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "./occ-helper";
 import { VectorHelperService } from "./api/vector-helper.service";
 import { ShapesHelperService } from "./api/shapes-helper.service";
 import { OCCTService } from "./occ-service";
-import { OCCT_FAILURES, OcctFailureCode, occtFailure } from "./kernel-failures";
+import type { OcctFailureCode } from "./kernel-failures";
+import { OCCT_FAILURES, occtFailure } from "./kernel-failures";
 
 type Builder =
     | "BRepFilletAPI_MakeFillet"
@@ -103,7 +105,9 @@ describe("OCCT operations the kernel cannot complete", () => {
     });
 
     afterEach(() => {
-        while (restores.length) restores.pop()!();
+        while (restores.length) {
+            restores.pop()!();
+        }
         vi.restoreAllMocks();
     });
 

@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as BABYLON from "@babylonjs/core";
 import * as SERIALIZERS from "@babylonjs/serializers";
-import { createHeadlessScene, addShadowGenerator, HeadlessScene } from "../../__test__/headless";
+import type { HeadlessScene } from "../../__test__/headless";
+import { createHeadlessScene, addShadowGenerator } from "../../__test__/headless";
 import { BabylonIO } from "./io";
 import * as Inputs from "../../inputs";
 

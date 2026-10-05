@@ -1,7 +1,5 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import * as Models from "../../models";
-import { designRebindEnum } from "./enums";
+import type * as Models from "../../models";
+import type { designRebindEnum } from "./enums";
 
 /**
  * A design document, with the documents an assembly places, for `design.validate`, which checks them

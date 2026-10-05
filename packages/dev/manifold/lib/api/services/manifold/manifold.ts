@@ -1,10 +1,10 @@
-import * as Manifold3D from "manifold-3d";
+import type * as Manifold3D from "manifold-3d";
 import { ManifoldShapes } from "./manifold-shapes";
 import { ManifoldBooleans } from "./manifold-booleans";
 import { ManifoldOperations } from "./manifold-operations";
 import { ManifoldTransforms } from "./manifold-transforms";
 import { ManifoldEvaluate } from "./manifold-evaluate";
-import * as Inputs from "../../inputs";
+import type * as Inputs from "../../inputs";
 
 /**
  * Solids in the Manifold kernel: `shapes` builds cubes, spheres, cylinders and solids from meshes,

@@ -10,7 +10,7 @@ import { DEFAULT_COLORS } from "../constants";
 import { Context } from "../context";
 import { DrawHelper } from "../draw-helper";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 import { BabylonNode } from "./babylon/node";
 import { Draw } from "./draw";
 
@@ -333,10 +333,11 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(box!.metadata).toEqual(expect.objectContaining({ part: "box-1", paths: ["box0"] }));
         });
 
-        it("should only move the instances when redrawn with the same parts at the same paths", async () => {
+        it("should only move the instances when redrawn with the same parts at the same paths, leaving each mesh's metadata as it was", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
             const children = drawn.getChildMeshes(true);
+            const metadata = children.map(child => child.metadata);
 
             // Act
             const redrawn = await draw.drawAnyAsync({ entity: buildOf([5, 15], [25]), options, babylonMesh: drawn });
@@ -345,6 +346,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(1);
             expect(redrawn.getChildMeshes(true)).toEqual(children);
+            expect(redrawn.getChildMeshes(true).every((child, index) => child.metadata === metadata[index])).toBe(true);
             const [box, pin] = surfacesOf(redrawn);
             expect(instanceMatrices(box!)[1]).toEqual(at(15));
             expect(instanceMatrices(pin!)[0]).toEqual(at(25));

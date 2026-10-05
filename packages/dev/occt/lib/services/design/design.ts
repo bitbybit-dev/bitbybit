@@ -1,10 +1,11 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { occtDtoRegistry } from "../../api/dto-registry";
 import type { OCCTService } from "../../occ-service";
+import type { BaseBitByBit } from "../../base";
 import { DesignCache, release } from "./cache";
 import { hintedDocument } from "./hints";
 import { runAssembly } from "./assembly";
@@ -16,10 +17,15 @@ import { probeRounding } from "./probe";
 import { DesignProblem, isKernelTrap } from "./problems";
 import { runDesign, runFeatures } from "./runner";
 import { partStructureOf } from "./export-structure";
-import { DesignTrace } from "./state";
+import type { DesignTrace } from "./state";
 import { typescriptOf } from "./typescript-export";
+import type { ParameterChoice } from "./values";
 
 const CACHE_CAPACITY = 256;
+
+const MAX_PROBE_ATTEMPTS = 64;
+
+const PROBLEMS_LISTED = 5;
 
 /**
  * Builds parametric parts and assemblies kept as data: a part document holds typed parameters,
@@ -41,6 +47,7 @@ export class OCCTDesign {
     constructor(
         private readonly occ: BitbybitOcctModule,
         private readonly service: () => OCCTService,
+        private readonly base: BaseBitByBit,
     ) {}
 
     /**
@@ -126,7 +133,7 @@ export class OCCTDesign {
      */
     build(inputs: Inputs.OCCT.DesignBuildDto<TopoDS_Shape>): Models.OCCT.DesignBuildResult<TopoDS_Shape> {
         this.refuseProblems(inputs.document, inputs.documents);
-        const context = { occt: this.service(), occ: this.occ, cache: this.cache, assets: inputs.assets, rebind: inputs.rebind === Inputs.OCCT.designRebindEnum.report ? "report" as const : "never" as const, outcomes: inputs.outcomes, sketches: inputs.sketches === true };
+        const context = { occt: this.service(), occ: this.occ, base: this.base, cache: this.cache, assets: inputs.assets, rebind: inputs.rebind === Inputs.OCCT.designRebindEnum.report ? "report" as const : "never" as const, outcomes: inputs.outcomes, sketches: inputs.sketches === true };
         const document = inputs.document;
         if (document.kind === "assembly") {
             const { library } = libraryOf<Models.OCCT.DesignDocument>(inputs.documents);
@@ -174,7 +181,7 @@ export class OCCTDesign {
         const hints = new Map<string, Models.OCCT.DesignReferenceHint | null>();
         const cache = new DesignCache(0);
         try {
-            const built = this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }));
+            const built = this.inputProblems(() => runDesign(document, this.choiceOf(inputs), { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets, hints, outcomes: inputs.outcomes }));
             built.parts.forEach(part => release(part.shape));
         } finally {
             cache.clear();
@@ -225,11 +232,11 @@ export class OCCTDesign {
         const trace = new Map<string, DesignTrace>();
         try {
             return this.inputProblems(() => {
-                const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, cache, assets: inputs.assets }, trace);
+                const { run, report } = runFeatures(document, choice, { occt: this.service(), occ: this.occ, base: this.base, cache, assets: inputs.assets }, trace);
                 const broken = report.filter(entry => entry.status === "failed" || entry.status === "skipped");
                 if (broken.length > 0) {
-                    const listed = broken.slice(0, 5).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
-                    throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > 5 ? "; and more" : ""}.`, "document");
+                    const listed = broken.slice(0, PROBLEMS_LISTED).map(entry => `"${entry.id}": ${entry.messages.join("; ")}`).join("; ");
+                    throw new InputError(`The design document does not build with these values, so it has no code: ${listed}${broken.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
                 }
                 return typescriptOf(document, run, trace, choice);
             });
@@ -270,22 +277,22 @@ export class OCCTDesign {
         if (document.kind === "assembly") {
             throw new InputError("A fillet is probed in a part document; an assembly document has no features.", "document");
         }
-        if (!Number.isInteger(resolved.maxAttempts) || resolved.maxAttempts < 1 || resolved.maxAttempts > 64) {
-            throw new InputError(`maxAttempts is a whole number from 1 to 64, not ${resolved.maxAttempts}.`, "maxAttempts");
+        if (!Number.isInteger(resolved.maxAttempts) || resolved.maxAttempts < 1 || resolved.maxAttempts > MAX_PROBE_ATTEMPTS) {
+            throw new InputError(`maxAttempts is a whole number from 1 to ${MAX_PROBE_ATTEMPTS}, not ${resolved.maxAttempts}.`, "maxAttempts");
         }
-        const context = { occt: this.service(), occ: this.occ, cache: this.cache, assets: resolved.assets };
+        const context = { occt: this.service(), occ: this.occ, base: this.base, cache: this.cache, assets: resolved.assets };
         return this.inputProblems(() => probeRounding(document, this.choiceOf(resolved), context, resolved.feature, resolved.maxAttempts));
     }
 
-    private choiceOf(inputs: { configuration?: string | undefined; parameters?: Record<string, number | string | boolean> | undefined }): { configuration: string | undefined; overrides: Readonly<Record<string, number | string | boolean>> | undefined } {
+    private choiceOf(inputs: Pick<Inputs.OCCT.DesignBuildDto<unknown>, "configuration" | "parameters">): ParameterChoice {
         return { configuration: inputs.configuration === "" ? undefined : inputs.configuration, overrides: inputs.parameters };
     }
 
     private refuseProblems(document: Models.OCCT.DesignDocument, documents: Models.OCCT.DesignDocument[] | undefined): void {
         const issues = this.validate({ document, documents });
         if (issues.length > 0) {
-            const listed = issues.slice(0, 5).map(issue => `${issue.path === "" ? "/" : issue.path}: ${issue.message}`).join("; ");
-            throw new InputError(`The design document has ${issues.length === 1 ? "a problem" : `${issues.length} problems`}: ${listed}${issues.length > 5 ? "; and more" : ""}.`, "document");
+            const listed = issues.slice(0, PROBLEMS_LISTED).map(issue => `${issue.path === "" ? "/" : issue.path}: ${issue.message}`).join("; ");
+            throw new InputError(`The design document has ${issues.length === 1 ? "a problem" : `${issues.length} problems`}: ${listed}${issues.length > PROBLEMS_LISTED ? "; and more" : ""}.`, "document");
         }
     }
 

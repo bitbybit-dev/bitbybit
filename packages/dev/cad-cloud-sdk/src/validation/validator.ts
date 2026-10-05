@@ -20,11 +20,15 @@ const validators = new Map<string, Validator>();
 
 function getValidator(schemaName: string): Validator | undefined {
     const cached = validators.get(schemaName);
-    if (cached) return cached;
+    if (cached) {
+        return cached;
+    }
 
     const defs: Readonly<Record<string, unknown>> = schemaBundle.$defs;
     const def = defs[schemaName];
-    if (!def) return undefined;
+    if (!def) {
+        return undefined;
+    }
 
     const rootSchema: Schema = {
         $schema: "https://json-schema.org/draft/2020-12/schema",

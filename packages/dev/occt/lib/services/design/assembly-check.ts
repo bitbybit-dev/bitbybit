@@ -1,10 +1,13 @@
-import * as Models from "../../api/models";
-import { DtoRegistry } from "@bitbybit-dev/base";
-import { DOCUMENT_KEYS, Known, checkBoolean, checkFrame, checkHeader, checkNumber, checkParameters, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
+import type * as Models from "../../api/models";
+import type { DtoRegistry } from "@bitbybit-dev/base";
+import { isRecord } from "@bitbybit-dev/base";
+import type { Known } from "./document-check";
+import { DOCUMENT_KEYS, checkBoolean, checkFrame, checkHeader, checkNumber, checkParameters, checkProperties, checkSwitch, documentIssues, knownFor, lengthUnitOf, oneOf, recorderOf } from "./document-check";
 import { DesignProblem, pointer } from "./problems";
-import { checkIdList, checkKeys, checkObject, checkText, isRecord } from "./structure";
+import { checkIdList, checkKeys, checkObject, checkText } from "./structure";
 import { isExpressionObject, parameterTypeOf } from "./values";
-import { DesignLibrary, sourceEntry, sourceOf } from "./library";
+import type { DesignLibrary } from "./library";
+import { sourceEntry, sourceOf } from "./library";
 import { connectorIdsOf } from "./connectors";
 
 function idsOf(value: unknown): string[] {
@@ -55,11 +58,6 @@ function checkSource(value: unknown, path: string, known: Known, library: Design
     Object.entries(isRecord(parameters) ? parameters : {}).forEach(([name, given]) => checkSourceValue(name, given, declaredParameters[name], pointer(path, "parameters", name), known));
 }
 
-/**
- * A value a source gives a parameter, read by that parameter's kind: text as written or `{ expr }`
- * for a text or choice parameter, an option of a choice, and a number, a boolean or an expression
- * over this assembly's parameters for the others.
- */
 function checkSourceValue(name: string, given: unknown, declared: unknown, path: string, known: Known): void {
     const type = parameterTypeOf(declared);
     if (type === "text" || type === "choice") {
@@ -84,10 +82,6 @@ function checkSourceValue(name: string, given: unknown, declared: unknown, path:
     }
 }
 
-/**
- * The connectors a component can be fastened by: the ones its source part declares, or the ones its
- * source assembly publishes; undefined when its document is not given or names no parts.
- */
 function connectorsOf(component: Record<string, unknown>, library: DesignLibrary): string[] | undefined {
     const source = isRecord(component["source"]) ? component["source"] : {};
     const entry = sourceOf(library, source);
@@ -104,7 +98,6 @@ function isAssemblySource(component: Record<string, unknown> | undefined, librar
     return sourceOf(library, component?.["source"])?.document["kind"] === "assembly";
 }
 
-/** What each type of joint lets move. */
 const FREE: Readonly<Record<string, readonly string[]>> = { fastened: [], revolute: ["angle"], slider: ["offset"], cylindrical: ["angle", "offset"] };
 
 function checkTarget(to: unknown, moved: string, path: string, known: Known, library: DesignLibrary, byId: ReadonlyMap<string, Record<string, unknown>>): void {
@@ -195,9 +188,13 @@ function checkJoint(value: unknown, path: string, known: Known, library: DesignL
     }
 }
 
-/** Checks the joints, and gives the joint that moves each component, by component id, with its position. */
-function checkJoints(joints: unknown, known: Known, library: DesignLibrary, byId: ReadonlyMap<string, Record<string, unknown>>, record: (check: () => void) => void): Map<string, { joint: Record<string, unknown>; index: number }> {
-    const moving = new Map<string, { joint: Record<string, unknown>; index: number }>();
+interface MovingJoint {
+    joint: Record<string, unknown>;
+    index: number;
+}
+
+function checkJoints(joints: unknown, known: Known, library: DesignLibrary, byId: ReadonlyMap<string, Record<string, unknown>>, record: (check: () => void) => void): Map<string, MovingJoint> {
+    const moving = new Map<string, MovingJoint>();
     if (joints === undefined) {
         return moving;
     }
@@ -263,11 +260,6 @@ function checkPublished(connectors: unknown, library: DesignLibrary, byId: Reado
     }));
 }
 
-/**
- * Checks how a component is placed on every member of a set: by a connector its source has, onto a
- * connector or a set of connectors of another component placed once, with a joint's flip, angle and
- * offset.
- */
 function checkReplicate(component: Record<string, unknown>, path: string, known: Known, library: DesignLibrary, byId: ReadonlyMap<string, Record<string, unknown>>): void {
     const replicate = checkObject(component["replicate"], DOCUMENT_KEYS.replicate, path, false, "replicate { connector, to, flip?, angle?, offset? }");
     const moved = String(component["id"]);
@@ -303,7 +295,7 @@ function checkReplicate(component: Record<string, unknown>, path: string, known:
     }
 }
 
-function checkJointLoops(moving: ReadonlyMap<string, { joint: Record<string, unknown>; index: number }>): void {
+function checkJointLoops(moving: ReadonlyMap<string, MovingJoint>): void {
     const targetOf = (id: string): string | undefined => {
         const to = moving.get(id)?.joint["to"];
         return isRecord(to) && typeof to["component"] === "string" ? to["component"] : undefined;

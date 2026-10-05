@@ -1,15 +1,19 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
-import { DesignOutcome, hashText, stableJson } from "./cache";
+import { messageOf } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
+import type { DesignOutcome } from "./cache";
+import { hashText, stableJson } from "./cache";
 import type { RebindEntry } from "./hints";
-import { DesignPlan, DesignRun, DesignRunContext, DesignTrace, SketchState, bodyKey, sketchKey } from "./state";
+import type { DesignPlan, DesignRun, DesignRunContext, DesignTrace, SketchState } from "./state";
+import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
 import { bodyPlan, operationPlan, sketchPlan, sweepPlan } from "./steps";
 import { DesignPending, DesignProblem, isKernelTrap, pointer } from "./problems";
 import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";
-import { ParameterChoice, parameterValues, parametersIn, truthOf } from "./values";
+import type { ParameterChoice } from "./values";
+import { parameterValues, parametersIn, truthOf } from "./values";
 
 type Feature = Models.OCCT.DesignFeature;
 
@@ -70,8 +74,13 @@ function parametersUsed(feature: Feature, parameters: DesignRun["parameters"]): 
     return [...parametersIn(feature, parameters)].sort().map(name => `${name}=${JSON.stringify(parameters.get(name))}`).join(",");
 }
 
-function stateOf(key: string, run: DesignRun): { hash: string; reads: Set<string> } {
-    return key.startsWith("body:") ? run.bodies.get(key.slice(5))! : run.sketches.get(key.slice(7))!;
+interface KeyState {
+    hash: string;
+    reads: Set<string>;
+}
+
+function stateOf(key: string, run: DesignRun): KeyState {
+    return isBodyKey(key) ? run.bodies.get(nameInKey(key))! : run.sketches.get(nameInKey(key))!;
 }
 
 function readsOf(feature: Feature, plan: DesignPlan, run: DesignRun): Set<string> {
@@ -83,11 +92,11 @@ function hashOf(feature: Feature, plan: DesignPlan, run: DesignRun): string {
     return hashText([stableJson(feature), parametersUsed(feature, run.parameters), plan.salt ?? "", `rebind:${run.rebinding.mode}`, ...inputs].join("\n"));
 }
 
-function messageOf(error: unknown): string {
+function reportMessageOf(error: unknown): string {
     if (error instanceof DesignProblem) {
         return `${error.path}: ${error.message}`;
     }
-    return error instanceof Error ? error.message : String(error);
+    return messageOf(error);
 }
 
 function usedUp(feature: Feature): string[] {
@@ -96,11 +105,11 @@ function usedUp(feature: Feature): string[] {
 
 function fail(feature: Feature, writes: string, run: DesignRun, reason: "failed" | "suppressed" | "pending"): void {
     run.failed.set(writes, reason);
-    if (writes.startsWith("sketch:")) {
+    if (isSketchKey(writes)) {
         run.sketches.delete(feature.id);
         return;
     }
-    const name = writes.slice(5);
+    const name = nameInKey(writes);
     run.bodies.delete(name);
     run.owners.set(feature.id, name);
     usedUp(feature).forEach(tool => run.bodies.delete(tool));
@@ -130,7 +139,7 @@ function apply(feature: Feature, writes: string, outcome: DesignOutcome, hash: s
         run.sketches.set(feature.id, { shape: outcome.shape, commands: outcome.commands, normal: outcome.normal, frame: outcome.frame, hash, reads, face });
         return;
     }
-    const name = writes.slice(5);
+    const name = nameInKey(writes);
     run.bodies.set(name, { shape: outcome.shape, names: outcome.names, hash, reads });
     if (!run.order.includes(name)) {
         run.order.push(name);
@@ -145,7 +154,6 @@ function apply(feature: Feature, writes: string, outcome: DesignOutcome, hash: s
     });
 }
 
-/** A feature's report with what its references' hints did: rebound references and offered repairs. */
 function withRebinds(report: Models.OCCT.DesignFeatureReport, entries: readonly RebindEntry[]): Models.OCCT.DesignFeatureReport {
     const rebound = entries.filter(entry => entry.kind === "rebound");
     const repairs = entries.filter(entry => entry.kind === "repair");
@@ -170,12 +178,12 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
             if (makesItsOwn(feature)) {
                 fail(feature, writes, run, "suppressed");
             } else {
-                parametersIn(feature.suppressed, run.parameters).forEach(name => run.bodies.get(writes.slice(5))?.reads.add(name));
+                parametersIn(feature.suppressed, run.parameters).forEach(name => run.bodies.get(nameInKey(writes))?.reads.add(name));
             }
         } else {
             const plan = planOf(feature, path, run);
             const missing = plan.reads.find(key => run.failed.has(key));
-            const blank = plan.reads.find(key => key.startsWith("sketch:") && drawsNothing(run.sketches.get(key.slice(7)), run));
+            const blank = plan.reads.find(key => isSketchKey(key) && drawsNothing(run.sketches.get(nameInKey(key)), run));
             if (missing === undefined && blank !== undefined) {
                 throw new DesignProblem(path, `${describeKey(blank)} draws nothing yet`);
             }
@@ -184,7 +192,7 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
                 let outcome = run.cache.take(hash);
                 report.cached = outcome !== undefined;
                 if (outcome === undefined) {
-                    const supplied = writes.startsWith("body:") ? run.supplied.get(hash) : undefined;
+                    const supplied = isBodyKey(writes) ? run.supplied.get(hash) : undefined;
                     const made = supplied === undefined ? plan.make() : suppliedOutcome(feature, supplied, path, run);
                     const rebinds = run.rebinding.entries.slice(before);
                     outcome = rebinds.length === 0 ? made : { ...made, rebinds };
@@ -212,12 +220,18 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
             fail(feature, writes, run, "pending");
         } else {
             report.status = "failed";
-            report.messages.push(messageOf(readKernelException(run.occ, error)));
+            report.messages.push(reportMessageOf(readKernelException(run.occ, error)));
             fail(feature, writes, run, "failed");
         }
     }
     report.ms = performance.now() - started;
     return withRebinds(report, run.rebinding.entries.slice(before));
+}
+
+/** A run of a part document's features, and the report of each feature. */
+export interface FeaturesRun {
+    run: DesignRun;
+    report: Models.OCCT.DesignFeatureReport[];
 }
 
 /**
@@ -226,7 +240,7 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
  * sketch it makes with it, and every feature that reads that one is skipped, so one fault never
  * stops the rest. With `trace`, each feature records what it resolved.
  */
-export function runFeatures(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, trace?: Map<string, DesignTrace>): { run: DesignRun; report: Models.OCCT.DesignFeatureReport[] } {
+export function runFeatures(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, trace?: Map<string, DesignTrace>): FeaturesRun {
     const derived = new Map<string, readonly string[]>();
     const run: DesignRun = {
         ...context,
@@ -286,7 +300,6 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
     };
 }
 
-/** The sketches a run drew, in document order: each outline copied, with its frame and the command that drew each edge. */
 function builtSketches(document: Models.OCCT.DesignPartDocument, run: DesignRun): Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] {
     return document.features.flatMap(feature => {
         const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;

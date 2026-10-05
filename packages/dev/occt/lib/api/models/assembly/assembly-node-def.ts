@@ -1,4 +1,4 @@
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 /**
  * Node definition for assembly structure.
  * Can be either an assembly (container) or an instance (reference to a part).

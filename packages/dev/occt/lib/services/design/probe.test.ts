@@ -1,14 +1,18 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { DesignCache } from "./cache";
 import { probeRounding } from "./probe";
+import { BaseBitByBit } from "../../base";
+
+const base = new BaseBitByBit();
 
 type Document = Models.OCCT.DesignPartDocument;
 
@@ -175,7 +179,7 @@ describe("OCCT design fillet probe", () => {
         expect(probe.attempts).toEqual([]);
     });
 
-    it("should report a radius that cannot be evaluated and still search", () => {
+    it("should report a radius that cannot be evaluated and still search, starting at a sixteenth of the body's diagonal", () => {
         // Arrange
         const document = plate([{ id: "round", type: "fillet", body: "plate", radius: "1 / (height - 10)", edges: topEdges(4) }]);
 
@@ -188,13 +192,14 @@ describe("OCCT design fillet probe", () => {
         expect(probe.messages).toHaveLength(1);
         expect(probe.messages[0]).toMatch(/^\/features\/2\/radius: /);
         expect(probe.attempts).toHaveLength(4);
+        expect(probe.attempts[0]!.value).toBeCloseTo(Math.hypot(40, 20, 10) / 16, 5);
         expect(probe.largest).toBeGreaterThan(0);
     });
 
     it("should trim the design cache to what the probe used, as a build does", () => {
         // Arrange
         const cache = new DesignCache(0);
-        const context = { occt, occ: kernel, cache };
+        const context = { occt, occ: kernel, base, cache };
         const document = plate([{ id: "round", type: "fillet", body: "plate", radius: 1, edges: topEdges(4) }]);
 
         // Act

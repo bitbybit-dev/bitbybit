@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import * as BABYLON from "@babylonjs/core";
-import * as Inputs from "./index";
-import { Base } from "./base-inputs";
-import { Draw } from "./draw-inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type * as Inputs from "./index";
+import type { Base } from "./base-inputs";
+import type { Draw } from "./draw-inputs";
 
 type Eq<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 const resolvesTo = <T extends true>(_proof?: T): boolean => true;

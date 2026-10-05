@@ -1,9 +1,9 @@
 
-import { Context } from "../../../context";
-import * as BABYLON from "../../../../gui-enriched-babylon";
+import type { Context } from "../../../context";
+import type * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * What every container control shares: adding child controls, a background color and the read-only

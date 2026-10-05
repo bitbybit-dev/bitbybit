@@ -1,6 +1,6 @@
 
-import { Context } from "../../context";
-import * as BABYLON from "@babylonjs/core";
+import type { Context } from "../../context";
+import type * as BABYLON from "@babylonjs/core";
 
 /**
  * The rendering engine itself: the render loop, canvas sizing and resolution, hardware scaling and

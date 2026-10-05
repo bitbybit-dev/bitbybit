@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as THREEJS from "three";
-import { Base } from "./base-inputs";
-import { OrbitCameraController, ThreeJSCamera } from "./threejs-camera-inputs";
+import type * as THREEJS from "three";
+import type { Base } from "./base-inputs";
+import type { OrbitCameraController, ThreeJSCamera } from "./threejs-camera-inputs";
 
 /**
  * Result object returned by initThreeJS helper function.

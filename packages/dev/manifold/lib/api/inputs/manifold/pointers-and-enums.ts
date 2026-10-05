@@ -1,5 +1,3 @@
-// A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 
 /**
  * A handle to a solid living inside the Manifold kernel, not the geometry itself. The kernel runs

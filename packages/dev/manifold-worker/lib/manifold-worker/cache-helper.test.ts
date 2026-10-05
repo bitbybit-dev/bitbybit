@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { CacheHelper, ObjectDefinition } from "./cache-helper";
+import type { ObjectDefinition } from "./cache-helper";
+import { CacheHelper } from "./cache-helper";
 
 function javaStringHash(str: string): number {
     let hash = 0;
@@ -163,6 +164,13 @@ describe("CacheHelper unit tests", () => {
         it("should return a number", () => {
             const hash = cacheHelper.stringToHash("test");
             expect(typeof hash).toBe("number");
+        });
+    });
+
+    describe("bytesToHash", () => {
+        it("should hash bytes like stringToHash hashes the same ASCII text", () => {
+            expect(cacheHelper.bytesToHash(new Uint8Array([]))).toBe(cacheHelper.stringToHash(""));
+            expect(cacheHelper.bytesToHash(new TextEncoder().encode("abc"))).toBe(cacheHelper.stringToHash("abc"));
         });
     });
 

@@ -1,11 +1,11 @@
-import { BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { IteratorService } from "./iterator.service";
-import { ConverterService } from "./converter.service";
-import { EntitiesService } from "./entities.service";
-import { ShapeGettersService } from "./shape-getters";
-import * as Resolved from "../../api/resolved-inputs";
+import type { BRepFilletAPI_MakeChamfer, BRepFilletAPI_MakeFillet, BRepFilletAPI_MakeFillet2d, BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { IteratorService } from "./iterator.service";
+import type { ConverterService } from "./converter.service";
+import type { EntitiesService } from "./entities.service";
+import type { ShapeGettersService } from "./shape-getters";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, KernelOperationError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 
@@ -520,11 +520,6 @@ export class FilletsService {
         return this.filletWireCorners(inputs.shape, this.radiiOfCorners(corners, inputs.radius, inputs.radiusList, inputs.indexes));
     }
 
-    /**
-     * One radius per corner of a wire: `radius` at every corner, or at the corners `indexes` lists,
-     * counted from 0, or the entry of `radiusList` beside each listed corner. A corner given no
-     * radius gets 0, which leaves it sharp.
-     */
     private radiiOfCorners(corners: number, radius: number, radiusList: number[] | undefined, indexes: number[] | undefined): number[] {
         if (!indexes || indexes.length === 0) {
             return Array.from({ length: corners }, () => radius);
@@ -543,22 +538,11 @@ export class FilletsService {
         return radii;
     }
 
-    /**
-     * True when every radius the caller gave is above 0: the list when there is one, otherwise the
-     * single radius. The corner rounding reads 0 as a corner to leave sharp, so a radius of 0 the
-     * caller asked for would otherwise come back as a wire rounded nowhere.
-     */
     private everyGivenRadiusRounds(radius: number | undefined, radiusList: number[] | undefined): boolean {
         const given = radiusList !== undefined && radiusList.length > 0 ? radiusList : [radius];
         return given.every(value => value !== undefined && value > 0);
     }
 
-    /**
-     * One radius per corner of a wire for the fallback of `fillet2d`, read as its main path reads
-     * its inputs: corners counted from 1, a `radiusList` without `indexes` giving each corner in
-     * turn its radius, listed corners taking the entries of `radiusList` in their order along the
-     * outline, and listed corners the wire does not have passed over.
-     */
     private radiiOf2dCorners(inputs: Resolved.OCCT.FilletDto<TopoDS_Shape>, corners: number): number[] {
         const radiusAt = (position: number): number => (inputs.radiusList ? inputs.radiusList[position] : inputs.radius) ?? 0;
         if (!inputs.indexes) {
@@ -572,10 +556,6 @@ export class FilletsService {
         return radii;
     }
 
-    /**
-     * Rounds every corner of a wire in one kernel call, each in the plane of the two edges that meet
-     * there, and names the corners that could not be rounded, counted from 1.
-     */
     private filletWireCorners(wire: TopoDS_Wire, radii: number[]): TopoDS_Wire {
         const { wire: rounded, failedCorners } = this.occ.FilletWireCorners(wire, radii);
         if (rounded === null) {

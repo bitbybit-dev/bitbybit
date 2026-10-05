@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
-import { Base } from "./base-inputs";
+import type * as BABYLON from "@babylonjs/core";
+import type { Base } from "./base-inputs";
 
 /**
  * Parameters for moving objects in the scene: translation, rotation around an axis or a pivot, and

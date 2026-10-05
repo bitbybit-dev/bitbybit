@@ -1,9 +1,9 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "../../../../gui-enriched-babylon";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * Color pickers: a color wheel with a square for lightness and saturation, giving a hex color.

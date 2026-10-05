@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { PlayCanvas } from "./playcanvas";
-import { Context } from "../context";
-import { DrawHelper } from "../draw-helper";
+import type { Context } from "../context";
+import type { DrawHelper } from "../draw-helper";
 import { createSimpleMockContext } from "../__mocks__/test-helpers";
 
 describe("PlayCanvas unit tests", () => {

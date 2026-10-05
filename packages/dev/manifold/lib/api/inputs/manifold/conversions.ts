@@ -1,5 +1,3 @@
-// A fragment of the Manifold inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../manifold-inputs.ts. Edit here, then regenerate.
 
 /**
  * Several solids for the methods that take a list, such as `manifold.booleans.union` or

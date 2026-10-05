@@ -1,29 +1,24 @@
-import {
-    BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakePipeShell, BRepOffsetAPI_MakeThickSolid, BRepOffsetAPI_ThruSections, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue,
-    BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire,
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { VectorHelperService } from "../../api/vector-helper.service";
+import type { BRepOffsetAPI_MakeOffset, BRepOffsetAPI_MakeOffsetShape, BRepOffsetAPI_MakePipeShell, BRepOffsetAPI_MakeThickSolid, BRepOffsetAPI_ThruSections, BRepPrimAPI_MakePrism, BRepPrimAPI_MakeRevol, Bnd_Box, EmbindEnumValue, BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Vertex, TopoDS_Wire } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { VectorHelperService } from "../../api/vector-helper.service";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { EnumService } from "./enum.service";
-import { EntitiesService } from "./entities.service";
-import { ConverterService } from "./converter.service";
-import { TransformsService } from "./transforms.service";
-import { ShapeGettersService } from "./shape-getters";
-import { EdgesService } from "./edges.service";
-import { WiresService } from "./wires.service";
-import { FacesService } from "./faces.service";
-import { SolidsService } from "./solids.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { Base } from "../../api/inputs";
+import type { EnumService } from "./enum.service";
+import type { EntitiesService } from "./entities.service";
+import type { ConverterService } from "./converter.service";
+import type { TransformsService } from "./transforms.service";
+import type { ShapeGettersService } from "./shape-getters";
+import type { EdgesService } from "./edges.service";
+import type { WiresService } from "./wires.service";
+import type { FacesService } from "./faces.service";
+import type { SolidsService } from "./solids.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { occtFailure } from "../../kernel-failures";
 import { coordinatesOf, pointsFromCoordinates } from "./kernel-arrays";
 import { checkedShapes } from "./input-checks";
 
-/** The most slices one call cuts, so a step too small for the shape, or for its distance from the origin, is refused rather than looped over. */
 const MOST_SLICES = 100000;
 
-/** The refusal of slicing that would cut more than `MOST_SLICES`, naming the property that set the spacing. */
 function tooManySlices(property: string): InputError {
     return new InputError(`\`${property}\` would cut the shape into more than ${MOST_SLICES} slices; use a larger spacing.`, property);
 }
@@ -159,7 +154,6 @@ export class OperationsService {
         return inputs.points.map((point, index) => this.vecHelper.distanceBetweenPoints(point, closest[index]!));
     }
 
-    /** The point of `shape` nearest to each of `points`, found in one kernel call that prepares `shape` once. */
     private closestPointsOn(shape: TopoDS_Shape, points: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
         const closest = pointsFromCoordinates(this.occ.ClosestPointsOnShape(shape, coordinatesOf(points)));
         if (closest.length !== points.length) {
@@ -678,7 +672,6 @@ export class OperationsService {
         return result;
     }
 
-    /** Runs `read`; when it throws, releases the kernel objects the caller would have released and rethrows. */
     private readThenRelease(read: () => void, ...objects: { delete(): void }[]): void {
         try {
             read();
@@ -744,12 +737,6 @@ export class OperationsService {
         });
     }
 
-    /**
-     * The section faces of the solids of `shape` at the levels `levelsBetween` picks between the
-     * lowest and the highest point of the shape along `direction`, sliced by the kernel in one call
-     * per solid: one compound per solid that the planes cross, holding its faces once each, in
-     * a compound of them all. A shape too thin to slice gives an empty compound.
-     */
     private sliceAlong(shape: TopoDS_Shape, direction: Inputs.Base.Vector3, levelsBetween: (lowest: number, highest: number) => number[]): TopoDS_Compound {
         const { bbox, transformedShape } = this.createBBoxAndTransformShape(shape, direction);
         try {
@@ -779,11 +766,6 @@ export class OperationsService {
         }
     }
 
-    /**
-     * The faces where the planes of `frames` cross `solid`, gathered into one compound turned back
-     * from the Y axis onto `direction`, or nothing when no plane crosses it. A plane given twice
-     * receives the same face twice from the kernel, which is kept once.
-     */
     private slicesOfSolid(solid: TopoDS_Shape, frames: number[], direction: Inputs.Base.Vector3): TopoDS_Shape[] {
         const perFrame = this.occ.SliceByFrames(solid, frames, true, 1e-7);
         const pieces = perFrame.flatMap(slice => this.occ.ChildrenOf(slice));

@@ -1,14 +1,16 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
 import { DesignProblem, pointer } from "./problems";
 import { connectorFrame, contextOf } from "./helpers";
 import { connectorMembers } from "./connectors";
 import { resolveEdges, resolveFaces } from "./references";
 import * as Inputs from "../../api/inputs";
 import { release } from "./cache";
-import { BodyState, DesignRun, bodyKey } from "./state";
+import type { BodyState, DesignRun } from "./state";
+import { bodyKey } from "./state";
 import { declaredValues, numberOf, parametersIn, propertyValue, textOf } from "./values";
 import { buildKeyOf, itemKeyOf, versionOf } from "./identity";
+import { DIMENSIONS } from "./constants";
 
 const COLOR = /^#[0-9a-fA-F]{6}$/;
 
@@ -36,7 +38,6 @@ function propertiesOf(properties: Models.OCCT.DesignProperties | undefined, path
     }));
 }
 
-/** A colour a document gives as `#rrggbb`, or as `{ "expr": "..." }` that must give one. */
 function colourOf(value: Models.OCCT.DesignText, path: string, run: DesignRun): string {
     const colour = textOf(value, run.parameters, path);
     if (!COLOR.test(colour)) {
@@ -73,7 +74,6 @@ function lookOf(look: Look, path: string, run: DesignRun): BuiltLook {
     return built;
 }
 
-/** The id of the material a part names, as written or as its expression gives it; it must be one of the document's materials. */
 function materialIdOf(value: Models.OCCT.DesignText, materials: readonly Models.OCCT.DesignMaterial[], path: string, run: DesignRun): string {
     const id = textOf(value, run.parameters, path);
     if (!materials.some(material => material.id === id)) {
@@ -189,7 +189,7 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
             ...(volume === undefined ? {} : { volume }),
             ...(material === undefined ? {} : { material }),
             ...(appearance === undefined ? {} : { appearance }),
-            ...(material?.density === undefined || volume === undefined ? {} : { mass: volume * metres ** 3 * material.density }),
+            ...(material?.density === undefined || volume === undefined ? {} : { mass: volume * metres ** DIMENSIONS * material.density }),
         };
     };
     const built: Models.OCCT.DesignBuiltPart<TopoDS_Shape>[] = [];
@@ -207,7 +207,6 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
     return built;
 }
 
-/** Whether a body is solid, alone or with others in a compound, so that it has a volume. */
 function isSolid(shape: TopoDS_Shape, run: DesignRun): boolean {
     const type = run.occt.shapes.shape.getShapeType({ shape });
     if (type === Inputs.OCCT.shapeTypeEnum.solid || type === Inputs.OCCT.shapeTypeEnum.compSolid) {

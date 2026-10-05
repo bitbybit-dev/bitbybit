@@ -1,11 +1,11 @@
 
 import { uniqueName } from "../../unique-name";
 import * as BABYLON from "@babylonjs/core";
-import { Context } from "../../context";
+import type { Context } from "../../context";
 import * as Inputs from "../../inputs";
-import { Base } from "../../inputs";
+import type { Base } from "../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Working with meshes already in the BabylonJS scene, the objects `draw.drawAnyAsync` gives back:

@@ -1,17 +1,19 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { runInNewContext } from "node:vm";
 import * as ts from "typescript";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { sha256 } from "./digest";
 import { evaluateExpression, parseExpression } from "./expressions";
-import { MathHelper, expressionCode, mathHelperDeclarations, mathHelperUses } from "./typescript-export";
+import type { MathHelper } from "./typescript-export";
+import { expressionCode, mathHelperDeclarations, mathHelperUses } from "./typescript-export";
 
 type Document = Models.OCCT.DesignPartDocument;
 type Drawn = { shape: TopoDS_Shape; properties: Record<string, unknown> };

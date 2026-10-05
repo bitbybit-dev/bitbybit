@@ -1,11 +1,9 @@
-import {
-    BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, TopoDS_Face
-} from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, TopoDS_Face } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
-import * as Models from "../api/models";
+import type * as Resolved from "../api/resolved-inputs";
+import type * as Models from "../api/models";
 import { numbersOfFrames } from "./base/frames";
 import { historiesFromKernel, historyFromKernel } from "./base/history";
 import { checkedFrame, checkedFrames, checkedNumber, checkedNumberList, checkedShape, checkedShapes, checkedWithin } from "./base/input-checks";
@@ -1147,11 +1145,6 @@ export class OCCTOperations {
         return { visible: this.ontoGround(drawing.visible), hidden: this.ontoGround(drawing.hidden) };
     }
 
-    /**
-     * The kernel's drawing on the XY plane turned onto the XZ plane, its y becoming z. Its edges
-     * arrive as curves on the drawing plane only, so their 3D curves are built first, or turning
-     * would lose them. The kernel's compound is released.
-     */
     private ontoGround(drawing: TopoDS_Compound): TopoDS_Compound {
         this.och.occ.BRepLib_BuildCurves3d_Simple(drawing);
         const turned = this.och.transformsService.rotate({ shape: drawing, angle: 90, axis: [1, 0, 0] });
@@ -1161,7 +1154,6 @@ export class OCCTOperations {
         return compound;
     }
 
-    /** The kernel's result as the kind of shape it is; the kernel's handle is released. */
     private actual(made: TopoDS_Shape): TopoDS_Shape {
         const shape = this.och.converterService.getActualTypeOfShape(made);
         made.delete();

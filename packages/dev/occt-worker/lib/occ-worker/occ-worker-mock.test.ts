@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { OCCTWorkerMock } from "./occ-worker-mock";
-import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { DataInput } from "./occ-worker";
+import { initializationComplete, onMessageInput } from "./occ-worker";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
 vi.mock("./occ-worker", () => ({
     initializationComplete: vi.fn(),

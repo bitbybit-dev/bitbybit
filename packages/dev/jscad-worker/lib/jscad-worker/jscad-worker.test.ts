@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputError, InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./jscad-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { InputError, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./jscad-worker";
+import { initializationComplete, onMessageInput } from "./jscad-worker";
 
 type Deletable = { delete: () => void };
 type Answer = { uid?: string; result?: unknown; error?: string; errorKind?: string; code?: string; details?: unknown; stack?: string };

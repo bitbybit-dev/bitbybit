@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { DESIGN_FORMAT, DesignFormat, lowestMinor, versionProblem } from "./format";
+import type { DesignFormat } from "./format";
+import { DESIGN_FORMAT, lowestMinor, versionProblem } from "./format";
 
 const RELEASED: DesignFormat = { released: true, major: 1, minor: 2 };
 

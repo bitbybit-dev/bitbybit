@@ -1,6 +1,10 @@
-import { ExpressionError, ExpressionNode, ExpressionValue, RESERVED_PARAMETER_NAMES, evaluateExpression, namesIn, parseExpression } from "./expressions";
+import type * as Models from "../../api/models";
+import { isRecord } from "@bitbybit-dev/base";
+import type { ExpressionNode, ExpressionValue } from "./expressions";
+import { ExpressionError, RESERVED_PARAMETER_NAMES, evaluateExpression, namesIn, parseExpression } from "./expressions";
 import { DesignProblem, pointer } from "./problems";
-import { checkKeys, checkLabel, checkText, isRecord } from "./structure";
+import { checkKeys, checkLabel, checkText } from "./structure";
+import { DIMENSIONS } from "./constants";
 
 const PARAMETER_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const PARAMETER_KEYS = ["value", "type", "unit", "min", "max", "step", "options", "label", "description", "group"];
@@ -134,7 +138,7 @@ function specOf(name: string, declared: unknown, path: string): ParameterSpec {
 }
 
 /** Whether a value is `{ "expr": "..." }`, the form text is computed in. */
-export function isExpressionObject(value: unknown): value is { expr: string } {
+export function isExpressionObject(value: unknown): value is Models.OCCT.DesignExpression {
     return isRecord(value) && Object.keys(value).length === 1 && typeof value["expr"] === "string";
 }
 
@@ -222,7 +226,12 @@ function checkedResult(spec: ParameterSpec, name: string, value: ExpressionValue
     }
 }
 
-function configurationValues(configurations: unknown, id: string): { values: Record<string, unknown>; path: string } {
+interface ConfigurationValues {
+    values: Record<string, unknown>;
+    path: string;
+}
+
+function configurationValues(configurations: unknown, id: string): ConfigurationValues {
     const list: unknown[] = Array.isArray(configurations) ? configurations : [];
     const index = list.findIndex(configuration => isRecord(configuration) && configuration["id"] === id);
     const found = list[index];
@@ -235,6 +244,11 @@ function configurationValues(configurations: unknown, id: string): { values: Rec
         throw new DesignProblem(path, "values is an object of parameter values");
     }
     return { values, path };
+}
+
+interface ParsedExpression {
+    tree: ExpressionNode;
+    path: string;
 }
 
 /**
@@ -269,7 +283,7 @@ export function parameterValues(parameters: unknown, configurations: unknown, ch
     }
     replace(choice.overrides ?? {}, name => pointer("/parameters", name));
     const values = new Map<string, ExpressionValue>([["configuration", choice.configuration ?? ""]]);
-    const trees = new Map<string, { tree: ExpressionNode; path: string }>();
+    const trees = new Map<string, ParsedExpression>();
     raws.forEach(({ raw, path }, name) => {
         const value = interpreted(specs.get(name)!, raw, path);
         if (typeof value === "object") {
@@ -343,7 +357,7 @@ export function truthOf(value: unknown, parameters: DesignValues, path: string):
 
 /** Three numbers a document point or vector stands for. */
 export function pointOf(value: unknown, parameters: DesignValues, path: string): [number, number, number] {
-    if (!Array.isArray(value) || value.length !== 3) {
+    if (!Array.isArray(value) || value.length !== DIMENSIONS) {
         throw new DesignProblem(path, "a point or vector is three numbers or expressions");
     }
     return [numberOf(value[0], parameters, pointer(path, 0)), numberOf(value[1], parameters, pointer(path, 1)), numberOf(value[2], parameters, pointer(path, 2))];
@@ -376,14 +390,27 @@ export function countOf(value: unknown, parameters: DesignValues, path: string, 
     return count;
 }
 
+const SHOWN_DIGITS = 12;
+
 /** A number written for people: at most twelve significant digits, so sums such as 0.1 + 0.2 read 0.3. */
 export function formatNumber(value: number): string {
-    return String(Number(value.toPrecision(12)));
+    return String(Number(value.toPrecision(SHOWN_DIGITS)));
+}
+
+/** One piece of a property template: plain text, or the expression inside `{ }`. */
+export type TemplatePiece = TextPiece | ExpressionPiece;
+
+interface TextPiece {
+    text: string;
+}
+
+interface ExpressionPiece {
+    expression: string;
 }
 
 /** The pieces of a property template: plain text, and the expressions inside `{ }`; `{{` and `}}` write braces. */
-export function templatePieces(template: string, path: string): ({ text: string } | { expression: string })[] {
-    const pieces: ({ text: string } | { expression: string })[] = [];
+export function templatePieces(template: string, path: string): TemplatePiece[] {
+    const pieces: TemplatePiece[] = [];
     let text = "";
     let at = 0;
     while (at < template.length) {

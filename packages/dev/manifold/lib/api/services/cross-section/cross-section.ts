@@ -1,13 +1,13 @@
 import * as Inputs from "../../inputs";
-import * as Manifold3D from "manifold-3d";
+import type * as Manifold3D from "manifold-3d";
 import { CrossSectionShapes } from "./cross-section-shapes";
 import { CrossSectionOperations } from "./cross-section-operations";
 import { CrossSectionTransforms } from "./cross-section-transforms";
 import { CrossSectionBooleans } from "./cross-section-booleans";
 import { CrossSectionEvaluate } from "./cross-section-evaluate";
-import { BaseBitByBit } from "../../../base";
+import type { BaseBitByBit } from "../../../base";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Flat outlines in the Manifold kernel, the 2D shapes that `operations.extrude` and

@@ -1,9 +1,6 @@
-// A fragment of the OCCT inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../occ-inputs.ts. Edit here, then regenerate.
-import { Base } from "@bitbybit-dev/base";
+import type { Base } from "@bitbybit-dev/base";
 import { joinTypeEnum } from "./enums";
 
-// Threading : Create Surfaces
 /**
  * A solid, the faces to remove and a wall thickness for `operations.makeThickSolidByJoin`, which
  * hollows the solid into a shell of that thickness.
@@ -922,10 +919,6 @@ export class Scale3DShapesDto<T> {
      */
     centers?: Base.Point3[] | undefined = [[0, 0, 0]];
 }
-// Matrices are flat 16-number arrays in COLUMN-MAJOR order (Base.TransformMatrix),
-// matching glTF/WebGL, Babylon/Three and the matrix returned by getLabelTransform.
-// A point transforms as p' = M * p; a list (Base.TransformMatrixes) is applied in
-// order (first matrix first).
 /**
  * A shape and a matrix, or a list of matrices, for `transforms.transformByMatrix`.
  */

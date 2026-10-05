@@ -1,9 +1,9 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
 import * as Inputs from "../../../inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../../resolved-inputs";
+import type * as Resolved from "../../../resolved-inputs";
 
 /**
  * Textures, the images a material spreads over a surface: a tiled texture from a URL with scale and

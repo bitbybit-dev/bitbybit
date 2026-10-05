@@ -4,7 +4,7 @@
 
 ```ts
 
-import * as JSCAD_3 from '@jscad/modeling';
+import type * as JSCAD_3 from '@jscad/modeling';
 
 // @public
 export namespace Base {

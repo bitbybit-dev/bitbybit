@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { resolveDto, resolveInputs, isRegisteredOperation, DtoRegistry } from "./resolve-dto";
+import type { DtoRegistry } from "./resolve-dto";
+import { resolveDto, resolveInputs, isRegisteredOperation } from "./resolve-dto";
 
 class LabelDto {
     text = "label";

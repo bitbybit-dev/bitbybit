@@ -1,7 +1,8 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { hashOfBytes, hashOfText } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Inputs from "../../api/inputs";
 import type { RebindEntry } from "./hints";
-import { FaceNames } from "./names";
+import type { FaceNames } from "./names";
 
 /** What one feature made: a body with its face names, or a sketch with the command each edge was drawn by, the way it faces and the frame it was drawn in. */
 export type DesignOutcome = (
@@ -93,30 +94,14 @@ export function stableJson(value: unknown): string {
     return JSON.stringify(value) ?? "null";
 }
 
+const KEY_RADIX = 36;
+
 /** A 53-bit cyrb53 hash of `bytes`, in base 36, as `hashText` hashes text. */
 export function hashBytes(bytes: Uint8Array): string {
-    let first = 0xdeadbeef;
-    let second = 0x41c6ce57;
-    for (let index = 0; index < bytes.length; index++) {
-        const code = bytes[index]!;
-        first = Math.imul(first ^ code, 2654435761);
-        second = Math.imul(second ^ code, 1597334677);
-    }
-    first = Math.imul(first ^ (first >>> 16), 2246822507) ^ Math.imul(second ^ (second >>> 13), 3266489909);
-    second = Math.imul(second ^ (second >>> 16), 2246822507) ^ Math.imul(first ^ (first >>> 13), 3266489909);
-    return (4294967296 * (2097151 & second) + (first >>> 0)).toString(36);
+    return hashOfBytes(bytes).toString(KEY_RADIX);
 }
 
 /** A 53-bit cyrb53 hash of `text`, in base 36. */
 export function hashText(text: string): string {
-    let first = 0xdeadbeef;
-    let second = 0x41c6ce57;
-    for (let index = 0; index < text.length; index++) {
-        const code = text.charCodeAt(index);
-        first = Math.imul(first ^ code, 2654435761);
-        second = Math.imul(second ^ code, 1597334677);
-    }
-    first = Math.imul(first ^ (first >>> 16), 2246822507) ^ Math.imul(second ^ (second >>> 13), 3266489909);
-    second = Math.imul(second ^ (second >>> 16), 2246822507) ^ Math.imul(first ^ (first >>> 13), 3266489909);
-    return (4294967296 * (2097151 & second) + (first >>> 0)).toString(36);
+    return hashOfText(text).toString(KEY_RADIX);
 }

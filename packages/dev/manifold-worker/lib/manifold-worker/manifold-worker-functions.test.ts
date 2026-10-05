@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputIssueReport, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./manifold-worker";
+import { initializationComplete, onMessageInput } from "./manifold-worker";
 
 type Pointer = { hash: string | number; type: string };
 type Answer = { uid: string; result?: Pointer | number; error?: string };

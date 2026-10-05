@@ -1,6 +1,7 @@
-import { DtoRules, defineRules, sameLength, when } from "@bitbybit-dev/base";
+import type { DtoRules } from "@bitbybit-dev/base";
+import { defineRules, sameLength, when } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 const bothGiven = <T>(a: keyof T, b: keyof T) => (inputs: T): boolean => Array.isArray(inputs[a]) && Array.isArray(inputs[b]);
 

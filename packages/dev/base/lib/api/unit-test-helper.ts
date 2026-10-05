@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import * as Inputs from "./inputs";
+import type * as Inputs from "./inputs";
 import { GeometryHelper, MathBitByBit, Vector } from "./services";
 
 export const TOLERANCE = 1e-7;
@@ -17,7 +17,9 @@ export class UnitTestHelper {
         expected: Inputs.Base.Point3 | Inputs.Base.Vector3
     ) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         expect(received.length).toEqual(expected.length);
         expect(received[0]).toBeCloseTo(expected[0], TOLERANCE);
         expect(received[1]).toBeCloseTo(expected[1], TOLERANCE);
@@ -39,7 +41,9 @@ export class UnitTestHelper {
         expected: Inputs.Base.Line3
     ) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         this.expectPointCloseTo(received.start, expected.start);
         this.expectPointCloseTo(received.end, expected.end);
     }
@@ -58,7 +62,9 @@ export class UnitTestHelper {
         precision = TOLERANCE
     ) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         expect(received).toHaveLength(2);
         const order1Matches = Math.abs(this.vector.dist({ first: received[0], second: expected[0] })) < precision &&
             Math.abs(this.vector.dist({ first: received[1], second: expected[1] })) < precision;
@@ -73,7 +79,9 @@ export class UnitTestHelper {
         precision = TOLERANCE
     ) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         const normalDir1 = this.vector.sub({ first: received.normal, second: expected.normal });
         const normalDir2 = this.vector.add({ first: received.normal, second: expected.normal });
         const dir1Match = this.vector.lengthSq({ vector: normalDir1 as Inputs.Base.Vector3 }) < precision * precision;
@@ -84,7 +92,9 @@ export class UnitTestHelper {
 
     expectMatrixCloseTo(received: Inputs.Base.TransformMatrix | undefined, expected: Inputs.Base.TransformMatrix) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         expect(received).toHaveLength(16);
         expect(expected).toHaveLength(16);
         for (let i = 0; i < 16; i++) {
@@ -94,7 +104,9 @@ export class UnitTestHelper {
 
     expectMatrixesCloseTo(received: Inputs.Base.TransformMatrixes | undefined, expected: Inputs.Base.TransformMatrixes) {
         expect(received).toBeDefined();
-        if (!received) return;
+        if (!received) {
+            return;
+        }
         expect(received.length).toEqual(expected.length);
         received.forEach((matrix, i) => this.expectMatrixCloseTo(matrix, expected[i]!));
     }
@@ -135,8 +147,12 @@ export class UnitTestHelper {
 
     sortPoints(points: Inputs.Base.Point3[]): Inputs.Base.Point3[] {
         return [...points].sort((a, b) => {
-            if (a[0] !== b[0]) return a[0] - b[0];
-            if (a[1] !== b[1]) return a[1] - b[1];
+            if (a[0] !== b[0]) {
+                return a[0] - b[0];
+            }
+            if (a[1] !== b[1]) {
+                return a[1] - b[1];
+            }
             return a[2] - b[2];
         });
     }
@@ -145,8 +161,12 @@ export class UnitTestHelper {
         return polylines.sort((a, b) => {
             const pA = a.points[0]!;
             const pB = b.points[0]!;
-            if (pA[0] !== pB[0]) return pA[0] - pB[0];
-            if (pA[1] !== pB[1]) return pA[1] - pB[1];
+            if (pA[0] !== pB[0]) {
+                return pA[0] - pB[0];
+            }
+            if (pA[1] !== pB[1]) {
+                return pA[1] - pB[1];
+            }
             return pA[2] - pB[2];
         });
     }

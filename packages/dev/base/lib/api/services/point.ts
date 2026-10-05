@@ -1,11 +1,11 @@
-import { GeometryHelper } from "./geometry-helper";
+import type { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
-import { Transforms } from "./transforms";
-import { Vector } from "./vector";
-import * as Models from "../models";
-import { Lists } from "./lists";
+import type { Transforms } from "./transforms";
+import type { Vector } from "./vector";
+import type * as Models from "../models";
+import type { Lists } from "./lists";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Points as plain number arrays. A point is `[x, y, z]` with Y pointing up, the same shape as a
@@ -670,10 +670,18 @@ export class Point {
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         for (const hex of unscaledHexagons) {
             for (const vertex of hex) {
-                if (vertex[0] < minX) minX = vertex[0];
-                if (vertex[0] > maxX) maxX = vertex[0];
-                if (vertex[1] < minY) minY = vertex[1];
-                if (vertex[1] > maxY) maxY = vertex[1];
+                if (vertex[0] < minX) {
+                    minX = vertex[0];
+                }
+                if (vertex[0] > maxX) {
+                    maxX = vertex[0];
+                }
+                if (vertex[1] < minY) {
+                    minY = vertex[1];
+                }
+                if (vertex[1] > maxY) {
+                    maxY = vertex[1];
+                }
             }
         }
 
@@ -1269,18 +1277,16 @@ export class Point {
      */
     sortPoints(inputs: Inputs.Point.PointsDto): Inputs.Base.Point3[] {
         return [...inputs.points].sort((a, b) => {
-            if (a[0] !== b[0]) return a[0] - b[0];
-            if (a[1] !== b[1]) return a[1] - b[1];
+            if (a[0] !== b[0]) {
+                return a[0] - b[0];
+            }
+            if (a[1] !== b[1]) {
+                return a[1] - b[1];
+            }
             return a[2] - b[2];
         });
     }
 
-    /**
-     * Calculates the 6 vertices of a regular flat-top hexagon.
-     * @param center The center point [x, y, z].
-     * @param radius The radius (distance from center to vertex).
-     * @returns An array of 6 Point3 vertices in counter-clockwise order.
-     */
     private getRegularHexagonVertices(center: Inputs.Base.Point3, radius: number): Inputs.Base.Point3[] {
         const vertices: Inputs.Base.Point3[] = [];
         const cx = center[0];

@@ -1,10 +1,10 @@
-import { GeometryHelper } from "./geometry-helper";
+import type { GeometryHelper } from "./geometry-helper";
 import * as Inputs from "../inputs";
-import { Point } from "./point";
-import { Vector } from "./vector";
-import { Line } from "./line";
+import type { Point } from "./point";
+import type { Vector } from "./vector";
+import type { Line } from "./line";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Polylines: chains of straight segments through a list of points, held as plain objects of the
@@ -389,12 +389,16 @@ export class Polyline {
             const info0: EndpointInfo = { segmentIndex: i, endpointIndex: 0, coords: segment[0] };
             const info1: EndpointInfo = { segmentIndex: i, endpointIndex: 1, coords: segment[1] };
 
-            if (!endpointMap.has(key0)) endpointMap.set(key0, []);
+            if (!endpointMap.has(key0)) {
+                endpointMap.set(key0, []);
+            }
 
             endpointMap.get(key0)!.push(info0);
 
             if (key1 !== key0) {
-                if (!endpointMap.has(key1)) endpointMap.set(key1, []);
+                if (!endpointMap.has(key1)) {
+                    endpointMap.set(key1, []);
+                }
 
                 endpointMap.get(key1)!.push(info1);
             } else {
@@ -424,7 +428,9 @@ export class Polyline {
 
             for (const searchKey of searchKeys) {
                 const candidates = endpointMap.get(searchKey);
-                if (!candidates) continue;
+                if (!candidates) {
+                    continue;
+                }
 
                 for (const candidate of candidates) {
                     if (!used[candidate.segmentIndex]) {
@@ -448,7 +454,9 @@ export class Polyline {
 
 
         for (let i = 0; i < numSegments; i++) {
-            if (used[i]) continue;
+            if (used[i]) {
+                continue;
+            }
 
             used[i] = true;
             const startSegment = segments[i]!;
@@ -460,7 +468,9 @@ export class Polyline {
 
             while (iterations++ < numSegments) {
                 const nextMatch = findConnection(currentTail);
-                if (!nextMatch) break;
+                if (!nextMatch) {
+                    break;
+                }
 
                 const nextSegment = segments[nextMatch.segmentIndex]!;
                 const pointToAdd = (nextMatch.endpointIndex === 0) ? nextSegment[1] : nextSegment[0];
@@ -480,7 +490,9 @@ export class Polyline {
             if (!isClosed) {
                 while (iterations++ < numSegments) {
                     const prevMatch = findConnection(currentHead);
-                    if (!prevMatch) break;
+                    if (!prevMatch) {
+                        break;
+                    }
 
                     const prevSegment = segments[prevMatch.segmentIndex]!;
                     const pointToAdd = (prevMatch.endpointIndex === 0) ? prevSegment[1] : prevSegment[0];

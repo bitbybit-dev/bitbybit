@@ -82,6 +82,8 @@ describe("the generated guides", () => {
         const ids = new Set(GUIDES.map((section) => section.id));
 
         // Assert
-        for (const target of Object.values(GUIDE_ALIASES)) expect(ids.has(target), target).toBe(true);
+        for (const target of Object.values(GUIDE_ALIASES)) {
+            expect(ids.has(target), target).toBe(true);
+        }
     });
 });

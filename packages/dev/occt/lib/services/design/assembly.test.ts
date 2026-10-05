@@ -1,15 +1,19 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { runAssembly } from "./assembly";
 import { itemKeyOf } from "./identity";
 import { libraryOf } from "./library";
 import { DesignCache } from "./cache";
+import { BaseBitByBit } from "../../base";
+
+const base = new BaseBitByBit();
 
 type Part = Models.OCCT.DesignPartDocument;
 type Assembly = Models.OCCT.DesignAssemblyDocument;
@@ -829,11 +833,11 @@ describe("design assemblies", () => {
             };
             const cache = new CountingCache(256);
             const library = libraryOf<Models.OCCT.DesignDocument>([post]).library;
-            runAssembly(variants, {}, library, { occt, occ: kernel, cache });
+            runAssembly(variants, {}, library, { occt, occ: kernel, base, cache });
             const before = cache.hits;
 
             // Act
-            runAssembly(variants, {}, library, { occt, occ: kernel, cache });
+            runAssembly(variants, {}, library, { occt, occ: kernel, base, cache });
 
             // Assert
             expect(before).toBe(0);
@@ -863,7 +867,7 @@ describe("design assemblies", () => {
             // Act
             let thrown: unknown;
             try {
-                runAssembly(variants, {}, libraryOf<Models.OCCT.DesignDocument>([post]).library, { occt, occ: kernel, cache: new DesignCache(256) });
+                runAssembly(variants, {}, libraryOf<Models.OCCT.DesignDocument>([post]).library, { occt, occ: kernel, base, cache: new DesignCache(256) });
             } catch (error) {
                 thrown = error;
             } finally {
@@ -882,10 +886,10 @@ describe("design assemblies", () => {
             const of = (heights: number[]): Assembly => ({ schemaVersion: 1, kind: "assembly", components: heights.map(height => ({ id: `p${height}`, source: { document: POST_ID, part: "post", parameters: { height, size: height } } })) });
             const cache = new DesignCache(4);
             const library = libraryOf<Models.OCCT.DesignDocument>([post]).library;
-            runAssembly(of([1, 2, 3]), {}, library, { occt, occ: kernel, cache });
+            runAssembly(of([1, 2, 3]), {}, library, { occt, occ: kernel, base, cache });
 
             // Act
-            runAssembly(of([4, 5, 6]), {}, library, { occt, occ: kernel, cache });
+            runAssembly(of([4, 5, 6]), {}, library, { occt, occ: kernel, base, cache });
 
             // Assert
             expect(cache.size).toBe(6);

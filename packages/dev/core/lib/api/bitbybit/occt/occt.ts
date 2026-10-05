@@ -1,7 +1,8 @@
 
-import { ContextBase } from "../../context";
+import type { ContextBase } from "../../context";
 import { OCCTWIO } from "./io";
-import { OCCTWorkerManager, OCCT } from "@bitbybit-dev/occt-worker";
+import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
+import { OCCT } from "@bitbybit-dev/occt-worker";
 
 /**
  * The OpenCascade (OCCT) API as reached from a script: every method of the `occt` kernel,

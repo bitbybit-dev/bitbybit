@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import { Base } from "./base-inputs";
+import type { Base } from "./base-inputs";
 
 
-// tslint:disable-next-line: no-namespace
 /**
  * Parameters for polygonal mesh geometry: vertex, index and normal data, the options for building and
  * inspecting a mesh, and the settings that control conversion between the mesh representations the

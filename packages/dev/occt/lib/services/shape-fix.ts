@@ -1,12 +1,11 @@
-import { OccHelper } from "../occ-helper";
-import { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Compound, TopoDS_Shape, TopoDS_Shell, TopoDS_Solid, TopoDS_Wire } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
-import * as Models from "../api/models";
+import type * as Models from "../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
+import type * as Resolved from "../api/resolved-inputs";
 import { checkedNumber, checkedShape, checkedShapes } from "./base/input-checks";
 
-/** The kinds of sub-shape the kernel's validity report names, as the shape type the getters use. */
 const FAULT_TYPES: Readonly<Record<string, Inputs.OCCT.shapeTypeEnum>> = {
     vertex: Inputs.OCCT.shapeTypeEnum.vertex,
     edge: Inputs.OCCT.shapeTypeEnum.edge,
@@ -19,7 +18,6 @@ const FAULT_TYPES: Readonly<Record<string, Inputs.OCCT.shapeTypeEnum>> = {
     shape: Inputs.OCCT.shapeTypeEnum.shape,
 };
 
-/** The upper bound the kernel's shape hash is taken modulo when occurrences are grouped. */
 const HASH_BOUND = 2147483647;
 
 /**
@@ -308,11 +306,6 @@ export class OCCTShapeFix {
         };
     }
 
-    /**
-     * Where each sub-shape of a kind first occurs among all its occurrences, by its place in the
-     * distinct list: the kernel's report numbers every kind in the distinct list, while the getters
-     * of vertices, wires, faces, shells and solids count every occurrence.
-     */
     private firstOccurrences(shape: TopoDS_Shape, type: string): number[] {
         const occurrences = this.occurrencesOf(shape, type);
         const firstOnes = new Map<number, TopoDS_Shape[]>();
@@ -329,7 +322,6 @@ export class OCCTShapeFix {
         return firsts;
     }
 
-    /** Every occurrence of the sub-shapes of a kind, in the order the getters number them. */
     private occurrencesOf(shape: TopoDS_Shape, type: string): TopoDS_Shape[] {
         switch (type) {
             case "vertex":

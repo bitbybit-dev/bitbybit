@@ -1,8 +1,9 @@
 import * as pc from "playcanvas";
-import { PlayCanvasScene, InitPlayCanvasResult, PlayCanvasOrbitCameraInstance, PlayCanvasInputHandler, PlayCanvasOrbitCameraController } from "../../inputs/playcanvas-scene-helper-inputs";
+import type { InitPlayCanvasResult, PlayCanvasOrbitCameraInstance, PlayCanvasInputHandler, PlayCanvasOrbitCameraController } from "../../inputs/playcanvas-scene-helper-inputs";
+import { PlayCanvasScene } from "../../inputs/playcanvas-scene-helper-inputs";
 import { PlayCanvasCamera } from "../../inputs/playcanvas-camera-inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../resolved-inputs";
+import type * as Resolved from "../../resolved-inputs";
 
 /**
  * Helper function to initialize a basic PlayCanvas scene with lights, shadows, and optional ground plane.
@@ -208,9 +209,6 @@ export function initPlayCanvas(inputs?: PlayCanvasScene.InitPlayCanvasDto): Init
     };
 }
 
-/**
- * Parse hex color to RGB values (0-1 range)
- */
 function hexToRgb(hex: string): { r: number; g: number; b: number } {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (result) {
@@ -499,7 +497,9 @@ function createMouseInput(
     orbitCamera: PlayCanvasOrbitCameraInstance,
     options: { orbitSensitivity: number; distanceSensitivity: number }
 ): PlayCanvasInputHandler | null {
-    if (!app.mouse) return null;
+    if (!app.mouse) {
+        return null;
+    }
 
     const mouse = app.mouse;
     let lookButtonDown = false;
@@ -512,7 +512,9 @@ function createMouseInput(
 
     const pan = (screenPoint: { x: number; y: number }): void => {
         const camera = entity.camera;
-        if (!camera) return;
+        if (!camera) {
+            return;
+        }
 
         const distance = orbitCamera.distance;
         camera.screenToWorld(screenPoint.x, screenPoint.y, distance, fromWorldPoint);
@@ -589,7 +591,9 @@ function createTouchInput(
     orbitCamera: PlayCanvasOrbitCameraInstance,
     options: { orbitSensitivity: number; distanceSensitivity: number }
 ): PlayCanvasInputHandler | null {
-    if (!app.touch) return null;
+    if (!app.touch) {
+        return null;
+    }
 
     const touch = app.touch;
     const lastTouchPoint = new pc.Vec2();
@@ -616,7 +620,9 @@ function createTouchInput(
 
     const pan = (midPoint: pc.Vec2): void => {
         const camera = entity.camera;
-        if (!camera) return;
+        if (!camera) {
+            return;
+        }
 
         const distance = orbitCamera.distance;
         camera.screenToWorld(midPoint.x, midPoint.y, distance, fromWorldPoint);

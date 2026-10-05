@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, ClassHandle } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, ClassHandle } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -17,7 +18,9 @@ describe("EntitiesService", () => {
     });
 
     afterEach(() => {
-        while (restores.length) restores.pop()!();
+        while (restores.length) {
+            restores.pop()!();
+        }
     });
 
     function track(names: Temporary[]): ClassHandle[] {

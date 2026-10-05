@@ -1,16 +1,12 @@
-import { BitbybitOcctModule, TopoDS_Shape, gp_Trsf, gp_GTrsf } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape, gp_Trsf, gp_GTrsf } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ConverterService } from "./converter.service";
-import { EntitiesService } from "./entities.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { ConverterService } from "./converter.service";
+import type { EntitiesService } from "./entities.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError } from "@bitbybit-dev/base";
 import { checkedShapes } from "./input-checks";
 
-/**
- * The smallest scale, in size, handed to the exact transform: nearer 0 a curved shape shrinks to a
- * point, and the kernel never returns from building it.
- */
 const smallestScale = 1e-100;
 
 export class TransformsService {

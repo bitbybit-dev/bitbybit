@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import * as THREEJS from "three";
-import { Base } from "./base-inputs";
+import type * as THREEJS from "three";
+import type { Base } from "./base-inputs";
 
 /**
  * Interface for orbit camera internal state and methods.

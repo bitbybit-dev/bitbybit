@@ -4,7 +4,8 @@ import { describeKernelFailure, prepareKernelCall } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
-import { getCommandHandler, CommandContext } from "./command-handlers";
+import type { CommandContext } from "./command-handlers";
+import { getCommandHandler } from "./command-handlers";
 
 let kernel: BitbybitOcctModule;
 let openCascade: OCCTService;
@@ -13,28 +14,16 @@ let shapeResolver: ShapeResolver;
 let resultSerializer: ResultSerializer;
 let functionPathResolver: FunctionPathResolver;
 
-/** Starts the worker again after the kernel crashed, by calling initializationComplete anew. */
+const STOP_REQUEST_WORD = 0;
+const PROGRESS_WORD_COUNT = 3;
+
 let restartKernel: (() => unknown) | undefined;
-/** Counts the kernels the worker has been given, so a restart can tell whether one arrived. */
 let kernelGeneration = 0;
-/** Set while a crashed kernel is being replaced; calls wait for it. */
 let restarting: Promise<void> | undefined;
-/** What crashed the kernel, when it was not replaced; every later call is refused. */
 let lostKernel: string | undefined;
-/** The mesh retention budget the host set, in triangles, given again to a kernel that replaces a crashed one. */
 let meshRetention = 0;
-/**
- * The kernel's three progress words, shared with the manager: word 0 asks the running call to stop,
- * word 1 is its progress in thousandths, word 2 counts the algorithms it started. Undefined where
- * memory cannot be shared (a page that is not cross-origin isolated) or the kernel predates them.
- */
 let progressWords: Int32Array | undefined;
 
-/**
- * The words the kernel reports progress in and reads a stop request from, over memory the manager
- * can share: the multithreaded kernel's own memory, or for the other kernels a SharedArrayBuffer
- * handed to the module, which the kernel keeps in step with its own words.
- */
 function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
     const control = (occ as Partial<BitbybitOcctModule>).ProgressControl;
     if (typeof SharedArrayBuffer === "undefined" || control === undefined) {
@@ -44,23 +33,17 @@ function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
     if (kernelWords.buffer instanceof SharedArrayBuffer) {
         return kernelWords;
     }
-    const hostWords = new Int32Array(new SharedArrayBuffer(3 * Int32Array.BYTES_PER_ELEMENT));
+    const hostWords = new Int32Array(new SharedArrayBuffer(PROGRESS_WORD_COUNT * Int32Array.BYTES_PER_ELEMENT));
     (occ as BitbybitOcctModule & { bitbybitControl?: Int32Array }).bitbybitControl = hostWords;
     return hostWords;
 }
 
-/** True when the manager asked the running call to stop. */
 function stopRequested(): boolean {
-    return progressWords !== undefined && Atomics.load(progressWords, 0) !== 0;
+    return progressWords !== undefined && Atomics.load(progressWords, STOP_REQUEST_WORD) !== 0;
 }
 
-/** Thrown inside a call the manager stopped, so nothing it made is cached. */
 class CallStopped extends Error { }
 
-/**
- * Pending dependencies that need to be added to plugins once OpenCascade is initialized.
- * This handles the case where addOc is called before full initialization.
- */
 const pendingDependencies: Record<string, unknown> = {};
 
 /**
@@ -141,9 +124,6 @@ export const initializationComplete = (
     return cacheHelper;
 };
 
-/**
- * Creates the command context for command handlers.
- */
 function createCommandContext(): CommandContext {
     return {
         openCascade,
@@ -160,13 +140,8 @@ function createCommandContext(): CommandContext {
     };
 }
 
-/** What the worker answers when a call failed and even its failure could not be sent back. */
 const UNREPORTABLE_FAILURE = "OCCT computation failed, and the failure could not be reported.";
 
-/**
- * Stops running the crashed kernel: starts it over when the worker can, or remembers the crash so
- * every later call is refused. Returns what the caller of the crashed call is told happens next.
- */
 function afterCrash(crash: string): string {
     const restart = restartKernel;
     if (restart === undefined) {
@@ -192,17 +167,6 @@ function afterCrash(crash: string): string {
     return " The kernel is restarting, and every shape made before it is gone.";
 }
 
-/**
- * Executes a standard (cacheable) OCCT function.
- * 
- * This handles the common flow:
- * 1. Lay the inputs over the defaults of the DTO the operation takes, so a property left out, or
- *    passed as undefined or as null where it has a default, gets its default, and cache the call
- *    under those inputs
- * 2. Only on a cache miss: report what the inputs would be rejected for, resolve the shape
- *    references in them recursively, and run the function - a hit touches no referenced shape
- * 3. Serialize the result for transmission
- */
 function executeStandardFunction(
     action: DataInput["action"]
 ): unknown {

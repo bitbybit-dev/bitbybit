@@ -1,17 +1,14 @@
-import {
-    Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve,
-    TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d, gp_Lin2d
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { Geom2d_Curve, Geom_Surface, BitbybitOcctModule, Handle_Geom2d_Curve, TopoDS_Edge, TopoDS_Shape, TopoDS_Wire, gp_Circ2d, gp_Lin2d } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { Base } from "../../api/inputs";
-import { VectorHelperService } from "../../api/vector-helper.service";
-import { ConverterService } from "./converter.service";
-import { EntitiesService } from "./entities.service";
-import { ShapeGettersService } from "./shape-getters";
-import { EnumService } from "./enum.service";
-import { GeomService } from "./geom.service";
-import { TransformsService } from "./transforms.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { Base } from "../../api/inputs";
+import type { VectorHelperService } from "../../api/vector-helper.service";
+import type { ConverterService } from "./converter.service";
+import type { EntitiesService } from "./entities.service";
+import type { ShapeGettersService } from "./shape-getters";
+import type { EnumService } from "./enum.service";
+import type { GeomService } from "./geom.service";
+import type { TransformsService } from "./transforms.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedShape, checkedShapes } from "./input-checks";
 
 export class EdgesService {

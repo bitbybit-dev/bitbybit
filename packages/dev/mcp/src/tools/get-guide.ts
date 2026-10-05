@@ -47,12 +47,16 @@ function findSection(guides: readonly GuideSection[], topic: string): GuideSecti
     const wanted = topic.trim().toLowerCase();
     const alias = Object.hasOwn(GUIDE_ALIASES, wanted) ? GUIDE_ALIASES[wanted] : undefined;
     const byId = guides.find((section) => section.id === (alias ?? wanted));
-    if (byId) return byId;
+    if (byId) {
+        return byId;
+    }
     const words = new Set(tokenize(wanted));
     let best: { section: GuideSection; overlap: number } | undefined;
     for (const section of guides) {
         const overlap = tokenize(section.title).filter((word) => words.has(word)).length;
-        if (overlap > 0 && (!best || overlap > best.overlap)) best = { section, overlap };
+        if (overlap > 0 && (!best || overlap > best.overlap)) {
+            best = { section, overlap };
+        }
     }
     return best?.section;
 }

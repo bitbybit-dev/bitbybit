@@ -1,5 +1,5 @@
-import { ContextBase } from "../../context";
-import * as Inputs from "../../inputs";
+import type { ContextBase } from "../../context";
+import type * as Inputs from "../../inputs";
 
 /**
  * Sweep surface functions.

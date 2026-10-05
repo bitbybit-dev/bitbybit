@@ -1,9 +1,9 @@
-import { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { TopoDS_Face, BitbybitOcctModule, TopoDS_Wire, TopoDS_Compound, TopoDS_Shape, TopoDS_Edge, EmbindEnumValue } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { occtFailure } from "../../kernel-failures";
 import { framesFromNumbers, framesOnCurve } from "../base/frames";
 import { checkedChoice, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedShapes, checkedWithin } from "../base/input-checks";
@@ -15,7 +15,6 @@ const JOIN_TYPES: readonly Inputs.OCCT.joinTypeEnum[] = [
     Inputs.OCCT.joinTypeEnum.tangent,
 ];
 
-/** The kernel's value for a way of joining offset pieces. */
 const kernelJoinType = (occ: BitbybitOcctModule, joinType: Inputs.OCCT.joinTypeEnum): EmbindEnumValue => {
     switch (joinType) {
         case Inputs.OCCT.joinTypeEnum.intersection:
@@ -27,7 +26,6 @@ const kernelJoinType = (occ: BitbybitOcctModule, joinType: Inputs.OCCT.joinTypeE
     }
 };
 
-/** A new wire handle for an edge or a wire: a wire of that one edge, or the wire itself. */
 const wireOf = (occ: BitbybitOcctModule, och: OccHelper, curve: TopoDS_Shape): TopoDS_Wire => {
     if (curve.ShapeType() === occ.TopAbs_ShapeEnum.WIRE) {
         return occ.CastToWire(curve);
@@ -38,10 +36,6 @@ const wireOf = (occ: BitbybitOcctModule, och: OccHelper, curve: TopoDS_Shape): T
     return wire;
 };
 
-/**
- * The pieces of an edge or a wire cut at fractions or at lengths, as wires: an edge is cut as a wire
- * of that one edge.
- */
 const splitAsWires = (occ: BitbybitOcctModule, och: OccHelper, shape: unknown, values: number[], isLength: boolean): TopoDS_Wire[] => {
     const wire = wireOf(occ, och, checkedCurve(occ, checkedShape(shape), "shape"));
     try {
@@ -51,7 +45,6 @@ const splitAsWires = (occ: BitbybitOcctModule, och: OccHelper, shape: unknown, v
     }
 };
 
-/** A new handle to the wire running the other way. */
 const reversedWireOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire): TopoDS_Wire => {
     const reversed = wire.Reversed();
     const cast = occ.CastToWire(reversed);
@@ -59,11 +52,6 @@ const reversedWireOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire): TopoDS_Wire
     return cast;
 };
 
-/**
- * An unbounded face on the plane of a flat face, with the face's normal, for an open offset to lie
- * in: the offset maker would offset a face's own boundary too. The face must be flat and the wire
- * must lie in its plane, or the offset maker fails, and can crash when the wire runs across it.
- */
 const planeFaceOf = (occ: BitbybitOcctModule, och: OccHelper, face: TopoDS_Face, wire: TopoDS_Wire): TopoDS_Face => {
     const frames = framesFromNumbers(occ.FramesOnFace(face, [0.5, 0.5, 0, 0, 1, 0, 0, 1, 1, 1]));
     const middle = frames[0]!;
@@ -88,10 +76,6 @@ const planeFaceOf = (occ: BitbybitOcctModule, och: OccHelper, face: TopoDS_Face,
     return plane;
 };
 
-/**
- * What the offset maker makes of a wire in open mode, or nothing when it fails. On an unbounded plane
- * face it offsets to the left of the wire, seen from the face's normal, whatever the distance's sign.
- */
 const offsetOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire, plane: TopoDS_Face | undefined, joinType: EmbindEnumValue, distance: number): TopoDS_Shape | undefined => {
     const maker = new occ.BRepOffsetAPI_MakeOffset();
     try {
@@ -108,10 +92,6 @@ const offsetOf = (occ: BitbybitOcctModule, wire: TopoDS_Wire, plane: TopoDS_Face
     }
 };
 
-/**
- * The one wire an open offset made, refused as a failed offset when there is none: the offset maker
- * gives a wire, or a compound holding it.
- */
 const onlyWireOf = (occ: BitbybitOcctModule, offset: TopoDS_Shape | undefined): TopoDS_Wire => {
     if (offset === undefined || offset.IsNull()) {
         offset?.delete();

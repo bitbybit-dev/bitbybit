@@ -1,9 +1,9 @@
-import { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedShape } from "../base/input-checks";
 import { OCCTAnalysisCurves } from "./curves";
 import { OCCTAnalysisSurfaces } from "./surfaces";
@@ -34,7 +34,6 @@ const CURVE_TYPES_BY_KERNEL_VALUE: readonly Inputs.OCCT.curveTypeEnum[] = [
     Inputs.OCCT.curveTypeEnum.offset,
 ];
 
-/** The point or vector at position `index` of a flat list of x, y, z triples. */
 const tripleAt = (values: Float64Array, index: number): [number, number, number] =>
     [values[3 * index]!, values[3 * index + 1]!, values[3 * index + 2]!];
 

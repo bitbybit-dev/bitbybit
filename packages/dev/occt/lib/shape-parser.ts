@@ -1,6 +1,6 @@
-import { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
-import { Inputs, OCCTTransforms } from "./index";
-import * as Models from "./api/models";
+import type { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { Inputs, OCCTTransforms } from "./index";
+import type * as Models from "./api/models";
 
 /**
  * What a value looks like after ShapeParser.parse: every shape object in it has been replaced by

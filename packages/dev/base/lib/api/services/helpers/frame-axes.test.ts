@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./frame-axes";
-import * as Inputs from "../../inputs";
+import type * as Inputs from "../../inputs";
 
 type Vec3 = Inputs.Base.Vector3;
 

@@ -136,16 +136,22 @@ const MODEL_BATCH_PATH_RE = /^\/api\/v1\/models\/([a-z][a-z0-9-]*)\/batch$/;
 
 function pathToEndpointKey(path: string): string | undefined {
     const staticKey = STATIC_PATH_MAP[path];
-    if (staticKey) return staticKey;
+    if (staticKey) {
+        return staticKey;
+    }
 
     const batchMatch = MODEL_BATCH_PATH_RE.exec(path);
-    if (batchMatch) return "models.batchSubmit";
+    if (batchMatch) {
+        return "models.batchSubmit";
+    }
 
     const modelMatch = MODEL_PATH_RE.exec(path);
     if (modelMatch) {
         const slug = modelMatch[1];
         const perModel = `models.submit.${slug}`;
-        if (getEndpointSchema(perModel)) return perModel;
+        if (getEndpointSchema(perModel)) {
+            return perModel;
+        }
         return "models.submit";
     }
 

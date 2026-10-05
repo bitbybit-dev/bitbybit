@@ -1,9 +1,10 @@
-import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import type { KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import { KernelCallError } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
-import { OccInfo } from "./occ-info";
-import { MeshRetention } from "./constants";
+import type { OccInfo } from "./occ-info";
+import type { MeshRetention } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
-import { OCCTWorkerMock } from "./occ-worker-mock";
+import type { OCCTWorkerMock } from "./occ-worker-mock";
 
 type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 
@@ -17,8 +18,10 @@ export type OccProgress = {
     algorithms: number;
 };
 
-/** How often the progress of a running call is read, in milliseconds. */
-const PROGRESS_INTERVAL = 100;
+const PROGRESS_INTERVAL_MS = 100;
+const STOP_REQUEST_WORD = 0;
+const PERMILLE_WORD = 1;
+const ALGORITHMS_STARTED_WORD = 2;
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -55,7 +58,7 @@ export class OCCTWorkerManager {
         if (this.progressWords === undefined || this.promisesMade.length === 0) {
             return false;
         }
-        Atomics.store(this.progressWords, 0, 1);
+        Atomics.store(this.progressWords, STOP_REQUEST_WORD, 1);
         return true;
     }
 
@@ -139,13 +142,12 @@ export class OCCTWorkerManager {
         this.stopWatchingProgress();
     }
 
-    /** Starts reading the running call's progress, when the worker shares it and nothing reads it yet. */
     private watchProgress(): void {
         const words = this.progressWords;
         if (words === undefined || this.progressTimer !== undefined) {
             return;
         }
-        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL);
+        this.progressTimer = setInterval(() => this.readProgress(words), PROGRESS_INTERVAL_MS);
     }
 
     private stopWatchingProgress(): void {
@@ -156,14 +158,10 @@ export class OCCTWorkerManager {
         this.lastProgress = "";
     }
 
-    /**
-     * Publishes the running call's progress when it moved; the oldest pending call is the one running.
-     * Only the timer calls it, and the timer is stopped whenever the last pending call settles.
-     */
     private readProgress(words: Int32Array): void {
         const running = this.promisesMade[0]!;
-        const permille = Atomics.load(words, 1);
-        const algorithms = Atomics.load(words, 2);
+        const permille = Atomics.load(words, PERMILLE_WORD);
+        const algorithms = Atomics.load(words, ALGORITHMS_STARTED_WORD);
         const key = `${running.uid}:${permille}:${algorithms}`;
         if (key !== this.lastProgress) {
             this.lastProgress = key;

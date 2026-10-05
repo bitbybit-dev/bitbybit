@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Dates and times as JavaScript `Date` values: creating them, reading and setting their parts, and

@@ -1,12 +1,8 @@
+import { isRecord } from "@bitbybit-dev/base";
 import { DesignProblem, pointer } from "./problems";
 
 const EXTENSION_NAME = /^[a-z][a-z0-9-]*(\.[A-Za-z][A-Za-z0-9_-]*)+$/;
 const LOCALE = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/;
-
-/** Whether `value` is a JSON object, not an array or null. */
-export function isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 /**
  * Refuses a property the format does not define. `extras` and `extensions` are allowed on every

@@ -1,5 +1,3 @@
-// The doc of the JSCAD inputs namespace itself; scripts/gen-inputs.mjs places it above `export namespace JSCAD`.
-
 /**
  * Every parameter object the JSCAD kernel accepts. JSCAD models by combining primitives with
  * booleans, expansions, hulls and extrusions, working on tessellated geometry rather than exact

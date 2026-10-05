@@ -1,7 +1,7 @@
 
-import { Context } from "../../../context";
+import type { Context } from "../../../context";
 import * as BABYLON from "@babylonjs/core";
-import * as Inputs from "../../../inputs";
+import type * as Inputs from "../../../inputs";
 
 /**
  * Adjusting lights that cast shadows, the point, directional and spot lights, after they were

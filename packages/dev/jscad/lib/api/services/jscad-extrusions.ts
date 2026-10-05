@@ -1,9 +1,10 @@
-import { GeometryHelper, resolveDto } from "@bitbybit-dev/base";
+import type { GeometryHelper } from "@bitbybit-dev/base";
+import { resolveDto } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs/jscad-inputs";
-import { MathBitByBit } from "@bitbybit-dev/base";
-import * as JSCAD from "@jscad/modeling";
+import type { MathBitByBit } from "@bitbybit-dev/base";
+import type * as JSCAD from "@jscad/modeling";
 import { asKind, asRegion, oneOrMany } from "./entity-narrowing";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Turning flat JSCAD shapes into solids: straight extrusion along Z with an optional twist, a wall

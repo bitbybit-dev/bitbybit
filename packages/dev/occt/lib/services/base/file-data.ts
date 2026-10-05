@@ -1,5 +1,5 @@
 import { InputError } from "@bitbybit-dev/base";
-import { Handle_TDocStd_Document } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { Handle_TDocStd_Document } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 
 /** The smallest mesh deflection the kernel's mesh exports take, in model units. */
 export const SMALLEST_MESH_DEFLECTION = 1e-7;

@@ -2,8 +2,8 @@
   "occt": {
     "geom.curves.geomCircleCurve": { "returns": "Inputs.OCCT.GeomCurvePointer", "reason": "the kernel builds a wire; the worker has always declared a geometric curve pointer and changing the public type is a separate decision" },
     "geom.curves.geomEllipseCurve": { "returns": "Inputs.OCCT.GeomCurvePointer", "reason": "the kernel builds a wire; the worker has always declared a geometric curve pointer and changing the public type is a separate decision" },
-    "fillets.fillet3DWire": { "params": ["Inputs.OCCT.Fillet3DWireDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change the node's socket" },
-    "fillets.fillet3DWires": { "params": ["Inputs.OCCT.Fillet3DWiresDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change the node's socket" },
+    "fillets.fillet3DWire": { "params": ["Inputs.OCCT.Fillet3DWireDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change its published type" },
+    "fillets.fillet3DWires": { "params": ["Inputs.OCCT.Fillet3DWiresDto<Inputs.OCCT.TopoDSShapePointer>"], "reason": "the worker accepts any shape pointer; narrowing the public input to wires would change its published type" },
     "fillets.fillet2d": { "returns": "Inputs.OCCT.TopoDSShapePointer", "reason": "the kernel narrows the result to face | wire; the worker exposes the general shape pointer" },
     "fillets.fillet2dShapes": { "returns": "Inputs.OCCT.TopoDSShapePointer[]", "reason": "the kernel narrows the result to face[] | wire[]; the worker exposes shape pointers" },
     "operations.loft": { "params": ["Inputs.OCCT.LoftDto<Inputs.OCCT.TopoDSWirePointer>"], "reason": "the kernel also accepts edges; the worker exposes the wire input the editor offers" },

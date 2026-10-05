@@ -1,39 +1,4 @@
 #!/usr/bin/env node
-/**
- * Generate the JSON Schema of the design document from its TypeScript types.
- *
- * The types in packages/dev/occt/lib/api/models/design/document.ts are the source of the format:
- * the runner is written against them, and this schema is what editors, agents and other languages
- * check a document with before any kernel runs. It is read through the compiler's type checker, so
- * a mapped type such as the pen commands (every number of a sketch command allowed to be an
- * expression) resolves to the plain objects it stands for.
- *
- * Every interface and type alias whose name starts with Design or Sketch becomes a definition under
- * `$defs`, described by its JSDoc; everything else is written in place. An object without an index
- * signature allows no other properties, because the format's core is strict (an unknown property is
- * an error, which catches typos and invented fields) and its open places are named: `extras`,
- * `extensions` and a filter's selector inputs.
- *
- * The schema ships in the occt package (`schemas/design-document/`, in its tarball too) and is
- * published on the release CDN, whose files never change once a release is cut. While the format is
- * experimental its address names the release it ships with
- * (`https://git-cdn.bitbybit.dev/v<version>/schemas/design-document/experimental.json`), since each
- * release's experimental schema is its own and documents written against it are not migrated; a
- * released format version has one address for good
- * (`https://git-cdn.bitbybit.dev/latest/schemas/design-document/v<major>.<minor>.json`), which every
- * later release carries unchanged. Editors register the schema under that address from a copy
- * rather than fetch it. `validate` stays the authority: references, expressions and the order of
- * features are beyond what a schema can say.
- *
- * It is also the release gate. Whether the format is released is declared once, in `DESIGN_FORMAT`
- * (format.ts), and three things must agree with it: the `@beta` tag on `OCCTDesign` (on while
- * experimental, off once released), the file the schema is published under (`experimental.json`, then
- * `v<major>.<minor>.json`), and the files already published: a released schema never changes, which
- * `published.json` holds by SHA-256, so a change to the format after a release needs a new minor.
- *
- *   node scripts/gen-design-schema.mjs           write the schema
- *   node scripts/gen-design-schema.mjs --check   write nothing; fail if it would change or the release is not consistent
- */
 import ts from "typescript";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -52,7 +17,6 @@ const CDN = "https://git-cdn.bitbybit.dev";
 const PUBLISHED = `${SCHEMA_DIR}/published.json`;
 const VERSIONED = /^v\d+\.\d+\.json$/;
 
-/** The format a runner reads, as `DESIGN_FORMAT` in format.ts declares it. */
 export function formatOf(text) {
     const match = /DESIGN_FORMAT: DesignFormat = \{ released: (true|false), major: (\d+), minor: (\d+) \}/.exec(text);
     if (!match) {
@@ -61,7 +25,6 @@ export function formatOf(text) {
     return { released: match[1] === "true", major: Number(match[2]), minor: Number(match[3]) };
 }
 
-/** Whether the JSDoc of the class `OCCTDesign` carries `@beta`. */
 export function isBeta(text) {
     const match = /\/\*\*((?:(?!\*\/)[\s\S])*)\*\/\s*export class OCCTDesign\b/.exec(text);
     if (!match) {
@@ -70,24 +33,14 @@ export function isBeta(text) {
     return /@beta\b/.test(match[1]);
 }
 
-/** The file a format's schema is published under. */
 export function schemaFileOf(format) {
     return format.released ? `v${format.major}.${format.minor}.json` : "experimental.json";
 }
 
-/**
- * The address a format's schema is published at: under the release that ships it while the format
- * is experimental, under `latest` once released, since every later release carries it unchanged.
- */
 export function schemaIdOf(format, version) {
     return `${CDN}/${format.released ? "latest" : `v${version}`}/schemas/design-document/${schemaFileOf(format)}`;
 }
 
-/**
- * What keeps a release from being consistent: the `@beta` tag against the format's state, a versioned
- * schema published while the format is experimental or the experimental one left after a release, and
- * a published schema that is missing, changed or not recorded in `published.json`.
- */
 export function releaseProblems({ format, beta, files, published, hashes }) {
     const problems = [];
     if (beta && format.released) {
@@ -114,13 +67,11 @@ export function releaseProblems({ format, beta, files, published, hashes }) {
 
 const FORMAT = formatOf(readFileSync(path.join(ROOT, FORMAT_SOURCE), "utf8"));
 
-/** Where the schema is written, and the address it is published at: experimental until the format is released. */
 export const OUT = `${SCHEMA_DIR}/${schemaFileOf(FORMAT)}`;
 export const ID = schemaIdOf(FORMAT, JSON.parse(readFileSync(path.join(ROOT, PACKAGE), "utf8")).version);
 
 const NAMED = /^(Design|Sketch)[A-Z]/;
 
-/** The patterns `validate` holds strings to, which the schema states too; a test keeps them equal to the checker's. */
 export const PATTERNS = {
     name: "^[A-Za-z_][A-Za-z0-9_-]*$",
     optionalName: "^([A-Za-z_][A-Za-z0-9_-]*)?$",
@@ -132,11 +83,6 @@ export const PATTERNS = {
 const DOCUMENTS = new Set(["DesignPartDocument", "DesignAssemblyDocument"]);
 const COLOURS = new Set(["color", "edgeColor", "emissive"]);
 
-/**
- * What the schema adds to a property beyond its type, as `validate` checks it: a pattern for ids,
- * colours and hashes and a least value for counts. A pattern constrains only the string a union may
- * hold and a bound only the number, so both sit beside a reference to a union safely.
- */
 export function constraintsOf(owner, name) {
     if (name === "id") {
         return { pattern: DOCUMENTS.has(owner) ? PATTERNS.uuid : owner.startsWith("Sketch") || owner === "DesignCircleCommand" ? PATTERNS.optionalName : PATTERNS.name };
@@ -168,10 +114,6 @@ function describe(symbol, checker) {
 
 const byJson = (a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b), "en-US");
 
-/**
- * The schema of the type named `rootName` in `file`, with every Design or Sketch type it reaches as
- * a definition.
- */
 export function schemaOf(program, file, rootName) {
     const checker = program.getTypeChecker();
     const source = program.getSourceFile(file);
@@ -286,7 +228,6 @@ export function schemaOf(program, file, rootName) {
     return { root, defs: sortedDefs };
 }
 
-/** The design document's schema, as it is published. */
 export function designSchema() {
     const program = programOf();
     const { root, defs } = schemaOf(program, path.join(ROOT, SOURCE), ROOT_TYPE);
@@ -301,7 +242,6 @@ export function designSchema() {
 
 const sha256 = (text) => createHash("sha256").update(text).digest("hex");
 
-/** The schema files published now, their SHA-256 and the record of those released. */
 function publishedState() {
     const dir = path.join(ROOT, SCHEMA_DIR);
     const files = existsSync(dir) ? readdirSync(dir).filter((file) => file.endsWith(".json") && file !== "published.json") : [];

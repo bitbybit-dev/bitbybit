@@ -1,6 +1,4 @@
-// A fragment of the JSCAD inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
+import type { Base } from "../base-inputs";
 
 /**
  * Feeds `polygon.circle`: a filled circle in the XY plane, given by its 2D center, radius and the

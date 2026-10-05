@@ -1,7 +1,7 @@
-import { AssemblyPartDef }  from "./assembly-part-def";
-import { AssemblyNodeDef }  from "./assembly-node-def";
-import { AssemblyPartUpdateDef } from "./assembly-part-update-def";
-import { AssemblyLoadedPartDef } from "./assembly-loaded-part-def";
+import type { AssemblyPartDef }  from "./assembly-part-def";
+import type { AssemblyNodeDef }  from "./assembly-node-def";
+import type { AssemblyPartUpdateDef } from "./assembly-part-update-def";
+import type { AssemblyLoadedPartDef } from "./assembly-loaded-part-def";
 
 /**
  * Complete assembly structure definition.

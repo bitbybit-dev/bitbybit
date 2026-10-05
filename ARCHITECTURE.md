@@ -19,14 +19,6 @@ therefore a public interface in a stronger sense than usual. Renaming a method o
 is not only a source-compatibility question: it can invalidate data that was written against the old
 name and that this repository will never see.
 
-> **On the visual editors.** The reference consumer of that property is the visual editor on
-> bitbybit.dev, which generates its node catalogue from these declarations and stores the dotted API
-> paths inside users' saved scripts. **It is closed-source and is not part of this repository** -
-> there is no editor and no node generator to find here. It is named only because it makes the
-> constraint concrete. The design does not depend on it: a stable, machine-readable published surface
-> is worth the same to anyone generating bindings, documentation or stored references from it, and
-> nothing below should be read as existing to serve one downstream product.
-
 ## The layer model
 
 ```mermaid
@@ -191,3 +183,119 @@ editor, which is where someone meets the function.
 **The documentation site** (`docs/learn`) holds what a user of the published packages needs before
 they hit it: the colour range, which way is up, what an SVG import supports, how DXF colours and
 versions behave.
+
+## TypeScript configuration
+
+Every TypeScript config in the packages is plain JSON - no comments, no trailing commas - and so is
+every other tracked `.json` file outside `docs/` and `examples/`: `npm run check:json`
+(`scripts/check-json.mjs`, a step of `npm test`) parses each with `JSON.parse` and lists the ones
+that fail. A generated config therefore carries no banner, and the reasons behind each config live
+here rather than in it.
+
+**`tsconfig.base.cad.json`** holds the compiler options every published package shares, the whole
+strict set included. Each package's configs extend it and keep only what differs there: `outDir`,
+the paths into the sibling dists, the exclusions, and for the three Node packages their module
+settings. The strict flags arrived one package at a time, held by a per-package baseline until each
+reached zero; when the last package was through, they moved here from the leaves with a zero-change
+proof - `tsc --showConfig` compared before and after for every config - so the packages compile
+exactly as they did. Any change to the configs is proven the same way. `include`, `exclude` and
+`files` are replaced by a leaf rather than merged, and relative paths resolve against the file that
+defines them, so those stay in the leaves. The base is self-contained on purpose: the repository must
+build from a bare clone with nothing above it. Its `lib` adds `es2022.error` alone rather than all of
+es2022: that is what types `new Error(message, { cause })`, and a rethrow that drops the kernel's
+original error is what makes a CAD failure hard to diagnose. The target stays es2015, so nothing about
+the emit changes.
+
+**The Node packages** - `cad-cloud-sdk`, `mcp` (a stdio MCP server and the library it is built from)
+and `create-app` - write their configs by hand. Each `tsconfig.json` extends the base, so the strict
+set applies there too, and states what differs: they are Node code rather than browser bundles, so
+they compile as NodeNext at ES2022 (`create-app` with no DOM library), and they ship source maps and
+declaration maps because their consumers step into them. That `tsconfig.json` is the editor and test
+view, the specs included, which is what `typecheck:tests` and the type-aware lint read; the
+`tsconfig.build.json` beside it is what `tsc` emits from, and only there are the specs excluded - a
+compiled spec has no business in a published package. In `create-app` the two were once one file, so
+excluding the specs from the build also took them out of the only project that named them, and both
+the gate and the lint were quietly checking the source alone. The scaffold templates are copied, not
+compiled.
+
+### gen-ts-references
+
+`scripts/gen-ts-references.mjs` writes the TypeScript project references from the package manifests,
+so the build order has one source: `packages/dev/*/package.json`. For every package with a
+`tsconfig.bitbybit.json` it writes three configs, and one at the root:
+
+- **`tsconfig.bitbybit.json`**, the build config: a composite project whose `references` are the
+  `@bitbybit-dev/*` siblings its manifest declares (dependencies and peer dependencies).
+  `references`, `composite` and `tsBuildInfoFile` are the generator's; every other key is the
+  package's own, read back from the file and kept on regeneration. The build info is written into
+  `dist/` on purpose: `tsc -b` trusts it over the outputs when it decides a project is up to date, so
+  it has to disappear with the dist it describes, or a deleted dist would "rebuild" to nothing.
+- **`tsconfig.strict.json`**, the typecheck-only view: the build config with nothing emitted.
+  `npm run typecheck:strict` runs it and must print nothing. It repeats the build config's
+  references, because references are not inherited through `extends`; without them the view would
+  follow a sibling's declarations into the source of a package it never resolves through its own
+  paths, and typecheck that too.
+- **`tsconfig.json`**, the view an editor and a lint run resolve: the same base and the same sibling
+  paths as the build config, minus its emit settings and its exclusions, so the tests and mocks are
+  part of the project. It is derived from the build config, so the two cannot disagree about where a
+  sibling resolves. `outDir` is stated because TypeScript excludes it by default, and a stale or
+  misspelt one silently pulls the built dist back in as source.
+- **`tsconfig.build.json`** at the root references every package's build config. `tsc -b` orders
+  the builds from it, and `pnpm -r run build-p` orders the staging the same way, from the same
+  manifests.
+
+`npm run gen:references` writes them; `npm run check:references` writes nothing and exits 1 when any
+of them differs from what the manifests say.
+
+### gen-worker-api
+
+`CLAUDE.md` ("The generated worker layer") describes the generated worker classes; this is what it
+leaves out. A fragment member in `lib/api-hand/` is placed by its marker line: `// replaces <path>`
+is emitted at that kernel method's slot instead of the generated method, `// after <path>` right after
+that slot (a private helper, a reserved command), and `// first` or `// last` before or after every
+generated member. A replacing member without JSDoc of its own receives the kernel method's, so the doc
+still has one author, and the fragment's imports are merged into the generated file. Every directory
+of generated classes gets a generated barrel exporting its files in sorted order, except a package's
+own `lib/api` barrel, which is hand-written because it also exports the init class. The manager is
+private to a class with methods, passed on by a pure container, and public where a consumer subclass
+overrides it (`core`'s OCCT worker classes). A worker method may be renamed from the kernel's only
+through the generator's `methodNames` map, since those names are persisted in users' scripts. A kernel
+type that no pointer mapping covers is an error, and so are an override or a rename that names no
+generated method. Each generated file opens with one `// GENERATED` line naming the kernel file, and
+the fragment where one contributes.
+
+### gen-dto-meta
+
+`scripts/gen-dto-meta.mjs` writes two things from the kernel surfaces and the inputs DTOs.
+
+**The operation registries** (`lib/api/dto-registry.ts` in `occt`, `jscad` and `manifold`). A kernel
+method takes one inputs DTO, and a caller - an object literal from a script, a message that crossed
+to a worker, a request to a server - rarely spells out every property of it. The registry lists every
+public operation by the dotted path a caller names it with and the DTO class it takes, so one call
+before the kernel runs (`resolveInputs` in the base package) lays the caller's properties over the
+DTO's defaults; a property holding another DTO is listed as nested and gets that DTO's defaults the
+same way. Each DTO also gets a constraint table that `validateInputs` checks: a number, a flag, text,
+a hex color, a point or vector of two or three numbers, a list of any of them, a value of a string
+enum or a union of string literals, and `opaque` - checked for presence only - for everything else. A
+number's range comes from its JSDoc `@minimum` and `@maximum`, made exclusive by
+`@exclusiveMinimum true` or `@exclusiveMaximum true`; an infinite bound is no bound. The surface is
+walked from the kernel's root class exactly as a dotted path resolves at run time
+(`scripts/lib/kernel-surface.mjs`, shared with gen-worker-api). A parameter typed
+`Inputs.<Namespace>.<Class>`, with or without type arguments, names its DTO; a method with no
+parameter is listed with none; any other parameter is an error.
+
+**The `Resolved` mirrors** (`lib/api/resolved-inputs/index.ts` in every package with inputs): every DTO
+as `resolveDto` leaves it, each property with a default present and never undefined. Code that reads
+a DTO after resolving it is typed against the mirror; code that takes one from a caller is typed
+against `Inputs`, where a defaulted property may be left out. A package's `Inputs` re-exports
+namespaces of the packages below it, and its mirror re-exports their mirrors the same way: the
+re-exports are read from the package's `inputs/index.ts`, so the two cannot drift, and the mirrors
+are generated in dependency order. A DTO's parent is looked up in its own package's inputs and then
+in those of the packages below it.
+
+In both, a DTO's properties are taken in the order the API index lists them - a concrete parent's
+first, an abstract parent's after the class's own, a redeclared property in its parent's place - and
+a parent the inputs do not hold is an error, because its properties and their defaults would
+otherwise be left out without a sign. Every list is sorted with a fixed `en-US` collation: a bare
+`localeCompare` collates by the machine's locale, and under one that sorts `y` with `i` the generated
+files would differ.

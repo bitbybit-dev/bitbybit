@@ -1,6 +1,6 @@
 import * as Inputs from "../inputs";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Reading, building and reshaping plain arrays of any kind of item. Positions are 0-based: index 0

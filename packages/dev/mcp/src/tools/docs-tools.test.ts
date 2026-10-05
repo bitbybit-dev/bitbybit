@@ -7,7 +7,9 @@ import { FIXTURE_VERSION, GUIDE_URL, fixtureContext } from "../__fixtures__/load
 
 function tool(name: string): HttpTool {
     const found = toHttp(createDocsRegistry(), fixtureContext()).find((candidate) => candidate.name === name);
-    if (!found) throw new Error(`no tool ${name}`);
+    if (!found) {
+        throw new Error(`no tool ${name}`);
+    }
     return found;
 }
 

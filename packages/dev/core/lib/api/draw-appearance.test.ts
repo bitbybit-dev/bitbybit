@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { contrastColor, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, meshNumbersOf, partPlacementsOf, samePlacements, type DesignLookOptions, type DesignMesh, type PartPlacement } from "./draw-appearance";
+import { contrastColor, defaultEdgeColor, designDrawPlanOf, DesignMeshCache, designMeshCacheKeyOf, designMeshesOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, meshesByKeyOf, meshNumbersOf, partPlacementsOf, samePlacements, type DesignDrawMemory, type DesignLookOptions, type DesignMesh, type DesignPlanOptions, type PartPlacement } from "./draw-appearance";
 
 const square = (faceIndex: number, z: number) => ({
     faceIndex,
@@ -452,5 +452,103 @@ describe("the meshes a drawer keeps across design builds", () => {
         expect(kept).toEqual([undefined, undefined, later]);
         expect(weight).toBe(66 + 36);
         expect([cache.size, cache.weight]).toEqual([0, 0]);
+    });
+});
+
+describe("a design build laid out for drawing", () => {
+    const options: DesignPlanOptions = { drawFaces: true, drawEdges: true, faceColour: "#ff0000", faceOpacity: 1, edgeColour: "#ffffff", edgeWidth: 2, edgeOpacity: 1, precision: 0.01 };
+    const moved = (x: number): number[] => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, 0, 0, 1];
+    const build = (x: number, extra: { path: string; part: string; world: number[] }[] = []) => ({
+        parts: [{ id: "bolt", shapeHash: "b1" }, { id: "plate", shape: { hash: 9 } }, { id: "spare", shapeHash: "s1" }],
+        components: [{ path: "plate", part: "plate", world: moved(0) }, { path: "bolt0", part: "bolt", world: moved(x) }, ...extra],
+    });
+    const meshOf = (faces: number): DesignMesh => ({
+        faceList: Array.from({ length: faces }, (_unused, faceIndex) => square(faceIndex, 0)),
+        edgeList: [],
+    });
+    const memoryOf = (plan: ReturnType<typeof designDrawPlanOf>, meshes: ReadonlyMap<string, DesignMesh>, precision = options.precision): DesignDrawMemory<DesignMesh> => ({ precision, signature: plan.signature, placements: plan.placements, meshes });
+
+    it("should place the parts the components place, in their order, leave out a component's part the build lacks, and key each one's mesh", () => {
+        // Act
+        const plan = designDrawPlanOf(build(1, [{ path: "ghost0", part: "ghost", world: moved(3) }]), options, undefined);
+
+        // Assert
+        expect(plan.placed).toEqual(["plate", "bolt"]);
+        expect([...plan.placements.keys()]).toEqual(["plate", "bolt", "ghost"]);
+        expect([...plan.meshKeys]).toEqual([["plate", "handle:9"], ["bolt", "b1"]]);
+        expect(plan.parts.get("spare")).toEqual({ id: "spare", shapeHash: "s1" });
+        expect(plan.signature).toBe(designSignatureOf(plan.parts, ["plate", "bolt"], options));
+        expect(plan.posesOnly).toBe(false);
+    });
+
+    it("should only move the parts when the drawing it replaces looks the same and places the same parts at the same paths", () => {
+        // Arrange
+        const first = designDrawPlanOf(build(1), options, undefined);
+        const memory = memoryOf(first, new Map());
+
+        // Act
+        const results = [
+            designDrawPlanOf(build(5), options, memory).posesOnly,
+            designDrawPlanOf(build(5), { ...options, precision: 0.1 }, memory).posesOnly,
+            designDrawPlanOf(build(5), { ...options, faceColour: "#00ff00" }, memory).posesOnly,
+            designDrawPlanOf(build(5, [{ path: "bolt1", part: "bolt", world: moved(2) }]), options, memory).posesOnly,
+        ];
+
+        // Assert
+        expect(results).toEqual([true, false, false, false]);
+    });
+
+    it("should take each mesh from the drawing it replaces, then the cache, and mesh the rest in one call that fills the cache", async () => {
+        // Arrange
+        const plan = designDrawPlanOf({
+            parts: [{ id: "kept", shapeHash: "k" }, { id: "cached", shapeHash: "c" }, { id: "fresh", shapeHash: "f" }, { id: "loose", shape: { hash: 4 } }],
+        }, options, undefined);
+        const [kept, cached, fresh, loose] = [meshOf(1), meshOf(2), meshOf(3), meshOf(4)];
+        const cache = new DesignMeshCache<DesignMesh>();
+        cache.set("c|fine", cached);
+        cache.set("k|fine", meshOf(5));
+        const asked: string[][] = [];
+
+        // Act
+        const meshes = await designMeshesOf(plan, options, memoryOf(plan, new Map([["k", kept]])), "fine", cache, parts => {
+            asked.push(parts.map(part => part.id));
+            return Promise.resolve([fresh, loose]);
+        });
+
+        // Assert
+        expect([...meshes]).toEqual([["kept", kept], ["cached", cached], ["fresh", fresh], ["loose", loose]]);
+        expect(asked).toEqual([["fresh", "loose"]]);
+        expect([cache.get("f|fine"), cache.size]).toEqual([fresh, 3]);
+    });
+
+    it("should ignore the meshes of a drawing made at another precision, and mesh nothing when every part has one", async () => {
+        // Arrange
+        const plan = designDrawPlanOf({ parts: [{ id: "kept", shapeHash: "k" }] }, options, undefined);
+        const [old, cached] = [meshOf(1), meshOf(2)];
+        const cache = new DesignMeshCache<DesignMesh>();
+        cache.set("k|fine", cached);
+        let calls = 0;
+
+        // Act
+        const meshes = await designMeshesOf(plan, options, memoryOf(plan, new Map([["k", old]]), 0.5), "fine", cache, () => {
+            calls++;
+            return Promise.resolve([]);
+        });
+
+        // Assert
+        expect(meshes.get("kept")).toBe(cached);
+        expect(calls).toBe(0);
+    });
+
+    it("should keep a plan's meshes by their mesh keys, leaving out a part without one", () => {
+        // Arrange
+        const plan = designDrawPlanOf(build(1), options, undefined);
+        const mesh = meshOf(1);
+
+        // Act
+        const byKey = meshesByKeyOf(plan, new Map([["bolt", mesh]]));
+
+        // Assert
+        expect([...byKey]).toEqual([["b1", mesh]]);
     });
 });

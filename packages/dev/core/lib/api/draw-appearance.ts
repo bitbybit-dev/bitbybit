@@ -1,4 +1,4 @@
-import * as Inputs from "./inputs";
+import type * as Inputs from "./inputs";
 import type * as Models from "./models";
 
 /**
@@ -547,4 +547,105 @@ export function samePlacements(first: ReadonlyMap<string, readonly PartPlacement
         }
     }
     return true;
+}
+
+/** The drawing options a design build's plan reads: the look, and the precision its parts are meshed at. */
+export interface DesignPlanOptions extends DesignLookOptions {
+    precision: number;
+}
+
+/** What a drawer remembers of the design build it drew last on a node: what the next plan compares against. */
+export interface DesignDrawMemory<T extends DesignMesh> {
+    precision: number;
+    signature: string;
+    placements: ReadonlyMap<string, readonly PartPlacement[]>;
+    meshes: ReadonlyMap<string, T>;
+}
+
+/** A design build laid out for drawing: where each part stands, the placed parts in drawing order, what decides their look and the key of each one's mesh. */
+export interface DesignDrawPlan<P extends DesignDrawnPart> {
+    placements: Map<string, PartPlacement[]>;
+    parts: Map<string, P>;
+    placed: string[];
+    signature: string;
+    meshKeys: Map<string, string>;
+    /** True when the build looks as the one drawn last and places the same parts at the same paths, so only the placements move. */
+    posesOnly: boolean;
+}
+
+/**
+ * Lays a design build out for drawing, and tells whether the drawing it replaces only needs its parts
+ * moved.
+ * @param build - The parts and the components that place them
+ * @param options - The resolved drawing options
+ * @param memory - What the drawer remembers of the build drawn last on the same node, if any
+ * @returns The plan
+ */
+export function designDrawPlanOf<P extends DesignDrawnPart & { id: string }>(build: { parts: readonly P[]; components?: PlacementSource["components"] }, options: DesignPlanOptions, memory: DesignDrawMemory<DesignMesh> | undefined): DesignDrawPlan<P> {
+    const placements = partPlacementsOf(build);
+    const parts = new Map(build.parts.map(part => [part.id, part]));
+    const placed = [...placements.keys()].filter(id => parts.has(id));
+    const signature = designSignatureOf(parts, placed, options);
+    const meshKeys = new Map(placed.map(id => [id, designMeshKeyOf(parts.get(id)!)]));
+    const posesOnly = memory !== undefined && memory.precision === options.precision && memory.signature === signature && samePlacements(memory.placements, placements);
+    return { placements, parts, placed, signature, meshKeys, posesOnly };
+}
+
+/**
+ * The mesh of every placed part of a plan: the one the drawing it replaces kept under the same key
+ * at the same precision, else the one the drawer's cache holds, else one `mesh` makes, in a single
+ * call for every part still without one. What `mesh` makes is kept in the cache.
+ * @param plan - The plan
+ * @param options - The resolved drawing options
+ * @param memory - What the drawer remembers of the build drawn last on the same node, if any
+ * @param meshing - The options the parts are meshed with, written out as text
+ * @param cache - The meshes the drawer keeps across every build it draws
+ * @param mesh - Meshes the given parts, one mesh per part in their order
+ * @returns The meshes, by part id
+ */
+export async function designMeshesOf<T extends DesignMesh, P extends DesignDrawnPart>(plan: DesignDrawPlan<P>, options: DesignPlanOptions, memory: DesignDrawMemory<T> | undefined, meshing: string, cache: DesignMeshCache<T>, mesh: (parts: P[]) => Promise<T[]>): Promise<Map<string, T>> {
+    const meshes = new Map<string, T>();
+    if (memory !== undefined && memory.precision === options.precision) {
+        for (const id of plan.placed) {
+            const kept = memory.meshes.get(plan.meshKeys.get(id)!);
+            if (kept !== undefined) {
+                meshes.set(id, kept);
+            }
+        }
+    }
+    const cacheKeys = new Map(plan.placed.map(id => [id, designMeshCacheKeyOf(plan.parts.get(id)!, meshing)]));
+    for (const id of plan.placed) {
+        const cacheKey = cacheKeys.get(id);
+        const cached = meshes.has(id) || cacheKey === undefined ? undefined : cache.get(cacheKey);
+        if (cached !== undefined) {
+            meshes.set(id, cached);
+        }
+    }
+    const missing = plan.placed.filter(id => !meshes.has(id));
+    if (missing.length > 0) {
+        const made = await mesh(missing.map(id => plan.parts.get(id)!));
+        missing.forEach((id, index) => {
+            const madeMesh = made[index]!;
+            const cacheKey = cacheKeys.get(id);
+            meshes.set(id, madeMesh);
+            if (cacheKey !== undefined) {
+                cache.set(cacheKey, madeMesh);
+            }
+        });
+    }
+    return meshes;
+}
+
+/**
+ * The meshes of a plan's placed parts by their mesh keys, which is how a drawer remembers them for
+ * the next build it draws on the same node.
+ * @param plan - The plan
+ * @param meshes - The meshes, by part id
+ * @returns The meshes, by mesh key
+ */
+export function meshesByKeyOf<T extends DesignMesh, P extends DesignDrawnPart>(plan: DesignDrawPlan<P>, meshes: ReadonlyMap<string, T>): Map<string, T> {
+    return new Map(plan.placed.flatMap(id => {
+        const found = meshes.get(id);
+        return found === undefined ? [] : [[plan.meshKeys.get(id)!, found] as const];
+    }));
 }

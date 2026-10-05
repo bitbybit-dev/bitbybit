@@ -1,11 +1,12 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct from "../../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../../occ-helper";
-import { VectorHelperService } from "../../../api/vector-helper.service";
-import { ShapesHelperService } from "../../../api/shapes-helper.service";
-import { OCCTService } from "../../../occ-service";
-import { BenchmarkReport, runBenchmark, statusOf, summaryLine } from "./benchmark";
-import { NAMING_CORPUS } from "./corpus";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import { OccHelper } from "../../occ-helper";
+import { VectorHelperService } from "../../api/vector-helper.service";
+import { ShapesHelperService } from "../../api/shapes-helper.service";
+import { OCCTService } from "../../occ-service";
+import type { BenchmarkReport } from "./__test__/naming-benchmark";
+import { runBenchmark, statusOf, summaryLine } from "./__test__/naming-benchmark";
+import { NAMING_CORPUS } from "./__test__/naming-corpus";
 
 describe("the naming benchmark", () => {
     let report: BenchmarkReport;

@@ -1,18 +1,6 @@
  
  
 
-/**
- * Centralized BabylonJS mocks for testing
- * This file contains all reusable mock classes for BabylonJS types
- */
-
-/**
- * Hands `value` back as an instance of `type` once it has checked that it is one, so a test that
- * reads a double's own state, or hands a double to code typed for the engine class, gets there
- * through a check instead of an assertion. Where `@babylonjs/core` is mocked, its classes are the
- * doubles in this file, so a `MockScene` is an instance of `BABYLON.Scene` there - and a suite that
- * forgot the mock fails here, by name, rather than somewhere downstream.
- */
 export function instanceOf<T>(value: unknown, type: abstract new (...args: never[]) => T): T {
     if (value instanceof type) {
         return value;
@@ -104,7 +92,7 @@ export class MockColor3 {
                 parseInt(result[3]!, 16) / 255
             );
         }
-        return new MockColor3(1, 0, 0); // Default to red if parsing fails
+        return new MockColor3(1, 0, 0);
     }
     
     static FromArray(array: number[]) {
@@ -146,8 +134,7 @@ export class MockMatrix {
     
     constructor() {
         this._m = new Float32Array(16);
-        // Identity matrix
-        this._m[0] = 1; this._m[5] = 1; this._m[10] = 1; this._m[15] = 1;
+        this._m.set([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
     }
     
     static FromArray(array: number[]) {
@@ -221,7 +208,6 @@ export class MockVertexData {
     }
     
     static ComputeNormals(positions: number[], _indices: number[] | Uint16Array | Uint32Array, normals: number[], _options?: { useRightHandedSystem?: boolean }) {
-        // Simple mock - fill normals with 0, 0, 1 for each vertex
         normals.length = 0;
         const vertexCount = positions.length / 3;
         for (let i = 0; i < vertexCount; i++) {
@@ -254,8 +240,8 @@ export class MockMaterial {
 export class MockTexture {
     name: string;
     url: string;
-    wrapU = 1; // WRAP_ADDRESSMODE
-    wrapV = 1; // WRAP_ADDRESSMODE
+    wrapU = MockTexture.WRAP_ADDRESSMODE;
+    wrapV = MockTexture.WRAP_ADDRESSMODE;
     uScale = 1;
     vScale = 1;
     uOffset = 0;
@@ -282,15 +268,9 @@ export class MockTexture {
     }
 
     dispose() {
-        // Mock dispose
     }
 }
 
-/**
- * What the package attaches to a mesh. Babylon treats `metadata` as free user data typed `any`, so
- * this is not the engine's shape - it is the set this package actually writes there and reads back,
- * which is what a mock should describe.
- */
 export type MockMeshMetadata = {
     options?: unknown;
     shadowGenerators?: unknown;
@@ -330,14 +310,6 @@ export class MockStandardMaterial extends MockMaterial {
     disableLighting = false;
 }
 
-/**
- * A node that is deliberately not a mesh.
- *
- * The synchronous draw path skips its detect chain when the entity it was handed is already a
- * `BABYLON.Mesh`, on the grounds that such an entity is being updated rather than drawn. A test for
- * the node branch therefore needs something that is a node and is not a mesh, which the mesh mock
- * cannot be.
- */
 export class MockTransformNode {
     name: string;
     id: string;
@@ -348,7 +320,7 @@ export class MockTransformNode {
         this.id = name;
     }
     getChildMeshes(): MockMesh[] { return []; }
-    dispose(): void { /* nothing to release in a mock */ }
+    dispose(): void { }
 }
 
 export class MockMesh extends MockTransformNode {
@@ -367,7 +339,6 @@ export class MockMesh extends MockTransformNode {
     
     constructor(name: string, scene?: MockScene | null) {
         super(name);
-        // Make _parent and _scene non-enumerable to avoid circular reference in JSON serialization
         Object.defineProperty(this, "_parent", {
             value: null,
             writable: true,
@@ -393,7 +364,6 @@ export class MockMesh extends MockTransformNode {
     }
     
     set parent(value: MockMesh | null) {
-        // Remove from old parent
         const oldParent = this._parent;
         if (oldParent) {
             const index = oldParent.children.indexOf(this);
@@ -402,14 +372,12 @@ export class MockMesh extends MockTransformNode {
             }
         }
         this._parent = value;
-        // Add to new parent
         if (value && !value.children.includes(this)) {
             value.children.push(this);
         }
     }
     
     override dispose() {
-        // Remove from parent
         const parent = this._parent;
         if (parent) {
             const index = parent.children.indexOf(this);
@@ -417,11 +385,9 @@ export class MockMesh extends MockTransformNode {
                 parent.children.splice(index, 1);
             }
         }
-        // Dispose children
         const childrenCopy = [...this.children];
         childrenCopy.forEach(child => child.dispose());
         this.children = [];
-        // Remove from scene
         const scene = this._scene;
         if (scene) {
             const index = scene._meshes.indexOf(this);
@@ -440,7 +406,6 @@ export class MockMesh extends MockTransformNode {
     }
     
     override getChildMeshes(): MockMesh[] {
-        // Recursively get all child meshes including instances
         const result: MockMesh[] = [];
         this.children.forEach(child => {
             result.push(child);
@@ -454,11 +419,9 @@ export class MockMesh extends MockTransformNode {
     }
     
     flipFaces(_flipNormals: boolean) {
-        // Mock implementation
     }
     
     setPreTransformMatrix(_matrix: MockMatrix) {
-        // Mock implementation
     }
     
     createInstance(name: string) {
@@ -479,7 +442,6 @@ export class MockMesh extends MockTransformNode {
     }
     
     thinInstanceSetBuffer(_kind: string, buffer: Float32Array, _stride: number, _staticBuffer: boolean) {
-        // Mock implementation for thin instances
         if (!this.metadata) {
             this.metadata = {};
         }
@@ -497,7 +459,6 @@ export class MockInstancedMesh extends MockMesh {
 }
 
 export class MockLinesMesh extends MockMesh {
-    /** The per-vertex colours the line system was built with, so a suite can assert them. */
     _colors: { r: number, g: number, b: number, a: number }[][] = [];
 
     override enableEdgesRendering() {
@@ -505,7 +466,6 @@ export class MockLinesMesh extends MockMesh {
     }
 }
 
-/** The line material's own settings, which a redraw in place changes without rebuilding the line. */
 export class MockGreasedLineMaterial {
     width: number;
     useColors: boolean;
@@ -530,7 +490,6 @@ export class MockGreasedLineMaterial {
 
 export class MockGreasedLineMesh extends MockMesh {
     _points: number[][] = [];
-    /** The material options the line was created with, so a suite can assert colour and width. */
     _materialOptions: { color?: MockColor3, colors?: MockColor3[], width?: number, useColors?: boolean } = {};
     greasedLineMaterial: MockGreasedLineMaterial | undefined;
     
@@ -576,10 +535,6 @@ export class MockMeshBuilder {
         options: { lines?: { x: number, y: number, z: number }[][]; colors?: { r: number, g: number, b: number, a: number }[][]; instance?: MockLinesMesh | null; updatable?: boolean },
         scene?: MockScene | null
     ) {
-        // Babylon updates and returns the mesh it is handed as `instance`, and a line system carries
-        // its points as vertex data. A mock that always made a fresh mesh and recorded no vertices
-        // reported zero of them, so callers that branch on the vertex count never reached their
-        // update path and the reuse could not be tested at all.
         const mesh = options.instance ?? new MockLinesMesh(name || "lineSystem", scene);
         const vertexData = new MockVertexData();
         vertexData.positions = (options.lines ?? []).flat().flatMap((p) => [p.x, p.y, p.z]);
@@ -597,8 +552,6 @@ export function CreateGreasedLine(
 ) {
     const mesh = new MockGreasedLineMesh(name, scene);
     mesh._points = lineOptions.points || [];
-    // The colour and width the line was built with are what a caller is choosing; a mock that dropped
-    // the material options left every colour decision unassertable.
     mesh._materialOptions = materialOptions ?? {};
     mesh.greasedLineMaterial = new MockGreasedLineMaterial(materialOptions ?? {});
     const material = new MockPBRMetallicRoughnessMaterial(name + "-material");
@@ -609,9 +562,6 @@ export function CreateGreasedLine(
     return mesh;
 }
 
-/**
- * Create BabylonJS module mock for vi.mock()
- */
 export function createBabylonJSMock() {
     return {
         Vector3: MockVector3,
@@ -644,7 +594,6 @@ export function createBabylonJSMock() {
     };
 }
 
-// Scene helper specific mock classes
 export class MockEngine {
     _canvas: HTMLCanvasElement;
     _renderLoop: (() => void) | null = null;
@@ -653,8 +602,8 @@ export class MockEngine {
         this._canvas = canvas;
     }
     
-    setHardwareScalingLevel(_level: number) { /* mock */ }
-    resize() { /* mock */ }
+    setHardwareScalingLevel(_level: number) { }
+    resize() { }
     
     runRenderLoop(callback: () => void) {
         this._renderLoop = callback;
@@ -664,7 +613,7 @@ export class MockEngine {
         this._renderLoop = null;
     }
     
-    dispose() { /* mock */ }
+    dispose() { }
 }
 
 export class MockBabylonScene {
@@ -673,8 +622,8 @@ export class MockBabylonScene {
     clearColor: MockColor4 | null = null;
     activeCamera: MockArcRotateCamera | null = null;
     
-    dispose() { /* mock */ }
-    render() { /* mock */ }
+    dispose() { }
+    render() { }
 }
 
 export class MockHemisphericLight {
@@ -691,7 +640,7 @@ export class MockHemisphericLight {
         this.groundColor = new MockColor3(0.5, 0.5, 0.5);
     }
     
-    dispose() { /* mock */ }
+    dispose() { }
 }
 
 export class MockDirectionalLight {
@@ -708,7 +657,7 @@ export class MockDirectionalLight {
         this.diffuse = new MockColor3(1, 1, 1);
     }
     
-    dispose() { /* mock */ }
+    dispose() { }
 }
 
 export class MockShadowGenerator {
@@ -716,7 +665,7 @@ export class MockShadowGenerator {
     blurKernel = 0;
     darkness = 0;
     
-    constructor(_mapSize: number, _light: MockDirectionalLight) { /* mock */ }
+    constructor(_mapSize: number, _light: MockDirectionalLight) { }
 }
 
 export class MockArcRotateCamera {
@@ -754,15 +703,14 @@ export class MockArcRotateCamera {
         scene.activeCamera = this;
     }
     
-    attachControl(_canvas: HTMLCanvasElement, _noPreventDefault?: boolean) { /* mock */ }
-    dispose() { /* mock */ }
+    attachControl(_canvas: HTMLCanvasElement, _noPreventDefault?: boolean) { }
+    dispose() { }
 }
 
 export const MockTools = {
     ToRadians: (degrees: number) => degrees * (Math.PI / 180)
 };
 
-/** The ground `CreateGround` builds, holding the size it was asked for so a suite can assert it. */
 export class MockGroundMesh extends MockMesh {
     receiveShadows = false;
     _groundWidth: number;
@@ -775,9 +723,6 @@ export class MockGroundMesh extends MockMesh {
     }
 }
 
-/**
- * Create scene helper mock for vi.mock("@babylonjs/core")
- */
 export function createSceneHelperMock() {
     return {
         Engine: MockEngine,

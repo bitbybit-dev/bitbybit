@@ -1,16 +1,19 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
 import { release, stableJson } from "./cache";
-import { cross } from "./helpers";
-import { IDENTITY, Matrix, followedBy, frameMatrix, jointMatrix, movedFrame } from "./placement";
-import { DesignLibrary, LibraryEntry, sourceEntry, versionIn } from "./library";
+import type { BaseBitByBit } from "../../base";
+import type { Matrix } from "./placement";
+import { frameMatrix, jointMatrix, movedFrame, squaredFrame } from "./placement";
+import type { DesignLibrary, LibraryEntry } from "./library";
+import { sourceEntry, versionIn } from "./library";
 import { connectorIdsOf } from "./connectors";
 import { DesignProblem, pointer } from "./problems";
 import { framingOf, runDesign } from "./runner";
-import { ROOT_NODE, structurePartOf } from "./export-structure";
-import { DesignRunContext } from "./state";
-import { DesignValues, directionOf, formatNumber, isExpressionObject, numberOf, parameterTypeOf, parameterValues, pointOf, propertyValue, textOf, truthOf, valueOf } from "./values";
+import { ROOT_NODE, structurePartOf, withProperties } from "./export-structure";
+import type { DesignRunContext } from "./state";
+import type { DesignValues, ParameterChoice } from "./values";
+import { directionOf, formatNumber, isExpressionObject, numberOf, parameterTypeOf, parameterValues, pointOf, propertyValue, textOf, truthOf, valueOf } from "./values";
 
 type Built = Models.OCCT.DesignBuildResult<TopoDS_Shape>;
 type Part = Models.OCCT.DesignBuiltPart<TopoDS_Shape>;
@@ -26,7 +29,12 @@ function sourceDocument(library: BuildLibrary, source: Models.OCCT.DesignCompone
 /** The most occurrences one build places through every level; a sub-assembly placed many times counts all it holds each time. */
 export const MAX_OCCURRENCES = 100_000;
 
-/** What an assembly build gathers through every level. */
+interface GatheredJoint {
+    joint: Omit<Models.OCCT.DesignBuiltJoint, "frame">;
+    local: Inputs.Base.Frame;
+    parent: string | undefined;
+}
+
 interface Gathered {
     context: DesignRunContext;
     library: BuildLibrary;
@@ -34,18 +42,15 @@ interface Gathered {
     parts: Map<string, Part>;
     components: Models.OCCT.DesignBuiltComponent[];
     products: Map<string, Record<string, string | number | boolean>>;
-    joints: { joint: Omit<Models.OCCT.DesignBuiltJoint, "frame">; local: Inputs.Base.Frame; parent: string | undefined }[];
+    joints: GatheredJoint[];
     report: Models.OCCT.DesignFeatureReport[];
     issues: Models.OCCT.DesignIssue[];
 }
 
-/** Connectors by id, as frames. */
 type Connectors = ReadonlyMap<string, Inputs.Base.Frame>;
 
-/** A joint and its position in its document's list. */
 type Placing = { joint: Models.OCCT.DesignJoint; path: string };
 
-/** The joint a replicated component is fastened by on one member of its set, `connector` of `to.component`. */
 function replicaJoint(component: Models.OCCT.DesignComponent, replicate: Models.OCCT.DesignReplicate, id: string, connector: string): Models.OCCT.DesignJoint {
     return {
         id, type: "fastened", component: component.id, connector: replicate.connector, to: { component: replicate.to.component, connector },
@@ -55,32 +60,26 @@ function replicaJoint(component: Models.OCCT.DesignComponent, replicate: Models.
     };
 }
 
-/**
- * The joint that moves each component, by component id, and for a replicated component the joint
- * that fastens it, on its set as a whole; `validate` has refused a component two joints move.
- */
 function jointsByComponent(document: Models.OCCT.DesignAssemblyDocument): Map<string, Placing> {
     const replicated = document.components.flatMap((component, index): [string, Placing][] => component.replicate === undefined ? [] : [[component.id, { joint: replicaJoint(component, component.replicate, component.id, component.replicate.to.connector), path: pointer("/components", index, "replicate") }]]);
     return new Map([...(document.joints ?? []).map((joint, index): [string, Placing] => [joint.component, { joint, path: pointer("/joints", index) }]), ...replicated]);
 }
 
-/** The members of the connector or set `name` among a placed component's connectors: the one it names, or every `<name>.<member>`. */
 function membersOf(connectors: Connectors | undefined, name: string): string[] {
     const ids = [...(connectors?.keys() ?? [])];
     return ids.includes(name) ? [name] : ids.filter(id => id.startsWith(`${name}.`));
 }
 
-function frameOf(frame: Models.OCCT.DesignFrame, parameters: DesignValues, path: string): Inputs.Base.Frame {
+function frameOf(frame: Models.OCCT.DesignFrame, parameters: DesignValues, path: string, base: BaseBitByBit): Inputs.Base.Frame {
     const normal = directionOf(frame.normal, parameters, pointer(path, "normal"));
     const direction = directionOf(frame.direction, parameters, pointer(path, "direction"));
-    if (Math.hypot(...cross(normal, direction)) <= 1e-9 * Math.hypot(...normal) * Math.hypot(...direction)) {
+    const origin = pointOf(frame.origin, parameters, pointer(path, "origin"));
+    if (squaredFrame(origin, normal, direction, base) === undefined) {
         throw new DesignProblem(pointer(path, "direction"), "the direction lies along the normal: the x axis needs a direction across it");
     }
-    return { origin: pointOf(frame.origin, parameters, pointer(path, "origin")), normal, direction };
+    return { origin, normal, direction };
 }
 
-/** How many occurrences an assembly places through every level, counting no further once past the limit. */
-/** How many occurrences a component makes: one, or for a replicated one, one per member of the set it is placed on. */
 function replicasOf(component: Models.OCCT.DesignComponent, document: Models.OCCT.DesignAssemblyDocument, library: BuildLibrary): number {
     const replicate = component.replicate;
     const target = replicate === undefined ? undefined : document.components.find(other => other.id === replicate.to.component);
@@ -135,12 +134,6 @@ export function placementOrder(components: readonly Models.OCCT.DesignComponent[
     return order;
 }
 
-/**
- * The values a component's source gives the parameters of the document it places, read by the kind
- * of each parameter there: text and choice parameters take text as written, or the text a
- * `{ "expr" }` computes over this assembly's parameters; the others take a number, a boolean or an
- * expression over them.
- */
 function overridesOf(source: Models.OCCT.DesignComponentSource, declared: Readonly<Record<string, unknown>> | undefined, parameters: DesignValues, path: string): Record<string, number | string | boolean> {
     return Object.fromEntries(Object.entries(source.parameters ?? {}).map(([name, value]) => {
         const at = pointer(path, "parameters", name);
@@ -155,7 +148,6 @@ function overridesOf(source: Models.OCCT.DesignComponentSource, declared: Readon
     }));
 }
 
-/** Runs `run`, reporting a problem it finds in the source document under the component's source `path`. */
 function inSource<T>(path: string, run: () => T): T {
     try {
         return run();
@@ -167,16 +159,15 @@ function inSource<T>(path: string, run: () => T): T {
     }
 }
 
-/**
- * The fingerprint that names a variant of a part: the first eight hexadecimal digits of the SHA-256
- * of its document, configuration and parameter values.
- */
-/**
- * Builds the part a component places, once per document version and values, and names it by its item
- * key; when the build is given several versions of the document, the version's first eight digits
- * follow, so two revisions placed together stay two parts.
- */
-function builtPart(document: Models.OCCT.DesignPartDocument, index: number, version: string, revisions: number, source: Models.OCCT.DesignComponentSource, overrides: Record<string, number | string | boolean>, gathered: Gathered, path: string): { part: Part; cached: boolean; messages: string[] } {
+const VERSION_MARK_LENGTH = 8;
+
+interface BuiltPart {
+    part: Part;
+    cached: boolean;
+    messages: string[];
+}
+
+function builtPart(document: Models.OCCT.DesignPartDocument, index: number, version: string, revisions: number, source: Models.OCCT.DesignComponentSource, overrides: Record<string, number | string | boolean>, gathered: Gathered, path: string): BuiltPart {
     const choice = { configuration: source.configuration, overrides };
     const values = inSource(path, () => parameterValues(document.parameters, document.configurations, choice));
     const variant = stableJson({ document: source.document, version, configuration: source.configuration, values: Object.fromEntries([...values].filter(([name]) => name !== "configuration")) });
@@ -193,7 +184,7 @@ function builtPart(document: Models.OCCT.DesignPartDocument, index: number, vers
     if (found === undefined) {
         throw new DesignProblem(pointer(path, "part"), `the part "${source.part}" was not built${messages.length > 0 ? `: ${messages.join("; ")}` : ""}`);
     }
-    const id = revisions > 1 ? `${found.id}-${found.itemKey}-${version.slice(0, 8)}` : `${found.id}-${found.itemKey}`;
+    const id = revisions > 1 ? `${found.id}-${found.itemKey}-${version.slice(0, VERSION_MARK_LENGTH)}` : `${found.id}-${found.itemKey}`;
     if (!gathered.parts.has(id)) {
         const partNumber = found.properties["partNumber"];
         const sharing = partNumber === undefined ? undefined : [...gathered.parts.values()].find(other => other.properties["partNumber"] === partNumber);
@@ -205,15 +196,14 @@ function builtPart(document: Models.OCCT.DesignPartDocument, index: number, vers
     return { part: gathered.parts.get(id)!, cached, messages };
 }
 
-/** The frame a component's joint places it against, found before anything of the component is built. */
-function targetOf(placing: Placing | undefined, placed: ReadonlyMap<string, Connectors>, parameters: DesignValues): Inputs.Base.Frame | undefined {
+function targetOf(placing: Placing | undefined, placed: ReadonlyMap<string, Connectors>, parameters: DesignValues, base: BaseBitByBit): Inputs.Base.Frame | undefined {
     if (placing === undefined) {
         return undefined;
     }
     const { joint } = placing;
     const path = placing.path;
     if ("frame" in joint.to) {
-        return frameOf(joint.to.frame, parameters, pointer(path, "to", "frame"));
+        return frameOf(joint.to.frame, parameters, pointer(path, "to", "frame"), base);
     }
     const other = placed.get(joint.to.component);
     if (other === undefined) {
@@ -226,8 +216,13 @@ function targetOf(placing: Placing | undefined, placed: ReadonlyMap<string, Conn
     return found;
 }
 
-/** A joint's angle and offset with these parameter values, and its limits, refusing a value outside them. */
-function jointValues(placing: Placing, parameters: DesignValues): { angle: number; offset: number; limits: Models.OCCT.DesignBuiltJoint["limits"] } {
+interface JointValues {
+    angle: number;
+    offset: number;
+    limits: Models.OCCT.DesignBuiltJoint["limits"];
+}
+
+function jointValues(placing: Placing, parameters: DesignValues): JointValues {
     const { joint } = placing;
     const path = placing.path;
     const values = {
@@ -253,13 +248,17 @@ function jointValues(placing: Placing, parameters: DesignValues): { angle: numbe
     return { ...values, limits };
 }
 
-/** Where a component goes: at its frame, against its joint's target, or where its source has it. */
-function placementOf(component: Models.OCCT.DesignComponent, own: Connectors, placing: Placing | undefined, target: Inputs.Base.Frame | undefined, parameters: DesignValues, path: string): { matrix: Matrix; values?: ReturnType<typeof jointValues> } {
+interface Placement {
+    matrix: Matrix;
+    values?: JointValues;
+}
+
+function placementOf(component: Models.OCCT.DesignComponent, own: Connectors, placing: Placing | undefined, target: Inputs.Base.Frame | undefined, parameters: DesignValues, path: string, base: BaseBitByBit): Placement {
     if (component.at !== undefined) {
-        return { matrix: frameMatrix(frameOf(component.at, parameters, pointer(path, "at"))) };
+        return { matrix: frameMatrix(frameOf(component.at, parameters, pointer(path, "at"), base), base) };
     }
     if (placing === undefined || target === undefined) {
-        return { matrix: IDENTITY };
+        return { matrix: base.transforms.identity() };
     }
     const { joint } = placing;
     const connector = own.get(joint.connector);
@@ -267,11 +266,11 @@ function placementOf(component: Models.OCCT.DesignComponent, own: Connectors, pl
         throw new DesignProblem(pointer(placing.path, "connector"), `the connector "${joint.connector}" was not placed in this build`);
     }
     const values = jointValues(placing, parameters);
-    return { matrix: jointMatrix(connector, target, joint.flip === true, values.angle, values.offset), values };
+    return { matrix: jointMatrix(connector, target, joint.flip === true, values.angle, values.offset, base), values };
 }
 
-function moved(matrix: Matrix, connectors: Connectors): Connectors {
-    return new Map([...connectors].map(([id, frame]) => [id, movedFrame(matrix, frame)]));
+function moved(matrix: Matrix, connectors: Connectors, base: BaseBitByBit): Connectors {
+    return new Map([...connectors].map(([id, frame]) => [id, movedFrame(matrix, frame, base)]));
 }
 
 function propertiesOf(properties: Models.OCCT.DesignProperties | undefined, parameters: DesignValues, path: string, gathered: Gathered): Record<string, string | number | boolean> {
@@ -288,13 +287,8 @@ function propertiesOf(properties: Models.OCCT.DesignProperties | undefined, para
     }));
 }
 
-/**
- * Places an assembly's components in its own coordinates, each with its matrix relative to this
- * assembly, and returns the connectors the assembly publishes, in the same coordinates. A
- * sub-assembly is laid out before it is placed, so it can be placed by one of its connectors.
- * `validate` has refused an assembly that contains itself, so the recursion ends.
- */
 function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: DesignValues, prefix: string, parent: string | undefined, gathered: Gathered): Connectors {
+    const base = gathered.context.base;
     const placed = new Map<string, Connectors>();
     const unplaced = new Map<string, "failed" | "suppressed">();
     const moving = jointsByComponent(document);
@@ -325,7 +319,7 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                 const overrides = overridesOf(component.source, source.parameters, parameters, sourcePath);
                 const properties = propertiesOf(component.properties, parameters, documentPath, gathered);
                 const place = (occurrencePath: string, name: string, how: Placing | undefined): Connectors => {
-                    const target = targetOf(how, placed, parameters);
+                    const target = targetOf(how, placed, parameters, base);
                     const joined = (values: ReturnType<typeof jointValues> | undefined): void => {
                         if (how === undefined || target === undefined || values === undefined) {
                             return;
@@ -334,27 +328,27 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
                         const joint: Omit<Models.OCCT.DesignBuiltJoint, "frame"> = { path: `${prefix}${how.joint.id}`, type: how.joint.type, component: occurrencePath, ...(to === undefined ? {} : { to }), ...values };
                         gathered.joints.push({ joint, local: target, parent });
                     };
-                    const occurrence = { path: occurrencePath, name, ...(parent === undefined ? {} : { parent }), matrix: IDENTITY, world: IDENTITY, properties };
+                    const occurrence = { path: occurrencePath, name, ...(parent === undefined ? {} : { parent }), matrix: base.transforms.identity(), world: base.transforms.identity(), properties };
                     if (source.kind === "assembly") {
                         const listedComponent: Models.OCCT.DesignBuiltComponent = { ...occurrence, assembly: true };
                         gathered.components.push(listedComponent);
                         const inner = inSource(sourcePath, () => parameterValues(source.parameters, source.configurations, { configuration: component.source.configuration, overrides }));
                         gathered.products.set(occurrencePath, propertiesOf(source.properties, inner, pointer("/documents", sourceIndex), gathered));
                         const published = assemble(source, inner, `${occurrencePath}/`, occurrencePath, gathered);
-                        const placement = placementOf(component, published, how, target, parameters, documentPath);
+                        const placement = placementOf(component, published, how, target, parameters, documentPath, base);
                         listedComponent.matrix = placement.matrix;
                         joined(placement.values);
-                        return moved(listedComponent.matrix, published);
+                        return moved(listedComponent.matrix, published, base);
                     }
                     const revisions = gathered.library.get(component.source.document)?.length ?? 1;
                     const { part, cached, messages } = builtPart(source, sourceIndex, versionIn(placedEntry), revisions, component.source, overrides, gathered, sourcePath);
                     entry.cached = cached;
                     entry.messages.push(...messages.filter(message => !entry.messages.includes(message)));
                     const own: Connectors = new Map(part.connectors.map(connector => [connector.id, connector.frame]));
-                    const { matrix, values } = placementOf(component, own, how, target, parameters, documentPath);
+                    const { matrix, values } = placementOf(component, own, how, target, parameters, documentPath, base);
                     gathered.components.push({ ...occurrence, part: part.id, matrix });
                     joined(values);
-                    return moved(matrix, own);
+                    return moved(matrix, own, base);
                 };
                 const replicate = component.replicate;
                 if (replicate === undefined) {
@@ -405,7 +399,7 @@ function assemble(document: Models.OCCT.DesignAssemblyDocument, parameters: Desi
  * that fails is reported and left out with everything inside it, which is reported skipped; the
  * components joined to it, or to one that was suppressed, are skipped, as features are.
  */
-export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice: { configuration?: string | undefined; overrides?: Readonly<Record<string, unknown>> | undefined }, library: BuildLibrary, context: DesignRunContext): Built {
+export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice: ParameterChoice, library: BuildLibrary, context: DesignRunContext): Built {
     const parameters = parameterValues(document.parameters, document.configurations, choice);
     if (occurrencesOf(document, library, new Map()) > MAX_OCCURRENCES) {
         throw new DesignProblem("/components", `the assembly places more than ${MAX_OCCURRENCES} occurrences through its levels`);
@@ -422,7 +416,7 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
     const worlds = new Map<string, Matrix>();
     const counts = new Map<string, number>();
     gathered.components.forEach(component => {
-        component.world = component.parent === undefined ? component.matrix : followedBy(component.matrix, worlds.get(component.parent)!);
+        component.world = component.parent === undefined ? component.matrix : context.occt.transforms.multiplyTransforms({ transformation: [component.matrix, worlds.get(component.parent)!] });
         worlds.set(component.path, component.world);
         if (component.part !== undefined) {
             counts.set(component.part, (counts.get(component.part) ?? 0) + 1);
@@ -437,7 +431,6 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
     }));
     const bom = parts.map(part => ({ part: part.id, name: part.name, quantity: counts.get(part.id)!, properties: part.properties }));
     const properties = propertiesOf(document.properties, parameters, "", gathered);
-    const withProperties = (values: Record<string, string | number | boolean> | undefined): { properties?: Record<string, string | number | boolean> } => values === undefined || Object.keys(values).length === 0 ? {} : { properties: values };
     const structure: Models.OCCT.AssemblyStructureDef<TopoDS_Shape> = {
         parts: parts.map(structurePartOf),
         nodes: [
@@ -462,7 +455,7 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
         ...(choice.configuration === undefined ? {} : { configuration: choice.configuration }),
         parameters: values,
         components: gathered.components,
-        joints: gathered.joints.map(({ joint, local, parent }) => ({ ...joint, frame: parent === undefined ? local : movedFrame(worlds.get(parent)!, local) })),
+        joints: gathered.joints.map(({ joint, local, parent }) => ({ ...joint, frame: parent === undefined ? local : movedFrame(worlds.get(parent)!, local, context.base) })),
         bom,
         structure,
         ...(Object.keys(properties).length === 0 ? {} : { properties }),

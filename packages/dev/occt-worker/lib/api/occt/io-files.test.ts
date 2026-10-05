@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { OCCTWorkerManager } from "../../occ-worker/occ-worker-manager";
 import { OCCTIO } from "./io";
-import { AnchorRecord, AnsweringWorker, recordDownloads } from "../__mocks__/test-helpers";
-import { Inputs, Models } from "@bitbybit-dev/occt";
+import type { AnchorRecord } from "../__mocks__/test-helpers";
+import { AnsweringWorker, recordDownloads } from "../__mocks__/test-helpers";
+import type { Models } from "@bitbybit-dev/occt";
+import { Inputs } from "@bitbybit-dev/occt";
 
 const A_SHAPE: Inputs.OCCT.TopoDSShapePointer = { hash: 1, type: "occ-shape" };
 const A_VIEW: Inputs.Base.Frame = { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0] };

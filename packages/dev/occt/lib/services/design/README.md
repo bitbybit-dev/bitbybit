@@ -378,11 +378,12 @@ than it expects:
 
 ## How well references survive: the naming benchmark
 
-`benchmark/` measures it, and `npm test` runs it, printing one line:
+`naming-benchmark.test.ts` measures it over the test support in `__test__/`, which the build leaves
+out of the package, and `npm test` runs it, printing one line:
 `naming benchmark: 129 checks over 16 cases - by lineage: kept 115, lost 13, ambiguous 0, wrong 1;
 with hints: kept 120, lost 8, ambiguous 0, wrong 1`.
 
-- **The corpus** (`benchmark/corpus.ts`) rebuilds the classic persistent-naming failures as
+- **The corpus** (`__test__/naming-corpus.ts`) rebuilds the classic persistent-naming failures as
   documents:
   - a pad sketched on a pad's face;
   - a face a slot splits;
@@ -402,8 +403,9 @@ with hints: kept 120, lost 8, ambiguous 0, wrong 1`.
 
   Each case varies parameters or edits the document.
 - **Ground truth never comes from names.** Each reference has an intent: the faces on a plane facing
-  one way, the faces holding some points, the cylinders of a radius about an axis, or the edges
-  between two such sets, found by geometry on each variation's build.
+  one way, the faces holding some points, the cylinders of a radius about an axis (each tested where
+  its centre, pushed out square to the axis by the radius, meets its surface), or the edges between
+  two such sets, found by geometry on each variation's build.
 - **Each check is classified** as kept, lost, ambiguous or wrong:
   - **kept:** the reference finds exactly what was meant, or fails where it no longer exists;
   - **lost:** it fails although the face exists, or finds only part of it;

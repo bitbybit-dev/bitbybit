@@ -1,4 +1,4 @@
-import { Base } from "../../inputs/base-inputs";
+import type { Base } from "../../inputs/base-inputs";
 
 export class VectorCharData {
     constructor(width?: number, height?: number, paths?: Base.Point3[][]) {

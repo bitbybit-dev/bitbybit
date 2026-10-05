@@ -1,8 +1,9 @@
 import { KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { OCCTWorkerManager, OccProgress } from "./occ-worker-manager";
+import type { OccProgress } from "./occ-worker-manager";
+import { OCCTWorkerManager } from "./occ-worker-manager";
 import { OccStateEnum } from "./occ-state.enum";
-import { OccInfo } from "./occ-info";
+import type { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
 type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };

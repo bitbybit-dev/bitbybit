@@ -1,4 +1,4 @@
-import { Base } from "../../api/inputs";
+import type { Base } from "../../api/inputs";
 
 /** The length, area or volume of one shape, and the centre it is taken about. */
 export interface MassAndCentre {

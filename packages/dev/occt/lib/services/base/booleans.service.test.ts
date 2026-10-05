@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterEach } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
@@ -22,7 +23,9 @@ describe("BooleansService", () => {
     });
 
     afterEach(() => {
-        while (restores.length) restores.pop()!();
+        while (restores.length) {
+            restores.pop()!();
+        }
     });
 
     function watch(name: BooleanCall, failFrom = Infinity, alerts = ""): { sizes: number[][], shapes: (TopoDS_Shape | null)[], strategies: unknown[] } {
@@ -141,8 +144,12 @@ describe("BooleansService", () => {
 
             // Act
             const failure = failureOf(() => {
-                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
-                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                if (operation === "union") {
+                    return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                }
+                if (operation === "difference") {
+                    return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                }
                 return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
             });
 
@@ -212,8 +219,12 @@ describe("BooleansService", () => {
 
             // Act
             const failure = failureOf(() => {
-                if (operation === "union") return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
-                if (operation === "difference") return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                if (operation === "union") {
+                    return helper.booleansService.union({ shapes: [box(0, 10), box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                }
+                if (operation === "difference") {
+                    return helper.booleansService.difference({ shape: box(0, 10), shapes: [box(5, 10)], keepEdges: true, strategy: Inputs.OCCT.booleanStrategyEnum.oneAfterAnother });
+                }
                 return helper.booleansService.intersection({ shapes: [box(0, 10), box(5, 10)], keepEdges: true });
             });
 

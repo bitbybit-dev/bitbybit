@@ -4,9 +4,6 @@
  * This is the single source of truth - other packages extend this via module augmentation.
  */
 export namespace Base {
-    // ============================================================================
-    // Core Types
-    // ============================================================================
     /**
      * A color as a CSS string - a hex value such as #ff8800, or any other form the browser
      * accepts. This is the form every draw option and material takes; use the color API to convert
@@ -140,9 +137,6 @@ export namespace Base {
      */
     export type TransformMatrixes = TransformMatrix[];
 
-    // ============================================================================
-    // Alignment Enums
-    // ============================================================================
     /**
      * Horizontal alignment of content against its anchor: left, center or right.
      */

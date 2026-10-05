@@ -1,10 +1,4 @@
 #!/usr/bin/env node
-/**
- * Fails the build when a page ships a meta description that Docusaurus derived from
- * source instead of front matter. Docusaurus falls back to the first line of the MDX
- * body when `description:` is missing, which has produced live descriptions reading
- * "return (", "<img" and "Learn". Run against build/ after `docusaurus build`.
- */
 const fs = require("fs");
 const path = require("path");
 
@@ -38,8 +32,12 @@ function main() {
     for (const file of htmlFiles(BUILD_DIR)) {
         const route = "/" + path.relative(BUILD_DIR, file).replace(/index\.html$/, "").replace(/\.html$/, "");
         const html = fs.readFileSync(file, "utf8");
-        if (/name="robots"[^>]*content="noindex/.test(html)) continue;
-        if (route === "/404" || route === "/404.html") continue;
+        if (/name="robots"[^>]*content="noindex/.test(html)) {
+            continue;
+        }
+        if (route === "/404" || route === "/404.html") {
+            continue;
+        }
         const desc = description(html);
         if (desc === null) {
             failures.push([route, "no meta description"]);

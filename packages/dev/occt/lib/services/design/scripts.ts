@@ -1,20 +1,23 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
-import { DesignOutcome, stableJson } from "./cache";
+import { isRecord } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
+import type { DesignOutcome } from "./cache";
+import { stableJson } from "./cache";
 import { sha256 } from "./digest";
 import { bodyOf, contextOf, faceCount, ownerOf } from "./helpers";
-import { FaceNames, nameOf } from "./names";
+import type { FaceNames } from "./names";
+import { nameOf } from "./names";
 import { DesignPending, DesignProblem, pointer } from "./problems";
 import { resolveEdges, resolveFaces } from "./references";
-import { DesignPlan, DesignRun, bodyKey } from "./state";
-import { isRecord, ownValue } from "./structure";
+import type { DesignPlan, DesignRun } from "./state";
+import { bodyKey } from "./state";
+import { ownValue } from "./structure";
 import { numberOf } from "./values";
 
 function only(value: unknown, key: string): value is Record<string, unknown> {
     return isRecord(value) && Object.keys(value).length === 1 && key in value;
 }
 
-/** The bodies a script's params read: the ones they pass, and the ones their face and edge references name faces on. */
 function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
     if (only(value, "body") && typeof value["body"] === "string") {
         return [value["body"]];
@@ -32,7 +35,6 @@ function bodiesReadBy(value: unknown, path: string, run: DesignRun): string[] {
     return isRecord(value) ? Object.entries(value).flatMap(([key, inner]) => bodiesReadBy(inner, pointer(path, key), run)) : [];
 }
 
-/** A script's params with bodies as new handles on their shapes, references as the indexes they find and expressions as numbers. */
 function inputsOf(value: unknown, path: string, run: DesignRun): unknown {
     if (only(value, "body") && typeof value["body"] === "string") {
         return bodyOf(value["body"], run).shape.clone();

@@ -48,12 +48,17 @@ export function versionProblem(value: unknown, format: DesignFormat = DESIGN_FOR
     return undefined;
 }
 
+interface MinorAddition {
+    minor: number;
+    uses: (document: Readonly<Record<string, unknown>>) => boolean;
+}
+
 /**
  * The lowest minor a document needs: the newest minor among the additions it uses, by `additions`,
  * which names for each minor after the first what it added, as a test on the document. A writer
  * stamps this, so a document that uses nothing new stays readable by older runners of the major.
  */
-export function lowestMinor(document: Readonly<Record<string, unknown>>, additions: readonly { minor: number; uses: (document: Readonly<Record<string, unknown>>) => boolean }[]): number {
+export function lowestMinor(document: Readonly<Record<string, unknown>>, additions: readonly MinorAddition[]): number {
     return additions.reduce((lowest, addition) => addition.minor > lowest && addition.uses(document) ? addition.minor : lowest, 0);
 }
 

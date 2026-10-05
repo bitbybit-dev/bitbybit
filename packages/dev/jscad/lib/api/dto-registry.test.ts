@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Jscad } from "./jscad-service";
+import type { Jscad } from "./jscad-service";
 import { jscadDtoRegistry } from "./dto-registry";
 import { jscadDtoRules } from "./validation";
 import { getJscad } from "./__test__/kernel";
-import { InputIssue, callByPath, resolveInputs, validateInputs } from "@bitbybit-dev/base";
+import type { InputIssue } from "@bitbybit-dev/base";
+import { callByPath, resolveInputs, validateInputs } from "@bitbybit-dev/base";
 import * as Inputs from "./inputs";
 
 const methodAt = (root: object, path: string): unknown => path.split(".").reduce<unknown>((owner, segment) => (owner === null || owner === undefined ? undefined : Reflect.get(owner, segment)), root);

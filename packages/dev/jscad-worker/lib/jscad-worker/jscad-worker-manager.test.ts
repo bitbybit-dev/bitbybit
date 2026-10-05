@@ -2,7 +2,7 @@ import { KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { JSCADWorkerManager } from "./jscad-worker-manager";
 import { JscadStateEnum } from "./jscad-state.enum";
-import { JscadInfo } from "./jscad-info";
+import type { JscadInfo } from "./jscad-info";
 import { JSCADWorkerMock } from "./jscad-worker-mock";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };

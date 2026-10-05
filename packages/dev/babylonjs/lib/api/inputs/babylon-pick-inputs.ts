@@ -1,4 +1,4 @@
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 

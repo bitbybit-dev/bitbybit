@@ -1,4 +1,4 @@
-import * as Inputs from "../../api/inputs";
+import type * as Inputs from "../../api/inputs";
 
 /**
  * The triangulated mesh of a shape as the kernel lays it out: every face's nodes, normals, UVs and
@@ -117,7 +117,6 @@ function sumOfCounts(records: Int32Array, size: number, at: number): number {
     return total;
 }
 
-/** Checks the colour and metadata records against the face and edge records they belong to. */
 function checkContents(arrays: MeshArrays, contents: MeshContents): void {
     const faceCount = arrays.faces.length / FACE_RECORD;
     const edgeCount = arrays.edges.length / EDGE_RECORD;
@@ -143,7 +142,6 @@ function hex(value: number): string {
     return value.toString(16).padStart(2, "0");
 }
 
-/** The colour groups the kernel's JSON writes: each "#rrggbbaa" colour, in sorted order, with its faces. */
 function colorGroups(arrays: MeshArrays): { [color: string]: number[] } {
     const colors = required("faceColors", arrays.faceColors);
     const byColor = new Map<string, number[]>();
@@ -167,10 +165,6 @@ function colorGroups(arrays: MeshArrays): { [color: string]: number[] } {
     return groups;
 }
 
-/**
- * Checks that every array holds exactly what the face and edge records describe, so a kernel whose
- * layout differs fails here instead of drawing holes in a mesh.
- */
 function checkLengths(arrays: MeshArrays): void {
     expectWholeRecords("faces", arrays.faces.length, FACE_RECORD);
     expectWholeRecords("edges", arrays.edges.length, EDGE_RECORD);

@@ -1,5 +1,5 @@
-import { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
+import type { BitbybitOcctModule } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
 
 /** What the kernel reports of one input's history, typed arrays of indexes. */
 export type KernelHistory = ReturnType<BitbybitOcctModule["HistoryOfFillet"]>;

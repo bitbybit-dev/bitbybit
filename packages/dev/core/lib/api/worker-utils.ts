@@ -1,14 +1,6 @@
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
 
 /**
- * Worker utilities for bitbybit engine packages.
- * 
- * Provides multiple strategies for creating workers:
- * 1. From CDN URLs (zero configuration, no local files needed)
- * 2. From local project files (for offline/production use)
- */
-
-/**
  * Worker architecture type for CDN workers. - "32" - 32-bit WebAssembly (default, widest browser support) -
  * "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-bit-mt" -
  * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
@@ -50,33 +42,16 @@ export interface WorkerOptions {
     occtArchitecture?: WorkerArchitecture | undefined;
 }
 
-/**
- * Creates a blob URL that uses importScripts to load a classic (non-ES module) worker script.
- * This works for all bundled webworkers loaded from CDN.
- */
 function getClassicWorkerURL(url: string): string {
     const content = `importScripts("${url}");`;
     return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
 }
 
-/**
- * Creates a blob URL that uses a static import to load an ES module worker script.
- * This is required for all OCCT workers which are built as ES modules.
- * 
- * Note: We use static import (not dynamic import()) so the module is fully loaded
- * and its message handlers are registered before any messages are sent.
- */
 function getModuleWorkerURL(url: string): string {
     const content = `import "${url}";`;
     return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
 }
 
-/**
- * Gets the OCCT worker filename based on architecture.
- * - "32" -> "bitbybit-dev-occt-webworker.js"
- * - "64" -> "bitbybit-dev-occt-64-bit-webworker.js"
- * - "64-mt" -> "bitbybit-dev-occt-64-bit-mt-webworker.js"
- */
 function getOcctWorkerFilename(architecture: WorkerArchitecture = "32"): string {
     switch (architecture) {
         case "64":

@@ -1,13 +1,15 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import * as Models from "../../api/models";
-import { InputError } from "@bitbybit-dev/base";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Models from "../../api/models";
+import { InputError, messageOf } from "@bitbybit-dev/base";
 import { release } from "./cache";
 import { contextOf } from "./helpers";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 import { countProblem, edgesBetween, facesFound } from "./references";
 import { runFeatures } from "./runner";
-import { BodyState, DesignRun, DesignRunContext, bodyKey } from "./state";
-import { ParameterChoice, numberOf } from "./values";
+import type { BodyState, DesignRun, DesignRunContext } from "./state";
+import { bodyKey } from "./state";
+import type { ParameterChoice } from "./values";
+import { numberOf } from "./values";
 
 type Rounding = Models.OCCT.DesignFilletFeature | Models.OCCT.DesignChamferFeature;
 
@@ -15,14 +17,23 @@ const CLOSE_ENOUGH = 0.02;
 
 const SMALLEST = 1e-6;
 
+const REASONS_SHOWN = 3;
+
+const FIRST_TRY_SHARE_OF_DIAGONAL = 0.0625;
+
 function problemText(error: unknown): string {
     if (error instanceof DesignProblem) {
         return `${error.path}: ${error.message}`;
     }
-    return error instanceof Error ? error.message : String(error);
+    return messageOf(error);
 }
 
-function roundingOf(document: Models.OCCT.DesignPartDocument, id: string): { feature: Rounding; index: number } {
+interface FoundRounding {
+    feature: Rounding;
+    index: number;
+}
+
+function roundingOf(document: Models.OCCT.DesignPartDocument, id: string): FoundRounding {
     const index = document.features.findIndex(feature => feature.id === id);
     if (index < 0) {
         throw new InputError(`The document has no feature "${id}".`, "feature");
@@ -39,7 +50,7 @@ function bodyBefore(feature: Rounding, report: Models.OCCT.DesignFeatureReport[]
     if (body !== undefined) {
         return body;
     }
-    const why = report.filter(entry => entry.status === "failed").flatMap(entry => entry.messages.map(message => `"${entry.id}": ${message}`)).slice(0, 3);
+    const why = report.filter(entry => entry.status === "failed").flatMap(entry => entry.messages.map(message => `"${entry.id}": ${message}`)).slice(0, REASONS_SHOWN);
     const state = run.failed.get(bodyKey(feature.body)) === "suppressed" ? "is suppressed" : "did not build";
     throw new InputError(`The body "${feature.body}" ${state} before "${feature.id}", so it has no edges to probe${why.length > 0 ? `: ${why.join("; ")}` : ""}.`, "document");
 }
@@ -116,10 +127,10 @@ function attempt(feature: Rounding, body: BodyState, indexes: number[], value: n
 
 function search(feature: Rounding, body: BodyState, indexes: number[], value: number | undefined, maxAttempts: number, run: DesignRun, probe: Models.OCCT.DesignFilletProbe): void {
     const size = run.occt.operations.boundingBoxSizeOfShape({ shape: body.shape });
-    const limit = Math.hypot(size[0], size[1], size[2]);
+    const limit = run.base.vector.length({ vector: size });
     const tried = (next: number): boolean => attempt(feature, body, indexes, next, run, probe);
     const left = (): boolean => probe.attempts.length < maxAttempts;
-    const start = value !== undefined && value > 0 ? value : limit / 16;
+    const start = value !== undefined && value > 0 ? value : limit * FIRST_TRY_SHARE_OF_DIAGONAL;
     let good = 0;
     let bad = Number.POSITIVE_INFINITY;
     if (tried(start)) {

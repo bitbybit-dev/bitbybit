@@ -1,5 +1,3 @@
-// The doc of the OCCT inputs namespace itself; scripts/gen-inputs.mjs places it above `export namespace OCCT`.
-
 /**
  * Every parameter object the OpenCascade kernel accepts. The kernel works on a boundary
  * representation - vertices, edges, wires, faces, shells, solids and compounds - so most DTOs here

@@ -1,9 +1,4 @@
 #!/usr/bin/env node
-// The committed OpenAPI document (docs/static/openapi.json) describes the CAD Cloud API the SDK
-// package targets, and both carry the version: the document's info.version must equal
-// @bitbybit-dev/cad-cloud-sdk's package version. A version bump that forgot to regenerate the
-// document, or a regenerated document under an unbumped package, fails here - before the
-// documentation site publishes the one and the registry the other.
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";

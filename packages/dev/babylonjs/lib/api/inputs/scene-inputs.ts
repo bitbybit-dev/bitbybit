@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
-import * as BABYLON from "@babylonjs/core";
+import type * as BABYLON from "@babylonjs/core";
 import { Base } from "./base-inputs";
 
 /**

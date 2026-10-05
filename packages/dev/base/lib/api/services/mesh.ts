@@ -1,8 +1,8 @@
 import * as Inputs from "../inputs";
-import { Polyline } from "./polyline";
-import { Vector } from "./vector";
+import type { Polyline } from "./polyline";
+import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 
 /**
  * Geometry on plain triangle meshes: a mesh is a list of triangles, each three points. The methods
@@ -97,7 +97,9 @@ export class MeshBitByBit {
         const plane1 = this.calculateTrianglePlane({ triangle: t1, tolerance: EPSILON });
         const plane2 = this.calculateTrianglePlane({ triangle: t2, tolerance: EPSILON });
 
-        if (!plane1 || !plane2) return undefined;
+        if (!plane1 || !plane2) {
+            return undefined;
+        }
 
         const distQ_Plane1: [number, number, number] = [
             this.signedDistanceToPlane({ point: q1, plane: plane1 }),
@@ -146,7 +148,9 @@ export class MeshBitByBit {
             const du = dists1[i]!;
             const dv = dists1[(i + 1) % 3]!;
 
-            if (Math.abs(du) < EPSILON) t1_intersection_points_3d.push(u);
+            if (Math.abs(du) < EPSILON) {
+                t1_intersection_points_3d.push(u);
+            }
 
             if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) {
                 const t = du / (du - dv);
@@ -162,7 +166,9 @@ export class MeshBitByBit {
             const du = dists2[i]!;
             const dv = dists2[(i + 1) % 3]!;
 
-            if (Math.abs(du) < EPSILON) t2_intersection_points_3d.push(u);
+            if (Math.abs(du) < EPSILON) {
+                t2_intersection_points_3d.push(u);
+            }
 
             if ((du * dv) < 0 && Math.abs(du - dv) > EPSILON) {
                 const t = du / (du - dv);

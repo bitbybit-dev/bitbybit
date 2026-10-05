@@ -1,15 +1,7 @@
 {
     "note": "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
-    "measured": "2026-10-02",
+    "measured": "2026-10-05",
     "history": [
-        {
-            "measured": "2026-09-08",
-            "tests": 6986,
-            "lines": 89.16,
-            "branches": 82.36,
-            "functions": 88.68,
-            "statements": 89.77
-        },
         {
             "measured": "2026-09-08",
             "tests": 7657,
@@ -193,23 +185,31 @@
             "branches": 93.88,
             "functions": 99.15,
             "statements": 98.14
+        },
+        {
+            "measured": "2026-10-05",
+            "tests": 11486,
+            "lines": 98.18,
+            "branches": 93.94,
+            "functions": 99.15,
+            "statements": 98.14
         }
     ],
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 2042,
-            "suites": 56,
-            "lines": 98.73,
-            "branches": 96.36,
-            "functions": 98.68,
-            "statements": 98.9
+            "tests": 2072,
+            "suites": 57,
+            "lines": 98.77,
+            "branches": 96.42,
+            "functions": 98.82,
+            "statements": 98.93
         },
         "base": {
             "runner": "vitest",
-            "tests": 1676,
-            "suites": 31,
-            "lines": 99.56,
+            "tests": 1683,
+            "suites": 34,
+            "lines": 99.54,
             "branches": 96.25,
             "functions": 100,
             "statements": 99.57
@@ -225,8 +225,8 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 344,
-            "suites": 13,
+            "tests": 390,
+            "suites": 14,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -266,7 +266,7 @@
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 470,
+            "tests": 471,
             "suites": 7,
             "lines": 100,
             "branches": 100,
@@ -275,26 +275,26 @@
         },
         "mcp": {
             "runner": "vitest",
-            "tests": 102,
+            "tests": 105,
             "suites": 11,
-            "lines": 97.94,
-            "branches": 84.39,
-            "functions": 99.15,
-            "statements": 96.31
+            "lines": 97.97,
+            "branches": 84.54,
+            "functions": 99.2,
+            "statements": 96.39
         },
         "occt": {
             "runner": "vitest",
-            "tests": 2833,
-            "suites": 79,
-            "lines": 97.17,
-            "branches": 90.61,
-            "functions": 98.55,
-            "statements": 97.15
+            "tests": 3169,
+            "suites": 103,
+            "lines": 97.38,
+            "branches": 92.1,
+            "functions": 98.65,
+            "statements": 97.37
         },
         "occt-worker": {
             "runner": "vitest",
-            "tests": 1060,
-            "suites": 17,
+            "tests": 1094,
+            "suites": 19,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -302,21 +302,21 @@
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 581,
-            "suites": 11,
-            "lines": 95.69,
-            "branches": 86.24,
-            "functions": 97.77,
-            "statements": 94.8
+            "tests": 605,
+            "suites": 12,
+            "lines": 95.73,
+            "branches": 87.88,
+            "functions": 98.08,
+            "statements": 95.19
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 511,
-            "suites": 10,
-            "lines": 97.68,
-            "branches": 91.03,
-            "functions": 98.62,
-            "statements": 97.26
+            "tests": 545,
+            "suites": 12,
+            "lines": 97.88,
+            "branches": 91.7,
+            "functions": 98.86,
+            "statements": 97.53
         }
     }
 }

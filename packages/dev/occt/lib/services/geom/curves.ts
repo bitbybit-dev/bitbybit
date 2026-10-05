@@ -1,8 +1,8 @@
-import { Geom2d_Curve, BitbybitOcctModule, TopoDS_Wire, Handle_Geom2d_Curve } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { Geom2d_Curve, BitbybitOcctModule, TopoDS_Wire, Handle_Geom2d_Curve } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 
 /**
  * Construction curves of OpenCascade: 2D curves in a plane or in the UV space of a surface

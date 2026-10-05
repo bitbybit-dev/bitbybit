@@ -1,7 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { InputIssueReport, KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
-import { DataInput, initializationComplete, onMessageInput } from "./occ-worker";
-import { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { InputIssueReport } from "@bitbybit-dev/base";
+import { KernelOperationError, setInputIssueSink } from "@bitbybit-dev/base";
+import type { DataInput } from "./occ-worker";
+import { initializationComplete, onMessageInput } from "./occ-worker";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 
 const { thrown, progress } = vi.hoisted(() => {
     const thrown: { value: unknown } = { value: undefined };

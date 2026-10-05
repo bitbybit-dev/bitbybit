@@ -64,7 +64,9 @@ describe("ManifoldOperations", () => {
             // Assert
             expect(volumeOf(composed)).toBeCloseTo(2 * CUBE_VOLUME, 6);
             expect(parts).toHaveLength(TWO_PARTS);
-            for (const part of parts) expect(volumeOf(part)).toBeCloseTo(CUBE_VOLUME, 6);
+            for (const part of parts) {
+                expect(volumeOf(part)).toBeCloseTo(CUBE_VOLUME, 6);
+            }
         });
     });
 

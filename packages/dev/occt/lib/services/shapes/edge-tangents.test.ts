@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule, TopoDS_Edge, TopoDS_Vertex } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Vertex } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { readKernelException } from "../../kernel-exception";
 import { OccHelper } from "../../occ-helper";
 import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
-import * as Inputs from "../../api/inputs";
+import type * as Inputs from "../../api/inputs";
 
 describe("OCCT edges tangent to planar curves", () => {
     let occt: OCCTService;

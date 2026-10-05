@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
+import initOpenCascade from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "@bitbybit-dev/occt/lib/api/inputs";
 import { CacheHelper } from "./cache-helper";
 import { initializationComplete, onMessageInput } from "./occ-worker";

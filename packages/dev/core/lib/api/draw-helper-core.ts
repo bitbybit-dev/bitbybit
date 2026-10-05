@@ -1,5 +1,6 @@
 import { Base } from "./inputs/base-inputs";
-import { Vector } from "@bitbybit-dev/base";
+import type { Vector } from "@bitbybit-dev/base";
+import { srgbToLinear } from "@bitbybit-dev/base";
 import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
 import { CACHE_CONFIG, DEFAULT_COLORS } from "./constants";
 
@@ -29,12 +30,10 @@ export interface SurfaceAnalysisMesh {
     faceList?: readonly SurfaceAnalysisFace[] | undefined;
 }
 
-/** The ramp a surface analysis is drawn with, as normalized sRGB: blue, cyan, green, yellow, red. */
 const SURFACE_ANALYSIS_RAMP: readonly (readonly [number, number, number])[] = [[0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]];
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value);
 
-/** The lowest and highest finite values the faces of `meshes` carry, or undefined when they carry none. */
 function finiteRange(meshes: readonly SurfaceAnalysisMesh[]): { min: number; max: number } | undefined {
     let min = Infinity;
     let max = -Infinity;
@@ -51,10 +50,6 @@ function finiteRange(meshes: readonly SurfaceAnalysisMesh[]): { min: number; max
     return min <= max ? { min, max } : undefined;
 }
 
-/**
- * Where `value` lies on the ramp, from 0 at `min` to 1 at `max` and clamped past them; when both ends
- * are the same value, the middle for that value and the nearer end for any other.
- */
 function rampPlace(value: number, min: number, max: number): number {
     if (max === min) {
         return value > min ? 1 : value < min ? 0 : 0.5;
@@ -62,7 +57,6 @@ function rampPlace(value: number, min: number, max: number): number {
     return Math.min(Math.max((value - min) / (max - min), 0), 1);
 }
 
-/** The ramp's color at `place`, from 0 to 1, as normalized sRGB. */
 function rampColor(place: number): [number, number, number] {
     const scaled = place * (SURFACE_ANALYSIS_RAMP.length - 1);
     const stop = Math.min(Math.floor(scaled), SURFACE_ANALYSIS_RAMP.length - 2);
@@ -70,11 +64,6 @@ function rampColor(place: number): [number, number, number] {
     const from = SURFACE_ANALYSIS_RAMP[stop]!;
     const to = SURFACE_ANALYSIS_RAMP[stop + 1]!;
     return [from[0] + (to[0] - from[0]) * share, from[1] + (to[1] - from[1]) * share, from[2] + (to[2] - from[2]) * share];
-}
-
-/** A normalized sRGB channel in linear light, the space the engines' shaders read vertex colors in. */
-function linearChannel(value: number): number {
-    return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4);
 }
 
 /**
@@ -653,13 +642,13 @@ export class DrawHelperCore {
         const low = isFiniteNumber(min) ? min : found?.min ?? 0;
         const high = isFiniteNumber(max) ? max : found?.max ?? 0;
         const plain = this.hexToRgb(this.normalizeColor(fallback, DEFAULT_COLORS.FACE))!;
-        const fallbackColor = [plain.r, plain.g, plain.b].map(linearChannel);
+        const fallbackColor = [plain.r, plain.g, plain.b].map(srgbToLinear);
         return faces.map(face => {
             const count = Math.floor(face.vertexCoord.length / 3);
             const colors = new Array<number>(count * components);
             for (let vertex = 0; vertex < count; vertex++) {
                 const value = face.analysisValues?.[vertex];
-                const color = typeof value === "number" && !Number.isNaN(value) ? rampColor(rampPlace(value, low, high)).map(linearChannel) : fallbackColor;
+                const color = typeof value === "number" && !Number.isNaN(value) ? rampColor(rampPlace(value, low, high)).map(srgbToLinear) : fallbackColor;
                 for (let channel = 0; channel < 3; channel++) {
                     colors[vertex * components + channel] = color[channel]!;
                 }

@@ -1,8 +1,8 @@
-import { BitbybitOcctModule, TopoDS_Face } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, TopoDS_Face } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Models from "../../api/models";
+import type * as Resolved from "../../api/resolved-inputs";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
 import { checkedPoints, checkedShape } from "../base/input-checks";
 import { checkedUVPairs, uvFractionsOn } from "../base/surface-analysis";

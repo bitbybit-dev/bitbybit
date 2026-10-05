@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
-import { DataInput, initializationComplete, onMessageInput } from "./manifold-worker";
+import type { DataInput } from "./manifold-worker";
+import { initializationComplete, onMessageInput } from "./manifold-worker";
 
 vi.mock("./manifold-worker", () => ({
     initializationComplete: vi.fn(),

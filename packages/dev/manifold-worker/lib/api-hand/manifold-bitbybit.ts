@@ -1,8 +1,5 @@
-// Hand-written members of the generated class of the same name (see scripts/gen-worker-api.mjs).
-// Each member's marker says where it lands: `// replaces <path>` takes the kernel method's slot (and its doc,
-// when the member has none), `// after <path>` follows that slot, `// first` and `// last` frame the class.
-import * as Inputs from "@bitbybit-dev/manifold/lib/api/inputs";
-import { ManifoldWorkerManager } from "../manifold-worker/manifold-worker-manager";
+import type * as Inputs from "@bitbybit-dev/manifold/lib/api/inputs";
+import type { ManifoldWorkerManager } from "../manifold-worker/manifold-worker-manager";
 
 export class ManifoldBitByBit {
     constructor(private readonly manifoldWorkerManager: ManifoldWorkerManager) { }

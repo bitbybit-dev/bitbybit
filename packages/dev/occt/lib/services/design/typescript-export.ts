@@ -1,11 +1,16 @@
-import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
-import { ExpressionNode, namesIn, parseExpression } from "./expressions";
-import { cross, unit } from "./helpers";
+import { isRecord } from "@bitbybit-dev/base";
+import type * as Inputs from "../../api/inputs";
+import type * as Models from "../../api/models";
+import type { ExpressionNode } from "./expressions";
+import { namesIn, parseExpression } from "./expressions";
+import { tripleOf, unitVector } from "./placement";
 import { pointer } from "./problems";
-import { DesignRun, DesignTrace } from "./state";
-import { isRecord, ownValue } from "./structure";
+import type { DesignRun, DesignTrace } from "./state";
+import { ownValue } from "./structure";
+import type { ParameterChoice } from "./values";
 import { directionOf, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
+import { FULL_TURN } from "./constants";
+import { DELETE, FIRST_PRINTABLE, LAST_CONTROL, LINE_SEPARATOR, NEGLIGIBLE, PARAGRAPH_SEPARATOR, WRITTEN_DIGITS } from "./typescript-export.constants";
 
 const RESERVED = new Set([
     "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally",
@@ -17,7 +22,6 @@ const RESERVED = new Set([
 
 const DEGREES = "Math.PI / 180";
 
-/** How exported code writes the constants expressions know. */
 const CONSTANT_CODE = new Map<string, string>([["pi", "Math.PI"], ["tau", "(2 * Math.PI)"], ["e", "Math.E"], ["true", "1"], ["false", "0"]]);
 
 /** A function a document's expressions compute differently from JavaScript's `Math`. */
@@ -29,12 +33,13 @@ const EXACT_TABLE = "[[0, 0], [30, 0.5], [45, Math.SQRT1_2], [60, Math.sqrt(3) /
 
 const INVERSE_TABLE = "[[0, 0], [0.5, 30], [Math.SQRT1_2, 45], [Math.sqrt(3) / 2, 60], [1, 90]]";
 
-/**
- * The helpers exported code declares so it computes what a build computes: degree trigonometry exact
- * at multiples of 30 and 45 degrees, after folding the angle into one turn, and rounding half away
- * from zero. Each is the same arithmetic as the expression functions, so the values agree to the bit.
- */
-const MATH_HELPERS: Record<MathHelper, { name: string; uses?: MathHelper; code: (names: ReadonlyMap<MathHelper, string>) => string }> = {
+interface MathHelperCode {
+    name: string;
+    uses?: MathHelper;
+    code: (names: ReadonlyMap<MathHelper, string>) => string;
+}
+
+const MATH_HELPERS: Record<MathHelper, MathHelperCode> = {
     sin: {
         name: "sinDegrees",
         code: () => [
@@ -84,7 +89,12 @@ export type Code = { text: string; level: number };
 
 const LEVEL = { or: 1, and: 2, equality: 3, comparison: 4, sum: 5, product: 6, unary: 7, power: 8, atom: 9 };
 
-const OPERATORS: Record<string, { text: string; level: number }> = {
+interface OperatorText {
+    text: string;
+    level: number;
+}
+
+const OPERATORS: Record<string, OperatorText> = {
     "||": { text: "||", level: LEVEL.or }, "&&": { text: "&&", level: LEVEL.and },
     "==": { text: "===", level: LEVEL.equality }, "!=": { text: "!==", level: LEVEL.equality },
     "<": { text: "<", level: LEVEL.comparison }, "<=": { text: "<=", level: LEVEL.comparison }, ">": { text: ">", level: LEVEL.comparison }, ">=": { text: ">=", level: LEVEL.comparison },
@@ -96,20 +106,17 @@ function wrapped(code: Code, level: number): string {
     return code.level < level ? `(${code.text})` : code.text;
 }
 
-/** The operand of `-` or `!`, in parentheses unless it is an atom or another sign: TypeScript refuses a sign right before `**`. */
 function unaryOperand(code: Code): string {
     return code.level === LEVEL.atom || code.level === LEVEL.unary ? code.text : `(${code.text})`;
 }
 
-/** Text a document supplies, made safe to write into a `//` comment: a line break would end the comment and run what follows as code. */
 function commentText(text: string): string {
     return Array.from(text, char => {
         const code = char.codePointAt(0)!;
-        return code < 0x20 || (code >= 0x7f && code <= 0x9f) || code === 0x2028 || code === 0x2029 ? " " : char;
+        return code < FIRST_PRINTABLE || (code >= DELETE && code <= LAST_CONTROL) || code === LINE_SEPARATOR || code === PARAGRAPH_SEPARATOR ? " " : char;
     }).join("");
 }
 
-/** A condition written as the 1 or 0 the document's expressions compute. */
 function asNumber(condition: Code): Code {
     return { text: `(${wrapped(condition, LEVEL.or)} ? 1 : 0)`, level: LEVEL.atom };
 }
@@ -196,7 +203,12 @@ function readsConfiguration(value: unknown): boolean {
     return isRecord(value) && Object.values(value).some(readsConfiguration);
 }
 
-/** Builds the TypeScript of one document, one feature at a time. */
+interface ResultFeature {
+    id: string;
+    body?: string | undefined;
+    join?: Models.OCCT.DesignJoin | undefined;
+}
+
 class Exporter {
     private readonly lines: string[] = [];
     private readonly used = new Set<string>();
@@ -207,7 +219,6 @@ class Exporter {
     private readonly mathHelpers = new Map<MathHelper, string>();
     private formatterName: string | undefined = undefined;
 
-    /** The name of a maths helper, declared before the parameters once any expression calls it. */
     private readonly helperName = (kind: MathHelper): string => {
         if (MATH_HELPERS[kind].uses !== undefined) {
             this.helperName(MATH_HELPERS[kind].uses);
@@ -220,7 +231,7 @@ class Exporter {
         return name;
     };
 
-    constructor(private readonly document: Models.OCCT.DesignPartDocument, private readonly run: DesignRun, private readonly trace: ReadonlyMap<string, DesignTrace>, private readonly choice: { configuration?: string | undefined; overrides?: Readonly<Record<string, unknown>> | undefined }) {}
+    constructor(private readonly document: Models.OCCT.DesignPartDocument, private readonly run: DesignRun, private readonly trace: ReadonlyMap<string, DesignTrace>, private readonly choice: ParameterChoice) {}
 
     private fresh(id: string, suffix = ""): string {
         const words = `${id}${suffix}`.split(/[^A-Za-z0-9]+/).filter(word => word !== "");
@@ -269,7 +280,7 @@ class Exporter {
     }
 
     private scaledCode(direction: readonly number[], factor: string): string {
-        const tidy = direction.map(component => Math.abs(component) < 1e-12 ? 0 : Number(component.toPrecision(15)));
+        const tidy = direction.map(component => Math.abs(component) < NEGLIGIBLE ? 0 : Number(component.toPrecision(WRITTEN_DIGITS)));
         return `[${tidy.map(component => component === 0 ? "0" : component === 1 ? factor : component === -1 ? this.negated(factor) : `${component} * ${this.grouped(factor)}`).join(", ")}]`;
     }
 
@@ -332,7 +343,7 @@ class Exporter {
         return wire;
     }
 
-    private result(feature: { id: string; body?: string | undefined; join?: Models.OCCT.DesignJoin | undefined }, tool: string): void {
+    private result(feature: ResultFeature, tool: string): void {
         if (feature.body === undefined) {
             const name = this.fresh(feature.id);
             this.variables.set(feature.id, name);
@@ -383,7 +394,7 @@ class Exporter {
         const parameters = this.run.parameters;
         switch (feature.type) {
             case "extrude": {
-                const along = feature.direction === undefined ? this.run.sketches.get(feature.profile)!.normal : unit(directionOf(feature.direction, parameters, pointer(path, "direction")));
+                const along = feature.direction === undefined ? this.run.sketches.get(feature.profile)!.normal : unitVector(directionOf(feature.direction, parameters, pointer(path, "direction")), pointer(path, "direction"), this.run.base);
                 this.result(feature, `occt.operations.extrude({ shape: ${this.variable(feature.profile)}, direction: ${this.scaledCode(along, this.code(feature.distance))} })`);
                 return;
             }
@@ -423,12 +434,12 @@ class Exporter {
         this.line(`const ${list} = [];`);
         this.line(`for (let copy = 1; copy < ${this.code(feature.count)}; copy++) {`);
         if (feature.type === "linearPattern") {
-            const along = unit(directionOf(feature.direction, this.run.parameters, pointer(path, "direction")));
+            const along = unitVector(directionOf(feature.direction, this.run.parameters, pointer(path, "direction")), pointer(path, "direction"), this.run.base);
             this.line(`    ${list}.push(await occt.transforms.translate({ shape: ${body}, translation: ${this.scaledCode(along, `${this.code(feature.spacing)} * copy`)} }));`);
         } else {
-            const angle = feature.angle === undefined ? 360 : numberOf(feature.angle, this.run.parameters, pointer(path, "angle"));
+            const angle = feature.angle === undefined ? FULL_TURN : numberOf(feature.angle, this.run.parameters, pointer(path, "angle"));
             const angleCode = feature.angle === undefined ? "360" : this.code(feature.angle);
-            const step = Math.abs(angle) === 360 ? `(${angleCode}) / (${this.code(feature.count)})` : `(${angleCode}) / (${this.code(feature.count)} - 1)`;
+            const step = Math.abs(angle) === FULL_TURN ? `(${angleCode}) / (${this.code(feature.count)})` : `(${angleCode}) / (${this.code(feature.count)} - 1)`;
             this.line(`    ${list}.push(await occt.transforms.rotateAroundCenter({ shape: ${body}, angle: ${step} * copy, center: ${this.code(feature.axis.origin)}, axis: ${this.code(feature.axis.direction)} }));`);
         }
         this.line("}");
@@ -438,7 +449,7 @@ class Exporter {
     private holes(feature: Models.OCCT.DesignHoleFeature, trace: DesignTrace): void {
         const body = this.variable(feature.body);
         const frame = trace.frame!;
-        const across = cross(frame.normal, frame.direction);
+        const across = tripleOf(this.run.base.vector.cross({ first: frame.normal, second: frame.direction }));
         const term = (coefficient: number, value: string): string => coefficient === 0 ? "" : coefficient === 1 ? ` + ${value}` : coefficient === -1 ? ` - ${value}` : ` + ${coefficient} * ${value}`;
         const frames = feature.at.map(position => {
             const x = this.grouped(this.code(Array.isArray(position) ? position[0] : position.x));
@@ -583,7 +594,6 @@ class Exporter {
         return `\`${pieces.join("")}\``;
     }
 
-    /** The helper that writes a number into a property template as the document does, declared on first use. */
     private formatter(): string {
         if (this.formatterName === undefined) {
             this.formatterName = this.fresh("formatted");
@@ -620,7 +630,6 @@ class Exporter {
         this.line("}");
     }
 
-    /** The whole program. */
     write(): string {
         const name = this.document.meta?.name;
         this.line(`// Generated by occt.design.toTypeScript${name === undefined ? "" : ` from "${commentText(name)}"`}${this.choice.configuration === undefined ? "" : `, configuration "${commentText(this.choice.configuration)}"`}.`);
@@ -650,6 +659,6 @@ class Exporter {
  * this package that make it, with the faces and edges the run resolved written as indexes, and the
  * parts drawn at the end.
  */
-export function typescriptOf(document: Models.OCCT.DesignPartDocument, run: DesignRun, trace: ReadonlyMap<string, DesignTrace>, choice: { configuration?: string | undefined; overrides?: Readonly<Record<string, unknown>> | undefined }): string {
+export function typescriptOf(document: Models.OCCT.DesignPartDocument, run: DesignRun, trace: ReadonlyMap<string, DesignTrace>, choice: ParameterChoice): string {
     return new Exporter(document, run, trace, choice).write();
 }

@@ -1,9 +1,9 @@
-import { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../../occ-helper";
+import type { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../../occ-helper";
 import * as Inputs from "../../api/inputs";
-import * as Models from "../../api/models";
+import type * as Models from "../../api/models";
 import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../../api/resolved-inputs";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedNumber } from "../base/input-checks";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, checkedDocument, objNameOf } from "../base/file-data";
 
@@ -11,7 +11,6 @@ type GltfExportCall = (...args: unknown[]) => Uint8Array | undefined;
 
 export type { Handle_TDocStd_Document };
 
-/** The four bytes a binary glTF file starts with, `glTF` in ASCII. */
 const GLB_MAGIC: readonly number[] = [0x67, 0x6c, 0x54, 0x46];
 
 /**
@@ -312,18 +311,6 @@ export class OCCTAssemblyManager {
         return document;
     }
 
-    /**
-     * The nodes as the document builder needs them to honour every placement. A root of the document
-     * cannot be placed, so when a root assembly node carries a placement other than the identity,
-     * every root node is put under one top assembly, named "Assembly" as the builder names the one it
-     * makes for loose instances, and the placement is kept relative to it. Nodes whose roots are not
-     * placed come back as they are.
-     */
-    /**
-     * The trailing argument that tells a glTF export call whether the document is y-up, for a kernel
-     * whose call takes it; none for a kernel built before it, recognised by the call taking only
-     * `olderArity` arguments, which turns every document as a z-up one and so cannot write y-up.
-     */
     private upFor(exportCall: GltfExportCall, olderArity: number, up: Inputs.OCCT.upAxisEnum): [boolean] | [] {
         if (exportCall.length !== olderArity) {
             return [up === Inputs.OCCT.upAxisEnum.y];

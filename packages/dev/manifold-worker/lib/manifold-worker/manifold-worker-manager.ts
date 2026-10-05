@@ -1,8 +1,9 @@
-import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import type { KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import { KernelCallError } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
-import { ManifoldInfo } from "./manifold-info";
+import type { ManifoldInfo } from "./manifold-info";
 import { ManifoldStateEnum } from "./manifold-state.enum";
-import { ManifoldWorkerMock } from "./manifold-worker-mock";
+import type { ManifoldWorkerMock } from "./manifold-worker-mock";
 
 type WorkerResponse = "manifold-initialised" | "busy" | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };

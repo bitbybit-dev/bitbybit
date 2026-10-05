@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import createBitbybitOcct, { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import createBitbybitOcct from "../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../api/inputs";
 import { ShapesHelperService } from "../api/shapes-helper.service";
 import { VectorHelperService } from "../api/vector-helper.service";
@@ -7,18 +8,6 @@ import { OccHelper } from "../occ-helper";
 import { OCCTDimensions } from "./dimensions";
 import { OCCTCompound, OCCTVertex } from "./shapes";
 
-/**
- * Comprehensive unit tests for the dimensions service.
- * 
- * These tests verify:
- * - Creation of linear, angular, and pin dimensions
- * - Arrow rendering (normal and flipped)
- * - Label transformations (rotation, flipping, offset)
- * - Label expression evaluation (mathematical and template strings)
- * - Edge cases (very small/large dimensions, extreme arrow angles)
- * 
- * Tests use vertex coordinate validation to ensure geometric accuracy.
- */
 describe("OCCT dimensions unit tests", () => {
     let occt: BitbybitOcctModule;
     let occHelper: OccHelper;

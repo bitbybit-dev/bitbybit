@@ -1,11 +1,12 @@
 import * as THREEJS from "three";
-import { DrawCore, Tag } from "@bitbybit-dev/core";
+import type { Tag } from "@bitbybit-dev/core";
+import { DrawCore } from "@bitbybit-dev/core";
 import * as Inputs from "../inputs";
-import { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
-import { Context } from "../context";
-import { DrawHelper } from "../draw-helper";
+import type { Base } from "@bitbybit-dev/core/lib/api/inputs/base-inputs";
+import type { Context } from "../context";
+import type { DrawHelper } from "../draw-helper";
 import { resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../resolved-inputs";
+import type * as Resolved from "../resolved-inputs";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 
 /**
@@ -65,11 +66,6 @@ export class Draw extends DrawCore {
 
     private cachedSyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> | undefined;
 
-    /**
-     * What this renderer draws each synchronous kind with, keyed by the kind's name in the ordered
-     * table. A kind absent from here is one this renderer does not draw, and the walk skips it.
-     * @ignore true
-     */
     private syncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>) => DrawnEntity> {
         return this.cachedSyncHandlers ??= {
             line: (i) => this.handleLine(i),
@@ -93,14 +89,6 @@ export class Draw extends DrawCore {
 
     private cachedAsyncHandlers: Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>, entity: unknown) => Promise<DrawnEntity>> | undefined;
 
-    /**
-     * The same for the kinds that have to cross to a worker and back.
-     *
-     * The two JSCAD entries ask their own check again rather than asserting: a handler that takes the
-     * narrowed entity can only be given one honestly, and re-running a check the table just ran is
-     * cheaper than a cast that could be wrong.
-     * @ignore true
-     */
     private asyncHandlers(): Record<string, (inputs: Inputs.Draw.DrawAny<THREEJS.Group>, entity: unknown) => Promise<DrawnEntity>> {
         return this.cachedAsyncHandlers ??= {
             jscadMesh: (i, e) => this.detectJscadMesh(e) ? this.handleJscadMesh(i, e) : Promise.resolve(undefined),
@@ -483,13 +471,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.point);
     }
 
-    /**
-     * A JSCAD path drawn as the polyline it is.
-     *
-     * The path's points are two-dimensional and its closing segment is implied by `isClosed`, so
-     * both are resolved before the polyline handler sees it - which then applies the same options,
-     * metadata and update handling every other polyline gets.
-     */
     private handleJscadPath(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group {
         const points = this.pathToPolylinePoints(inputs.entity as Inputs.JSCAD.JSCADPath2);
         return this.handlePolyline({ ...inputs, entity: { points } }, Inputs.Draw.drawingTypes.jscadPath);
@@ -531,12 +512,6 @@ export class Draw extends DrawCore {
         }, Inputs.Draw.drawingTypes.verbSurface);
     }
 
-    /**
-     * A frame or a list of frames drawn as one set of lines: the axes and plane grids of every
-     * frame in the list go into the same draw call, however long the list is. Whether it is one
-     * frame or a list is read from the entity, so a drawing can be redrawn with either. When no
-     * frame can be squared nothing is drawn, and an updatable drawing handed back is removed.
-     */
     private handleFrames(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): THREEJS.Group | undefined {
         let options: Inputs.Draw.DrawOptions = inputs.options ? inputs.options : this.defaultFrameOptions;
         if (!inputs.options && inputs.group && inputs.group.userData["options"]) {
@@ -720,10 +695,6 @@ export class Draw extends DrawCore {
         return result;
     }
 
-    /**
-     * The options a draw call was given, laid over the defaults of the options class for the kind
-     * being drawn: a partial object gets the same values the matching `options` method would give it.
-     */
     private basicOptions(options: Inputs.Draw.DrawOptions): Resolved.Draw.DrawBasicGeometryOptions {
         return resolveDto(Inputs.Draw.DrawBasicGeometryOptions, options) as Resolved.Draw.DrawBasicGeometryOptions;
     }

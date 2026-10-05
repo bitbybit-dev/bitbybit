@@ -68,7 +68,7 @@ reads, and a constant whose value needs explaining is derived from named ones in
 that a name or an AGENTS sentence is missing.
 
 **Every template is strict and linted, and the smoke runs both first.** Each TypeScript project ships a
-self-contained `tsconfig.json` carrying the whole strict set the CAD packages and the host units share
+self-contained `tsconfig.json` carrying the whole strict set the CAD packages share
 (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitReturns`,
 `noImplicitOverride`, `noPropertyAccessFromIndexSignature`, `noFallthroughCasesInSwitch`, unused locals
 and parameters, `useUnknownInCatchVariables`, `isolatedModules`, `verbatimModuleSyntax`,

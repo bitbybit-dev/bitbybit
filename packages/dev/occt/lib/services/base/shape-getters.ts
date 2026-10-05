@@ -1,10 +1,7 @@
-import {
-    BitbybitOcctModule, TopoDS_Edge, TopoDS_Face,
-    TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Compound
-} from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { BitbybitOcctModule, TopoDS_Edge, TopoDS_Face, TopoDS_Shape, TopoDS_Solid, TopoDS_Vertex, TopoDS_Wire, TopoDS_Compound } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
-import { EnumService } from "./enum.service";
-import * as Resolved from "../../api/resolved-inputs";
+import type { EnumService } from "./enum.service";
+import type * as Resolved from "../../api/resolved-inputs";
 import { checkedShape } from "./input-checks";
 
 export class ShapeGettersService {

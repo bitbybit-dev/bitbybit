@@ -1,11 +1,8 @@
-import {
-    Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit,
-    Point, Polyline, TextBitByBit, Transforms, Vector,
-} from "@bitbybit-dev/base";
+import { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
-import { ContextBase } from "./context";
+import type { ContextBase } from "./context";
 import { Tag } from "./bitbybit/tag";
 import { Time } from "./bitbybit/time";
 import { Asset } from "./bitbybit/asset";

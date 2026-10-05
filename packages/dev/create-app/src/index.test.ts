@@ -62,7 +62,9 @@ type EngineTemplate = { engine: string; mainTs: string };
 
 const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-        if (entry.name === "node_modules") return [];
+        if (entry.name === "node_modules") {
+            return [];
+        }
         const full = path.join(dir, entry.name);
         return entry.isDirectory() ? [full, ...walk(full)] : [full];
     });
@@ -134,13 +136,19 @@ const answerPrompts = (cwd: string, args: string[], answers: Answer[]): Promise<
         const onData = (chunk: Buffer): void => {
             output += chunk.toString();
             const answer = answers[answered];
-            if (!answer) return;
+            if (!answer) {
+                return;
+            }
             const match = answer.question.exec(output.slice(searchFrom));
-            if (!match) return;
+            if (!match) {
+                return;
+            }
             searchFrom += match.index + match[0].length;
             answered += 1;
             child.stdin.write(answer.keys);
-            if (answered === answers.length) child.stdin.end();
+            if (answered === answers.length) {
+                child.stdin.end();
+            }
         };
         child.stdout.on("data", onData);
         child.stderr.on("data", onData);
@@ -178,7 +186,9 @@ describe("create-app", () => {
     }, 120_000);
 
     afterAll(() => {
-        if (work) rmSync(work, { recursive: true, force: true });
+        if (work) {
+            rmSync(work, { recursive: true, force: true });
+        }
     });
 
     describe("a frontend project", () => {
@@ -211,7 +221,9 @@ describe("create-app", () => {
             const pins = Object.entries({ ...manifest.dependencies, ...manifest.devDependencies })
                 .filter(([dependency]) => dependency.startsWith("@bitbybit-dev/"));
             expect(pins.map(([dependency]) => dependency).sort()).toEqual(["@bitbybit-dev/occt", "@bitbybit-dev/threejs"]);
-            for (const [, pinned] of pins) expect(pinned).toBe(RELEASE_VERSION);
+            for (const [, pinned] of pins) {
+                expect(pinned).toBe(RELEASE_VERSION);
+            }
         });
     });
 
@@ -384,7 +396,9 @@ describe("create-app", () => {
             const manifests = walk(path.join(work, name)).filter((file) => path.basename(file) === "package.json").map((file) => JSON.parse(readFileSync(file, "utf8")) as Manifest);
             const pins = manifests.flatMap((m) => Object.entries({ ...m.dependencies, ...m.devDependencies })).filter(([dependency]) => dependency.startsWith("@bitbybit-dev/"));
             expect(pins.length).toBeGreaterThan(0);
-            for (const [, pinned] of pins) expect(pinned).toBe(RELEASE_VERSION);
+            for (const [, pinned] of pins) {
+                expect(pinned).toBe(RELEASE_VERSION);
+            }
             expect(pins.map(([dependency]) => dependency)).toContain("@bitbybit-dev/occt");
             const agents = readFileSync(path.join(work, name, "AGENTS.md"), "utf8");
             expect(agents).toContain(`\`${template}\` template`);
@@ -440,7 +454,9 @@ describe("create-app", () => {
             // Assert
             expect(status).toBe(FAILURE_EXIT);
             expect(output).toMatch(/space-elevator/);
-            for (const template of APP_TEMPLATES) expect(output).toContain(template);
+            for (const template of APP_TEMPLATES) {
+                expect(output).toContain(template);
+            }
             expect(existsSync(path.join(work, "bad-template"))).toBe(false);
         });
 
@@ -484,7 +500,9 @@ describe("create-app", () => {
                 const scripts = readManifest(path.join(dir, "package.json")).scripts ?? {};
 
                 // Assert
-                for (const flag of STRICT_FLAGS) expect(tsconfig.compilerOptions[flag], `${relative}: ${flag}`).toBe(true);
+                for (const flag of STRICT_FLAGS) {
+                    expect(tsconfig.compilerOptions[flag], `${relative}: ${flag}`).toBe(true);
+                }
                 expect(scripts["typecheck"], relative).toBe("tsc --noEmit");
                 expect(scripts["lint"], relative).toBe("eslint . --max-warnings 0");
                 expect(scripts["smoke"], relative).toMatch(/^npm run typecheck && npm run lint/);
@@ -747,7 +765,9 @@ describe("create-app", () => {
 
         it("should stop matching once that options object is reordered", () => {
             const [first] = engineTemplates();
-            if (!first) throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
+            if (!first) {
+                throw new Error(`no engine templates under ${ENGINE_TEMPLATES_DIR} - there is nothing left to patch`);
+            }
             const template = readFileSync(first.mainTs, "utf8");
             const reordered = template.replace(LAST_TWO_OPTION_PROPERTIES, "$2$1");
 

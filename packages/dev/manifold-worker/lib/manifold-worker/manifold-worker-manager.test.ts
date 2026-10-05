@@ -2,7 +2,7 @@ import { KernelCallError } from "@bitbybit-dev/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ManifoldWorkerManager } from "./manifold-worker-manager";
 import { ManifoldStateEnum } from "./manifold-state.enum";
-import { ManifoldInfo } from "./manifold-info";
+import type { ManifoldInfo } from "./manifold-info";
 import { ManifoldWorkerMock } from "./manifold-worker-mock";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };

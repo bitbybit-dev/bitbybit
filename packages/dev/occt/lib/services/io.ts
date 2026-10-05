@@ -1,21 +1,20 @@
-import { IGESControl_Reader, BitbybitOcctModule, Handle_TDocStd_Document, STEPControl_Reader, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
-import { OccHelper } from "../occ-helper";
+import type { IGESControl_Reader, BitbybitOcctModule, Handle_TDocStd_Document, STEPControl_Reader, TopoDS_Compound, TopoDS_Shape } from "../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { OccHelper } from "../occ-helper";
 import * as Inputs from "../api/inputs";
-import * as Models from "../api/models";
-import { IO } from "@bitbybit-dev/base/lib/api/inputs";
-import { InputError, resolveDto } from "@bitbybit-dev/base";
-import * as Resolved from "../api/resolved-inputs";
+import type * as Models from "../api/models";
+import type { IO } from "@bitbybit-dev/base/lib/api/inputs";
+import { InputError, messageOf, resolveDto } from "@bitbybit-dev/base";
+import type * as Resolved from "../api/resolved-inputs";
 import { checkedFrame, checkedNumber, checkedShape } from "./base/input-checks";
 import { readKernelException } from "../kernel-exception";
 import { numbersOfFrames } from "./base/frames";
 import { SMALLEST_MESH_DEFLECTION, bytesOfFile, objNameOf, textOfFile } from "./base/file-data";
-import { DrawingLine, svgOfDrawing } from "./base/svg-drawing";
+import type { DrawingLine } from "./base/svg-drawing";
+import { svgOfDrawing } from "./base/svg-drawing";
 import { stlWithYAndZSwapped } from "./base/stl-data";
 
-/** What a whole BREP text opens with, after an optional line a drawing tool writes before it. */
 const BREP_HEADER = /^\s*(DBRep_DrawableShape\s+)?CASCADE Topology V\d/;
 
-/** What a whole BREP text ends with: its table of shapes, then the reference to the shape it holds. */
 const BREP_ENDING = /\r?\nTShapes \d+\r?\n[\s\S]*\r?\n[+\-ie]\d+ \d+\s*$/;
 
 /**
@@ -455,7 +454,6 @@ export class OCCTIO {
         }
     }
 
-    /** The kernel's reading of BREP text; text the kernel finds damaged is refused as an input error saying where. */
     private brepShapeOf(text: string): TopoDS_Shape {
         try {
             return this.occ.ReadBREPFromString(text);
@@ -613,7 +611,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -742,7 +740,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF advanced conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -808,7 +806,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -894,7 +892,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             throw new Error(`STEP to glTF advanced (Draco) conversion failed: ${errorMessage}`, { cause: error });
         }
     }
@@ -936,7 +934,7 @@ export class OCCTIO {
 
             return result;
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
+            const errorMessage = messageOf(error);
             return {
                 version: "1.0",
                 nodes: [],
@@ -945,9 +943,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * Convert gltfNameFormatEnum string to OCCT numeric value.
-     */
     private gltfNameFormatEnumToOcct(format: Inputs.OCCT.gltfNameFormatEnum): number {
         switch (format) {
             case Inputs.OCCT.gltfNameFormatEnum.empty: return 0;
@@ -961,9 +956,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * Convert gltfTransformFormatEnum string to OCCT numeric value.
-     */
     private gltfTransformFormatEnumToOcct(format: Inputs.OCCT.gltfTransformFormatEnum): number {
         switch (format) {
             case Inputs.OCCT.gltfTransformFormatEnum.compact: return 0;
@@ -973,12 +965,6 @@ export class OCCTIO {
         }
     }
 
-    /**
-     * A copy of the shape without the mesh it may carry, so a mesh export triangulates at its own
-     * precision and leaves the caller's mesh alone. With `adjustYtoZ` the copy is placed with y and z
-     * swapped, which turns Y-up into Z-up; a placement moves a face that carries only a mesh too, and
-     * the mesh writers turn the triangles of a mirrored placement so they keep facing out.
-     */
     private unmeshedCopy(shape: TopoDS_Shape, adjustYtoZ: boolean): TopoDS_Shape {
         const copy = this.occ.BRepBuilderAPI_Copy_Shape(shape, false);
         if (!adjustYtoZ) {
@@ -994,10 +980,6 @@ export class OCCTIO {
         return placed;
     }
 
-    /**
-     * Puts a copy of the shape into a new document as one part named `name`, hands the document to
-     * `write` and deletes the document and the copy, whatever `write` does.
-     */
     private writtenAsDocument<R>(shape: TopoDS_Shape, adjustYtoZ: boolean, name: string, write: (document: Handle_TDocStd_Document) => R): R {
         const copy = this.unmeshedCopy(shape, adjustYtoZ);
         try {
@@ -1016,7 +998,6 @@ export class OCCTIO {
         }
     }
 
-    /** The edges of a flat drawing as lines of x and y, each curve traced within `precision`. */
     private drawingLinesOf(drawing: TopoDS_Compound, precision: number): DrawingLine[] {
         const edges = this.occ.EdgesOf(drawing, true);
         try {
@@ -1033,7 +1014,6 @@ export class OCCTIO {
         }
     }
 
-    /** Removes a file the kernel staged, if it is there. */
     private removeFile(path: string): void {
         try {
             this.occ.FS.unlink(path);

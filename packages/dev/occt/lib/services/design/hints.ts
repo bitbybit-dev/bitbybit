@@ -1,16 +1,12 @@
-import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OCCTService } from "../../occ-service";
-import * as Models from "../../api/models";
+import type { BaseBitByBit } from "../../base";
+import type * as Models from "../../api/models";
 import type { FaceNames } from "./names";
+import { tripleOf } from "./placement";
 
-/**
- * The share each fact has in a face's likeness to a hint. Where a body holds none of the names a
- * hint's neighbours had, as after an operation that keeps no history, the neighbours say nothing and
- * the other facts share the likeness.
- */
 const WEIGHTS = { normal: 0.35, area: 0.2, neighbours: 0.45 };
 
-/** How far, in fractions of the body's box, a face may lie from a hinted centre before it scores nothing. */
 const REACH = 0.25;
 
 /** The least score a face needs to be taken for a lost reference. */
@@ -69,19 +65,24 @@ interface BodyFacts {
     adjacent: number[][];
 }
 
+/** The services a hint is recorded and scored with. */
+export interface HintServices {
+    occt: OCCTService;
+    base: BaseBitByBit;
+}
+
 const factsByShape = new WeakMap<TopoDS_Shape, BodyFacts>();
 
-function factsOf(shape: TopoDS_Shape, occt: OCCTService): BodyFacts {
+function factsOf(shape: TopoDS_Shape, { occt, base }: HintServices): BodyFacts {
     let facts = factsByShape.get(shape);
     if (facts === undefined) {
         const faces = occt.analysis.signatures({ shape }).faces;
-        const min = [0, 1, 2].map(axis => Math.min(...faces.map(face => face.box.min[axis]!)));
-        const max = [0, 1, 2].map(axis => Math.max(...faces.map(face => face.box.max[axis]!)));
+        const box = base.point.boundingBoxOfPoints({ points: faces.flatMap(face => [face.box.min, face.box.max]) });
         const adjacency = new Map(occt.brepGraph.faceAdjacency({ shape }).faces.map(entry => [entry.index, entry.adjacent]));
         facts = {
             faces,
-            min,
-            size: max.map((value, axis) => value - min[axis]!),
+            min: box.min,
+            size: base.vector.sub({ first: box.max, second: box.min }),
             area: faces.reduce((sum, face) => sum + face.area, 0),
             adjacent: faces.map(face => [...(adjacency.get(face.index) ?? [])]),
         };
@@ -90,12 +91,9 @@ function factsOf(shape: TopoDS_Shape, occt: OCCTService): BodyFacts {
     return facts;
 }
 
-const rounded = (value: number): number => Math.round(value * 1e6) / 1e6 + 0;
+const HINT_SCALE = 1e6;
 
-function unit(vector: readonly number[]): number[] {
-    const length = Math.hypot(...vector);
-    return length === 0 ? [0, 0, 0] : vector.map(value => value / length);
-}
+const rounded = (value: number): number => Math.round(value * HINT_SCALE) / HINT_SCALE + 0;
 
 function neighboursOf(index: number, facts: BodyFacts, names: FaceNames): string[] {
     return [...new Set(facts.adjacent[index]!.flatMap(face => names[face] ?? []))].sort();
@@ -108,26 +106,26 @@ const fractionOf = (facts: BodyFacts, value: number, axis: number): number => fa
  * body's, its centre as fractions of the body's box, its normal, and the names of the faces next to
  * it, so it can be found again by likeness where its names are lost.
  */
-export function faceHintOf(index: number, shape: TopoDS_Shape, names: FaceNames, occt: OCCTService): Models.OCCT.DesignFaceHint {
-    const facts = factsOf(shape, occt);
+export function faceHintOf(index: number, shape: TopoDS_Shape, names: FaceNames, services: HintServices): Models.OCCT.DesignFaceHint {
+    const facts = factsOf(shape, services);
     const face = facts.faces[index]!;
     return {
         type: face.type,
         area: rounded(facts.area === 0 ? 0 : face.area / facts.area),
         centre: [0, 1, 2].map(axis => rounded(fractionOf(facts, face.centre[axis]!, axis))) as [number, number, number],
-        normal: unit(face.normal).map(rounded) as [number, number, number],
+        normal: tripleOf((services.base.vector.normalized({ vector: face.normal }) ?? [0, 0, 0]).map(rounded)),
         neighbours: neighboursOf(index, facts, names),
     };
 }
 
 /** The hint of a reference that found `faces` of a body: the body's box, and each face as `faceHintOf` records it. */
-export function referenceHintOf(faces: readonly number[], shape: TopoDS_Shape, names: FaceNames, occt: OCCTService): Models.OCCT.DesignReferenceHint {
-    const facts = factsOf(shape, occt);
+export function referenceHintOf(faces: readonly number[], shape: TopoDS_Shape, names: FaceNames, services: HintServices): Models.OCCT.DesignReferenceHint {
+    const facts = factsOf(shape, services);
     const corner = (values: readonly number[]): [number, number, number] => values.map(rounded) as [number, number, number];
     return {
         v: 1,
         box: { min: corner(facts.min), max: corner(facts.min.map((value, axis) => value + facts.size[axis]!)) },
-        faces: faces.map(face => faceHintOf(face, shape, names, occt)),
+        faces: faces.map(face => faceHintOf(face, shape, names, services)),
     };
 }
 
@@ -139,24 +137,23 @@ interface Candidate {
     bodySize: readonly number[];
 }
 
-function candidateOf(index: number, shape: TopoDS_Shape, names: FaceNames, occt: OCCTService): Candidate {
-    const facts = factsOf(shape, occt);
+function candidateOf(index: number, shape: TopoDS_Shape, names: FaceNames, services: HintServices): Candidate {
+    const facts = factsOf(shape, services);
     const box = facts.faces[index]!.box;
-    return { hint: faceHintOf(index, shape, names, occt), min: box.min, max: box.max, bodyMin: facts.min, bodySize: facts.size };
+    return { hint: faceHintOf(index, shape, names, services), min: box.min, max: box.max, bodyMin: facts.min, bodySize: facts.size };
 }
 
-/** How near a point lies to a box, per axis in fractions of `span`, as a factor that falls from 1 to 0 over `REACH`. */
-function nearness(point: readonly number[], min: readonly number[], max: readonly number[], span: (axis: number) => number): number {
-    const away = Math.hypot(...point.map((value, axis) => Math.max(min[axis]! - value, 0, value - max[axis]!) / span(axis)));
+function nearness(point: readonly number[], min: readonly number[], max: readonly number[], span: (axis: number) => number, services: HintServices): number {
+    const away = services.base.vector.norm({ vector: point.map((value, axis) => Math.max(min[axis]! - value, 0, value - max[axis]!) / span(axis)) });
     return 1 - Math.min(1, away / REACH);
 }
 
-/**
- * Where a face lies against a hinted face, twice: in proportion, the hinted centre in fractions of
- * the box the hint recorded against the face's box in fractions of the body's box now; and in
- * place, both in the hint's units. A face merged with others still covers the hinted centre.
- */
-function placement(hint: Models.OCCT.DesignFaceHint, box: Models.OCCT.DesignHintBox, found: Candidate): { proportion: number; place: number } {
+interface Nearness {
+    proportion: number;
+    place: number;
+}
+
+function placement(hint: Models.OCCT.DesignFaceHint, box: Models.OCCT.DesignHintBox, found: Candidate, services: HintServices): Nearness {
     const size = box.max.map((value, axis) => value - box.min[axis]!);
     const largest = Math.max(...size) || 1;
     const hintSpan = (axis: number): number => size[axis]! > 0 ? size[axis]! : largest;
@@ -164,18 +161,13 @@ function placement(hint: Models.OCCT.DesignFaceHint, box: Models.OCCT.DesignHint
     const toBody = (values: readonly number[]): number[] => values.map((value, axis) => (value - found.bodyMin[axis]!) / bodySpan(axis));
     const centre = hint.centre.map((value, axis) => box.min[axis]! + value * size[axis]!);
     return {
-        proportion: nearness(hint.centre, toBody(found.min), toBody(found.max), () => 1),
-        place: nearness(centre, found.min, found.max, hintSpan),
+        proportion: nearness(hint.centre, toBody(found.min), toBody(found.max), () => 1, services),
+        place: nearness(centre, found.min, found.max, hintSpan, services),
     };
 }
 
-/**
- * How much a face looks like one face of a hint, from 0 to 1, given how near it lies: its normal,
- * its area and the names its neighbours share with the hinted ones weigh in, and hinted names the
- * body no longer holds anywhere are left out, as no face could share them.
- */
-function likeness(hint: Models.OCCT.DesignFaceHint, found: Candidate, present: ReadonlySet<string>): number {
-    const normal = (1 + hint.normal.reduce((sum, value, axis) => sum + value * found.hint.normal[axis]!, 0)) / 2;
+function likeness(hint: Models.OCCT.DesignFaceHint, found: Candidate, present: ReadonlySet<string>, services: HintServices): number {
+    const normal = (1 + services.base.vector.dot({ first: hint.normal, second: found.hint.normal })) / 2;
     const larger = Math.max(hint.area, found.hint.area);
     const area = larger === 0 ? 1 : Math.min(hint.area, found.hint.area) / larger;
     const shape = WEIGHTS.normal * normal + WEIGHTS.area * area;
@@ -188,30 +180,36 @@ function likeness(hint: Models.OCCT.DesignFaceHint, found: Candidate, present: R
     return shape + WEIGHTS.neighbours * (union.size === 0 ? 1 : shared / union.size);
 }
 
-/**
- * A face's score against the best matching face of a hint. Nearness gates it: a face of another
- * surface type scores nothing, and the score falls to nothing as the face moves `REACH` away from
- * where the hinted face lay, in proportion or in place, whichever is further, so a sibling a pattern
- * moved into the place the body's proportions give is not taken.
- */
-function scoreOf(hint: Models.OCCT.DesignReferenceHint, index: number, shape: TopoDS_Shape, names: FaceNames, occt: OCCTService, present: ReadonlySet<string>): number {
-    const found = candidateOf(index, shape, names, occt);
+function scoreOf(hint: Models.OCCT.DesignReferenceHint, index: number, shape: TopoDS_Shape, names: FaceNames, services: HintServices, present: ReadonlySet<string>): number {
+    const found = candidateOf(index, shape, names, services);
     return Math.max(0, ...hint.faces.map(face => {
         if (face.type !== found.hint.type) {
             return 0;
         }
-        const { proportion, place } = placement(face, hint.box, found);
-        return Math.min(proportion, place) * likeness(face, found, present);
+        const { proportion, place } = placement(face, hint.box, found, services);
+        return Math.min(proportion, place) * likeness(face, found, present, services);
     }));
 }
 
+/** A face a lost reference could rebind to, and how like the hint it scored. */
+export interface RebindCandidate {
+    face: number;
+    score: number;
+}
+
+/** The faces a lost reference rebinds to, and the lowest score among them. */
+export interface Rebound {
+    faces: number[];
+    score: number;
+}
+
 /** Every face of a body of a type the hint has, scored against it, best first. */
-export function candidatesOf(hint: Models.OCCT.DesignReferenceHint, shape: TopoDS_Shape, names: FaceNames, occt: OCCTService): { face: number; score: number }[] {
+export function candidatesOf(hint: Models.OCCT.DesignReferenceHint, shape: TopoDS_Shape, names: FaceNames, services: HintServices): RebindCandidate[] {
     const types = new Set(hint.faces.map(face => face.type));
     const present = new Set(names.flat());
-    return factsOf(shape, occt).faces
+    return factsOf(shape, services).faces
         .filter(face => types.has(face.type))
-        .map(face => ({ face: face.index, score: rounded(scoreOf(hint, face.index, shape, names, occt, present)) }))
+        .map(face => ({ face: face.index, score: rounded(scoreOf(hint, face.index, shape, names, services, present)) }))
         .sort((a, b) => b.score - a.score || a.face - b.face);
 }
 
@@ -219,7 +217,7 @@ export function candidatesOf(hint: Models.OCCT.DesignReferenceHint, shape: TopoD
  * The faces a lost reference rebinds to: the `needed` best candidates, when each scores at least
  * `REBIND_SCORE` and beats the best one left out by `REBIND_MARGIN`; otherwise none.
  */
-export function rebindOf(candidates: readonly { face: number; score: number }[], needed: number): { faces: number[]; score: number } | undefined {
+export function rebindOf(candidates: readonly RebindCandidate[], needed: number): Rebound | undefined {
     const taken = candidates.slice(0, needed);
     if (needed < 1 || taken.length < needed || taken.some(candidate => candidate.score < REBIND_SCORE)) {
         return undefined;

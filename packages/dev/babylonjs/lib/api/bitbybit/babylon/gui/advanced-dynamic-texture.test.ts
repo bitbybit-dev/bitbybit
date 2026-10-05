@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as BABYLON from "@babylonjs/core";
 import * as GUI from "@babylonjs/gui";
-import { createHeadlessScene, HeadlessScene } from "../../../__test__/headless";
+import type { HeadlessScene } from "../../../__test__/headless";
+import { createHeadlessScene } from "../../../__test__/headless";
 import { BabylonGuiAdvancedDynamicTexture } from "./advanced-dynamic-texture";
 import * as Inputs from "../../../inputs";
 

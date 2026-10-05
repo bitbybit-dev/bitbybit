@@ -1,9 +1,9 @@
-import { Inputs, Models } from "@bitbybit-dev/occt";
+import { messageOf } from "@bitbybit-dev/base";
+import type { Inputs, Models } from "@bitbybit-dev/occt";
 import type { OCCTWorkerManager } from "./occ-worker-manager";
 
 type AsyncFunctionConstructor = new (...parameters: string[]) => (...values: unknown[]) => Promise<unknown>;
 
-/** The package's API as a script reaches it: every dotted path one call to the worker, as each generated member makes it. */
 function kernelCalls(manager: OCCTWorkerManager, path: readonly string[]): unknown {
     const call = (dto: unknown): Promise<unknown> => manager.genericCallToWorkerPromise(path.join("."), dto);
     return new Proxy(call, {
@@ -53,7 +53,7 @@ async function scriptOutcome(pending: Models.OCCT.DesignPendingScript<Inputs.OCC
     try {
         made = await new AsyncFunction("inputs", "occt", code)(pending.inputs, occt);
     } catch (error) {
-        throw new Error(`The script of "${pending.id}" failed: ${error instanceof Error ? error.message : String(error)}`, { cause: error });
+        throw new Error(`The script of "${pending.id}" failed: ${messageOf(error)}`, { cause: error });
     }
     if (isShapePointer(made)) {
         return { hash: pending.hash, shape: made };

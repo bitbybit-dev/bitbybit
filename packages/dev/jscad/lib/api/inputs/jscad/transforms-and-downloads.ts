@@ -1,7 +1,5 @@
-// A fragment of the JSCAD inputs namespace: scripts/gen-inputs.mjs assembles every file in this
-// directory, in the order set by scripts/inputs.config.mjs, into ../jscad-inputs.ts. Edit here, then regenerate.
-import { Base } from "../base-inputs";
-import { JSCADEntity } from "./entities-and-enums";
+import type { Base } from "../base-inputs";
+import type { JSCADEntity } from "./entities-and-enums";
 
 /**
  * Feeds `transformSolids` on the JSCAD service: the solids to move and the matrix, or matrices,
