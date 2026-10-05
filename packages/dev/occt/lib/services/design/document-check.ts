@@ -59,7 +59,7 @@ export const DOCUMENT_KEYS = {
 
 /** The properties each feature type adds to the ones every feature has. */
 export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly string[]> = {
-    sketch: ["on", "start", "pen", "loops", "closed"],
+    sketch: ["on", "start", "pen", "loops", "face"],
     extrude: ["profile", "distance", "direction", "body", "join"],
     revolve: ["profile", "axis", "angle", "body", "join"],
     boolean: ["operation", "body", "tools"],
@@ -68,6 +68,8 @@ export const FEATURE_KEYS: Record<Models.OCCT.DesignFeature["type"], readonly st
     linearPattern: ["body", "direction", "spacing", "count"],
     polarPattern: ["body", "axis", "count", "angle"],
     mirror: ["body", "plane", "keepOriginal"],
+    transform: ["body", "translate", "rotate", "pivot"],
+    pushPull: ["body", "face", "distance"],
     sweep: ["profile", "path", "body", "join"],
     loft: ["profiles", "solid", "body", "join"],
     shell: ["body", "thickness", "open"],
@@ -377,8 +379,8 @@ function checkLoops(feature: Record<string, unknown>, path: string, known: Known
             throw new DesignProblem(pointer(path, key), `a sketch draws with pen or with loops: give ${key} inside each loop`);
         }
     }
-    if (feature["closed"] === false) {
-        throw new DesignProblem(pointer(path, "closed"), "loops are closed outlines, so a sketch with loops is closed");
+    if (feature["face"] === false) {
+        throw new DesignProblem(pointer(path, "face"), "loops are the outline and the holes of one face, so a sketch with loops is a face");
     }
     const loops = feature["loops"];
     if (!Array.isArray(loops) || loops.length === 0) {
@@ -511,6 +513,8 @@ const FIELDS: Record<Exclude<Models.OCCT.DesignFeature["type"], "sketch">, Recor
     linearPattern: { body: checkBody, direction: checkPoint, spacing: checkNumber, count: checkNumber },
     polarPattern: { body: checkBody, axis: checkAxis, count: checkNumber, angle: optional(checkNumber) },
     mirror: { body: checkBody, plane: checkPlane, keepOriginal: optional(checkBoolean) },
+    transform: { body: checkBody, translate: optional(checkPoint), rotate: optional(checkPoint), pivot: optional(checkPoint) },
+    pushPull: { body: checkBody, face: checkFaces, distance: checkNumber },
     sweep: { profile: checkProfile, path: checkProfile, body: optional(checkBody), join: oneOf(JOINS, true) },
     loft: { profiles: checkProfiles, solid: optional(checkBoolean), body: optional(checkBody), join: oneOf(JOINS, true) },
     shell: { body: checkBody, thickness: checkNumber, open: checkCountedFaces },
@@ -545,6 +549,9 @@ function checkFeature(feature: unknown, path: string, known: Known): void {
     if (!isFeatureType(type)) {
         throw new DesignProblem(pointer(path, "type"), `${JSON.stringify(type)} is not a feature type: ${Object.keys(FEATURE_KEYS).join(", ")}`);
     }
+    if (type === "sketch" && feature["closed"] !== undefined) {
+        throw new DesignProblem(pointer(path, "closed"), "a sketch's `closed` is now `face`: the pen's `close` command closes the outline, and `face` false keeps a closed outline a wire");
+    }
     checkKeys(feature, [...DOCUMENT_KEYS.feature, ...FEATURE_KEYS[type]], path, true);
     if (feature["name"] !== undefined) {
         checkText(feature["name"], pointer(path, "name"), "a name");
@@ -557,10 +564,11 @@ function checkFeature(feature: unknown, path: string, known: Known): void {
         if (feature["start"] !== undefined) {
             checkNumbersIn(feature["start"], pointer(path, "start"), known);
         }
-        if (feature["closed"] !== undefined) {
-            checkBoolean(feature["closed"], pointer(path, "closed"));
+        if (feature["face"] !== undefined) {
+            checkBoolean(feature["face"], pointer(path, "face"));
         }
-        known.sketches.set(id, feature["loops"] === undefined ? checkPen(feature["pen"], pointer(path, "pen"), known) : checkLoops(feature, path, known));
+        const drawsNothing = feature["loops"] === undefined && (feature["pen"] === undefined || (Array.isArray(feature["pen"]) && feature["pen"].length === 0));
+        known.sketches.set(id, drawsNothing ? new Set() : feature["loops"] === undefined ? checkPen(feature["pen"], pointer(path, "pen"), known) : checkLoops(feature, path, known));
         if (isRecord(feature["on"]) && "face" in feature["on"]) {
             known.faceSketches.add(id);
         }

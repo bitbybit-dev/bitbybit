@@ -1,7 +1,7 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, MeshData, defaultEdgeColor, designMeshKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
+import { DrawHelperCore, MeshData, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
 import type { EdgeRange, EdgeSegments, FaceLook, FaceRange, LookGroup, LookMesh, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -56,6 +56,8 @@ export class DrawHelper extends DrawHelperCore {
     private readonly lineMaterialCache = new Map<string, LineMaterial>();
 
     private readonly designStates = new WeakMap<THREEJS.Group, DesignDrawState>();
+
+    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
     private readonly scratchMatrix = new THREEJS.Matrix4();
 
     private entityIdCounter = 0;
@@ -85,6 +87,7 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
+        this.designMeshes.clear();
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -255,10 +258,26 @@ export class DrawHelper extends DrawHelperCore {
                 }
             }
         }
+        const meshing = this.meshingTextOf(options);
+        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
+        for (const id of placed) {
+            const cacheKey = cacheKeys.get(id);
+            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
+            if (cached) {
+                meshes.set(id, cached);
+            }
+        }
         const missing = placed.filter(id => !meshes.has(id));
         if (missing.length > 0) {
             const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => meshes.set(id, made[index]!));
+            missing.forEach((id, index) => {
+                const mesh = made[index]!;
+                const cacheKey = cacheKeys.get(id);
+                meshes.set(id, mesh);
+                if (cacheKey !== undefined) {
+                    this.designMeshes.set(cacheKey, mesh);
+                }
+            });
         }
         const target = previous && state ? previous : this.newDesignGroup();
         if (state && target === previous) {
@@ -270,9 +289,17 @@ export class DrawHelper extends DrawHelperCore {
         return target;
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, options) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
-        const meshing = this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+        return this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+    }
+
+    private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
+        return JSON.stringify(this.meshingForLooks(options));
+    }
+
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+        const meshing = this.meshingForLooks(options);
         const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);

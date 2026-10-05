@@ -1,7 +1,14 @@
+import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { CacheHelper } from "./cache-helper";
-import { ReservedFunctions, CACHE_THRESHOLD } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES, MeshRetention } from "./constants";
 import { ShapeResolver } from "./shape-resolver";
 import { OCCTService } from "@bitbybit-dev/occt";
+
+const meshRetentionOf = (kernel: BitbybitOcctModule): MeshRetention => ({
+    budget: kernel.MeshRetentionBudget(),
+    faces: kernel.KeptMeshFaces(),
+    triangles: kernel.KeptMeshTriangles(),
+});
 
 /**
  * CommandResult represents the outcome of a command handler.
@@ -19,6 +26,10 @@ export interface CommandResult {
 export interface CommandContext {
     /** The OpenCascade service instance */
     openCascade: OCCTService;
+    /** The kernel module the service runs on, for the switches that live on the kernel itself */
+    kernel: BitbybitOcctModule;
+    /** Sets the kernel's mesh retention budget, kept by the worker for a kernel that replaces a crashed one */
+    setMeshRetention: (triangles: number) => void;
     /** The cache helper for managing shape cache */
     cacheHelper: CacheHelper;
     /** The shape resolver for resolving cached shapes */
@@ -126,6 +137,7 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      */
     [ReservedFunctions.STARTED_THE_RUN]: (_inputs, context): CommandResult => {
         if (Object.keys(context.cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
+            context.kernel.ReleaseKeptMeshes();
             context.cacheHelper.cleanAllCache();
         }
         return { handled: true, result: {} };
@@ -135,8 +147,23 @@ export const CommandHandlers: Record<string, CommandHandler> = {
      * Handles full cache cleanup.
      */
     [ReservedFunctions.CLEAN_ALL_CACHE]: (_inputs, context): CommandResult => {
+        context.kernel.ReleaseKeptMeshes();
         context.cacheHelper.cleanAllCache();
         return { handled: true, result: {} };
+    },
+
+    /**
+     * Handles the mesh retention budget: how many triangles meshing may keep on shapes, so a shape
+     * meshed again with the same settings, or a shape sharing its faces, reuses them. 0 turns keeping
+     * off and releases what was kept. Answers with what is kept after the change.
+     */
+    [ReservedFunctions.SET_MESH_RETENTION]: (inputs, context): CommandResult => {
+        const triangles = inputs["triangles"];
+        if (typeof triangles !== "number" || !Number.isInteger(triangles) || triangles < 0 || triangles > MAX_RETAINED_TRIANGLES) {
+            throw new Error(`setMeshRetention: triangles must be a whole number from 0 to ${MAX_RETAINED_TRIANGLES}.`);
+        }
+        context.setMeshRetention(triangles);
+        return { handled: true, result: meshRetentionOf(context.kernel) };
     },
 
     /**

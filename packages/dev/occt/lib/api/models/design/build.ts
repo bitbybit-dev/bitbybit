@@ -233,4 +233,19 @@ export interface DesignBuildResult<T> {
     units: Required<DesignUnits>;
     up: "y" | "z";
     pending?: DesignPendingScript<T>[];
+    sketches?: DesignBuiltSketch<T>[];
+}
+
+/**
+ * A sketch a build drew, listed when the build is asked for its sketches: the sketch feature's `id`,
+ * its outline as a face (`face` true), or as a wire when it is open or its `face` is false, the `frame` it was
+ * drawn in, and per edge of the outline, in `shapes.edge.getEdges` order, the command that drew it as
+ * `"<sketch id>.<command id>"`, or null for a command without an id.
+ */
+export interface DesignBuiltSketch<T> {
+    id: string;
+    shape: T;
+    face: boolean;
+    frame: Base.Frame;
+    commands: (string | null)[];
 }

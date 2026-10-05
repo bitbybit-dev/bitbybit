@@ -106,6 +106,8 @@ A plate with two holes and rounded top edges, made of aluminium, with a part num
 
 - `on` places the sketch: `{ "plane": "XY" }` (or `XZ`, `YZ`, with an `offset`), `{ "frame": { "origin", "normal", "direction" } }`, or `{ "face": <face reference>, "origin": [...], "direction": [...] }` on a flat face of a body. A sketch on a face follows the face when parameters move it.
 - `pen` draws one outline from `start`: `line` (to a point), `hLine` and `vLine` (a length along x or y, negative for the other way), `polarLine`, `tangentLine`, `threePointArc`, `tangentArc`, `sagittaArc`, `bulgeArc`, `quadratic`, `cubic`, `close`, and `filletCorner` and `chamferCorner`, which round or bevel the corner between the commands before and after them.
+- A sketch with no `pen` and no `loops` draws nothing yet: it is only its plane, which an editor draws on, and a feature that uses it fails until it draws something.
+- An outline that ends with `close`, or back at its `start`, is closed, and a closed outline is a face. `"face": false` keeps it a wire, such as a closed path to sweep along; an open outline is always a wire.
 - `circle` draws an exact circle as one closed edge: `{ "type": "circle", "id": "bore", "centre": [0, 0], "radius": 5 }`.
 - `loops` draws several outlines in one sketch, the first the outside and each further one a hole in it, so one sketch makes a washer: `"loops": [{ "start": [-15, -15], "pen": [...] }, { "pen": [{ "type": "circle", ... }] }]`.
 - **Give an id to every command a later feature refers to.** A side face is named after the command it was swept from; a command without an id has no name a reference can use.
@@ -127,6 +129,8 @@ A plate with two holes and rounded top edges, made of aluminium, with a part num
 | `pocket` | sinks a sketch into a face, a `distance`, `until` a face or `through` | `side`, `end` |
 | `linearPattern`, `polarPattern` | repeats a body `count` times | copies picked with `copy` |
 | `mirror` | mirrors a body across a plane | the image is copy 1 |
+| `pushPull` | moves one flat face of a body along its normal: out when `distance` is above 0, in when below | `end` (the moved face, which keeps its names), `side` |
+| `transform` | moves a body: turns it `rotate` degrees about X, Y and Z through a `pivot`, then shifts it by `translate` | keeps every name it had |
 | `import` | starts a body from a STEP, IGES or BREP asset pinned by its SHA-256 | `face` (per index) |
 | `operation` | calls any method of the package by its path, such as `"occt.shapes.shape.unifySameDomain"` | carried through history, otherwise `face` |
 | `script` | runs code from an asset pinned by its SHA-256, outside the kernel, on bodies, references and values | the roles the script returns, otherwise `face` |

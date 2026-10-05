@@ -47,6 +47,13 @@ worker boundary at all, are in `packages/dev/CLAUDE.md`. What is specific to the
   tuned to a memory figure. The number is a practical ceiling on how far the cache drifts before being
   reset, and all three kernel workers use the same one under the same name.
 
+- **Meshes are bounded separately, in triangles.** The kernel keeps no triangulation unless a caller
+  calls `setMeshRetention(triangles)`; with a budget every mesh stays on its shape, and the least
+  recently used faces are cleaned once the kept triangles exceed it, however long the cached shapes
+  live. This is the one strip that is safe: the kernel cleans only a face whose triangulation is still
+  the one it recorded, never the geometry. `cleanAllCache` and the threshold reset release the kept
+  meshes first (`ReleaseKeptMeshes`) and keep the budget.
+
 - **`manifoldObjectHashes` is the liveness ledger** in the Manifold worker's sibling of this cache: an
   entry that was a handle but no longer carries embind's `$$` marker is evicted and reported as a miss
   rather than returned as a dangling pointer. That marker is an embind implementation detail and would

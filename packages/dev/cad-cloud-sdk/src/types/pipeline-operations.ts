@@ -6977,6 +6977,11 @@ export interface OperationParams {
          * making those features.
          */
         outcomes?: unknown[] | PipelineRef;
+        /**
+         * Whether a part document's build also lists its `sketches`: each one's outline, the frame it was
+         * drawn in and the command that drew each edge, for editors that draw and edit sketches.
+         */
+        sketches?: boolean | PipelineRef;
     };
     /**
      * Checks a design document without building it and lists every problem found.
@@ -7198,18 +7203,18 @@ export interface OperationParams {
          */
         computeMetadata?: boolean | PipelineRef;
         /**
-         * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          */
         keepMeshData?: boolean | PipelineRef;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          */
         allowQualityDecrease?: boolean | PipelineRef;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          */
         forceFaceDeflection?: boolean | PipelineRef;
     };
@@ -7249,18 +7254,18 @@ export interface OperationParams {
          */
         computeMetadata?: boolean | PipelineRef;
         /**
-         * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          */
         keepMeshData?: boolean | PipelineRef;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          */
         allowQualityDecrease?: boolean | PipelineRef;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          */
         forceFaceDeflection?: boolean | PipelineRef;
     };
@@ -15603,18 +15608,18 @@ export interface OperationParams {
          */
         computeMetadata?: boolean | PipelineRef;
         /**
-         * When true, the triangulation stays cached on each shape; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          */
         keepMeshData?: boolean | PipelineRef;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          */
         allowQualityDecrease?: boolean | PipelineRef;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          */
         forceFaceDeflection?: boolean | PipelineRef;
         /**
@@ -15689,18 +15694,18 @@ export interface OperationParams {
          */
         computeMetadata?: boolean | PipelineRef;
         /**
-         * When true, the triangulation stays cached on the shape; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulation stays on the shape for the next mesh with the same settings to
+         * reuse; when false it is cleared. A mesh retention budget keeps every mesh.
          */
         keepMeshData?: boolean | PipelineRef;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          */
         allowQualityDecrease?: boolean | PipelineRef;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          */
         forceFaceDeflection?: boolean | PipelineRef;
         /**

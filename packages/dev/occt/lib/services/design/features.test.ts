@@ -145,7 +145,7 @@ describe("OCCT design features beyond the first slice", () => {
                 schemaVersion: 1,
                 features: [
                     rectangle("profile", 2, 1, { plane: "XZ" }, [-1, -0.5]),
-                    { id: "spine", type: "sketch", on: { plane: "XY" }, closed: false, pen: [{ type: "vLine", id: "up", length: 10 }] },
+                    { id: "spine", type: "sketch", on: { plane: "XY" }, pen: [{ type: "vLine", id: "up", length: 10 }] },
                     { id: "bar", type: "sweep", profile: "profile", path: "spine" },
                 ],
             };
@@ -195,7 +195,7 @@ describe("OCCT design features beyond the first slice", () => {
                     rectangle("high", 4, 4, { plane: "XY", offset: 5 }, [-2, -2]),
                     { id: "skin", type: "loft", profiles: ["low", "high"], solid: false },
                     { id: "block", type: "extrude", profile: "low", distance: 2 },
-                    { id: "spine", type: "sketch", on: { plane: "XZ" }, closed: false, pen: [{ type: "hLine", id: "across", length: 10 }] },
+                    { id: "spine", type: "sketch", on: { plane: "XZ" }, pen: [{ type: "hLine", id: "across", length: 10 }] },
                     rectangle("ring", 1, 1, { plane: "YZ" }, [-0.5, 0]),
                     { id: "rail", type: "sweep", profile: "ring", path: "spine", body: "block" },
                 ],

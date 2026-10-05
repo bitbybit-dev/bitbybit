@@ -371,6 +371,143 @@ export function designMeshKeyOf(part: DesignDrawnPart): string {
     return part.shapeHash ?? `handle:${String(part.shape?.hash)}`;
 }
 
+/** A mesh the worker made for a design part, as much of it as a cache counts. */
+export type DesignMesh = LookMeshSource & EdgeSource;
+
+/**
+ * How many numbers a mesh holds: its vertex, normal and index data and its edge points, which is
+ * what a cache of meshes weighs it by.
+ * @param mesh - The mesh
+ * @returns The count of numbers it holds
+ */
+export function meshNumbersOf(mesh: DesignMesh): number {
+    const faces = mesh.faceList.reduce((sum, face) => sum + face.vertexCoord.length + face.normalCoord.length + face.triIndexes.length, 0);
+    const edges = mesh.edgeList.reduce((sum, edge) => sum + edge.vertexCoord.length * 3, 0);
+    return faces + edges;
+}
+
+/**
+ * Where a drawer keeps the mesh of a design part across the builds it draws: the part's `shapeHash`
+ * with the meshing options, or undefined for a part without a `shapeHash`, whose shape no other build
+ * shares.
+ * @param part - The part
+ * @param meshing - The options the part is meshed with, written out as text
+ * @returns The key, or undefined when the mesh is not worth keeping
+ */
+export function designMeshCacheKeyOf(part: DesignDrawnPart, meshing: string): string | undefined {
+    return part.shapeHash === undefined ? undefined : `${part.shapeHash}|${meshing}`;
+}
+
+/**
+ * The meshes a drawer made for design parts, kept across every build it draws, so a part meshed for
+ * one drawn build, such as a preview, is not meshed again for another, such as the model. The least
+ * recently used are forgotten beyond `capacity` meshes or `budget` numbers.
+ */
+export class DesignMeshCache<T extends DesignMesh> {
+    /** The most meshes it keeps. */
+    readonly capacity: number;
+    /** The most numbers its meshes hold together. */
+    readonly budget: number;
+    private readonly entries = new Map<string, { mesh: T; numbers: number }>();
+    private numbers = 0;
+
+    /**
+     * @param capacity - The most meshes it keeps
+     * @param budget - The most numbers its meshes hold together
+     */
+    constructor(capacity = 256, budget = 16_000_000) {
+        this.capacity = capacity;
+        this.budget = budget;
+    }
+
+    /** How many meshes it keeps. */
+    get size(): number {
+        return this.entries.size;
+    }
+
+    /** How many numbers its meshes hold together. */
+    get weight(): number {
+        return this.numbers;
+    }
+
+    /**
+     * The mesh kept under `key`, which is now the most recently used.
+     * @param key - The key, as `designMeshCacheKeyOf` makes it
+     * @returns The mesh, or undefined when it is not kept
+     */
+    get(key: string): T | undefined {
+        const found = this.entries.get(key);
+        if (found === undefined) {
+            return undefined;
+        }
+        this.entries.delete(key);
+        this.entries.set(key, found);
+        return found.mesh;
+    }
+
+    /**
+     * Keeps `mesh` under `key` as the most recently used, then forgets the least recently used until
+     * the cache is within its capacity and its budget. A mesh heavier than the whole budget is not kept.
+     * @param key - The key, as `designMeshCacheKeyOf` makes it
+     * @param mesh - The mesh
+     */
+    set(key: string, mesh: T): void {
+        const previous = this.entries.get(key);
+        if (previous !== undefined) {
+            this.entries.delete(key);
+            this.numbers -= previous.numbers;
+        }
+        const numbers = meshNumbersOf(mesh);
+        if (numbers > this.budget) {
+            return;
+        }
+        this.entries.set(key, { mesh, numbers });
+        this.numbers += numbers;
+        for (const [oldest, entry] of this.entries) {
+            if (this.entries.size <= this.capacity && this.numbers <= this.budget) {
+                break;
+            }
+            this.entries.delete(oldest);
+            this.numbers -= entry.numbers;
+        }
+    }
+
+    /** Forgets every mesh. */
+    clear(): void {
+        this.entries.clear();
+        this.numbers = 0;
+    }
+}
+
+/**
+ * What decides how one placed part of a design build looks on its own: its appearance and the shape it
+ * draws. Under the same drawing options, a redraw keeps what it drew for a part whose key is the same.
+ * @param part - The part
+ * @returns A string that changes whenever the part's own look does
+ */
+export function designPartKeyOf(part: DesignDrawnPart): string {
+    return JSON.stringify([part.appearance ?? null, designMeshKeyOf(part)]);
+}
+
+/**
+ * What decides how every part of a design build looks: the drawing options. A redraw under other
+ * options draws every part again.
+ * @param options - The resolved drawing options
+ * @returns A string that changes whenever the options that decide the look do
+ */
+export function designOptionsKeyOf(options: DesignLookOptions): string {
+    return JSON.stringify({
+        drawFaces: options.drawFaces,
+        drawEdges: options.drawEdges,
+        edgeColour: options.edgeColour,
+        edgeContrast: options.edgeContrast ?? null,
+        edgeWidth: options.edgeWidth,
+        edgeOpacity: options.edgeOpacity,
+        faceColour: options.faceColour,
+        faceOpacity: options.faceOpacity,
+    });
+}
+
 /**
  * What decides how the placed parts of a design build look: their appearances, the shapes they
  * draw and the drawing options. A redraw with the same signature and the same placements only moves
@@ -382,15 +519,8 @@ export function designMeshKeyOf(part: DesignDrawnPart): string {
  */
 export function designSignatureOf(parts: ReadonlyMap<string, DesignDrawnPart>, placed: readonly string[], options: DesignLookOptions): string {
     return JSON.stringify({
-        looks: placed.map(id => [id, parts.get(id)?.appearance ?? null, designMeshKeyOf(parts.get(id) ?? {})]),
-        drawFaces: options.drawFaces,
-        drawEdges: options.drawEdges,
-        edgeColour: options.edgeColour,
-        edgeContrast: options.edgeContrast ?? null,
-        edgeWidth: options.edgeWidth,
-        edgeOpacity: options.edgeOpacity,
-        faceColour: options.faceColour,
-        faceOpacity: options.faceOpacity,
+        looks: placed.map(id => [id, designPartKeyOf(parts.get(id) ?? {})]),
+        options: designOptionsKeyOf(options),
     });
 }
 

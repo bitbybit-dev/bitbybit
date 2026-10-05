@@ -21,6 +21,8 @@ let kernelGeneration = 0;
 let restarting: Promise<void> | undefined;
 /** What crashed the kernel, when it was not replaced; every later call is refused. */
 let lostKernel: string | undefined;
+/** The mesh retention budget the host set, in triangles, given again to a kernel that replaces a crashed one. */
+let meshRetention = 0;
 /**
  * The kernel's three progress words, shared with the manager: word 0 asks the running call to stop,
  * word 1 is its progress in thousandths, word 2 counts the algorithms it started. Undefined where
@@ -102,6 +104,11 @@ export const initializationComplete = (
     restart?: () => unknown
 ): CacheHelper => {
     kernel = occ;
+    if (restarting === undefined) {
+        meshRetention = 0;
+    } else if (meshRetention > 0) {
+        occ.SetMeshRetention(meshRetention);
+    }
     kernelGeneration++;
     lostKernel = undefined;
     restartKernel = restart;
@@ -140,6 +147,11 @@ export const initializationComplete = (
 function createCommandContext(): CommandContext {
     return {
         openCascade,
+        kernel,
+        setMeshRetention: (triangles: number) => {
+            kernel.SetMeshRetention(triangles);
+            meshRetention = triangles;
+        },
         cacheHelper,
         shapeResolver,
         addPendingDependency: (key: string, value: unknown) => {

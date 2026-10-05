@@ -33,7 +33,7 @@ export class DesignDocumentDto {
  * document as code.
  */
 export class DesignBuildDto<T> {
-    constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[]) {
+    constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean) {
         if (document !== undefined) { this.document = document; }
         if (configuration !== undefined) { this.configuration = configuration; }
         if (parameters !== undefined) { this.parameters = parameters; }
@@ -41,6 +41,7 @@ export class DesignBuildDto<T> {
         if (documents !== undefined) { this.documents = documents; }
         if (rebind !== undefined) { this.rebind = rebind; }
         if (outcomes !== undefined) { this.outcomes = outcomes; }
+        if (sketches !== undefined) { this.sketches = sketches; }
     }
     /**
      * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
@@ -91,6 +92,14 @@ export class DesignBuildDto<T> {
      * @ignore true
      */
     outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[] | undefined;
+    /**
+     * Whether a part document's build also lists its `sketches`: each one's outline, the frame it was
+     * drawn in and the command that drew each edge, for editors that draw and edit sketches.
+     * @default undefined
+     * @optional true
+     * @ignore true
+     */
+    sketches?: boolean | undefined;
 }
 
 /**

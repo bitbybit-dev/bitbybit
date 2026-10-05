@@ -1,11 +1,12 @@
 import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
+import type * as Inputs from "../../api/inputs";
 import type { RebindEntry } from "./hints";
 import { FaceNames } from "./names";
 
-/** What one feature made: a body with its face names, or a sketch with the command each edge was drawn by and the way it faces. */
+/** What one feature made: a body with its face names, or a sketch with the command each edge was drawn by, the way it faces and the frame it was drawn in. */
 export type DesignOutcome = (
     | { kind: "body"; shape: TopoDS_Shape; names: FaceNames }
-    | { kind: "sketch"; shape: TopoDS_Shape; commands: (string | undefined)[]; normal: [number, number, number] }
+    | { kind: "sketch"; shape: TopoDS_Shape; commands: (string | undefined)[]; normal: [number, number, number]; frame: Inputs.Base.Frame }
 ) & { rebinds?: readonly RebindEntry[] };
 
 /** Frees a shape the cache or a feature owns, once. */

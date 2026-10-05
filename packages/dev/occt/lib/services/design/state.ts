@@ -20,6 +20,7 @@ export interface SketchState {
     shape: TopoDS_Shape;
     commands: (string | undefined)[];
     normal: [number, number, number];
+    frame: Inputs.Base.Frame;
     hash: string;
     reads: Set<string>;
     face?: Models.OCCT.DesignFaceReference | undefined;
@@ -28,11 +29,13 @@ export interface SketchState {
 /** What a feature resolved while it was made, kept for code that has to repeat it without the names. */
 export interface DesignTrace {
     frame?: Inputs.Base.Frame;
+    face?: boolean;
     indexes?: number[];
     sketchFace?: number;
     untilFace?: number;
     format?: string;
     join?: string;
+    pull?: boolean;
 }
 
 /** The bytes or text of a document's assets, by asset id, as a build is given them. */
@@ -81,6 +84,8 @@ export interface DesignRunContext {
     hints?: Map<string, Models.OCCT.DesignReferenceHint | null> | undefined;
     /** Outcomes the caller made or kept, taken instead of making the features whose hashes they carry. */
     outcomes?: readonly Models.OCCT.DesignSuppliedOutcome<TopoDS_Shape>[] | undefined;
+    /** Whether the result lists the sketches the run drew. */
+    sketches?: boolean | undefined;
 }
 
 /** The key a body is read and written by. */

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { contrastColor, defaultEdgeColor, designMeshKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements, type DesignLookOptions, type PartPlacement } from "./draw-appearance";
+import { contrastColor, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, edgeSegmentsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, meshNumbersOf, partPlacementsOf, samePlacements, type DesignLookOptions, type DesignMesh, type PartPlacement } from "./draw-appearance";
 
 const square = (faceIndex: number, z: number) => ({
     faceIndex,
@@ -359,6 +359,25 @@ describe("what decides how a design build looks", () => {
         expect(keys).toEqual(["one", "handle:7", "handle:undefined"]);
     });
 
+    it("should key one part's own look by its appearance and shape, and the options that decide every part's apart", () => {
+        // Act
+        const part = designPartKeyOf({ appearance: { color: "#123456", faces: [] }, shapeHash: "one", shape: { hash: 7 } });
+        const keys = [
+            designPartKeyOf({ appearance: { color: "#123456", faces: [] }, shapeHash: "one", shape: { hash: 8 } }),
+            designPartKeyOf({ appearance: { color: "#654321", faces: [] }, shapeHash: "one" }),
+            designPartKeyOf({ appearance: { color: "#123456", faces: [] }, shapeHash: "two" }),
+        ];
+        const lookOptions = designOptionsKeyOf(options);
+        const otherOptions = (["drawFaces", "drawEdges", "faceColour", "faceOpacity", "edgeColour", "edgeContrast", "edgeWidth", "edgeOpacity"] as const)
+            .map(key => designOptionsKeyOf({ ...options, [key]: key === "edgeContrast" ? 0.5 : typeof options[key] === "boolean" ? !options[key] : typeof options[key] === "number" ? 0.25 : "#000000" }));
+
+        // Assert
+        expect(keys[0]).toBe(part);
+        expect(keys.slice(1).every(key => key !== part)).toBe(true);
+        expect(designOptionsKeyOf({ ...options })).toBe(lookOptions);
+        expect(new Set([lookOptions, ...otherOptions]).size).toBe(otherOptions.length + 1);
+    });
+
     it("should follow the parts in the order they are placed", () => {
         // Act
         const forward = designSignatureOf(parts, ["a", "b"], options);
@@ -366,5 +385,72 @@ describe("what decides how a design build looks", () => {
 
         // Assert
         expect(backward).not.toBe(forward);
+    });
+});
+
+describe("the meshes a drawer keeps across design builds", () => {
+    const meshOf = (faces: number): DesignMesh => ({
+        faceList: Array.from({ length: faces }, (_unused, faceIndex) => square(faceIndex, 0)),
+        edgeList: [{ edgeIndex: 0, vertexCoord: [[0, 0, 0], [1, 0, 0]] }],
+    });
+
+    it("should weigh a mesh by its vertex, normal and index numbers and its edge points", () => {
+        // Act
+        const numbers = meshNumbersOf(meshOf(2));
+
+        // Assert
+        expect(numbers).toBe(2 * (12 + 12 + 6) + 6);
+    });
+
+    it("should key a part's mesh by its shape hash and the meshing options, and keep none for a part without a shape hash", () => {
+        // Act
+        const keys = [
+            designMeshCacheKeyOf({ shapeHash: "a" }, "fine"),
+            designMeshCacheKeyOf({ shapeHash: "a" }, "coarse"),
+            designMeshCacheKeyOf({ shape: { hash: 7 } }, "fine"),
+        ];
+
+        // Assert
+        expect(keys).toEqual(["a|fine", "a|coarse", undefined]);
+    });
+
+    it("should forget the least recently used mesh beyond its capacity, counting a read as a use", () => {
+        // Arrange
+        const cache = new DesignMeshCache(2);
+        const [first, second, third] = [meshOf(1), meshOf(1), meshOf(1)];
+        cache.set("a", first);
+        cache.set("b", second);
+
+        // Act
+        const read = cache.get("a");
+        cache.set("c", third);
+
+        // Assert
+        expect(read).toBe(first);
+        expect([cache.get("a"), cache.get("b"), cache.get("c")]).toEqual([first, undefined, third]);
+        expect(cache.size).toBe(2);
+    });
+
+    it("should forget the oldest meshes beyond its budget, keep none heavier than the budget, and count a replaced mesh once", () => {
+        // Arrange
+        const cache = new DesignMeshCache(10, 110);
+        const [light, later] = [meshOf(1), meshOf(1)];
+        cache.set("a", light);
+        cache.set("b", meshOf(2));
+
+        // Act
+        cache.set("b", meshOf(2));
+        const replaced = cache.weight;
+        cache.set("c", meshOf(4));
+        cache.set("d", later);
+        const kept = [cache.get("a"), cache.get("c"), cache.get("d")];
+        const weight = cache.weight;
+        cache.clear();
+
+        // Assert
+        expect(replaced).toBe(36 + 66);
+        expect(kept).toEqual([undefined, undefined, later]);
+        expect(weight).toBe(66 + 36);
+        expect([cache.size, cache.weight]).toEqual([0, 0]);
     });
 });

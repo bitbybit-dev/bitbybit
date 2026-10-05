@@ -2,15 +2,20 @@ import { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Models from "../../api/models";
 import { DesignOutcome, hashText, stableJson } from "./cache";
 import type { RebindEntry } from "./hints";
-import { DesignPlan, DesignRun, DesignRunContext, DesignTrace, bodyKey, sketchKey } from "./state";
+import { DesignPlan, DesignRun, DesignRunContext, DesignTrace, SketchState, bodyKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
 import { bodyPlan, operationPlan, sketchPlan, sweepPlan } from "./steps";
 import { DesignPending, DesignProblem, isKernelTrap, pointer } from "./problems";
+import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";
 import { ParameterChoice, parameterValues, parametersIn, truthOf } from "./values";
 
 type Feature = Models.OCCT.DesignFeature;
+
+function drawsNothing(sketch: SketchState | undefined, run: DesignRun): boolean {
+    return sketch !== undefined && run.occ.CountSubShapes(sketch.shape, run.occ.TopAbs_ShapeEnum.EDGE, false) === 0;
+}
 
 function describeKey(key: string): string {
     const split = key.indexOf(":");
@@ -46,6 +51,7 @@ function planOf(feature: Feature, path: string, run: DesignRun): DesignPlan {
             return sweepPlan(feature, path, run);
         case "shell":
         case "hole":
+        case "pushPull":
         case "boss":
         case "pocket":
             return localPlan(feature, path, run);
@@ -121,7 +127,7 @@ function apply(feature: Feature, writes: string, outcome: DesignOutcome, hash: s
     run.failed.delete(writes);
     if (outcome.kind === "sketch") {
         const face = feature.type === "sketch" && "face" in feature.on ? feature.on.face : undefined;
-        run.sketches.set(feature.id, { shape: outcome.shape, commands: outcome.commands, normal: outcome.normal, hash, reads, face });
+        run.sketches.set(feature.id, { shape: outcome.shape, commands: outcome.commands, normal: outcome.normal, frame: outcome.frame, hash, reads, face });
         return;
     }
     const name = writes.slice(5);
@@ -169,6 +175,10 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
         } else {
             const plan = planOf(feature, path, run);
             const missing = plan.reads.find(key => run.failed.has(key));
+            const blank = plan.reads.find(key => key.startsWith("sketch:") && drawsNothing(run.sketches.get(key.slice(7)), run));
+            if (missing === undefined && blank !== undefined) {
+                throw new DesignProblem(path, `${describeKey(blank)} draws nothing yet`);
+            }
             if (missing === undefined) {
                 hash = hashOf(feature, plan, run);
                 let outcome = run.cache.take(hash);
@@ -202,7 +212,7 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
             fail(feature, writes, run, "pending");
         } else {
             report.status = "failed";
-            report.messages.push(messageOf(error));
+            report.messages.push(messageOf(readKernelException(run.occ, error)));
             fail(feature, writes, run, "failed");
         }
     }
@@ -272,5 +282,20 @@ export function runDesign(document: Models.OCCT.DesignPartDocument, choice: Para
         parameters,
         ...framingOf(document),
         ...(run.pending.length === 0 ? {} : { pending: run.pending }),
+        ...(context.sketches === true ? { sketches: builtSketches(document, run) } : {}),
     };
+}
+
+/** The sketches a run drew, in document order: each outline copied, with its frame and the command that drew each edge. */
+function builtSketches(document: Models.OCCT.DesignPartDocument, run: DesignRun): Models.OCCT.DesignBuiltSketch<TopoDS_Shape>[] {
+    return document.features.flatMap(feature => {
+        const state = feature.type === "sketch" ? run.sketches.get(feature.id) : undefined;
+        return state === undefined || feature.type !== "sketch" ? [] : [{
+            id: feature.id,
+            shape: state.shape.clone(),
+            face: run.occ.CountSubShapes(state.shape, run.occ.TopAbs_ShapeEnum.FACE, false) > 0,
+            frame: state.frame,
+            commands: state.commands.map(command => command ?? null),
+        }];
+    });
 }

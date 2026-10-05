@@ -313,27 +313,49 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(instanceMatrices(linesOf(parts[1]!)[0]!)[0]).toEqual(at(25));
         });
 
-        it("should mesh only the parts it has not when the placements change, and destroy what it drew before", async () => {
+        it("should keep and place again what it drew for the parts that stay, and mesh and draw only a new part", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
-            const before = partEntitiesOf(drawn);
-            const lookMaterial = surfacesOf(before[0]!)[0]!.material;
+            const [box, pin] = partEntitiesOf(drawn);
+            const lookMaterial = surfacesOf(box!)[0]!.material;
+            const pinBuffer = surfacesOf(pin!)[0]!.instancingData!.vertexBuffer;
 
             // Act
-            const redrawn = await draw.drawAnyAsync({ entity: buildOf([0], [20], { id: "nut-3", shape: shapeC }), options, group: drawn });
+            const redrawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20], { id: "nut-3", shape: shapeC }), options, group: drawn });
 
             // Assert
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
-            expect(partEntitiesOf(redrawn).map(part => part.designPart!.part)).toEqual(["box-1", "pin-2", "nut-3"]);
-            expect(before.every(part => part.parent === null && !partEntitiesOf(redrawn).includes(part))).toBe(true);
-            expect(surfacesOf(partEntitiesOf(redrawn)[0]!)[0]!.material).toBe(lookMaterial);
+            const after = partEntitiesOf(redrawn);
+            expect([after[0] === box, after[1] === pin]).toEqual([true, true]);
+            expect(after.map(part => part.designPart!.part)).toEqual(["box-1", "pin-2", "nut-3"]);
+            expect(box!.designPart).toEqual({ part: "box-1", paths: ["box0", "box1"] });
+            expect(meshInstancesOf(box!).map(instance => instance.instancingCount)).toEqual([2, 2, 2]);
+            expect(instanceMatrices(surfacesOf(box!)[0]!)[1]).toEqual(at(10));
+            expect(surfacesOf(box!)[0]!.instancingData!.vertexBuffer).toBe(linesOf(box!)[0]!.instancingData!.vertexBuffer);
+            expect(surfacesOf(pin!)[0]!.instancingData!.vertexBuffer).toBe(pinBuffer);
+            expect(surfacesOf(box!)[0]!.material).toBe(lookMaterial);
         });
 
-        it("should mesh a part again when its shape changed under the same id, and only that part", async () => {
+        it("should destroy what it drew for a part that is no longer placed", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = partEntitiesOf(drawn);
+
+            // Act
+            await draw.drawAnyAsync({ entity: buildOf([0], []), options, group: drawn });
+
+            // Assert
+            expect(partEntitiesOf(drawn)).toHaveLength(1);
+            expect(partEntitiesOf(drawn)[0]).toBe(box);
+            expect(pin!.parent).toBeNull();
+        });
+
+        it("should mesh and draw again only a part whose shape changed under the same id", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = partEntitiesOf(drawn);
             const edited = buildOf([0], [20]);
             edited.parts[1] = partOf("pin-2", shapeC, undefined, "pin-2-edited");
 
@@ -344,11 +366,49 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
+            const after = partEntitiesOf(redrawn);
+            expect([after.includes(box!), after.includes(pin!), pin!.parent]).toEqual([true, false, null]);
+            expect(after.map(part => part.designPart!.part)).toEqual(["box-1", "pin-2"]);
         });
 
-        it("should mesh every part again when the precision changes", async () => {
+        it("should draw again a part whose appearance changed without meshing it again, and every part when the options change", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = partEntitiesOf(drawn);
+            const restyled = buildOf([0], [20]);
+            restyled.parts[1] = partOf("pin-2", shapeB, { color: "#00ff00", faces: [] });
+
+            // Act
+            await draw.drawAnyAsync({ entity: restyled, options, group: drawn });
+            const afterLook = partEntitiesOf(drawn);
+            const restyledColours = surfacesOf(afterLook[1]!).map(diffuseOf);
+            await draw.drawAnyAsync({ entity: restyled, options: { ...options, faceColour: "#0000ff" }, group: drawn });
+
+            // Assert
+            expect([afterLook.includes(box!), afterLook.includes(pin!)]).toEqual([true, false]);
+            expect(restyledColours).toEqual(["#00ff00"]);
+            expect(partEntitiesOf(drawn).some(part => afterLook.includes(part))).toBe(false);
+            expect(workerCall).toHaveBeenCalledTimes(1);
+        });
+
+        it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {
+            // Arrange
+            const first = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Act
+            const second = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precision: 0.5 } });
+
+            // Assert
+            expect(second).not.toBe(first);
+            expect(workerCall).toHaveBeenCalledTimes(2);
+            expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
+        it("should mesh and draw every part again when the precision changes", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const before = partEntitiesOf(drawn);
 
             // Act
             await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precision: 0.5 }, group: drawn });
@@ -356,6 +416,7 @@ describe("drawing shapes with their appearance and design builds in PlayCanvas",
             // Assert
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
+            expect(partEntitiesOf(drawn).some(part => before.includes(part))).toBe(false);
         });
 
         it("should color the edges of each part as its appearance says, and draw them again when the edge contrast changes", async () => {

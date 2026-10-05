@@ -358,6 +358,20 @@ describe("drawing shapes with their appearance and design builds", () => {
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
         });
 
+        it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {
+            // Arrange
+            const first = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Act
+            const second = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precision: 0.5 } });
+
+            // Assert
+            expect(second).not.toBe(first);
+            expect(workerCall).toHaveBeenCalledTimes(2);
+            expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
         it("should mesh every part again when the precision changes", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });

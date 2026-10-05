@@ -3,7 +3,7 @@ import * as Inputs from "../../api/inputs";
 import * as Models from "../../api/models";
 import { DesignOutcome, hashBytes, hashText, release, stableJson } from "./cache";
 import { sha256 } from "./digest";
-import { Vector, bodyOf, contextOf, cross, faceCount, faceFrame, profileNames, scaled } from "./helpers";
+import { Vector, bodyOf, contextOf, cross, faceCount, faceFrame, faceSignatures, profileNames, scaled } from "./helpers";
 import { carryNames, give, nameOf } from "./names";
 import { DesignProblem, isKernelTrap, pointer } from "./problems";
 import { resolveFaces } from "./references";
@@ -138,13 +138,45 @@ function prismed(feature: Prism, path: string, run: DesignRun): DesignOutcome {
     return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.histories[0]! }], given) };
 }
 
-/** Shells, drills, raises or sinks the body a feature names. */
-export function localPlan(feature: Models.OCCT.DesignShellFeature | Models.OCCT.DesignHoleFeature | Prism, path: string, run: DesignRun): DesignPlan {
+function pushedOrPulled(feature: Models.OCCT.DesignPushPullFeature, path: string, run: DesignRun): DesignOutcome {
+    const body = bodyOf(feature.body, run);
+    const index = oneFace(feature.face, feature.body, run, pointer(path, "face"));
+    const signature = faceSignatures(body.shape, run)[index]!;
+    if (signature.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
+        throw new DesignProblem(pointer(path, "face"), `a flat face is needed here, and this one is a ${signature.type}`);
+    }
+    const distance = numberOf(feature.distance, run.parameters, pointer(path, "distance"));
+    if (distance === 0) {
+        throw new DesignProblem(pointer(path, "distance"), "the distance is not 0: above 0 pulls the face out, below 0 pushes it in");
+    }
+    const pull = distance > 0;
+    const direction = pull ? signature.normal : scaled(signature.normal, -1);
+    run.trace?.set(path, { sketchFace: index, pull, frame: { origin: signature.centre, normal: direction, direction: [1, 0, 0] } });
+    const face = run.occt.shapes.face.getFace({ shape: body.shape, index });
+    try {
+        const inputs: Inputs.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face> = { shape: body.shape, profile: face, sketchFaceIndex: index, direction, extent: Inputs.OCCT.featureExtentEnum.length, length: Math.abs(distance) };
+        const made = pull ? run.occt.features.bossWithHistory(inputs) : run.occt.features.pocketWithHistory(inputs);
+        const given = profileNames(feature.id, [{ history: made.histories[1]!, commands: [] }]);
+        const names = carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.histories[0]! }], given);
+        const moved = body.names[index] ?? [];
+        made.histories[1]!.lastFaces.forEach(last => {
+            names[last] = [...new Set([...(names[last] ?? []), ...moved])].sort();
+        });
+        return { kind: "body", shape: made.shape, names };
+    } finally {
+        release(face);
+    }
+}
+
+/** Shells, drills, raises, sinks, pushes or pulls the body a feature names. */
+export function localPlan(feature: Models.OCCT.DesignShellFeature | Models.OCCT.DesignHoleFeature | Models.OCCT.DesignPushPullFeature | Prism, path: string, run: DesignRun): DesignPlan {
     switch (feature.type) {
         case "shell":
             return { reads: [bodyKey(feature.body)], make: () => shelled(feature, path, run) };
         case "hole":
             return { reads: [bodyKey(feature.body)], make: () => drilled(feature, path, run) };
+        case "pushPull":
+            return { reads: [bodyKey(feature.body)], make: () => pushedOrPulled(feature, path, run) };
         default:
             return { reads: [sketchKey(feature.profile), bodyKey(feature.body)], make: () => prismed(feature, path, run) };
     }

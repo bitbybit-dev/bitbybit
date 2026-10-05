@@ -51,6 +51,8 @@ export const ReservedFunctions = {
     STARTED_THE_RUN: "startedTheRun",
     /** Clean all cached shapes */
     CLEAN_ALL_CACHE: "cleanAllCache",
+    /** Set how many triangles meshing may keep on shapes, and report what is kept */
+    SET_MESH_RETENTION: "setMeshRetention",
     /** Add OpenCascade dependencies/plugins */
     ADD_OC: "addOc",
     /** Save shape to STEP file format */
@@ -71,9 +73,23 @@ export const NON_CACHEABLE_FUNCTIONS = new Set<string>([
     ReservedFunctions.DELETE_DOCUMENT,
     ReservedFunctions.STARTED_THE_RUN,
     ReservedFunctions.CLEAN_ALL_CACHE,
+    ReservedFunctions.SET_MESH_RETENTION,
     ReservedFunctions.ADD_OC,
     ReservedFunctions.SAVE_SHAPE_STEP,
 ]);
+
+/** The largest mesh retention budget the kernel takes, in triangles: its counter is a 32-bit integer. */
+export const MAX_RETAINED_TRIANGLES = 2147483647;
+
+/**
+ * What the kernel keeps of the meshes it made: the budget in triangles (0 when keeping is off), how
+ * many faces carry a kept triangulation and how many triangles those hold together.
+ */
+export interface MeshRetention {
+    budget: number;
+    faces: number;
+    triangles: number;
+}
 
 /**
  * Maximum number of cached hashes before triggering a full cache cleanup.

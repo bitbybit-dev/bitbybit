@@ -53,7 +53,7 @@ export function ownerOf(feature: string, path: string, run: DesignRun): string {
 const signaturesByShape = new WeakMap<TopoDS_Shape, Models.OCCT.ShapeSignatures["faces"]>();
 
 /** The signatures of a body's faces, worked out once per shape however many frames are placed on it. */
-function faceSignatures(shape: TopoDS_Shape, run: DesignRun): Models.OCCT.ShapeSignatures["faces"] {
+export function faceSignatures(shape: TopoDS_Shape, run: DesignRun): Models.OCCT.ShapeSignatures["faces"] {
     let faces = signaturesByShape.get(shape);
     if (faces === undefined) {
         faces = run.occt.analysis.signatures({ shape }).faces;

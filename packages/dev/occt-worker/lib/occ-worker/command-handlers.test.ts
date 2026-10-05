@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 import initOpenCascade, { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { OCCTService, OccHelper, ShapesHelperService, VectorHelperService } from "@bitbybit-dev/occt";
 import { CommandContext, getCommandHandler, hasCommandHandler } from "./command-handlers";
 import { CacheHelper } from "./cache-helper";
 import { ShapeResolver } from "./shape-resolver";
-import { ReservedFunctions, CACHE_THRESHOLD } from "./constants";
+import { ReservedFunctions, CACHE_THRESHOLD, MAX_RETAINED_TRIANGLES } from "./constants";
 
 describe("the reserved command handlers", () => {
     let occt: BitbybitOcctModule;
@@ -44,11 +44,25 @@ describe("the reserved command handlers", () => {
         openCascade.plugins = { dependencies: {} };
         context = {
             openCascade,
+            kernel: occt,
+            setMeshRetention: (triangles) => occt.SetMeshRetention(triangles),
             cacheHelper,
             shapeResolver: new ShapeResolver(cacheHelper),
             addPendingDependency: (key, value) => pending.push([key, value]),
         };
     });
+
+    afterEach(() => {
+        occt.SetMeshRetention(0);
+    });
+
+    const cacheBox = (hash: string): void => {
+        cacheHelper.addToCache(hash, openCascade.shapes.solid.createBox({ width: 1, height: 1, length: 1, center: [0, 0, 0] }));
+    };
+
+    const meshBox = (hash: string): void => {
+        run(ReservedFunctions.SHAPE_TO_MESH, { shape: { type: "occ-shape", hash }, precision: 0.1, adjustYtoZ: false });
+    };
 
     describe("hasCommandHandler", () => {
         it("should know the reserved function names", () => {
@@ -204,19 +218,95 @@ describe("the reserved command handlers", () => {
             expect(result).toEqual({ handled: true, result: {} });
         });
 
-        it("should drop the whole cache once it has outgrown the run", () => {
+        it("should drop the whole cache once it has outgrown the run, with the meshes it kept", () => {
             // Arrange
+            run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 100 });
+            cacheBox("box");
+            meshBox("box");
+            const keptBefore = occt.KeptMeshFaces();
             cacheHelper.usedHashes = Object.fromEntries(Array.from({ length: CACHE_THRESHOLD + 1 }, (_, index) => [index, index]));
 
             // Act
             run(ReservedFunctions.STARTED_THE_RUN, {});
 
             // Assert
+            expect(keptBefore).toBe(6);
             expect(cacheHelper.usedHashes).toEqual({});
+            expect(occt.KeptMeshFaces()).toBe(0);
+            expect(occt.MeshRetentionBudget()).toBe(100);
+        });
+    });
+
+    describe("setMeshRetention", () => {
+        it("should keep the meshes of cached shapes under the budget and say what it keeps", () => {
+            // Arrange
+            cacheBox("box");
+
+            // Act
+            const set = run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 100 });
+            meshBox("box");
+            const after = run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 100 });
+
+            // Assert
+            expect(set).toEqual({ handled: true, result: { budget: 100, faces: 0, triangles: 0 } });
+            expect(after).toEqual({ handled: true, result: { budget: 100, faces: 6, triangles: 12 } });
+        });
+
+        it("should keep nothing and free what it kept at 0", () => {
+            // Arrange
+            run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 100 });
+            cacheBox("box");
+            meshBox("box");
+
+            // Act
+            const off = run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 0 });
+            meshBox("box");
+
+            // Assert
+            expect(off).toEqual({ handled: true, result: { budget: 0, faces: 0, triangles: 0 } });
+            expect(occt.KeptMeshFaces()).toBe(0);
+        });
+
+        it("should take the largest budget the kernel counts to", () => {
+            // Act
+            const result = run(ReservedFunctions.SET_MESH_RETENTION, { triangles: MAX_RETAINED_TRIANGLES });
+
+            // Assert
+            expect(result).toEqual({ handled: true, result: { budget: 2147483647, faces: 0, triangles: 0 } });
+        });
+
+        it("should refuse a budget that is not a whole number of triangles from 0", () => {
+            // Act
+            const refusals = [-1, 1.5, "10", undefined, 2 ** 31].map(triangles => {
+                try {
+                    run(ReservedFunctions.SET_MESH_RETENTION, { triangles });
+                    return "taken";
+                } catch (error) {
+                    return error instanceof Error ? error.message : "not an error";
+                }
+            });
+
+            // Assert
+            expect(new Set(refusals)).toEqual(new Set(["setMeshRetention: triangles must be a whole number from 0 to 2147483647."]));
+            expect(occt.MeshRetentionBudget()).toBe(0);
         });
     });
 
     describe("cleanAllCache", () => {
+        it("should free the meshes it kept and keep the budget", () => {
+            // Arrange
+            run(ReservedFunctions.SET_MESH_RETENTION, { triangles: 100 });
+            cacheBox("box");
+            meshBox("box");
+
+            // Act
+            run(ReservedFunctions.CLEAN_ALL_CACHE, {});
+
+            // Assert
+            expect(occt.KeptMeshFaces()).toBe(0);
+            expect(occt.MeshRetentionBudget()).toBe(100);
+        });
+
         it("should drop the whole cache", () => {
             // Arrange
             cacheHelper.addToCache("shape-1", { hash: "shape-1" });

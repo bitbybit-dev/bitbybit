@@ -238,7 +238,7 @@ describe("design documents as TypeScript", () => {
                     rectangle("ring", 2, 3, { plane: "XZ", offset: 30 }, [5, 0]),
                     { id: "wheel", type: "revolve", profile: "ring", axis: { origin: [1, 30, 0], direction: [0, 0, 1] }, angle: 120 },
                     rectangle("profile", 2, 1, { frame: { origin: [0, -20, 0], normal: [0, 1, 0], direction: [1, 0, 0] } }, [-1, -0.5]),
-                    { id: "spine", type: "sketch", on: { frame: { origin: [0, -20, 0], normal: [0, 0, 1], direction: [1, 0, 0] } }, closed: false, pen: [{ type: "vLine", id: "run", length: 10 }] },
+                    { id: "spine", type: "sketch", on: { frame: { origin: [0, -20, 0], normal: [0, 0, 1], direction: [1, 0, 0] } }, pen: [{ type: "vLine", id: "run", length: 10 }] },
                     { id: "bar", type: "sweep", profile: "profile", path: "spine" },
                     rectangle("low", 4, 4, { plane: "XY", offset: 50 }, [-2, -2]),
                     rectangle("high", 2, 2, { plane: "XY", offset: 55 }, [-1, -1]),
@@ -269,6 +269,53 @@ describe("design documents as TypeScript", () => {
             expect(parts.map(part => part.properties)).toEqual(built.parts.map(() => ({})));
             expect(parts.map(part => volume(part.shape))).toEqual(built.parts.map(part => expect.closeTo(volume(part.shape), 4)));
             expect(code).toContain("const assets: Record<string, string | Uint8Array | ArrayBuffer> = {};");
+        });
+
+        it("should write a push or pull as a boss or pocket of the face itself, so the program builds the same volume", async () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                parameters: { lift: 2 },
+                features: [
+                    rectangle("base", 4, 2, { plane: "XY" }),
+                    { id: "block", type: "extrude", profile: "base", distance: 3 },
+                    { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: "lift" },
+                    { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1 },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+            const code = occt.design.toTypeScript({ document });
+            const parts = await execute(code, {});
+
+            // Assert
+            expect(built.report.filter(entry => entry.status !== "ok")).toEqual([]);
+            expect(volume(parts[0]!.shape)).toBeCloseTo(volume(built.parts[0]!.shape), 6);
+            expect(volume(built.parts[0]!.shape)).toBeCloseTo(32, 6);
+        });
+
+        it("should write a transform as turns about its pivot and a shift, so the program puts the body where the build does", async () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                parameters: { lift: 4 },
+                features: [
+                    rectangle("base", 4, 2, { plane: "XY" }),
+                    { id: "block", type: "extrude", profile: "base", distance: 3 },
+                    { id: "place", type: "transform", body: "block", rotate: [30, 0, 45], pivot: [1, 1, 0], translate: [5, 0, "lift"] },
+                ],
+            };
+
+            // Act
+            const built = occt.design.build({ document });
+            const code = occt.design.toTypeScript({ document });
+            const parts = await execute(code, {});
+
+            // Assert
+            const box = (shape: TopoDS_Shape): number[] => occt.analysis.measure.tightBoundingBox({ shape }).center;
+            expect(code).toContain("occt.transforms.rotateAroundCenter");
+            expect(box(parts[0]!.shape)).toEqual(box(built.parts[0]!.shape).map(value => expect.closeTo(value, 6)));
         });
 
         it("should refuse a document that does not build or has problems", () => {

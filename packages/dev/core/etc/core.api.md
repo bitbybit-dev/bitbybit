@@ -724,7 +724,31 @@ export interface DesignLookOptions {
 }
 
 // @public
+export type DesignMesh = LookMeshSource & EdgeSource;
+
+// @public
+export class DesignMeshCache<T extends DesignMesh> {
+    constructor(capacity?: number, budget?: number);
+    readonly budget: number;
+    readonly capacity: number;
+    clear(): void;
+    get(key: string): T | undefined;
+    set(key: string, mesh: T): void;
+    get size(): number;
+    get weight(): number;
+}
+
+// @public
+export function designMeshCacheKeyOf(part: DesignDrawnPart, meshing: string): string | undefined;
+
+// @public
 export function designMeshKeyOf(part: DesignDrawnPart): string;
+
+// @public
+export function designOptionsKeyOf(options: DesignLookOptions): string;
+
+// @public
+export function designPartKeyOf(part: DesignDrawnPart): string;
 
 // @public
 export function designSignatureOf(parts: ReadonlyMap<string, DesignDrawnPart>, placed: readonly string[], options: DesignLookOptions): string;
@@ -3431,6 +3455,9 @@ export interface MeshData {
 }
 
 // @public
+export function meshNumbersOf(mesh: DesignMesh): number;
+
+// @public
 namespace OCCT {
     class AlignAndTranslateDto<T> {
         constructor(shape?: T, direction?: Base_2.Vector3, center?: Base_2.Vector3);
@@ -4180,7 +4207,7 @@ namespace OCCT {
         pointsList: Base_2.Point3[];
     }
     class DesignBuildDto<T> {
-        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[]);
+        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
         configuration?: string | undefined;
         document: Models.OCCT.DesignDocument;
@@ -4188,6 +4215,7 @@ namespace OCCT {
         outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[] | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
         rebind?: designRebindEnum | undefined;
+        sketches?: boolean | undefined;
     }
     class DesignDocumentDto {
         constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[]);

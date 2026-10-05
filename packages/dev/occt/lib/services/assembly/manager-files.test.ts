@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, afterEach } from "vitest";
 import createBitbybitOcct, { BitbybitOcctModule, Handle_TDocStd_Document, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { InputError } from "@bitbybit-dev/base";
 import { OccHelper } from "../../occ-helper";
@@ -79,6 +79,33 @@ describe("OCCT assembly documents read from STEP, glTF and OBJ files and written
         manager = new OCCTAssemblyManager(occt, occHelper);
         query = new OCCTAssemblyQuery(occt, occHelper);
         solid = new OCCTSolid(occt, occHelper);
+    });
+
+    describe("the meshes a glTF export leaves", () => {
+        const meshedTriangles = (document: Handle_TDocStd_Document): number =>
+            occHelper.shapeGettersService.getFaces({ shape: onlyPartShape(document) })
+                .reduce((sum, face) => sum + occt.GetFaceTriangulation(face).NbTriangles(), 0);
+
+        afterEach(() => {
+            occt.SetMeshRetention(0);
+        });
+
+        it("should leave no mesh on the document's shapes without a retention budget, and keep them with one", () => {
+            // Arrange
+            const plain = brickDocument();
+            const kept = brickDocument();
+
+            // Act
+            glbOf(plain);
+            const left = [meshedTriangles(plain), occt.KeptMeshFaces()];
+            occt.SetMeshRetention(1000);
+            glbOf(kept);
+
+            // Assert
+            expect(left).toEqual([0, 0]);
+            expect(meshedTriangles(kept)).toBe(12);
+            expect([occt.KeptMeshFaces(), occt.KeptMeshTriangles()]).toEqual([6, 12]);
+        });
     });
 
     describe("loadStepToDoc", () => {

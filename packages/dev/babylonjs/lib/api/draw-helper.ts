@@ -1,7 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, MeshData, defaultEdgeColor, designMeshKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
+import { DrawHelperCore, MeshData, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
 import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { Vector, resolveDto } from "@bitbybit-dev/base";
@@ -13,6 +13,7 @@ import * as Resolved from "./resolved-inputs";
 
 interface DesignPartDrawn {
     part: string;
+    key: string;
     matrices: Float32Array;
     faces: BABYLON.Mesh | undefined;
     edges: BABYLON.GreasedLineMesh | undefined;
@@ -22,6 +23,7 @@ interface DesignDrawState {
     placements: Map<string, PartPlacement[]>;
     meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
     signature: string;
+    looks: string;
     precision: number;
     parts: DesignPartDrawn[];
 }
@@ -38,6 +40,8 @@ export class DrawHelper extends DrawHelperCore {
     private readonly materialCache = new Map<string, BABYLON.PBRMetallicRoughnessMaterial>();
 
     private readonly designStates = new WeakMap<BABYLON.Mesh, DesignDrawState>();
+
+    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
 
     private readonly unlitMaterialCache = new Map<string, BABYLON.StandardMaterial>();
 
@@ -67,6 +71,7 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
+        this.designMeshes.clear();
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.dispose) {
@@ -1207,8 +1212,9 @@ export class DrawHelper extends DrawHelperCore {
      * Draws what `occt.design.build` returns. Every part is meshed once, in one call to the worker,
      * into one mesh with a sub-mesh per look and one line for its edges, and every placement is a
      * thin instance of both. Given the mesh an earlier build drew, it redraws in place: when the same
-     * parts sit at the same paths, it only moves them, and otherwise it meshes only the parts it has
-     * not.
+     * parts sit at the same paths, it only moves them, and otherwise it keeps what it drew for every
+     * part whose shape and appearance are unchanged under the same options, places it again, and
+     * meshes and draws only the rest.
      * @param build - The build to draw
      * @param drawOptions - The drawing options; the face color is the color of faces no look colors
      * @param previous - The mesh an earlier build drew, to redraw in place
@@ -1235,24 +1241,55 @@ export class DrawHelper extends DrawHelperCore {
                 }
             }
         }
+        const meshing = this.meshingTextOf(options);
+        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
+        for (const id of placed) {
+            const cacheKey = cacheKeys.get(id);
+            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
+            if (cached) {
+                meshes.set(id, cached);
+            }
+        }
+        const looks = designOptionsKeyOf(options);
+        const kept = new Map(state && state.looks === looks && state.precision === options.precision
+            ? state.parts.filter(drawn => parts.has(drawn.part) && placements.has(drawn.part) && drawn.key === designPartKeyOf(parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
+            : []);
         const missing = placed.filter(id => !meshes.has(id));
         if (missing.length > 0) {
             const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => meshes.set(id, made[index]!));
+            missing.forEach((id, index) => {
+                const mesh = made[index]!;
+                const cacheKey = cacheKeys.get(id);
+                meshes.set(id, mesh);
+                if (cacheKey !== undefined) {
+                    this.designMeshes.set(cacheKey, mesh);
+                }
+            });
         }
         const target = previous && state ? previous : this.newDesignRoot();
         if (state && target === previous) {
-            this.clearDesign(state);
+            this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
-        const filled = this.fillDesign(target, parts, placements, placed, meshes, options, signature);
-        filled.meshes = new Map(placed.map(id => [keys.get(id)!, meshes.get(id)!]));
-        this.designStates.set(target, filled);
+        const drawnParts = this.fillDesign(target, parts, placements, placed, meshes, options, kept);
+        const keptMeshes = new Map(placed.flatMap(id => {
+            const mesh = meshes.get(id);
+            return mesh ? [[keys.get(id)!, mesh] as const] : [];
+        }));
+        this.designStates.set(target, { placements, meshes: keptMeshes, signature, looks, precision: options.precision, parts: drawnParts });
         return target;
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, options) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
-        const meshing = this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+        return this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+    }
+
+    private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
+        return JSON.stringify(this.meshingForLooks(options));
+    }
+
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+        const meshing = this.meshingForLooks(options);
         const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
@@ -1285,8 +1322,11 @@ export class DrawHelper extends DrawHelperCore {
     /** The edges of a part as one line, each edge in the color its appearance gives it; the part has edges. */
     private partEdges(mesh: Inputs.OCCT.DecomposedMeshDto, appearance: Inputs.Draw.ShapeWithAppearance["appearance"], options: Resolved.Draw.DrawOcctShapeOptions): BABYLON.GreasedLineMesh {
         const fallback = defaultEdgeColor(appearance?.color ?? options.faceColour, options.edgeColour, options.edgeContrast);
-        const colors = edgeColorsOf(appearance, mesh.edgeList.map(edge => edge.edgeIndex), fallback);
-        return this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors)!;
+        const edgeIndexes = mesh.edgeList.map(edge => edge.edgeIndex);
+        const colors = edgeColorsOf(appearance, edgeIndexes, fallback);
+        const line = this.drawPolylines(undefined, mesh.edgeList.map(edge => edge.vertexCoord.filter(point => point !== undefined)), false, options.edgeWidth, options.edgeOpacity, colors)!;
+        line.metadata = { ...line.metadata, edgeIndexes };
+        return line;
     }
 
     /**
@@ -1374,21 +1414,24 @@ export class DrawHelper extends DrawHelperCore {
 
     /**
      * Each placed part as one faces mesh and one edges line, both thin-instanced once per placement
-     * from one matrix buffer. Their `metadata` gives the part and the component path of each thin
-     * instance, and the faces mesh where each face's triangles are.
+     * from one matrix buffer, the `kept` ones as they were drawn. Their `metadata` gives the part and
+     * the component path of each thin instance, the faces mesh where each face's triangles are, and
+     * the edges line the edge each of its `points` lines draws, as `shapes.edge.getEdges` numbers
+     * them, in `edgeIndexes`.
      */
-    private fillDesign(target: BABYLON.Mesh, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, signature: string): DesignDrawState {
+    private fillDesign(target: BABYLON.Mesh, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
-        const drawnParts = placed.map((id): DesignPartDrawn => {
-            const mesh = meshes.get(id)!;
-            const appearance = parts.get(id)!.appearance;
+        return placed.map((id): DesignPartDrawn => {
+            const part = parts.get(id)!;
             const partPlacements = placements.get(id)!;
             const matrices = new Float32Array(partPlacements.length * 16);
             partPlacements.forEach((placement, index) => matrices.set(placement.world, index * 16));
-            const faces = options.drawFaces && mesh.faceList.length > 0
-                ? this.lookedMesh(lookMeshesOf(mesh, lookGroupsOf(appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour)), options.faceOpacity, zOffset)
+            const reused = kept.get(id);
+            const mesh = reused ? undefined : meshes.get(id)!;
+            const faces = reused ? reused.faces : mesh && options.drawFaces && mesh.faceList.length > 0
+                ? this.lookedMesh(lookMeshesOf(mesh, lookGroupsOf(part.appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour)), options.faceOpacity, zOffset)
                 : undefined;
-            const edges = options.drawEdges && mesh.edgeList.length > 0 ? this.partEdges(mesh, appearance, options) : undefined;
+            const edges = reused ? reused.edges : mesh && options.drawEdges && mesh.edgeList.length > 0 ? this.partEdges(mesh, part.appearance, options) : undefined;
             const paths = partPlacements.map(placement => placement.path);
             for (const drawn of [faces, edges]) {
                 if (drawn) {
@@ -1398,9 +1441,8 @@ export class DrawHelper extends DrawHelperCore {
                     drawn.metadata = { ...drawn.metadata, part: id, paths };
                 }
             }
-            return { part: id, matrices, faces, edges };
+            return { part: id, key: designPartKeyOf(part), matrices, faces, edges };
         });
-        return { placements, meshes: new Map(meshes), signature, precision: options.precision, parts: drawnParts };
     }
 
     private poseDesign(state: DesignDrawState, placements: Map<string, PartPlacement[]>): void {
@@ -1408,7 +1450,7 @@ export class DrawHelper extends DrawHelperCore {
             placements.get(drawn.part)!.forEach((placement, index) => drawn.matrices.set(placement.world, index * 16));
             for (const mesh of [drawn.faces, drawn.edges]) {
                 if (mesh) {
-                    mesh.thinInstanceBufferUpdated("matrix");
+                    mesh.thinInstanceSetBuffer("matrix", drawn.matrices, 16, false);
                     mesh.thinInstanceRefreshBoundingInfo(false);
                 }
             }
@@ -1416,8 +1458,8 @@ export class DrawHelper extends DrawHelperCore {
         state.placements = placements;
     }
 
-    private clearDesign(state: DesignDrawState): void {
-        for (const drawn of state.parts) {
+    private clearDesign(parts: readonly DesignPartDrawn[]): void {
+        for (const drawn of parts) {
             if (drawn.faces) {
                 const material = drawn.faces.material;
                 drawn.faces.dispose(false, false);

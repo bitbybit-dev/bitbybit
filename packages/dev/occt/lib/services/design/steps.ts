@@ -14,6 +14,7 @@ import { DesignProblem, pointer } from "./problems";
 import { DesignValues, MAX_PATTERN_COUNT, countOf, directionOf, numberOf, pointOf } from "./values";
 import { ProfileHistory, Vector, bodyOf, contextOf, cross, faceCount, faceFrame, inPlane, ownerOf, profileNames, scaled, unit } from "./helpers";
 import { isRecord } from "./structure";
+import { rigidMotion } from "./motion";
 
 type Join = Models.OCCT.DesignJoin;
 
@@ -121,14 +122,14 @@ function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly L
             const id = loops[loop]!.pen[command]?.id;
             return id === undefined || id === "" ? undefined : `${feature.id}.${id}`;
         };
-        if (feature.closed === false) {
+        if (feature.face === false) {
             const wire = drawn[0]!.wire;
             owned.splice(0, 1);
             const commands: (string | undefined)[] = [];
             drawn[0]!.segments.forEach(segment => segment.edges.forEach(edge => {
                 commands[edge] = nameOfCommand(0, segment.command);
             }));
-            return { kind: "sketch", shape: wire, commands, normal };
+            return { kind: "sketch", shape: wire, commands, normal, frame };
         }
         const oriented = drawn.map((loop, index) => {
             if (anticlockwise(loop.wire, normal, run) === (index === 0)) {
@@ -156,7 +157,7 @@ function loopsSketch(feature: Models.OCCT.DesignSketchFeature, loops: readonly L
                 }
             }));
         });
-        return { kind: "sketch", shape: face, commands, normal };
+        return { kind: "sketch", shape: face, commands, normal, frame };
     } finally {
         owned.forEach(release);
     }
@@ -172,14 +173,25 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
         make: () => {
             const frame = frameOf(on, host, pointer(path, "on"), run);
             run.trace?.set(path, { frame });
+            if (feature.loops === undefined && pen.length === 0) {
+                run.trace?.set(path, { frame, face: false });
+                return { kind: "sketch", shape: run.occt.shapes.compound.makeCompound({ shapes: [] }), commands: [], normal: unit(frame.normal), frame };
+            }
             if (feature.loops !== undefined || pen.some(isCircle)) {
+                run.trace?.set(path, { frame, face: feature.face !== false });
                 return loopsSketch(feature, feature.loops ?? [{ ...(feature.start === undefined ? {} : { start: feature.start }), pen }], frame, path, run);
             }
             const commands = pen.map((command, index) => commandOf(command, pointer(path, "pen", index), run.parameters));
             const start: Inputs.Base.Point2 | undefined = feature.start === undefined
                 ? undefined
                 : [numberOf(feature.start[0], run.parameters, pointer(path, "start", 0)), numberOf(feature.start[1], run.parameters, pointer(path, "start", 1))];
-            const drawn = run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: feature.closed !== false });
+            const outline = run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: false });
+            const face = feature.face !== false && run.occt.shapes.wire.isWireClosed({ shape: outline.shape });
+            const drawn = face ? run.occt.sketch.penWithSegments({ commands, start, frame, makeFace: true }) : outline;
+            if (face) {
+                release(outline.shape);
+            }
+            run.trace?.set(path, { frame, face });
             const byEdge: (string | undefined)[] = Array.from({ length: Math.max(0, ...drawn.segments.flatMap(segment => segment.edges.map(edge => edge + 1))) }, () => undefined);
             drawn.segments.forEach(segment => {
                 const id = pen[segment.command]?.id;
@@ -187,7 +199,7 @@ export function sketchPlan(feature: Models.OCCT.DesignSketchFeature, path: strin
                     byEdge[edge] = id === undefined || id === "" ? undefined : `${feature.id}.${id}`;
                 });
             });
-            return { kind: "sketch", shape: drawn.shape, commands: byEdge, normal: unit(frame.normal) };
+            return { kind: "sketch", shape: drawn.shape, commands: byEdge, normal: unit(frame.normal), frame };
         },
     };
 }
@@ -400,10 +412,19 @@ function mirrored(feature: Models.OCCT.DesignMirrorFeature, path: string, run: D
     return fusedWithCopies(feature.id, body, [image], run);
 }
 
-type BodyChange = Models.OCCT.DesignBooleanFeature | Models.OCCT.DesignFilletFeature | Models.OCCT.DesignChamferFeature
-    | Models.OCCT.DesignLinearPatternFeature | Models.OCCT.DesignPolarPatternFeature | Models.OCCT.DesignMirrorFeature;
+function transformed(feature: Models.OCCT.DesignTransformFeature, path: string, run: DesignRun): DesignOutcome {
+    const body = bodyOf(feature.body, run);
+    const point = (value: Models.OCCT.DesignPoint | undefined, key: string): Vector => value === undefined ? [0, 0, 0] : pointOf(value, run.parameters, pointer(path, key));
+    const motion = rigidMotion(point(feature.rotate, "rotate"), point(feature.pivot, "pivot"), point(feature.translate, "translate"));
+    const shape = run.occt.transforms.transform({ shape: body.shape, rotationAxis: motion.turn.axis, rotationAngle: motion.turn.angle, translation: motion.shift, scaleFactor: 1 });
+    return { kind: "body", shape, names: body.names.map(list => [...list]) };
+}
 
-/** Changes the body a boolean, fillet, chamfer, pattern or mirror names. */
+type BodyChange = Models.OCCT.DesignBooleanFeature | Models.OCCT.DesignFilletFeature | Models.OCCT.DesignChamferFeature
+    | Models.OCCT.DesignLinearPatternFeature | Models.OCCT.DesignPolarPatternFeature | Models.OCCT.DesignMirrorFeature
+    | Models.OCCT.DesignTransformFeature;
+
+/** Changes the body a boolean, fillet, chamfer, pattern, mirror or transform names. */
 export function bodyPlan(feature: BodyChange, path: string, run: DesignRun): DesignPlan {
     switch (feature.type) {
         case "boolean":
@@ -417,6 +438,8 @@ export function bodyPlan(feature: BodyChange, path: string, run: DesignRun): Des
             return { reads: [bodyKey(feature.body)], make: () => polarPattern(feature, path, run) };
         case "mirror":
             return { reads: [bodyKey(feature.body)], make: () => mirrored(feature, path, run) };
+        case "transform":
+            return { reads: [bodyKey(feature.body)], make: () => transformed(feature, path, run) };
     }
 }
 

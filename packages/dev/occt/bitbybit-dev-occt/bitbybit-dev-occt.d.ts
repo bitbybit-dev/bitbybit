@@ -2327,6 +2327,11 @@ interface EmbindModule {
   GetFaceLocation(_0: TopoDS_Face): TopLoc_Location;
   ShapeToMeshJson(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean): string;
   ShapeToMeshBuffers(_0: TopoDS_Shape, _1: number, _2: boolean, _3: boolean, _4: boolean, _5: boolean, _6: boolean, _7: number, _8: boolean): MeshBuffers;
+  SetMeshRetention(_0: number): void;
+  MeshRetentionBudget(): number;
+  KeptMeshFaces(): number;
+  KeptMeshTriangles(): number;
+  ReleaseKeptMeshes(): void;
   STEPControl_Reader: {
     new(): STEPControl_Reader;
   };

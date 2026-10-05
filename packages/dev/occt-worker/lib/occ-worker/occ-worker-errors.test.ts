@@ -395,6 +395,70 @@ describe("what the worker says when a call fails", () => {
             vi.unstubAllGlobals();
         });
 
+        describe("the mesh retention budget", () => {
+            const given: [string, number][] = [];
+            const kernelNamed = (name: string): BitbybitOcctModule => ({
+                SetMeshRetention: (triangles: number): void => {
+                    given.push([name, triangles]);
+                },
+                MeshRetentionBudget: (): number => 0,
+                KeptMeshFaces: (): number => 0,
+                KeptMeshTriangles: (): number => 0,
+            }) as BitbybitOcctModule;
+
+            beforeEach(() => {
+                given.length = 0;
+            });
+
+            it("should give a kernel it restarts the budget the crashed one was given", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("second"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+                run({ functionName: "setMeshRetention", inputs: { triangles: 500 } });
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([["first", 500], ["second", 500]]);
+            });
+
+            it("should forget the budget when it is given a kernel anew", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("third"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+                run({ functionName: "setMeshRetention", inputs: { triangles: 500 } });
+
+                // Act
+                initializationComplete(kernelNamed("second"), undefined, true, restart);
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([["first", 500]]);
+            });
+
+            it("should give a restarted kernel no budget when none was set", async () => {
+                // Arrange
+                const restart = (): void => {
+                    initializationComplete(kernelNamed("second"), undefined, true, restart);
+                };
+                initializationComplete(kernelNamed("first"), undefined, true, restart);
+
+                // Act
+                run({ functionName: "boom", inputs: {} });
+                await settle();
+
+                // Assert
+                expect(given).toEqual([]);
+            });
+        });
+
         it("should refuse later calls when the restart brought no new kernel", async () => {
             // Arrange
             initializationComplete(A_MODULE, undefined, true, () => undefined);

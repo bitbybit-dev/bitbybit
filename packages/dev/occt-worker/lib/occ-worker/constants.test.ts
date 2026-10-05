@@ -35,6 +35,7 @@ describe("the worker protocol constants", () => {
                 DELETE_DOCUMENT: "deleteDocument",
                 STARTED_THE_RUN: "startedTheRun",
                 CLEAN_ALL_CACHE: "cleanAllCache",
+                SET_MESH_RETENTION: "setMeshRetention",
                 ADD_OC: "addOc",
                 SAVE_SHAPE_STEP: "saveShapeSTEP",
             });
@@ -42,7 +43,7 @@ describe("the worker protocol constants", () => {
     });
 
     describe("NON_CACHEABLE_FUNCTIONS", () => {
-        it("should hold every reserved command but the two mesh conversions of a document", () => {
+        it("should hold every reserved command", () => {
             expect([...NON_CACHEABLE_FUNCTIONS].sort()).toEqual([
                 "addOc",
                 "cleanAllCache",
@@ -52,6 +53,7 @@ describe("the worker protocol constants", () => {
                 "docToMesh",
                 "docToMeshes",
                 "saveShapeSTEP",
+                "setMeshRetention",
                 "shapeToMesh",
                 "shapesToMeshes",
                 "startedTheRun",

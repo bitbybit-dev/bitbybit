@@ -8289,20 +8289,20 @@ export namespace OCCT {
          */
         computeMetadata?: boolean | undefined = false;
         /**
-         * When true, the triangulation stays cached on the shape; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulation stays on the shape for the next mesh with the same settings to
+         * reuse; when false it is cleared. A mesh retention budget keeps every mesh.
          * @default false
          */
         keepMeshData?: boolean | undefined = false;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          * @default true
          */
         allowQualityDecrease?: boolean | undefined = true;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
@@ -8463,20 +8463,20 @@ export namespace OCCT {
          */
         computeMetadata?: boolean | undefined = false;
         /**
-         * When true, the triangulation stays cached on each shape; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          * @default false
          */
         keepMeshData?: boolean | undefined = false;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          * @default true
          */
         allowQualityDecrease?: boolean | undefined = true;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
@@ -8570,20 +8570,20 @@ export namespace OCCT {
          */
         computeMetadata?: boolean | undefined = false;
         /**
-         * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          * @default false
          */
         keepMeshData?: boolean | undefined = false;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          * @default true
          */
         allowQualityDecrease?: boolean | undefined = true;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
@@ -8648,20 +8648,20 @@ export namespace OCCT {
          */
         computeMetadata?: boolean | undefined = false;
         /**
-         * When true, the triangulation stays cached on the shapes; when false it is cleared afterwards
-         * so memory does not grow across calls.
+         * When true, the triangulations stay on the shapes for the next mesh with the same settings to
+         * reuse; when false they are cleared. A mesh retention budget keeps every mesh.
          * @default false
          */
         keepMeshData?: boolean | undefined = false;
         /**
-         * When true, a shape already meshed more finely may be remeshed at the coarser precision asked
-         * for.
+         * When true, a face whose triangulation is not within 10% of the precision it needs is meshed
+         * again; when false, a finer one is kept.
          * @default true
          */
         allowQualityDecrease?: boolean | undefined = true;
         /**
-         * When true, every face is remeshed at the requested precision even when a triangulation is
-         * cached.
+         * When true, every face is meshed at exactly the requested precision; when false, a face's
+         * precision is raised to the average of its edges' and to twice its tolerance.
          * @default false
          */
         forceFaceDeflection?: boolean | undefined = false;
@@ -15528,7 +15528,7 @@ export namespace OCCT {
      * document as code.
      */
     export class DesignBuildDto<T> {
-        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[]) {
+        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean) {
             if (document !== undefined) { this.document = document; }
             if (configuration !== undefined) { this.configuration = configuration; }
             if (parameters !== undefined) { this.parameters = parameters; }
@@ -15536,6 +15536,7 @@ export namespace OCCT {
             if (documents !== undefined) { this.documents = documents; }
             if (rebind !== undefined) { this.rebind = rebind; }
             if (outcomes !== undefined) { this.outcomes = outcomes; }
+            if (sketches !== undefined) { this.sketches = sketches; }
         }
         /**
          * The document: a part document with its `parameters`, `features` and `parts`, or an assembly
@@ -15586,6 +15587,14 @@ export namespace OCCT {
          * @ignore true
          */
         outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[] | undefined;
+        /**
+         * Whether a part document's build also lists its `sketches`: each one's outline, the frame it was
+         * drawn in and the command that drew each edge, for editors that draw and edit sketches.
+         * @default undefined
+         * @optional true
+         * @ignore true
+         */
+        sketches?: boolean | undefined;
     }
 
     /**

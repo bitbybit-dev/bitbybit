@@ -2026,6 +2026,8 @@ interface DesignBuildResult<T> {
     // (undocumented)
     report: DesignFeatureReport[];
     // (undocumented)
+    sketches?: DesignBuiltSketch<T>[];
+    // (undocumented)
     structure?: AssemblyStructureDef<T>;
     // (undocumented)
     units: Required<DesignUnits>;
@@ -2180,6 +2182,20 @@ interface DesignBuiltPart<T> {
     shapeHash: string;
     // (undocumented)
     volume?: number;
+}
+
+// @public
+interface DesignBuiltSketch<T> {
+    // (undocumented)
+    commands: (string | null)[];
+    // (undocumented)
+    face: boolean;
+    // (undocumented)
+    frame: Base.Frame;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    shape: T;
 }
 
 // @public
@@ -2387,7 +2403,7 @@ interface DesignFaceReference {
 }
 
 // @public
-type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
+type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignTransformFeature | DesignPushPullFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
 
 // @public
 interface DesignFeatureBase extends DesignExtensible {
@@ -2831,6 +2847,18 @@ type DesignProperties = Record<string, DesignPropertyValue>;
 type DesignPropertyValue = string | number | boolean | DesignExpression;
 
 // @public
+interface DesignPushPullFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    distance: DesignNumber;
+    // (undocumented)
+    face: DesignFaceReference;
+    // (undocumented)
+    type: "pushPull";
+}
+
+// @public
 interface DesignReferenceHint {
     // (undocumented)
     box: DesignHintBox;
@@ -2915,7 +2943,7 @@ interface DesignShellFeature extends DesignFeatureBase {
 // @public
 interface DesignSketchFeature extends DesignFeatureBase {
     // (undocumented)
-    closed?: boolean;
+    face?: boolean;
     // (undocumented)
     loops?: DesignLoop[];
     // (undocumented)
@@ -2968,6 +2996,20 @@ interface DesignSweepFeature extends DesignFeatureBase {
 
 // @public
 type DesignText = string | DesignExpression;
+
+// @public
+interface DesignTransformFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    pivot?: DesignPoint;
+    // (undocumented)
+    rotate?: DesignPoint;
+    // (undocumented)
+    translate?: DesignPoint;
+    // (undocumented)
+    type: "transform";
+}
 
 // @public
 interface DesignUnits {
@@ -4105,6 +4147,10 @@ export interface EmbindModule {
     // (undocumented)
     IsoCurvesOnFace(_0: TopoDS_Shape, _1: boolean, _2: ArrayLike<number>): TopoDS_Edge[];
     // (undocumented)
+    KeptMeshFaces(): number;
+    // (undocumented)
+    KeptMeshTriangles(): number;
+    // (undocumented)
     KinksOfCurve(_0: TopoDS_Shape, _1: number): { point: [number, number, number]; edge: number; angle: number }[];
     // (undocumented)
     LinearPropertiesOfEach(_0: TopoDS_Shape[]): Float64Array;
@@ -4233,6 +4279,8 @@ export interface EmbindModule {
     // (undocumented)
     MeshBuffers: {};
     // (undocumented)
+    MeshRetentionBudget(): number;
+    // (undocumented)
     MinCurvatureRadius(_0: TopoDS_Shape, _1: number, _2: boolean): { radius: number; point: [number, number, number]; support: 'face' | 'edge' | 'none'; index: number };
     // (undocumented)
     MoveSeamByLength(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
@@ -4336,6 +4384,8 @@ export interface EmbindModule {
     // (undocumented)
     RebuildFaceDegree(_0: TopoDS_Face, _1: number, _2: number, _3: number, _4: boolean): TopoDS_Face;
     // (undocumented)
+    ReleaseKeptMeshes(): void;
+    // (undocumented)
     RemoveFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
     RotatePeriodicEdgeSeam(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
@@ -4411,6 +4461,8 @@ export interface EmbindModule {
     SetDocLabelColor(_0: Handle_TDocStd_Document, _1: EmbindString, _2: number, _3: number, _4: number, _5: number): boolean;
     // (undocumented)
     SetDocLabelName(_0: Handle_TDocStd_Document, _1: EmbindString, _2: EmbindString): boolean;
+    // (undocumented)
+    SetMeshRetention(_0: number): void;
     // (undocumented)
     SetRunsInParallel(_0: boolean): void;
     // (undocumented)
@@ -8040,7 +8092,7 @@ namespace OCCT {
         pointsList: Base.Point3[];
     }
     class DesignBuildDto<T> {
-        constructor(document?: Models_2.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models_2.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[]);
+        constructor(document?: Models_2.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models_2.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
         configuration?: string | undefined;
         document: Models_2.OCCT.DesignDocument;
@@ -8048,6 +8100,7 @@ namespace OCCT {
         outcomes?: Models_2.OCCT.DesignSuppliedOutcome<T>[] | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
         rebind?: designRebindEnum | undefined;
+        sketches?: boolean | undefined;
     }
     class DesignDocumentDto {
         constructor(document?: Models_2.OCCT.DesignDocument, documents?: Models_2.OCCT.DesignDocument[]);
@@ -10691,6 +10744,8 @@ declare namespace OCCT_2 {
         DesignLinearPatternFeature,
         DesignPolarPatternFeature,
         DesignMirrorFeature,
+        DesignTransformFeature,
+        DesignPushPullFeature,
         DesignSweepFeature,
         DesignLoftFeature,
         DesignShellFeature,
@@ -10739,6 +10794,7 @@ declare namespace OCCT_2 {
         DesignSuppliedOutcome,
         DesignPendingScript,
         DesignBuildResult,
+        DesignBuiltSketch,
         DesignProbeAttempt,
         DesignFilletProbe
     }

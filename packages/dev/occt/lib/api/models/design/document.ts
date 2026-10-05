@@ -240,10 +240,11 @@ export type DesignSketchPlacement =
     | { face: DesignFaceReference; origin?: DesignPoint; direction?: DesignPoint };
 
 /**
- * A sketch: pen commands on a placement, closed into a face unless `closed` is false; or `loops`,
- * several closed outlines making one face, the first its outside and each further one a hole in it,
- * such as a washer or a plate with cut-outs. Each command's `id`, distinct across the sketch's loops,
- * names the sides a later feature sweeps from it.
+ * A sketch: pen commands on a placement, or `loops`, several closed outlines making one face, the
+ * first its outside and each further one a hole in it, such as a washer or a plate with cut-outs. An
+ * outline is closed when it ends with `close` or back at its start; a closed outline is made a face
+ * unless `face` is false, and an open one stays a wire. Each command's `id`, distinct across the
+ * sketch's loops, names the sides a later feature sweeps from it.
  */
 export interface DesignSketchFeature extends DesignFeatureBase {
     type: "sketch";
@@ -251,7 +252,7 @@ export interface DesignSketchFeature extends DesignFeatureBase {
     start?: [DesignNumber, DesignNumber];
     pen?: DesignPenCommand[];
     loops?: DesignLoop[];
-    closed?: boolean;
+    face?: boolean;
 }
 
 /**
@@ -346,6 +347,31 @@ export interface DesignMirrorFeature extends DesignFeatureBase {
     body: string;
     plane: { origin: DesignPoint; normal: DesignPoint };
     keepOriginal?: boolean;
+}
+
+/**
+ * Moves `body` as one rigid piece: it turns `rotate` degrees about X, then Y, then Z, each about an
+ * axis through `pivot` (the origin when it is left out), and then shifts by `translate`. The body
+ * keeps its faces and their names, so references made before the move still find them.
+ */
+export interface DesignTransformFeature extends DesignFeatureBase {
+    type: "transform";
+    body: string;
+    translate?: DesignPoint;
+    rotate?: DesignPoint;
+    pivot?: DesignPoint;
+}
+
+/**
+ * Pushes or pulls one flat face of `body` along its normal by `distance`: out of the body when it is
+ * above 0, into it when it is below. The moved face keeps its names and is also named `end`; the
+ * faces it sweeps out are named `side`.
+ */
+export interface DesignPushPullFeature extends DesignFeatureBase {
+    type: "pushPull";
+    body: string;
+    face: DesignFaceReference;
+    distance: DesignNumber;
 }
 
 /**
@@ -505,6 +531,8 @@ export type DesignFeature =
     | DesignLinearPatternFeature
     | DesignPolarPatternFeature
     | DesignMirrorFeature
+    | DesignTransformFeature
+    | DesignPushPullFeature
     | DesignSweepFeature
     | DesignLoftFeature
     | DesignShellFeature

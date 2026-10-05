@@ -201,6 +201,7 @@ class Exporter {
     private readonly lines: string[] = [];
     private readonly used = new Set<string>();
     private readonly variables = new Map<string, string>();
+    private readonly faceSketches = new Set<string>();
     private readonly constants = new Map<string, string>();
     private readonly helpers: string[] = [];
     private readonly mathHelpers = new Map<MathHelper, string>();
@@ -322,9 +323,8 @@ class Exporter {
     }
 
     private outline(sketchId: string): string {
-        const sketch = this.document.features.find(feature => feature.id === sketchId) as Models.OCCT.DesignSketchFeature;
         const shape = this.variable(sketchId);
-        if (sketch.closed === false) {
+        if (!this.faceSketches.has(sketchId)) {
             return shape;
         }
         const wire = this.fresh(sketchId, "Wire");
@@ -350,6 +350,10 @@ class Exporter {
     }
 
     private sketch(feature: Models.OCCT.DesignSketchFeature, trace: DesignTrace): void {
+        if (feature.loops === undefined && (feature.pen ?? []).length === 0) {
+            this.line(`// "${feature.id}" draws nothing yet.`);
+            return;
+        }
         const name = this.fresh(feature.id);
         this.variables.set(feature.id, name);
         const on = feature.on;
@@ -367,7 +371,10 @@ class Exporter {
             return `        { ${fields.join(", ")} },`;
         });
         const start = feature.start === undefined ? "" : ` start: ${this.code(feature.start)},`;
-        this.line(`const ${name} = await occt.sketch.pen({${start} frame: ${frame}, makeFace: ${feature.closed !== false}, commands: [`);
+        if (trace.face === true) {
+            this.faceSketches.add(feature.id);
+        }
+        this.line(`const ${name} = await occt.sketch.pen({${start} frame: ${frame}, makeFace: ${trace.face === true}, commands: [`);
         commands.forEach(command => this.line(command));
         this.line("] });");
     }
@@ -521,6 +528,26 @@ class Exporter {
                 const image = this.fresh(feature.id, "Image");
                 this.line(`const ${image} = await occt.transforms.mirrorAlongNormal({ shape: ${body}, origin: ${this.code(feature.plane.origin)}, normal: ${this.code(feature.plane.normal)} });`);
                 this.line(feature.keepOriginal === false ? `${body} = ${image};` : `${body} = await occt.booleans.union({ shapes: [${body}, ${image}] });`);
+                return;
+            }
+            case "pushPull": {
+                const body = this.variable(feature.body);
+                const index = trace.sketchFace!;
+                const profile = `await occt.shapes.face.getFace({ shape: ${body}, index: ${index} })`;
+                this.line(`${body} = await occt.features.${trace.pull === true ? "boss" : "pocket"}({ shape: ${body}, profile: ${profile}, sketchFaceIndex: ${index}, direction: ${this.numbers(trace.frame!.normal)}, extent: Bit.Inputs.OCCT.featureExtentEnum.length, length: Math.abs(${this.code(feature.distance)}) });`);
+                return;
+            }
+            case "transform": {
+                const body = this.variable(feature.body);
+                const pivot = feature.pivot === undefined ? "[0, 0, 0]" : this.code(feature.pivot);
+                (feature.rotate ?? [0, 0, 0]).forEach((angle, axis) => {
+                    if (angle !== 0) {
+                        this.line(`${body} = await occt.transforms.rotateAroundCenter({ shape: ${body}, angle: ${this.code(angle)}, center: ${pivot}, axis: ${["[1, 0, 0]", "[0, 1, 0]", "[0, 0, 1]"][axis]} });`);
+                    }
+                });
+                if (feature.translate !== undefined) {
+                    this.line(`${body} = await occt.transforms.translate({ shape: ${body}, translation: ${this.code(feature.translate)} });`);
+                }
                 return;
             }
             case "shell": {

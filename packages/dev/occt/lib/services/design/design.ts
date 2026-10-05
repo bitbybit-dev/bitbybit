@@ -126,7 +126,7 @@ export class OCCTDesign {
      */
     build(inputs: Inputs.OCCT.DesignBuildDto<TopoDS_Shape>): Models.OCCT.DesignBuildResult<TopoDS_Shape> {
         this.refuseProblems(inputs.document, inputs.documents);
-        const context = { occt: this.service(), occ: this.occ, cache: this.cache, assets: inputs.assets, rebind: inputs.rebind === Inputs.OCCT.designRebindEnum.report ? "report" as const : "never" as const, outcomes: inputs.outcomes };
+        const context = { occt: this.service(), occ: this.occ, cache: this.cache, assets: inputs.assets, rebind: inputs.rebind === Inputs.OCCT.designRebindEnum.report ? "report" as const : "never" as const, outcomes: inputs.outcomes, sketches: inputs.sketches === true };
         const document = inputs.document;
         if (document.kind === "assembly") {
             const { library } = libraryOf<Models.OCCT.DesignDocument>(inputs.documents);

@@ -694,4 +694,14 @@ describe("OCCTWorkerManager unit tests", () => {
             expect((posted[0] as PostedCall).action).toEqual({ functionName: "cleanAllCache", inputs: {} });
         });
     });
+
+    describe("setMeshRetention", () => {
+        it("should post the budget in triangles", () => {
+            // Act
+            void manager.setMeshRetention(250000);
+
+            // Assert
+            expect((posted[0] as PostedCall).action).toEqual({ functionName: "setMeshRetention", inputs: { triangles: 250000 } });
+        });
+    });
 });

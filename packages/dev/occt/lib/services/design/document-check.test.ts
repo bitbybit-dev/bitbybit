@@ -18,7 +18,7 @@ describe("design document check", () => {
     it("should accept a document whose every reference names something made before it", () => {
         // Act
         const issues = issuesOf(
-            { id: "frame", type: "sketch", on: { frame: { origin: [0, 0, "size"], normal: [0, 0, 1], direction: [1, 0, 0] } }, start: [1, "size"], pen: [{ type: "line", to: [1, "size * 2"] }], closed: false },
+            { id: "frame", type: "sketch", on: { frame: { origin: [0, 0, "size"], normal: [0, 0, 1], direction: [1, 0, 0] } }, start: [1, "size"], pen: [{ type: "line", to: [1, "size * 2"] }] },
             { id: "top", type: "sketch", on: { face: { ...endOfBlock, count: 1, filter: { select: "facing", direction: [0, 0, 1] } }, origin: [1, 1, 2], direction: [1, 0, 0] }, pen: [{ type: "hLine", length: 1 }, { type: "vLine", length: 1 }, { type: "close" }] },
             { id: "boss", type: "extrude", profile: "top", distance: "size", direction: [0, 0, 1], body: "block", join: "add" },
             { id: "spin", type: "revolve", profile: "base", axis: { origin: [0, 0, 0], direction: [0, 1, 0] }, angle: 90 },
@@ -56,7 +56,7 @@ describe("design document check", () => {
 
         // Assert
         expect(paths).toEqual(["/features/2", "/features/3/id", "/features/4/id", "/features/5/type"]);
-        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, sweep, loft, shell, hole, boss, pocket, import, operation, script");
+        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, transform, pushPull, sweep, loft, shell, hole, boss, pocket, import, operation, script");
     });
 
     it("should refuse numbers and points that cannot be read", () => {
@@ -81,6 +81,25 @@ describe("design document check", () => {
         ]);
     });
 
+    it("should take transforms, pushes and pulls of a body made before them, and refuse what cannot be read", () => {
+        // Act
+        const issues = issuesOf(
+            { id: "moved", type: "transform", body: "block", translate: [1, 0, "size"], rotate: [0, 90, 0], pivot: [1, 1, 1] },
+            { id: "still", type: "transform", body: "block" },
+            { id: "bad", type: "transform", body: "block", rotate: [0, 90] },
+            { id: "lost", type: "transform", body: "nothing", translate: [1, 0, 0] },
+            { id: "pressed", type: "pushPull", body: "block", face: endOfBlock, distance: "size" },
+            { id: "unread", type: "pushPull", body: "block", face: endOfBlock, distance: "1 +" },
+        );
+
+        // Assert
+        expect(issues).toEqual([
+            { path: "/features/4/rotate", message: "a point or vector is three numbers or expressions" },
+            { path: "/features/5/body", message: expect.stringContaining("nothing") },
+            { path: "/features/7/distance", message: "the expression ends too soon (at character 4 of \"1 +\")" },
+        ]);
+    });
+
     it("should refuse sketch placements and pens it cannot read", () => {
         // Act
         const paths = pathsOf(
@@ -92,7 +111,7 @@ describe("design document check", () => {
             { id: "f", type: "sketch", on: { face: endOfBlock, origin: [0, 0] }, pen: [] },
             { id: "g", type: "sketch", on: { face: endOfBlock, direction: [0, 0] }, pen: [] },
             { id: "h", type: "sketch", on: { axis: "Z" }, pen: [] },
-            { id: "i", type: "sketch", on: { plane: "XY" }, pen: [] },
+            { id: "i", type: "sketch", on: { plane: "XY" }, pen: { type: "hLine", length: 1 } },
             { id: "j", type: "sketch", on: { plane: "XY" }, pen: ["hLine"] },
             { id: "k", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", id: "a.b", length: 1 }] },
             { id: "l", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", id: "x", length: 1 }, { type: "vLine", id: "x", length: 1 }] },
@@ -288,7 +307,7 @@ describe("design document check", () => {
             { id: "f", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", length: 1, width: 2 }] },
             { id: "g", type: "sketch", on: { plane: "XY", origin: [0, 0, 0] }, pen: [{ type: "hLine", length: 1 }] },
             { id: "h", type: "sketch", on: { frame: { origin: [0, 0, 0], normal: [0, 0, 1], direction: [1, 0, 0], up: [0, 1, 0] } }, pen: [{ type: "hLine", length: 1 }] },
-            { id: "i", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", length: 1 }], closed: "yes" },
+            { id: "i", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", length: 1 }], face: "yes" },
             { id: "j", type: "fillet", body: "block", radius: 1, edges: { between: [sideOfBlock, endOfBlock], filter: { select: "along", direction: [1, 0, 0], angle: 5, bend: 2 }, count: 1 } },
             { id: "k", type: "fillet", body: "block", radius: 1, edges: { between: [sideOfBlock, { ...endOfBlock, colour: "red" }], count: 1 } },
             { id: "l", type: "fillet", body: "block", radius: 1, edges: { between: [sideOfBlock, endOfBlock], count: 1, extra: 1 } },
@@ -308,7 +327,7 @@ describe("design document check", () => {
             "/features/7/pen/0/width",
             "/features/8/on/origin",
             "/features/9/on/frame/up",
-            "/features/10/closed",
+            "/features/10/face",
             "/features/11/edges/filter/bend",
             "/features/12/edges/between/1/colour",
             "/features/13/edges/extra",
@@ -440,7 +459,7 @@ describe("design document check", () => {
         const schema = JSON.parse(readFileSync(new URL("../../../schemas/design-document/experimental.json", import.meta.url), "utf8")) as { $defs: Record<string, { properties: Record<string, unknown> }> };
         const keysOf = (name: string): string[] => Object.keys(schema.$defs[name]!.properties).sort();
         const extensible = (keys: readonly string[]): string[] => [...keys, "extras", "extensions"].sort();
-        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
+        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", transform: "DesignTransformFeature", pushPull: "DesignPushPullFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
 
         // Act
         const features = Object.entries(FEATURE_KEYS).map(([type, keys]) => [keysOf(featureNames[type]!), extensible([...DOCUMENT_KEYS.feature, ...keys])]);

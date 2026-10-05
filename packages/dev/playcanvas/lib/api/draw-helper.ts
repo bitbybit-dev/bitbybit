@@ -1,7 +1,7 @@
 
 import { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, designMeshKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
+import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designMeshCacheKeyOf, designMeshKeyOf, designOptionsKeyOf, designPartKeyOf, designSignatureOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, partPlacementsOf, samePlacements } from "@bitbybit-dev/core";
 import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -34,9 +34,11 @@ type DesignPartEntity = pc.Entity & { designPart?: { part: string; paths: string
 
 interface DesignPartDrawn {
     part: string;
+    key: string;
     matrices: Float32Array;
     buffer: pc.VertexBuffer;
     entity: DesignPartEntity;
+    faces: pc.Entity | undefined;
     edges: pc.Entity | undefined;
 }
 
@@ -44,6 +46,7 @@ interface DesignDrawState {
     placements: Map<string, PartPlacement[]>;
     meshes: Map<string, Inputs.OCCT.DecomposedMeshDto>;
     signature: string;
+    looks: string;
     precision: number;
     parts: DesignPartDrawn[];
 }
@@ -53,6 +56,8 @@ export class DrawHelper extends DrawHelperCore {
     private readonly materialCache = new Map<string, pc.StandardMaterial>();
 
     private readonly designStates = new WeakMap<pc.Entity, DesignDrawState>();
+
+    private readonly designMeshes = new DesignMeshCache<Inputs.OCCT.DecomposedMeshDto>();
     
     private entityIdCounter = 0;
     private readonly instanceId = `pc-${Date.now()}`;
@@ -740,7 +745,8 @@ export class DrawHelper extends DrawHelperCore {
      * into one entity with a mesh instance per look and one for its edges, and every placement is a
      * hardware instance of each, from one buffer of matrices per part. Given the entity an earlier
      * build drew, it redraws in place: when the same parts sit at the same paths, it only moves
-     * them, and otherwise it meshes only the parts it has not.
+     * them, and otherwise it keeps what it drew for every part whose shape and appearance are
+     * unchanged under the same options, places it again, and meshes and draws only the rest.
      * @param build - The build to draw
      * @param drawOptions - The drawing options; the face color is the color of faces no look colors
      * @param previous - The entity an earlier build drew, to redraw in place
@@ -767,24 +773,55 @@ export class DrawHelper extends DrawHelperCore {
                 }
             }
         }
+        const meshing = this.meshingTextOf(options);
+        const cacheKeys = new Map(placed.map(id => [id, designMeshCacheKeyOf(parts.get(id)!, meshing)]));
+        for (const id of placed) {
+            const cacheKey = cacheKeys.get(id);
+            const cached = meshes.has(id) || cacheKey === undefined ? undefined : this.designMeshes.get(cacheKey);
+            if (cached) {
+                meshes.set(id, cached);
+            }
+        }
+        const looks = designOptionsKeyOf(options);
+        const kept = new Map(state && state.looks === looks && state.precision === options.precision
+            ? state.parts.filter(drawn => parts.has(drawn.part) && placements.has(drawn.part) && drawn.key === designPartKeyOf(parts.get(drawn.part)!)).map(drawn => [drawn.part, drawn])
+            : []);
         const missing = placed.filter(id => !meshes.has(id));
         if (missing.length > 0) {
             const made = await this.meshShapesForLooks(missing.map(id => parts.get(id)!.shape), options);
-            missing.forEach((id, index) => meshes.set(id, made[index]!));
+            missing.forEach((id, index) => {
+                const mesh = made[index]!;
+                const cacheKey = cacheKeys.get(id);
+                meshes.set(id, mesh);
+                if (cacheKey !== undefined) {
+                    this.designMeshes.set(cacheKey, mesh);
+                }
+            });
         }
         const target = previous && state ? previous : this.newDesignRoot();
         if (state && target === previous) {
-            this.clearDesign(state);
+            this.clearDesign(state.parts.filter(drawn => kept.get(drawn.part) !== drawn));
         }
-        const filled = this.fillDesign(target, parts, placements, placed, meshes, options, signature);
-        filled.meshes = new Map(placed.map(id => [keys.get(id)!, meshes.get(id)!]));
-        this.designStates.set(target, filled);
+        const drawnParts = this.fillDesign(target, parts, placements, placed, meshes, options, kept);
+        const keptMeshes = new Map(placed.flatMap(id => {
+            const mesh = meshes.get(id);
+            return mesh ? [[keys.get(id)!, mesh] as const] : [];
+        }));
+        this.designStates.set(target, { placements, meshes: keptMeshes, signature, looks, precision: options.precision, parts: drawnParts });
         return target;
     }
 
-    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+    private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {
         const resolved = resolveDto(Inputs.OCCT.DrawShapeDto, options) as Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">;
-        const meshing = this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+        return this.getMeshingOptions({ ...resolved, drawIsoCurves: false, surfaceAnalysis: Inputs.OCCT.surfaceAnalysisEnum.none });
+    }
+
+    private meshingTextOf(options: Resolved.Draw.DrawOcctShapeOptions): string {
+        return JSON.stringify(this.meshingForLooks(options));
+    }
+
+    private async meshShapesForLooks(shapes: Inputs.OCCT.TopoDSShapePointer[], options: Resolved.Draw.DrawOcctShapeOptions): Promise<Inputs.OCCT.DecomposedMeshDto[]> {
+        const meshing = this.meshingForLooks(options);
         const meshes: unknown = await this.occWorkerManager.genericCallToWorkerPromise("shapesToMeshes", { ...meshing, shapes });
         if (!Array.isArray(meshes) || meshes.length !== shapes.length || !meshes.every(mesh => this.isMeshOfFacesAndEdges(mesh))) {
             throw new Error(`Meshing ${shapes.length} shapes did not return one mesh of faces and edges per shape.`);
@@ -880,40 +917,48 @@ export class DrawHelper extends DrawHelperCore {
 
     /**
      * Each placed part as one entity whose looks and edges are mesh instances, all hardware
-     * instanced once per placement from one buffer of matrices. Each part entity's `designPart`
-     * gives the part and the component path of each instance, and its faces entity's `faceRanges`
-     * where each face's triangles are.
+     * instanced once per placement from one buffer of matrices, the `kept` ones as they were drawn.
+     * Each part entity's `designPart` gives the part and the component path of each instance, and
+     * its faces entity's `faceRanges` where each face's triangles are.
      */
-    private fillDesign(target: pc.Entity, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, signature: string): DesignDrawState {
+    private fillDesign(target: pc.Entity, parts: ReadonlyMap<string, Inputs.Draw.ShapeWithAppearance & { shapeHash?: string }>, placements: Map<string, PartPlacement[]>, placed: readonly string[], meshes: ReadonlyMap<string, Inputs.OCCT.DecomposedMeshDto>, options: Resolved.Draw.DrawOcctShapeOptions, kept: ReadonlyMap<string, DesignPartDrawn>): DesignPartDrawn[] {
         const zOffset = options.drawEdges ? 2 : 0;
         const device = this.context.app.graphicsDevice;
-        const drawnParts = placed.map((id): DesignPartDrawn => {
-            const mesh = meshes.get(id)!;
-            const appearance = parts.get(id)!.appearance;
+        return placed.map((id): DesignPartDrawn => {
+            const part = parts.get(id)!;
             const partPlacements = placements.get(id)!;
             const matrices = new Float32Array(partPlacements.length * 16);
             partPlacements.forEach((placement, index) => matrices.set(placement.world, index * 16));
-            const buffer = new pc.VertexBuffer(device, pc.VertexFormat.getDefaultInstancingFormat(device), partPlacements.length, { usage: pc.BUFFER_DYNAMIC });
+            const reused = kept.get(id);
+            const sameCount = reused !== undefined && reused.matrices.length === matrices.length;
+            if (reused && !sameCount) {
+                reused.buffer.destroy();
+            }
+            const buffer = reused && sameCount ? reused.buffer : new pc.VertexBuffer(device, pc.VertexFormat.getDefaultInstancingFormat(device), partPlacements.length, { usage: pc.BUFFER_DYNAMIC });
             this.writeInstances(buffer, matrices);
-            const entity: DesignPartEntity = new pc.Entity(this.generateEntityId("designPart"));
+            const entity: DesignPartEntity = reused ? reused.entity : new pc.Entity(this.generateEntityId("designPart"));
             entity.designPart = { part: id, paths: partPlacements.map(placement => placement.path) };
-            const faces = options.drawFaces && mesh.faceList.length > 0
-                ? this.lookedEntity(lookMeshesOf(mesh, lookGroupsOf(appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour)), options.faceOpacity, zOffset)
+            const mesh = reused ? undefined : meshes.get(id)!;
+            const faces = reused ? reused.faces : mesh && options.drawFaces && mesh.faceList.length > 0
+                ? this.lookedEntity(lookMeshesOf(mesh, lookGroupsOf(part.appearance, mesh.faceList.map(face => face.faceIndex), options.faceColour)), options.faceOpacity, zOffset)
                 : undefined;
-            const edges = options.drawEdges && mesh.edgeList.length > 0 ? this.partEdges(mesh, appearance, options) : undefined;
+            const edges = reused ? reused.edges : mesh && options.drawEdges && mesh.edgeList.length > 0 ? this.partEdges(mesh, part.appearance, options) : undefined;
             for (const drawn of [faces, edges]) {
                 if (drawn) {
-                    entity.addChild(drawn);
+                    if (!reused) {
+                        entity.addChild(drawn);
+                    }
                     for (const meshInstance of drawn.render?.meshInstances ?? []) {
                         meshInstance.setInstancing(buffer);
                         meshInstance.instancingCount = partPlacements.length;
                     }
                 }
             }
-            target.addChild(entity);
-            return { part: id, matrices, buffer, entity, edges };
+            if (!reused) {
+                target.addChild(entity);
+            }
+            return { part: id, key: designPartKeyOf(part), matrices, buffer, entity, faces, edges };
         });
-        return { placements, meshes: new Map(meshes), signature, precision: options.precision, parts: drawnParts };
     }
 
     private writeInstances(buffer: pc.VertexBuffer, matrices: Float32Array): void {
@@ -932,8 +977,8 @@ export class DrawHelper extends DrawHelperCore {
         state.placements = placements;
     }
 
-    private clearDesign(state: DesignDrawState): void {
-        for (const drawn of state.parts) {
+    private clearDesign(parts: readonly DesignPartDrawn[]): void {
+        for (const drawn of parts) {
             const lineMaterials = (drawn.edges?.render?.meshInstances ?? []).map(meshInstance => meshInstance.material);
             drawn.entity.destroy();
             lineMaterials.forEach(material => material.destroy());
@@ -1700,6 +1745,7 @@ export class DrawHelper extends DrawHelperCore {
      * Should be called when the DrawHelper instance is no longer needed
      */
     public dispose(): void {
+        this.designMeshes.clear();
         this.materialCache.forEach((material, key) => {
             try {
                 if (material.destroy) {

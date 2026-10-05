@@ -922,6 +922,9 @@
                     "$ref": "#/$defs/DesignPolarPatternFeature"
                 },
                 {
+                    "$ref": "#/$defs/DesignPushPullFeature"
+                },
+                {
                     "$ref": "#/$defs/DesignRevolveFeature"
                 },
                 {
@@ -935,6 +938,9 @@
                 },
                 {
                     "$ref": "#/$defs/DesignSweepFeature"
+                },
+                {
+                    "$ref": "#/$defs/DesignTransformFeature"
                 }
             ]
         },
@@ -2550,6 +2556,57 @@
                 }
             ]
         },
+        "DesignPushPullFeature": {
+            "description": "Pushes or pulls one flat face of `body` along its normal by `distance`: out of the body when it is\nabove 0, into it when it is below. The moved face keeps its names and is also named `end`; the\nfaces it sweeps out are named `side`.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "pushPull"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "face": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "distance": {
+                    "$ref": "#/$defs/DesignNumber"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "face",
+                "distance",
+                "id"
+            ],
+            "additionalProperties": false
+        },
         "DesignReferenceHint": {
             "description": "What a reference's faces were like when a tool last resolved it (`design.withHints`): the body's\nbounding `box` then, and one entry per face. A build reads it only to find the faces again by\nlikeness when their names are lost.",
             "type": "object",
@@ -2784,7 +2841,7 @@
             "additionalProperties": false
         },
         "DesignSketchFeature": {
-            "description": "A sketch: pen commands on a placement, closed into a face unless `closed` is false; or `loops`,\nseveral closed outlines making one face, the first its outside and each further one a hole in it,\nsuch as a washer or a plate with cut-outs. Each command's `id`, distinct across the sketch's loops,\nnames the sides a later feature sweeps from it.",
+            "description": "A sketch: pen commands on a placement, or `loops`, several closed outlines making one face, the\nfirst its outside and each further one a hole in it, such as a washer or a plate with cut-outs. An\noutline is closed when it ends with `close` or back at its start; a closed outline is made a face\nunless `face` is false, and an open one stays a wire. Each command's `id`, distinct across the\nsketch's loops, names the sides a later feature sweeps from it.",
             "type": "object",
             "properties": {
                 "type": {
@@ -2818,7 +2875,7 @@
                         "$ref": "#/$defs/DesignLoop"
                     }
                 },
-                "closed": {
+                "face": {
                     "type": "boolean"
                 },
                 "id": {
@@ -2972,6 +3029,58 @@
                     "type": "string"
                 }
             ]
+        },
+        "DesignTransformFeature": {
+            "description": "Moves `body` as one rigid piece: it turns `rotate` degrees about X, then Y, then Z, each about an\naxis through `pivot` (the origin when it is left out), and then shifts by `translate`. The body\nkeeps its faces and their names, so references made before the move still find them.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "transform"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "translate": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "rotate": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "pivot": {
+                    "$ref": "#/$defs/DesignPoint"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "id"
+            ],
+            "additionalProperties": false
         },
         "DesignUnits": {
             "description": "The units the document's numbers are in. Geometry is built from the numbers as they are; exports\nand masses read the units. Angles are in degrees. Every document an assembly places is in the\nassembly's length unit, so one build is in one unit.",

@@ -5,6 +5,7 @@ import { VectorHelperService } from "../../api/vector-helper.service";
 import { ShapesHelperService } from "../../api/shapes-helper.service";
 import { OCCTService } from "../../occ-service";
 import * as Models from "../../api/models";
+import * as Inputs from "../../api/inputs";
 import { InputError } from "@bitbybit-dev/base";
 
 type Document = Models.OCCT.DesignPartDocument;
@@ -47,6 +48,119 @@ describe("OCCT design documents", () => {
     const facesNamed = (faceNames: string[][], name: string): number[] => faceNames.flatMap((names, index) => names.includes(name) ? [index] : []);
 
     describe("building", () => {
+        it("should list each sketch's outline, the frame it was drawn in and the command of each edge, only when asked", () => {
+            // Arrange
+            const document = plate();
+
+            // Act
+            const plain = occt.design.build({ document });
+            const listed = occt.design.build({ document, sketches: true });
+
+            // Assert
+            expect(plain.sketches).toBeUndefined();
+            expect(listed.sketches?.map(sketch => [sketch.id, sketch.face])).toEqual([["base", true]]);
+            const base = listed.sketches![0]!;
+            expect(base.frame.origin).toEqual([0, 0, 0]);
+            expect(base.frame.normal).toEqual([0, 0, 1]);
+            expect(occt.shapes.shape.getShapeType({ shape: base.shape })).toBe(Inputs.OCCT.shapeTypeEnum.face);
+            expect([...base.commands].sort()).toEqual(["base.bottom", "base.left", "base.right", "base.top"]);
+        });
+
+        it("should give a sketch on a face the frame it was drawn in, and keep it when the sketch comes from the cache", () => {
+            // Arrange
+            const document = plate([rectangle("dent", 4, 4, { face: { of: "plate", role: "end" }, origin: [20, 10, 10] }, [-2, -2])]);
+
+            // Act
+            const first = occt.design.build({ document, sketches: true });
+            const again = occt.design.build({ document, sketches: true });
+
+            // Assert
+            for (const result of [first, again]) {
+                const dent = result.sketches!.find(sketch => sketch.id === "dent")!;
+                expect(dent.frame.origin).toEqual([20, 10, 10]);
+                expect(dent.frame.normal.map(value => Math.round(value * 1e9) / 1e9)).toEqual([0, 0, 1]);
+            }
+            expect(again.report.find(entry => entry.id === "dent")?.cached).toBe(true);
+        });
+
+        it("should report a kernel exception by its type and message, not as an object", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "square", type: "sketch", on: { plane: "XZ" }, start: [0, 0], pen: [{ type: "hLine", length: 10 }, { type: "vLine", length: 10 }, { type: "hLine", length: -10 }, { type: "close" }] },
+                    { id: "swept", type: "sweep", profile: "square", path: "square" },
+                ],
+            };
+
+            // Act
+            const result = occt.design.build({ document });
+
+            // Assert
+            const swept = result.report.find(entry => entry.id === "swept");
+            expect(swept?.status).toBe("failed");
+            expect(swept?.messages.join(" ")).not.toContain("[object");
+            expect(swept?.messages[0]?.length ?? 0).toBeGreaterThan(3);
+        });
+
+        it("should list a sketch left open as its wire", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [{ id: "path", type: "sketch", on: { plane: "XZ" }, pen: [{ type: "hLine", id: "run", length: 10 }, { type: "vLine", id: "rise", length: 5 }] }],
+            };
+
+            // Act
+            const result = occt.design.build({ document, sketches: true });
+
+            // Assert
+            const path = result.sketches![0]!;
+            expect(path.face).toBe(false);
+            expect(occt.shapes.shape.getShapeType({ shape: path.shape })).toBe(Inputs.OCCT.shapeTypeEnum.wire);
+            expect(path.commands).toEqual(["path.run", "path.rise"]);
+            expect(path.frame.normal.map(value => Math.round(value * 1e9) / 1e9)).toEqual([0, 1, 0]);
+        });
+
+        it("should build a sketch that draws nothing as its plane, and fail a feature that uses it by name", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "blank", type: "sketch", on: { plane: "XY", offset: 5 } },
+                    { id: "slab", type: "extrude", profile: "blank", distance: 2 },
+                ],
+            };
+
+            // Act
+            const issues = occt.design.validate({ document });
+            const result = occt.design.build({ document, sketches: true });
+
+            // Assert
+            const blank = result.sketches![0]!;
+            expect(issues).toEqual([]);
+            expect([blank.id, blank.face, blank.commands]).toEqual(["blank", false, []]);
+            expect(blank.frame.origin.map(value => Math.round(value * 1e9) / 1e9)).toEqual([0, 0, 5]);
+            expect(result.report.map(entry => [entry.id, entry.status, entry.messages])).toEqual([["blank", "ok", []], ["slab", "failed", ["/features/1: sketch \"blank\" draws nothing yet"]]]);
+        });
+
+        it("should keep a closed outline a wire when face is false, and point the old closed flag to face", () => {
+            // Arrange
+            const loop = (extra: Record<string, unknown>): Document => ({
+                schemaVersion: 1,
+                features: [{ id: "loop", type: "sketch", on: { plane: "XZ" }, pen: [{ type: "hLine", length: 10 }, { type: "vLine", length: 5 }, { type: "close" }], ...extra }],
+            });
+
+            // Act
+            const wire = occt.design.build({ document: loop({ face: false }), sketches: true }).sketches![0]!;
+            const face = occt.design.build({ document: loop({}), sketches: true }).sketches![0]!;
+            const old = occt.design.validate({ document: loop({ closed: false }) });
+
+            // Assert
+            expect([wire.face, occt.shapes.shape.getShapeType({ shape: wire.shape })]).toEqual([false, Inputs.OCCT.shapeTypeEnum.wire]);
+            expect([face.face, occt.shapes.shape.getShapeType({ shape: face.shape })]).toEqual([true, Inputs.OCCT.shapeTypeEnum.face]);
+            expect(old.map(issue => [issue.path, issue.message])).toEqual([["/features/0/closed", "a sketch's `closed` is now `face`: the pen's `close` command closes the outline, and `face` false keeps a closed outline a wire"]]);
+        });
+
         it("should extrude a sketch into a body whose faces are named by role and sketch command", () => {
             // Arrange
             const document = plate();
@@ -245,6 +359,110 @@ describe("OCCT design documents", () => {
             const centre = occt.analysis.signatures({ shape: single!.shape }).faces[facesNamed(single!.faceNames, "single:end@flip#1")[0]!]!.centre;
             expect(centre[0]).toBeCloseTo(-11, 6);
             expect(facesNamed(single!.faceNames, "single:end")).toHaveLength(0);
+        });
+
+        it("should pull a flat face out and push one in, the moved face keeping its names for the features after it", () => {
+            // Arrange
+            const pulled: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: 2 },
+                    { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "pull", role: "side" }], count: 4 } },
+                ],
+            };
+            const pushed: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1 },
+                ],
+            };
+
+            // Act
+            const out = occt.design.build({ document: pulled });
+            const inward = occt.design.build({ document: pushed });
+
+            // Assert
+            expect(out.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok"]);
+            expect(size(out.parts[0]!.shape)[2]).toBeCloseTo(5, 6);
+            expect(facesNamed(out.parts[0]!.faceNames, "edge:bevel")).toHaveLength(4);
+            const body = inward.parts[0]!;
+            expect(inward.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok"]);
+            expect(volume(body.shape)).toBeCloseTo(16, 6);
+            const start = facesNamed(body.faceNames, "block:start");
+            expect(start).toEqual(facesNamed(body.faceNames, "push:end"));
+            expect(occt.analysis.signatures({ shape: body.shape }).faces[start[0]!]!.centre[2]).toBeCloseTo(1, 6);
+        });
+
+        it("should refuse to push or pull a face that is not flat, or by nothing", () => {
+            // Arrange
+            const round = (distance: number): Document => ({
+                schemaVersion: 1,
+                features: [
+                    { id: "disc", type: "sketch", on: { plane: "XY" }, pen: [{ type: "circle", centre: [0, 0], radius: 2 }] },
+                    { id: "rod", type: "extrude", profile: "disc", distance: 3 },
+                    { id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "side" }, distance },
+                ],
+            });
+
+            // Act
+            const curved = occt.design.build({ document: round(1) });
+            const still = occt.design.build({ document: { ...round(0), features: [...round(0).features.slice(0, 2), { id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "end" }, distance: 0 }] } });
+
+            // Assert
+            expect(curved.report[2]!.messages[0]).toContain("a flat face is needed here");
+            expect(still.report[2]!.messages[0]).toContain("the distance is not 0");
+        });
+
+        it("should move and turn a body as one piece, keeping its faces' names for the features after it", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "move", type: "transform", body: "block", rotate: [0, 0, 90], translate: [10, 0, 0] },
+                    { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "block", role: "side" }], count: 4 } },
+                ],
+            };
+
+            // Act
+            const result = occt.design.build({ document });
+
+            // Assert
+            const body = result.parts[0]!;
+            expect(result.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok"]);
+            expect(facesNamed(body.faceNames, "edge:bevel")).toHaveLength(4);
+            const box = occt.analysis.measure.tightBoundingBox({ shape: body.shape });
+            expect(box.min).toEqual([expect.closeTo(8, 6), expect.closeTo(0, 6), expect.closeTo(0, 6)]);
+            expect(box.max).toEqual([expect.closeTo(10, 6), expect.closeTo(4, 6), expect.closeTo(3, 6)]);
+        });
+
+        it("should turn about X, then Y, then Z through the pivot, with expressions in every coordinate", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                parameters: { quarter: 90 },
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "turn", type: "transform", body: "block", rotate: ["quarter", 0, "quarter"], pivot: [1, 1, 1] },
+                ],
+            };
+
+            // Act
+            const result = occt.design.build({ document });
+
+            // Assert
+            const body = result.parts[0]!;
+            const box = occt.analysis.measure.tightBoundingBox({ shape: body.shape });
+            expect(box.min).toEqual([expect.closeTo(0, 6), expect.closeTo(0, 6), expect.closeTo(0, 6)]);
+            expect(box.max).toEqual([expect.closeTo(3, 6), expect.closeTo(4, 6), expect.closeTo(2, 6)]);
+            const end = occt.analysis.signatures({ shape: body.shape }).faces[facesNamed(body.faceNames, "block:end")[0]!]!.centre;
+            expect(end).toEqual([expect.closeTo(3, 6), expect.closeTo(2, 6), expect.closeTo(1, 6)]);
         });
 
         it("should run an operation by its path with bodies and expressions in its inputs, naming the faces of one without a history after it, and keeping them through a move", () => {

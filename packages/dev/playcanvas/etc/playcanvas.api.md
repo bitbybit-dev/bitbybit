@@ -4104,7 +4104,7 @@ namespace OCCT {
         pointsList: Base.Point3[];
     }
     class DesignBuildDto<T> {
-        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[]);
+        constructor(document?: Models.OCCT.DesignDocument, configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, documents?: Models.OCCT.DesignDocument[], rebind?: designRebindEnum, outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[], sketches?: boolean);
         assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
         configuration?: string | undefined;
         document: Models.OCCT.DesignDocument;
@@ -4112,6 +4112,7 @@ namespace OCCT {
         outcomes?: Models.OCCT.DesignSuppliedOutcome<T>[] | undefined;
         parameters?: Record<string, number | string | boolean> | undefined;
         rebind?: designRebindEnum | undefined;
+        sketches?: boolean | undefined;
     }
     class DesignDocumentDto {
         constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[]);

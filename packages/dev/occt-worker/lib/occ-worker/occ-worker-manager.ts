@@ -1,6 +1,7 @@
 import { KernelCallError, KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import { OccInfo } from "./occ-info";
+import { MeshRetention } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
 import { OCCTWorkerMock } from "./occ-worker-mock";
 
@@ -229,5 +230,19 @@ export class OCCTWorkerManager {
      */
     cleanAllCache(): Promise<void> {
         return this.genericCallToWorkerPromise("cleanAllCache", {});
+    }
+
+    /**
+     * Sets how many triangles the kernel may keep on the shapes it meshes, so drawing a shape again
+     * with the same settings, or drawing a shape that shares faces with one drawn before, reuses
+     * their triangulation instead of meshing them anew. With a budget every mesh is kept, and the
+     * least recently used faces are freed once the kept triangles exceed it; a mesh made with other
+     * settings is never reused. Kept meshes cost about 40 bytes a triangle. 0, the default, keeps
+     * nothing and frees what was kept; `cleanAllCache` frees it too.
+     * @param triangles - The budget, a whole number of triangles from 0
+     * @returns What the kernel keeps after the change
+     */
+    setMeshRetention(triangles: number): Promise<MeshRetention> {
+        return this.genericCallToWorkerPromise("setMeshRetention", { triangles });
     }
 }

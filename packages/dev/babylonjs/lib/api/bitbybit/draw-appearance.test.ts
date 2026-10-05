@@ -316,6 +316,23 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(drawn.metadata.type).toBe(Inputs.Draw.drawingTypes.occtShapes);
         });
 
+        it("should name the edge each line of a part's edges draws, so a viewer can tell which edge it shows", async () => {
+            // Arrange
+            const reversed = boxMesh();
+            reversed.edgeList = [...reversed.edgeList].reverse();
+            workerCall.mockResolvedValueOnce([reversed, boxMesh()]);
+
+            // Act
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Assert
+            const [box] = linesOf(drawn);
+            expect(box!.metadata.edgeIndexes).toEqual([11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0]);
+            expect(box!.points).toHaveLength(12);
+            expect(box!.points[0]).toEqual([...CORNERS[3]!, ...CORNERS[7]!]);
+            expect(box!.metadata).toEqual(expect.objectContaining({ part: "box-1", paths: ["box0"] }));
+        });
+
         it("should only move the instances when redrawn with the same parts at the same paths", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
@@ -334,31 +351,67 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(instanceMatrices(linesOf(redrawn)[0]!)[0]).toEqual(at(5));
         });
 
-        it("should mesh only the parts it has not when the placements change, and dispose what it drew before", async () => {
+        it("should hand out the moved world matrices after moving instances whose matrices were read before", async () => {
             // Arrange
-            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
-            const before = drawn.getChildMeshes(true);
-            const lookMaterial = surfacesOf(drawn)[0]!.material as BABYLON.MultiMaterial;
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+            const [box, pin] = surfacesOf(drawn);
+            const before = [instanceMatrices(box!)[1], instanceMatrices(pin!)[0], instanceMatrices(linesOf(drawn)[0]!)[0]];
 
             // Act
-            const redrawn = await draw.drawAnyAsync({ entity: buildOf([0], [20], { id: "nut-3", shape: shapeC }), options, babylonMesh: drawn });
+            await draw.drawAnyAsync({ entity: buildOf([5, 15], [25]), options, babylonMesh: drawn });
+
+            // Assert
+            expect(before).toEqual([at(10), at(20), at(0)]);
+            expect(instanceMatrices(box!)[1]).toEqual(at(15));
+            expect(instanceMatrices(pin!)[0]).toEqual(at(25));
+            expect(instanceMatrices(linesOf(drawn)[0]!)[0]).toEqual(at(5));
+        });
+
+        it("should keep and place again what it drew for the parts that stay, and mesh and draw only a new part", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = surfacesOf(drawn);
+            const lookMaterial = box!.material as BABYLON.MultiMaterial;
+
+            // Act
+            const redrawn = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20], { id: "nut-3", shape: shapeC }), options, babylonMesh: drawn });
 
             // Assert
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
-            expect(surfacesOf(redrawn).map(surface => surface.thinInstanceCount)).toEqual([1, 1, 1]);
-            expect(before.every(child => child.isDisposed())).toBe(true);
-            expect(scene.multiMaterials).not.toContain(lookMaterial);
-            expect(lookMaterial.subMaterials.every(material => material !== null && scene.materials.includes(material))).toBe(true);
+            const surfaces = surfacesOf(redrawn);
+            expect([surfaces[0] === box, surfaces[1] === pin]).toEqual([true, true]);
+            expect(surfaces.map(surface => surface.thinInstanceCount)).toEqual([2, 1, 1]);
+            expect(instanceMatrices(box!)[1]).toEqual(at(10));
+            expect(box!.metadata).toEqual(expect.objectContaining({ part: "box-1", paths: ["box0", "box1"] }));
+            expect(box!.material).toBe(lookMaterial);
+            expect(scene.multiMaterials).toContain(lookMaterial);
+            expect(linesOf(redrawn).map(line => line.thinInstanceCount)).toEqual([2, 1, 1]);
         });
 
-        it("should mesh a part again when its shape changed under the same id, and only that part", async () => {
+        it("should dispose what it drew for a part that is no longer placed", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
-            const before = drawn.getChildMeshes(true);
+            const [box, pin] = surfacesOf(drawn);
+            const [, pinLine] = linesOf(drawn);
+
+            // Act
+            await draw.drawAnyAsync({ entity: buildOf([0], []), options, babylonMesh: drawn });
+
+            // Assert
+            expect([box!.isDisposed(), pin!.isDisposed(), pinLine!.isDisposed()]).toEqual([false, true, true]);
+            expect(surfacesOf(drawn)).toHaveLength(1);
+        });
+
+        it("should mesh and draw again only a part whose shape changed under the same id, freeing its look materials", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = surfacesOf(drawn);
+            const [boxLine, pinLine] = linesOf(drawn);
+            const lookMaterial = box!.material as BABYLON.MultiMaterial;
             const edited = buildOf([0], [20]);
-            edited.parts[1] = partOf("pin-2", shapeC, undefined, "pin-2-edited");
+            edited.parts[0] = partOf("box-1", shapeC, boxAppearance, "box-1-edited");
 
             // Act
             const redrawn = await draw.drawAnyAsync({ entity: edited, options, babylonMesh: drawn });
@@ -367,12 +420,50 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(redrawn).toBe(drawn);
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
-            expect(before.every(child => child.isDisposed())).toBe(true);
+            expect([box!.isDisposed(), boxLine!.isDisposed(), pin!.isDisposed(), pinLine!.isDisposed()]).toEqual([true, true, false, false]);
+            expect(scene.multiMaterials).not.toContain(lookMaterial);
+            expect(lookMaterial.subMaterials.every(material => material !== null && scene.materials.includes(material))).toBe(true);
+            expect(surfacesOf(redrawn)).toHaveLength(2);
         });
 
-        it("should mesh every part again when the precision changes", async () => {
+        it("should draw again a part whose appearance changed without meshing it again, and every part when the options change", async () => {
             // Arrange
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const [box, pin] = surfacesOf(drawn);
+            const restyled = buildOf([0], [20]);
+            restyled.parts[1] = partOf("pin-2", shapeB, { color: "#00ff00", faces: [] });
+
+            // Act
+            await draw.drawAnyAsync({ entity: restyled, options, babylonMesh: drawn });
+            const afterLook = [box!.isDisposed(), pin!.isDisposed()];
+            const [keptBox, newPin] = surfacesOf(drawn);
+            await draw.drawAnyAsync({ entity: restyled, options: { ...options, faceColour: "#0000ff" }, babylonMesh: drawn });
+
+            // Assert
+            expect(afterLook).toEqual([false, true]);
+            expect(lookColours(newPin!)).toEqual(["#00ff00"]);
+            expect([keptBox!.isDisposed(), newPin!.isDisposed()]).toEqual([true, true]);
+            expect(workerCall).toHaveBeenCalledTimes(1);
+        });
+
+        it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {
+            // Arrange
+            const first = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Act
+            const second = await draw.drawAnyAsync({ entity: buildOf([0, 10], [20]), options });
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precision: 0.5 } });
+
+            // Assert
+            expect(second).not.toBe(first);
+            expect(workerCall).toHaveBeenCalledTimes(2);
+            expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
+        });
+
+        it("should mesh and draw every part again when the precision changes", async () => {
+            // Arrange
+            const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const before = drawn.getChildMeshes(true);
 
             // Act
             await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: { ...options, precision: 0.5 }, babylonMesh: drawn });
@@ -380,6 +471,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Assert
             expect(workerCall).toHaveBeenCalledTimes(2);
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeA, shapeB]);
+            expect(before.every(child => child.isDisposed())).toBe(true);
         });
 
         it("should color the edges of each part as its appearance says, and draw them again when the edge contrast changes", async () => {
@@ -400,7 +492,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             expect(lineColours(linesOf(drawn)[1]!, [0])).toEqual(["#ff8080"]);
         });
 
-        it("should pose and redraw only the lines when the faces are off", async () => {
+        it("should pose the lines, and draw only a new part's line, when the faces are off", async () => {
             // Arrange
             const linesOnly = { ...options, drawFaces: false };
             const drawn = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options: linesOnly });
@@ -414,7 +506,7 @@ describe("drawing shapes with their appearance and design builds in BabylonJS", 
             // Assert
             expect(posed).toEqual(at(7));
             expect(surfacesOf(drawn)).toHaveLength(0);
-            expect(before.every(line => line.isDisposed())).toBe(true);
+            expect(before.every(line => !line.isDisposed())).toBe(true);
             expect(linesOf(drawn)).toHaveLength(3);
         });
 
