@@ -124,9 +124,9 @@
         "rxjs": "7.8.2"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "7.59.1",
+        "@microsoft/api-extractor": "7.59.3",
         "@vitest/coverage-v8": "4.1.11",
-        "sass": "1.104.1",
+        "sass": "1.105.1",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.11"
