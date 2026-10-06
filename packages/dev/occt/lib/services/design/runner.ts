@@ -64,6 +64,7 @@ function planOf(feature: Feature, path: string, run: DesignRun): DesignPlan {
         case "shell":
         case "hole":
         case "pushPull":
+        case "removeFaces":
         case "boss":
         case "pocket":
             return localPlan(feature, path, run);
@@ -269,7 +270,12 @@ export interface FeaturesRun {
 export function runFeatures(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, trace?: Map<string, DesignTrace>): FeaturesRun {
     const run = newRun(document, choice, context, trace);
     const modes = trace === undefined && (run.supplied.size > 0 || context.cache.size > 0) ? modesOf(document, choice, context) : undefined;
-    const report = document.features.map((feature, index) => step(feature, pointer("/features", index), run, modes?.[index] ?? "make"));
+    context.progress?.starting(document, document.features.length);
+    const report = document.features.map((feature, index) => {
+        const made = step(feature, pointer("/features", index), run, modes?.[index] ?? "make");
+        context.progress?.stepped();
+        return made;
+    });
     return { run, report };
 }
 

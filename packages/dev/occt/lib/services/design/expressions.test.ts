@@ -178,9 +178,53 @@ describe("design expressions", () => {
             expect(valueOf(longest)).toBe(1000);
             expect(valueOf(deepest)).toBe(1);
             expect(tooLong.message).toBe("an expression is at most 2000 characters long: put parts of it in parameters");
-            expect(tooDeep.message).toBe("parentheses, calls and signs nest at most 64 deep");
-            expect(tooManySigns.message).toBe("parentheses, calls and signs nest at most 64 deep");
-            expect(tooManyCalls.message).toBe("parentheses, calls and signs nest at most 64 deep");
+            expect(tooDeep.message).toBe("parentheses, calls, signs and powers nest at most 64 deep");
+            expect(tooManySigns.message).toBe("parentheses, calls, signs and powers nest at most 64 deep");
+            expect(tooManyCalls.message).toBe("parentheses, calls, signs and powers nest at most 64 deep");
+        });
+
+        it("should count each power in a chain toward the nesting limit", () => {
+            // Arrange
+            const deepest = `2${"^1".repeat(64)}`;
+
+            // Act
+            const tooDeep = failureOf(() => parseExpression(`${deepest}^1`));
+
+            // Assert
+            expect(valueOf(deepest)).toBe(2);
+            expect(tooDeep.message).toBe("parentheses, calls, signs and powers nest at most 64 deep");
+            expect(tooDeep.position).toBe(129);
+        });
+
+        it("should give the tree it made for a text when the same text is read again", () => {
+            // Arrange
+            const first = parseExpression("width * 2 + if(depth > 3, 1, 0)");
+
+            // Act
+            const again = parseExpression("width * 2 + if(depth > 3, 1, 0)");
+            const other = parseExpression("width * 3");
+
+            // Assert
+            expect(again).toBe(first);
+            expect(other).not.toBe(first);
+            expect(namesIn(again)).toEqual(["width", "depth"]);
+        });
+
+        it("should keep reading texts after it has kept the trees of many others", () => {
+            // Arrange
+            const texts = Array.from({ length: 2100 }, (_, index) => `${index} + a`);
+            const first = parseExpression("0 + a");
+
+            // Act
+            texts.forEach(text => parseExpression(text));
+            const again = parseExpression("0 + a");
+            const last = parseExpression("2099 + a");
+
+            // Assert
+            expect(again).not.toBe(first);
+            expect(again).toEqual(first);
+            expect(valueOf("2099 + a", { a: 1 })).toBe(2100);
+            expect(parseExpression("2099 + a")).toBe(last);
         });
 
         it("should treat names objects inherit, such as constructor, as parameters like any other", () => {

@@ -205,6 +205,25 @@ export class OCCTFeatures {
     }
 
     /**
+     * Removes faces as `removeFaces` does, and reports one history, the shape's: a removed face's
+     * `faces` entry is empty, and each face that stays lists the face it became, grown over the gap.
+     * @param inputs - The shape and the faces to remove
+     * @returns The shape without the faces, and the history of the shape as the one entry of `histories`
+     * @group faces
+     * @shortname remove faces with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const walls = await bitbybit.occt.select.faces.ofType({ shape: drilled, type: Bit.Inputs.OCCT.surfaceTypeEnum.cylinder });
+     * const { shape, histories: [history] } = await bitbybit.occt.features.removeFacesWithHistory({ shape: drilled, indexes: walls });
+     * const topNow = history.faces[0];
+     * ```
+     */
+    removeFacesWithHistory(inputs: Inputs.OCCT.RemoveFacesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.removeFacesWithHistory", inputs);
+    }
+
+    /**
      * Moves faces of a shape along their outward normals and stretches the faces around them to
      * follow, such as raising the top of a block.
      *
@@ -223,6 +242,25 @@ export class OCCTFeatures {
      */
     pushPullFaces(inputs: Inputs.OCCT.PushPullFacesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Inputs.OCCT.TopoDSShapePointer> {
         return this.occWorkerManager.genericCallToWorkerPromise("features.pushPullFaces", inputs);
+    }
+
+    /**
+     * Moves faces as `pushPullFaces` does, and reports one history, the shape's: each face, edge and
+     * vertex lists what it became, so a moved face is followed to where it went, curved ones too.
+     * @param inputs - The shape, the faces and how far to move them
+     * @returns The shape with the faces moved, and the history of the shape as the one entry of `histories`
+     * @group faces
+     * @shortname push pull faces with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const [wall] = await bitbybit.occt.select.faces.ofType({ shape: rod, type: Bit.Inputs.OCCT.surfaceTypeEnum.cylinder });
+     * const { shape, histories: [history] } = await bitbybit.occt.features.pushPullFacesWithHistory({ shape: rod, indexes: [wall], distance: 1 });
+     * const [movedWall] = history.faces[wall];
+     * ```
+     */
+    pushPullFacesWithHistory(inputs: Inputs.OCCT.PushPullFacesDto<Inputs.OCCT.TopoDSShapePointer>): Promise<Models.OCCT.ShapeWithHistories<Inputs.OCCT.TopoDSShapePointer>> {
+        return this.occWorkerManager.genericCallToWorkerPromise("features.pushPullFacesWithHistory", inputs);
     }
 
     /**

@@ -1,4 +1,4 @@
-import type { KernelFailureDetails, KernelFailureKind } from "@bitbybit-dev/base";
+import type { KernelFailureDetails, KernelFailureKind, KernelSteps } from "@bitbybit-dev/base";
 import { KernelCallError } from "@bitbybit-dev/base";
 import { Subject } from "rxjs";
 import type { OccInfo } from "./occ-info";
@@ -6,7 +6,7 @@ import type { MeshRetention } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
 import type { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array, stepWords?: Int32Array | undefined } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 
 /** How far the OCCT call running now has got. */
 export type OccProgress = {
@@ -16,12 +16,16 @@ export type OccProgress = {
     fraction: number;
     /** How many kernel algorithms the call has started so far; each reports from 0 to 1 again. */
     algorithms: number;
+    /** For a call that works in steps, such as a design build making its features, how many are done of how many. */
+    steps?: KernelSteps;
 };
 
 const PROGRESS_INTERVAL_MS = 100;
 const STOP_REQUEST_WORD = 0;
 const PERMILLE_WORD = 1;
 const ALGORITHMS_STARTED_WORD = 2;
+const STEPS_DONE_WORD = 0;
+const STEPS_TOTAL_WORD = 1;
 type PendingCall = { promise?: Promise<unknown>, uid: string, functionName: string, resolve?: (value: unknown) => void, reject?: (reason?: unknown) => void };
 
 /**
@@ -41,6 +45,7 @@ export class OCCTWorkerManager {
     private occWorker!: Worker | OCCTWorkerMock;
     private promisesMade: PendingCall[] = [];
     private progressWords: Int32Array | undefined;
+    private stepWords: Int32Array | undefined;
     private progressTimer: ReturnType<typeof setInterval> | undefined;
     private lastProgress = "";
 
@@ -87,10 +92,12 @@ export class OCCTWorkerManager {
     setOccWorker(worker: Worker | OCCTWorkerMock): void {
         this.occWorker = worker;
         this.progressWords = undefined;
+        this.stepWords = undefined;
         this.stopWatchingProgress();
         this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
             if (typeof data === "object" && "progressWords" in data) {
                 this.progressWords = data.progressWords;
+                this.stepWords = data.stepWords;
                 this.stopWatchingProgress();
                 if (this.promisesMade.length > 0) {
                     this.watchProgress();
@@ -162,10 +169,12 @@ export class OCCTWorkerManager {
         const running = this.promisesMade[0]!;
         const permille = Atomics.load(words, PERMILLE_WORD);
         const algorithms = Atomics.load(words, ALGORITHMS_STARTED_WORD);
-        const key = `${running.uid}:${permille}:${algorithms}`;
+        const total = this.stepWords === undefined ? 0 : Atomics.load(this.stepWords, STEPS_TOTAL_WORD);
+        const done = this.stepWords === undefined ? 0 : Math.min(Atomics.load(this.stepWords, STEPS_DONE_WORD), total);
+        const key = `${running.uid}:${permille}:${algorithms}:${done}/${total}`;
         if (key !== this.lastProgress) {
             this.lastProgress = key;
-            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms });
+            this.occWorkerProgress$.next({ functionName: running.functionName, fraction: permille / 1000, algorithms, ...(total > 0 ? { steps: { done, total } } : {}) });
         }
     }
 

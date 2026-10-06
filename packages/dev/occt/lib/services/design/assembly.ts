@@ -114,6 +114,19 @@ function occurrencesOf(document: Models.OCCT.DesignAssemblyDocument, library: Bu
     return total;
 }
 
+/** The features of every part document an assembly reaches through its levels, each document counted once. */
+export function featuresReached(document: Models.OCCT.DesignAssemblyDocument, library: BuildLibrary, seen = new Set<number>()): number {
+    let total = 0;
+    for (const component of document.components) {
+        const entry = sourceDocument(library, component.source);
+        if (!seen.has(entry.index)) {
+            seen.add(entry.index);
+            total += entry.document.kind === "assembly" ? featuresReached(entry.document, library, seen) : entry.document.features.length;
+        }
+    }
+    return total;
+}
+
 /** The components in an order that places every joint's target before the component it moves; `validate` has refused joints that close a loop. */
 export function placementOrder(components: readonly Models.OCCT.DesignComponent[], moving: ReadonlyMap<string, Placing>): number[] {
     const order: number[] = [];

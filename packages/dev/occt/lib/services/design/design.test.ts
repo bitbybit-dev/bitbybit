@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, beforeAll, vi } from "vitest";
 import type { BitbybitOcctModule, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../../occ-helper";
@@ -362,7 +362,7 @@ describe("OCCT design documents", () => {
             expect(facesNamed(single!.faceNames, "single:end")).toHaveLength(0);
         });
 
-        it("should pull a flat face out and push one in, the moved face keeping its names for the features after it", () => {
+        it("should pull a flat face out and push one in, the faces keeping their names for the features after it", () => {
             // Arrange
             const pulled: Document = {
                 schemaVersion: 1,
@@ -370,7 +370,7 @@ describe("OCCT design documents", () => {
                     rectangle("square", 4, 2),
                     { id: "block", type: "extrude", profile: "square", distance: 3 },
                     { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: 2 },
-                    { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "pull", role: "side" }], count: 4 } },
+                    { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "block", role: "side" }], count: 4 } },
                 ],
             };
             const pushed: Document = {
@@ -390,6 +390,7 @@ describe("OCCT design documents", () => {
             expect(out.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok"]);
             expect(size(out.parts[0]!.shape)[2]).toBeCloseTo(5, 6);
             expect(facesNamed(out.parts[0]!.faceNames, "edge:bevel")).toHaveLength(4);
+            expect(out.parts.flatMap(part => part.faceNames.flat()).filter(name => name.startsWith("pull:") && name !== "pull:end")).toEqual([]);
             const body = inward.parts[0]!;
             expect(inward.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok"]);
             expect(volume(body.shape)).toBeCloseTo(16, 6);
@@ -398,7 +399,7 @@ describe("OCCT design documents", () => {
             expect(occt.analysis.signatures({ shape: body.shape }).faces[start[0]!]!.centre[2]).toBeCloseTo(1, 6);
         });
 
-        it("should refuse to push or pull a face that is not flat, or by nothing", () => {
+        it("should move a curved face as a flat one, naming it, and refuse to move a face by nothing", () => {
             // Arrange
             const round = (distance: number): Document => ({
                 schemaVersion: 1,
@@ -414,7 +415,15 @@ describe("OCCT design documents", () => {
             const still = occt.design.build({ document: { ...round(0), features: [...round(0).features.slice(0, 2), { id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "end" }, distance: 0 }] } });
 
             // Assert
-            expect(curved.report[2]!.messages[0]).toContain("a flat face is needed here");
+            const [rod] = curved.parts;
+            expect(curved.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok"]);
+            expect(curved.parts).toHaveLength(1);
+            if (rod === undefined) {
+                return;
+            }
+            expect(volume(rod.shape)).toBeCloseTo(27 * Math.PI, 4);
+            expect(facesNamed(rod.faceNames, "press:end")).toEqual(facesNamed(rod.faceNames, "rod:side"));
+            expect(facesNamed(rod.faceNames, "press:end")).toHaveLength(1);
             expect(still.report[2]!.messages[0]).toContain("the distance is not 0");
         });
 
@@ -803,10 +812,37 @@ describe("OCCT design documents", () => {
             ]);
             expect(built.structure!.parts.map(part => [part.id, part.name, part.colorRgba?.b, part.properties])).toEqual([["plate", "Plate", 0.6, { partNumber: "PL-40" }], ["lug", "Lug", undefined, undefined]]);
             expect(built.structure!.lengthUnit).toBe("mm");
-            expect(step).toMatch(/PRODUCT\('Bracket set'/);
-            expect(step).toMatch(/PRODUCT\('Plate'/);
+            expect(step).toMatch(/PRODUCT\('Bracket set','Bracket set'/);
+            expect(step).toMatch(/PRODUCT\('PL-40','Plate'/);
+            expect(step).toMatch(/PRODUCT\('Lug','Lug'/);
             expect(step).toMatch(/DESCRIPTIVE_REPRESENTATION_ITEM\('partNumber','PL-40'\)/);
             built.structure!.parts.forEach(part => part.shape.delete());
+        });
+
+        it("should measure a body's volume once, and give the same volume when a later build takes the body from the cache", () => {
+            // Arrange
+            const document: Document = {
+                schemaVersion: 1,
+                parameters: { height: 10, label: 1 },
+                features: [rectangle("base", 4, 2), { id: "block", type: "extrude", profile: "base", distance: "height" }],
+                parts: [{ id: "block", body: "block", properties: { mark: "M{label}" } }],
+            };
+            const measure = vi.spyOn(occt.shapes.solid, "getSolidVolume");
+            const first = occt.design.build({ document });
+            const measuredFirst = measure.mock.calls.length;
+
+            // Act
+            const again = occt.design.build({ document, parameters: { label: 2 } });
+            const taller = occt.design.build({ document, parameters: { height: 12 } });
+
+            // Assert
+            const measuredAll = measure.mock.calls.length;
+            measure.mockRestore();
+            expect(measuredFirst).toBe(1);
+            expect(measuredAll).toBe(2);
+            expect(again.parts[0]?.volume).toBeCloseTo(80, 6);
+            expect(again.parts[0]?.volume).toBe(first.parts[0]?.volume);
+            expect(taller.parts[0]?.volume).toBeCloseTo(96, 6);
         });
 
         it("should give a volume and a mass only to a part that is solid, and say so when a density asks for a mass", () => {

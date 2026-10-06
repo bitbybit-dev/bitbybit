@@ -6,6 +6,7 @@ import type * as Models from "../../api/models";
 import type { FaceNames } from "./names";
 import type { DesignValues } from "./values";
 import type { Rebinding } from "./hints";
+import type { DesignProgress } from "./progress";
 import type { BaseBitByBit } from "../../base";
 
 /** A body as the build holds it: its face names, the hash of the feature that made it as it is, and the parameters what made it read. */
@@ -42,7 +43,13 @@ export interface DesignTrace {
     untilFace?: number;
     format?: string;
     join?: string;
-    pull?: boolean;
+    lids?: DesignShellLid[];
+}
+
+/** A lid a shell cut out: the face of the inner copy under an open face, and how far it was swept out. */
+export interface DesignShellLid {
+    face: number;
+    direction: Inputs.Base.Vector3;
 }
 
 /** The bytes or text of a document's assets, by asset id, as a build is given them. */
@@ -96,6 +103,8 @@ export interface DesignRunContext {
     outcomes?: readonly Models.OCCT.DesignSuppliedOutcome<TopoDS_Shape>[] | undefined;
     /** Whether the result lists the sketches the run drew. */
     sketches?: boolean | undefined;
+    /** When given, counts each feature run so the build's progress can be reported. */
+    progress?: DesignProgress | undefined;
 }
 
 const BODY_KEY_PREFIX = "body:";

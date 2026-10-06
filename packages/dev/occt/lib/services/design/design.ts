@@ -8,12 +8,16 @@ import type { OCCTService } from "../../occ-service";
 import type { BaseBitByBit } from "../../base";
 import { DesignCache, release } from "./cache";
 import { hintedDocument } from "./hints";
-import { runAssembly } from "./assembly";
+import { featuresReached, runAssembly } from "./assembly";
+import { DesignProgress } from "./progress";
 import { assemblyIssues } from "./assembly-check";
 import { versionOf } from "./identity";
 import { libraryOf } from "./library";
 import { documentIssues } from "./document-check";
 import { probeRounding } from "./probe";
+import { clashesOf } from "./clashes";
+import type { DesignPicked } from "./reference-for";
+import { referenceFor } from "./reference-for";
 import { DesignProblem, isKernelTrap } from "./problems";
 import { runDesign, runFeatures } from "./runner";
 import { partStructureOf } from "./export-structure";
@@ -26,6 +30,18 @@ const CACHE_CAPACITY = 256;
 const MAX_PROBE_ATTEMPTS = 64;
 
 const PROBLEMS_LISTED = 5;
+
+function pickedOf(faces: number[] | undefined, edges: number[] | undefined): DesignPicked {
+    const [kind, indexes] = faces !== undefined && edges === undefined ? ["faces", faces] as const : edges !== undefined && faces === undefined ? ["edges", edges] as const : [undefined, []] as const;
+    if (kind === undefined) {
+        throw new InputError("Give the picked faces or the picked edges: one of the two, not both.", faces === undefined ? "faces" : "edges");
+    }
+    const wrong = indexes.find(index => !Number.isInteger(index) || index < 0);
+    if (indexes.length === 0 || wrong !== undefined) {
+        throw new InputError(`The picked ${kind} are indexes, whole numbers from 0, and at least one${wrong === undefined ? "" : `; ${wrong} is not one`}.`, kind);
+    }
+    return { kind, indexes };
+}
 
 /**
  * Builds parametric parts and assemblies kept as data: a part document holds typed parameters,
@@ -137,10 +153,10 @@ export class OCCTDesign {
         const document = inputs.document;
         if (document.kind === "assembly") {
             const { library } = libraryOf<Models.OCCT.DesignDocument>(inputs.documents);
-            return this.inputProblems(() => runAssembly(document, this.choiceOf(inputs), library, context));
+            return this.inputProblems(() => runAssembly(document, this.choiceOf(inputs), library, { ...context, progress: new DesignProgress(featuresReached(document, library)) }));
         }
         return this.inputProblems(() => {
-            const built = runDesign(document, this.choiceOf(inputs), context);
+            const built = runDesign(document, this.choiceOf(inputs), { ...context, progress: new DesignProgress(document.features.length) });
             return { ...built, structure: partStructureOf(document, built.parts) };
         });
     }
@@ -246,6 +262,39 @@ export class OCCTDesign {
     }
 
     /**
+     * Finds the placed parts of a design build that overlap, touch or come within `clearance` of each
+     * other, such as a sleeve that runs into the arm it slides on.
+     *
+     * The document is built as `build` builds it and every part placement is checked against every
+     * other in place. Two components a joint holds together are expected to touch, so a touch between
+     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
+     * where they were built.
+     * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
+     * @returns The clashing pairs, with their distance, the volume they share and their nearest points
+     * @group document
+     * @shortname design clashes
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const clashes = await bitbybit.occt.design.clashes({ document: assembly, documents: [bracket, pin], clearance: 0.2 });
+     * const overlaps = clashes.filter(clash => clash.volume > 0);
+     * ```
+     */
+    clashes(inputs: Inputs.OCCT.DesignClashesDto): Models.OCCT.DesignClash[] {
+        const resolved = resolveDto(Inputs.OCCT.DesignClashesDto, inputs) as Resolved.OCCT.DesignClashesDto;
+        if (!Number.isFinite(resolved.clearance) || resolved.clearance < 0) {
+            throw new InputError(`The clearance is a number from 0, not ${resolved.clearance}.`, "clearance");
+        }
+        const built = this.build({ document: resolved.document, documents: resolved.documents, configuration: resolved.configuration, parameters: resolved.parameters, assets: resolved.assets });
+        try {
+            return clashesOf(built, resolved.clearance, this.service());
+        } finally {
+            built.parts.forEach(part => release(part.shape));
+        }
+    }
+
+    /**
      * Probes a fillet or chamfer feature of a part document: the faces and edges its reference
      * finds, and the largest radius or distance that builds a valid solid.
      *
@@ -282,6 +331,45 @@ export class OCCTDesign {
         }
         const context = { occt: this.service(), occ: this.occ, base: this.base, cache: this.cache, assets: resolved.assets };
         return this.inputProblems(() => probeRounding(document, this.choiceOf(resolved), context, resolved.feature, resolved.maxAttempts));
+    }
+
+    /**
+     * Names faces or edges picked on a built body the way a document stores them: a reference by the
+     * names of the features that made them, narrowed by an axis filter when names alone do not single
+     * them out, with their count.
+     *
+     * With `nudge`, the default, the document is built again with each number the body depends on
+     * moved a little, at most eight of them; `lost` lists those after which the reference no longer
+     * finds elements like the picked ones. `refused` says why no reference names the picks.
+     * @param inputs - The document, the body, the picked faces or edges and the values to build it with
+     * @returns The reference or why there is none, the numbers it was checked against and those it lost its elements to
+     * @group document
+     * @shortname design reference for
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const found = await bitbybit.occt.design.referenceFor({
+     *     document: { schemaVersion: 1, parameters: { height: 10 }, features: [
+     *         { id: "base", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", length: 40 }, { type: "vLine", length: 20 }, { type: "hLine", length: -40 }, { type: "close" }] },
+     *         { id: "plate", type: "extrude", profile: "base", distance: "height" },
+     *     ] },
+     *     body: "plate",
+     *     faces: [1],
+     * });
+     * console.log(found.reference, found.lost);
+     * ```
+     */
+    referenceFor(inputs: Inputs.OCCT.DesignReferenceForDto): Models.OCCT.DesignReferenceFound {
+        const resolved = resolveDto(Inputs.OCCT.DesignReferenceForDto, inputs) as Resolved.OCCT.DesignReferenceForDto;
+        this.refuseProblems(resolved.document, undefined);
+        const document = resolved.document;
+        if (document.kind === "assembly") {
+            throw new InputError("Faces and edges are named in part documents; an assembly document has no bodies.", "document");
+        }
+        const picked = pickedOf(resolved.faces, resolved.edges);
+        const context = { occt: this.service(), occ: this.occ, base: this.base, cache: this.cache, assets: resolved.assets };
+        return this.inputProblems(() => referenceFor(document, this.choiceOf(resolved), context, resolved.body, picked, resolved.nudge));
     }
 
     private choiceOf(inputs: Pick<Inputs.OCCT.DesignBuildDto<unknown>, "configuration" | "parameters">): ParameterChoice {

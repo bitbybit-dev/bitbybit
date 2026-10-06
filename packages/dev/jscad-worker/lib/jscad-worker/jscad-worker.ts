@@ -8,12 +8,19 @@ const CACHE_THRESHOLD = 10000;
 let jscad: Jscad;
 let cacheHelper: CacheHelper;
 
+type Held = { call: DataInput; postMessage: (message: unknown) => void };
+
+let held: Held[] | undefined = [];
+
 export const initializationComplete = (jcd: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     jscad = new Jscad(jcd);
     if (!doNotPost) {
         postMessage("jscad-initialised");
     }
+    const waiting = held ?? [];
+    held = undefined;
+    waiting.forEach(({ call, postMessage: answer }) => onMessageInput(call, answer));
 };
 
 export type DataInput = {
@@ -26,6 +33,7 @@ export type DataInput = {
     }
     uid: string;
 };
+
 
 const GEOMETRY_REFERENCE = "jscad-geometry";
 
@@ -44,7 +52,9 @@ const cachedGeometry = (hash: string | number): unknown => {
 
 const isGeometry = (value: object): boolean => "polygons" in value || "sides" in value || "isClosed" in value;
 
-const UNREPORTABLE_FAILURE = "JSCAD computation failed, and the failure could not be reported.";
+const unreportableFailure = (functionName: unknown): string => typeof functionName === "string" && functionName !== ""
+    ? `JSCAD '${functionName}' failed, and the failure could not be reported.`
+    : "JSCAD computation failed, and the failure could not be reported.";
 
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const call = prepareKernelCall("JSCAD", jscadDtoRegistry, action.functionName, action.inputs, jscadDtoRules);
@@ -55,6 +65,10 @@ const executeStandardFunction = (action: DataInput["action"]): unknown => {
 };
 
 export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {
+    if (held !== undefined) {
+        held.push({ call: d, postMessage });
+        return;
+    }
     postMessage("busy");
 
     let result;
@@ -88,7 +102,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 stack: failure.stack,
             });
         } catch {
-            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+            postMessage({ uid: d?.uid, result: undefined, error: unreportableFailure(d?.action?.functionName), errorKind: "kernel" });
         }
     }
 };

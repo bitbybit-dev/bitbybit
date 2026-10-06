@@ -56,7 +56,7 @@ describe("design document check", () => {
 
         // Assert
         expect(paths).toEqual(["/features/2", "/features/3/id", "/features/4/id", "/features/5/type"]);
-        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, transform, pushPull, sweep, loft, shell, hole, boss, pocket, import, operation, script");
+        expect(message).toBe("\"melt\" is not a feature type: sketch, extrude, revolve, boolean, fillet, chamfer, linearPattern, polarPattern, mirror, transform, pushPull, removeFaces, sweep, loft, shell, hole, boss, pocket, import, operation, script");
     });
 
     it("should refuse numbers and points that cannot be read", () => {
@@ -459,7 +459,7 @@ describe("design document check", () => {
         const schema = JSON.parse(readFileSync(new URL("../../../schemas/design-document/experimental.json", import.meta.url), "utf8")) as { $defs: Record<string, { properties: Record<string, unknown> }> };
         const keysOf = (name: string): string[] => Object.keys(schema.$defs[name]!.properties).sort();
         const extensible = (keys: readonly string[]): string[] => [...keys, "extras", "extensions"].sort();
-        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", transform: "DesignTransformFeature", pushPull: "DesignPushPullFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
+        const featureNames: Record<string, string> = { sketch: "DesignSketchFeature", extrude: "DesignExtrudeFeature", revolve: "DesignRevolveFeature", boolean: "DesignBooleanFeature", fillet: "DesignFilletFeature", chamfer: "DesignChamferFeature", linearPattern: "DesignLinearPatternFeature", polarPattern: "DesignPolarPatternFeature", mirror: "DesignMirrorFeature", transform: "DesignTransformFeature", pushPull: "DesignPushPullFeature", removeFaces: "DesignRemoveFacesFeature", operation: "DesignOperationFeature", sweep: "DesignSweepFeature", loft: "DesignLoftFeature", shell: "DesignShellFeature", hole: "DesignHoleFeature", boss: "DesignBossFeature", pocket: "DesignPocketFeature", import: "DesignImportFeature", script: "DesignScriptFeature" };
 
         // Act
         const features = Object.entries(FEATURE_KEYS).map(([type, keys]) => [keysOf(featureNames[type]!), extensible([...DOCUMENT_KEYS.feature, ...keys])]);

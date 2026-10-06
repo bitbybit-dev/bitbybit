@@ -103,6 +103,15 @@ type Token =
 
 const SYMBOLS = ["<=", ">=", "==", "!=", "&&", "||", "+", "-", "*", "/", "^", "(", ")", ",", "<", ">", "!"];
 
+const NUMBER = /(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/y;
+
+const NAME = /[A-Za-z_][A-Za-z0-9_]*/y;
+
+function matchedAt(pattern: RegExp, text: string, at: number): string | undefined {
+    pattern.lastIndex = at;
+    return pattern.exec(text)?.[0];
+}
+
 function tokensOf(text: string): Token[] {
     const tokens: Token[] = [];
     let at = 0;
@@ -112,16 +121,16 @@ function tokensOf(text: string): Token[] {
             at++;
             continue;
         }
-        const number = /^(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?/.exec(text.slice(at));
-        if (number) {
-            tokens.push({ kind: "number", value: Number(number[0]), at });
-            at += number[0].length;
+        const number = matchedAt(NUMBER, text, at);
+        if (number !== undefined) {
+            tokens.push({ kind: "number", value: Number(number), at });
+            at += number.length;
             continue;
         }
-        const name = /^[A-Za-z_][A-Za-z0-9_]*/.exec(text.slice(at));
-        if (name) {
-            tokens.push({ kind: "name", value: name[0], at });
-            at += name[0].length;
+        const name = matchedAt(NAME, text, at);
+        if (name !== undefined) {
+            tokens.push({ kind: "name", value: name, at });
+            at += name.length;
             continue;
         }
         if (char === "'") {
@@ -146,8 +155,32 @@ function tokensOf(text: string): Token[] {
 
 const LEVELS: readonly (readonly BinaryOperator[])[] = [["||"], ["&&"], ["==", "!="], ["<", "<=", ">", ">="], ["+", "-"], ["*", "/"]];
 
-/** Reads an expression into a tree, or throws an `ExpressionError` saying where it stopped making sense. */
+const KEPT_TREES = 2048;
+
+const keptTrees = new Map<string, ExpressionNode>();
+
+/**
+ * Reads an expression into a tree, or throws an `ExpressionError` saying where it stopped making sense.
+ * The trees of the last texts read are kept, so a text read again is not parsed again; a tree is
+ * never changed after it is made.
+ */
 export function parseExpression(text: string): ExpressionNode {
+    const kept = keptTrees.get(text);
+    if (kept !== undefined) {
+        return kept;
+    }
+    const tree = parsedFresh(text);
+    if (keptTrees.size >= KEPT_TREES) {
+        const oldest = keptTrees.keys().next();
+        if (oldest.done !== true) {
+            keptTrees.delete(oldest.value);
+        }
+    }
+    keptTrees.set(text, tree);
+    return tree;
+}
+
+function parsedFresh(text: string): ExpressionNode {
     if (text.length > MAX_EXPRESSION_LENGTH) {
         throw new ExpressionError(`an expression is at most ${MAX_EXPRESSION_LENGTH} characters long: put parts of it in parameters`, MAX_EXPRESSION_LENGTH);
     }
@@ -157,7 +190,7 @@ export function parseExpression(text: string): ExpressionNode {
     const deeper = <T>(at: number, read: () => T): T => {
         depth++;
         if (depth > MAX_EXPRESSION_DEPTH) {
-            throw new ExpressionError(`parentheses, calls and signs nest at most ${MAX_EXPRESSION_DEPTH} deep`, at);
+            throw new ExpressionError(`parentheses, calls, signs and powers nest at most ${MAX_EXPRESSION_DEPTH} deep`, at);
         }
         const result = read();
         depth--;
@@ -206,9 +239,10 @@ export function parseExpression(text: string): ExpressionNode {
     };
     const power = (): ExpressionNode => {
         const base = primary();
+        const at = peek()?.at ?? text.length;
         if (isSymbol("^")) {
             next++;
-            return { kind: "binary", operator: "^", left: base, right: unary() };
+            return { kind: "binary", operator: "^", left: base, right: deeper(at, unary) };
         }
         return base;
     };

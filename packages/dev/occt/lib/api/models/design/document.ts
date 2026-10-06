@@ -363,15 +363,28 @@ export interface DesignTransformFeature extends DesignFeatureBase {
 }
 
 /**
- * Pushes or pulls one flat face of `body` along its normal by `distance`: out of the body when it is
- * above 0, into it when it is below. The moved face keeps its names and is also named `end`; the
- * faces it sweeps out are named `side`.
+ * Moves the face `face` names along its outward normal by `distance`: out of the body when it is above
+ * 0, into it when it is below. With a `count` the reference may name several faces, which all move.
+ * The faces around them stretch along their own surfaces to follow, as Press Pull and Move Face do in
+ * other CAD tools, so curved faces move as flat ones do. The moved faces keep their names and are also
+ * named `end`; every other face keeps its names.
  */
 export interface DesignPushPullFeature extends DesignFeatureBase {
     type: "pushPull";
     body: string;
     face: DesignFaceReference;
     distance: DesignNumber;
+}
+
+/**
+ * Removes the `count` faces `faces` names from `body` and closes the gap by extending the faces around
+ * them, as Delete Face does in other CAD tools: a hole's wall removed fills the hole, a round removed
+ * sharpens its edge back. Every face that stays keeps its names.
+ */
+export interface DesignRemoveFacesFeature extends DesignFeatureBase {
+    type: "removeFaces";
+    body: string;
+    faces: DesignFaceReference;
 }
 
 /**
@@ -533,6 +546,7 @@ export type DesignFeature =
     | DesignMirrorFeature
     | DesignTransformFeature
     | DesignPushPullFeature
+    | DesignRemoveFacesFeature
     | DesignSweepFeature
     | DesignLoftFeature
     | DesignShellFeature

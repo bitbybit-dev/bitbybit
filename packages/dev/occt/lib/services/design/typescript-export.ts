@@ -11,6 +11,8 @@ import type { ParameterChoice } from "./values";
 import { directionOf, isExpressionObject, numberOf, pointOf, templatePieces } from "./values";
 import { FULL_TURN } from "./constants";
 import { DELETE, FIRST_PRINTABLE, LAST_CONTROL, LINE_SEPARATOR, NEGLIGIBLE, PARAGRAPH_SEPARATOR, WRITTEN_DIGITS } from "./typescript-export.constants";
+import type { MathHelper } from "./typescript-math";
+import { DEGREES, MATH_HELPERS, mathHelperDeclarations } from "./typescript-math";
 
 const RESERVED = new Set([
     "break", "case", "catch", "class", "const", "continue", "debugger", "default", "delete", "do", "else", "enum", "export", "extends", "false", "finally",
@@ -20,69 +22,7 @@ const RESERVED = new Set([
     "eval", "arguments", "String", "Number",
 ]);
 
-const DEGREES = "Math.PI / 180";
-
 const CONSTANT_CODE = new Map<string, string>([["pi", "Math.PI"], ["tau", "(2 * Math.PI)"], ["e", "Math.E"], ["true", "1"], ["false", "0"]]);
-
-/** A function a document's expressions compute differently from JavaScript's `Math`. */
-export type MathHelper = "sin" | "cos" | "tan" | "asin" | "acos" | "round";
-
-const MATH_ORDER: readonly MathHelper[] = ["sin", "cos", "tan", "asin", "acos", "round"];
-
-const EXACT_TABLE = "[[0, 0], [30, 0.5], [45, Math.SQRT1_2], [60, Math.sqrt(3) / 2], [90, 1]]";
-
-const INVERSE_TABLE = "[[0, 0], [0.5, 30], [Math.SQRT1_2, 45], [Math.sqrt(3) / 2, 60], [1, 90]]";
-
-interface MathHelperCode {
-    name: string;
-    uses?: MathHelper;
-    code: (names: ReadonlyMap<MathHelper, string>) => string;
-}
-
-const MATH_HELPERS: Record<MathHelper, MathHelperCode> = {
-    sin: {
-        name: "sinDegrees",
-        code: () => [
-            "(degrees: number): number => {",
-            "    const angle = ((degrees % 360) + 360) % 360 + 0;",
-            "    const quarter = angle <= 90 ? angle : angle <= 180 ? 180 - angle : angle <= 270 ? angle - 180 : 360 - angle;",
-            `    const exact = ${EXACT_TABLE}.find(([at]) => at === quarter);`,
-            `    return exact === undefined ? Math.sin(angle * (${DEGREES})) : (angle > 180 ? -exact[1]! : exact[1]!) + 0;`,
-            "}",
-        ].join("\n"),
-    },
-    cos: { name: "cosDegrees", uses: "sin", code: names => `(degrees: number): number => ${names.get("sin")!}(degrees + 90)` },
-    tan: { name: "tanDegrees", uses: "cos", code: names => `(degrees: number): number => ${names.get("sin")!}(degrees) / ${names.get("cos")!}(degrees)` },
-    asin: {
-        name: "asinDegrees",
-        code: () => [
-            "(value: number): number => {",
-            `    const exact = ${INVERSE_TABLE}.find(([at]) => at === Math.abs(value));`,
-            `    return exact === undefined ? Math.asin(value) / (${DEGREES}) : (value < 0 ? -exact[1]! : exact[1]!) + 0;`,
-            "}",
-        ].join("\n"),
-    },
-    acos: {
-        name: "acosDegrees",
-        code: () => [
-            "(value: number): number => {",
-            `    const exact = ${INVERSE_TABLE}.find(([at]) => at === Math.abs(value));`,
-            `    return exact === undefined ? Math.acos(value) / (${DEGREES}) : value < 0 ? 90 + exact[1]! : 90 - exact[1]!;`,
-            "}",
-        ].join("\n"),
-    },
-    round: { name: "roundHalfAway", code: () => "(value: number): number => Math.sign(value) * Math.round(Math.abs(value)) + 0" },
-};
-
-/** The declarations of the maths helpers `names` gives names, in an order where each follows those it calls. */
-export function mathHelperDeclarations(names: ReadonlyMap<MathHelper, string>): string[] {
-    return [...names].sort(([a], [b]) => MATH_ORDER.indexOf(a) - MATH_ORDER.indexOf(b)).map(([kind, name]) => `const ${name} = ${MATH_HELPERS[kind].code(names)};`);
-}
-
-/** Whether a helper calls another, which must then be declared too. */
-export function mathHelperUses(kind: MathHelper): MathHelper | undefined {
-    return MATH_HELPERS[kind].uses;
-}
 
 /** TypeScript text and how tightly it binds, so it is wrapped in parentheses only where needed. */
 export type Code = { text: string; level: number };
@@ -446,6 +386,13 @@ class Exporter {
         this.line(`${body} = await occt.booleans.union({ shapes: [${body}, ...${list}] });`);
     }
 
+    private cutShell(feature: Models.OCCT.DesignShellFeature, trace: DesignTrace, body: string): void {
+        const inner = this.fresh(feature.id, "Inner");
+        const lids = (trace.lids ?? []).map(lid => `await occt.operations.extrude({ shape: await occt.shapes.face.getFace({ shape: ${inner}, index: ${lid.face} }), direction: ${this.numbers(lid.direction)} })`);
+        this.line(`const ${inner} = await occt.shapes.solid.fromClosedShell({ shape: await occt.operations.offsetAdv({ shape: ${body}, distance: ${this.negated(this.code(feature.thickness))}, tolerance: 1e-7, joinType: Bit.Inputs.OCCT.joinTypeEnum.intersection, removeIntEdges: false }) });`);
+        this.line(`${body} = await occt.booleans.difference({ shape: await occt.booleans.difference({ shape: ${body}, shapes: [${inner}], keepEdges: false }), shapes: [${lids.join(", ")}], keepEdges: false });`);
+    }
+
     private holes(feature: Models.OCCT.DesignHoleFeature, trace: DesignTrace): void {
         const body = this.variable(feature.body);
         const frame = trace.frame!;
@@ -541,11 +488,11 @@ class Exporter {
                 this.line(feature.keepOriginal === false ? `${body} = ${image};` : `${body} = await occt.booleans.union({ shapes: [${body}, ${image}] });`);
                 return;
             }
-            case "pushPull": {
+            case "pushPull":
+            case "removeFaces": {
                 const body = this.variable(feature.body);
-                const index = trace.sketchFace!;
-                const profile = `await occt.shapes.face.getFace({ shape: ${body}, index: ${index} })`;
-                this.line(`${body} = await occt.features.${trace.pull === true ? "boss" : "pocket"}({ shape: ${body}, profile: ${profile}, sketchFaceIndex: ${index}, direction: ${this.numbers(trace.frame!.normal)}, extent: Bit.Inputs.OCCT.featureExtentEnum.length, length: Math.abs(${this.code(feature.distance)}) });`);
+                const call = feature.type === "pushPull" ? `pushPullFaces({ shape: ${body}, indexes: ${this.numbers(trace.indexes ?? [])}, distance: ${this.code(feature.distance)} })` : `removeFaces({ shape: ${body}, indexes: ${this.numbers(trace.indexes ?? [])} })`;
+                this.line(`${body} = await occt.features.${call};`);
                 return;
             }
             case "transform": {
@@ -563,6 +510,9 @@ class Exporter {
             }
             case "shell": {
                 const body = this.variable(feature.body);
+                if (trace.join === "cut") {
+                    return this.cutShell(feature, trace, body);
+                }
                 const faces = trace.indexes!.map(index => `await occt.shapes.face.getFace({ shape: ${body}, index: ${index} })`).join(", ");
                 this.line(`${body} = await occt.operations.makeThickSolidByJoin({ shape: ${body}, shapes: [${faces}], offset: ${this.negated(this.code(feature.thickness))}, joinType: Bit.Inputs.OCCT.joinTypeEnum.${trace.join} });`);
                 return;

@@ -10,3 +10,4 @@ export * from "./rehydrate";
 export * from "./with-defaults";
 export * from "./hashing";
 export * from "./unknown-values";
+export * from "./kernel-steps";

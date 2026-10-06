@@ -15624,4 +15624,130 @@ export namespace OCCT {
          */
         maxAttempts?: number | undefined = 16;
     }
+
+    /**
+     * A part document with the configuration, parameter values and asset contents to build it with, a
+     * body of it and faces or edges picked on that body, for `design.referenceFor`, which names them.
+     */
+    export class DesignReferenceForDto {
+        constructor(document?: Models.OCCT.DesignDocument, body?: string, faces?: number[], edges?: number[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, nudge?: boolean) {
+            if (document !== undefined) { this.document = document; }
+            if (body !== undefined) { this.body = body; }
+            if (faces !== undefined) { this.faces = faces; }
+            if (edges !== undefined) { this.edges = edges; }
+            if (configuration !== undefined) { this.configuration = configuration; }
+            if (parameters !== undefined) { this.parameters = parameters; }
+            if (assets !== undefined) { this.assets = assets; }
+            if (nudge !== undefined) { this.nudge = nudge; }
+        }
+        /**
+         * The part document with its `parameters`, `features` and `parts`.
+         * @default undefined
+         */
+        document!: Models.OCCT.DesignDocument;
+        /**
+         * The body the elements were picked on, by the id of the feature that started it, as a part's
+         * `body` names it.
+         * @default undefined
+         */
+        body!: string;
+        /**
+         * The picked faces of the body, as indexes from 0; give these or `edges`.
+         * @default undefined
+         * @optional true
+         */
+        faces?: number[] | undefined;
+        /**
+         * The picked edges of the body, as indexes from 0; give these or `faces`.
+         * @default undefined
+         * @optional true
+         */
+        edges?: number[] | undefined;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         * @default undefined
+         * @optional true
+         */
+        configuration?: string | undefined;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         * @default undefined
+         * @optional true
+         */
+        parameters?: Record<string, number | string | boolean> | undefined;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them.
+         * @default undefined
+         * @optional true
+         */
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        /**
+         * Whether to check the reference by building again with each number parameter the body depends
+         * on moved a little, one at a time.
+         * @default true
+         */
+        nudge?: boolean | undefined = true;
+    }
+
+    /**
+     * A design document with the configuration, parameter values, asset contents and the documents an
+     * assembly places, and the clearance to keep, for `design.clashes`, which finds the placed parts that
+     * overlap or come too close.
+     */
+    export class DesignClashesDto {
+        constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, clearance?: number) {
+            if (document !== undefined) { this.document = document; }
+            if (documents !== undefined) { this.documents = documents; }
+            if (configuration !== undefined) { this.configuration = configuration; }
+            if (parameters !== undefined) { this.parameters = parameters; }
+            if (assets !== undefined) { this.assets = assets; }
+            if (clearance !== undefined) { this.clearance = clearance; }
+        }
+        /**
+         * The document: an assembly document with its `components`, or a part document whose parts are
+         * checked where they were built.
+         * @default undefined
+         */
+        document!: Models.OCCT.DesignDocument;
+        /**
+         * The documents an assembly's components place, each with the `id` they name it by.
+         * @default undefined
+         * @optional true
+         */
+        documents?: Models.OCCT.DesignDocument[] | undefined;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         * @default undefined
+         * @optional true
+         */
+        configuration?: string | undefined;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         * @default undefined
+         * @optional true
+         */
+        parameters?: Record<string, number | string | boolean> | undefined;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them.
+         * @default undefined
+         * @optional true
+         */
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        /**
+         * How close two placed parts may come before they clash; 0 reports only parts that touch or
+         * overlap.
+         * @default 0
+         * @minimum 0
+         * @maximum Infinity
+         * @step 0.1
+         */
+        clearance?: number | undefined = 0;
+    }
+
 }

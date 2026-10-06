@@ -20,15 +20,24 @@ each idea comes from, so the reasoning stays next to the code that implements it
   into indexes, and `hints.ts` writes hints and scores faces against them when names are lost.
 - `runner.ts` runs the features in order. `steps.ts` holds the sketches, the sweeps (extrude, revolve,
   sweep, loft), booleans, fillets, chamfers, patterns, mirrors and operations, `local-features.ts`
-  the features that change a body in place (shell, hole, boss, pocket) and import, and `helpers.ts`
+  the features that change a body in place (shell, hole, boss, pocket, push and pull, face removal)
+  and import, and `helpers.ts`
   what they share (face frames, profile names). A feature that fails takes what it makes or changes
   with it, a suppressed one that makes a body or a sketch makes none, and the features that read
   either are skipped. `parts.ts` then builds the parts: properties, material, appearance, volume and
   mass.
-- A shell tries arc joins, OCCT's default, then intersection joins, and fails when neither builds a
-  valid solid with an inner wall: OCCT builds an invalid shell of some filleted bodies with arc
-  joins, refuses others, and returns the body itself, unhollowed and "valid", for a thickness well
-  past what the body allows.
+- A shell tries arc joins, OCCT's default, then intersection joins: OCCT builds an invalid shell of
+  some filleted bodies with arc joins, refuses others, and returns the body itself, unhollowed and
+  "valid", for a thickness well past what the body allows. When neither builds a valid solid with an
+  inner wall, an inward shell whose open faces are flat is cut instead: the body less its inward
+  offset (intersection joins), then a lid over each open face, the inner copy's face under it swept
+  out through the wall. This hollows a body rounded all round, which OCCT's own shell cannot next to
+  tangent rounds; it fails too when the offset is not one closed solid, as when the thickness
+  reaches a round's radius, and the problem then lists why each way failed.
+- A push or pull moves faces by OCCT's face offset (`features.pushPullFacesWithHistory`): the faces
+  around them stretch along their own surfaces, so a curved face moves as a flat one does, and every
+  face keeps its names. A face removal (`features.removeFacesWithHistory`) closes the gap from the
+  faces around it, and the faces that stay keep theirs.
 - An import reads the bytes the build is given for its asset (`assets` on `design.build`), checks
   them against the SHA-256 the asset must record (`digest.ts`), and keys the cache by their digest
   and the asset's entry, so changed data or a changed entry rebuilds. Since the hash is required,
@@ -37,7 +46,8 @@ each idea comes from, so the reasoning stays next to the code that implements it
   fetches nothing. For OCCT's BREP, `mediaType` records the format version
   (`model/vnd.occt.brep; version=3`).
 - `typescript-export.ts` is `toTypeScript`: it builds the document once, recording what each feature
-  resolved (face frames, face and edge indexes, the import format, the shell's joins), and writes the
+  resolved (face frames, face and edge indexes, the import format, the shell's joins or its cut
+  lids), and writes the
   parameters as constants, expressions as TypeScript over them, and each feature as this package's
   calls, with the resolved faces and edges as indexes.
 - `probe.ts` is `probeFillet`, for whoever writes a fillet or chamfer without trial builds: it runs
@@ -323,8 +333,9 @@ position (`{ "id": "left", "x": -10, "y": 0 }`), and an imported face by its ind
 is pinned by its SHA-256. A command or a position without an id has no name a reference can use:
 inserting a command or a position would shift every later one, and a reference by position would go
 on resolving, with the right count, to a different face. Ids stay optional, so a quick sketch nothing
-refers to needs none. The count is required on edge references and on the faces a shell opens; an
-appearance may leave it out.
+refers to needs none. The count is required on edge references, on the faces a shell opens and on
+the faces a removal takes; a push or pull without one moves exactly one face, and an appearance may
+leave it out.
 
 **Hints, for when names are lost.** A face reference may carry a `hint`, which tools write
 (`design.withHints`, from a build with given values) and the version leaves out: the body's box,

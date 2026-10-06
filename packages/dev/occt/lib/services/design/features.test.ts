@@ -251,7 +251,7 @@ describe("OCCT design features beyond the first slice", () => {
             expect(volume(hollow.shape)).toBeLessThan(40 * 20 * 10 - 38 * 18 * 9);
         });
 
-        it("should refuse a shell OCCT builds invalid, cannot build, or leaves unhollowed with either join, naming why for each", () => {
+        it("should hollow a block rounded all round, which OCCT's own shell leaves invalid, by cutting its inward offset and a lid out", () => {
             // Arrange
             const allRound: Document = {
                 schemaVersion: 1,
@@ -261,6 +261,49 @@ describe("OCCT design features beyond the first slice", () => {
                     { id: "hollow", type: "shell", body: "block", thickness: 0.5, open: { of: "block", role: "face", filter: { select: "facing", direction: [0, 1, 0] }, count: 1 } },
                 ],
             };
+            const solid: Document = { ...allRound, features: allRound.features.slice(0, 2) };
+
+            // Act
+            const built = occt.design.build({ document: allRound });
+            const whole = occt.design.build({ document: solid });
+
+            // Assert
+            const [part] = built.parts;
+            const [solidPart] = whole.parts;
+            expect(built.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok"]);
+            expect(part !== undefined && solidPart !== undefined).toBe(true);
+            if (part === undefined || solidPart === undefined) {
+                return;
+            }
+            expect(occt.shapeFix.isValid({ shape: part.shape })).toBe(true);
+            expect(volume(solidPart.shape)).toBeCloseTo(3958.419, 2);
+            expect(volume(part.shape)).toBeCloseTo(3958.419 - 3239.081 - 18 * 18 * 0.5, 2);
+            expect(facesNamed(part, "hollow:inner").length).toBeGreaterThan(20);
+            expect(facesNamed(part, "hollow:rim")).toHaveLength(4);
+            expect(facesNamed(part, "hollow:rim").filter(face => part.faceNames[face]?.includes("hollow:inner"))).toEqual([]);
+        });
+
+        it("should not cut a shell open through a curved face, and say so", () => {
+            // Arrange
+            const roundOpen: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } },
+                    { id: "round", type: "operation", operation: "occt.fillets.filletEdges", params: { shape: { body: "block" }, radius: 1 }, body: "block" },
+                    { id: "hollow", type: "shell", body: "block", thickness: 0.5, open: { of: "round", role: "face", filter: { select: "nearest", point: [10, 10, 0] }, count: 1 } },
+                ],
+            };
+
+            // Act
+            const report = occt.design.build({ document: roundOpen }).report[2];
+
+            // Assert
+            expect(report?.status).toBe("failed");
+            expect(report?.messages[0]).toMatch(/by cutting, an open face is not flat or has no inner face below it\)$/);
+        });
+
+        it("should refuse a shell OCCT cannot build or leaves unhollowed with either join and by cutting, naming why for each", () => {
+            // Arrange
             const dented = plate(
                 rectangle("dent", 4, 4, { face: { of: "plate", role: "end" }, origin: [20, 10, 10] }, [-2, -2]),
                 { id: "dip", type: "pocket", profile: "dent", body: "plate", distance: 4 },
@@ -269,14 +312,12 @@ describe("OCCT design features beyond the first slice", () => {
             const tooThick = plate({ id: "hollow", type: "shell", body: "plate", thickness: 25, open: { of: "plate", role: "end", count: 1 } });
 
             // Act
-            const invalid = occt.design.build({ document: allRound }).report[2]!;
             const refused = occt.design.build({ document: dented }).report[4]!;
             const unhollowed = occt.design.build({ document: tooThick }).report[2]!;
 
             // Assert
-            expect(invalid.messages).toEqual(["/features/2/thickness: the shell could not be built (with arc joins the solid is not valid; with intersection joins nothing was hollowed)"]);
-            expect(refused.messages[0]).toMatch(/^\/features\/4\/thickness: the shell could not be built \(with arc joins: .+; with intersection joins: .+\)$/);
-            expect(unhollowed.messages).toEqual(["/features/2/thickness: the shell could not be built (with arc joins nothing was hollowed; with intersection joins nothing was hollowed)"]);
+            expect(refused.messages[0]).toMatch(/^\/features\/4\/thickness: the shell could not be built \(with arc joins: .+; with intersection joins: .+; by cutting.+\)$/);
+            expect(unhollowed.messages).toEqual(["/features/2/thickness: the shell could not be built (with arc joins nothing was hollowed; with intersection joins nothing was hollowed; by cutting, the inward offset is not one closed solid)"]);
         });
 
         it("should drill holes at positions on a face, through by default, naming each hole's walls", () => {
@@ -299,6 +340,30 @@ describe("OCCT design features beyond the first slice", () => {
             expect(facesNamed(countersunk, "holes:wall:sink").length).toBeGreaterThanOrEqual(2);
             facesNamed(countersunk, "holes:wall:sink").forEach(face => expect(centreOf(countersunk, face).slice(0, 2)).toEqual([expect.closeTo(10, 6), expect.closeTo(14, 6)]));
             expect(volume(countersunk.shape)).toBeLessThan(40 * 20 * 10 - Math.PI * 4 * 5 + 1e-6);
+        });
+
+        it("should remove a hole's wall and fill the hole, the faces that stay keeping their names, and ask how many faces it removes", () => {
+            // Arrange
+            const drilled: Models.OCCT.DesignHoleFeature = { id: "holes", type: "hole", body: "plate", on: { of: "plate", role: "end" }, origin: [20, 10, 10], at: [{ id: "left", x: -10, y: 0 }, { id: "right", x: 10, y: 0 }], diameter: 4 };
+            const filled = plate(drilled, { id: "fill", type: "removeFaces", body: "plate", faces: { of: "holes", role: "wall", from: "left", count: 1 } });
+            const uncounted = plate(drilled, { id: "fill", type: "removeFaces", body: "plate", faces: { of: "holes", role: "wall", from: "left" } });
+
+            // Act
+            const built = occt.design.build({ document: filled });
+            const check = occt.design.validate({ document: uncounted });
+
+            // Assert
+            const [part] = built.parts;
+            expect(built.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok"]);
+            expect(built.parts).toHaveLength(1);
+            if (part === undefined) {
+                return;
+            }
+            expect(volume(part.shape)).toBeCloseTo(40 * 20 * 10 - Math.PI * 4 * 10, 4);
+            expect(facesNamed(part, "holes:wall:left")).toEqual([]);
+            expect(facesNamed(part, "holes:wall:right")).toHaveLength(1);
+            expect(facesNamed(part, "plate:end")).toHaveLength(1);
+            expect(check.map(issue => issue.path)).toEqual(["/features/3/faces/count"]);
         });
 
         it("should raise a boss from a sketch on a face and sink pockets a distance, until a face or through", () => {
@@ -400,6 +465,19 @@ describe("OCCT design features beyond the first slice", () => {
             expect(statuses(told)).toEqual(["ok"]);
             expect(statuses(media)).toEqual(["ok"]);
             expect(statuses(brepMedia)).toEqual(["ok"]);
+        });
+
+        it("should read binary BREP given as text as its bytes, and refuse one that holds no shape", () => {
+            // Arrange
+            const garbage = "not a binary BREP";
+            const document: Document = { schemaVersion: 1, assets: [{ id: "file", uri: "a.bin", sha256: sha256(new TextEncoder().encode(garbage)) }], features: [{ id: "part", type: "import", asset: "file", format: "brep-binary" }] };
+
+            // Act
+            const report = occt.design.build({ document, assets: { file: garbage } }).report[0];
+
+            // Assert
+            expect(report?.status).toBe("failed");
+            expect(report?.messages).toHaveLength(1);
         });
 
         it("should rebuild an import when its data changes and reuse it when it does not", () => {

@@ -162,7 +162,7 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
         }
         const material = materialId === undefined ? undefined : builtMaterials.get(materialId);
         const appearance = appearanceOf(part, path, materials[materialIndex], pointer("/materials", materialIndex), body, run, issues);
-        const volume = isSolid(body.shape, run) ? run.occt.shapes.solid.getSolidVolume({ shape: body.shape }) : undefined;
+        const volume = volumeOf(body.shape, run);
         if (volume === undefined && material?.density !== undefined) {
             issues.push({ path: pointer(path, "body"), message: `the body "${part.body}" is not a solid, so the part has no volume or mass` });
         }
@@ -205,6 +205,17 @@ export function buildParts(document: Models.OCCT.DesignPartDocument, run: Design
         throw error;
     }
     return built;
+}
+
+const volumes = new WeakMap<TopoDS_Shape, number | null>();
+
+function volumeOf(shape: TopoDS_Shape, run: DesignRun): number | undefined {
+    let volume = volumes.get(shape);
+    if (volume === undefined) {
+        volume = isSolid(shape, run) ? run.occt.shapes.solid.getSolidVolume({ shape }) : null;
+        volumes.set(shape, volume);
+    }
+    return volume ?? undefined;
 }
 
 function isSolid(shape: TopoDS_Shape, run: DesignRun): boolean {

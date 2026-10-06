@@ -12,8 +12,9 @@ import type * as Models from "../../api/models";
 import { InputError } from "@bitbybit-dev/base";
 import { sha256 } from "./digest";
 import { evaluateExpression, parseExpression } from "./expressions";
-import type { MathHelper } from "./typescript-export";
-import { expressionCode, mathHelperDeclarations, mathHelperUses } from "./typescript-export";
+import { expressionCode } from "./typescript-export";
+import type { MathHelper } from "./typescript-math";
+import { mathHelperDeclarations, mathHelperUses } from "./typescript-math";
 
 type Document = Models.OCCT.DesignPartDocument;
 type Drawn = { shape: TopoDS_Shape; properties: Record<string, unknown> };
@@ -273,9 +274,9 @@ describe("design documents as TypeScript", () => {
             expect(code).toContain("const assets: Record<string, string | Uint8Array | ArrayBuffer> = {};");
         });
 
-        it("should write a push or pull as a boss or pocket of the face itself, so the program builds the same volume", async () => {
+        it("should write face moves, face removals and a shell OCCT cannot hollow as the calls the build made, so the program builds the same volumes", async () => {
             // Arrange
-            const document: Document = {
+            const moved: Document = {
                 schemaVersion: 1,
                 parameters: { lift: 2 },
                 features: [
@@ -283,18 +284,47 @@ describe("design documents as TypeScript", () => {
                     { id: "block", type: "extrude", profile: "base", distance: 3 },
                     { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: "lift" },
                     { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1 },
+                    { id: "rod", type: "operation", operation: "occt.shapes.solid.createCylinder", params: { radius: 2, height: 3, center: [0, 0, 20], direction: [0, 0, 1] } },
+                    { id: "thicker", type: "pushPull", body: "rod", face: { of: "rod", role: "face", filter: { select: "ofType", type: "cylinder" }, count: 1 }, distance: 1 },
+                ],
+            };
+            const filled: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("base", 40, 20, { plane: "XY" }),
+                    { id: "plate", type: "extrude", profile: "base", distance: 10 },
+                    { id: "holes", type: "hole", body: "plate", on: { of: "plate", role: "end" }, origin: [20, 10, 10], at: [{ id: "left", x: -10, y: 0 }, { id: "right", x: 10, y: 0 }], diameter: 4 },
+                    { id: "fill", type: "removeFaces", body: "plate", faces: { of: "holes", role: "wall", from: "left", count: 1 } },
+                ],
+            };
+            const hollowed: Document = {
+                schemaVersion: 1,
+                features: [
+                    { id: "block", type: "operation", operation: "occt.shapes.solid.createBox", params: { width: 20, length: 20, height: 10, center: [0, 5, 0] } },
+                    { id: "round", type: "operation", operation: "occt.fillets.filletEdges", params: { shape: { body: "block" }, radius: 1 }, body: "block" },
+                    { id: "hollow", type: "shell", body: "block", thickness: 0.5, open: { of: "block", role: "face", filter: { select: "facing", direction: [0, 1, 0] }, count: 1 } },
                 ],
             };
 
             // Act
-            const built = occt.design.build({ document });
-            const code = occt.design.toTypeScript({ document });
-            const parts = await execute(code, {});
+            const results = await Promise.all([moved, filled, hollowed].map(async document => {
+                const built = occt.design.build({ document });
+                const code = occt.design.toTypeScript({ document });
+                return { built, code, parts: await execute(code, {}) };
+            }));
 
             // Assert
-            expect(built.report.filter(entry => entry.status !== "ok")).toEqual([]);
-            expect(volume(parts[0]!.shape)).toBeCloseTo(volume(built.parts[0]!.shape), 6);
-            expect(volume(built.parts[0]!.shape)).toBeCloseTo(32, 6);
+            const [move, fill, hollow] = results;
+            results.forEach(({ built, parts }) => {
+                expect(built.report.filter(entry => entry.status !== "ok")).toEqual([]);
+                expect(parts.map(part => volume(part.shape))).toEqual(built.parts.map(part => expect.closeTo(volume(part.shape), 6)));
+            });
+            expect(move?.built.parts.map(part => volume(part.shape))).toEqual([expect.closeTo(32, 6), expect.closeTo(27 * Math.PI, 6)]);
+            expect(move?.code).toContain("occt.features.pushPullFaces");
+            expect(fill?.code).toContain("occt.features.removeFaces");
+            expect(fill?.built.parts.map(part => volume(part.shape))).toEqual([expect.closeTo(8000 - 40 * Math.PI, 4)]);
+            expect(hollow?.code).toContain("occt.operations.offsetAdv");
+            expect(hollow?.code).not.toContain("makeThickSolidByJoin");
         });
 
         it("should write a transform as turns about its pivot and a shift, so the program puts the body where the build does", async () => {

@@ -2231,6 +2231,22 @@ interface DesignCircleCommand {
 }
 
 // @public
+interface DesignClash {
+    // (undocumented)
+    components: [string, string];
+    // (undocumented)
+    distance: number;
+    // (undocumented)
+    joined: boolean;
+    // (undocumented)
+    pointA: Base.Point3;
+    // (undocumented)
+    pointB: Base.Point3;
+    // (undocumented)
+    volume: number;
+}
+
+// @public
 interface DesignComponent extends DesignExtensible {
     // (undocumented)
     at?: DesignFrame;
@@ -2403,7 +2419,7 @@ interface DesignFaceReference {
 }
 
 // @public
-type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignTransformFeature | DesignPushPullFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
+type DesignFeature = DesignSketchFeature | DesignExtrudeFeature | DesignRevolveFeature | DesignBooleanFeature | DesignFilletFeature | DesignChamferFeature | DesignLinearPatternFeature | DesignPolarPatternFeature | DesignMirrorFeature | DesignTransformFeature | DesignPushPullFeature | DesignRemoveFacesFeature | DesignSweepFeature | DesignLoftFeature | DesignShellFeature | DesignHoleFeature | DesignBossFeature | DesignPocketFeature | DesignImportFeature | DesignOperationFeature | DesignScriptFeature;
 
 // @public
 interface DesignFeatureBase extends DesignExtensible {
@@ -2859,6 +2875,18 @@ interface DesignPushPullFeature extends DesignFeatureBase {
 }
 
 // @public
+interface DesignReferenceFound {
+    // (undocumented)
+    lost: string[];
+    // (undocumented)
+    nudged: string[];
+    // (undocumented)
+    reference?: DesignFaceReference | DesignEdgeReference;
+    // (undocumented)
+    refused?: string;
+}
+
+// @public
 interface DesignReferenceHint {
     // (undocumented)
     box: DesignHintBox;
@@ -2866,6 +2894,16 @@ interface DesignReferenceHint {
     faces: DesignFaceHint[];
     // (undocumented)
     v: 1;
+}
+
+// @public
+interface DesignRemoveFacesFeature extends DesignFeatureBase {
+    // (undocumented)
+    body: string;
+    // (undocumented)
+    faces: DesignFaceReference;
+    // (undocumented)
+    type: "removeFaces";
 }
 
 // @public
@@ -8102,6 +8140,15 @@ namespace OCCT {
         rebind?: designRebindEnum | undefined;
         sketches?: boolean | undefined;
     }
+    class DesignClashesDto {
+        constructor(document?: Models_2.OCCT.DesignDocument, documents?: Models_2.OCCT.DesignDocument[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, clearance?: number);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        clearance?: number | undefined;
+        configuration?: string | undefined;
+        document: Models_2.OCCT.DesignDocument;
+        documents?: Models_2.OCCT.DesignDocument[] | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
+    }
     class DesignDocumentDto {
         constructor(document?: Models_2.OCCT.DesignDocument, documents?: Models_2.OCCT.DesignDocument[]);
         document: Models_2.OCCT.DesignDocument;
@@ -8121,6 +8168,17 @@ namespace OCCT {
         never = "never",
         // (undocumented)
         report = "report"
+    }
+    class DesignReferenceForDto {
+        constructor(document?: Models_2.OCCT.DesignDocument, body?: string, faces?: number[], edges?: number[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, nudge?: boolean);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        body: string;
+        configuration?: string | undefined;
+        document: Models_2.OCCT.DesignDocument;
+        edges?: number[] | undefined;
+        faces?: number[] | undefined;
+        nudge?: boolean | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
     }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
@@ -10746,6 +10804,7 @@ declare namespace OCCT_2 {
         DesignMirrorFeature,
         DesignTransformFeature,
         DesignPushPullFeature,
+        DesignRemoveFacesFeature,
         DesignSweepFeature,
         DesignLoftFeature,
         DesignShellFeature,
@@ -10796,7 +10855,9 @@ declare namespace OCCT_2 {
         DesignBuildResult,
         DesignBuiltSketch,
         DesignProbeAttempt,
-        DesignFilletProbe
+        DesignFilletProbe,
+        DesignReferenceFound,
+        DesignClash
     }
 }
 
@@ -10985,9 +11046,13 @@ namespace OCCT_3 {
     // (undocumented)
     type DesignBuildDto<T> = Inputs_2.OCCT.DesignBuildDto<T>;
     // (undocumented)
+    type DesignClashesDto = WithDefaults<Inputs_2.OCCT.DesignClashesDto, "clearance">;
+    // (undocumented)
     type DesignDocumentDto = Inputs_2.OCCT.DesignDocumentDto;
     // (undocumented)
     type DesignProbeFilletDto = WithDefaults<Inputs_2.OCCT.DesignProbeFilletDto, "maxAttempts">;
+    // (undocumented)
+    type DesignReferenceForDto = WithDefaults<Inputs_2.OCCT.DesignReferenceForDto, "nudge">;
     // (undocumented)
     type DifferenceDto<T> = WithDefaults<Inputs_2.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)

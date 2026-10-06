@@ -4,6 +4,7 @@ import * as Inputs from "../../api/inputs";
 import { resolveDto } from "@bitbybit-dev/base";
 import type * as Resolved from "../../api/resolved-inputs";
 import type * as Models from "../../api/models";
+import type { KernelHistory } from "../base/history";
 import { historiesFromKernel } from "../base/history";
 import { numbersOfFrames } from "../base/frames";
 import { checkedChoice, checkedDirection, checkedFrame, checkedFrames, checkedIndexes, checkedNumber, checkedNumberList, checkedPoint, checkedShape, checkedWhole, checkedWithin } from "../base/input-checks";
@@ -23,6 +24,11 @@ type DrillArguments = [shape: TopoDS_Shape, frames: number[], diameter: number, 
 
 type PrismArguments = [shape: TopoDS_Shape, profile: TopoDS_Shape, sketchFace: number, direction: Inputs.Base.Vector3,
     length: number, untilFace: number, throughAll: boolean];
+
+interface KernelShapeWithHistories {
+    shape: TopoDS_Shape;
+    histories: KernelHistory[];
+}
 
 /**
  * Local modelling features on solids: holes drilled at frames, bosses and pockets from a profile
@@ -257,6 +263,28 @@ export class OCCTFeatures {
     }
 
     /**
+     * Removes faces as `removeFaces` does, and reports one history, the shape's: a removed face's
+     * `faces` entry is empty, and each face that stays lists the face it became, grown over the gap.
+     * @param inputs - The shape and the faces to remove
+     * @returns The shape without the faces, and the history of the shape as the one entry of `histories`
+     * @group faces
+     * @shortname remove faces with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const walls = await bitbybit.occt.select.faces.ofType({ shape: drilled, type: Bit.Inputs.OCCT.surfaceTypeEnum.cylinder });
+     * const { shape, histories: [history] } = await bitbybit.occt.features.removeFacesWithHistory({ shape: drilled, indexes: walls });
+     * const topNow = history.faces[0];
+     * ```
+     */
+    removeFacesWithHistory(inputs: Inputs.OCCT.RemoveFacesDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.RemoveFacesDto, inputs) as Resolved.OCCT.RemoveFacesDto<TopoDS_Shape>;
+        const shape = checkedShape(resolved.shape);
+        const indexes = checkedIndexes(resolved.indexes, "indexes");
+        return this.withHistories(this.occ.RemoveFacesWithHistory(shape, indexes));
+    }
+
+    /**
      * Moves faces of a shape along their outward normals and stretches the faces around them to
      * follow, such as raising the top of a block.
      *
@@ -275,16 +303,27 @@ export class OCCTFeatures {
      */
     pushPullFaces(inputs: Inputs.OCCT.PushPullFacesDto<TopoDS_Shape>): TopoDS_Shape {
         const resolved = resolveDto(Inputs.OCCT.PushPullFacesDto, inputs) as Resolved.OCCT.PushPullFacesDto<TopoDS_Shape>;
-        const shape = checkedShape(resolved.shape);
-        const indexes = checkedIndexes(resolved.indexes, "indexes");
-        let distances: number[];
-        if (resolved.distances === undefined) {
-            const distance = checkedWithin(resolved.distance, "distance", {});
-            distances = indexes.map(() => distance);
-        } else {
-            distances = checkedNumberList(resolved.distances, "distances");
-        }
-        return this.actual(this.occ.PushPullFaces(shape, indexes, distances));
+        return this.actual(this.occ.PushPullFaces(...this.pushPullArguments(resolved)));
+    }
+
+    /**
+     * Moves faces as `pushPullFaces` does, and reports one history, the shape's: each face, edge and
+     * vertex lists what it became, so a moved face is followed to where it went, curved ones too.
+     * @param inputs - The shape, the faces and how far to move them
+     * @returns The shape with the faces moved, and the history of the shape as the one entry of `histories`
+     * @group faces
+     * @shortname push pull faces with history
+     * @drawable false
+     * @example
+     * ```typescript
+     * const [wall] = await bitbybit.occt.select.faces.ofType({ shape: rod, type: Bit.Inputs.OCCT.surfaceTypeEnum.cylinder });
+     * const { shape, histories: [history] } = await bitbybit.occt.features.pushPullFacesWithHistory({ shape: rod, indexes: [wall], distance: 1 });
+     * const [movedWall] = history.faces[wall];
+     * ```
+     */
+    pushPullFacesWithHistory(inputs: Inputs.OCCT.PushPullFacesDto<TopoDS_Shape>): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        const resolved = resolveDto(Inputs.OCCT.PushPullFacesDto, inputs) as Resolved.OCCT.PushPullFacesDto<TopoDS_Shape>;
+        return this.withHistories(this.occ.PushPullFacesWithHistory(...this.pushPullArguments(resolved)));
     }
 
     /**
@@ -528,13 +567,26 @@ export class OCCTFeatures {
         return this.linearForm(resolved, false);
     }
 
+    private pushPullArguments(inputs: Resolved.OCCT.PushPullFacesDto<TopoDS_Shape>): [TopoDS_Shape, number[], number[]] {
+        const shape = checkedShape(inputs.shape);
+        const indexes = checkedIndexes(inputs.indexes, "indexes");
+        if (inputs.distances !== undefined) {
+            return [shape, indexes, checkedNumberList(inputs.distances, "distances")];
+        }
+        const distance = checkedWithin(inputs.distance, "distance", {});
+        return [shape, indexes, indexes.map(() => distance)];
+    }
+
+    private withHistories(made: KernelShapeWithHistories): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
+        return { shape: this.actual(made.shape), histories: historiesFromKernel(made.histories) };
+    }
+
     private drilled(inputs: Resolved.OCCT.HolesDto<TopoDS_Shape>, mouth: () => [number, number, number, number]): TopoDS_Shape {
         return this.actual(this.occ.DrillHoles(...this.drillArguments(inputs, mouth)));
     }
 
     private drilledWithHistory(inputs: Resolved.OCCT.HolesDto<TopoDS_Shape>, mouth: () => [number, number, number, number]): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
-        const made = this.occ.DrillHolesWithHistory(...this.drillArguments(inputs, mouth));
-        return { shape: this.actual(made.shape), histories: historiesFromKernel(made.histories) };
+        return this.withHistories(this.occ.DrillHolesWithHistory(...this.drillArguments(inputs, mouth)));
     }
 
     private drillArguments(inputs: Resolved.OCCT.HolesDto<TopoDS_Shape>, mouth: () => [number, number, number, number]): DrillArguments {
@@ -555,8 +607,7 @@ export class OCCTFeatures {
 
     private prismWithHistory(inputs: Resolved.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face>, isAdding: boolean): Models.OCCT.ShapeWithHistories<TopoDS_Shape> {
         const args = this.prismArguments(inputs);
-        const made = isAdding ? this.occ.FeatureBossWithHistory(...args) : this.occ.FeaturePocketWithHistory(...args);
-        return { shape: this.actual(made.shape), histories: historiesFromKernel(made.histories) };
+        return this.withHistories(isAdding ? this.occ.FeatureBossWithHistory(...args) : this.occ.FeaturePocketWithHistory(...args));
     }
 
     private prismArguments(inputs: Resolved.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face>): PrismArguments {

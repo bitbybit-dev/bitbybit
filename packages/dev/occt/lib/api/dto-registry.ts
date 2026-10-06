@@ -86,8 +86,10 @@ const OCCT_DataOnGeometryesAtParamDto: DtoConstraints = { shapes: k.required(k.l
 const OCCT_DataOnUVDto: DtoConstraints = { shape: k.required(k.opaque), paramU: k.between(k.number, { min: 0, max: 1 }), paramV: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DataOnUVsDto: DtoConstraints = { shape: k.required(k.opaque), paramsUV: k.list(k.opaque) };
 const OCCT_DesignBuildDto: DtoConstraints = { document: k.required(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, documents: k.list(k.opaque), rebind: k.oneOf(["never", "report"]), outcomes: k.list(k.opaque), sketches: k.boolean };
+const OCCT_DesignClashesDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque), configuration: k.string, parameters: k.opaque, assets: k.opaque, clearance: k.between(k.number, { min: 0 }) };
 const OCCT_DesignDocumentDto: DtoConstraints = { document: k.required(k.opaque), documents: k.list(k.opaque) };
 const OCCT_DesignProbeFilletDto: DtoConstraints = { document: k.required(k.opaque), feature: k.required(k.string), configuration: k.string, parameters: k.opaque, assets: k.opaque, maxAttempts: k.between(k.number, { min: 1, max: 64 }) };
+const OCCT_DesignReferenceForDto: DtoConstraints = { document: k.required(k.opaque), body: k.required(k.string), faces: k.list(k.number), edges: k.list(k.number), configuration: k.string, parameters: k.opaque, assets: k.opaque, nudge: k.boolean };
 const OCCT_DifferenceDto: DtoConstraints = { shape: k.required(k.opaque), shapes: k.required(k.list(k.opaque)), keepEdges: k.boolean, strategy: k.oneOf(["oneAfterAnother", "inGroups", "allAtOnce"]) };
 const OCCT_DihedralAngleDto: DtoConstraints = { shape: k.required(k.opaque), index: k.between(k.number, { min: 0 }), param: k.between(k.number, { min: 0, max: 1 }) };
 const OCCT_DivideDto: DtoConstraints = { shape: k.required(k.opaque), nrOfDivisions: k.between(k.number, { min: 1 }), removeStartPoint: k.boolean, removeEndPoint: k.boolean };
@@ -456,7 +458,9 @@ export const occtDtoRegistry: DtoRegistry = {
     "corners.cornerByPointReport": { dto: Inputs.OCCT.FilletCornerByPointDto, constraints: OCCT_FilletCornerByPointDto },
     "corners.filletCornerByPoint": { dto: Inputs.OCCT.FilletCornerByPointDto, constraints: OCCT_FilletCornerByPointDto },
     "design.build": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
+    "design.clashes": { dto: Inputs.OCCT.DesignClashesDto, constraints: OCCT_DesignClashesDto },
     "design.probeFillet": { dto: Inputs.OCCT.DesignProbeFilletDto, constraints: OCCT_DesignProbeFilletDto },
+    "design.referenceFor": { dto: Inputs.OCCT.DesignReferenceForDto, constraints: OCCT_DesignReferenceForDto },
     "design.toTypeScript": { dto: Inputs.OCCT.DesignBuildDto, constraints: OCCT_DesignBuildDto },
     "design.validate": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },
     "design.versionOf": { dto: Inputs.OCCT.DesignDocumentDto, constraints: OCCT_DesignDocumentDto },
@@ -481,7 +485,9 @@ export const occtDtoRegistry: DtoRegistry = {
     "features.pocket": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
     "features.pocketWithHistory": { dto: Inputs.OCCT.PrismFeatureDto, constraints: OCCT_PrismFeatureDto },
     "features.pushPullFaces": { dto: Inputs.OCCT.PushPullFacesDto, constraints: OCCT_PushPullFacesDto },
+    "features.pushPullFacesWithHistory": { dto: Inputs.OCCT.PushPullFacesDto, constraints: OCCT_PushPullFacesDto },
     "features.removeFaces": { dto: Inputs.OCCT.RemoveFacesDto, constraints: OCCT_RemoveFacesDto },
+    "features.removeFacesWithHistory": { dto: Inputs.OCCT.RemoveFacesDto, constraints: OCCT_RemoveFacesDto },
     "features.revolvedBoss": { dto: Inputs.OCCT.RevolvedFeatureDto, constraints: OCCT_RevolvedFeatureDto },
     "features.revolvedPocket": { dto: Inputs.OCCT.RevolvedFeatureDto, constraints: OCCT_RevolvedFeatureDto },
     "features.rib": { dto: Inputs.OCCT.RibFeatureDto, constraints: OCCT_RibFeatureDto },

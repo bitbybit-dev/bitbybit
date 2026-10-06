@@ -26,6 +26,10 @@ describe("OCCT face features", () => {
     });
     const facing = (shape: TopoDS_Shape, direction: Inputs.Base.Vector3): number[] => occt.select.faces.facing({ shape, direction, angle: 0 });
     const walls = (shape: TopoDS_Shape): number[] => occt.select.faces.ofType({ shape, type: Inputs.OCCT.surfaceTypeEnum.cylinder });
+    const only = (indexes: number[]): number => {
+        expect(indexes).toHaveLength(1);
+        return indexes[0] ?? -1;
+    };
     const volumeOf = (shape: TopoDS_Shape): number => occt.shapes.solid.getSolids({ shape }).reduce((sum, solid) => sum + occt.shapes.solid.getSolidVolume({ shape: solid }), 0);
     const kernelMessage = (action: () => unknown): string => {
         try {
@@ -92,6 +96,37 @@ describe("OCCT face features", () => {
 
             // Assert
             expect(negative.message).toBe("`indexes` holds -1, which is not an index: indexes are whole numbers from 0.");
+        });
+    });
+
+    describe("removeFacesWithHistory", () => {
+        it("should fill a hole as removeFaces does and say what each face that stays became", () => {
+            // Arrange
+            const holed = holedCube();
+            const wall = only(walls(holed));
+            const top = only(facing(holed, [0, 1, 0]));
+
+            // Act
+            const filled = occt.features.removeFacesWithHistory({ shape: holed, indexes: [wall] });
+
+            // Assert
+            const [history] = filled.histories;
+            expect(filled.histories).toHaveLength(1);
+            expect(volumeOf(filled.shape)).toBeCloseTo(1000, 6);
+            expect(history?.faces[wall]).toEqual([]);
+            expect(history?.faces[top]).toEqual(facing(filled.shape, [0, 1, 0]));
+            expect(history?.faces.filter(images => images.length === 1)).toHaveLength(6);
+        });
+
+        it("should pass on the kernel's refusal under its own name", () => {
+            // Arrange
+            const box = cube();
+
+            // Act
+            const lid = kernelMessage(() => occt.features.removeFacesWithHistory({ shape: box, indexes: facing(box, [0, 1, 0]) }));
+
+            // Assert
+            expect(lid).toBe("Standard_DomainError: RemoveFacesWithHistory: OCCT could not remove the faces and close the gap they leave");
         });
     });
 
@@ -176,6 +211,42 @@ describe("OCCT face features", () => {
             // Assert
             expect(mismatch).toBe("Standard_DomainError: PushPullFaces: give one distance per face");
             expect(twice).toBe("Standard_DomainError: PushPullFaces: face 2 is chosen twice");
+        });
+    });
+
+    describe("pushPullFacesWithHistory", () => {
+        it("should move a curved face out as pushPullFaces does and follow every face to where it went", () => {
+            // Arrange
+            const rod = occt.shapes.solid.createCylinder({ radius: 3, height: 5, center: [0, 0, 0], direction: [0, 1, 0] });
+            const wall = only(walls(rod));
+
+            // Act
+            const thicker = occt.features.pushPullFacesWithHistory({ shape: rod, indexes: [wall], distance: 1 });
+
+            // Assert
+            const [history] = thicker.histories;
+            expect(thicker.histories).toHaveLength(1);
+            expect(volumeOf(thicker.shape)).toBeCloseTo(80 * Math.PI, 6);
+            expect(history?.faces.map(images => images.length)).toEqual([1, 1, 1]);
+            expect(history?.faces[wall]).toEqual(walls(thicker.shape));
+            expect(occt.analysis.signatures({ shape: thicker.shape }).faces[only(walls(thicker.shape))]?.area).toBeCloseTo(2 * Math.PI * 4 * 5, 6);
+        });
+
+        it("should move faces by their own distances and refuse under its own name", () => {
+            // Arrange
+            const box = cube();
+            const top = only(facing(box, [0, 1, 0]));
+            const bottom = only(facing(box, [0, -1, 0]));
+
+            // Act
+            const shorter = occt.features.pushPullFacesWithHistory({ shape: box, indexes: [top, bottom], distances: [-1, -2] });
+            const twice = kernelMessage(() => occt.features.pushPullFacesWithHistory({ shape: box, indexes: [2, 2], distance: 1 }));
+
+            // Assert
+            expect(volumeOf(shorter.shape)).toBeCloseTo(700, 6);
+            expect(shorter.histories[0]?.faces[top]).toEqual(facing(shorter.shape, [0, 1, 0]));
+            expect(occt.operations.boundingBoxOfShape({ shape: shorter.shape }).center[1]).toBeCloseTo(5.5, 6);
+            expect(twice).toBe("Standard_DomainError: PushPullFacesWithHistory: face 2 is chosen twice");
         });
     });
 });

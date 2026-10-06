@@ -898,6 +898,14 @@ export class KernelOperationError extends Error {
 }
 
 // @public
+export interface KernelSteps {
+    // (undocumented)
+    done: number;
+    // (undocumented)
+    total: number;
+}
+
+// @public
 export function lessThan<T>(property: Key<T>, limit: Key<T> | ((inputs: T) => number), message?: string, reads?: readonly Key<T>[]): InputRule<T>;
 
 // @public
@@ -2199,6 +2207,9 @@ export function rehydrateReferences(value: unknown, hashOf: ReferenceHash, looku
 // @public
 export function reportInputIssues(kernel: string, path: string, issues: readonly InputIssue[], unknown?: readonly string[]): void;
 
+// @public
+export function reportKernelSteps(steps: KernelSteps): void;
+
 declare namespace Resolved {
     export {
         Color_3 as Color,
@@ -2238,6 +2249,9 @@ export function sameLength<T>(property: Key<T>, other: Key<T>): InputRule<T>;
 
 // @public
 export function setInputIssueSink(next?: (report: InputIssueReport) => void): void;
+
+// @public
+export function setKernelStepSink(next?: (steps: KernelSteps) => void): void;
 
 // @public
 export function srgbToLinear(channel: number): number;

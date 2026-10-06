@@ -119,6 +119,22 @@ describe("the worker message loop", () => {
     });
 
     describe("initializationComplete", () => {
+        it("should hold a call that arrives before the kernel and answer it once the kernel is given", async () => {
+            // Arrange
+            vi.resetModules();
+            const fresh = await import("./jscad-worker");
+            const posted: unknown[] = [];
+            fresh.onMessageInput({ action: { functionName: "shapes.cube", inputs: { size: 1 } }, uid: "early" }, (message: unknown) => posted.push(message));
+            const beforeTheKernel = [...posted];
+
+            // Act
+            fresh.initializationComplete(A_KERNEL, undefined, true);
+
+            // Assert
+            expect(beforeTheKernel).toEqual([]);
+            expect(posted).toEqual(["busy", { uid: "early", result: { made: "cube", from: { size: 1 } } }]);
+        });
+
         it("should announce itself to the host that started it", () => {
             // Act
             initializationComplete(A_KERNEL);
@@ -753,7 +769,7 @@ describe("the worker message loop", () => {
             expect(answer().error).toBe("JSCAD computation failed while executing function 'boom': [object Object].");
         });
 
-        it("should still answer, with a fixed message, when the failure cannot be sent back", () => {
+        it("should still answer, naming the call, when the failure cannot be sent back", () => {
             // Arrange
             const sent: unknown[] = [];
             const post = (message: unknown): void => {
@@ -765,6 +781,23 @@ describe("the worker message loop", () => {
 
             // Act
             onMessageInput({ action: { functionName: "boom", inputs: {} }, uid: "uid-9" }, post);
+
+            // Assert
+            expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "JSCAD 'boom' failed, and the failure could not be reported.", errorKind: "kernel" }]);
+        });
+
+        it("should say only that the computation failed when the call names no function", () => {
+            // Arrange
+            const sent: unknown[] = [];
+            const post = (message: unknown): void => {
+                if (typeof message === "object" && message !== null && "stack" in message) {
+                    throw new Error("the channel refused");
+                }
+                sent.push(message);
+            };
+
+            // Act
+            onMessageInput({ action: { functionName: "", inputs: {} }, uid: "uid-9" }, post);
 
             // Assert
             expect(sent).toEqual(["busy", { uid: "uid-9", result: undefined, error: "JSCAD computation failed, and the failure could not be reported.", errorKind: "kernel" }]);

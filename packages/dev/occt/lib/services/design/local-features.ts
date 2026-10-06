@@ -1,4 +1,3 @@
-import { messageOf } from "@bitbybit-dev/base";
 import type { TopoDS_Face, TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import * as Inputs from "../../api/inputs";
 import type * as Models from "../../api/models";
@@ -7,10 +6,11 @@ import { hashBytes, hashText, release, stableJson } from "./cache";
 import { sha256 } from "./digest";
 import { bodyOf, contextOf, faceCount, faceFrame, faceSignatures, profileNames } from "./helpers";
 import { tripleOf } from "./placement";
+import type { FaceNames } from "./names";
 import { carryNames, give, nameOf } from "./names";
-import { DesignProblem, isKernelTrap, pointer } from "./problems";
+import { DesignProblem, failedWith, pointer, unlessTrapped } from "./problems";
 import { resolveFaces } from "./references";
-import type { DesignPlan, DesignRun } from "./state";
+import type { BodyState, DesignPlan, DesignRun, DesignShellLid } from "./state";
 import { bodyKey, sketchKey } from "./state";
 import { ownValue } from "./structure";
 import { numberOf } from "./values";
@@ -32,45 +32,147 @@ function shelled(feature: Models.OCCT.DesignShellFeature, path: string, run: Des
         throw new DesignProblem(pointer(path, "thickness"), "the thickness is 0");
     }
     const open = resolveFaces(feature.open, contextOf(body, run), pointer(path, "open"));
+    const reasons: string[] = [];
+    const made = byJoins(feature.id, body, open, -thickness, reasons, run) ?? (thickness > 0 ? byCutting(feature.id, body, open, thickness, reasons, run) : undefined);
+    if (made === undefined) {
+        throw new DesignProblem(pointer(path, "thickness"), `the shell could not be built (${reasons.join("; ")})`);
+    }
+    run.trace?.set(path, { indexes: open, join: made.join, ...(made.lids === undefined ? {} : { lids: made.lids }) });
+    return { kind: "body", shape: made.shape, names: made.names };
+}
+
+const SHELL_JOINS = [Inputs.OCCT.joinTypeEnum.arc, Inputs.OCCT.joinTypeEnum.intersection] as const;
+
+const LID_REACH = 2;
+
+const DIRECTION_TOLERANCE = 1e-9;
+
+const SAME_DIRECTION = 1 - DIRECTION_TOLERANCE;
+
+const LID_TOLERANCE = 1e-6;
+
+interface Shelled {
+    shape: TopoDS_Shape;
+    names: FaceNames;
+    join: string;
+    lids?: DesignShellLid[];
+}
+
+function joined(id: string, body: BodyState, open: number[], faces: TopoDS_Shape[], offset: number, joinType: Inputs.OCCT.joinTypeEnum, run: DesignRun): Shelled | string {
+    const made = run.occt.operations.makeThickSolidByJoinWithHistory({ shape: body.shape, shapes: faces, offset, joinType });
+    const hollow = made.history.facesFromFaces.some(walls => walls.length > 0);
+    if (!hollow || !run.occt.shapeFix.isValid({ shape: made.shape })) {
+        release(made.shape);
+        return hollow ? `with ${joinType} joins the solid is not valid` : `with ${joinType} joins nothing was hollowed`;
+    }
+    const given = new Map<number, string[]>();
+    open.forEach(index => give(given, made.history.faces[index] ?? [], nameOf(id, "rim")));
+    made.history.facesFromFaces.forEach(offsets => give(given, offsets, nameOf(id, "inner")));
+    return { shape: made.shape, names: carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.history }], given), join: joinType };
+}
+
+function byJoins(id: string, body: BodyState, open: number[], offset: number, reasons: string[], run: DesignRun): Shelled | undefined {
     const faces = open.map(index => run.occt.shapes.face.getFace({ shape: body.shape, index }));
     try {
-        const { made, join } = hollowed(body.shape, faces, -thickness, pointer(path, "thickness"), run);
-        run.trace?.set(path, { indexes: open, join });
-        const given = new Map<number, string[]>();
-        open.forEach(index => give(given, made.history.faces[index] ?? [], nameOf(feature.id, "rim")));
-        made.history.facesFromFaces.forEach(offsets => give(given, offsets, nameOf(feature.id, "inner")));
-        return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.history }], given) };
+        for (const joinType of SHELL_JOINS) {
+            const tried = unlessTrapped(() => joined(id, body, open, faces, offset, joinType, run), failedWith(`with ${joinType} joins`));
+            if (typeof tried !== "string") {
+                return tried;
+            }
+            reasons.push(tried);
+        }
+        return undefined;
     } finally {
         faces.forEach(release);
     }
 }
 
-const SHELL_JOINS = [Inputs.OCCT.joinTypeEnum.arc, Inputs.OCCT.joinTypeEnum.intersection] as const;
-
-interface Hollowed {
-    made: Models.OCCT.ShapeWithHistory<TopoDS_Shape>;
-    join: string;
+function innerSolidOf(shape: TopoDS_Shape, thickness: number, run: DesignRun): TopoDS_Shape | undefined {
+    const offset = run.occt.operations.offsetAdv({ shape, distance: -thickness, tolerance: 1e-7, joinType: Inputs.OCCT.joinTypeEnum.intersection, removeIntEdges: false });
+    if (run.occt.shapes.shape.getShapeType({ shape: offset }) !== Inputs.OCCT.shapeTypeEnum.shell) {
+        release(offset);
+        return undefined;
+    }
+    const inner = run.occt.shapes.solid.fromClosedShell({ shape: offset });
+    release(offset);
+    if (!run.occt.shapeFix.isValid({ shape: inner })) {
+        release(inner);
+        return undefined;
+    }
+    return inner;
 }
 
-function hollowed(shape: TopoDS_Shape, faces: TopoDS_Shape[], offset: number, path: string, run: DesignRun): Hollowed {
-    const reasons: string[] = [];
-    for (const joinType of SHELL_JOINS) {
-        try {
-            const made = run.occt.operations.makeThickSolidByJoinWithHistory({ shape, shapes: faces, offset, joinType });
-            const hollow = made.history.facesFromFaces.some(walls => walls.length > 0);
-            if (hollow && run.occt.shapeFix.isValid({ shape: made.shape })) {
-                return { made, join: joinType };
-            }
-            release(made.shape);
-            reasons.push(hollow ? `with ${joinType} joins the solid is not valid` : `with ${joinType} joins nothing was hollowed`);
-        } catch (error) {
-            if (isKernelTrap(error)) {
-                throw error;
-            }
-            reasons.push(`with ${joinType} joins: ${messageOf(error)}`);
+function lidsOf(body: BodyState, open: number[], inner: TopoDS_Shape, thickness: number, run: DesignRun): DesignShellLid[] | undefined {
+    const outer = faceSignatures(body.shape, run);
+    const faces = faceSignatures(inner, run);
+    const lids: DesignShellLid[] = [];
+    for (const index of open) {
+        const face = outer[index];
+        if (face === undefined || face.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
+            return undefined;
         }
+        const [minX, minY, minZ] = face.box.min;
+        const [maxX, maxY, maxZ] = face.box.max;
+        const tolerance = LID_TOLERANCE * Math.max(1, Math.hypot(maxX - minX, maxY - minY, maxZ - minZ));
+        const below = faces.find(candidate => candidate.type === Inputs.OCCT.surfaceTypeEnum.plane
+            && run.base.vector.dot({ first: candidate.normal, second: face.normal }) > SAME_DIRECTION
+            && Math.abs(run.base.vector.dot({ first: run.base.vector.sub({ first: candidate.centre, second: face.centre }), second: face.normal }) + thickness) <= tolerance);
+        if (below === undefined) {
+            return undefined;
+        }
+        lids.push({ face: below.index, direction: tripleOf(run.base.vector.mul({ vector: face.normal, scalar: thickness * LID_REACH })) });
     }
-    throw new DesignProblem(path, `the shell could not be built (${reasons.join("; ")})`);
+    return lids;
+}
+
+function cut(id: string, body: BodyState, open: number[], thickness: number, inner: TopoDS_Shape, run: DesignRun): Shelled | string {
+    const lids = lidsOf(body, open, inner, thickness, run);
+    if (lids === undefined) {
+        return "by cutting, an open face is not flat or has no inner face below it";
+    }
+    const hollow = run.occt.booleans.differenceWithHistory({ shape: body.shape, shapes: [inner], keepEdges: false });
+    const hollowGiven = new Map<number, string[]>();
+    hollow.histories.slice(1).forEach(history => give(hollowGiven, history.faces.flat(), nameOf(id, "inner")));
+    const hollowNames = carryNames(faceCount(hollow.shape, run), hollow.histories.slice(0, 1).map(history => ({ names: body.names, history })), hollowGiven);
+    const tools = lids.map(lid => {
+        const face = run.occt.shapes.face.getFace({ shape: inner, index: lid.face });
+        const tool = run.occt.operations.extrude({ shape: face, direction: lid.direction });
+        release(face);
+        return tool;
+    });
+    const opened = run.occt.booleans.differenceWithHistory({ shape: hollow.shape, shapes: tools, keepEdges: false });
+    tools.forEach(release);
+    release(hollow.shape);
+    if (!run.occt.shapeFix.isValid({ shape: opened.shape })) {
+        release(opened.shape);
+        return "by cutting, the solid is not valid";
+    }
+    const given = new Map<number, string[]>();
+    opened.histories.slice(1).forEach(history => give(given, history.faces.flat(), nameOf(id, "rim")));
+    opened.histories.slice(0, 1).forEach(history => hollow.histories.slice(0, 1).forEach(first => {
+        give(given, open.flatMap(index => first.faces[index] ?? []).flatMap(face => history.faces[face] ?? []), nameOf(id, "rim"));
+    }));
+    const names = carryNames(faceCount(opened.shape, run), opened.histories.slice(0, 1).map(history => ({ names: hollowNames, history })), given);
+    return { shape: opened.shape, names, join: "cut", lids };
+}
+
+function byCutting(id: string, body: BodyState, open: number[], thickness: number, reasons: string[], run: DesignRun): Shelled | undefined {
+    const tried = unlessTrapped<Shelled | string>(() => {
+        const inner = innerSolidOf(body.shape, thickness, run);
+        if (inner === undefined) {
+            return "by cutting, the inward offset is not one closed solid";
+        }
+        try {
+            return cut(id, body, open, thickness, inner, run);
+        } finally {
+            release(inner);
+        }
+    }, failedWith("by cutting"));
+    if (typeof tried === "string") {
+        reasons.push(tried);
+        return undefined;
+    }
+    return tried;
 }
 
 function drilled(feature: Models.OCCT.DesignHoleFeature, path: string, run: DesignRun): DesignOutcome {
@@ -140,36 +242,32 @@ function prismed(feature: Prism, path: string, run: DesignRun): DesignOutcome {
 
 function pushedOrPulled(feature: Models.OCCT.DesignPushPullFeature, path: string, run: DesignRun): DesignOutcome {
     const body = bodyOf(feature.body, run);
-    const index = oneFace(feature.face, feature.body, run, pointer(path, "face"));
-    const signature = faceSignatures(body.shape, run)[index]!;
-    if (signature.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
-        throw new DesignProblem(pointer(path, "face"), `a flat face is needed here, and this one is a ${signature.type}`);
-    }
+    const indexes = feature.face.count === undefined
+        ? [oneFace(feature.face, feature.body, run, pointer(path, "face"))]
+        : resolveFaces(feature.face, contextOf(body, run), pointer(path, "face"));
     const distance = numberOf(feature.distance, run.parameters, pointer(path, "distance"));
     if (distance === 0) {
-        throw new DesignProblem(pointer(path, "distance"), "the distance is not 0: above 0 pulls the face out, below 0 pushes it in");
+        throw new DesignProblem(pointer(path, "distance"), "the distance is not 0: above 0 pulls the faces out, below 0 pushes them in");
     }
-    const pull = distance > 0;
-    const direction = pull ? signature.normal : tripleOf(run.base.vector.neg({ vector: signature.normal }));
-    run.trace?.set(path, { sketchFace: index, pull, frame: { origin: signature.centre, normal: direction, direction: [1, 0, 0] } });
-    const face = run.occt.shapes.face.getFace({ shape: body.shape, index });
-    try {
-        const inputs: Inputs.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face> = { shape: body.shape, profile: face, sketchFaceIndex: index, direction, extent: Inputs.OCCT.featureExtentEnum.length, length: Math.abs(distance) };
-        const made = pull ? run.occt.features.bossWithHistory(inputs) : run.occt.features.pocketWithHistory(inputs);
-        const given = profileNames(feature.id, [{ history: made.histories[1]!, commands: [] }]);
-        const names = carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.histories[0]! }], given);
-        const moved = body.names[index] ?? [];
-        made.histories[1]!.lastFaces.forEach(last => {
-            names[last] = [...new Set([...(names[last] ?? []), ...moved])].sort();
-        });
-        return { kind: "body", shape: made.shape, names };
-    } finally {
-        release(face);
-    }
+    run.trace?.set(path, { indexes });
+    const made = run.occt.features.pushPullFacesWithHistory({ shape: body.shape, indexes, distance });
+    const given = new Map<number, string[]>();
+    made.histories.forEach(history => give(given, indexes.flatMap(index => history.faces[index] ?? []), nameOf(feature.id, "end")));
+    return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), made.histories.map(history => ({ names: body.names, history })), given) };
 }
 
-/** Shells, drills, raises, sinks, pushes or pulls the body a feature names. */
-export function localPlan(feature: Models.OCCT.DesignShellFeature | Models.OCCT.DesignHoleFeature | Models.OCCT.DesignPushPullFeature | Prism, path: string, run: DesignRun): DesignPlan {
+function removed(feature: Models.OCCT.DesignRemoveFacesFeature, path: string, run: DesignRun): DesignOutcome {
+    const body = bodyOf(feature.body, run);
+    const indexes = resolveFaces(feature.faces, contextOf(body, run), pointer(path, "faces"));
+    run.trace?.set(path, { indexes });
+    const made = run.occt.features.removeFacesWithHistory({ shape: body.shape, indexes });
+    return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), made.histories.map(history => ({ names: body.names, history })), new Map()) };
+}
+
+type LocalFeature = Models.OCCT.DesignShellFeature | Models.OCCT.DesignHoleFeature | Models.OCCT.DesignPushPullFeature | Models.OCCT.DesignRemoveFacesFeature | Prism;
+
+/** Shells, drills, raises, sinks, pushes or pulls the body a feature names, or removes faces from it. */
+export function localPlan(feature: LocalFeature, path: string, run: DesignRun): DesignPlan {
     switch (feature.type) {
         case "shell":
             return { reads: [bodyKey(feature.body)], make: () => shelled(feature, path, run) };
@@ -177,6 +275,8 @@ export function localPlan(feature: Models.OCCT.DesignShellFeature | Models.OCCT.
             return { reads: [bodyKey(feature.body)], make: () => drilled(feature, path, run) };
         case "pushPull":
             return { reads: [bodyKey(feature.body)], make: () => pushedOrPulled(feature, path, run) };
+        case "removeFaces":
+            return { reads: [bodyKey(feature.body)], make: () => removed(feature, path, run) };
         default:
             return { reads: [sketchKey(feature.profile), bodyKey(feature.body)], make: () => prismed(feature, path, run) };
     }

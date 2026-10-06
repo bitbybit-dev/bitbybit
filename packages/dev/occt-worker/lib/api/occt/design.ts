@@ -193,6 +193,30 @@ export class OCCTDesign {
     }
 
     /**
+     * Finds the placed parts of a design build that overlap, touch or come within `clearance` of each
+     * other, such as a sleeve that runs into the arm it slides on.
+     *
+     * The document is built as `build` builds it and every part placement is checked against every
+     * other in place. Two components a joint holds together are expected to touch, so a touch between
+     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
+     * where they were built.
+     * @param inputs - The document, the documents an assembly places, the values to build with and the clearance
+     * @returns The clashing pairs, with their distance, the volume they share and their nearest points
+     * @group document
+     * @shortname design clashes
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const clashes = await bitbybit.occt.design.clashes({ document: assembly, documents: [bracket, pin], clearance: 0.2 });
+     * const overlaps = clashes.filter(clash => clash.volume > 0);
+     * ```
+     */
+    clashes(inputs: Inputs.OCCT.DesignClashesDto): Promise<Models.OCCT.DesignClash[]> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.clashes", inputs);
+    }
+
+    /**
      * Probes a fillet or chamfer feature of a part document: the faces and edges its reference
      * finds, and the largest radius or distance that builds a valid solid.
      *
@@ -219,5 +243,36 @@ export class OCCTDesign {
      */
     probeFillet(inputs: Inputs.OCCT.DesignProbeFilletDto): Promise<Models.OCCT.DesignFilletProbe> {
         return this.occWorkerManager.genericCallToWorkerPromise("design.probeFillet", inputs);
+    }
+
+    /**
+     * Names faces or edges picked on a built body the way a document stores them: a reference by the
+     * names of the features that made them, narrowed by an axis filter when names alone do not single
+     * them out, with their count.
+     *
+     * With `nudge`, the default, the document is built again with each number the body depends on
+     * moved a little, at most eight of them; `lost` lists those after which the reference no longer
+     * finds elements like the picked ones. `refused` says why no reference names the picks.
+     * @param inputs - The document, the body, the picked faces or edges and the values to build it with
+     * @returns The reference or why there is none, the numbers it was checked against and those it lost its elements to
+     * @group document
+     * @shortname design reference for
+     * @drawable false
+     * @ignore true
+     * @example
+     * ```typescript
+     * const found = await bitbybit.occt.design.referenceFor({
+     *     document: { schemaVersion: 1, parameters: { height: 10 }, features: [
+     *         { id: "base", type: "sketch", on: { plane: "XY" }, pen: [{ type: "hLine", length: 40 }, { type: "vLine", length: 20 }, { type: "hLine", length: -40 }, { type: "close" }] },
+     *         { id: "plate", type: "extrude", profile: "base", distance: "height" },
+     *     ] },
+     *     body: "plate",
+     *     faces: [1],
+     * });
+     * console.log(found.reference, found.lost);
+     * ```
+     */
+    referenceFor(inputs: Inputs.OCCT.DesignReferenceForDto): Promise<Models.OCCT.DesignReferenceFound> {
+        return this.occWorkerManager.genericCallToWorkerPromise("design.referenceFor", inputs);
     }
 }

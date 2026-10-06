@@ -925,6 +925,9 @@
                     "$ref": "#/$defs/DesignPushPullFeature"
                 },
                 {
+                    "$ref": "#/$defs/DesignRemoveFacesFeature"
+                },
+                {
                     "$ref": "#/$defs/DesignRevolveFeature"
                 },
                 {
@@ -2557,7 +2560,7 @@
             ]
         },
         "DesignPushPullFeature": {
-            "description": "Pushes or pulls one flat face of `body` along its normal by `distance`: out of the body when it is\nabove 0, into it when it is below. The moved face keeps its names and is also named `end`; the\nfaces it sweeps out are named `side`.",
+            "description": "Moves the face `face` names along its outward normal by `distance`: out of the body when it is above\n0, into it when it is below. With a `count` the reference may name several faces, which all move.\nThe faces around them stretch along their own surfaces to follow, as Press Pull and Move Face do in\nother CAD tools, so curved faces move as flat ones do. The moved faces keep their names and are also\nnamed `end`; every other face keeps its names.",
             "type": "object",
             "properties": {
                 "type": {
@@ -2628,6 +2631,53 @@
                 "v",
                 "box",
                 "faces"
+            ],
+            "additionalProperties": false
+        },
+        "DesignRemoveFacesFeature": {
+            "description": "Removes the `count` faces `faces` names from `body` and closes the gap by extending the faces around\nthem, as Delete Face does in other CAD tools: a hole's wall removed fills the hole, a round removed\nsharpens its edge back. Every face that stays keeps its names.",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "removeFaces"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "faces": {
+                    "$ref": "#/$defs/DesignFaceReference"
+                },
+                "id": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "suppressed": {
+                    "anyOf": [
+                        {
+                            "type": "boolean"
+                        },
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "extras": {},
+                "extensions": {
+                    "type": "object",
+                    "additionalProperties": {}
+                }
+            },
+            "required": [
+                "type",
+                "body",
+                "faces",
+                "id"
             ],
             "additionalProperties": false
         },

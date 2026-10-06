@@ -123,13 +123,14 @@ A plate with two holes and rounded top edges, made of aluminium, with a part num
 | `boolean` | `union`, `difference` or `intersection` of `body` with `tools` | `new` for faces no input had |
 | `fillet` | rounds the `edges` a reference names | `round` |
 | `chamfer` | bevels them | `bevel` |
-| `shell` | hollows a body, leaving the `open` faces open | `rim`, `inner` |
+| `shell` | hollows a body, leaving the `open` faces open, including bodies rounded all round when the open faces are flat | `rim`, `inner` |
 | `hole` | drills holes `at` positions on a face, with counterbores or countersinks | `wall` (per position id) |
 | `boss` | raises a sketch on a face | `side`, `end` |
 | `pocket` | sinks a sketch into a face, a `distance`, `until` a face or `through` | `side`, `end` |
 | `linearPattern`, `polarPattern` | repeats a body `count` times | copies picked with `copy` |
 | `mirror` | mirrors a body across a plane | the image is copy 1 |
-| `pushPull` | moves one flat face of a body along its normal: out when `distance` is above 0, in when below | `end` (the moved face, which keeps its names), `side` |
+| `pushPull` | moves a face of a body, flat or curved, along its normal: out when `distance` is above 0, in when below; the faces around it stretch to follow, and with a `count` the reference may name several faces | `end` (the moved faces, which keep their names) |
+| `removeFaces` | removes the `count` faces a reference names and closes the gap from the faces around them: a hole's wall fills the hole, a round sharpens its edge | keeps every name the faces that stay had |
 | `transform` | moves a body: turns it `rotate` degrees about X, Y and Z through a `pivot`, then shifts it by `translate` | keeps every name it had |
 | `import` | starts a body from a STEP, IGES or BREP asset pinned by its SHA-256 | `face` (per index) |
 | `operation` | calls any method of the package by its path, such as `"occt.shapes.shape.unifySameDomain"` | carried through history, otherwise `face` |

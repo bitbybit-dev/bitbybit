@@ -1,6 +1,6 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
-import { describeKernelFailure, prepareKernelCall } from "@bitbybit-dev/base";
+import { describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -16,6 +16,9 @@ let functionPathResolver: FunctionPathResolver;
 
 const STOP_REQUEST_WORD = 0;
 const PROGRESS_WORD_COUNT = 3;
+const STEP_WORD_COUNT = 2;
+const STEPS_DONE_WORD = 0;
+const STEPS_TOTAL_WORD = 1;
 
 let restartKernel: (() => unknown) | undefined;
 let kernelGeneration = 0;
@@ -23,6 +26,11 @@ let restarting: Promise<void> | undefined;
 let lostKernel: string | undefined;
 let meshRetention = 0;
 let progressWords: Int32Array | undefined;
+let stepWords: Int32Array | undefined;
+
+type Held = { call: DataInput; postMessage: (message: unknown) => void };
+
+let held: Held[] | undefined = [];
 
 function progressWordsOf(occ: BitbybitOcctModule): Int32Array | undefined {
     const control = (occ as Partial<BitbybitOcctModule>).ProgressControl;
@@ -58,6 +66,7 @@ export type DataInput = {
         functionName: string;
         inputs: Record<string, unknown>;
     };
+
     /**
      * Unique identifier used to match responses with their corresponding requests.
      */
@@ -71,7 +80,8 @@ export type DataInput = {
  * an unknown state, so the worker answers that call as a `crash` and never runs the crashed kernel
  * again. Pass `restart` to have the worker start over: it is called once per crash and must end by
  * calling `initializationComplete` again with a new module and new plugins, and calls wait until it
- * has. Without it, every later call is refused.
+ * has. Without it, every later call is refused. Calls that arrive before the first kernel is given
+ * wait for it, and are answered in the order they came.
  *
  * @param occ - The BitbybitOcctModule instance
  * @param plugins - Optional plugins to add to the OpenCascade service (e.g., AdvancedOCCT)
@@ -114,12 +124,21 @@ export const initializationComplete = (
     }
 
     progressWords = progressWordsOf(occ);
+    stepWords = progressWords === undefined ? undefined : stepWords ?? new Int32Array(new SharedArrayBuffer(STEP_WORD_COUNT * Int32Array.BYTES_PER_ELEMENT));
+    const steps = stepWords;
+    setKernelStepSink(steps === undefined ? undefined : ({ done, total }) => {
+        Atomics.store(steps, STEPS_TOTAL_WORD, total);
+        Atomics.store(steps, STEPS_DONE_WORD, done);
+    });
     if (!doNotPost && progressWords !== undefined) {
-        postMessage({ progressWords });
+        postMessage({ progressWords, stepWords });
     }
     if (!doNotPost && restarting === undefined) {
         postMessage(WorkerMessages.INITIALIZED);
     }
+    const waiting = held ?? [];
+    held = undefined;
+    waiting.forEach(({ call, postMessage: answer }) => onMessageInput(call, answer));
 
     return cacheHelper;
 };
@@ -140,7 +159,9 @@ function createCommandContext(): CommandContext {
     };
 }
 
-const UNREPORTABLE_FAILURE = "OCCT computation failed, and the failure could not be reported.";
+const unreportableFailure = (functionName: unknown): string => typeof functionName === "string" && functionName !== ""
+    ? `OCCT '${functionName}' failed, and the failure could not be reported.`
+    : "OCCT computation failed, and the failure could not be reported.";
 
 function afterCrash(crash: string): string {
     const restart = restartKernel;
@@ -197,6 +218,10 @@ export const onMessageInput = (
     d: DataInput,
     postMessage: (message: unknown) => void
 ): void => {
+    if (held !== undefined) {
+        held.push({ call: d, postMessage });
+        return;
+    }
     if (restarting !== undefined) {
         void restarting.then(() => onMessageInput(d, postMessage));
         return;
@@ -207,6 +232,10 @@ export const onMessageInput = (
     }
     postMessage(WorkerMessages.BUSY);
     (kernel as Partial<BitbybitOcctModule> | undefined)?.ProgressBeginCall?.();
+    if (stepWords !== undefined) {
+        Atomics.store(stepWords, STEPS_DONE_WORD, 0);
+        Atomics.store(stepWords, STEPS_TOTAL_WORD, 0);
+    }
 
     let result: unknown;
     let started = "";
@@ -255,7 +284,7 @@ export const onMessageInput = (
                 stack: failure.stack,
             });
         } catch {
-            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+            postMessage({ uid: d?.uid, result: undefined, error: unreportableFailure(d?.action?.functionName), errorKind: "kernel" });
         }
     }
 };

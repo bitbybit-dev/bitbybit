@@ -100,8 +100,10 @@ export namespace OCCT {
     export type DecomposedManifoldMeshDto = Inputs.OCCT.DecomposedManifoldMeshDto;
     export type DecomposedMeshDto = Inputs.OCCT.DecomposedMeshDto;
     export type DesignBuildDto<T> = Inputs.OCCT.DesignBuildDto<T>;
+    export type DesignClashesDto = WithDefaults<Inputs.OCCT.DesignClashesDto, "clearance">;
     export type DesignDocumentDto = Inputs.OCCT.DesignDocumentDto;
     export type DesignProbeFilletDto = WithDefaults<Inputs.OCCT.DesignProbeFilletDto, "maxAttempts">;
+    export type DesignReferenceForDto = WithDefaults<Inputs.OCCT.DesignReferenceForDto, "nudge">;
     export type DifferenceDto<T> = WithDefaults<Inputs.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     export type DihedralAngleDto<T> = WithDefaults<Inputs.OCCT.DihedralAngleDto<T>, "index" | "param">;
     export type DivideDto<T> = WithDefaults<Inputs.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;

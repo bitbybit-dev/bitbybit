@@ -9,12 +9,19 @@ const CACHE_THRESHOLD = 10000;
 let manifold: ManifoldService;
 let cacheHelper: CacheHelper;
 
+type Held = { call: DataInput; postMessage: (message: unknown) => void };
+
+let held: Held[] | undefined = [];
+
 export const initializationComplete = (mnf: any, _plugins?: any, doNotPost?: boolean) => {
     cacheHelper = new CacheHelper();
     manifold = new ManifoldService(mnf);
     if (!doNotPost) {
         postMessage("manifold-initialised");
     }
+    const waiting = held ?? [];
+    held = undefined;
+    waiting.forEach(({ call, postMessage: answer }) => onMessageInput(call, answer));
 };
 
 export type DataInput = {
@@ -27,6 +34,7 @@ export type DataInput = {
     }
     uid: string;
 };
+
 
 type HashedManifold = { hash: string | number };
 
@@ -74,7 +82,9 @@ const serializeResult = (res: unknown): unknown => {
     return { hash: (res as Hashed).hash, type: MANIFOLD_REFERENCE };
 };
 
-const UNREPORTABLE_FAILURE = "Manifold computation failed, and the failure could not be reported.";
+const unreportableFailure = (functionName: unknown): string => typeof functionName === "string" && functionName !== ""
+    ? `Manifold '${functionName}' failed, and the failure could not be reported.`
+    : "Manifold computation failed, and the failure could not be reported.";
 
 const executeStandardFunction = (action: DataInput["action"]): unknown => {
     const call = prepareKernelCall("Manifold", manifoldDtoRegistry, action.functionName, action.inputs);
@@ -85,6 +95,10 @@ const executeStandardFunction = (action: DataInput["action"]): unknown => {
 };
 
 export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => void) => {
+    if (held !== undefined) {
+        held.push({ call: d, postMessage });
+        return;
+    }
     postMessage("busy");
 
     let result;
@@ -142,7 +156,7 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
                 stack: failure.stack,
             });
         } catch {
-            postMessage({ uid: d?.uid, result: undefined, error: UNREPORTABLE_FAILURE, errorKind: "kernel" });
+            postMessage({ uid: d?.uid, result: undefined, error: unreportableFailure(d?.action?.functionName), errorKind: "kernel" });
         }
     }
 };
