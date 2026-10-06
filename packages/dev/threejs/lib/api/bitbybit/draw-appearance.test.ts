@@ -359,6 +359,25 @@ describe("drawing shapes with their appearance and design builds", () => {
             expect(workerCall.mock.calls[1]![1].shapes).toEqual([shapeC]);
         });
 
+        it("should hand out the meshes it keeps by shape hash for these options, and draw parts from meshes handed back without meshing them", async () => {
+            // Arrange
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+            const kept = drawHelper.keptDesignMeshes(["box-1-shape", "pin-2-shape", "elsewhere"], options);
+            const coarse = drawHelper.keptDesignMeshes(["box-1-shape"], { ...options, precision: 0.5 });
+            drawHelper.dispose();
+            workerCall.mockClear();
+
+            // Act
+            drawHelper.keepDesignMeshes([kept[0]!, { shapeHash: "pin-2-shape", mesh: { faceList: "none", edgeList: [] } }], options);
+            await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });
+
+            // Assert
+            expect(kept.map(each => each.shapeHash)).toEqual(["box-1-shape", "pin-2-shape"]);
+            expect(coarse).toEqual([]);
+            expect(workerCall).toHaveBeenCalledTimes(1);
+            expect(workerCall.mock.calls[0]![1].shapes).toEqual([shapeB]);
+        });
+
         it("should mesh a part once for every build it draws, a preview beside the model say, until the meshing changes", async () => {
             // Arrange
             const first = await draw.drawAnyAsync({ entity: buildOf([0], [20]), options });

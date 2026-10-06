@@ -2067,6 +2067,17 @@ export class JSONBitByBit {
 }
 
 // @public
+export interface KeptDesignMesh<T = DesignMesh> {
+    // (undocumented)
+    mesh: T;
+    // (undocumented)
+    shapeHash: string;
+}
+
+// @public
+export function keptMeshKeyOf(shapeHash: string, meshing: string): string;
+
+// @public
 namespace Line {
     class DrawLineDto<T> {
         constructor(line?: LinePointsDto, opacity?: number, colours?: string | string[], size?: number, updatable?: boolean, lineMesh?: T);

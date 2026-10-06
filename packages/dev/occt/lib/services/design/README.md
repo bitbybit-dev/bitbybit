@@ -375,6 +375,19 @@ than it expects:
   caller decides, never inside the library.
 - **`outcomes` is general:** an outcome supplied under any feature's hash, with its face `names`, is
   taken instead of making the feature, which is how a caller restores bodies it kept.
+- **Only what is needed is made.** When the build holds outcomes (the cache, or `outcomes`), the
+  features first run dry: their plans, hashes and reads, no shapes. Then, from the last feature back,
+  a feature whose outcome only feeds outcomes the build already holds is skipped: it reports `cached`,
+  keeps its hash and reads for the features after it, and its cached outcome stays kept, with its
+  rebinds reported again. Every other feature is made, so a build that holds nothing makes all of
+  them, and so does one that traces. A caller that kept each part's last outcome therefore rebuilds a
+  document by reading those back, with nothing before them made.
+- **An assembly builds its documents without their sketches**, since it hands none back.
+- **Meshes a caller keeps.** Each engine's drawer hands out the meshes it made for design parts,
+  by `shapeHash`, for the drawing options given (`drawHelper.keptDesignMeshes`), and takes them back
+  (`drawHelper.keepDesignMeshes`), passing over anything that is not a mesh of faces and edges. With
+  each part's last outcome and its mesh kept, a caller reopens a design without making or meshing
+  anything.
 
 ## How well references survive: the naming benchmark
 

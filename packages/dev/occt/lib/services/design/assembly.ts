@@ -405,7 +405,7 @@ export function runAssembly(document: Models.OCCT.DesignAssemblyDocument, choice
         throw new DesignProblem("/components", `the assembly places more than ${MAX_OCCURRENCES} occurrences through its levels`);
     }
     const usedOutcomes = new Set<string>();
-    const gathered: Gathered = { context: { ...context, used: usedOutcomes }, library, builds: new Map(), parts: new Map(), components: [], products: new Map(), joints: [], report: [], issues: [] };
+    const gathered: Gathered = { context: { ...context, used: usedOutcomes, sketches: false }, library, builds: new Map(), parts: new Map(), components: [], products: new Map(), joints: [], report: [], issues: [] };
     try {
         assemble(document, parameters, "", undefined, gathered);
     } catch (error) {

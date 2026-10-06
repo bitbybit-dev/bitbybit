@@ -842,6 +842,30 @@ describe("design assemblies", () => {
             // Assert
             expect(before).toBe(0);
             expect(cache.hits).toBe(280);
+            expect(cache.size).toBe(280);
+        });
+
+        it("should build the documents it places without their sketches, so an outcome supplied for a part leaves nothing else to make", () => {
+            // Arrange
+            class KeepingCache extends DesignCache {
+                kept = 0;
+                override keep(hash: string, outcome: Parameters<DesignCache["keep"]>[1]): void {
+                    this.kept++;
+                    super.keep(hash, outcome);
+                }
+            }
+            const one: Assembly = { schemaVersion: 1, kind: "assembly", components: [{ id: "p", source: { document: POST_ID, part: "post" } }] };
+            const library = libraryOf<Models.OCCT.DesignDocument>([post]).library;
+            const first = runAssembly(one, {}, library, { occt, occ: kernel, base, cache: new DesignCache(0) });
+            const part = first.parts[0]!;
+            const cache = new KeepingCache(256);
+
+            // Act
+            const again = runAssembly(one, {}, library, { occt, occ: kernel, base, cache, sketches: true, outcomes: [{ hash: part.shapeHash, shape: part.shape, names: part.faceNames }] });
+
+            // Assert
+            expect(cache.kept).toBe(1);
+            expect(again.parts.map(each => each.shapeHash)).toEqual([part.shapeHash]);
         });
 
         it("should free the parts it built when something other than a document problem stops an assembly", () => {

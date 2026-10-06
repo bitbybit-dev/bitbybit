@@ -3929,6 +3929,9 @@ export class DrawHelper extends DrawHelperCore {
     // (undocumented)
     handleDecomposedMeshIndividually(inputs: Omit<Inputs_2.OCCT.DrawShapeDto<Inputs_2.OCCT.TopoDSShapePointer>, "shape">, decomposedMesh: Inputs_2.OCCT.DecomposedMeshDto, options: Partial<Inputs_2.Draw.DrawOcctShapeOptions>): Promise<BABYLON_2.Mesh>;
     isDisposed(): boolean;
+    keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs_2.Draw.DrawOcctShapeOptions): void;
+    // Warning: (ae-forgotten-export) The symbol "KeptDesignMesh" needs to be exported by the entry point index.d.ts
+    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs_2.Draw.DrawOcctShapeOptions): KeptDesignMesh<Inputs_2.OCCT.DecomposedMeshDto>[];
     // (undocumented)
     localAxes(size: number, scene: BABYLON_2.Scene, colorXHex: string, colorYHex: string, colorZHex: string): BABYLON_2.Mesh;
     // (undocumented)

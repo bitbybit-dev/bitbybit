@@ -374,6 +374,12 @@ export function designMeshKeyOf(part: DesignDrawnPart): string {
 /** A mesh the worker made for a design part, as much of it as a cache counts. */
 export type DesignMesh = LookMeshSource & EdgeSource;
 
+/** A mesh a drawer keeps for a design part under the part's `shapeHash`, as it hands it out, or as a caller hands it back before the drawer checks it. */
+export interface KeptDesignMesh<T = DesignMesh> {
+    shapeHash: string;
+    mesh: T;
+}
+
 /**
  * How many numbers a mesh holds: its vertex, normal and index data and its edge points, which is
  * what a cache of meshes weighs it by.
@@ -395,7 +401,17 @@ export function meshNumbersOf(mesh: DesignMesh): number {
  * @returns The key, or undefined when the mesh is not worth keeping
  */
 export function designMeshCacheKeyOf(part: DesignDrawnPart, meshing: string): string | undefined {
-    return part.shapeHash === undefined ? undefined : `${part.shapeHash}|${meshing}`;
+    return part.shapeHash === undefined ? undefined : keptMeshKeyOf(part.shapeHash, meshing);
+}
+
+/**
+ * Where a drawer keeps the mesh of the design part with this `shapeHash`, meshed with these options.
+ * @param shapeHash - The part's shape hash, as a design build gives it
+ * @param meshing - The options the part is meshed with, written out as text
+ * @returns The key
+ */
+export function keptMeshKeyOf(shapeHash: string, meshing: string): string {
+    return `${shapeHash}|${meshing}`;
 }
 
 /**

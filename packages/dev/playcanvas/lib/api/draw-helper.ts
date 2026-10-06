@@ -1,7 +1,8 @@
 
 import type { Context } from "./context";
 import * as Inputs from "./inputs";
-import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf } from "@bitbybit-dev/core";
+import { DrawHelperCore, defaultEdgeColor, DesignMeshCache, designOptionsKeyOf, designPartKeyOf, edgeColorsOf, lookGroupsOf, lookGroupsOfColors, lookMeshesOf, designDrawPlanOf, designMeshesOf, meshesByKeyOf, keptMeshKeyOf } from "@bitbybit-dev/core";
+import type { KeptDesignMesh } from "@bitbybit-dev/core";
 import type { FaceLook, FaceRange, LookMesh, PartPlacement } from "@bitbybit-dev/core";
 import type * as Models from "@bitbybit-dev/core/lib/api/models";
 import type { JSCADText } from "@bitbybit-dev/jscad-worker";
@@ -758,6 +759,39 @@ export class DrawHelper extends DrawHelperCore {
         const drawnParts = this.fillDesign(target, plan.parts, plan.placements, plan.placed, meshes, options, kept);
         this.designStates.set(target, { placements: plan.placements, meshes: meshesByKeyOf(plan, meshes), signature: plan.signature, looks, precision: options.precision, parts: drawnParts });
         return target;
+    }
+
+
+    /**
+     * The meshes this drawer keeps for design parts with the given shape hashes, as it meshed them for
+     * these drawing options, so a caller can store them and hand them back with `keepDesignMeshes`.
+     * @param shapeHashes - The parts' shape hashes, as a design build gives them
+     * @param drawOptions - The options the parts were drawn with
+     * @returns The meshes it keeps, each with its part's shape hash; a part it has not meshed for these options is left out
+     */
+    keptDesignMeshes(shapeHashes: readonly string[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): KeptDesignMesh<Inputs.OCCT.DecomposedMeshDto>[] {
+        const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
+        const meshing = this.meshingTextOf(resolved);
+        return shapeHashes.flatMap(shapeHash => {
+            const mesh = this.designMeshes.get(keptMeshKeyOf(shapeHash, meshing));
+            return mesh === undefined ? [] : [{ shapeHash, mesh }];
+        });
+    }
+
+    /**
+     * Keeps meshes a caller stored for design parts, so the parts with these shape hashes are drawn with
+     * these options without being meshed again. A mesh that is not one of faces and edges is passed over.
+     * @param meshes - The meshes, each with its part's shape hash
+     * @param drawOptions - The options the meshes were made for
+     */
+    keepDesignMeshes(meshes: readonly KeptDesignMesh<unknown>[], drawOptions: Inputs.Draw.DrawOcctShapeOptions): void {
+        const resolved = resolveDto(Inputs.Draw.DrawOcctShapeOptions, drawOptions) as Resolved.Draw.DrawOcctShapeOptions;
+        const meshing = this.meshingTextOf(resolved);
+        meshes.forEach(({ shapeHash, mesh }) => {
+            if (this.isMeshOfFacesAndEdges(mesh)) {
+                this.designMeshes.set(keptMeshKeyOf(shapeHash, meshing), mesh);
+            }
+        });
     }
 
     private meshingForLooks(options: Resolved.Draw.DrawOcctShapeOptions): Omit<Omit<Resolved.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>, "shape">, "faceMaterial"> {

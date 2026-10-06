@@ -27,6 +27,12 @@ export interface SketchState {
     face?: Models.OCCT.DesignFaceReference | undefined;
 }
 
+/** A body or sketch the build did not make, because only what it feeds was needed and that was at hand: the hash and the parameters it was made from, without a shape. */
+export interface HollowState {
+    hash: string;
+    reads: Set<string>;
+}
+
 /** What a feature resolved while it was made, kept for code that has to repeat it without the names. */
 export interface DesignTrace {
     frame?: Inputs.Base.Frame;
@@ -52,6 +58,7 @@ export interface DesignRun {
     derived: ReadonlyMap<string, readonly string[]>;
     bodies: Map<string, BodyState>;
     sketches: Map<string, SketchState>;
+    hollow: Map<string, HollowState>;
     failed: Map<string, "failed" | "suppressed" | "pending">;
     suppressed: Set<string>;
     owners: Map<string, string>;

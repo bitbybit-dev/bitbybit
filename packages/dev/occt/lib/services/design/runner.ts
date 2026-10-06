@@ -4,7 +4,7 @@ import type * as Models from "../../api/models";
 import type { DesignOutcome } from "./cache";
 import { hashText, stableJson } from "./cache";
 import type { RebindEntry } from "./hints";
-import type { DesignPlan, DesignRun, DesignRunContext, DesignTrace, SketchState } from "./state";
+import type { DesignPlan, DesignRun, DesignRunContext, DesignTrace, HollowState, SketchState } from "./state";
 import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
@@ -16,6 +16,14 @@ import type { ParameterChoice } from "./values";
 import { parameterValues, parametersIn, truthOf } from "./values";
 
 type Feature = Models.OCCT.DesignFeature;
+
+type StepMode = "make" | "plan" | "skip";
+
+interface Planned {
+    writes: string;
+    reads: string[];
+    ready: boolean;
+}
 
 function drawsNothing(sketch: SketchState | undefined, run: DesignRun): boolean {
     return sketch !== undefined && run.occ.CountSubShapes(sketch.shape, run.occ.TopAbs_ShapeEnum.EDGE, false) === 0;
@@ -74,13 +82,8 @@ function parametersUsed(feature: Feature, parameters: DesignRun["parameters"]): 
     return [...parametersIn(feature, parameters)].sort().map(name => `${name}=${JSON.stringify(parameters.get(name))}`).join(",");
 }
 
-interface KeyState {
-    hash: string;
-    reads: Set<string>;
-}
-
-function stateOf(key: string, run: DesignRun): KeyState {
-    return isBodyKey(key) ? run.bodies.get(nameInKey(key))! : run.sketches.get(nameInKey(key))!;
+function stateOf(key: string, run: DesignRun): HollowState {
+    return run.hollow.get(key) ?? (isBodyKey(key) ? run.bodies.get(nameInKey(key))! : run.sketches.get(nameInKey(key))!);
 }
 
 function readsOf(feature: Feature, plan: DesignPlan, run: DesignRun): Set<string> {
@@ -132,21 +135,33 @@ function makesItsOwn(feature: Feature): boolean {
     }
 }
 
-function apply(feature: Feature, writes: string, outcome: DesignOutcome, hash: string, reads: Set<string>, run: DesignRun): void {
+function apply(feature: Feature, writes: string, outcome: DesignOutcome | undefined, hash: string, reads: Set<string>, run: DesignRun): void {
     run.failed.delete(writes);
-    if (outcome.kind === "sketch") {
+    run.hollow.delete(writes);
+    if (outcome === undefined) {
+        run.hollow.set(writes, { hash, reads });
+    }
+    if (outcome?.kind === "sketch") {
         const face = feature.type === "sketch" && "face" in feature.on ? feature.on.face : undefined;
         run.sketches.set(feature.id, { shape: outcome.shape, commands: outcome.commands, normal: outcome.normal, frame: outcome.frame, hash, reads, face });
         return;
     }
+    if (isSketchKey(writes)) {
+        return;
+    }
     const name = nameInKey(writes);
-    run.bodies.set(name, { shape: outcome.shape, names: outcome.names, hash, reads });
+    if (outcome !== undefined) {
+        run.bodies.set(name, { shape: outcome.shape, names: outcome.names, hash, reads });
+    }
     if (!run.order.includes(name)) {
         run.order.push(name);
     }
     run.owners.set(feature.id, name);
     const tools = usedUp(feature);
-    tools.forEach(tool => run.bodies.delete(tool));
+    tools.forEach(tool => {
+        run.bodies.delete(tool);
+        run.hollow.delete(bodyKey(tool));
+    });
     run.owners.forEach((owner, id) => {
         if (tools.includes(owner)) {
             run.owners.set(id, name);
@@ -165,7 +180,7 @@ function withRebinds(report: Models.OCCT.DesignFeatureReport, entries: readonly 
     };
 }
 
-function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.DesignFeatureReport {
+function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, noted?: (planned: Planned) => void): Models.OCCT.DesignFeatureReport {
     const started = performance.now();
     const before = run.rebinding.entries.length;
     const report: Models.OCCT.DesignFeatureReport = { id: feature.id, type: feature.type, status: "ok", ms: 0, cached: false, messages: [] };
@@ -178,7 +193,8 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
             if (makesItsOwn(feature)) {
                 fail(feature, writes, run, "suppressed");
             } else {
-                parametersIn(feature.suppressed, run.parameters).forEach(name => run.bodies.get(nameInKey(writes))?.reads.add(name));
+                const held = run.hollow.get(writes) ?? run.bodies.get(nameInKey(writes));
+                parametersIn(feature.suppressed, run.parameters).forEach(name => held?.reads.add(name));
             }
         } else {
             const plan = planOf(feature, path, run);
@@ -187,7 +203,17 @@ function step(feature: Feature, path: string, run: DesignRun): Models.OCCT.Desig
             if (missing === undefined && blank !== undefined) {
                 throw new DesignProblem(path, `${describeKey(blank)} draws nothing yet`);
             }
-            if (missing === undefined) {
+            if (missing === undefined && mode !== "make") {
+                hash = hashOf(feature, plan, run);
+                noted?.({ writes, reads: plan.reads, ready: run.cache.has(hash) || (isBodyKey(writes) && run.supplied.has(hash)) });
+                const kept = mode === "skip" ? run.cache.take(hash) : undefined;
+                if (kept !== undefined) {
+                    run.used.add(hash);
+                    run.rebinding.entries.push(...kept.rebinds ?? []);
+                }
+                report.cached = true;
+                apply(feature, writes, undefined, hash, readsOf(feature, plan, run), run);
+            } else if (missing === undefined) {
                 hash = hashOf(feature, plan, run);
                 let outcome = run.cache.take(hash);
                 report.cached = outcome !== undefined;
@@ -241,13 +267,50 @@ export interface FeaturesRun {
  * stops the rest. With `trace`, each feature records what it resolved.
  */
 export function runFeatures(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, trace?: Map<string, DesignTrace>): FeaturesRun {
+    const run = newRun(document, choice, context, trace);
+    const modes = trace === undefined && (run.supplied.size > 0 || context.cache.size > 0) ? modesOf(document, choice, context) : undefined;
+    const report = document.features.map((feature, index) => step(feature, pointer("/features", index), run, modes?.[index] ?? "make"));
+    return { run, report };
+}
+
+function modesOf(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext): StepMode[] {
+    const dry = newRun(document, choice, { ...context, used: new Set() }, undefined);
+    const planned = document.features.map((feature, index): Planned | undefined => {
+        let noted: Planned | undefined;
+        step(feature, pointer("/features", index), dry, "plan", entry => {
+            noted = entry;
+        });
+        return noted;
+    });
+    const required = new Set([...dry.hollow.keys()].filter(key => isBodyKey(key) || context.sketches === true));
+    const shadowed = new Set<string>();
+    const modes = planned.map((): StepMode => "make");
+    for (let index = planned.length - 1; index >= 0; index--) {
+        const entry = planned[index];
+        if (entry === undefined) {
+            continue;
+        }
+        const wanted = required.delete(entry.writes);
+        const covered = shadowed.delete(entry.writes);
+        if (!wanted && covered) {
+            modes[index] = "skip";
+            entry.reads.forEach(key => shadowed.add(key));
+        } else {
+            entry.reads.forEach(key => (entry.ready ? shadowed : required).add(key));
+        }
+    }
+    return modes;
+}
+
+function newRun(document: Models.OCCT.DesignPartDocument, choice: ParameterChoice, context: DesignRunContext, trace: Map<string, DesignTrace> | undefined): DesignRun {
     const derived = new Map<string, readonly string[]>();
-    const run: DesignRun = {
+    return {
         ...context,
         parameters: parameterValues(document.parameters, document.configurations, choice, derived),
         derived,
         bodies: new Map(),
         sketches: new Map(),
+        hollow: new Map(),
         failed: new Map(),
         suppressed: new Set(),
         owners: new Map(),
@@ -259,8 +322,6 @@ export function runFeatures(document: Models.OCCT.DesignPartDocument, choice: Pa
         supplied: new Map((context.outcomes ?? []).map(outcome => [outcome.hash, outcome])),
         pending: [],
     };
-    const report = document.features.map((feature, index) => step(feature, pointer("/features", index), run));
-    return { run, report };
 }
 
 /** The units and up axis a document's build reports: the document's, with the defaults filled in. */

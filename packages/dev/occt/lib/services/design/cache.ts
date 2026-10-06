@@ -42,6 +42,11 @@ export class DesignCache {
         return this.entries.size;
     }
 
+    /** Whether an outcome is kept under `hash`, without touching how recently it was used. */
+    has(hash: string): boolean {
+        return this.entries.has(hash);
+    }
+
     /** The outcome made under `hash`, now the most recently used, or undefined. */
     take(hash: string): DesignOutcome | undefined {
         const found = this.entries.get(hash);
