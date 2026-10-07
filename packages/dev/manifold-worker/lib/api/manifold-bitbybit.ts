@@ -45,9 +45,8 @@ export class ManifoldBitByBit {
      * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
      * or export.
      *
-     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
-     * them. With `minSharpAngle`, the normals are computed into the properties after the position,
-     * smooth across edges flatter than the angle, so the mesh shades as its surfaces curve.
+     * `normalIdx` names the channel holding normals the solid carries. With `minSharpAngle`, normals
+     * follow each position, smooth across flatter edges and split across sharper ones.
      * @param inputs - The solid or cross-section and the optional normal channel
      * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose

@@ -1,5 +1,6 @@
-import type { Manifold as Manifold3DManifold, Mesh as Manifold3DMesh } from "manifold-3d";
-import { describe, it, expect, beforeAll, vi } from "vitest";
+import type { Base } from "@bitbybit-dev/base";
+import type { Mesh as Manifold3DMesh } from "manifold-3d";
+import { describe, it, expect, beforeAll } from "vitest";
 import Module from "manifold-3d";
 import { ManifoldService } from "./manifold-service";
 import * as Inputs from "./inputs";
@@ -94,23 +95,72 @@ describe("Manifold unit tests", () => {
             expect(flat.vertProperties.length / 6).toBeGreaterThan(smooth.vertProperties.length / 6 * 2);
         });
 
-        it("should release the copy it computed the normals on", () => {
+        it("should give a moved and turned solid normals that face the way its faces do", () => {
             // Arrange
-            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
-            const prototype = Object.getPrototypeOf(cube) as Manifold3DManifold;
-            const calculate = vi.spyOn(prototype, "calculateNormals");
-            const release = vi.spyOn(prototype, "delete");
+            const square = manifold.crossSection.shapes.square(new Inputs.Manifold.SquareDto(false, 1));
+            const box = manifold.crossSection.operations.extrude({ crossSection: square, height: 2 });
+            const moved = manifold.manifold.transforms.transform({ manifold: box, transform: [0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 10, 0, 0, 1] });
+            const turned = manifold.manifold.transforms.rotate({ manifold: moved, vector: [30, 0, 0] });
 
             // Act
-            manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: cube, minSharpAngle: 40 });
-            const computed: unknown = calculate.mock.results[0]?.value;
-            const released = [...release.mock.contexts];
-            calculate.mockRestore();
-            release.mockRestore();
+            const decomposed = manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: turned, minSharpAngle: 40 }) as Manifold3DMesh;
 
             // Assert
-            expect(computed).toBeDefined();
-            expect(released).toContain(computed);
+            const position = (vertex: number): number[] => [0, 1, 2].map((axis) => decomposed.vertProperties[vertex * 6 + axis]!);
+            const agreements: number[] = [];
+            for (let at = 0; at < decomposed.triVerts.length; at += 3) {
+                const [a, b, c] = [0, 1, 2].map((corner) => position(decomposed.triVerts[at + corner]!)) as [number[], number[], number[]];
+                const u = [b[0]! - a[0]!, b[1]! - a[1]!, b[2]! - a[2]!];
+                const v = [c[0]! - a[0]!, c[1]! - a[1]!, c[2]! - a[2]!];
+                const face = [u[1]! * v[2]! - u[2]! * v[1]!, u[2]! * v[0]! - u[0]! * v[2]!, u[0]! * v[1]! - u[1]! * v[0]!];
+                for (let corner = 0; corner < 3; corner++) {
+                    const vertex = decomposed.triVerts[at + corner]!;
+                    const normal = [3, 4, 5].map((channel) => decomposed.vertProperties[vertex * 6 + channel]!);
+                    agreements.push((face[0]! * normal[0]! + face[1]! * normal[1]! + face[2]! * normal[2]!) / Math.hypot(...face));
+                }
+            }
+            expect(decomposed.numProp).toBe(6);
+            expect(Math.min(...agreements)).toBeCloseTo(1, 5);
+        });
+
+        it("should give a thin slab built from a recipe and turned upright one normal per face, each facing out", () => {
+            // Arrange
+            const recipe: Base.Recipe = {
+                format: "bitbybit.recipe", version: 1, millimetresPerUnit: 1, tolerance: 0.001,
+                buffers: { f64: new Float64Array([11, -0.4, 14.6, -0.4, 14.6, 8.8, 11, 8.8]), i32: new Int32Array(0) },
+                nodes: [{ op: "polygon", points: [0, 8], holes: [] }, { op: "extrude", profile: 0, direction: [0, 0, 1], depth: 0.04 }],
+                roots: [{ node: 1, matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 3.24, 1], tag: {} }],
+            };
+            const [slab] = manifold.recipes.build({ recipe, adjustZtoY: true });
+
+            // Act
+            const decomposed = manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: slab!, minSharpAngle: 40 }) as Manifold3DMesh;
+
+            // Assert
+            const centre = [12.8, 3.26, -4.2];
+            const outward = Array.from({ length: decomposed.vertProperties.length / 6 }, (_, vertex) => {
+                const at = vertex * 6;
+                const offset = [0, 1, 2].map((axis) => decomposed.vertProperties[at + axis]! - centre[axis]!);
+                return offset[0]! * decomposed.vertProperties[at + 3]! + offset[1]! * decomposed.vertProperties[at + 4]! + offset[2]! * decomposed.vertProperties[at + 5]!;
+            });
+            expect(decomposed.vertProperties.length / 6).toBe(24);
+            expect(Math.min(...outward)).toBeGreaterThan(0);
+        });
+
+        it("should read the positions of a solid that carries other values per vertex, giving it fresh normals", () => {
+            // Arrange
+            const cube = manifold.manifold.shapes.cube(new Inputs.Manifold.CubeDto(true, CUBE_SIZE));
+            const carrying = cube.calculateNormals(0, 90);
+
+            // Act
+            const decomposed = manifold.decomposeManifoldOrCrossSection({ manifoldOrCrossSection: carrying, minSharpAngle: 40 }) as Manifold3DMesh;
+
+            // Assert
+            const corners = new Set(Array.from({ length: decomposed.vertProperties.length / 6 }, (_, vertex) => [0, 1, 2].map((axis) => decomposed.vertProperties[vertex * 6 + axis]).join(",")));
+            expect(carrying.getMesh().numProp).toBe(6);
+            expect(decomposed.vertProperties.length / 6).toBe(24);
+            expect(corners.size).toBe(8);
+            expect([...corners].every((corner) => corner.split(",").every((value) => Math.abs(Math.abs(Number(value)) - CUBE_SIZE / 2) < 1e-6))).toBe(true);
         });
 
         it("should refuse a sharp angle that is not a finite angle of at least 0", () => {

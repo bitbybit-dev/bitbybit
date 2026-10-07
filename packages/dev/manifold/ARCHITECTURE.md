@@ -48,20 +48,25 @@ root by transforming its node's solid with the root's matrix.
 
 ## Drawing
 
-The renderers draw a solid from `decomposeManifoldOrCrossSection` with `minSharpAngle`: the kernel's
-`calculateNormals` writes normals after each position, smooth across edges flatter than the angle and
-split into one normal per face across sharper ones, so a cylinder shades round while a box keeps its
-edges. The angle is the drawing option `minSharpAngle` (40 degrees) when `computeNormals` is true, its
-default, and 0 when it is false, which shades every face flat by the same path. `calculateNormals`
-counts its channel among the properties after the position (0), `getMesh` among all of them (3), which
-is why the two indices differ.
+The renderers draw a solid from `decomposeManifoldOrCrossSection` with `minSharpAngle`, which reads the
+solid's plain mesh and computes its normals with base's `creasedMesh`: smooth across edges flatter
+than the angle, split into one normal per face across sharper ones, so a cylinder shades round while a
+box keeps its edges. The angle is the drawing option `minSharpAngle` (40 degrees) when
+`computeNormals` is true, its default, and 0 when it is false, which shades every face flat by the
+same path. The mesh comes back with six properties per vertex, the normal after the position.
+
+The kernel's own `calculateNormals` is not used for drawing. On a solid built after many others, as a
+recipe builds a whole building, its normals came back attached to the wrong vertices when read with a
+plain `getMesh()`, and `getMesh` with a normal index (meant for normals the input meshes carried, turned
+with each run's transform) wrote past its buffers and corrupted the kernel's memory. Neither happened on
+a solid built alone, which is why the tests build a recipe's solid and a moved and turned one.
 
 The renderers read the mesh through core's `manifoldMeshAttributes`, one path for all three: the
-kernel's normals when a vertex carries six properties, otherwise base's `creasedMesh` with the same
-angle, which splits the vertices along every sharper edge itself. That covers a worker of an older
-release, which ignores `minSharpAngle` and sends positions alone, and a mesh read some other way; a
-cube therefore keeps its edges whichever worker draws it, where the engine's own normal computation
-would average them across the shared corners and shade it round.
+worker's normals when a vertex carries six properties, otherwise `creasedMesh` with the same angle on
+the main thread. That covers a worker of an older release, which ignores `minSharpAngle` and sends
+positions alone, and a mesh read some other way, so a cube keeps its edges whichever worker draws it,
+where the engine's own normal computation would average them across the shared corners and shade it
+round.
 
 ## Tests
 

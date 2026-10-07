@@ -1,4 +1,5 @@
 import type * as Manifold3D from "manifold-3d";
+import { creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
 import type * as Inputs from "./inputs";
 import { Manifold } from "./services/manifold/manifold";
 import { CrossSection } from "./services/cross-section/cross-section";
@@ -6,8 +7,20 @@ import { Mesh } from "./services/mesh/mesh";
 import { ManifoldRecipes } from "./services/recipes/recipes";
 import { BaseBitByBit } from "../base";
 
-const NORMAL_CHANNEL = 0;
-const NORMAL_PROPERTY = 3;
+const POSITION_SIZE = 3;
+const WITH_NORMALS = 6;
+
+function positionsOf(mesh: Manifold3D.Mesh): Float32Array {
+    if (mesh.numProp === POSITION_SIZE) {
+        return mesh.vertProperties;
+    }
+    const count = mesh.vertProperties.length / mesh.numProp;
+    const positions = new Float32Array(count * POSITION_SIZE);
+    for (let vertex = 0; vertex < count; vertex++) {
+        positions.set(mesh.vertProperties.subarray(vertex * mesh.numProp, vertex * mesh.numProp + POSITION_SIZE), vertex * POSITION_SIZE);
+    }
+    return positions;
+}
 
 /**
  * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
@@ -30,8 +43,10 @@ export class ManifoldService {
      * @beta
      */
     recipes: ManifoldRecipes;
+    private readonly wasm: Manifold3D.ManifoldToplevel;
 
     constructor(wasm: Manifold3D.ManifoldToplevel) {
+        this.wasm = wasm;
         this.base = new BaseBitByBit();
         this.manifold = new Manifold(wasm);
         this.crossSection = new CrossSection(wasm, this.base);
@@ -43,9 +58,8 @@ export class ManifoldService {
      * Turns a solid into plain mesh data, or a cross-section into its polygons, ready for drawing
      * or export.
      *
-     * `normalIdx` names the vertex property channel that holds normals, when the solid carries
-     * them. With `minSharpAngle`, the normals are computed into the properties after the position,
-     * smooth across edges flatter than the angle, so the mesh shades as its surfaces curve.
+     * `normalIdx` names the channel holding normals the solid carries. With `minSharpAngle`, normals
+     * follow each position, smooth across flatter edges and split across sharper ones.
      * @param inputs - The solid or cross-section and the optional normal channel
      * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose
@@ -65,12 +79,14 @@ export class ManifoldService {
             if (!Number.isFinite(inputs.minSharpAngle) || inputs.minSharpAngle < 0) {
                 throw new RangeError(`minSharpAngle must be a finite angle of at least 0 degrees, got ${inputs.minSharpAngle}`);
             }
-            const withNormals = solid.calculateNormals(NORMAL_CHANNEL, inputs.minSharpAngle);
-            try {
-                return withNormals.getMesh(NORMAL_PROPERTY);
-            } finally {
-                withNormals.delete();
+            const plain = solid.getMesh();
+            const creased = creasedMesh(positionsOf(plain), plain.triVerts, inputs.minSharpAngle);
+            const vertProperties = new Float32Array(creased.positions.length / POSITION_SIZE * WITH_NORMALS);
+            for (let vertex = 0; vertex * POSITION_SIZE < creased.positions.length; vertex++) {
+                vertProperties.set(creased.positions.subarray(vertex * POSITION_SIZE, (vertex + 1) * POSITION_SIZE), vertex * WITH_NORMALS);
+                vertProperties.set(creased.normals.subarray(vertex * POSITION_SIZE, (vertex + 1) * POSITION_SIZE), vertex * WITH_NORMALS + POSITION_SIZE);
             }
+            return new this.wasm.Mesh({ numProp: WITH_NORMALS, vertProperties, triVerts: creased.indices });
         } else {
             return (inputs.manifoldOrCrossSection as Manifold3D.CrossSection).toPolygons();
         }
