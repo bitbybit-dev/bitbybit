@@ -430,6 +430,7 @@ export type OperationPath =
     | "occt.deleteShape"
     | "occt.deleteShapes"
     | "occt.design.build"
+    | "occt.design.clashes"
     | "occt.design.validate"
     | "occt.design.versionOf"
     | "occt.dimensions.pinWithLabel"
@@ -7009,6 +7010,44 @@ export interface OperationParams {
          * drawn in and the command that drew each edge, for editors that draw and edit sketches.
          */
         sketches?: boolean | PipelineRef;
+    };
+    /**
+     * Finds the placed parts of a design build that overlap, touch or come within `clearance` of each
+     * other, such as a sleeve that runs into the arm it slides on.
+     *
+     * The document is built as `build` builds it and every part placement is checked against every
+     * other in place. Two components a joint holds together are expected to touch, so a touch between
+     * them is left out and an overlap is listed with `joined` true. A part document's parts are checked
+     * where they were built.
+     */
+    "occt.design.clashes": {
+        /**
+         * The document: an assembly document with its `components`, or a part document whose parts are
+         * checked where they were built.
+         */
+        document: unknown | PipelineRef;
+        /** The documents an assembly's components place, each with the `id` they name it by. */
+        documents?: unknown[] | PipelineRef;
+        /**
+         * The id of one of the document's `configurations`, whose values replace the parameters' own;
+         * left out or empty, none is used.
+         */
+        configuration?: string | PipelineRef;
+        /**
+         * Values that replace the parameters of the same names after the configuration's, each read as
+         * the parameter's own value is, such as `{ width: 40 }`.
+         */
+        parameters?: unknown | PipelineRef;
+        /**
+         * The contents of the document's `assets` by asset id, as text or bytes, for the features that
+         * import them.
+         */
+        assets?: unknown | PipelineRef;
+        /**
+         * How close two placed parts may come before they clash; 0 reports only parts that touch or
+         * overlap.
+         */
+        clearance?: number | PipelineRef;
     };
     /**
      * Checks a design document without building it and lists every problem found.
