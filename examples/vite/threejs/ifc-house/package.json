@@ -12,7 +12,8 @@
     "@bitbybit-dev/threejs": "1.4.1",
     "@bitbybit-dev/ifc-worker": "1.4.1",
     "@bitbybit-dev/manifold-worker": "1.4.1",
-    "manifold-3d": "3.5.3"
+    "manifold-3d": "3.5.3",
+    "three": "0.186.0"
   },
   "devDependencies": {
     "typescript": "~5.8.3",

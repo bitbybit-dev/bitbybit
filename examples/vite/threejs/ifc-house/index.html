@@ -4,9 +4,13 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bitbybit & ThreeJS IFC House Example</title>
+    <title>Bitbybit & ThreeJS IFC Family House Example</title>
   </head>
   <body>
+    <canvas id="three-canvas"></canvas>
+    <div id="labels" class="labels"></div>
+    <div id="ui"></div>
+    <div id="status" class="status">Loading</div>
     <a
       class="logo"
       href="https://bitbybit.dev"
@@ -18,11 +22,8 @@
         src="https://bitbybit.dev/logo-gold-small.png"
       />
       <div>bitbybit.dev</div>
-      <br />
       <div>support the mission - subscribe</div>
     </a>
-    <button id="download-ifc" class="download" disabled>Download house.ifc</button>
-    <canvas id="three-canvas"> </canvas>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

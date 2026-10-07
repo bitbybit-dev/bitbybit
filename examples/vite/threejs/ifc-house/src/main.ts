@@ -1,23 +1,26 @@
 import "./style.css";
-import { BitByBitBase, Inputs, initBitByBit, initThreeJS } from "@bitbybit-dev/threejs";
+import * as THREE from "three";
+import { BitByBitBase, Inputs, initBitByBit } from "@bitbybit-dev/threejs";
+import { HouseAuthor } from "./house/build-house";
+import type { Layer, StoreyKey } from "./house/house-types";
+import { drawHouse } from "./scene/draw-house";
+import type { DrawnElement, ElementInfo, Stage } from "./scene/scene-types";
+import { createStage } from "./scene/stage";
+import { HousePanel, showStatus } from "./ui/panel";
+import { RoomLabels } from "./ui/room-labels";
 
-const CORNERS: Inputs.Base.Point2[] = [[0, 0], [10, 0], [10, 8], [0, 8]];
-const STOREY_HEIGHT = 3;
-const GABLE_WALL_HEIGHT = 6.5;
-const TYPE_COLOURS: Record<string, string> = { IfcDoor: "#8a5a35", IfcWindow: "#9fd3ff" };
 const DOWNLOAD_URL_LIFETIME_MS = 10000;
+const CLICK_TOLERANCE_PX = 4;
+const HIGHLIGHT = new THREE.MeshStandardMaterial({ color: "#e9b44c", emissive: "#3d2700", roughness: 0.5 });
 
-start();
+const status = document.getElementById("status") as HTMLElement;
+start().catch((error: unknown) => showStatus(status, `The house could not be built: ${error instanceof Error ? error.message : String(error)}`));
 
-async function start() {
-    const sceneOptions = new Inputs.ThreeJSScene.InitThreeJSDto();
-    sceneOptions.canvasId = "three-canvas";
-    sceneOptions.sceneSize = 20;
-    const { scene, startAnimationLoop } = initThreeJS(sceneOptions);
-    startAnimationLoop();
-
+async function start(): Promise<void> {
+    const stage = createStage("three-canvas");
     const bitbybit = new BitByBitBase();
-    await initBitByBit(scene, bitbybit, {
+    showStatus(status, "Starting the IFC and Manifold workers");
+    await initBitByBit(stage.scene, bitbybit, {
         enableManifold: true,
         enableIFC: true,
         workers: {
@@ -26,79 +29,87 @@ async function start() {
         },
     });
 
-    const model = await buildHouse(bitbybit);
-    await drawModel(bitbybit, model);
-    offerDownload(bitbybit, model);
+    const started = performance.now();
+    const house = await new HouseAuthor(bitbybit, (message) => showStatus(status, message)).build();
+    showStatus(status, "Building the geometry with Manifold");
+    const drawn = await drawHouse(bitbybit, house);
+    const seconds = (performance.now() - started) / 1000;
+
+    const spaces = await bitbybit.ifc.spaces.list({ model: house.model });
+    const areas = new Map(spaces.map((space) => [space.name, space.area]));
+    const summary = await bitbybit.ifc.model.summary({ model: house.model });
+    const openings = (summary.elementCounts["IfcWindow"] ?? 0) + (summary.elementCounts["IfcDoor"] ?? 0);
+    const netArea = spaces.reduce((sum, space) => sum + space.area, 0);
+
+    const labels = new RoomLabels(stage, house.rooms, areas, document.getElementById("labels") as HTMLElement);
+    const panel: HousePanel = new HousePanel(document.getElementById("ui") as HTMLElement, { netArea, rooms: spaces.length, openings, seconds }, house.rooms, areas, {
+        onToggle: (key, on) => {
+            if (key === "labels" && on) {
+                panel.turn("roof", false);
+            }
+            if (key !== "labels") {
+                drawn.filter((item) => item.info.layer === key).forEach((item) => {
+                    item.object.visible = on;
+                });
+            }
+            labels.show(labelledStorey(panel));
+        },
+        onDownload: () => download(bitbybit, house.model),
+    });
+    enablePicking(stage, drawn, (info) => panel.select(info));
+    showStatus(status, undefined);
 }
 
-async function buildHouse(bitbybit: BitByBitBase): Promise<Inputs.IFC.IfcModelPointer> {
-    const ifc = bitbybit.ifc;
-    let model = await ifc.model.create({ name: "House", lengthUnit: Inputs.IFC.lengthUnitEnum.metre, seed: "ifc-house-example" });
-    model = await ifc.spatial.addStorey({ model, id: "ground", name: "Ground floor", elevation: 0 });
-    model = await ifc.spatial.addStorey({ model, id: "first", name: "First floor", elevation: STOREY_HEIGHT });
+function labelledStorey(panel: HousePanel): StoreyKey | undefined {
+    if (!panel.isOn("labels")) {
+        return undefined;
+    }
+    const order: [Layer, StoreyKey][] = [["first", "first"], ["ground", "ground"]];
+    return order.find(([layer]) => panel.isOn(layer))?.[1];
+}
 
-    model = await ifc.materials.add({ model, name: "Brick", category: "brick", color: "#b5651d" });
-    model = await ifc.materials.add({ model, name: "Plaster", category: "plaster", color: "#f2efe6" });
-    model = await ifc.materials.add({ model, name: "Concrete", category: "concrete", color: "#9a9a9a" });
-    model = await ifc.materials.add({ model, name: "Tiles", category: "tile", color: "#7a2e1d" });
-    model = await ifc.materials.addLayerSet({ model, name: "Exterior wall", layers: [{ material: "Brick", thickness: 0.235 }, { material: "Plaster", thickness: 0.015 }] });
-    model = await ifc.materials.addLayerSet({ model, name: "Floor", layers: [{ material: "Concrete", thickness: 0.2 }] });
-    model = await ifc.materials.addLayerSet({ model, name: "Roof", layers: [{ material: "Tiles", thickness: 0.22 }] });
-    model = await ifc.doors.addType({ model, id: "door", name: "Door 900", width: 0.9, height: 2.1 });
-    model = await ifc.windows.addType({ model, id: "window", name: "Window 1200", width: 1.2, height: 1.4 });
-
-    for (const storey of ["ground", "first"]) {
-        for (let i = 0; i < CORNERS.length; i++) {
-            const gable = storey === "first" && i % 2 === 1;
-            model = await ifc.walls.add({
-                model, storey, id: `${storey}-wall-${i}`, name: `Wall ${i + 1}`,
-                start: CORNERS[i], end: CORNERS[(i + 1) % CORNERS.length],
-                height: gable ? GABLE_WALL_HEIGHT : STOREY_HEIGHT, layerSet: "Exterior wall", alignment: Inputs.IFC.wallAlignmentEnum.left,
+function enablePicking(stage: Stage, drawn: DrawnElement[], onPick: (info: ElementInfo | undefined) => void): void {
+    const canvas = stage.renderer.domElement;
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const restore = new Map<THREE.Mesh, THREE.Material | THREE.Material[]>();
+    let down: [number, number] = [0, 0];
+    canvas.addEventListener("pointerdown", (event) => {
+        down = [event.clientX, event.clientY];
+    });
+    canvas.addEventListener("pointerup", (event) => {
+        if (Math.hypot(event.clientX - down[0], event.clientY - down[1]) > CLICK_TOLERANCE_PX) {
+            return;
+        }
+        const bounds = canvas.getBoundingClientRect();
+        pointer.set((event.clientX - bounds.left) / bounds.width * 2 - 1, -((event.clientY - bounds.top) / bounds.height) * 2 + 1);
+        raycaster.setFromCamera(pointer, stage.camera);
+        const visible = drawn.filter((item) => item.object.visible).map((item) => item.object);
+        const hit = raycaster.intersectObjects(visible, true).find((candidate) => candidate.object.userData["element"]);
+        restore.forEach((material, mesh) => {
+            mesh.material = material;
+        });
+        restore.clear();
+        const info = hit?.object.userData["element"] as ElementInfo | undefined;
+        if (hit && info) {
+            const owner = drawn.find((item) => item.info === info);
+            owner?.object.traverse((part) => {
+                if (part instanceof THREE.Mesh) {
+                    restore.set(part, part.material);
+                    part.material = HIGHLIGHT;
+                }
             });
         }
-        for (let i = 0; i < CORNERS.length; i++) {
-            model = await ifc.walls.connect({ model, wall: `${storey}-wall-${i}`, other: `${storey}-wall-${(i + 1) % CORNERS.length}` });
-        }
-        model = await ifc.slabs.add({ model, storey, id: `${storey}-floor`, name: "Floor", outline: CORNERS, layerSet: "Floor" });
-        for (const [wall, offset] of [[0, 2], [0, 6.8], [2, 3], [1, 3.4]] as const) {
-            model = await ifc.windows.add({ model, wall: `${storey}-wall-${wall}`, windowType: "window", offset });
-        }
-    }
-    model = await ifc.doors.add({ model, wall: "ground-wall-0", doorType: "door", id: "front-door", name: "Front door", offset: 4.5 });
-    model = await ifc.roofs.add({ model, storey: "first", id: "roof", name: "Roof", outline: CORNERS, kind: Inputs.IFC.roofKindEnum.gable, pitch: 35, baseOffset: STOREY_HEIGHT, overhang: 0.4, layerSet: "Roof" });
-    for (let i = 0; i < CORNERS.length; i++) {
-        model = await ifc.walls.clipByRoof({ model, wall: `first-wall-${i}`, roof: "roof" });
-    }
-    return ifc.quantities.compute({ model });
-}
-
-function hexOf(rgba: number[]): string {
-    return `#${rgba.slice(0, 3).map((channel) => Math.round(channel * 255).toString(16).padStart(2, "0")).join("")}`;
-}
-
-async function drawModel(bitbybit: BitByBitBase, model: Inputs.IFC.IfcModelPointer) {
-    const recipe = await bitbybit.ifc.geometry.recipe({ model });
-    const solids = await bitbybit.manifold.recipes.build({ recipe, adjustZtoY: true });
-    for (let i = 0; i < solids.length; i++) {
-        const tag = recipe.roots[i].tag;
-        const rgba = Array.isArray(tag.rgba) ? tag.rgba : undefined;
-        const options = new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
-        options.faceColour = rgba ? hexOf(rgba) : TYPE_COLOURS[String(tag.type)] ?? "#cccccc";
-        options.faceOpacity = tag.type === "IfcWindow" ? 0.5 : 1;
-        await bitbybit.draw.drawAnyAsync({ entity: solids[i], options });
-    }
-}
-
-function offerDownload(bitbybit: BitByBitBase, model: Inputs.IFC.IfcModelPointer) {
-    const button = document.getElementById("download-ifc") as HTMLButtonElement;
-    button.disabled = false;
-    button.addEventListener("click", async () => {
-        const text = await bitbybit.ifc.model.write({ model, fileName: "house.ifc" });
-        const url = URL.createObjectURL(new Blob([text], { type: "application/x-step" }));
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "house.ifc";
-        link.click();
-        setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_LIFETIME_MS);
+        onPick(info);
     });
+}
+
+async function download(bitbybit: BitByBitBase, model: Inputs.IFC.IfcModelPointer): Promise<void> {
+    const text = await bitbybit.ifc.model.write({ model, fileName: "house.ifc" });
+    const url = URL.createObjectURL(new Blob([text], { type: "application/x-step" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "house.ifc";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_URL_LIFETIME_MS);
 }
