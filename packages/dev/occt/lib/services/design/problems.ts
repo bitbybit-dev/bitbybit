@@ -1,5 +1,6 @@
 import { messageOf } from "@bitbybit-dev/base";
 import type * as Models from "../../api/models";
+import type { OcctFailureCode, OcctFailureDetails } from "../../kernel-failures";
 
 /** A problem found while reading a document, with the JSON pointer of the value it is about. */
 export class DesignProblem extends Error {
@@ -16,6 +17,15 @@ export class DesignProblem extends Error {
  */
 export function isKernelTrap(error: unknown): boolean {
     return typeof WebAssembly !== "undefined" && error instanceof WebAssembly.RuntimeError;
+}
+
+export function tagTrap(error: unknown, feature: string, path: string): void {
+    if (error instanceof Error && Reflect.get(error, "code") === undefined) {
+        const code: OcctFailureCode = "occt.design.crashed";
+        const details: OcctFailureDetails[typeof code] = { feature, path };
+        Reflect.set(error, "code", code);
+        Reflect.set(error, "details", details);
+    }
 }
 
 /**

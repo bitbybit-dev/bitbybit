@@ -88,6 +88,7 @@ describe("OCCT_FAILURES", () => {
             "occt.fillet.failedOnEdges": ["edges"],
             "occt.fillet.failedAtCorners": ["corners"],
             "occt.pipe.notValid": ["trihedron"],
+            "occt.design.crashed": ["feature", "path"],
         });
     });
 });

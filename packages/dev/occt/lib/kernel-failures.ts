@@ -1,4 +1,7 @@
 import { KernelOperationError, fillFailureMessage } from "@bitbybit-dev/base";
+import type { DesignCrashDetails } from "./kernel-failure-details";
+
+export type { DesignCrashDetails } from "./kernel-failure-details";
 
 /**
  * Every failure an OCCT operation names, by its stable code, with the values its message names: a
@@ -18,6 +21,7 @@ export type OcctFailureDetails = {
     "occt.revolve.failed": undefined;
     "occt.pipe.failed": undefined;
     "occt.pipe.notValid": { readonly trihedron: string };
+    "occt.design.crashed": DesignCrashDetails;
 };
 
 /** The code of a failure an OCCT operation names, such as `occt.fillet.failedOnEdges`. */
@@ -42,6 +46,7 @@ export const OCCT_FAILURES: Readonly<Record<OcctFailureCode, string>> = {
     "occt.revolve.failed": "The revolve could not be built. The profile may cross or touch the axis, which makes the swept shape pass through itself; keep the whole profile on one side of the axis.",
     "occt.pipe.failed": "The pipe could not be built. The profile may be too large for the bends of the path, or the path may turn a corner the profile cannot follow.",
     "occt.pipe.notValid": "The pipe came out as a shape that is not valid, part of its side missing. With the {trihedron} trihedron OCCT can do that on a path that is straight or nearly so; the discrete trihedron (isDiscreteTrihedron) builds such paths.",
+    "occt.design.crashed": "The kernel crashed while a design build made the feature {feature} ({path}), and every shape made before it is gone. Leave that feature out, or change it, to build the rest.",
 };
 
 /**

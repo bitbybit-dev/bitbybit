@@ -2394,6 +2394,12 @@ interface DesignCopy {
 }
 
 // @public
+export type DesignCrashDetails = {
+    readonly feature: string;
+    readonly path: string;
+};
+
+// @public
 type DesignDocument = DesignPartDocument | DesignAssemblyDocument;
 
 // @public
@@ -12047,6 +12053,7 @@ export type OcctFailureDetails = {
     "occt.pipe.notValid": {
         readonly trihedron: string;
     };
+    "occt.design.crashed": DesignCrashDetails;
 };
 
 // @public

@@ -26,6 +26,10 @@ each idea comes from, so the reasoning stays next to the code that implements it
   with it, a suppressed one that makes a body or a sketch makes none, and the features that read
   either are skipped. `parts.ts` then builds the parts: properties, material, appearance, volume and
   mass.
+- A WebAssembly trap is never reported as a failed feature: after one the kernel cannot be trusted,
+  so the build throws it on, tagged `occt.design.crashed` with the id and path of the feature it was
+  making (`tagTrap` in `problems.ts`; an inner build's tag stays). The worker restarts the kernel, and
+  the caller can build again with that feature suppressed or changed.
 - A shell tries arc joins, OCCT's default, then intersection joins: OCCT builds an invalid shell of
   some filleted bodies with arc joins, refuses others, and returns the body itself, unhollowed and
   "valid", for a thickness well past what the body allows. When neither builds a valid solid with an

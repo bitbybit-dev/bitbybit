@@ -372,6 +372,20 @@ describe("what the worker says when a call fails", () => {
             expect(messages.filter((message) => message === "busy")).toHaveLength(1);
         });
 
+        it("should pass on the feature a design build tagged its crash with, so the caller can leave it out", () => {
+            // Arrange
+            const trap = new RuntimeError("null function");
+            Reflect.set(trap, "code", "occt.design.crashed");
+            Reflect.set(trap, "details", { feature: "fillet1", path: "/features/3" });
+            thrown.value = trap;
+
+            // Act
+            run({ functionName: "boom", inputs: {} });
+
+            // Assert
+            expect(messages.filter((message) => typeof message === "object")[0]).toEqual(expect.objectContaining({ errorKind: "crash", code: "occt.design.crashed", details: { feature: "fillet1", path: "/features/3" } }));
+        });
+
         it("should still refuse, and answer, a later message that carries no call", () => {
             // Arrange
             const sent: unknown[] = [];

@@ -9,7 +9,7 @@ import { bodyKey, isBodyKey, isSketchKey, nameInKey, sketchKey } from "./state";
 import { importPlan, localPlan } from "./local-features";
 import { scriptPlan, suppliedOutcome } from "./scripts";
 import { bodyPlan, operationPlan, sketchPlan, sweepPlan } from "./steps";
-import { DesignPending, DesignProblem, isKernelTrap, pointer } from "./problems";
+import { DesignPending, DesignProblem, isKernelTrap, pointer, tagTrap } from "./problems";
 import { readKernelException } from "../../kernel-exception";
 import { buildParts } from "./parts";
 import type { ParameterChoice } from "./values";
@@ -240,6 +240,7 @@ function step(feature: Feature, path: string, run: DesignRun, mode: StepMode, no
         }
     } catch (error) {
         if (isKernelTrap(error)) {
+            tagTrap(error, feature.id, path);
             throw error;
         }
         if (error instanceof DesignPending) {

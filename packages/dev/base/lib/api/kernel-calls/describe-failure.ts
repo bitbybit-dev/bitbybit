@@ -105,7 +105,7 @@ function isWebAssemblyTrap(error: unknown): boolean {
 }
 
 function namedFailure(error: unknown): { code: string; details: KernelFailureDetails | undefined } | undefined {
-    if (!(error instanceof Error) || error.name !== "KernelOperationError") {
+    if (!(error instanceof Error) || (error.name !== "KernelOperationError" && !isWebAssemblyTrap(error))) {
         return undefined;
     }
     const code: unknown = Reflect.get(error, "code");
@@ -141,7 +141,8 @@ function withFullStop(text: string): string {
  * Describes a failed kernel call in one shape for every kernel. An `InputError` reads
  * `<path>: <message>`, because the message already names the input at fault. A WebAssembly trap
  * (`RuntimeError`, such as an out-of-bounds access) is a `crash`: it reads `<kernel> crashed while
- * executing function '<path>': <message>.`, then the inputs. Any other failure
+ * executing function '<path>': <message>.`, then the inputs, with the code and details its caller
+ * tagged it with, as a design build names the feature it was making. Any other failure
  * reads `<kernel> computation failed while executing function '<path>': <message>.` followed by the
  * inputs; a `KernelOperationError` gives its message without its type's name, its code and its
  * details, when they are a plain record of strings, numbers, booleans and lists of them. A message
@@ -165,7 +166,8 @@ export function describeKernelFailure(kernel: string, functionName: string, inpu
         const entries = inputs !== null && typeof inputs === "object" && binaryText(inputs) === undefined ? Object.entries(inputs) : [];
         const props = entries.length > 0 ? ` Input values were: {${entries.map(([key, value]) => inputText(key, value)).join(", ")}}.` : "";
         if (isWebAssemblyTrap(error)) {
-            return { message: `${kernel} crashed${where}: ${withFullStop(errorText(error))}${props}`, kind: "crash", code: undefined, details: undefined, stack };
+            const tagged = namedFailure(error);
+            return { message: `${kernel} crashed${where}: ${withFullStop(errorText(error))}${props}`, kind: "crash", code: tagged?.code, details: tagged?.details, stack };
         }
         const named = namedFailure(error);
         const text = named !== undefined && error instanceof Error ? error.message : errorText(error);

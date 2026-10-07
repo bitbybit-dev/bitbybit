@@ -362,6 +362,26 @@ describe("OCCT design documents", () => {
             expect(facesNamed(single!.faceNames, "single:end")).toHaveLength(0);
         });
 
+        it("should throw a kernel crash on, naming the feature it was making, and keep a tag an inner build gave it", () => {
+            // Arrange
+            const RuntimeError = Reflect.get(WebAssembly, "RuntimeError") as new (message: string) => Error;
+            const document = plate([{ id: "round", type: "fillet", body: "plate", radius: 1, edges: { between: [{ of: "plate", role: "end" }, { of: "plate", role: "side" }], count: 4 } }]);
+            const inner = new RuntimeError("null function");
+            Reflect.set(inner, "code", "occt.design.crashed");
+            Reflect.set(inner, "details", { feature: "deeper", path: "/features/0" });
+            const trap = vi.spyOn(occt.fillets, "filletEdgesWithHistory").mockImplementationOnce(() => { throw new RuntimeError("null function"); }).mockImplementationOnce(() => { throw inner; });
+
+            // Act
+            const crashed = (() => { try { occt.design.build({ document: { ...document, parameters: { ...document.parameters, height: 11 } } }); return undefined; } catch (error) { return error; } })();
+            const kept = (() => { try { occt.design.build({ document: { ...document, parameters: { ...document.parameters, height: 12 } } }); return undefined; } catch (error) { return error; } })();
+            trap.mockRestore();
+
+            // Assert
+            expect(crashed).toBeInstanceOf(RuntimeError);
+            expect([Reflect.get(crashed as object, "code"), Reflect.get(crashed as object, "details")]).toEqual(["occt.design.crashed", { feature: "round", path: "/features/2" }]);
+            expect(Reflect.get(kept as object, "details")).toEqual({ feature: "deeper", path: "/features/0" });
+        });
+
         it("should pull a flat face out straight and push one in by default, naming the faces it sweeps out side", () => {
             // Arrange
             const pulled: Document = {

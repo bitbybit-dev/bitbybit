@@ -169,6 +169,26 @@ describe("describeKernelFailure", () => {
         expect(failure).toEqual({ message: "Manifold crashed: RuntimeError: unreachable.", kind: "crash", stack: trap.stack });
     });
 
+    it("should pass on the code and details a caller tagged a trap with, and no details that are not plain values", () => {
+        // Arrange
+        const RuntimeError = Reflect.get(WebAssembly, "RuntimeError") as new (message: string) => Error;
+        const tagged = new RuntimeError("null function");
+        Reflect.set(tagged, "code", "occt.design.crashed");
+        Reflect.set(tagged, "details", { feature: "fillet1", path: "/features/2" });
+        const odd = new RuntimeError("null function");
+        Reflect.set(odd, "code", "occt.design.crashed");
+        Reflect.set(odd, "details", { feature: { id: "fillet1" } });
+
+        // Act
+        const failure = describeKernelFailure("OCCT", "design.build", {}, tagged);
+        const oddFailure = describeKernelFailure("OCCT", "design.build", {}, odd);
+
+        // Assert
+        expect([failure.kind, failure.code, failure.details]).toEqual(["crash", "occt.design.crashed", { feature: "fillet1", path: "/features/2" }]);
+        expect(failure.message).toBe("OCCT crashed while executing function 'design.build': RuntimeError: null function.");
+        expect([oddFailure.code, oddFailure.details]).toEqual(["occt.design.crashed", undefined]);
+    });
+
     it("should read an input error as the path and its own message, with no input dump", () => {
         // Act
         const failure = describeKernelFailure("OCCT", PATH, { width: -1 }, new InputError("`width` must be at least 0, got -1", "width"));
