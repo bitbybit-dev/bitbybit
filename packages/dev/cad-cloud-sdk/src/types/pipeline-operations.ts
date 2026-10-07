@@ -302,6 +302,7 @@ export type OperationPath =
     | "manifold.mesh.evaluate.transform"
     | "manifold.mesh.evaluate.verts"
     | "manifold.mesh.operations.merge"
+    | "manifold.recipes.build"
     | "manifold.toPolygonPoints"
     | "math.abs"
     | "math.acos"
@@ -451,7 +452,9 @@ export type OperationPath =
     | "occt.features.pocket"
     | "occt.features.pocketWithHistory"
     | "occt.features.pushPullFaces"
+    | "occt.features.pushPullFacesWithHistory"
     | "occt.features.removeFaces"
+    | "occt.features.removeFacesWithHistory"
     | "occt.features.revolvedBoss"
     | "occt.features.revolvedPocket"
     | "occt.features.rib"
@@ -5047,6 +5050,30 @@ export interface OperationParams {
         mesh: unknown | PipelineRef;
     };
     /**
+     * Builds each root of a recipe as a solid placed by its matrix, in root order.
+     *
+     * A node several roots share is built once. An invalid recipe throws before anything is built;
+     * an open mesh or a root the kernel cannot build throws naming its node. Circles get
+     * `circularSegments` sides; `tolerance` and `millimetresPerUnit` are not applied.
+     */
+    "manifold.recipes.build": {
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
+         * a package that describes geometry as data writes it.
+         */
+        recipe: unknown | PipelineRef;
+        /**
+         * How many flat sides each circle of the recipe is divided into; more is rounder. The recipe
+         * leaves this to the kernel, so it is chosen here.
+         */
+        circularSegments?: number | PipelineRef;
+        /**
+         * When true, each solid turns a quarter turn about X so the recipe's Z points along Y, which is
+         * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         */
+        adjustZtoY?: boolean | PipelineRef;
+    };
+    /**
      * Turns a solid into a list of triangles, each three points, the same form
      * `shapes.fromPolygonPoints` reads back.
      *
@@ -7710,6 +7737,26 @@ export interface OperationParams {
         distances?: number[] | PipelineRef;
     };
     /**
+     * Moves faces as `pushPullFaces` does, and reports one history, the shape's: each face, edge and
+     * vertex lists what it became, so a moved face is followed to where it went, curved ones too.
+     */
+    "occt.features.pushPullFacesWithHistory": {
+        /** The shape whose faces move. */
+        shape: unknown | PipelineRef;
+        /** The faces to move, counted from 0 as `shapes.face.getFaces` lists them, each at most once. */
+        indexes: number[] | PipelineRef;
+        /**
+         * How far every chosen face moves along its outward normal, in model units; a negative
+         * distance moves it inward.
+         */
+        distance?: number | PipelineRef;
+        /**
+         * One distance per entry of `indexes`, in the same order, used instead of `distance`; left out,
+         * every chosen face moves by `distance`.
+         */
+        distances?: number[] | PipelineRef;
+    };
+    /**
      * Removes faces from a solid and closes the gap by extending the faces around them, as when a
      * hole or a rounded edge is deleted from a part.
      *
@@ -7717,6 +7764,16 @@ export interface OperationParams {
      * leaves, is refused rather than left open.
      */
     "occt.features.removeFaces": {
+        /** The shape to remove faces from; it must hold solids only. */
+        shape: unknown | PipelineRef;
+        /** The faces to remove, counted from 0 as `shapes.face.getFaces` lists them. */
+        indexes: number[] | PipelineRef;
+    };
+    /**
+     * Removes faces as `removeFaces` does, and reports one history, the shape's: a removed face's
+     * `faces` entry is empty, and each face that stays lists the face it became, grown over the gap.
+     */
+    "occt.features.removeFacesWithHistory": {
         /** The shape to remove faces from; it must hold solids only. */
         shape: unknown | PipelineRef;
         /** The faces to remove, counted from 0 as `shapes.face.getFaces` lists them. */
