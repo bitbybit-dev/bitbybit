@@ -147,6 +147,8 @@ const DELEGATIONS: [string, (manifold: ManifoldBitByBit) => unknown][] = [
     ["mesh.evaluate.transform", (m) => m.mesh.evaluate.transform(asInputs())],
     ["mesh.evaluate.verts", (m) => m.mesh.evaluate.verts(asInputs())],
     ["mesh.operations.merge", (m) => m.mesh.operations.merge(asInputs())],
+    ["recipes.build", (m) => m.recipes.build(asInputs())],
+    ["recipes.surfaceMeshes", (m) => m.recipes.surfaceMeshes(asInputs())],
     ["toPolygonPoints", (m) => m.toPolygonPoints(asInputs())],
 ];
 

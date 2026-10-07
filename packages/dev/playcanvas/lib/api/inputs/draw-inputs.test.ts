@@ -106,7 +106,8 @@ describe("Draw DTO unit tests", () => {
             expect(result.crossSectionColour).toBe("#ff00ff");
             expect(result.crossSectionWidth).toBe(2);
             expect(result.crossSectionOpacity).toBe(1);
-            expect(result.computeNormals).toBe(false);
+            expect(result.computeNormals).toBe(true);
+            expect(result.minSharpAngle).toBe(40);
             expect(result.drawTwoSided).toBe(true);
             expect(result.backFaceColour).toBe("#0000ff");
             expect(result.backFaceOpacity).toBe(1);

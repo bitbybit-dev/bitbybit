@@ -1,36 +1,29 @@
-import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { OccStateEnum } from "@bitbybit-dev/occt-worker";
-import type { JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { JscadStateEnum } from "@bitbybit-dev/jscad-worker";
-import type { ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
 import { ManifoldStateEnum } from "@bitbybit-dev/manifold-worker";
+import { IFCStateEnum } from "@bitbybit-dev/ifc-worker";
 import { firstValueFrom, first, map } from "rxjs";
-import type { WorkerInstances, WorkerOptions } from "./worker-utils";
+import type { IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
+import type { BitByBitWorkerManagers, InitBitByBitOptions, InitKernelsResult } from "./init-kernels-types";
+import type { WorkerInstances, WorkerOptions } from "./worker-types";
 import { createWorkersFromCDN } from "./worker-utils";
 
-/**
- * Options for initializing bitbybit
- */
-export interface InitBitByBitOptions extends WorkerOptions {
-    /** Pre-created worker instances. If not provided, workers will be created from CDN. */
-    workers?: WorkerInstances | undefined;
-}
-
-/**
- * Interface for worker managers that engine-specific BitByBitBase classes must implement
- */
-export interface BitByBitWorkerManagers {
-    occtWorkerManager: OCCTWorkerManager;
-    jscadWorkerManager: JSCADWorkerManager;
-    manifoldWorkerManager: ManifoldWorkerManager;
-}
-
-/**
- * Result of kernel initialization
- */
-export interface InitKernelsResult {
-    message: string;
-    initializedKernels: string[];
+function ifcStarted(manager: IFCWorkerManager): Promise<string> {
+    if (manager.ifcWorkerStarted()) {
+        return Promise.resolve("IFC");
+    }
+    if (!manager.ifcWorkerAlreadyInitialised()) {
+        return Promise.reject(new Error("IFC is enabled, but no IFC worker was handed over: pass one as workers.ifcWorker, or leave workers out to load it from the CDN"));
+    }
+    return firstValueFrom(manager.ifcWorkerState$.pipe(
+        first((s) => s.state === IFCStateEnum.initialised || s.state === IFCStateEnum.failed),
+        map((s) => {
+            if (s.state === IFCStateEnum.failed) {
+                throw new Error("The IFC worker failed to start; check that its script can be loaded");
+            }
+            return "IFC";
+        }),
+    ));
 }
 
 /**
@@ -99,6 +92,11 @@ export async function waitForKernelInitialization(
                 "Manifold enabled in options, but manifoldWorkerManager not found after init."
             );
         }
+    }
+
+    if (options.enableIFC) {
+        anyKernelSelectedForInit = true;
+        initializationPromises.push(ifcStarted(managers.ifcWorkerManager));
     }
 
     if (!anyKernelSelectedForInit) {

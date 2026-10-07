@@ -93,6 +93,87 @@ export namespace Base {
         isClosed?: boolean;
         color?: number[];
     };
+    // @beta
+    export interface Recipe {
+        buffers: RecipeBuffers;
+        format: "bitbybit.recipe";
+        millimetresPerUnit: number;
+        nodes: RecipeNode[];
+        roots: RecipeRoot[];
+        tolerance: number;
+        version: 1;
+    }
+    // @beta
+    export interface RecipeBuffers {
+        f64: Float64Array;
+        i32: Int32Array;
+    }
+    // @beta
+    export interface RecipeCircleNode {
+        center: Point2;
+        op: "circle";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeCompoundNode {
+        of: number[];
+        op: "compound";
+    }
+    // @beta
+    export interface RecipeDifferenceNode {
+        of: number;
+        op: "difference";
+        tools: number[];
+    }
+    // @beta
+    export interface RecipeExtrudeNode {
+        depth: number;
+        direction: Vector3;
+        op: "extrude";
+        profile: number;
+    }
+    // @beta
+    export interface RecipeHalfSpaceNode {
+        normal: Vector3;
+        op: "halfSpace";
+        origin: Point3;
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    // @beta
+    export interface RecipePolygonNode {
+        holes: RecipeRange[];
+        op: "polygon";
+        points: RecipeRange;
+    }
+    // @beta
+    export type RecipeRange = [number, number];
+    // @beta
+    export interface RecipeRoot {
+        matrix: TransformMatrix;
+        node: number;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
+    export type RecipeTagValue = string | number | boolean | number[];
+    // @beta
+    export interface RecipeTransformNode {
+        matrix: TransformMatrix;
+        of: number;
+        op: "transform";
+    }
+    // @beta
+    export interface RecipeTrianglesNode {
+        indices: RecipeRange;
+        op: "triangles";
+        positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeVoidsNode {
+        host: number;
+        op: "voids";
+        openings: number[];
+    }
     export type Segment2 = [Point2, Point2];
     export type Segment3 = [Point3, Point3];
     export enum topBottomEnum {
@@ -1025,6 +1106,14 @@ namespace Logic_2 {
 
 // @public
 export namespace Manifold {
+    // @beta
+    export class BuildRecipeDto {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean);
+        adjustZtoY?: boolean | undefined;
+        circularSegments?: number | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        recipe: Base.Recipe;
+    }
     export class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
         gaussianIdx?: number | undefined;
@@ -1116,17 +1205,19 @@ export namespace Manifold {
         vertProperties: Float32Array;
     }
     export class DecomposeManifoldOrCrossSectionDto<T> {
-        constructor(manifoldOrCrossSection?: T, normalIdx?: number);
+        constructor(manifoldOrCrossSection?: T, normalIdx?: number, minSharpAngle?: number);
         manifoldOrCrossSection: T;
+        minSharpAngle?: number | undefined;
         normalIdx?: number | undefined;
     }
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
-        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]);
+        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[], minSharpAngle?: number);
         manifoldsOrCrossSections: T[];
+        minSharpAngle?: number | undefined;
         normalIdx?: number[] | undefined;
     }
     export class DrawManifoldOrCrossSectionDto<T, M> {
-        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number);
         backFaceColour?: Base.Color | undefined;
         backFaceOpacity?: number | undefined;
         computeNormals?: boolean | undefined;
@@ -1138,9 +1229,10 @@ export namespace Manifold {
         faceMaterial?: M | undefined;
         faceOpacity?: number | undefined;
         manifoldOrCrossSection?: T | undefined;
+        minSharpAngle?: number | undefined;
     }
     export class DrawManifoldsOrCrossSectionsDto<T, M> {
-        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number);
+        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number);
         backFaceColour?: Base.Color | undefined;
         backFaceOpacity?: number | undefined;
         computeNormals?: boolean | undefined;
@@ -1152,6 +1244,7 @@ export namespace Manifold {
         faceMaterial?: M | undefined;
         faceOpacity?: number | undefined;
         manifoldsOrCrossSections?: T[] | undefined;
+        minSharpAngle?: number | undefined;
     }
     export class ExtrudeDto<T> {
         constructor(crossSection?: T);
@@ -1327,6 +1420,13 @@ export namespace Manifold {
         position: Base.Point3;
         normal: Base.Vector3;
     };
+    // @beta
+    export class RecipeSurfaceMeshesDto {
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean);
+        adjustZtoY?: boolean | undefined;
+        recipe: Base.Recipe;
+        roots?: number[] | undefined;
+    }
     export class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center?: boolean | undefined;
@@ -1480,6 +1580,8 @@ namespace Manifold_2 {
     // Warning: (ae-forgotten-export) The symbol "Inputs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
+    type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
+    // (undocumented)
     type CalculateCurvatureDto<T> = WithDefaults<Inputs.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     // (undocumented)
     type CalculateNormalsDto<T> = WithDefaults<Inputs.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
@@ -1514,9 +1616,9 @@ namespace Manifold_2 {
     // (undocumented)
     type DecomposeManifoldsOrCrossSectionsDto<T> = Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<T>;
     // (undocumented)
-    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
     type ExtrudeDto<T> = WithDefaults<Inputs.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
     // (undocumented)
@@ -1571,6 +1673,8 @@ namespace Manifold_2 {
     type OffsetDto<T> = WithDefaults<Inputs.Manifold.OffsetDto<T>, "delta" | "joinType" | "miterLimit" | "circularSegments">;
     // (undocumented)
     type RayCastDto<T> = WithDefaults<Inputs.Manifold.RayCastDto<T>, "origin" | "endpoint">;
+    // (undocumented)
+    type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
     // (undocumented)
     type RectangleDto = WithDefaults<Inputs.Manifold.RectangleDto, "length" | "height" | "center">;
     // (undocumented)
@@ -1651,6 +1755,10 @@ export class ManifoldService {
     mesh: Mesh_3;
     // (undocumented)
     plugins: any;
+    // Warning: (ae-forgotten-export) The symbol "ManifoldRecipes" needs to be exported by the entry point index.d.ts
+    //
+    // @beta
+    recipes: ManifoldRecipes;
     toPolygonPoints(inputs: Inputs.Manifold.ManifoldDto<Manifold3D.Manifold>): Inputs.Base.Mesh3;
 }
 
@@ -1917,11 +2025,20 @@ namespace Math_3 {
 
 // @public
 export namespace Mesh {
+    export class MeshDto {
+        constructor(mesh?: Base.Mesh3);
+        mesh: Base.Mesh3;
+    }
     export class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
         tolerance?: number | undefined;
+    }
+    export class PolygonWithHolesDto {
+        constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
+        holes?: Base.Point3[][] | undefined;
+        points: Base.Point3[];
     }
     export class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3);
@@ -1948,7 +2065,11 @@ export namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
+    type MeshDto = Inputs_2.Mesh.MeshDto;
+    // (undocumented)
     type MeshMeshToleranceDto = WithDefaults<Inputs_2.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type PolygonWithHolesDto = Inputs_2.Mesh.PolygonWithHolesDto;
     // (undocumented)
     type SignedDistanceFromPlaneToPointDto = Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto;
     // (undocumented)
@@ -1961,6 +2082,13 @@ namespace Mesh_2 {
 
 // @public
 export namespace Point {
+    export class ArcThroughThreePointsDto {
+        constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3, segments?: number);
+        end: Base.Point3;
+        middle: Base.Point3;
+        segments?: number | undefined;
+        start: Base.Point3;
+    }
     export class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
         point: Base.Point3;
@@ -2141,6 +2269,8 @@ export namespace Point {
 
 // @public
 namespace Point_2 {
+    // (undocumented)
+    type ArcThroughThreePointsDto = WithDefaults<Inputs_2.Point.ArcThroughThreePointsDto, "segments">;
     // (undocumented)
     type ClosestPointFromPointsDto = Inputs_2.Point.ClosestPointFromPointsDto;
     // (undocumented)

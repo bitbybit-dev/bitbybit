@@ -198,21 +198,21 @@
     "packages": {
         "babylonjs": {
             "runner": "vitest",
-            "tests": 2072,
+            "tests": 2076,
             "suites": 57,
-            "lines": 98.77,
-            "branches": 96.42,
+            "lines": 98.78,
+            "branches": 96.43,
             "functions": 98.82,
-            "statements": 98.93
+            "statements": 98.94
         },
         "base": {
             "runner": "vitest",
-            "tests": 1683,
-            "suites": 34,
-            "lines": 99.54,
-            "branches": 96.25,
+            "tests": 1738,
+            "suites": 36,
+            "lines": 99.57,
+            "branches": 96.59,
             "functions": 100,
-            "statements": 99.57
+            "statements": 99.59
         },
         "cad-cloud-sdk": {
             "runner": "vitest",
@@ -225,8 +225,8 @@
         },
         "core": {
             "runner": "vitest",
-            "tests": 390,
-            "suites": 14,
+            "tests": 399,
+            "suites": 16,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -236,6 +236,24 @@
             "runner": "vitest",
             "tests": 99,
             "suites": 2
+        },
+        "ifc": {
+            "runner": "vitest",
+            "tests": 1137,
+            "suites": 46,
+            "lines": 98.57,
+            "branches": 93.21,
+            "functions": 99.66,
+            "statements": 98.57
+        },
+        "ifc-worker": {
+            "runner": "vitest",
+            "tests": 72,
+            "suites": 6,
+            "lines": 100,
+            "branches": 100,
+            "functions": 100,
+            "statements": 100
         },
         "jscad": {
             "runner": "vitest",
@@ -257,8 +275,8 @@
         },
         "manifold": {
             "runner": "vitest",
-            "tests": 374,
-            "suites": 10,
+            "tests": 408,
+            "suites": 11,
             "lines": 100,
             "branches": 100,
             "functions": 100,
@@ -266,7 +284,7 @@
         },
         "manifold-worker": {
             "runner": "vitest",
-            "tests": 471,
+            "tests": 475,
             "suites": 7,
             "lines": 100,
             "branches": 100,
@@ -302,21 +320,21 @@
         },
         "playcanvas": {
             "runner": "vitest",
-            "tests": 605,
+            "tests": 609,
             "suites": 12,
-            "lines": 95.73,
-            "branches": 87.88,
-            "functions": 98.08,
-            "statements": 95.19
+            "lines": 95.75,
+            "branches": 87.96,
+            "functions": 98.1,
+            "statements": 95.22
         },
         "threejs": {
             "runner": "vitest",
-            "tests": 545,
+            "tests": 549,
             "suites": 12,
-            "lines": 97.88,
-            "branches": 91.7,
-            "functions": 98.86,
-            "statements": 97.53
+            "lines": 97.9,
+            "branches": 91.75,
+            "functions": 98.87,
+            "statements": 97.54
         }
     }
 }

@@ -20,4 +20,4 @@ export * from "./scene-inputs";
 export * from "./node-inputs";
 export * from "./draw-inputs";
 export * from "./base-inputs";
-export { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/inputs";
+export { Asset, CSV, JSON, JSCAD, Manifold, IFC, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/inputs";

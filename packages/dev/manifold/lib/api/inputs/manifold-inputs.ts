@@ -120,7 +120,7 @@ export namespace Manifold {
         /**
          * Provide options without default values
          */
-        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -132,6 +132,7 @@ export namespace Manifold {
             if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
             if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
          * The solid or cross-section to draw.
@@ -177,10 +178,20 @@ export namespace Manifold {
          */
         crossSectionOpacity?: number | undefined = 1;
         /**
-         * When true, normals are computed for the mesh so it shades smoothly.
-         * @default false
+         * When true, solids shade smoothly across edges flatter than `minSharpAngle` and keep sharper
+         * ones crisp; when false, every face is shaded flat.
+         * @default true
          */
-        computeNormals?: boolean | undefined = false;
+        computeNormals?: boolean | undefined = true;
+        /**
+         * The angle between two faces, in degrees, above which their shared edge is drawn sharp when
+         * `computeNormals` is true.
+         * @default 40
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined = 40;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
@@ -209,7 +220,7 @@ export namespace Manifold {
         /**
          * Provide options without default values
          */
-        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number) {
             if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -221,6 +232,7 @@ export namespace Manifold {
             if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
             if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
          * The solids or cross-sections to draw with the same options.
@@ -266,10 +278,20 @@ export namespace Manifold {
          */
         crossSectionOpacity?: number | undefined = 1;
         /**
-         * When true, normals are computed for the meshes so they shade smoothly.
-         * @default false
+         * When true, solids shade smoothly across edges flatter than `minSharpAngle` and keep sharper
+         * ones crisp; when false, every face is shaded flat.
+         * @default true
          */
-        computeNormals?: boolean | undefined = false;
+        computeNormals?: boolean | undefined = true;
+        /**
+         * The angle between two faces, in degrees, above which their shared edge is drawn sharp when
+         * `computeNormals` is true.
+         * @default 40
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined = 40;
         /**
          * When true, the back of each face is drawn in its own color, which shows which way faces
          * point.
@@ -1823,9 +1845,10 @@ export namespace Manifold {
      * A solid or cross-section and an optional normal channel for `decomposeManifoldOrCrossSection`.
      */
     export class DecomposeManifoldOrCrossSectionDto<T> {
-        constructor(manifoldOrCrossSection?: T, normalIdx?: number) {
+        constructor(manifoldOrCrossSection?: T, normalIdx?: number, minSharpAngle?: number) {
             if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
          * The solid or cross-section to turn into plain data.
@@ -1836,6 +1859,16 @@ export namespace Manifold {
          * @optional true
          */
         normalIdx?: number | undefined;
+        /**
+         * When given, a solid's mesh carries normals after its positions, and edges sharper than this,
+         * in degrees, keep a normal on each side; 0 shades every face flat.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined;
     }
     /**
      * One solid or cross-section for the methods that accept either.
@@ -1866,9 +1899,10 @@ export namespace Manifold {
      * `decomposeManifoldsOrCrossSections`.
      */
     export class DecomposeManifoldsOrCrossSectionsDto<T> {
-        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {
+        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[], minSharpAngle?: number) {
             if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
             if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
          * The solids or cross-sections to turn into plain data, one result each.
@@ -1879,5 +1913,88 @@ export namespace Manifold {
          * @optional true
          */
         normalIdx?: number[] | undefined;
+        /**
+         * When given, each solid's mesh carries normals after its positions, and edges sharper than
+         * this, in degrees, keep a normal on each side; 0 shades every face flat.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined;
+    }
+    /**
+     * A recipe for `recipes.build`, which builds each of its roots as a solid, with how finely circles
+     * are divided and whether Z turns into Y. Experimental: the recipe format may still change.
+     * @beta
+     */
+    export class BuildRecipeDto {
+        constructor(recipe?: Base.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean) {
+            if (recipe !== undefined) { this.recipe = recipe; }
+            if (circularSegments !== undefined) { this.circularSegments = circularSegments; }
+            if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+            if (emptyWhenFailed !== undefined) { this.emptyWhenFailed = emptyWhenFailed; }
+        }
+        /**
+         * The recipe: steps such as polygons, extrusions and cuts, and the roots to build from them, as
+         * a package that describes geometry as data writes it.
+         * @default undefined
+         */
+        recipe!: Base.Recipe;
+        /**
+         * How many flat sides each circle of the recipe is divided into; more is rounder. The recipe
+         * leaves this to the kernel, so it is chosen here.
+         * @default 32
+         * @minimum 3
+         * @maximum Infinity
+         * @step 1
+         */
+        circularSegments?: number | undefined = 32;
+        /**
+         * When true, each solid turns a quarter turn about X so the recipe's Z points along Y, which is
+         * up when drawn: `(x, y, z)` becomes `(x, z, -y)`.
+         * @default false
+         */
+        adjustZtoY?: boolean | undefined = false;
+        /**
+         * When true, a root that cannot be built, such as an open triangle mesh, comes back empty and
+         * the others are still built; when false, it stops the build.
+         * @default false
+         */
+        emptyWhenFailed?: boolean | undefined = false;
+    }
+
+    /**
+     * A recipe for `recipes.surfaceMeshes`, which gives the roots made of triangle meshes alone as
+     * meshes, with which roots to read and whether Z turns into Y. Experimental: the recipe format may
+     * still change.
+     * @beta
+     */
+    export class RecipeSurfaceMeshesDto {
+        constructor(recipe?: Base.Recipe, roots?: number[], adjustZtoY?: boolean) {
+            if (recipe !== undefined) { this.recipe = recipe; }
+            if (roots !== undefined) { this.roots = roots; }
+            if (adjustZtoY !== undefined) { this.adjustZtoY = adjustZtoY; }
+        }
+        /**
+         * The recipe: steps such as polygons, extrusions and triangle meshes, and the roots to build
+         * from them, as a package that describes geometry as data writes it.
+         * @default undefined
+         */
+        recipe!: Base.Recipe;
+        /**
+         * The positions of the roots to read, such as the ones `recipes.build` gave back empty; every
+         * root when left out.
+         * @default undefined
+         * @optional true
+         */
+        roots?: number[] | undefined;
+        /**
+         * When true, each mesh turns a quarter turn about X so the recipe's Z points along Y, as
+         * `recipes.build` turns its solids: `(x, y, z)` becomes `(x, z, -y)`.
+         * @default false
+         */
+        adjustZtoY?: boolean | undefined = false;
     }
 }

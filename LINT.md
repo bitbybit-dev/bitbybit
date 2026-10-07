@@ -76,7 +76,10 @@ its defaults, so one `--fix` run pointed at `packages/dev` would delete the publ
   initial values and default parameters are names already). A file named `constants.ts` or
   `*.constants.ts` holds named numbers and is exempt, and so is the design package's `digest.ts`, a
   transcription of SHA-256 whose numbers are the standard's own. These hold the packages' code, not
-  tests, and the findings that predate them are in the suppressions file.
+  tests, and the findings that predate them are in the suppressions file. The suites that check a
+  package's output with an outside tool or time it (`packages/dev/*/validation`,
+  `packages/dev/*/bench`) keep the return types and the named object types but not the file length or
+  the numbers: they are tables of fixtures, sizes and budgets, each read where it stands.
 - **`base/lib/api/services/logic.ts` may compare loosely.** `compare` offers `==` and `!=` to its
   callers as operators of their own, beside `===` and `!==`; the loose forms are the feature.
 - **Unused variables**: a leading underscore marks an argument, a variable or a caught error as
@@ -142,8 +145,9 @@ from it, so a fix removes the directive rather than adding one.
   have said what the value is. A discriminated union keeps its variants inline, because the alias
   names the whole and each variant is told apart by its tag. A name that is not part of a package's
   API stays beside the code that owns it, or in the module the folder shares its state through; it
-  does not move into the published models. It covers the packages' code, not tests, mocks or
-  generated files, and the findings that predate it are in the suppressions file.
+  does not move into the published models. It covers the packages' code and their validation and
+  bench suites, not tests, mocks or generated files, and the findings that predate it are in the
+  suppressions file.
 
 Each local rule has a `RuleTester` suite beside it, run by `npm run test:scripts`.
 

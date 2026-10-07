@@ -8,7 +8,7 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
     /**
      * Provide options without default values
      */
-    constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+    constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number) {
         if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
         if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -20,6 +20,7 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
         if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
         if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+        if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
     }
     /**
      * The solid or cross-section to draw.
@@ -65,10 +66,20 @@ export class DrawManifoldOrCrossSectionDto<T, M> {
      */
     crossSectionOpacity?: number | undefined = 1;
     /**
-     * When true, normals are computed for the mesh so it shades smoothly.
-     * @default false
+     * When true, solids shade smoothly across edges flatter than `minSharpAngle` and keep sharper
+     * ones crisp; when false, every face is shaded flat.
+     * @default true
      */
-    computeNormals?: boolean | undefined = false;
+    computeNormals?: boolean | undefined = true;
+    /**
+     * The angle between two faces, in degrees, above which their shared edge is drawn sharp when
+     * `computeNormals` is true.
+     * @default 40
+     * @minimum 0
+     * @maximum 180
+     * @step 5
+     */
+    minSharpAngle?: number | undefined = 40;
     /**
      * When true, the back of each face is drawn in its own color, which shows which way faces
      * point.
@@ -97,7 +108,7 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
     /**
      * Provide options without default values
      */
-    constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+    constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number) {
         if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
         if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
         if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
@@ -109,6 +120,7 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
         if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
         if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
         if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+        if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
     }
     /**
      * The solids or cross-sections to draw with the same options.
@@ -154,10 +166,20 @@ export class DrawManifoldsOrCrossSectionsDto<T, M> {
      */
     crossSectionOpacity?: number | undefined = 1;
     /**
-     * When true, normals are computed for the meshes so they shade smoothly.
-     * @default false
+     * When true, solids shade smoothly across edges flatter than `minSharpAngle` and keep sharper
+     * ones crisp; when false, every face is shaded flat.
+     * @default true
      */
-    computeNormals?: boolean | undefined = false;
+    computeNormals?: boolean | undefined = true;
+    /**
+     * The angle between two faces, in degrees, above which their shared edge is drawn sharp when
+     * `computeNormals` is true.
+     * @default 40
+     * @minimum 0
+     * @maximum 180
+     * @step 5
+     */
+    minSharpAngle?: number | undefined = 40;
     /**
      * When true, the back of each face is drawn in its own color, which shows which way faces
      * point.

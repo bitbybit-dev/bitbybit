@@ -14,7 +14,7 @@ that reads an allow-list fails on an entry that no longer matches anything, so t
 ## gen-inputs.mjs and inputs.config.mjs
 
 `npm run gen:inputs` writes each kernel's inputs namespace (`occ-inputs.ts`, `jscad-inputs.ts`,
-`manifold-inputs.ts`, `verb-inputs.ts`) from the fragments in the directory beside it;
+`manifold-inputs.ts`, `ifc-inputs.ts`, `verb-inputs.ts`) from the fragments in the directory beside it;
 `npm run check:inputs` (part of `npm test`) writes nothing and fails when a committed file is not what
 its fragments assemble to, naming the first differing line.
 
@@ -309,6 +309,23 @@ experimental, off once released), the file the schema is written to, and the fil
 A released schema never changes - `published.json` records each by SHA-256 - so a change to the format
 after a release needs a new minor.
 
+## gen-ifc-schema.mjs
+
+`npm run gen:ifc-schema` writes the IFC package's schema tables (`packages/dev/ifc/lib/schema/generated/`)
+from buildingSMART's EXPRESS files in `packages/dev/ifc/schema/`; `npm run check:ifc-schema` (part of
+`npm test`) writes nothing and fails when a committed table is not what its schema generates.
+
+- The EXPRESS files are kept exactly as buildingSMART publishes them: their notice allows translating
+  them into another computer language with attribution, and asks consent for changes. The generator
+  copies the notice into every table it writes and refuses a schema file that no longer opens with it.
+- A table holds, per entity, its supertype, its explicit attributes (name, type, optionality), the
+  inherited attributes it derives and its inverse attributes; per type, its definition, enumeration
+  values or select options. It leaves out `WHERE`, `FUNCTION` and `RULE` blocks.
+- `SCHEMAS` names each source, its output and the constant it exports. A schema is added there and in
+  the package's `lib/schema/registry.ts`.
+- The generator fails on a type it cannot read and on a name the schema does not define, rather than
+  writing a table that would decode files wrongly.
+
 ## check-strict-baselines.mjs
 
 `npm run check:strict-baselines` (`verify.yml`) holds every package at zero strict errors. Each package
@@ -513,9 +530,10 @@ follows type names, the parity check follows `extends`, the worker generator ref
   the assembled file, while the documentation check wants the fragments, where DTOs are authored. A
   missing directory is an empty surface.
 - `parse(file)` parses each file once per process.
-- `HAND_DIRS` and `HAND_FILES` are the hand-written part of the three worker packages: the members the
-  worker generator merges into its generated classes and the init classes it does not generate. They run
-  on the calling thread, so the documentation check audits them and the resolved-entry check walks them.
+- `HAND_DIRS` and `HAND_FILES` are the hand-written part of the four worker packages (OCCT, JSCAD,
+  Manifold and IFC): the members the worker generator merges into its generated classes and the init
+  classes it does not generate. They run on the calling thread, so the documentation check audits them
+  and the resolved-entry check walks them.
 - `INPUTS_CHAINS` names, per package with inputs DTOs, the packages whose inputs its `Inputs` namespace
   re-exports, its own first: a DTO name declared in two of them (the renderers' `Draw`) means the nearest.
 - `isPublic` excludes private, protected and static members; `jsdocOf` returns the last JSDoc block

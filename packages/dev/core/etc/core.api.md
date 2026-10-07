@@ -10,28 +10,28 @@ import { Subject } from 'rxjs';
 // @public
 export class Asset {
     constructor();
-    arrayBufferToUint8Array(inputs: Inputs_6.Asset.ArrayBufferToUint8ArrayDto): Uint8Array;
+    arrayBufferToUint8Array(inputs: Inputs_7.Asset.ArrayBufferToUint8ArrayDto): Uint8Array;
     // Warning: (ae-forgotten-export) The symbol "AssetManager" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     assetManager: AssetManager;
-    blobToFile(inputs: Inputs_6.Asset.BlobToFileDto): File;
-    createObjectURL(inputs: Inputs_6.Asset.FileDto): string;
-    createObjectURLs(inputs: Inputs_6.Asset.FilesDto): string[];
-    download(inputs: Inputs_6.Asset.DownloadDto): void;
-    fetchBlob(inputs: Inputs_6.Asset.FetchDto): Promise<Blob>;
-    fetchFile(inputs: Inputs_6.Asset.FetchDto): Promise<File>;
-    fetchJSON(inputs: Inputs_6.Asset.FetchDto): Promise<any>;
-    fetchText(inputs: Inputs_6.Asset.FetchDto): Promise<string>;
-    fileToBlob(inputs: Inputs_6.Asset.FileDto): Blob;
-    // Warning: (ae-forgotten-export) The symbol "Inputs_6" needs to be exported by the entry point index.d.ts
-    getFile(inputs: Inputs_6.Asset.GetAssetDto): Promise<File>;
-    getLocalFile(inputs: Inputs_6.Asset.GetAssetDto): Promise<File | File[]>;
-    getLocalTextFile(inputs: Inputs_6.Asset.GetAssetDto): Promise<string | string[]>;
-    getTextFile(inputs: Inputs_6.Asset.GetAssetDto): Promise<string>;
-    toArrayBuffer(inputs: Inputs_6.Asset.FileDto): Promise<ArrayBuffer>;
-    toUint8Array(inputs: Inputs_6.Asset.FileDto): Promise<Uint8Array>;
-    uint8ArrayToArrayBuffer(inputs: Inputs_6.Asset.Uint8ArrayToArrayBufferDto): ArrayBuffer;
+    blobToFile(inputs: Inputs_7.Asset.BlobToFileDto): File;
+    createObjectURL(inputs: Inputs_7.Asset.FileDto): string;
+    createObjectURLs(inputs: Inputs_7.Asset.FilesDto): string[];
+    download(inputs: Inputs_7.Asset.DownloadDto): void;
+    fetchBlob(inputs: Inputs_7.Asset.FetchDto): Promise<Blob>;
+    fetchFile(inputs: Inputs_7.Asset.FetchDto): Promise<File>;
+    fetchJSON(inputs: Inputs_7.Asset.FetchDto): Promise<any>;
+    fetchText(inputs: Inputs_7.Asset.FetchDto): Promise<string>;
+    fileToBlob(inputs: Inputs_7.Asset.FileDto): Blob;
+    // Warning: (ae-forgotten-export) The symbol "Inputs_7" needs to be exported by the entry point index.d.ts
+    getFile(inputs: Inputs_7.Asset.GetAssetDto): Promise<File>;
+    getLocalFile(inputs: Inputs_7.Asset.GetAssetDto): Promise<File | File[]>;
+    getLocalTextFile(inputs: Inputs_7.Asset.GetAssetDto): Promise<string | string[]>;
+    getTextFile(inputs: Inputs_7.Asset.GetAssetDto): Promise<string>;
+    toArrayBuffer(inputs: Inputs_7.Asset.FileDto): Promise<ArrayBuffer>;
+    toUint8Array(inputs: Inputs_7.Asset.FileDto): Promise<Uint8Array>;
+    uint8ArrayToArrayBuffer(inputs: Inputs_7.Asset.Uint8ArrayToArrayBufferDto): ArrayBuffer;
 }
 
 // @public
@@ -95,29 +95,29 @@ namespace Asset_2 {
 // @public
 namespace Asset_3 {
     // (undocumented)
-    type ArrayBufferToUint8ArrayDto = Inputs_6.Asset.ArrayBufferToUint8ArrayDto;
+    type ArrayBufferToUint8ArrayDto = Inputs_7.Asset.ArrayBufferToUint8ArrayDto;
     // Warning: (ae-forgotten-export) The symbol "WithDefaults" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    type AssetFileByUrlDto = WithDefaults<Inputs_6.Asset.AssetFileByUrlDto, "hidden">;
+    type AssetFileByUrlDto = WithDefaults<Inputs_7.Asset.AssetFileByUrlDto, "hidden">;
     // (undocumented)
-    type AssetFileDto = WithDefaults<Inputs_6.Asset.AssetFileDto, "hidden">;
+    type AssetFileDto = WithDefaults<Inputs_7.Asset.AssetFileDto, "hidden">;
     // (undocumented)
-    type AssetGlbDataDto = WithDefaults<Inputs_6.Asset.AssetGlbDataDto, "fileName" | "hidden">;
+    type AssetGlbDataDto = WithDefaults<Inputs_7.Asset.AssetGlbDataDto, "fileName" | "hidden">;
     // (undocumented)
-    type BlobToFileDto = WithDefaults<Inputs_6.Asset.BlobToFileDto, "fileName">;
+    type BlobToFileDto = WithDefaults<Inputs_7.Asset.BlobToFileDto, "fileName">;
     // (undocumented)
-    type DownloadDto = WithDefaults<Inputs_6.Asset.DownloadDto, "extension" | "contentType">;
+    type DownloadDto = WithDefaults<Inputs_7.Asset.DownloadDto, "extension" | "contentType">;
     // (undocumented)
-    type FetchDto = Inputs_6.Asset.FetchDto;
+    type FetchDto = Inputs_7.Asset.FetchDto;
     // (undocumented)
-    type FileDto = Inputs_6.Asset.FileDto;
+    type FileDto = Inputs_7.Asset.FileDto;
     // (undocumented)
-    type FilesDto = Inputs_6.Asset.FilesDto;
+    type FilesDto = Inputs_7.Asset.FilesDto;
     // (undocumented)
-    type GetAssetDto = Inputs_6.Asset.GetAssetDto;
+    type GetAssetDto = Inputs_7.Asset.GetAssetDto;
     // (undocumented)
-    type Uint8ArrayToArrayBufferDto = Inputs_6.Asset.Uint8ArrayToArrayBufferDto;
+    type Uint8ArrayToArrayBufferDto = Inputs_7.Asset.Uint8ArrayToArrayBufferDto;
 }
 
 // @public
@@ -238,17 +238,13 @@ export namespace BaseTypes {
 
 // @public
 export interface BitByBitWorkerManagers {
+    // Warning: (ae-forgotten-export) The symbol "IFCWorkerManager" needs to be exported by the entry point index.d.ts
+    ifcWorkerManager: IFCWorkerManager;
     // Warning: (ae-forgotten-export) The symbol "JSCADWorkerManager" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     jscadWorkerManager: JSCADWorkerManager;
     // Warning: (ae-forgotten-export) The symbol "ManifoldWorkerManager" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     manifoldWorkerManager: ManifoldWorkerManager;
     // Warning: (ae-forgotten-export) The symbol "OCCTWorkerManager" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
     occtWorkerManager: OCCTWorkerManager;
 }
 
@@ -342,36 +338,36 @@ namespace Color {
 
 // @public
 namespace Color_2 {
-    // Warning: (ae-forgotten-export) The symbol "Inputs_5" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Inputs_6" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    type HexDto = WithDefaults<Inputs_5.Color.HexDto, "color">;
+    type HexDto = WithDefaults<Inputs_6.Color.HexDto, "color">;
     // (undocumented)
-    type HexDtoMapped = WithDefaults<Inputs_5.Color.HexDtoMapped, "color" | "from" | "to">;
+    type HexDtoMapped = WithDefaults<Inputs_6.Color.HexDtoMapped, "color" | "from" | "to">;
     // (undocumented)
-    type InvertHexDto = WithDefaults<Inputs_5.Color.InvertHexDto, "color" | "blackAndWhite">;
+    type InvertHexDto = WithDefaults<Inputs_6.Color.InvertHexDto, "color" | "blackAndWhite">;
     // (undocumented)
-    type Rgb1Dto = WithDefaults<Inputs_5.Color.Rgb1Dto, "colorRgb">;
+    type Rgb1Dto = WithDefaults<Inputs_6.Color.Rgb1Dto, "colorRgb">;
     // (undocumented)
-    type Rgb255Dto = WithDefaults<Inputs_5.Color.Rgb255Dto, "colorRgb">;
+    type Rgb255Dto = WithDefaults<Inputs_6.Color.Rgb255Dto, "colorRgb">;
     // (undocumented)
-    type Rgba1Dto = WithDefaults<Inputs_5.Color.Rgba1Dto, "colorRgba">;
+    type Rgba1Dto = WithDefaults<Inputs_6.Color.Rgba1Dto, "colorRgba">;
     // (undocumented)
-    type Rgba255Dto = WithDefaults<Inputs_5.Color.Rgba255Dto, "colorRgba">;
+    type Rgba255Dto = WithDefaults<Inputs_6.Color.Rgba255Dto, "colorRgba">;
     // (undocumented)
-    type RgbaAttomic1Dto = WithDefaults<Inputs_5.Color.RgbaAttomic1Dto, "r" | "g" | "b" | "a">;
+    type RgbaAttomic1Dto = WithDefaults<Inputs_6.Color.RgbaAttomic1Dto, "r" | "g" | "b" | "a">;
     // (undocumented)
-    type RgbaAttomic255Dto = WithDefaults<Inputs_5.Color.RgbaAttomic255Dto, "r" | "g" | "b" | "a">;
+    type RgbaAttomic255Dto = WithDefaults<Inputs_6.Color.RgbaAttomic255Dto, "r" | "g" | "b" | "a">;
     // (undocumented)
-    type RgbAttomic1Dto = WithDefaults<Inputs_5.Color.RgbAttomic1Dto, "r" | "g" | "b">;
+    type RgbAttomic1Dto = WithDefaults<Inputs_6.Color.RgbAttomic1Dto, "r" | "g" | "b">;
     // (undocumented)
-    type RgbAttomic255Dto = WithDefaults<Inputs_5.Color.RgbAttomic255Dto, "r" | "g" | "b">;
+    type RgbAttomic255Dto = WithDefaults<Inputs_6.Color.RgbAttomic255Dto, "r" | "g" | "b">;
     // (undocumented)
-    type RGBMinMaxDto = WithDefaults<Inputs_5.Color.RGBMinMaxDto, "r" | "g" | "b" | "min" | "max">;
+    type RGBMinMaxDto = WithDefaults<Inputs_6.Color.RGBMinMaxDto, "r" | "g" | "b" | "min" | "max">;
     // (undocumented)
-    type RGBObjectDto = Inputs_5.Color.RGBObjectDto;
+    type RGBObjectDto = Inputs_6.Color.RGBObjectDto;
     // (undocumented)
-    type RGBObjectMaxDto = WithDefaults<Inputs_5.Color.RGBObjectMaxDto, "min" | "max">;
+    type RGBObjectMaxDto = WithDefaults<Inputs_6.Color.RGBObjectMaxDto, "min" | "max">;
 }
 
 // @public (undocumented)
@@ -434,6 +430,9 @@ export class ContextBase {
 export function contrastColor(color: string, contrast: number): string;
 
 // @public
+export function createIfcWorkerFromCDN(cdnUrl?: string): Worker;
+
+// @public
 export function createJscadWorkerFromCDN(cdnUrl?: string): Worker;
 
 // @public
@@ -446,11 +445,7 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
 export function createWorkersFromCDN(options: WorkerOptions_2): WorkerInstances;
 
 // @public
-export function createWorkersFromUrls(workerUrls: {
-    occtWorkerUrl?: URL | string | undefined;
-    jscadWorkerUrl?: URL | string | undefined;
-    manifoldWorkerUrl?: URL | string | undefined;
-}): WorkerInstances;
+export function createWorkersFromUrls(workerUrls: WorkerUrls): WorkerInstances;
 
 // @public
 namespace CSV {
@@ -540,40 +535,40 @@ namespace CSV {
 // @public
 namespace CSV_2 {
     // (undocumented)
-    type ArrayToCsvDto = WithDefaults<Inputs_6.CSV.ArrayToCsvDto, "array" | "rowSeparator" | "columnSeparator">;
+    type ArrayToCsvDto = WithDefaults<Inputs_7.CSV.ArrayToCsvDto, "array" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type GetHeadersDto = WithDefaults<Inputs_6.CSV.GetHeadersDto, "csv" | "headerRow" | "rowSeparator" | "columnSeparator">;
+    type GetHeadersDto = WithDefaults<Inputs_7.CSV.GetHeadersDto, "csv" | "headerRow" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type GetRowCountDto = WithDefaults<Inputs_6.CSV.GetRowCountDto, "csv" | "hasHeaders" | "rowSeparator" | "columnSeparator">;
+    type GetRowCountDto = WithDefaults<Inputs_7.CSV.GetRowCountDto, "csv" | "hasHeaders" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type JsonToCsvAutoDto<T = Record<string, unknown>> = WithDefaults<Inputs_6.CSV.JsonToCsvAutoDto<T>, "json" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    type JsonToCsvAutoDto<T = Record<string, unknown>> = WithDefaults<Inputs_7.CSV.JsonToCsvAutoDto<T>, "json" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type JsonToCsvDto<T = Record<string, unknown>> = WithDefaults<Inputs_6.CSV.JsonToCsvDto<T>, "json" | "headers" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
+    type JsonToCsvDto<T = Record<string, unknown>> = WithDefaults<Inputs_7.CSV.JsonToCsvDto<T>, "json" | "headers" | "includeHeaders" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type ParseToArrayDto = WithDefaults<Inputs_6.CSV.ParseToArrayDto, "csv" | "rowSeparator" | "columnSeparator">;
+    type ParseToArrayDto = WithDefaults<Inputs_7.CSV.ParseToArrayDto, "csv" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type ParseToJsonDto = WithDefaults<Inputs_6.CSV.ParseToJsonDto, "csv" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    type ParseToJsonDto = WithDefaults<Inputs_7.CSV.ParseToJsonDto, "csv" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type ParseToJsonWithHeadersDto = WithDefaults<Inputs_6.CSV.ParseToJsonWithHeadersDto, "csv" | "headers" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    type ParseToJsonWithHeadersDto = WithDefaults<Inputs_7.CSV.ParseToJsonWithHeadersDto, "csv" | "headers" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
     // (undocumented)
-    type QueryColumnDto = WithDefaults<Inputs_6.CSV.QueryColumnDto, "csv" | "column" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator" | "asNumber">;
+    type QueryColumnDto = WithDefaults<Inputs_7.CSV.QueryColumnDto, "csv" | "column" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator" | "asNumber">;
     // (undocumented)
-    type QueryRowsByValueDto = WithDefaults<Inputs_6.CSV.QueryRowsByValueDto, "csv" | "column" | "value" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
+    type QueryRowsByValueDto = WithDefaults<Inputs_7.CSV.QueryRowsByValueDto, "csv" | "column" | "value" | "headerRow" | "dataStartRow" | "rowSeparator" | "columnSeparator">;
 }
 
 // @public
 export class CSVBitByBit {
-    arrayToCsv(inputs: Inputs_6.CSV.ArrayToCsvDto): string;
-    getColumnCount(inputs: Inputs_6.CSV.ParseToArrayDto): number;
-    getHeaders(inputs: Inputs_6.CSV.GetHeadersDto): string[];
-    getRowCount(inputs: Inputs_6.CSV.GetRowCountDto): number;
-    jsonToCsv<T = Record<string, unknown>>(inputs: Inputs_6.CSV.JsonToCsvDto<T>): string;
-    jsonToCsvAuto<T = Record<string, unknown>>(inputs: Inputs_6.CSV.JsonToCsvAutoDto<T>): string;
-    parseToArray(inputs: Inputs_6.CSV.ParseToArrayDto): string[][];
-    parseToJson<T = Record<string, string | number>>(inputs: Inputs_6.CSV.ParseToJsonDto): T[];
-    parseToJsonWithHeaders<T = Record<string, string | number>>(inputs: Inputs_6.CSV.ParseToJsonWithHeadersDto): T[];
-    queryColumn(inputs: Inputs_6.CSV.QueryColumnDto): (string | number)[];
-    queryRowsByValue<T = Record<string, string | number>>(inputs: Inputs_6.CSV.QueryRowsByValueDto): T[];
+    arrayToCsv(inputs: Inputs_7.CSV.ArrayToCsvDto): string;
+    getColumnCount(inputs: Inputs_7.CSV.ParseToArrayDto): number;
+    getHeaders(inputs: Inputs_7.CSV.GetHeadersDto): string[];
+    getRowCount(inputs: Inputs_7.CSV.GetRowCountDto): number;
+    jsonToCsv<T = Record<string, unknown>>(inputs: Inputs_7.CSV.JsonToCsvDto<T>): string;
+    jsonToCsvAuto<T = Record<string, unknown>>(inputs: Inputs_7.CSV.JsonToCsvAutoDto<T>): string;
+    parseToArray(inputs: Inputs_7.CSV.ParseToArrayDto): string[][];
+    parseToJson<T = Record<string, string | number>>(inputs: Inputs_7.CSV.ParseToJsonDto): T[];
+    parseToJsonWithHeaders<T = Record<string, string | number>>(inputs: Inputs_7.CSV.ParseToJsonWithHeadersDto): T[];
+    queryColumn(inputs: Inputs_7.CSV.QueryColumnDto): (string | number)[];
+    queryRowsByValue<T = Record<string, string | number>>(inputs: Inputs_7.CSV.QueryRowsByValueDto): T[];
 }
 
 // @public
@@ -645,29 +640,29 @@ namespace Dates {
 // @public
 namespace Dates_2 {
     // (undocumented)
-    type CreateDateDto = WithDefaults<Inputs_5.Dates.CreateDateDto, "year" | "month" | "day" | "hours" | "minutes" | "seconds" | "milliseconds">;
+    type CreateDateDto = WithDefaults<Inputs_6.Dates.CreateDateDto, "year" | "month" | "day" | "hours" | "minutes" | "seconds" | "milliseconds">;
     // (undocumented)
-    type CreateFromUnixTimeStampDto = WithDefaults<Inputs_5.Dates.CreateFromUnixTimeStampDto, "unixTimeStamp">;
+    type CreateFromUnixTimeStampDto = WithDefaults<Inputs_6.Dates.CreateFromUnixTimeStampDto, "unixTimeStamp">;
     // (undocumented)
-    type DateDayDto = WithDefaults<Inputs_5.Dates.DateDayDto, "day">;
+    type DateDayDto = WithDefaults<Inputs_6.Dates.DateDayDto, "day">;
     // (undocumented)
-    type DateDto = Inputs_5.Dates.DateDto;
+    type DateDto = Inputs_6.Dates.DateDto;
     // (undocumented)
-    type DateHoursDto = WithDefaults<Inputs_5.Dates.DateHoursDto, "hours">;
+    type DateHoursDto = WithDefaults<Inputs_6.Dates.DateHoursDto, "hours">;
     // (undocumented)
-    type DateMillisecondsDto = WithDefaults<Inputs_5.Dates.DateMillisecondsDto, "milliseconds">;
+    type DateMillisecondsDto = WithDefaults<Inputs_6.Dates.DateMillisecondsDto, "milliseconds">;
     // (undocumented)
-    type DateMinutesDto = WithDefaults<Inputs_5.Dates.DateMinutesDto, "minutes">;
+    type DateMinutesDto = WithDefaults<Inputs_6.Dates.DateMinutesDto, "minutes">;
     // (undocumented)
-    type DateMonthDto = WithDefaults<Inputs_5.Dates.DateMonthDto, "month">;
+    type DateMonthDto = WithDefaults<Inputs_6.Dates.DateMonthDto, "month">;
     // (undocumented)
-    type DateSecondsDto = WithDefaults<Inputs_5.Dates.DateSecondsDto, "seconds">;
+    type DateSecondsDto = WithDefaults<Inputs_6.Dates.DateSecondsDto, "seconds">;
     // (undocumented)
-    type DateStringDto = Inputs_5.Dates.DateStringDto;
+    type DateStringDto = Inputs_6.Dates.DateStringDto;
     // (undocumented)
-    type DateTimeDto = WithDefaults<Inputs_5.Dates.DateTimeDto, "time">;
+    type DateTimeDto = WithDefaults<Inputs_6.Dates.DateTimeDto, "time">;
     // (undocumented)
-    type DateYearDto = WithDefaults<Inputs_5.Dates.DateYearDto, "year">;
+    type DateYearDto = WithDefaults<Inputs_6.Dates.DateYearDto, "year">;
 }
 
 // @public
@@ -818,39 +813,43 @@ export class DrawCore {
     // (undocumented)
     checkIfElementsInArrayAreNumbers(array: unknown[]): boolean;
     // (undocumented)
-    detectDecomposedMesh(entity: unknown): entity is Inputs_6.OCCT.DecomposedMeshDto;
+    detectDecomposedMesh(entity: unknown): entity is Inputs_7.OCCT.DecomposedMeshDto;
     // (undocumented)
-    detectDecomposedMeshes(entity: unknown): entity is Inputs_6.OCCT.DecomposedMeshDto[];
-    detectDesignBuild(entity: unknown): entity is Models_3.OCCT.DesignBuildResult<Inputs_6.OCCT.TopoDSShapePointer>;
-    detectFrame(entity: unknown): entity is Inputs_6.Base.Frame;
+    detectDecomposedMeshes(entity: unknown): entity is Inputs_7.OCCT.DecomposedMeshDto[];
+    detectDesignBuild(entity: unknown): entity is Models_3.OCCT.DesignBuildResult<Inputs_7.OCCT.TopoDSShapePointer>;
+    detectFrame(entity: unknown): entity is Inputs_7.Base.Frame;
     // (undocumented)
-    detectFrames(entity: unknown): entity is Inputs_6.Base.Frame[];
+    detectFrames(entity: unknown): entity is Inputs_7.Base.Frame[];
     // (undocumented)
-    detectJscadMesh(entity: unknown): entity is Inputs_6.JSCAD.JSCADGeom2 | Inputs_6.JSCAD.JSCADGeom3;
+    detectJscadMesh(entity: unknown): entity is Inputs_7.JSCAD.JSCADGeom2 | Inputs_7.JSCAD.JSCADGeom3;
     // (undocumented)
-    detectJscadMeshes(entity: unknown): entity is (Inputs_6.JSCAD.JSCADGeom2 | Inputs_6.JSCAD.JSCADGeom3)[];
-    detectJscadPath(entity: unknown): entity is Inputs_6.JSCAD.JSCADPath2;
+    detectJscadMeshes(entity: unknown): entity is (Inputs_7.JSCAD.JSCADGeom2 | Inputs_7.JSCAD.JSCADGeom3)[];
+    detectJscadPath(entity: unknown): entity is Inputs_7.JSCAD.JSCADPath2;
     // (undocumented)
-    detectJscadPaths(entity: unknown): entity is Inputs_6.JSCAD.JSCADPath2[];
+    detectJscadPaths(entity: unknown): entity is Inputs_7.JSCAD.JSCADPath2[];
     // (undocumented)
-    detectLine(entity: unknown): entity is Inputs_6.Base.Line3 | Inputs_6.Base.Segment3;
+    detectLine(entity: unknown): entity is Inputs_7.Base.Line3 | Inputs_7.Base.Segment3;
     // (undocumented)
-    detectLines(entity: unknown): entity is (Inputs_6.Base.Line3 | Inputs_6.Base.Segment3)[];
+    detectLines(entity: unknown): entity is (Inputs_7.Base.Line3 | Inputs_7.Base.Segment3)[];
     // (undocumented)
-    detectManifoldShape(entity: unknown): entity is Inputs_6.Manifold.ManifoldPointer | Inputs_6.Manifold.CrossSectionPointer;
+    detectManifoldMesh(entity: unknown): entity is Inputs_7.Manifold.DecomposedManifoldMeshDto;
     // (undocumented)
-    detectManifoldShapes(entity: unknown): entity is (Inputs_6.Manifold.ManifoldPointer | Inputs_6.Manifold.CrossSectionPointer)[];
+    detectManifoldMeshes(entity: unknown): entity is Inputs_7.Manifold.DecomposedManifoldMeshDto[];
+    // (undocumented)
+    detectManifoldShape(entity: unknown): entity is Inputs_7.Manifold.ManifoldPointer | Inputs_7.Manifold.CrossSectionPointer;
+    // (undocumented)
+    detectManifoldShapes(entity: unknown): entity is (Inputs_7.Manifold.ManifoldPointer | Inputs_7.Manifold.CrossSectionPointer)[];
     detectNode(entity: unknown): boolean;
     // (undocumented)
     detectNodes(entity: unknown): boolean;
     // (undocumented)
-    detectOcctShape(entity: unknown): entity is Inputs_6.OCCT.TopoDSShapePointer;
+    detectOcctShape(entity: unknown): entity is Inputs_7.OCCT.TopoDSShapePointer;
     // (undocumented)
-    detectOcctShapes(entity: unknown): entity is Inputs_6.OCCT.TopoDSShapePointer[];
+    detectOcctShapes(entity: unknown): entity is Inputs_7.OCCT.TopoDSShapePointer[];
     // (undocumented)
-    detectPoint(entity: unknown): entity is Inputs_6.Base.Point3;
+    detectPoint(entity: unknown): entity is Inputs_7.Base.Point3;
     // (undocumented)
-    detectPoints(entity: unknown): entity is Inputs_6.Base.Point3[];
+    detectPoints(entity: unknown): entity is Inputs_7.Base.Point3[];
     detectPolyline(entity: unknown): boolean;
     // (undocumented)
     detectPolylines(entity: unknown): boolean;
@@ -858,9 +857,9 @@ export class DrawCore {
     detectShapesWithAppearance(entity: unknown): entity is ShapeWithAppearance[];
     detectShapeWithAppearance(entity: unknown): entity is ShapeWithAppearance;
     // (undocumented)
-    detectTag(entity: unknown): entity is Inputs_6.Tag.TagDto;
+    detectTag(entity: unknown): entity is Inputs_7.Tag.TagDto;
     // (undocumented)
-    detectTags(entity: unknown): entity is Inputs_6.Tag.TagDto[];
+    detectTags(entity: unknown): entity is Inputs_7.Tag.TagDto[];
     detectVerbCurve(entity: unknown): boolean;
     // (undocumented)
     detectVerbCurves(entity: unknown): boolean;
@@ -869,11 +868,11 @@ export class DrawCore {
     detectVerbSurfaces(entity: unknown): boolean;
     // (undocumented)
     protected drawableKinds(): readonly DrawableKind[];
-    protected frameMarkerLines(frames: readonly Inputs_6.Base.Frame[], style: FrameMarkerStyle): FrameMarkerLines;
-    protected isTagDto(value: unknown): value is Inputs_6.Tag.TagDto;
-    protected isTagDtoArray(value: unknown): value is Inputs_6.Tag.TagDto[];
+    protected frameMarkerLines(frames: readonly Inputs_7.Base.Frame[], style: FrameMarkerStyle): FrameMarkerLines;
+    protected isTagDto(value: unknown): value is Inputs_7.Tag.TagDto;
+    protected isTagDtoArray(value: unknown): value is Inputs_7.Tag.TagDto[];
     protected isValidDrawInput(entity: unknown): boolean;
-    protected pathToPolylinePoints(path: Inputs_6.JSCAD.JSCADPath2): Inputs_6.Base.Point3[];
+    protected pathToPolylinePoints(path: Inputs_7.JSCAD.JSCADPath2): Inputs_7.Base.Point3[];
     protected resolveDrawableKind(entity: unknown, phase: DrawPhase, handled: (kind: string) => boolean): string | undefined;
 }
 
@@ -903,6 +902,8 @@ export class DrawHelperCore {
         g: number;
         b: number;
     } | null;
+    protected manifoldMeshAttributes(mesh: ManifoldVertexData, minSharpAngle: number): ManifoldMeshAttributes;
+    protected manifoldSharpAngle(options: ManifoldShadingOptions): number;
     protected normalizeColor(color: number[] | string | undefined, fallback: string): string;
     protected normalizedColorToHex(r: number, g: number, b: number): string;
     protected prepareBackFaceMeshData(meshDataArray: MeshData[]): MeshData;
@@ -1139,59 +1140,59 @@ namespace Frame {
 // @public
 namespace Frame_2 {
     // (undocumented)
-    type BestFitDto = Inputs_5.Frame.BestFitDto;
+    type BestFitDto = Inputs_6.Frame.BestFitDto;
     // (undocumented)
-    type ChildFrameDto = Inputs_5.Frame.ChildFrameDto;
+    type ChildFrameDto = Inputs_6.Frame.ChildFrameDto;
     // (undocumented)
-    type ChildFramesDto = Inputs_5.Frame.ChildFramesDto;
+    type ChildFramesDto = Inputs_6.Frame.ChildFramesDto;
     // (undocumented)
-    type ChildFrameSharedDto = Inputs_5.Frame.ChildFrameSharedDto;
+    type ChildFrameSharedDto = Inputs_6.Frame.ChildFrameSharedDto;
     // (undocumented)
-    type CreateFrameDto = WithDefaults<Inputs_5.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
+    type CreateFrameDto = WithDefaults<Inputs_6.Frame.CreateFrameDto, "origin" | "normal" | "direction">;
     // (undocumented)
-    type FrameDto = Inputs_5.Frame.FrameDto;
+    type FrameDto = Inputs_6.Frame.FrameDto;
     // (undocumented)
-    type FramePointDto = Inputs_5.Frame.FramePointDto;
+    type FramePointDto = Inputs_6.Frame.FramePointDto;
     // (undocumented)
-    type FramePointsDto = Inputs_5.Frame.FramePointsDto;
+    type FramePointsDto = Inputs_6.Frame.FramePointsDto;
     // (undocumented)
-    type FramesDto = Inputs_5.Frame.FramesDto;
+    type FramesDto = Inputs_6.Frame.FramesDto;
     // (undocumented)
-    type FrameVectorDto = Inputs_5.Frame.FrameVectorDto;
+    type FrameVectorDto = Inputs_6.Frame.FrameVectorDto;
     // (undocumented)
-    type FromToDto = Inputs_5.Frame.FromToDto;
+    type FromToDto = Inputs_6.Frame.FromToDto;
     // (undocumented)
-    type GridDto = WithDefaults<Inputs_5.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
+    type GridDto = WithDefaults<Inputs_6.Frame.GridDto, "countX" | "countY" | "spacingX" | "spacingY" | "centered">;
     // (undocumented)
-    type HexGridDto = WithDefaults<Inputs_5.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
+    type HexGridDto = WithDefaults<Inputs_6.Frame.HexGridDto, "countX" | "countY" | "radius" | "centered">;
     // (undocumented)
-    type OffsetDto = WithDefaults<Inputs_5.Frame.OffsetDto, "distance">;
+    type OffsetDto = WithDefaults<Inputs_6.Frame.OffsetDto, "distance">;
     // (undocumented)
-    type OffsetFramesDto = WithDefaults<Inputs_5.Frame.OffsetFramesDto, "distance">;
+    type OffsetFramesDto = WithDefaults<Inputs_6.Frame.OffsetFramesDto, "distance">;
     // (undocumented)
-    type OffsetSharedDto = WithDefaults<Inputs_5.Frame.OffsetSharedDto, "distance">;
+    type OffsetSharedDto = WithDefaults<Inputs_6.Frame.OffsetSharedDto, "distance">;
     // (undocumented)
-    type OriginDto = WithDefaults<Inputs_5.Frame.OriginDto, "origin">;
+    type OriginDto = WithDefaults<Inputs_6.Frame.OriginDto, "origin">;
     // (undocumented)
-    type PointAndNormalDto = WithDefaults<Inputs_5.Frame.PointAndNormalDto, "origin" | "normal">;
+    type PointAndNormalDto = WithDefaults<Inputs_6.Frame.PointAndNormalDto, "origin" | "normal">;
     // (undocumented)
-    type PolarDto = WithDefaults<Inputs_5.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
+    type PolarDto = WithDefaults<Inputs_6.Frame.PolarDto, "count" | "radius" | "angle" | "startAngle" | "rotate">;
     // (undocumented)
-    type RotateDto = WithDefaults<Inputs_5.Frame.RotateDto, "axis" | "angle">;
+    type RotateDto = WithDefaults<Inputs_6.Frame.RotateDto, "axis" | "angle">;
     // (undocumented)
-    type RotateFramesDto = WithDefaults<Inputs_5.Frame.RotateFramesDto, "axis" | "angle">;
+    type RotateFramesDto = WithDefaults<Inputs_6.Frame.RotateFramesDto, "axis" | "angle">;
     // (undocumented)
-    type RotateSharedDto = WithDefaults<Inputs_5.Frame.RotateSharedDto, "axis" | "angle">;
+    type RotateSharedDto = WithDefaults<Inputs_6.Frame.RotateSharedDto, "axis" | "angle">;
     // (undocumented)
-    type ThreePointsDto = WithDefaults<Inputs_5.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
+    type ThreePointsDto = WithDefaults<Inputs_6.Frame.ThreePointsDto, "origin" | "xPoint" | "planePoint">;
     // (undocumented)
-    type TransformationDto = Inputs_5.Frame.TransformationDto;
+    type TransformationDto = Inputs_6.Frame.TransformationDto;
     // (undocumented)
-    type TranslateDto = WithDefaults<Inputs_5.Frame.TranslateDto, "translation">;
+    type TranslateDto = WithDefaults<Inputs_6.Frame.TranslateDto, "translation">;
     // (undocumented)
-    type TranslateFramesDto = WithDefaults<Inputs_5.Frame.TranslateFramesDto, "translation">;
+    type TranslateFramesDto = WithDefaults<Inputs_6.Frame.TranslateFramesDto, "translation">;
     // (undocumented)
-    type TranslateSharedDto = WithDefaults<Inputs_5.Frame.TranslateSharedDto, "translation">;
+    type TranslateSharedDto = WithDefaults<Inputs_6.Frame.TranslateSharedDto, "translation">;
 }
 
 // @public
@@ -1199,7 +1200,7 @@ export interface FrameMarkerLines {
     // (undocumented)
     colours: string[];
     // (undocumented)
-    polylines: Inputs_6.Base.Polyline3[];
+    polylines: Inputs_7.Base.Polyline3[];
 }
 
 // @public
@@ -1239,6 +1240,612 @@ export type GeometryDefaults = typeof GEOMETRY_DEFAULTS;
 // @public
 export function getOrCreateWorkers(options: InitBitByBitOptions): WorkerInstances;
 
+// @beta
+namespace IFC {
+    class AddBeamDto<T> extends MemberSharedDto<T> {
+        constructor(model?: T, storey?: string, start?: Base_2.Point3, end?: Base_2.Point3, id?: string, name?: string, profile?: profileKindEnum, width?: number, depth?: number, radius?: number, webThickness?: number, flangeThickness?: number, rotation?: number, material?: string);
+        end: Base_2.Point3;
+        start: Base_2.Point3;
+    }
+    class AddColumnDto<T> extends MemberSharedDto<T> {
+        constructor(model?: T, storey?: string, position?: Base_2.Point2, height?: number, baseOffset?: number, id?: string, name?: string, profile?: profileKindEnum, width?: number, depth?: number, radius?: number, webThickness?: number, flangeThickness?: number, rotation?: number, material?: string);
+        baseOffset?: number | undefined;
+        height?: number | undefined;
+        position?: Base_2.Point2 | undefined;
+    }
+    class AddDoorDto<T> {
+        constructor(model?: T, wall?: string, doorType?: string, id?: string, name?: string, offset?: number, sill?: number);
+        doorType: string;
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        offset?: number | undefined;
+        sill?: number | undefined;
+        wall: string;
+    }
+    class AddDoorTypeDto<T> {
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum);
+        height?: number | undefined;
+        id?: string | undefined;
+        liningDepth?: number | undefined;
+        liningThickness?: number | undefined;
+        model: T;
+        name?: string | undefined;
+        operation?: doorOperationEnum | undefined;
+        panelThickness?: number | undefined;
+        width?: number | undefined;
+    }
+    class AddLayerSetDto<T> {
+        constructor(model?: T, name?: string, layers?: MaterialLayerDto[]);
+        layers: MaterialLayerDto[];
+        model: T;
+        name?: string | undefined;
+    }
+    class AddMaterialDto<T> {
+        constructor(model?: T, name?: string, category?: string, color?: string, transparency?: number);
+        category?: string | undefined;
+        color?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        transparency?: number | undefined;
+    }
+    class AddMemberDto<T> extends MemberSharedDto<T> {
+        constructor(model?: T, storey?: string, start?: Base_2.Point3, end?: Base_2.Point3, id?: string, name?: string, profile?: profileKindEnum, width?: number, depth?: number, radius?: number, webThickness?: number, flangeThickness?: number, rotation?: number, material?: string, predefinedType?: memberPredefinedTypeEnum);
+        end: Base_2.Point3;
+        predefinedType?: memberPredefinedTypeEnum | undefined;
+        start: Base_2.Point3;
+    }
+    class AddOpeningDto<T> {
+        constructor(model?: T, wall?: string, id?: string, name?: string, offset?: number, sill?: number, width?: number, height?: number);
+        height?: number | undefined;
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        offset?: number | undefined;
+        sill?: number | undefined;
+        wall: string;
+        width?: number | undefined;
+    }
+    class AddPropertySetDto<T> {
+        constructor(model?: T, elements?: string[], name?: string, properties?: PropertyDto[]);
+        elements: string[];
+        model: T;
+        name?: string | undefined;
+        properties: PropertyDto[];
+    }
+    class AddRoofDto<T> {
+        constructor(model?: T, storey?: string, id?: string, name?: string, outline?: Base_2.Point2[], kind?: roofKindEnum, pitch?: number, thickness?: number, layerSet?: string, overhang?: number, baseOffset?: number);
+        baseOffset?: number | undefined;
+        id?: string | undefined;
+        kind?: roofKindEnum | undefined;
+        layerSet?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        outline: Base_2.Point2[];
+        overhang?: number | undefined;
+        pitch?: number | undefined;
+        storey: string;
+        thickness?: number | undefined;
+    }
+    class AddSlabDto<T> {
+        constructor(model?: T, storey?: string, id?: string, name?: string, outline?: Base_2.Point2[], holes?: Base_2.Point2[][], thickness?: number, layerSet?: string, topOffset?: number, predefinedType?: slabPredefinedTypeEnum);
+        holes?: Base_2.Point2[][] | undefined;
+        id?: string | undefined;
+        layerSet?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        outline: Base_2.Point2[];
+        predefinedType?: slabPredefinedTypeEnum | undefined;
+        storey: string;
+        thickness?: number | undefined;
+        topOffset?: number | undefined;
+    }
+    class AddSlabOpeningDto<T> {
+        constructor(model?: T, slab?: string, id?: string, name?: string, outline?: Base_2.Point2[]);
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        outline: Base_2.Point2[];
+        slab: string;
+    }
+    class AddSpaceDto<T> {
+        constructor(model?: T, storey?: string, id?: string, name?: string, longName?: string, outline?: Base_2.Point2[], height?: number, baseOffset?: number, predefinedType?: spacePredefinedTypeEnum);
+        baseOffset?: number | undefined;
+        height?: number | undefined;
+        id?: string | undefined;
+        longName?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        outline: Base_2.Point2[];
+        predefinedType?: spacePredefinedTypeEnum | undefined;
+        storey: string;
+    }
+    class AddStoreyDto<T> {
+        constructor(model?: T, id?: string, name?: string, elevation?: number);
+        elevation?: number | undefined;
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+    }
+    class AddWallDto<T> {
+        constructor(model?: T, storey?: string, id?: string, name?: string, start?: Base_2.Point2, end?: Base_2.Point2, height?: number, thickness?: number, layerSet?: string, alignment?: wallAlignmentEnum, baseOffset?: number, wallType?: string, predefinedType?: wallPredefinedTypeEnum);
+        alignment?: wallAlignmentEnum | undefined;
+        baseOffset?: number | undefined;
+        end: Base_2.Point2;
+        height?: number | undefined;
+        id?: string | undefined;
+        layerSet?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        predefinedType?: wallPredefinedTypeEnum | undefined;
+        start: Base_2.Point2;
+        storey: string;
+        thickness?: number | undefined;
+        wallType?: string | undefined;
+    }
+    class AddWallTypeDto<T> {
+        constructor(model?: T, id?: string, name?: string, layerSet?: string, predefinedType?: wallPredefinedTypeEnum);
+        id?: string | undefined;
+        layerSet: string;
+        model: T;
+        name?: string | undefined;
+        predefinedType?: wallPredefinedTypeEnum | undefined;
+    }
+    class AddWindowDto<T> {
+        constructor(model?: T, wall?: string, windowType?: string, id?: string, name?: string, offset?: number, sill?: number);
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        offset?: number | undefined;
+        sill?: number | undefined;
+        wall: string;
+        windowType: string;
+    }
+    class AddWindowTypeDto<T> {
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number);
+        frameDepth?: number | undefined;
+        frameThickness?: number | undefined;
+        glassThickness?: number | undefined;
+        height?: number | undefined;
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        width?: number | undefined;
+    }
+    class ClipWallByRoofDto<T> {
+        constructor(model?: T, wall?: string, roof?: string);
+        model: T;
+        roof: string;
+        wall: string;
+    }
+    class ClipWallDto<T> {
+        constructor(model?: T, wall?: string, origin?: Base_2.Point3, normal?: Base_2.Vector3);
+        model: T;
+        normal?: Base_2.Vector3 | undefined;
+        origin: Base_2.Point3;
+        wall: string;
+    }
+    class ComputeQuantitiesDto<T> {
+        constructor(model?: T, elements?: string[]);
+        elements?: string[] | undefined;
+        model: T;
+    }
+    class ConnectWallsDto<T> {
+        constructor(model?: T, wall?: string, other?: string);
+        model: T;
+        other: string;
+        wall: string;
+    }
+    class CreateModelDto {
+        constructor(name?: string, siteName?: string, buildingName?: string, lengthUnit?: lengthUnitEnum, seed?: string, author?: string, organization?: string);
+        author?: string | undefined;
+        buildingName?: string | undefined;
+        lengthUnit?: lengthUnitEnum | undefined;
+        name?: string | undefined;
+        organization?: string | undefined;
+        seed?: string | undefined;
+        siteName?: string | undefined;
+    }
+    enum doorOperationEnum {
+        doubleSwingLeft = "DOUBLE_SWING_LEFT",
+        doubleSwingRight = "DOUBLE_SWING_RIGHT",
+        foldingToLeft = "FOLDING_TO_LEFT",
+        foldingToRight = "FOLDING_TO_RIGHT",
+        notDefined = "NOTDEFINED",
+        revolving = "REVOLVING",
+        rollingUp = "ROLLINGUP",
+        singleSwingLeft = "SINGLE_SWING_LEFT",
+        singleSwingRight = "SINGLE_SWING_RIGHT",
+        slidingToLeft = "SLIDING_TO_LEFT",
+        slidingToRight = "SLIDING_TO_RIGHT"
+    }
+    class EditOpeningDto<T> {
+        constructor(model?: T, opening?: string, offset?: number, sill?: number, width?: number, height?: number);
+        height?: number | undefined;
+        model: T;
+        offset?: number | undefined;
+        opening: string;
+        sill?: number | undefined;
+        width?: number | undefined;
+    }
+    class EditWallDto<T> {
+        constructor(model?: T, wall?: string, start?: Base_2.Point2, end?: Base_2.Point2, height?: number, baseOffset?: number, thickness?: number, layerSet?: string, alignment?: wallAlignmentEnum);
+        alignment?: wallAlignmentEnum | undefined;
+        baseOffset?: number | undefined;
+        end?: Base_2.Point2 | undefined;
+        height?: number | undefined;
+        layerSet?: string | undefined;
+        model: T;
+        start?: Base_2.Point2 | undefined;
+        thickness?: number | undefined;
+        wall: string;
+    }
+    class ElementDto<T> {
+        constructor(model?: T, element?: string);
+        element: string;
+        model: T;
+    }
+    class ElementInfoDto {
+        globalId: string;
+        name: string;
+        storey: string;
+        type: string;
+    }
+    class ElementsDto<T> {
+        constructor(model?: T, type?: string, storey?: string);
+        model: T;
+        storey?: string | undefined;
+        type?: string | undefined;
+    }
+    class GeometryDto<T> {
+        constructor(model?: T, elements?: string[]);
+        elements?: string[] | undefined;
+        model: T;
+    }
+    class GeometryProblemDto {
+        globalId: string;
+        message: string;
+        type: string;
+    }
+    class GetAttributeDto<T> {
+        constructor(model?: T, element?: string, attribute?: string);
+        attribute?: string | undefined;
+        element: string;
+        model: T;
+    }
+    class GlobalIdOfDto<T> {
+        constructor(model?: T, id?: string);
+        id: string;
+        model: T;
+    }
+    // Warning: (ae-forgotten-export) The symbol "IfcValue" needs to be exported by the entry point index.d.ts
+    type IfcAttributeValue = IfcValue;
+    type IfcModelPointer = {
+        hash: number;
+        type: "ifc-model";
+    };
+    enum lengthUnitEnum {
+        centimetre = "centimetre",
+        metre = "metre",
+        millimetre = "millimetre"
+    }
+    class MaterialLayerDto {
+        constructor(material?: string, thickness?: number, name?: string);
+        material?: string | undefined;
+        name?: string | undefined;
+        thickness?: number | undefined;
+    }
+    enum memberPredefinedTypeEnum {
+        brace = "BRACE",
+        chord = "CHORD",
+        collar = "COLLAR",
+        member = "MEMBER",
+        mullion = "MULLION",
+        notDefined = "NOTDEFINED",
+        plate = "PLATE",
+        post = "POST",
+        purlin = "PURLIN",
+        rafter = "RAFTER",
+        stringer = "STRINGER",
+        strut = "STRUT",
+        stud = "STUD"
+    }
+    abstract class MemberSharedDto<T> {
+        depth?: number | undefined;
+        flangeThickness?: number | undefined;
+        id?: string | undefined;
+        material?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        profile?: profileKindEnum | undefined;
+        radius?: number | undefined;
+        rotation?: number | undefined;
+        storey: string;
+        webThickness?: number | undefined;
+        width?: number | undefined;
+    }
+    class ModelDto<T> {
+        constructor(model?: T);
+        model: T;
+    }
+    class ModelSummaryDto {
+        editable: boolean;
+        elementCounts: Record<string, number>;
+        entities: number;
+        millimetresPerUnit: number;
+        project: string;
+        schema: string;
+        storeys: StoreyInfoDto[];
+    }
+    class MoveElementDto<T> {
+        constructor(model?: T, element?: string, translation?: Base_2.Vector3, rotation?: number);
+        element: string;
+        model: T;
+        rotation?: number | undefined;
+        translation?: Base_2.Vector3 | undefined;
+    }
+    enum profileKindEnum {
+        circle = "circle",
+        iShape = "iShape",
+        rectangle = "rectangle"
+    }
+    class PropertyDto {
+        constructor(name?: string, value?: string | number | boolean, type?: string);
+        name?: string | undefined;
+        type?: string | undefined;
+        value: string | number | boolean;
+    }
+    class PropertySetInfoDto {
+        name: string;
+        properties: Record<string, string | number | boolean>;
+    }
+    class QuantitySetInfoDto {
+        name: string;
+        quantities: Record<string, number>;
+    }
+    class ReadModelDto {
+        constructor(data?: string | Uint8Array | ArrayBuffer);
+        data: string | Uint8Array | ArrayBuffer;
+    }
+    class RemovePropertySetDto<T> {
+        constructor(model?: T, element?: string, name?: string);
+        element: string;
+        model: T;
+        name?: string | undefined;
+    }
+    class RemovePropertyValuesDto<T> {
+        constructor(model?: T, element?: string, name?: string, names?: string[]);
+        element: string;
+        model: T;
+        name?: string | undefined;
+        names: string[];
+    }
+    enum roofKindEnum {
+        flat = "flat",
+        gable = "gable",
+        hip = "hip",
+        monoPitch = "monoPitch"
+    }
+    class SetAttributeDto<T> {
+        constructor(model?: T, element?: string, attribute?: string, value?: string | number | boolean);
+        attribute?: string | undefined;
+        element: string;
+        model: T;
+        value: string | number | boolean;
+    }
+    class SetPropertyValuesDto<T> {
+        constructor(model?: T, element?: string, name?: string, properties?: PropertyDto[]);
+        element: string;
+        model: T;
+        name?: string | undefined;
+        properties: PropertyDto[];
+    }
+    class SetStoreyElevationDto<T> {
+        constructor(model?: T, storey?: string, elevation?: number);
+        elevation?: number | undefined;
+        model: T;
+        storey: string;
+    }
+    enum slabPredefinedTypeEnum {
+        baseSlab = "BASESLAB",
+        floor = "FLOOR",
+        landing = "LANDING",
+        notDefined = "NOTDEFINED",
+        roof = "ROOF"
+    }
+    class SpaceInfoDto {
+        area: number;
+        globalId: string;
+        height: number;
+        longName: string;
+        name: string;
+        storey: string;
+    }
+    enum spacePredefinedTypeEnum {
+        external = "EXTERNAL",
+        gfa = "GFA",
+        internal = "INTERNAL",
+        notDefined = "NOTDEFINED",
+        parking = "PARKING",
+        space = "SPACE"
+    }
+    class SpacesDto<T> {
+        constructor(model?: T, storey?: string);
+        model: T;
+        storey?: string | undefined;
+    }
+    class StoreyInfoDto {
+        elevation: number;
+        globalId: string;
+        name: string;
+    }
+    enum wallAlignmentEnum {
+        center = "center",
+        left = "left",
+        right = "right"
+    }
+    class WallDto<T> {
+        constructor(model?: T, wall?: string);
+        model: T;
+        wall: string;
+    }
+    enum wallEndEnum {
+        along = "along",
+        end = "end",
+        start = "start"
+    }
+    class WallJoinInfoDto {
+        at: wallEndEnum;
+        other: string;
+        otherAt: wallEndEnum;
+    }
+    class WallParametersDto {
+        alignment: wallAlignmentEnum | "";
+        baseOffset: number;
+        clippings: number;
+        end: Base_2.Point2;
+        globalId: string;
+        height: number;
+        joins: WallJoinInfoDto[];
+        layerSet: string;
+        name: string;
+        offset: number;
+        openings: string[];
+        start: Base_2.Point2;
+        storey: string;
+        thickness: number;
+        wallType: string;
+    }
+    enum wallPredefinedTypeEnum {
+        movable = "MOVABLE",
+        notDefined = "NOTDEFINED",
+        parapet = "PARAPET",
+        partitioning = "PARTITIONING",
+        plumbingWall = "PLUMBINGWALL",
+        shear = "SHEAR",
+        solidWall = "SOLIDWALL",
+        standard = "STANDARD"
+    }
+    class WriteModelDto<T> {
+        constructor(model?: T, fileName?: string, timeStamp?: string);
+        fileName?: string | undefined;
+        model: T;
+        timeStamp?: string | undefined;
+    }
+}
+
+// @public
+namespace IFC_2 {
+    // Warning: (ae-forgotten-export) The symbol "Inputs_4" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    type AddBeamDto<T> = WithDefaults<Inputs_4.IFC.AddBeamDto<T>, "profile" | "rotation">;
+    // (undocumented)
+    type AddColumnDto<T> = WithDefaults<Inputs_4.IFC.AddColumnDto<T>, "position" | "baseOffset" | "profile" | "rotation">;
+    // (undocumented)
+    type AddDoorDto<T> = WithDefaults<Inputs_4.IFC.AddDoorDto<T>, "sill">;
+    // (undocumented)
+    type AddDoorTypeDto<T> = WithDefaults<Inputs_4.IFC.AddDoorTypeDto<T>, "name" | "operation">;
+    // (undocumented)
+    type AddLayerSetDto<T> = WithDefaults<Inputs_4.IFC.AddLayerSetDto<T>, "name">;
+    // (undocumented)
+    type AddMaterialDto<T> = WithDefaults<Inputs_4.IFC.AddMaterialDto<T>, "name" | "transparency">;
+    // (undocumented)
+    type AddMemberDto<T> = WithDefaults<Inputs_4.IFC.AddMemberDto<T>, "predefinedType" | "profile" | "rotation">;
+    // (undocumented)
+    type AddOpeningDto<T> = WithDefaults<Inputs_4.IFC.AddOpeningDto<T>, "sill">;
+    // (undocumented)
+    type AddPropertySetDto<T> = WithDefaults<Inputs_4.IFC.AddPropertySetDto<T>, "name">;
+    // (undocumented)
+    type AddRoofDto<T> = WithDefaults<Inputs_4.IFC.AddRoofDto<T>, "kind" | "pitch" | "overhang" | "baseOffset">;
+    // (undocumented)
+    type AddSlabDto<T> = WithDefaults<Inputs_4.IFC.AddSlabDto<T>, "topOffset" | "predefinedType">;
+    // (undocumented)
+    type AddSlabOpeningDto<T> = Inputs_4.IFC.AddSlabOpeningDto<T>;
+    // (undocumented)
+    type AddSpaceDto<T> = WithDefaults<Inputs_4.IFC.AddSpaceDto<T>, "baseOffset" | "predefinedType">;
+    // (undocumented)
+    type AddStoreyDto<T> = WithDefaults<Inputs_4.IFC.AddStoreyDto<T>, "name" | "elevation">;
+    // (undocumented)
+    type AddWallDto<T> = WithDefaults<Inputs_4.IFC.AddWallDto<T>, "alignment" | "baseOffset" | "predefinedType">;
+    // (undocumented)
+    type AddWallTypeDto<T> = WithDefaults<Inputs_4.IFC.AddWallTypeDto<T>, "name" | "predefinedType">;
+    // (undocumented)
+    type AddWindowDto<T> = Inputs_4.IFC.AddWindowDto<T>;
+    // (undocumented)
+    type AddWindowTypeDto<T> = WithDefaults<Inputs_4.IFC.AddWindowTypeDto<T>, "name">;
+    // (undocumented)
+    type ClipWallByRoofDto<T> = Inputs_4.IFC.ClipWallByRoofDto<T>;
+    // (undocumented)
+    type ClipWallDto<T> = WithDefaults<Inputs_4.IFC.ClipWallDto<T>, "normal">;
+    // (undocumented)
+    type ComputeQuantitiesDto<T> = Inputs_4.IFC.ComputeQuantitiesDto<T>;
+    // (undocumented)
+    type ConnectWallsDto<T> = Inputs_4.IFC.ConnectWallsDto<T>;
+    // (undocumented)
+    type CreateModelDto = WithDefaults<Inputs_4.IFC.CreateModelDto, "name" | "siteName" | "buildingName" | "lengthUnit">;
+    // (undocumented)
+    type EditOpeningDto<T> = Inputs_4.IFC.EditOpeningDto<T>;
+    // (undocumented)
+    type EditWallDto<T> = Inputs_4.IFC.EditWallDto<T>;
+    // (undocumented)
+    type ElementDto<T> = Inputs_4.IFC.ElementDto<T>;
+    // (undocumented)
+    type ElementInfoDto = WithDefaults<Inputs_4.IFC.ElementInfoDto, "globalId" | "type" | "name" | "storey">;
+    // (undocumented)
+    type ElementsDto<T> = WithDefaults<Inputs_4.IFC.ElementsDto<T>, "type">;
+    // (undocumented)
+    type GeometryDto<T> = Inputs_4.IFC.GeometryDto<T>;
+    // (undocumented)
+    type GeometryProblemDto = WithDefaults<Inputs_4.IFC.GeometryProblemDto, "globalId" | "type" | "message">;
+    // (undocumented)
+    type GetAttributeDto<T> = WithDefaults<Inputs_4.IFC.GetAttributeDto<T>, "attribute">;
+    // (undocumented)
+    type GlobalIdOfDto<T> = Inputs_4.IFC.GlobalIdOfDto<T>;
+    // (undocumented)
+    type MaterialLayerDto = Inputs_4.IFC.MaterialLayerDto;
+    // (undocumented)
+    type MemberSharedDto<T> = WithDefaults<Inputs_4.IFC.MemberSharedDto<T>, "profile" | "rotation">;
+    // (undocumented)
+    type ModelDto<T> = Inputs_4.IFC.ModelDto<T>;
+    // (undocumented)
+    type ModelSummaryDto = WithDefaults<Inputs_4.IFC.ModelSummaryDto, "schema" | "editable" | "project" | "millimetresPerUnit" | "entities" | "storeys" | "elementCounts">;
+    // (undocumented)
+    type MoveElementDto<T> = WithDefaults<Inputs_4.IFC.MoveElementDto<T>, "translation" | "rotation">;
+    // (undocumented)
+    type PropertyDto = WithDefaults<Inputs_4.IFC.PropertyDto, "name">;
+    // (undocumented)
+    type PropertySetInfoDto = WithDefaults<Inputs_4.IFC.PropertySetInfoDto, "name" | "properties">;
+    // (undocumented)
+    type QuantitySetInfoDto = WithDefaults<Inputs_4.IFC.QuantitySetInfoDto, "name" | "quantities">;
+    // (undocumented)
+    type ReadModelDto = Inputs_4.IFC.ReadModelDto;
+    // (undocumented)
+    type RemovePropertySetDto<T> = WithDefaults<Inputs_4.IFC.RemovePropertySetDto<T>, "name">;
+    // (undocumented)
+    type RemovePropertyValuesDto<T> = WithDefaults<Inputs_4.IFC.RemovePropertyValuesDto<T>, "name">;
+    // (undocumented)
+    type SetAttributeDto<T> = WithDefaults<Inputs_4.IFC.SetAttributeDto<T>, "attribute">;
+    // (undocumented)
+    type SetPropertyValuesDto<T> = WithDefaults<Inputs_4.IFC.SetPropertyValuesDto<T>, "name">;
+    // (undocumented)
+    type SetStoreyElevationDto<T> = WithDefaults<Inputs_4.IFC.SetStoreyElevationDto<T>, "elevation">;
+    // (undocumented)
+    type SpaceInfoDto = WithDefaults<Inputs_4.IFC.SpaceInfoDto, "globalId" | "name" | "longName" | "storey" | "area" | "height">;
+    // (undocumented)
+    type SpacesDto<T> = Inputs_4.IFC.SpacesDto<T>;
+    // (undocumented)
+    type StoreyInfoDto = WithDefaults<Inputs_4.IFC.StoreyInfoDto, "globalId" | "name" | "elevation">;
+    // (undocumented)
+    type WallDto<T> = Inputs_4.IFC.WallDto<T>;
+    // (undocumented)
+    type WallJoinInfoDto = WithDefaults<Inputs_4.IFC.WallJoinInfoDto, "other" | "at" | "otherAt">;
+    // (undocumented)
+    type WallParametersDto = WithDefaults<Inputs_4.IFC.WallParametersDto, "globalId" | "name" | "storey" | "start" | "end" | "height" | "baseOffset" | "thickness" | "offset" | "alignment" | "layerSet" | "wallType" | "joins" | "openings" | "clippings">;
+    // (undocumented)
+    type WriteModelDto<T> = WithDefaults<Inputs_4.IFC.WriteModelDto<T>, "fileName">;
+}
+
 // @public
 export interface InitBitByBitOptions extends WorkerOptions_2 {
     workers?: WorkerInstances | undefined;
@@ -1246,9 +1853,7 @@ export interface InitBitByBitOptions extends WorkerOptions_2 {
 
 // @public
 export interface InitKernelsResult {
-    // (undocumented)
     initializedKernels: string[];
-    // (undocumented)
     message: string;
 }
 
@@ -1256,6 +1861,7 @@ declare namespace Inputs {
     export {
         JSCAD,
         Manifold,
+        IFC,
         OCCT,
         Color,
         Dates,
@@ -1333,21 +1939,21 @@ namespace IO {
 // @public
 namespace IO_2 {
     // (undocumented)
-    type DxfArcSegmentDto = Inputs_5.IO.DxfArcSegmentDto;
+    type DxfArcSegmentDto = Inputs_6.IO.DxfArcSegmentDto;
     // (undocumented)
-    type DxfCircleSegmentDto = Inputs_5.IO.DxfCircleSegmentDto;
+    type DxfCircleSegmentDto = Inputs_6.IO.DxfCircleSegmentDto;
     // (undocumented)
-    type DxfLineSegmentDto = Inputs_5.IO.DxfLineSegmentDto;
+    type DxfLineSegmentDto = Inputs_6.IO.DxfLineSegmentDto;
     // (undocumented)
-    type DxfModelDto = WithDefaults<Inputs_5.IO.DxfModelDto, "colorFormat" | "acadVersion">;
+    type DxfModelDto = WithDefaults<Inputs_6.IO.DxfModelDto, "colorFormat" | "acadVersion">;
     // (undocumented)
-    type DxfPathDto = Inputs_5.IO.DxfPathDto;
+    type DxfPathDto = Inputs_6.IO.DxfPathDto;
     // (undocumented)
-    type DxfPathsPartDto = WithDefaults<Inputs_5.IO.DxfPathsPartDto, "layer" | "color">;
+    type DxfPathsPartDto = WithDefaults<Inputs_6.IO.DxfPathsPartDto, "layer" | "color">;
     // (undocumented)
-    type DxfPolylineSegmentDto = WithDefaults<Inputs_5.IO.DxfPolylineSegmentDto, "closed">;
+    type DxfPolylineSegmentDto = WithDefaults<Inputs_6.IO.DxfPolylineSegmentDto, "closed">;
     // (undocumented)
-    type DxfSplineSegmentDto = WithDefaults<Inputs_5.IO.DxfSplineSegmentDto, "degree" | "closed">;
+    type DxfSplineSegmentDto = WithDefaults<Inputs_6.IO.DxfSplineSegmentDto, "degree" | "closed">;
 }
 
 // @public
@@ -2028,42 +2634,42 @@ namespace JSON_2 {
 // @public
 namespace JSON_3 {
     // (undocumented)
-    type GetJsonFromArrayByFirstPropMatchDto = WithDefaults<Inputs_6.JSON.GetJsonFromArrayByFirstPropMatchDto, "property">;
+    type GetJsonFromArrayByFirstPropMatchDto = WithDefaults<Inputs_7.JSON.GetJsonFromArrayByFirstPropMatchDto, "property">;
     // (undocumented)
-    type GetValueOnPropDto = WithDefaults<Inputs_6.JSON.GetValueOnPropDto, "property">;
+    type GetValueOnPropDto = WithDefaults<Inputs_7.JSON.GetValueOnPropDto, "property">;
     // (undocumented)
-    type JsonDto = Inputs_6.JSON.JsonDto;
+    type JsonDto = Inputs_7.JSON.JsonDto;
     // (undocumented)
-    type ParseDto = WithDefaults<Inputs_6.JSON.ParseDto, "text">;
+    type ParseDto = WithDefaults<Inputs_7.JSON.ParseDto, "text">;
     // (undocumented)
-    type PathsDto = Inputs_6.JSON.PathsDto;
+    type PathsDto = Inputs_7.JSON.PathsDto;
     // (undocumented)
-    type QueryDto = Inputs_6.JSON.QueryDto;
+    type QueryDto = Inputs_7.JSON.QueryDto;
     // (undocumented)
-    type SetValueDto = WithDefaults<Inputs_6.JSON.SetValueDto, "path" | "prop">;
+    type SetValueDto = WithDefaults<Inputs_7.JSON.SetValueDto, "path" | "prop">;
     // (undocumented)
-    type SetValueOnPropDto = WithDefaults<Inputs_6.JSON.SetValueOnPropDto, "property">;
+    type SetValueOnPropDto = WithDefaults<Inputs_7.JSON.SetValueOnPropDto, "property">;
     // (undocumented)
-    type SetValuesOnPathsDto = Inputs_6.JSON.SetValuesOnPathsDto;
+    type SetValuesOnPathsDto = Inputs_7.JSON.SetValuesOnPathsDto;
     // (undocumented)
-    type StringifyDto = Inputs_6.JSON.StringifyDto;
+    type StringifyDto = Inputs_7.JSON.StringifyDto;
 }
 
 // @public
 export class JSONBitByBit {
     constructor(context: ContextBase);
     createEmpty(): any;
-    getJsonFromArrayByFirstPropMatch(inputs: Inputs_6.JSON.GetJsonFromArrayByFirstPropMatchDto): any;
-    getValueOnProp(inputs: Inputs_6.JSON.GetValueOnPropDto): any;
-    parse(inputs: Inputs_6.JSON.ParseDto): any;
-    paths(inputs: Inputs_6.JSON.PathsDto): any;
-    previewAndSaveJson(inputs: Inputs_6.JSON.JsonDto): void;
-    previewJson(inputs: Inputs_6.JSON.JsonDto): void;
-    query(inputs: Inputs_6.JSON.QueryDto): any;
-    setValue(inputs: Inputs_6.JSON.SetValueDto): any;
-    setValueOnProp(inputs: Inputs_6.JSON.SetValueOnPropDto): any;
-    setValuesOnPaths(inputs: Inputs_6.JSON.SetValuesOnPathsDto): any;
-    stringify(inputs: Inputs_6.JSON.StringifyDto): string;
+    getJsonFromArrayByFirstPropMatch(inputs: Inputs_7.JSON.GetJsonFromArrayByFirstPropMatchDto): any;
+    getValueOnProp(inputs: Inputs_7.JSON.GetValueOnPropDto): any;
+    parse(inputs: Inputs_7.JSON.ParseDto): any;
+    paths(inputs: Inputs_7.JSON.PathsDto): any;
+    previewAndSaveJson(inputs: Inputs_7.JSON.JsonDto): void;
+    previewJson(inputs: Inputs_7.JSON.JsonDto): void;
+    query(inputs: Inputs_7.JSON.QueryDto): any;
+    setValue(inputs: Inputs_7.JSON.SetValueDto): any;
+    setValueOnProp(inputs: Inputs_7.JSON.SetValueOnPropDto): any;
+    setValuesOnPaths(inputs: Inputs_7.JSON.SetValuesOnPathsDto): any;
+    stringify(inputs: Inputs_7.JSON.StringifyDto): string;
 }
 
 // @public
@@ -2159,33 +2765,33 @@ namespace Line {
 // @public
 namespace Line_2 {
     // (undocumented)
-    type DrawLineDto<T> = WithDefaults<Inputs_5.Line.DrawLineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawLineDto<T> = WithDefaults<Inputs_6.Line.DrawLineDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type DrawLinesDto<T> = WithDefaults<Inputs_5.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawLinesDto<T> = WithDefaults<Inputs_6.Line.DrawLinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type LineDto = Inputs_5.Line.LineDto;
+    type LineDto = Inputs_6.Line.LineDto;
     // (undocumented)
-    type LineLineIntersectionDto = WithDefaults<Inputs_5.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
+    type LineLineIntersectionDto = WithDefaults<Inputs_6.Line.LineLineIntersectionDto, "checkSegmentsOnly" | "tolerance">;
     // (undocumented)
-    type LinePointsDto = Inputs_5.Line.LinePointsDto;
+    type LinePointsDto = Inputs_6.Line.LinePointsDto;
     // (undocumented)
-    type LinesDto = Inputs_5.Line.LinesDto;
+    type LinesDto = Inputs_6.Line.LinesDto;
     // (undocumented)
-    type LineStartEndPointsDto = Inputs_5.Line.LineStartEndPointsDto;
+    type LineStartEndPointsDto = Inputs_6.Line.LineStartEndPointsDto;
     // (undocumented)
-    type PointOnLineDto = WithDefaults<Inputs_5.Line.PointOnLineDto, "param">;
+    type PointOnLineDto = WithDefaults<Inputs_6.Line.PointOnLineDto, "param">;
     // (undocumented)
-    type PointsLinesDto = Inputs_5.Line.PointsLinesDto;
+    type PointsLinesDto = Inputs_6.Line.PointsLinesDto;
     // (undocumented)
-    type SegmentDto = Inputs_5.Line.SegmentDto;
+    type SegmentDto = Inputs_6.Line.SegmentDto;
     // (undocumented)
-    type SegmentsDto = Inputs_5.Line.SegmentsDto;
+    type SegmentsDto = Inputs_6.Line.SegmentsDto;
     // (undocumented)
-    type TransformLineDto = Inputs_5.Line.TransformLineDto;
+    type TransformLineDto = Inputs_6.Line.TransformLineDto;
     // (undocumented)
-    type TransformLinesDto = Inputs_5.Line.TransformLinesDto;
+    type TransformLinesDto = Inputs_6.Line.TransformLinesDto;
     // (undocumented)
-    type TransformsLinesDto = Inputs_5.Line.TransformsLinesDto;
+    type TransformsLinesDto = Inputs_6.Line.TransformsLinesDto;
 }
 
 // @public
@@ -2359,59 +2965,59 @@ namespace Lists {
 // @public
 namespace Lists_2 {
     // (undocumented)
-    type AddItemAtIndexDto<T> = WithDefaults<Inputs_5.Lists.AddItemAtIndexDto<T>, "index" | "clone">;
+    type AddItemAtIndexDto<T> = WithDefaults<Inputs_6.Lists.AddItemAtIndexDto<T>, "index" | "clone">;
     // (undocumented)
-    type AddItemAtIndexesDto<T> = WithDefaults<Inputs_5.Lists.AddItemAtIndexesDto<T>, "indexes" | "clone">;
+    type AddItemAtIndexesDto<T> = WithDefaults<Inputs_6.Lists.AddItemAtIndexesDto<T>, "indexes" | "clone">;
     // (undocumented)
-    type AddItemDto<T> = WithDefaults<Inputs_5.Lists.AddItemDto<T>, "clone">;
+    type AddItemDto<T> = WithDefaults<Inputs_6.Lists.AddItemDto<T>, "clone">;
     // (undocumented)
-    type AddItemFirstLastDto<T> = WithDefaults<Inputs_5.Lists.AddItemFirstLastDto<T>, "position" | "clone">;
+    type AddItemFirstLastDto<T> = WithDefaults<Inputs_6.Lists.AddItemFirstLastDto<T>, "position" | "clone">;
     // (undocumented)
-    type AddItemsAtIndexesDto<T> = WithDefaults<Inputs_5.Lists.AddItemsAtIndexesDto<T>, "indexes" | "clone">;
+    type AddItemsAtIndexesDto<T> = WithDefaults<Inputs_6.Lists.AddItemsAtIndexesDto<T>, "indexes" | "clone">;
     // (undocumented)
-    type ConcatenateDto<T> = WithDefaults<Inputs_5.Lists.ConcatenateDto<T>, "clone">;
+    type ConcatenateDto<T> = WithDefaults<Inputs_6.Lists.ConcatenateDto<T>, "clone">;
     // (undocumented)
-    type GetByPatternDto<T> = WithDefaults<Inputs_5.Lists.GetByPatternDto<T>, "pattern">;
+    type GetByPatternDto<T> = WithDefaults<Inputs_6.Lists.GetByPatternDto<T>, "pattern">;
     // (undocumented)
-    type GetLongestListLength<T> = Inputs_5.Lists.GetLongestListLength<T>;
+    type GetLongestListLength<T> = Inputs_6.Lists.GetLongestListLength<T>;
     // (undocumented)
-    type GetNthItemDto<T> = WithDefaults<Inputs_5.Lists.GetNthItemDto<T>, "nth" | "offset" | "clone">;
+    type GetNthItemDto<T> = WithDefaults<Inputs_6.Lists.GetNthItemDto<T>, "nth" | "offset" | "clone">;
     // (undocumented)
-    type GroupListDto<T> = WithDefaults<Inputs_5.Lists.GroupListDto<T>, "nrElements" | "keepRemainder">;
+    type GroupListDto<T> = WithDefaults<Inputs_6.Lists.GroupListDto<T>, "nrElements" | "keepRemainder">;
     // (undocumented)
-    type IncludesDto<T> = Inputs_5.Lists.IncludesDto<T>;
+    type IncludesDto<T> = Inputs_6.Lists.IncludesDto<T>;
     // (undocumented)
-    type InterleaveDto<T> = WithDefaults<Inputs_5.Lists.InterleaveDto<T>, "clone">;
+    type InterleaveDto<T> = WithDefaults<Inputs_6.Lists.InterleaveDto<T>, "clone">;
     // (undocumented)
-    type ListCloneDto<T> = WithDefaults<Inputs_5.Lists.ListCloneDto<T>, "clone">;
+    type ListCloneDto<T> = WithDefaults<Inputs_6.Lists.ListCloneDto<T>, "clone">;
     // (undocumented)
-    type ListDto<T> = Inputs_5.Lists.ListDto<T>;
+    type ListDto<T> = Inputs_6.Lists.ListDto<T>;
     // (undocumented)
-    type ListItemDto<T> = WithDefaults<Inputs_5.Lists.ListItemDto<T>, "index" | "clone">;
+    type ListItemDto<T> = WithDefaults<Inputs_6.Lists.ListItemDto<T>, "index" | "clone">;
     // (undocumented)
-    type MergeElementsOfLists<T> = WithDefaults<Inputs_5.Lists.MergeElementsOfLists<T>, "level">;
+    type MergeElementsOfLists<T> = WithDefaults<Inputs_6.Lists.MergeElementsOfLists<T>, "level">;
     // (undocumented)
-    type MultiplyItemDto<T> = WithDefaults<Inputs_5.Lists.MultiplyItemDto<T>, "times">;
+    type MultiplyItemDto<T> = WithDefaults<Inputs_6.Lists.MultiplyItemDto<T>, "times">;
     // (undocumented)
-    type RandomThresholdDto<T> = WithDefaults<Inputs_5.Lists.RandomThresholdDto<T>, "threshold" | "clone">;
+    type RandomThresholdDto<T> = WithDefaults<Inputs_6.Lists.RandomThresholdDto<T>, "threshold" | "clone">;
     // (undocumented)
-    type RemoveDuplicatesDto<T> = WithDefaults<Inputs_5.Lists.RemoveDuplicatesDto<T>, "clone">;
+    type RemoveDuplicatesDto<T> = WithDefaults<Inputs_6.Lists.RemoveDuplicatesDto<T>, "clone">;
     // (undocumented)
-    type RemoveDuplicatesToleranceDto<T> = WithDefaults<Inputs_5.Lists.RemoveDuplicatesToleranceDto<T>, "tolerance" | "clone">;
+    type RemoveDuplicatesToleranceDto<T> = WithDefaults<Inputs_6.Lists.RemoveDuplicatesToleranceDto<T>, "tolerance" | "clone">;
     // (undocumented)
-    type RemoveItemAtIndexDto<T> = WithDefaults<Inputs_5.Lists.RemoveItemAtIndexDto<T>, "index" | "clone">;
+    type RemoveItemAtIndexDto<T> = WithDefaults<Inputs_6.Lists.RemoveItemAtIndexDto<T>, "index" | "clone">;
     // (undocumented)
-    type RemoveItemsAtIndexesDto<T> = WithDefaults<Inputs_5.Lists.RemoveItemsAtIndexesDto<T>, "clone">;
+    type RemoveItemsAtIndexesDto<T> = WithDefaults<Inputs_6.Lists.RemoveItemsAtIndexesDto<T>, "clone">;
     // (undocumented)
-    type RemoveNthItemDto<T> = WithDefaults<Inputs_5.Lists.RemoveNthItemDto<T>, "nth" | "offset" | "clone">;
+    type RemoveNthItemDto<T> = WithDefaults<Inputs_6.Lists.RemoveNthItemDto<T>, "nth" | "offset" | "clone">;
     // (undocumented)
-    type RepeatInPatternDto<T> = WithDefaults<Inputs_5.Lists.RepeatInPatternDto<T>, "clone" | "lengthLimit">;
+    type RepeatInPatternDto<T> = WithDefaults<Inputs_6.Lists.RepeatInPatternDto<T>, "clone" | "lengthLimit">;
     // (undocumented)
-    type SortDto<T> = WithDefaults<Inputs_5.Lists.SortDto<T>, "clone" | "orderAsc">;
+    type SortDto<T> = WithDefaults<Inputs_6.Lists.SortDto<T>, "clone" | "orderAsc">;
     // (undocumented)
-    type SortJsonDto<T> = WithDefaults<Inputs_5.Lists.SortJsonDto<T>, "clone" | "orderAsc" | "property">;
+    type SortJsonDto<T> = WithDefaults<Inputs_6.Lists.SortJsonDto<T>, "clone" | "orderAsc" | "property">;
     // (undocumented)
-    type SubListDto<T> = WithDefaults<Inputs_5.Lists.SubListDto<T>, "indexStart" | "indexEnd" | "clone">;
+    type SubListDto<T> = WithDefaults<Inputs_6.Lists.SubListDto<T>, "indexStart" | "indexEnd" | "clone">;
 }
 
 // @public
@@ -2484,23 +3090,23 @@ namespace Logic {
 // @public
 namespace Logic_2 {
     // (undocumented)
-    type BooleanDto = WithDefaults<Inputs_5.Logic.BooleanDto, "boolean">;
+    type BooleanDto = WithDefaults<Inputs_6.Logic.BooleanDto, "boolean">;
     // (undocumented)
-    type BooleanListDto = Inputs_5.Logic.BooleanListDto;
+    type BooleanListDto = Inputs_6.Logic.BooleanListDto;
     // (undocumented)
-    type ComparisonDto<T> = WithDefaults<Inputs_5.Logic.ComparisonDto<T>, "operator">;
+    type ComparisonDto<T> = WithDefaults<Inputs_6.Logic.ComparisonDto<T>, "operator">;
     // (undocumented)
-    type RandomBooleansDto = WithDefaults<Inputs_5.Logic.RandomBooleansDto, "length" | "trueThreshold">;
+    type RandomBooleansDto = WithDefaults<Inputs_6.Logic.RandomBooleansDto, "length" | "trueThreshold">;
     // (undocumented)
-    type ThresholdBooleanListDto = WithDefaults<Inputs_5.Logic.ThresholdBooleanListDto, "threshold" | "inverse">;
+    type ThresholdBooleanListDto = WithDefaults<Inputs_6.Logic.ThresholdBooleanListDto, "threshold" | "inverse">;
     // (undocumented)
-    type ThresholdGapsBooleanListDto = WithDefaults<Inputs_5.Logic.ThresholdGapsBooleanListDto, "inverse">;
+    type ThresholdGapsBooleanListDto = WithDefaults<Inputs_6.Logic.ThresholdGapsBooleanListDto, "inverse">;
     // (undocumented)
-    type TwoThresholdRandomGradientDto = WithDefaults<Inputs_5.Logic.TwoThresholdRandomGradientDto, "thresholdTotalTrue" | "thresholdTotalFalse" | "nrLevels">;
+    type TwoThresholdRandomGradientDto = WithDefaults<Inputs_6.Logic.TwoThresholdRandomGradientDto, "thresholdTotalTrue" | "thresholdTotalFalse" | "nrLevels">;
     // (undocumented)
-    type TwoValueGateDto<T, U> = Inputs_5.Logic.TwoValueGateDto<T, U>;
+    type TwoValueGateDto<T, U> = Inputs_6.Logic.TwoValueGateDto<T, U>;
     // (undocumented)
-    type ValueGateDto<T> = WithDefaults<Inputs_5.Logic.ValueGateDto<T>, "boolean">;
+    type ValueGateDto<T> = WithDefaults<Inputs_6.Logic.ValueGateDto<T>, "boolean">;
 }
 
 // @public
@@ -2563,6 +3169,14 @@ export interface LookMeshSource {
 
 // @public
 namespace Manifold {
+    // @beta
+    class BuildRecipeDto {
+        constructor(recipe?: Base_2.Recipe, circularSegments?: number, adjustZtoY?: boolean, emptyWhenFailed?: boolean);
+        adjustZtoY?: boolean | undefined;
+        circularSegments?: number | undefined;
+        emptyWhenFailed?: boolean | undefined;
+        recipe: Base_2.Recipe;
+    }
     class CalculateCurvatureDto<T> {
         constructor(manifold?: T);
         gaussianIdx?: number | undefined;
@@ -2654,17 +3268,19 @@ namespace Manifold {
         vertProperties: Float32Array;
     }
     class DecomposeManifoldOrCrossSectionDto<T> {
-        constructor(manifoldOrCrossSection?: T, normalIdx?: number);
+        constructor(manifoldOrCrossSection?: T, normalIdx?: number, minSharpAngle?: number);
         manifoldOrCrossSection: T;
+        minSharpAngle?: number | undefined;
         normalIdx?: number | undefined;
     }
     class DecomposeManifoldsOrCrossSectionsDto<T> {
-        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]);
+        constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[], minSharpAngle?: number);
         manifoldsOrCrossSections: T[];
+        minSharpAngle?: number | undefined;
         normalIdx?: number[] | undefined;
     }
     class DrawManifoldOrCrossSectionDto<T, M> {
-        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base_2.Color, crossSectionColour?: Base_2.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_2.Color, backFaceOpacity?: number);
+        constructor(manifoldOrCrossSection?: T, faceOpacity?: number, faceMaterial?: M, faceColour?: Base_2.Color, crossSectionColour?: Base_2.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_2.Color, backFaceOpacity?: number, minSharpAngle?: number);
         backFaceColour?: Base_2.Color | undefined;
         backFaceOpacity?: number | undefined;
         computeNormals?: boolean | undefined;
@@ -2676,9 +3292,10 @@ namespace Manifold {
         faceMaterial?: M | undefined;
         faceOpacity?: number | undefined;
         manifoldOrCrossSection?: T | undefined;
+        minSharpAngle?: number | undefined;
     }
     class DrawManifoldsOrCrossSectionsDto<T, M> {
-        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base_2.Color, crossSectionColour?: Base_2.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_2.Color, backFaceOpacity?: number);
+        constructor(manifoldsOrCrossSections?: T[], faceOpacity?: number, faceMaterial?: M, faceColour?: Base_2.Color, crossSectionColour?: Base_2.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base_2.Color, backFaceOpacity?: number, minSharpAngle?: number);
         backFaceColour?: Base_2.Color | undefined;
         backFaceOpacity?: number | undefined;
         computeNormals?: boolean | undefined;
@@ -2690,6 +3307,7 @@ namespace Manifold {
         faceMaterial?: M | undefined;
         faceOpacity?: number | undefined;
         manifoldsOrCrossSections?: T[] | undefined;
+        minSharpAngle?: number | undefined;
     }
     class ExtrudeDto<T> {
         constructor(crossSection?: T);
@@ -2865,6 +3483,13 @@ namespace Manifold {
         position: Base_2.Point3;
         normal: Base_2.Vector3;
     };
+    // @beta
+    class RecipeSurfaceMeshesDto {
+        constructor(recipe?: Base_2.Recipe, roots?: number[], adjustZtoY?: boolean);
+        adjustZtoY?: boolean | undefined;
+        recipe: Base_2.Recipe;
+        roots?: number[] | undefined;
+    }
     class RectangleDto {
         constructor(length?: number, height?: number, center?: boolean);
         center?: boolean | undefined;
@@ -3018,6 +3643,8 @@ namespace Manifold_2 {
     // Warning: (ae-forgotten-export) The symbol "Inputs_3" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
+    type BuildRecipeDto = WithDefaults<Inputs_3.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
+    // (undocumented)
     type CalculateCurvatureDto<T> = WithDefaults<Inputs_3.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     // (undocumented)
     type CalculateNormalsDto<T> = WithDefaults<Inputs_3.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
@@ -3052,9 +3679,9 @@ namespace Manifold_2 {
     // (undocumented)
     type DecomposeManifoldsOrCrossSectionsDto<T> = Inputs_3.Manifold.DecomposeManifoldsOrCrossSectionsDto<T>;
     // (undocumented)
-    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs_3.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs_3.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs_3.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs_3.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
     type ExtrudeDto<T> = WithDefaults<Inputs_3.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
     // (undocumented)
@@ -3110,6 +3737,8 @@ namespace Manifold_2 {
     // (undocumented)
     type RayCastDto<T> = WithDefaults<Inputs_3.Manifold.RayCastDto<T>, "origin" | "endpoint">;
     // (undocumented)
+    type RecipeSurfaceMeshesDto = WithDefaults<Inputs_3.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
+    // (undocumented)
     type RectangleDto = WithDefaults<Inputs_3.Manifold.RectangleDto, "length" | "height" | "center">;
     // (undocumented)
     type RevolveDto<T> = WithDefaults<Inputs_3.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
@@ -3163,6 +3792,26 @@ namespace Manifold_2 {
     type TwoCrossSectionsDto<T> = Inputs_3.Manifold.TwoCrossSectionsDto<T>;
     // (undocumented)
     type TwoManifoldsDto<T> = Inputs_3.Manifold.TwoManifoldsDto<T>;
+}
+
+// @public
+export interface ManifoldMeshAttributes {
+    readonly indices: Uint32Array;
+    readonly normals: Float32Array;
+    readonly positions: Float32Array;
+}
+
+// @public
+export interface ManifoldShadingOptions {
+    readonly computeNormals: boolean;
+    readonly minSharpAngle: number;
+}
+
+// @public
+export interface ManifoldVertexData {
+    readonly numProp: number;
+    readonly triVerts: Uint32Array;
+    readonly vertProperties: Float32Array;
 }
 
 // @public
@@ -3415,50 +4064,59 @@ namespace Math_2 {
 // @public
 namespace Math_3 {
     // (undocumented)
-    type ActionOnOneNumberDto = WithDefaults<Inputs_5.Math.ActionOnOneNumberDto, "number" | "operation">;
+    type ActionOnOneNumberDto = WithDefaults<Inputs_6.Math.ActionOnOneNumberDto, "number" | "operation">;
     // (undocumented)
-    type ActionOnTwoNumbersDto = WithDefaults<Inputs_5.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
+    type ActionOnTwoNumbersDto = WithDefaults<Inputs_6.Math.ActionOnTwoNumbersDto, "first" | "second" | "operation">;
     // (undocumented)
-    type ClampDto = WithDefaults<Inputs_5.Math.ClampDto, "number" | "min" | "max">;
+    type ClampDto = WithDefaults<Inputs_6.Math.ClampDto, "number" | "min" | "max">;
     // (undocumented)
-    type EaseDto = WithDefaults<Inputs_5.Math.EaseDto, "x" | "min" | "max" | "ease">;
+    type EaseDto = WithDefaults<Inputs_6.Math.EaseDto, "x" | "min" | "max" | "ease">;
     // (undocumented)
-    type EvalArithmeticDto = WithDefaults<Inputs_5.Math.EvalArithmeticDto, "expression">;
+    type EvalArithmeticDto = WithDefaults<Inputs_6.Math.EvalArithmeticDto, "expression">;
     // (undocumented)
-    type InverseLerpDto = WithDefaults<Inputs_5.Math.InverseLerpDto, "start" | "end" | "value">;
+    type InverseLerpDto = WithDefaults<Inputs_6.Math.InverseLerpDto, "start" | "end" | "value">;
     // (undocumented)
-    type LerpDto = WithDefaults<Inputs_5.Math.LerpDto, "start" | "end" | "t">;
+    type LerpDto = WithDefaults<Inputs_6.Math.LerpDto, "start" | "end" | "t">;
     // (undocumented)
-    type ModulusDto = WithDefaults<Inputs_5.Math.ModulusDto, "number" | "modulus">;
+    type ModulusDto = WithDefaults<Inputs_6.Math.ModulusDto, "number" | "modulus">;
     // (undocumented)
-    type MoveTowardsDto = WithDefaults<Inputs_5.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
+    type MoveTowardsDto = WithDefaults<Inputs_6.Math.MoveTowardsDto, "current" | "target" | "maxDelta">;
     // (undocumented)
-    type NumberDto = WithDefaults<Inputs_5.Math.NumberDto, "number">;
+    type NumberDto = WithDefaults<Inputs_6.Math.NumberDto, "number">;
     // (undocumented)
-    type PingPongDto = WithDefaults<Inputs_5.Math.PingPongDto, "t" | "length">;
+    type PingPongDto = WithDefaults<Inputs_6.Math.PingPongDto, "t" | "length">;
     // (undocumented)
-    type RandomNumberDto = WithDefaults<Inputs_5.Math.RandomNumberDto, "low" | "high">;
+    type RandomNumberDto = WithDefaults<Inputs_6.Math.RandomNumberDto, "low" | "high">;
     // (undocumented)
-    type RandomNumbersDto = WithDefaults<Inputs_5.Math.RandomNumbersDto, "low" | "high" | "count">;
+    type RandomNumbersDto = WithDefaults<Inputs_6.Math.RandomNumbersDto, "low" | "high" | "count">;
     // (undocumented)
-    type RemapNumberDto = WithDefaults<Inputs_5.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
+    type RemapNumberDto = WithDefaults<Inputs_6.Math.RemapNumberDto, "number" | "fromLow" | "fromHigh" | "toLow" | "toHigh">;
     // (undocumented)
-    type RoundToDecimalsDto = WithDefaults<Inputs_5.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
+    type RoundToDecimalsDto = WithDefaults<Inputs_6.Math.RoundToDecimalsDto, "number" | "decimalPlaces">;
     // (undocumented)
-    type ToFixedDto = WithDefaults<Inputs_5.Math.ToFixedDto, "decimalPlaces">;
+    type ToFixedDto = WithDefaults<Inputs_6.Math.ToFixedDto, "decimalPlaces">;
     // (undocumented)
-    type TwoNumbersDto = WithDefaults<Inputs_5.Math.TwoNumbersDto, "first" | "second">;
+    type TwoNumbersDto = WithDefaults<Inputs_6.Math.TwoNumbersDto, "first" | "second">;
     // (undocumented)
-    type WrapDto = WithDefaults<Inputs_5.Math.WrapDto, "number" | "min" | "max">;
+    type WrapDto = WithDefaults<Inputs_6.Math.WrapDto, "number" | "min" | "max">;
 }
 
 // @public
 namespace Mesh {
+    class MeshDto {
+        constructor(mesh?: Base_2.Mesh3);
+        mesh: Base_2.Mesh3;
+    }
     class MeshMeshToleranceDto {
         constructor(mesh1?: Base_2.Mesh3, mesh2?: Base_2.Mesh3, tolerance?: number);
         mesh1: Base_2.Mesh3;
         mesh2: Base_2.Mesh3;
         tolerance?: number | undefined;
+    }
+    class PolygonWithHolesDto {
+        constructor(points?: Base_2.Point3[], holes?: Base_2.Point3[][]);
+        holes?: Base_2.Point3[][] | undefined;
+        points: Base_2.Point3[];
     }
     class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base_2.Point3, plane?: Base_2.TrianglePlane3);
@@ -3485,15 +4143,19 @@ namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
-    type MeshMeshToleranceDto = WithDefaults<Inputs_5.Mesh.MeshMeshToleranceDto, "tolerance">;
+    type MeshDto = Inputs_6.Mesh.MeshDto;
     // (undocumented)
-    type SignedDistanceFromPlaneToPointDto = Inputs_5.Mesh.SignedDistanceFromPlaneToPointDto;
+    type MeshMeshToleranceDto = WithDefaults<Inputs_6.Mesh.MeshMeshToleranceDto, "tolerance">;
     // (undocumented)
-    type TriangleDto = Inputs_5.Mesh.TriangleDto;
+    type PolygonWithHolesDto = Inputs_6.Mesh.PolygonWithHolesDto;
     // (undocumented)
-    type TriangleToleranceDto = WithDefaults<Inputs_5.Mesh.TriangleToleranceDto, "tolerance">;
+    type SignedDistanceFromPlaneToPointDto = Inputs_6.Mesh.SignedDistanceFromPlaneToPointDto;
     // (undocumented)
-    type TriangleTriangleToleranceDto = WithDefaults<Inputs_5.Mesh.TriangleTriangleToleranceDto, "tolerance">;
+    type TriangleDto = Inputs_6.Mesh.TriangleDto;
+    // (undocumented)
+    type TriangleToleranceDto = WithDefaults<Inputs_6.Mesh.TriangleToleranceDto, "tolerance">;
+    // (undocumented)
+    type TriangleTriangleToleranceDto = WithDefaults<Inputs_6.Mesh.TriangleTriangleToleranceDto, "tolerance">;
 }
 
 // @public
@@ -4275,6 +4937,15 @@ namespace OCCT {
         rebind?: designRebindEnum | undefined;
         sketches?: boolean | undefined;
     }
+    class DesignClashesDto {
+        constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, clearance?: number);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        clearance?: number | undefined;
+        configuration?: string | undefined;
+        document: Models.OCCT.DesignDocument;
+        documents?: Models.OCCT.DesignDocument[] | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
+    }
     class DesignDocumentDto {
         constructor(document?: Models.OCCT.DesignDocument, documents?: Models.OCCT.DesignDocument[]);
         document: Models.OCCT.DesignDocument;
@@ -4294,6 +4965,17 @@ namespace OCCT {
         never = "never",
         // (undocumented)
         report = "report"
+    }
+    class DesignReferenceForDto {
+        constructor(document?: Models.OCCT.DesignDocument, body?: string, faces?: number[], edges?: number[], configuration?: string, parameters?: Record<string, number | string | boolean>, assets?: Record<string, string | Uint8Array | ArrayBuffer>, nudge?: boolean);
+        assets?: Record<string, string | Uint8Array | ArrayBuffer> | undefined;
+        body: string;
+        configuration?: string | undefined;
+        document: Models.OCCT.DesignDocument;
+        edges?: number[] | undefined;
+        faces?: number[] | undefined;
+        nudge?: boolean | undefined;
+        parameters?: Record<string, number | string | boolean> | undefined;
     }
     class DifferenceDto<T> {
         constructor(shape?: T, shapes?: T[], keepEdges?: boolean, strategy?: booleanStrategyEnum);
@@ -6775,800 +7457,804 @@ namespace OCCT {
 
 // @public
 namespace OCCT_3 {
-    // Warning: (ae-forgotten-export) The symbol "Inputs_4" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "Inputs_5" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    type AlignAndTranslateDto<T> = WithDefaults<Inputs_4.OCCT.AlignAndTranslateDto<T>, "direction" | "center">;
+    type AlignAndTranslateDto<T> = WithDefaults<Inputs_5.OCCT.AlignAndTranslateDto<T>, "direction" | "center">;
     // (undocumented)
-    type AlignAndTranslateShapesDto<T> = WithDefaults<Inputs_4.OCCT.AlignAndTranslateShapesDto<T>, "directions" | "centers">;
+    type AlignAndTranslateShapesDto<T> = WithDefaults<Inputs_5.OCCT.AlignAndTranslateShapesDto<T>, "directions" | "centers">;
     // (undocumented)
-    type AlignDto<T> = WithDefaults<Inputs_4.OCCT.AlignDto<T>, "fromOrigin" | "fromDirection" | "toOrigin" | "toDirection">;
+    type AlignDto<T> = WithDefaults<Inputs_5.OCCT.AlignDto<T>, "fromOrigin" | "fromDirection" | "toOrigin" | "toDirection">;
     // (undocumented)
-    type AlignNormAndAxisDto<T> = WithDefaults<Inputs_4.OCCT.AlignNormAndAxisDto<T>, "fromOrigin" | "fromNorm" | "fromAx" | "toOrigin" | "toNorm" | "toAx">;
+    type AlignNormAndAxisDto<T> = WithDefaults<Inputs_5.OCCT.AlignNormAndAxisDto<T>, "fromOrigin" | "fromNorm" | "fromAx" | "toOrigin" | "toNorm" | "toAx">;
     // (undocumented)
-    type AlignShapesDto<T> = WithDefaults<Inputs_4.OCCT.AlignShapesDto<T>, "fromOrigins" | "fromDirections" | "toOrigins" | "toDirections">;
+    type AlignShapesDto<T> = WithDefaults<Inputs_5.OCCT.AlignShapesDto<T>, "fromOrigins" | "fromDirections" | "toOrigins" | "toDirections">;
     // (undocumented)
-    type ArcEdgeCirclePointAngleDto<T> = WithDefaults<Inputs_4.OCCT.ArcEdgeCirclePointAngleDto<T>, "alphaAngle" | "sense">;
+    type ArcEdgeCirclePointAngleDto<T> = WithDefaults<Inputs_5.OCCT.ArcEdgeCirclePointAngleDto<T>, "alphaAngle" | "sense">;
     // (undocumented)
-    type ArcEdgeCircleTwoAnglesDto<T> = WithDefaults<Inputs_4.OCCT.ArcEdgeCircleTwoAnglesDto<T>, "alphaAngle1" | "alphaAngle2" | "sense">;
+    type ArcEdgeCircleTwoAnglesDto<T> = WithDefaults<Inputs_5.OCCT.ArcEdgeCircleTwoAnglesDto<T>, "alphaAngle1" | "alphaAngle2" | "sense">;
     // (undocumented)
-    type ArcEdgeCircleTwoPointsDto<T> = WithDefaults<Inputs_4.OCCT.ArcEdgeCircleTwoPointsDto<T>, "start" | "end" | "sense">;
+    type ArcEdgeCircleTwoPointsDto<T> = WithDefaults<Inputs_5.OCCT.ArcEdgeCircleTwoPointsDto<T>, "start" | "end" | "sense">;
     // (undocumented)
-    type ArcEdgeThreePointsDto = WithDefaults<Inputs_4.OCCT.ArcEdgeThreePointsDto, "start" | "middle" | "end">;
+    type ArcEdgeThreePointsDto = WithDefaults<Inputs_5.OCCT.ArcEdgeThreePointsDto, "start" | "middle" | "end">;
     // (undocumented)
-    type ArcEdgeTwoPointsTangentDto = WithDefaults<Inputs_4.OCCT.ArcEdgeTwoPointsTangentDto, "start" | "tangentVec" | "end">;
+    type ArcEdgeTwoPointsTangentDto = WithDefaults<Inputs_5.OCCT.ArcEdgeTwoPointsTangentDto, "start" | "tangentVec" | "end">;
     // (undocumented)
-    type BasicShapeRepairDto<T> = WithDefaults<Inputs_4.OCCT.BasicShapeRepairDto<T>, "precision" | "maxTolerance" | "minTolerance">;
+    type BasicShapeRepairDto<T> = WithDefaults<Inputs_5.OCCT.BasicShapeRepairDto<T>, "precision" | "maxTolerance" | "minTolerance">;
     // (undocumented)
-    type BezierDto = WithDefaults<Inputs_4.OCCT.BezierDto, "closed" | "periodic">;
+    type BezierDto = WithDefaults<Inputs_5.OCCT.BezierDto, "closed" | "periodic">;
     // (undocumented)
-    type BezierWeightsDto = WithDefaults<Inputs_4.OCCT.BezierWeightsDto, "closed" | "periodic">;
+    type BezierWeightsDto = WithDefaults<Inputs_5.OCCT.BezierWeightsDto, "closed" | "periodic">;
     // (undocumented)
-    type BezierWiresDto = WithDefaults<Inputs_4.OCCT.BezierWiresDto, "returnCompound">;
+    type BezierWiresDto = WithDefaults<Inputs_5.OCCT.BezierWiresDto, "returnCompound">;
     // (undocumented)
-    type BlendBetweenEdgesDto<T> = WithDefaults<Inputs_4.OCCT.BlendBetweenEdgesDto<T>, "matchCurvature" | "bulge">;
+    type BlendBetweenEdgesDto<T> = WithDefaults<Inputs_5.OCCT.BlendBetweenEdgesDto<T>, "matchCurvature" | "bulge">;
     // (undocumented)
-    type BoundaryPatchDto<T> = WithDefaults<Inputs_4.OCCT.BoundaryPatchDto<T>, "style">;
+    type BoundaryPatchDto<T> = WithDefaults<Inputs_5.OCCT.BoundaryPatchDto<T>, "style">;
     // (undocumented)
-    type BoundingBoxDto = Inputs_4.OCCT.BoundingBoxDto;
+    type BoundingBoxDto = Inputs_5.OCCT.BoundingBoxDto;
     // (undocumented)
-    type BoundingBoxInFrameDto<T> = Inputs_4.OCCT.BoundingBoxInFrameDto<T>;
+    type BoundingBoxInFrameDto<T> = Inputs_5.OCCT.BoundingBoxInFrameDto<T>;
     // (undocumented)
-    type BoundingBoxPropsDto = WithDefaults<Inputs_4.OCCT.BoundingBoxPropsDto, "min" | "max" | "center" | "size">;
+    type BoundingBoxPropsDto = WithDefaults<Inputs_5.OCCT.BoundingBoxPropsDto, "min" | "max" | "center" | "size">;
     // (undocumented)
-    type BoundingSpherePropsDto = WithDefaults<Inputs_4.OCCT.BoundingSpherePropsDto, "center" | "radius">;
+    type BoundingSpherePropsDto = WithDefaults<Inputs_5.OCCT.BoundingSpherePropsDto, "center" | "radius">;
     // (undocumented)
-    type BoxDto = WithDefaults<Inputs_4.OCCT.BoxDto, "width" | "length" | "height" | "center" | "originOnCenter">;
+    type BoxDto = WithDefaults<Inputs_5.OCCT.BoxDto, "width" | "length" | "height" | "center" | "originOnCenter">;
     // (undocumented)
-    type BoxFromCornerDto = WithDefaults<Inputs_4.OCCT.BoxFromCornerDto, "width" | "length" | "height" | "corner">;
+    type BoxFromCornerDto = WithDefaults<Inputs_5.OCCT.BoxFromCornerDto, "width" | "length" | "height" | "corner">;
     // (undocumented)
-    type BRepGraphNodeOfShapeDto<T> = Inputs_4.OCCT.BRepGraphNodeOfShapeDto<T>;
+    type BRepGraphNodeOfShapeDto<T> = Inputs_5.OCCT.BRepGraphNodeOfShapeDto<T>;
     // (undocumented)
-    type BRepGraphReconstructDto<T> = WithDefaults<Inputs_4.OCCT.BRepGraphReconstructDto<T>, "kind" | "index">;
+    type BRepGraphReconstructDto<T> = WithDefaults<Inputs_5.OCCT.BRepGraphReconstructDto<T>, "kind" | "index">;
     // (undocumented)
-    type BSplineDto = WithDefaults<Inputs_4.OCCT.BSplineDto, "closed">;
+    type BSplineDto = WithDefaults<Inputs_5.OCCT.BSplineDto, "closed">;
     // (undocumented)
-    type BSplinesDto = WithDefaults<Inputs_4.OCCT.BSplinesDto, "returnCompound">;
+    type BSplinesDto = WithDefaults<Inputs_5.OCCT.BSplinesDto, "returnCompound">;
     // (undocumented)
-    type BuildAssemblyDocumentDto<T, D> = Inputs_4.OCCT.BuildAssemblyDocumentDto<T, D>;
+    type BuildAssemblyDocumentDto<T, D> = Inputs_5.OCCT.BuildAssemblyDocumentDto<T, D>;
     // (undocumented)
-    type Chamfer2dVertexDto<T> = WithDefaults<Inputs_4.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
+    type Chamfer2dVertexDto<T> = WithDefaults<Inputs_5.OCCT.Chamfer2dVertexDto<T>, "distance" | "angle">;
     // (undocumented)
-    type ChamferCornerByPointDto<T> = WithDefaults<Inputs_4.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
+    type ChamferCornerByPointDto<T> = WithDefaults<Inputs_5.OCCT.ChamferCornerByPointDto<T>, "points" | "distance" | "angle" | "snapTolerance" | "mode">;
     // (undocumented)
-    type ChamferDto<T> = WithDefaults<Inputs_4.OCCT.ChamferDto<T>, "distance">;
+    type ChamferDto<T> = WithDefaults<Inputs_5.OCCT.ChamferDto<T>, "distance">;
     // (undocumented)
-    type ChamferEdgeDistAngleDto<T, U, F> = WithDefaults<Inputs_4.OCCT.ChamferEdgeDistAngleDto<T, U, F>, "distance" | "angle">;
+    type ChamferEdgeDistAngleDto<T, U, F> = WithDefaults<Inputs_5.OCCT.ChamferEdgeDistAngleDto<T, U, F>, "distance" | "angle">;
     // (undocumented)
-    type ChamferEdgesDistAngleDto<T, U, F> = WithDefaults<Inputs_4.OCCT.ChamferEdgesDistAngleDto<T, U, F>, "distance" | "angle">;
+    type ChamferEdgesDistAngleDto<T, U, F> = WithDefaults<Inputs_5.OCCT.ChamferEdgesDistAngleDto<T, U, F>, "distance" | "angle">;
     // (undocumented)
-    type ChamferEdgesDistsAnglesDto<T, U, F> = Inputs_4.OCCT.ChamferEdgesDistsAnglesDto<T, U, F>;
+    type ChamferEdgesDistsAnglesDto<T, U, F> = Inputs_5.OCCT.ChamferEdgesDistsAnglesDto<T, U, F>;
     // (undocumented)
-    type ChamferEdgesListDto<T, U> = Inputs_4.OCCT.ChamferEdgesListDto<T, U>;
+    type ChamferEdgesListDto<T, U> = Inputs_5.OCCT.ChamferEdgesListDto<T, U>;
     // (undocumented)
-    type ChamferEdgesTwoDistancesDto<T, U, F> = WithDefaults<Inputs_4.OCCT.ChamferEdgesTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    type ChamferEdgesTwoDistancesDto<T, U, F> = WithDefaults<Inputs_5.OCCT.ChamferEdgesTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
     // (undocumented)
-    type ChamferEdgesTwoDistancesListsDto<T, U, F> = Inputs_4.OCCT.ChamferEdgesTwoDistancesListsDto<T, U, F>;
+    type ChamferEdgesTwoDistancesListsDto<T, U, F> = Inputs_5.OCCT.ChamferEdgesTwoDistancesListsDto<T, U, F>;
     // (undocumented)
-    type ChamferEdgeTwoDistancesDto<T, U, F> = WithDefaults<Inputs_4.OCCT.ChamferEdgeTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
+    type ChamferEdgeTwoDistancesDto<T, U, F> = WithDefaults<Inputs_5.OCCT.ChamferEdgeTwoDistancesDto<T, U, F>, "distance1" | "distance2">;
     // (undocumented)
-    type ChristmasTreeDto = WithDefaults<Inputs_4.OCCT.ChristmasTreeDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction">;
+    type ChristmasTreeDto = WithDefaults<Inputs_5.OCCT.ChristmasTreeDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction">;
     // (undocumented)
-    type ChristmasTreeSolidDto = WithDefaults<Inputs_4.OCCT.ChristmasTreeSolidDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type ChristmasTreeSolidDto = WithDefaults<Inputs_5.OCCT.ChristmasTreeSolidDto, "height" | "innerDist" | "outerDist" | "nrSkirts" | "trunkHeight" | "trunkWidth" | "half" | "rotation" | "origin" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type CircleDto = WithDefaults<Inputs_4.OCCT.CircleDto, "radius" | "center" | "direction">;
+    type CircleDto = WithDefaults<Inputs_5.OCCT.CircleDto, "radius" | "center" | "direction">;
     // (undocumented)
-    type CirclesTangentToThreeDto<T> = WithDefaults<Inputs_4.OCCT.CirclesTangentToThreeDto<T>, "tolerance" | "onArgumentsOnly">;
+    type CirclesTangentToThreeDto<T> = WithDefaults<Inputs_5.OCCT.CirclesTangentToThreeDto<T>, "tolerance" | "onArgumentsOnly">;
     // (undocumented)
-    type CirclesTangentToTwoCenteredOnDto<T> = WithDefaults<Inputs_4.OCCT.CirclesTangentToTwoCenteredOnDto<T>, "tolerance" | "onArgumentsOnly">;
+    type CirclesTangentToTwoCenteredOnDto<T> = WithDefaults<Inputs_5.OCCT.CirclesTangentToTwoCenteredOnDto<T>, "tolerance" | "onArgumentsOnly">;
     // (undocumented)
-    type CirclesTangentToTwoWithRadiusDto<T> = WithDefaults<Inputs_4.OCCT.CirclesTangentToTwoWithRadiusDto<T>, "radius" | "tolerance" | "onArgumentsOnly">;
+    type CirclesTangentToTwoWithRadiusDto<T> = WithDefaults<Inputs_5.OCCT.CirclesTangentToTwoWithRadiusDto<T>, "radius" | "tolerance" | "onArgumentsOnly">;
     // (undocumented)
-    type ClashesBetweenShapesDto<T> = WithDefaults<Inputs_4.OCCT.ClashesBetweenShapesDto<T>, "clearance">;
+    type ClashesBetweenShapesDto<T> = WithDefaults<Inputs_5.OCCT.ClashesBetweenShapesDto<T>, "clearance">;
     // (undocumented)
-    type ClassifyCornerByPointDto<T> = WithDefaults<Inputs_4.OCCT.ClassifyCornerByPointDto<T>, "points" | "snapTolerance">;
+    type ClassifyCornerByPointDto<T> = WithDefaults<Inputs_5.OCCT.ClassifyCornerByPointDto<T>, "points" | "snapTolerance">;
     // (undocumented)
-    type ClosestPointsBetweenTwoShapesDto<T> = Inputs_4.OCCT.ClosestPointsBetweenTwoShapesDto<T>;
+    type ClosestPointsBetweenTwoShapesDto<T> = Inputs_5.OCCT.ClosestPointsBetweenTwoShapesDto<T>;
     // (undocumented)
-    type ClosestPointsOnShapeFromPointsDto<T> = Inputs_4.OCCT.ClosestPointsOnShapeFromPointsDto<T>;
+    type ClosestPointsOnShapeFromPointsDto<T> = Inputs_5.OCCT.ClosestPointsOnShapeFromPointsDto<T>;
     // (undocumented)
-    type ClosestPointsOnShapesFromPointsDto<T> = Inputs_4.OCCT.ClosestPointsOnShapesFromPointsDto<T>;
+    type ClosestPointsOnShapesFromPointsDto<T> = Inputs_5.OCCT.ClosestPointsOnShapesFromPointsDto<T>;
     // (undocumented)
-    type CombineAssemblyStructureDto<T> = WithDefaults<Inputs_4.OCCT.CombineAssemblyStructureDto<T>, "parts" | "nodes" | "clearDocument">;
+    type CombineAssemblyStructureDto<T> = WithDefaults<Inputs_5.OCCT.CombineAssemblyStructureDto<T>, "parts" | "nodes" | "clearDocument">;
     // (undocumented)
-    type CompareShapesDto<T> = Inputs_4.OCCT.CompareShapesDto<T>;
+    type CompareShapesDto<T> = Inputs_5.OCCT.CompareShapesDto<T>;
     // (undocumented)
-    type ComposeTransformDto = WithDefaults<Inputs_4.OCCT.ComposeTransformDto, "translation" | "rotation" | "scale">;
+    type ComposeTransformDto = WithDefaults<Inputs_5.OCCT.ComposeTransformDto, "translation" | "rotation" | "scale">;
     // (undocumented)
-    type CompoundShapesDto<T> = Inputs_4.OCCT.CompoundShapesDto<T>;
+    type CompoundShapesDto<T> = Inputs_5.OCCT.CompoundShapesDto<T>;
     // (undocumented)
-    type ConeDto = WithDefaults<Inputs_4.OCCT.ConeDto, "radius1" | "radius2" | "height" | "angle" | "center" | "direction">;
+    type ConeDto = WithDefaults<Inputs_5.OCCT.ConeDto, "radius1" | "radius2" | "height" | "angle" | "center" | "direction">;
     // (undocumented)
-    type ConstraintTanCirclesOnCircleAndPntDto<T> = WithDefaults<Inputs_4.OCCT.ConstraintTanCirclesOnCircleAndPntDto<T>, "tolerance" | "radius">;
+    type ConstraintTanCirclesOnCircleAndPntDto<T> = WithDefaults<Inputs_5.OCCT.ConstraintTanCirclesOnCircleAndPntDto<T>, "tolerance" | "radius">;
     // (undocumented)
-    type ConstraintTanCirclesOnTwoCirclesDto<T> = WithDefaults<Inputs_4.OCCT.ConstraintTanCirclesOnTwoCirclesDto<T>, "tolerance" | "radius">;
+    type ConstraintTanCirclesOnTwoCirclesDto<T> = WithDefaults<Inputs_5.OCCT.ConstraintTanCirclesOnTwoCirclesDto<T>, "tolerance" | "radius">;
     // (undocumented)
-    type ConstraintTanLinesFromPtToCircleDto<T> = WithDefaults<Inputs_4.OCCT.ConstraintTanLinesFromPtToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    type ConstraintTanLinesFromPtToCircleDto<T> = WithDefaults<Inputs_5.OCCT.ConstraintTanLinesFromPtToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
     // (undocumented)
-    type ConstraintTanLinesFromTwoPtsToCircleDto<T> = WithDefaults<Inputs_4.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
+    type ConstraintTanLinesFromTwoPtsToCircleDto<T> = WithDefaults<Inputs_5.OCCT.ConstraintTanLinesFromTwoPtsToCircleDto<T>, "tolerance" | "positionResult" | "circleRemainder">;
     // (undocumented)
-    type ConstraintTanLinesOnTwoCirclesDto<T> = WithDefaults<Inputs_4.OCCT.ConstraintTanLinesOnTwoCirclesDto<T>, "tolerance" | "positionResult" | "circleRemainders">;
+    type ConstraintTanLinesOnTwoCirclesDto<T> = WithDefaults<Inputs_5.OCCT.ConstraintTanLinesOnTwoCirclesDto<T>, "tolerance" | "positionResult" | "circleRemainders">;
     // (undocumented)
-    type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs_4.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale">;
+    type ConvertStepToGltfAdvancedDto = WithDefaults<Inputs_5.OCCT.ConvertStepToGltfAdvancedDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale">;
     // (undocumented)
-    type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs_4.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    type ConvertStepToGltfAdvancedWithDracoDto = WithDefaults<Inputs_5.OCCT.ConvertStepToGltfAdvancedWithDracoDto, "readColors" | "readNames" | "readMaterials" | "readLayers" | "readProps" | "meshDeflection" | "meshAngle" | "meshParallel" | "faceCountThreshold" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "splitIndices16" | "parallelWrite" | "embedTextures" | "forceUVExport" | "nodeNameFormat" | "meshNameFormat" | "transformFormat" | "adjustZtoY" | "scale" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     // (undocumented)
-    type ConvertStepToGltfDto = WithDefaults<Inputs_4.OCCT.ConvertStepToGltfDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection">;
+    type ConvertStepToGltfDto = WithDefaults<Inputs_5.OCCT.ConvertStepToGltfDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection">;
     // (undocumented)
-    type ConvertStepToGltfWithDracoDto = WithDefaults<Inputs_4.OCCT.ConvertStepToGltfWithDracoDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    type ConvertStepToGltfWithDracoDto = WithDefaults<Inputs_5.OCCT.ConvertStepToGltfWithDracoDto, "meshPrecision" | "meshAngle" | "meshRelative" | "internalVerticesMode" | "controlSurfaceDeflection" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     // (undocumented)
-    type CounterboredHolesDto<T> = WithDefaults<Inputs_4.OCCT.CounterboredHolesDto<T>, "diameter" | "depth" | "tipAngle" | "counterboreDiameter" | "counterboreDepth">;
+    type CounterboredHolesDto<T> = WithDefaults<Inputs_5.OCCT.CounterboredHolesDto<T>, "diameter" | "depth" | "tipAngle" | "counterboreDiameter" | "counterboreDepth">;
     // (undocumented)
-    type CountersunkHolesDto<T> = WithDefaults<Inputs_4.OCCT.CountersunkHolesDto<T>, "diameter" | "depth" | "tipAngle" | "countersinkDiameter" | "countersinkAngle">;
+    type CountersunkHolesDto<T> = WithDefaults<Inputs_5.OCCT.CountersunkHolesDto<T>, "diameter" | "depth" | "tipAngle" | "countersinkDiameter" | "countersinkAngle">;
     // (undocumented)
-    type CreateAssemblyNodeDto = WithDefaults<Inputs_4.OCCT.CreateAssemblyNodeDto, "colorRgba">;
+    type CreateAssemblyNodeDto = WithDefaults<Inputs_5.OCCT.CreateAssemblyNodeDto, "colorRgba">;
     // (undocumented)
-    type CreateAssemblyPartDto<T> = Inputs_4.OCCT.CreateAssemblyPartDto<T>;
+    type CreateAssemblyPartDto<T> = Inputs_5.OCCT.CreateAssemblyPartDto<T>;
     // (undocumented)
-    type CreateImportedPartDto = WithDefaults<Inputs_4.OCCT.CreateImportedPartDto, "sourceDocumentIndex">;
+    type CreateImportedPartDto = WithDefaults<Inputs_5.OCCT.CreateImportedPartDto, "sourceDocumentIndex">;
     // (undocumented)
-    type CreateInstanceNodeDto = WithDefaults<Inputs_4.OCCT.CreateInstanceNodeDto, "translation" | "rotation" | "scale">;
+    type CreateInstanceNodeDto = WithDefaults<Inputs_5.OCCT.CreateInstanceNodeDto, "translation" | "rotation" | "scale">;
     // (undocumented)
-    type CreatePartUpdateDto<T> = Inputs_4.OCCT.CreatePartUpdateDto<T>;
+    type CreatePartUpdateDto<T> = Inputs_5.OCCT.CreatePartUpdateDto<T>;
     // (undocumented)
-    type CubeDto = WithDefaults<Inputs_4.OCCT.CubeDto, "size" | "center" | "originOnCenter">;
+    type CubeDto = WithDefaults<Inputs_5.OCCT.CubeDto, "size" | "center" | "originOnCenter">;
     // (undocumented)
-    type CurvatureCombDto<T> = WithDefaults<Inputs_4.OCCT.CurvatureCombDto<T>, "samples" | "scale">;
+    type CurvatureCombDto<T> = WithDefaults<Inputs_5.OCCT.CurvatureCombDto<T>, "samples" | "scale">;
     // (undocumented)
-    type CurveAndSurfaceDto<T, U> = Inputs_4.OCCT.CurveAndSurfaceDto<T, U>;
+    type CurveAndSurfaceDto<T, U> = Inputs_5.OCCT.CurveAndSurfaceDto<T, U>;
     // (undocumented)
-    type CurveExtremesAlongDto<T> = WithDefaults<Inputs_4.OCCT.CurveExtremesAlongDto<T>, "direction">;
+    type CurveExtremesAlongDto<T> = WithDefaults<Inputs_5.OCCT.CurveExtremesAlongDto<T>, "direction">;
     // (undocumented)
-    type CurveKinksDto<T> = WithDefaults<Inputs_4.OCCT.CurveKinksDto<T>, "angle">;
+    type CurveKinksDto<T> = WithDefaults<Inputs_5.OCCT.CurveKinksDto<T>, "angle">;
     // (undocumented)
-    type CurveSeamByLengthDto<T> = WithDefaults<Inputs_4.OCCT.CurveSeamByLengthDto<T>, "length">;
+    type CurveSeamByLengthDto<T> = WithDefaults<Inputs_5.OCCT.CurveSeamByLengthDto<T>, "length">;
     // (undocumented)
-    type CurveSeamByParameterDto<T> = WithDefaults<Inputs_4.OCCT.CurveSeamByParameterDto<T>, "parameter">;
+    type CurveSeamByParameterDto<T> = WithDefaults<Inputs_5.OCCT.CurveSeamByParameterDto<T>, "parameter">;
     // (undocumented)
-    type CylinderDto = WithDefaults<Inputs_4.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
+    type CylinderDto = WithDefaults<Inputs_5.OCCT.CylinderDto, "radius" | "height" | "center" | "direction" | "angle" | "originOnCenter">;
     // (undocumented)
-    type CylindersOnLinesDto = WithDefaults<Inputs_4.OCCT.CylindersOnLinesDto, "radius">;
+    type CylindersOnLinesDto = WithDefaults<Inputs_5.OCCT.CylindersOnLinesDto, "radius">;
     // (undocumented)
-    type DataOnGeometryAtLengthDto<T> = WithDefaults<Inputs_4.OCCT.DataOnGeometryAtLengthDto<T>, "length">;
+    type DataOnGeometryAtLengthDto<T> = WithDefaults<Inputs_5.OCCT.DataOnGeometryAtLengthDto<T>, "length">;
     // (undocumented)
-    type DataOnGeometryAtLengthsDto<T> = Inputs_4.OCCT.DataOnGeometryAtLengthsDto<T>;
+    type DataOnGeometryAtLengthsDto<T> = Inputs_5.OCCT.DataOnGeometryAtLengthsDto<T>;
     // (undocumented)
-    type DataOnGeometryAtParamDto<T> = WithDefaults<Inputs_4.OCCT.DataOnGeometryAtParamDto<T>, "param">;
+    type DataOnGeometryAtParamDto<T> = WithDefaults<Inputs_5.OCCT.DataOnGeometryAtParamDto<T>, "param">;
     // (undocumented)
-    type DataOnGeometryAtParamsDto<T> = Inputs_4.OCCT.DataOnGeometryAtParamsDto<T>;
+    type DataOnGeometryAtParamsDto<T> = Inputs_5.OCCT.DataOnGeometryAtParamsDto<T>;
     // (undocumented)
-    type DataOnGeometryesAtLengthDto<T> = WithDefaults<Inputs_4.OCCT.DataOnGeometryesAtLengthDto<T>, "length">;
+    type DataOnGeometryesAtLengthDto<T> = WithDefaults<Inputs_5.OCCT.DataOnGeometryesAtLengthDto<T>, "length">;
     // (undocumented)
-    type DataOnGeometryesAtParamDto<T> = WithDefaults<Inputs_4.OCCT.DataOnGeometryesAtParamDto<T>, "param">;
+    type DataOnGeometryesAtParamDto<T> = WithDefaults<Inputs_5.OCCT.DataOnGeometryesAtParamDto<T>, "param">;
     // (undocumented)
-    type DataOnUVDto<T> = WithDefaults<Inputs_4.OCCT.DataOnUVDto<T>, "paramU" | "paramV">;
+    type DataOnUVDto<T> = WithDefaults<Inputs_5.OCCT.DataOnUVDto<T>, "paramU" | "paramV">;
     // (undocumented)
-    type DataOnUVsDto<T> = WithDefaults<Inputs_4.OCCT.DataOnUVsDto<T>, "paramsUV">;
+    type DataOnUVsDto<T> = WithDefaults<Inputs_5.OCCT.DataOnUVsDto<T>, "paramsUV">;
     // (undocumented)
-    type DecomposedEdgeDto = Inputs_4.OCCT.DecomposedEdgeDto;
+    type DecomposedEdgeDto = Inputs_5.OCCT.DecomposedEdgeDto;
     // (undocumented)
-    type DecomposedFaceDto = Inputs_4.OCCT.DecomposedFaceDto;
+    type DecomposedFaceDto = Inputs_5.OCCT.DecomposedFaceDto;
     // (undocumented)
-    type DecomposedManifoldMeshDto = Inputs_4.OCCT.DecomposedManifoldMeshDto;
+    type DecomposedManifoldMeshDto = Inputs_5.OCCT.DecomposedManifoldMeshDto;
     // (undocumented)
-    type DecomposedMeshDto = Inputs_4.OCCT.DecomposedMeshDto;
+    type DecomposedMeshDto = Inputs_5.OCCT.DecomposedMeshDto;
     // (undocumented)
-    type DesignBuildDto<T> = Inputs_4.OCCT.DesignBuildDto<T>;
+    type DesignBuildDto<T> = Inputs_5.OCCT.DesignBuildDto<T>;
     // (undocumented)
-    type DesignDocumentDto = Inputs_4.OCCT.DesignDocumentDto;
+    type DesignClashesDto = WithDefaults<Inputs_5.OCCT.DesignClashesDto, "clearance">;
     // (undocumented)
-    type DesignProbeFilletDto = WithDefaults<Inputs_4.OCCT.DesignProbeFilletDto, "maxAttempts">;
+    type DesignDocumentDto = Inputs_5.OCCT.DesignDocumentDto;
     // (undocumented)
-    type DifferenceDto<T> = WithDefaults<Inputs_4.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
+    type DesignProbeFilletDto = WithDefaults<Inputs_5.OCCT.DesignProbeFilletDto, "maxAttempts">;
     // (undocumented)
-    type DihedralAngleDto<T> = WithDefaults<Inputs_4.OCCT.DihedralAngleDto<T>, "index" | "param">;
+    type DesignReferenceForDto = WithDefaults<Inputs_5.OCCT.DesignReferenceForDto, "nudge">;
     // (undocumented)
-    type DivideDto<T> = WithDefaults<Inputs_4.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    type DifferenceDto<T> = WithDefaults<Inputs_5.OCCT.DifferenceDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
-    type DivideShapesDto<T> = WithDefaults<Inputs_4.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    type DihedralAngleDto<T> = WithDefaults<Inputs_5.OCCT.DihedralAngleDto<T>, "index" | "param">;
     // (undocumented)
-    type DivideSharedDto = WithDefaults<Inputs_4.OCCT.DivideSharedDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
+    type DivideDto<T> = WithDefaults<Inputs_5.OCCT.DivideDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
-    type DocToMeshDto<U> = WithDefaults<Inputs_4.OCCT.DocToMeshDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    type DivideShapesDto<T> = WithDefaults<Inputs_5.OCCT.DivideShapesDto<T>, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
-    type DocToMeshesDto<U> = WithDefaults<Inputs_4.OCCT.DocToMeshesDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
+    type DivideSharedDto = WithDefaults<Inputs_5.OCCT.DivideSharedDto, "nrOfDivisions" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
-    type DocumentLabelQueryDto<T> = Inputs_4.OCCT.DocumentLabelQueryDto<T>;
+    type DocToMeshDto<U> = WithDefaults<Inputs_5.OCCT.DocToMeshDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
-    type DocumentQueryDto<T> = Inputs_4.OCCT.DocumentQueryDto<T>;
+    type DocToMeshesDto<U> = WithDefaults<Inputs_5.OCCT.DocToMeshesDto<U>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection">;
     // (undocumented)
-    type DraftAngleDto<T, U> = WithDefaults<Inputs_4.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
+    type DocumentLabelQueryDto<T> = Inputs_5.OCCT.DocumentLabelQueryDto<T>;
     // (undocumented)
-    type DrawShapeDto<T> = WithDefaults<Inputs_4.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DocumentQueryDto<T> = Inputs_5.OCCT.DocumentQueryDto<T>;
     // (undocumented)
-    type DrawShapesDto<T> = WithDefaults<Inputs_4.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DraftAngleDto<T, U> = WithDefaults<Inputs_5.OCCT.DraftAngleDto<T, U>, "direction" | "angle" | "neutralPlaneOrigin" | "neutralPlaneDirection" | "flag">;
     // (undocumented)
-    type DrawShapeSharedDto = WithDefaults<Inputs_4.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
+    type DrawShapeDto<T> = WithDefaults<Inputs_5.OCCT.DrawShapeDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DxfPathsPartsListDto = WithDefaults<Inputs_4.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
+    type DrawShapesDto<T> = WithDefaults<Inputs_5.OCCT.DrawShapesDto<T>, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type DxfPathsWithLayerDto = WithDefaults<Inputs_4.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
+    type DrawShapeSharedDto = WithDefaults<Inputs_5.OCCT.DrawShapeSharedDto, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "edgeWidth" | "drawEdges" | "drawFaces" | "drawVertices" | "vertexColour" | "vertexSize" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type EdgeIndexDto<T> = WithDefaults<Inputs_4.OCCT.EdgeIndexDto<T>, "index">;
+    type DxfPathsPartsListDto = WithDefaults<Inputs_5.OCCT.DxfPathsPartsListDto, "colorFormat" | "acadVersion" | "fileName" | "tryDownload">;
     // (undocumented)
-    type EdgesToPointsDto<T> = WithDefaults<Inputs_4.OCCT.EdgesToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    type DxfPathsWithLayerDto = WithDefaults<Inputs_5.OCCT.DxfPathsWithLayerDto, "layer" | "color">;
     // (undocumented)
-    type EllipseDto = WithDefaults<Inputs_4.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
+    type EdgeIndexDto<T> = WithDefaults<Inputs_5.OCCT.EdgeIndexDto<T>, "index">;
     // (undocumented)
-    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_4.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload">;
+    type EdgesToPointsDto<T> = WithDefaults<Inputs_5.OCCT.EdgesToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     // (undocumented)
-    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_4.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
+    type EllipseDto = WithDefaults<Inputs_5.OCCT.EllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor">;
     // (undocumented)
-    type ExportDocumentToObjDto<T> = WithDefaults<Inputs_4.OCCT.ExportDocumentToObjDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
+    type ExportDocumentToGltfDto<T> = WithDefaults<Inputs_5.OCCT.ExportDocumentToGltfDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload">;
     // (undocumented)
-    type ExportDocumentToPlyDto<T> = WithDefaults<Inputs_4.OCCT.ExportDocumentToPlyDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
+    type ExportDocumentToGltfWithDracoDto<T> = WithDefaults<Inputs_5.OCCT.ExportDocumentToGltfWithDracoDto<T>, "meshDeflection" | "meshAngle" | "internalVerticesMode" | "controlSurfaceDeflection" | "mergeFaces" | "forceUVExport" | "up" | "fileName" | "tryDownload" | "useDraco" | "dracoCompressionLevel" | "dracoQuantizePositionBits" | "dracoQuantizeNormalBits" | "dracoQuantizeTexcoordBits" | "dracoQuantizeColorBits" | "dracoQuantizeGenericBits" | "dracoUnifiedQuantization">;
     // (undocumented)
-    type ExportDocumentToStepDto<T> = WithDefaults<Inputs_4.OCCT.ExportDocumentToStepDto<T>, "fileName" | "author" | "organization" | "compress" | "tryDownload">;
+    type ExportDocumentToObjDto<T> = WithDefaults<Inputs_5.OCCT.ExportDocumentToObjDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
     // (undocumented)
-    type ExtendEdgeDto<T> = WithDefaults<Inputs_4.OCCT.ExtendEdgeDto<T>, "atStart" | "atEnd">;
+    type ExportDocumentToPlyDto<T> = WithDefaults<Inputs_5.OCCT.ExportDocumentToPlyDto<T>, "meshDeflection" | "fileName" | "tryDownload">;
     // (undocumented)
-    type ExtrudedSolidDto = WithDefaults<Inputs_4.OCCT.ExtrudedSolidDto, "extrusionLengthFront" | "extrusionLengthBack" | "center" | "direction">;
+    type ExportDocumentToStepDto<T> = WithDefaults<Inputs_5.OCCT.ExportDocumentToStepDto<T>, "fileName" | "author" | "organization" | "compress" | "tryDownload">;
     // (undocumented)
-    type ExtrudeDto<T> = WithDefaults<Inputs_4.OCCT.ExtrudeDto<T>, "direction">;
+    type ExtendEdgeDto<T> = WithDefaults<Inputs_5.OCCT.ExtendEdgeDto<T>, "atStart" | "atEnd">;
     // (undocumented)
-    type ExtrudeShapesDto<T> = WithDefaults<Inputs_4.OCCT.ExtrudeShapesDto<T>, "direction">;
+    type ExtrudedSolidDto = WithDefaults<Inputs_5.OCCT.ExtrudedSolidDto, "extrusionLengthFront" | "extrusionLengthBack" | "center" | "direction">;
     // (undocumented)
-    type FaceFromMultipleCircleTanWireCollectionsDto<T> = WithDefaults<Inputs_4.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<T>, "combination" | "unify" | "tolerance">;
+    type ExtrudeDto<T> = WithDefaults<Inputs_5.OCCT.ExtrudeDto<T>, "direction">;
     // (undocumented)
-    type FaceFromMultipleCircleTanWiresDto<T> = WithDefaults<Inputs_4.OCCT.FaceFromMultipleCircleTanWiresDto<T>, "combination" | "unify" | "tolerance">;
+    type ExtrudeShapesDto<T> = WithDefaults<Inputs_5.OCCT.ExtrudeShapesDto<T>, "direction">;
     // (undocumented)
-    type FaceFromPointGridDto = WithDefaults<Inputs_4.OCCT.FaceFromPointGridDto, "interpolate" | "periodic" | "degreeMin" | "degreeMax" | "tolerance">;
+    type FaceFromMultipleCircleTanWireCollectionsDto<T> = WithDefaults<Inputs_5.OCCT.FaceFromMultipleCircleTanWireCollectionsDto<T>, "combination" | "unify" | "tolerance">;
     // (undocumented)
-    type FaceFromSurfaceAndWireDto<T, U> = WithDefaults<Inputs_4.OCCT.FaceFromSurfaceAndWireDto<T, U>, "inside">;
+    type FaceFromMultipleCircleTanWiresDto<T> = WithDefaults<Inputs_5.OCCT.FaceFromMultipleCircleTanWiresDto<T>, "combination" | "unify" | "tolerance">;
     // (undocumented)
-    type FaceFromWireDto<T> = WithDefaults<Inputs_4.OCCT.FaceFromWireDto<T>, "planar">;
+    type FaceFromPointGridDto = WithDefaults<Inputs_5.OCCT.FaceFromPointGridDto, "interpolate" | "periodic" | "degreeMin" | "degreeMax" | "tolerance">;
     // (undocumented)
-    type FaceFromWireOnFaceDto<T, U> = WithDefaults<Inputs_4.OCCT.FaceFromWireOnFaceDto<T, U>, "inside">;
+    type FaceFromSurfaceAndWireDto<T, U> = WithDefaults<Inputs_5.OCCT.FaceFromSurfaceAndWireDto<T, U>, "inside">;
     // (undocumented)
-    type FaceFromWiresDto<T> = WithDefaults<Inputs_4.OCCT.FaceFromWiresDto<T>, "planar">;
+    type FaceFromWireDto<T> = WithDefaults<Inputs_5.OCCT.FaceFromWireDto<T>, "planar">;
     // (undocumented)
-    type FaceFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_4.OCCT.FaceFromWiresOnFaceDto<T, U>, "inside">;
+    type FaceFromWireOnFaceDto<T, U> = WithDefaults<Inputs_5.OCCT.FaceFromWireOnFaceDto<T, U>, "inside">;
     // (undocumented)
-    type FaceLinearSubdivisionDto<T> = WithDefaults<Inputs_4.OCCT.FaceLinearSubdivisionDto<T>, "isU" | "param" | "nrPoints" | "shiftHalfStep" | "removeStartPoint" | "removeEndPoint">;
+    type FaceFromWiresDto<T> = WithDefaults<Inputs_5.OCCT.FaceFromWiresDto<T>, "planar">;
     // (undocumented)
-    type FacesFromWiresDto<T> = WithDefaults<Inputs_4.OCCT.FacesFromWiresDto<T>, "planar">;
+    type FaceFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_5.OCCT.FaceFromWiresOnFaceDto<T, U>, "inside">;
     // (undocumented)
-    type FacesFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_4.OCCT.FacesFromWiresOnFaceDto<T, U>, "inside">;
+    type FaceLinearSubdivisionDto<T> = WithDefaults<Inputs_5.OCCT.FaceLinearSubdivisionDto<T>, "isU" | "param" | "nrPoints" | "shiftHalfStep" | "removeStartPoint" | "removeEndPoint">;
     // (undocumented)
-    type FaceSubdivideToHexagonHolesDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivideToHexagonHolesDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    type FacesFromWiresDto<T> = WithDefaults<Inputs_5.OCCT.FacesFromWiresDto<T>, "planar">;
     // (undocumented)
-    type FaceSubdivideToHexagonWiresDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivideToHexagonWiresDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "offsetFromBorderU" | "offsetFromBorderV" | "extendUUp" | "extendUBottom" | "extendVUp" | "extendVBottom">;
+    type FacesFromWiresOnFaceDto<T, U> = WithDefaults<Inputs_5.OCCT.FacesFromWiresOnFaceDto<T, U>, "inside">;
     // (undocumented)
-    type FaceSubdivideToRectangleHolesDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivideToRectangleHolesDto<T>, "nrRectanglesU" | "nrRectanglesV" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
+    type FaceSubdivideToHexagonHolesDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivideToHexagonHolesDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
     // (undocumented)
-    type FaceSubdivideToRectangleWiresDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivideToRectangleWiresDto<T>, "nrRectanglesU" | "nrRectanglesV" | "offsetFromBorderU" | "offsetFromBorderV">;
+    type FaceSubdivideToHexagonWiresDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivideToHexagonWiresDto<T>, "nrHexagonsU" | "nrHexagonsV" | "flatU" | "offsetFromBorderU" | "offsetFromBorderV" | "extendUUp" | "extendUBottom" | "extendVUp" | "extendVBottom">;
     // (undocumented)
-    type FaceSubdivisionControlledDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivisionControlledDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepNthU" | "shiftHalfStepUOffsetN" | "removeStartEdgeNthU" | "removeStartEdgeUOffsetN" | "removeEndEdgeNthU" | "removeEndEdgeUOffsetN" | "shiftHalfStepNthV" | "shiftHalfStepVOffsetN" | "removeStartEdgeNthV" | "removeStartEdgeVOffsetN" | "removeEndEdgeNthV" | "removeEndEdgeVOffsetN">;
+    type FaceSubdivideToRectangleHolesDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivideToRectangleHolesDto<T>, "nrRectanglesU" | "nrRectanglesV" | "holesToFaces" | "offsetFromBorderU" | "offsetFromBorderV">;
     // (undocumented)
-    type FaceSubdivisionDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
+    type FaceSubdivideToRectangleWiresDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivideToRectangleWiresDto<T>, "nrRectanglesU" | "nrRectanglesV" | "offsetFromBorderU" | "offsetFromBorderV">;
     // (undocumented)
-    type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_4.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
+    type FaceSubdivisionControlledDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivisionControlledDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepNthU" | "shiftHalfStepUOffsetN" | "removeStartEdgeNthU" | "removeStartEdgeUOffsetN" | "removeEndEdgeNthU" | "removeEndEdgeUOffsetN" | "shiftHalfStepNthV" | "shiftHalfStepVOffsetN" | "removeStartEdgeNthV" | "removeStartEdgeVOffsetN" | "removeEndEdgeNthV" | "removeEndEdgeVOffsetN">;
     // (undocumented)
-    type FacesWithinDto<T> = WithDefaults<Inputs_4.OCCT.FacesWithinDto<T>, "clearance" | "precision">;
+    type FaceSubdivisionDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivisionDto<T>, "nrDivisionsU" | "nrDivisionsV" | "shiftHalfStepU" | "removeStartEdgeU" | "removeEndEdgeU" | "shiftHalfStepV" | "removeStartEdgeV" | "removeEndEdgeV">;
     // (undocumented)
-    type Fillet3DWireDto<T> = WithDefaults<Inputs_4.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
+    type FaceSubdivisionToWiresDto<T> = WithDefaults<Inputs_5.OCCT.FaceSubdivisionToWiresDto<T>, "nrDivisions" | "isU" | "shiftHalfStep" | "removeStart" | "removeEnd">;
     // (undocumented)
-    type Fillet3DWiresDto<T> = WithDefaults<Inputs_4.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
+    type FacesWithinDto<T> = WithDefaults<Inputs_5.OCCT.FacesWithinDto<T>, "clearance" | "precision">;
     // (undocumented)
-    type Fillet3DWireSharedDto = WithDefaults<Inputs_4.OCCT.Fillet3DWireSharedDto, "radius" | "direction">;
+    type Fillet3DWireDto<T> = WithDefaults<Inputs_5.OCCT.Fillet3DWireDto<T>, "radius" | "direction">;
     // (undocumented)
-    type FilletCornerByPointDto<T> = WithDefaults<Inputs_4.OCCT.FilletCornerByPointDto<T>, "points" | "radius" | "taperFactor" | "snapTolerance" | "mode">;
+    type Fillet3DWiresDto<T> = WithDefaults<Inputs_5.OCCT.Fillet3DWiresDto<T>, "radius" | "direction">;
     // (undocumented)
-    type FilletDto<T> = WithDefaults<Inputs_4.OCCT.FilletDto<T>, "radius">;
+    type Fillet3DWireSharedDto = WithDefaults<Inputs_5.OCCT.Fillet3DWireSharedDto, "radius" | "direction">;
     // (undocumented)
-    type FilletEdgesListDto<T, U> = Inputs_4.OCCT.FilletEdgesListDto<T, U>;
+    type FilletCornerByPointDto<T> = WithDefaults<Inputs_5.OCCT.FilletCornerByPointDto<T>, "points" | "radius" | "taperFactor" | "snapTolerance" | "mode">;
     // (undocumented)
-    type FilletEdgesListOneRadiusDto<T, U> = WithDefaults<Inputs_4.OCCT.FilletEdgesListOneRadiusDto<T, U>, "radius">;
+    type FilletDto<T> = WithDefaults<Inputs_5.OCCT.FilletDto<T>, "radius">;
     // (undocumented)
-    type FilletEdgesSameVariableRadiusDto<T, U> = Inputs_4.OCCT.FilletEdgesSameVariableRadiusDto<T, U>;
+    type FilletEdgesListDto<T, U> = Inputs_5.OCCT.FilletEdgesListDto<T, U>;
     // (undocumented)
-    type FilletEdgesVariableRadiusDto<T, U> = Inputs_4.OCCT.FilletEdgesVariableRadiusDto<T, U>;
+    type FilletEdgesListOneRadiusDto<T, U> = WithDefaults<Inputs_5.OCCT.FilletEdgesListOneRadiusDto<T, U>, "radius">;
     // (undocumented)
-    type FilletEdgeVariableRadiusDto<T, U> = Inputs_4.OCCT.FilletEdgeVariableRadiusDto<T, U>;
+    type FilletEdgesSameVariableRadiusDto<T, U> = Inputs_5.OCCT.FilletEdgesSameVariableRadiusDto<T, U>;
     // (undocumented)
-    type FilletShapesDto<T> = WithDefaults<Inputs_4.OCCT.FilletShapesDto<T>, "radius">;
+    type FilletEdgesVariableRadiusDto<T, U> = Inputs_5.OCCT.FilletEdgesVariableRadiusDto<T, U>;
     // (undocumented)
-    type FilletTwoEdgesInPlaneDto<T> = WithDefaults<Inputs_4.OCCT.FilletTwoEdgesInPlaneDto<T>, "planeOrigin" | "planeDirection" | "radius" | "solution">;
+    type FilletEdgeVariableRadiusDto<T, U> = Inputs_5.OCCT.FilletEdgeVariableRadiusDto<T, U>;
     // (undocumented)
-    type FillPatchDto<T, U> = WithDefaults<Inputs_4.OCCT.FillPatchDto<T, U>, "degree" | "pointsOnCurves" | "iterations" | "tolerance">;
+    type FilletShapesDto<T> = WithDefaults<Inputs_5.OCCT.FilletShapesDto<T>, "radius">;
     // (undocumented)
-    type FilterFacePointsDto<T> = WithDefaults<Inputs_4.OCCT.FilterFacePointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    type FilletTwoEdgesInPlaneDto<T> = WithDefaults<Inputs_5.OCCT.FilletTwoEdgesInPlaneDto<T>, "planeOrigin" | "planeDirection" | "radius" | "solution">;
     // (undocumented)
-    type FilterFacesPointsDto<T> = WithDefaults<Inputs_4.OCCT.FilterFacesPointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown" | "flatPointsArray">;
+    type FillPatchDto<T, U> = WithDefaults<Inputs_5.OCCT.FillPatchDto<T, U>, "degree" | "pointsOnCurves" | "iterations" | "tolerance">;
     // (undocumented)
-    type FilterSolidPointsDto<T> = WithDefaults<Inputs_4.OCCT.FilterSolidPointsDto<T>, "tolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
+    type FilterFacePointsDto<T> = WithDefaults<Inputs_5.OCCT.FilterFacePointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
     // (undocumented)
-    type FixSmallEdgesInWireDto<T> = WithDefaults<Inputs_4.OCCT.FixSmallEdgesInWireDto<T>, "lockvtx" | "precsmall">;
+    type FilterFacesPointsDto<T> = WithDefaults<Inputs_5.OCCT.FilterFacesPointsDto<T>, "tolerance" | "useBndBox" | "gapTolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown" | "flatPointsArray">;
     // (undocumented)
-    type FlatSpiralWireDto = WithDefaults<Inputs_4.OCCT.FlatSpiralWireDto, "startRadius" | "endRadius" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    type FilterSolidPointsDto<T> = WithDefaults<Inputs_5.OCCT.FilterSolidPointsDto<T>, "tolerance" | "keepIn" | "keepOn" | "keepOut" | "keepUnknown">;
     // (undocumented)
-    type FlipFaceUVDto<T> = WithDefaults<Inputs_4.OCCT.FlipFaceUVDto<T>, "swapUV" | "reverseU" | "reverseV">;
+    type FixSmallEdgesInWireDto<T> = WithDefaults<Inputs_5.OCCT.FixSmallEdgesInWireDto<T>, "lockvtx" | "precsmall">;
     // (undocumented)
-    type FrameNearestPointDto<T> = WithDefaults<Inputs_4.OCCT.FrameNearestPointDto<T>, "point">;
+    type FlatSpiralWireDto = WithDefaults<Inputs_5.OCCT.FlatSpiralWireDto, "startRadius" | "endRadius" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
-    type FrameOnCurveAtLengthDto<T> = WithDefaults<Inputs_4.OCCT.FrameOnCurveAtLengthDto<T>, "length" | "kind" | "up">;
+    type FlipFaceUVDto<T> = WithDefaults<Inputs_5.OCCT.FlipFaceUVDto<T>, "swapUV" | "reverseU" | "reverseV">;
     // (undocumented)
-    type FrameOnCurveAtParamDto<T> = WithDefaults<Inputs_4.OCCT.FrameOnCurveAtParamDto<T>, "param" | "kind" | "up">;
+    type FrameNearestPointDto<T> = WithDefaults<Inputs_5.OCCT.FrameNearestPointDto<T>, "point">;
     // (undocumented)
-    type FrameOnCurveSharedDto = WithDefaults<Inputs_4.OCCT.FrameOnCurveSharedDto, "kind" | "up">;
+    type FrameOnCurveAtLengthDto<T> = WithDefaults<Inputs_5.OCCT.FrameOnCurveAtLengthDto<T>, "length" | "kind" | "up">;
     // (undocumented)
-    type FramesAlongWireDto<T> = WithDefaults<Inputs_4.OCCT.FramesAlongWireDto<T>, "count" | "skipEndOnClosed" | "kind" | "up">;
+    type FrameOnCurveAtParamDto<T> = WithDefaults<Inputs_5.OCCT.FrameOnCurveAtParamDto<T>, "param" | "kind" | "up">;
     // (undocumented)
-    type FramesNearestPointsDto<T> = Inputs_4.OCCT.FramesNearestPointsDto<T>;
+    type FrameOnCurveSharedDto = WithDefaults<Inputs_5.OCCT.FrameOnCurveSharedDto, "kind" | "up">;
     // (undocumented)
-    type FramesOnCurveAtLengthsDto<T> = WithDefaults<Inputs_4.OCCT.FramesOnCurveAtLengthsDto<T>, "kind" | "up">;
+    type FramesAlongWireDto<T> = WithDefaults<Inputs_5.OCCT.FramesAlongWireDto<T>, "count" | "skipEndOnClosed" | "kind" | "up">;
     // (undocumented)
-    type FramesOnCurveAtParamsDto<T> = WithDefaults<Inputs_4.OCCT.FramesOnCurveAtParamsDto<T>, "kind" | "up">;
+    type FramesNearestPointsDto<T> = Inputs_5.OCCT.FramesNearestPointsDto<T>;
     // (undocumented)
-    type Geom2dCircleDto = WithDefaults<Inputs_4.OCCT.Geom2dCircleDto, "center" | "direction" | "radius" | "sense">;
+    type FramesOnCurveAtLengthsDto<T> = WithDefaults<Inputs_5.OCCT.FramesOnCurveAtLengthsDto<T>, "kind" | "up">;
     // (undocumented)
-    type Geom2dEllipseDto = WithDefaults<Inputs_4.OCCT.Geom2dEllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor" | "sense">;
+    type FramesOnCurveAtParamsDto<T> = WithDefaults<Inputs_5.OCCT.FramesOnCurveAtParamsDto<T>, "kind" | "up">;
     // (undocumented)
-    type Geom2dSegmentDto = WithDefaults<Inputs_4.OCCT.Geom2dSegmentDto, "start" | "end">;
+    type Geom2dCircleDto = WithDefaults<Inputs_5.OCCT.Geom2dCircleDto, "center" | "direction" | "radius" | "sense">;
     // (undocumented)
-    type Geom2dTrimmedCurveDto<T> = WithDefaults<Inputs_4.OCCT.Geom2dTrimmedCurveDto<T>, "u1" | "u2" | "sense" | "adjustPeriodic">;
+    type Geom2dEllipseDto = WithDefaults<Inputs_5.OCCT.Geom2dEllipseDto, "center" | "direction" | "radiusMinor" | "radiusMajor" | "sense">;
     // (undocumented)
-    type GeomCylindricalSurfaceDto = WithDefaults<Inputs_4.OCCT.GeomCylindricalSurfaceDto, "radius" | "center" | "direction">;
+    type Geom2dSegmentDto = WithDefaults<Inputs_5.OCCT.Geom2dSegmentDto, "start" | "end">;
     // (undocumented)
-    type HBeamProfileDto = WithDefaults<Inputs_4.OCCT.HBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    type Geom2dTrimmedCurveDto<T> = WithDefaults<Inputs_5.OCCT.Geom2dTrimmedCurveDto<T>, "u1" | "u2" | "sense" | "adjustPeriodic">;
     // (undocumented)
-    type HBeamProfileSolidDto = WithDefaults<Inputs_4.OCCT.HBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type GeomCylindricalSurfaceDto = WithDefaults<Inputs_5.OCCT.GeomCylindricalSurfaceDto, "radius" | "center" | "direction">;
     // (undocumented)
-    type Heart2DDto = WithDefaults<Inputs_4.OCCT.Heart2DDto, "center" | "direction" | "rotation" | "sizeApprox">;
+    type HBeamProfileDto = WithDefaults<Inputs_5.OCCT.HBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
     // (undocumented)
-    type HeartSolidDto = WithDefaults<Inputs_4.OCCT.HeartSolidDto, "center" | "direction" | "rotation" | "sizeApprox" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type HBeamProfileSolidDto = WithDefaults<Inputs_5.OCCT.HBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type HelixWireByTurnsDto = WithDefaults<Inputs_4.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
+    type Heart2DDto = WithDefaults<Inputs_5.OCCT.Heart2DDto, "center" | "direction" | "rotation" | "sizeApprox">;
     // (undocumented)
-    type HelixWireDto = WithDefaults<Inputs_4.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    type HeartSolidDto = WithDefaults<Inputs_5.OCCT.HeartSolidDto, "center" | "direction" | "rotation" | "sizeApprox" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type HexagonsInGridDto = WithDefaults<Inputs_4.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
+    type HelixWireByTurnsDto = WithDefaults<Inputs_5.OCCT.HelixWireByTurnsDto, "radius" | "pitch" | "numTurns" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
-    type HiddenLinesDto<T> = WithDefaults<Inputs_4.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision">;
+    type HelixWireDto = WithDefaults<Inputs_5.OCCT.HelixWireDto, "radius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
-    type HolesDto<T> = WithDefaults<Inputs_4.OCCT.HolesDto<T>, "diameter" | "depth" | "tipAngle">;
+    type HexagonsInGridDto = WithDefaults<Inputs_5.OCCT.HexagonsInGridDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight">;
     // (undocumented)
-    type IBeamProfileDto = WithDefaults<Inputs_4.OCCT.IBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    type HiddenLinesDto<T> = WithDefaults<Inputs_5.OCCT.HiddenLinesDto<T>, "exact" | "smoothEdges" | "hiddenEdges" | "focus" | "precision">;
     // (undocumented)
-    type IBeamProfileSolidDto = WithDefaults<Inputs_4.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type HolesDto<T> = WithDefaults<Inputs_5.OCCT.HolesDto<T>, "diameter" | "depth" | "tipAngle">;
     // (undocumented)
-    type ImportStepIgesDto = WithDefaults<Inputs_4.OCCT.ImportStepIgesDto, "adjustZtoY">;
+    type IBeamProfileDto = WithDefaults<Inputs_5.OCCT.IBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
     // (undocumented)
-    type ImportStepIgesFromTextDto = WithDefaults<Inputs_4.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY">;
+    type IBeamProfileSolidDto = WithDefaults<Inputs_5.OCCT.IBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type InterpolateSymmetricDto = WithDefaults<Inputs_4.OCCT.InterpolateSymmetricDto, "tolerance">;
+    type ImportStepIgesDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesDto, "adjustZtoY">;
     // (undocumented)
-    type InterpolateWiresDto = WithDefaults<Inputs_4.OCCT.InterpolateWiresDto, "returnCompound">;
+    type ImportStepIgesFromTextDto = WithDefaults<Inputs_5.OCCT.ImportStepIgesFromTextDto, "fileType" | "adjustZtoY">;
     // (undocumented)
-    type InterpolationDto = WithDefaults<Inputs_4.OCCT.InterpolationDto, "periodic" | "tolerance" | "parametrization">;
+    type InterpolateSymmetricDto = WithDefaults<Inputs_5.OCCT.InterpolateSymmetricDto, "tolerance">;
     // (undocumented)
-    type IntersectCurvesDto<T> = WithDefaults<Inputs_4.OCCT.IntersectCurvesDto<T>, "tolerance">;
+    type InterpolateWiresDto = WithDefaults<Inputs_5.OCCT.InterpolateWiresDto, "returnCompound">;
     // (undocumented)
-    type IntersectCurveWithFaceDto<T, U> = WithDefaults<Inputs_4.OCCT.IntersectCurveWithFaceDto<T, U>, "tolerance">;
+    type InterpolationDto = WithDefaults<Inputs_5.OCCT.InterpolationDto, "periodic" | "tolerance" | "parametrization">;
     // (undocumented)
-    type IntersectionDto<T> = WithDefaults<Inputs_4.OCCT.IntersectionDto<T>, "keepEdges">;
+    type IntersectCurvesDto<T> = WithDefaults<Inputs_5.OCCT.IntersectCurvesDto<T>, "tolerance">;
     // (undocumented)
-    type InvertTransformDto = Inputs_4.OCCT.InvertTransformDto;
+    type IntersectCurveWithFaceDto<T, U> = WithDefaults<Inputs_5.OCCT.IntersectCurveWithFaceDto<T, U>, "tolerance">;
     // (undocumented)
-    type LineBaseDto = Inputs_4.OCCT.LineBaseDto;
+    type IntersectionDto<T> = WithDefaults<Inputs_5.OCCT.IntersectionDto<T>, "keepEdges">;
     // (undocumented)
-    type LineDto = WithDefaults<Inputs_4.OCCT.LineDto, "start" | "end">;
+    type InvertTransformDto = Inputs_5.OCCT.InvertTransformDto;
     // (undocumented)
-    type LinesBaseDto = Inputs_4.OCCT.LinesBaseDto;
+    type LineBaseDto = Inputs_5.OCCT.LineBaseDto;
     // (undocumented)
-    type LinesDto = WithDefaults<Inputs_4.OCCT.LinesDto, "returnCompound">;
+    type LineDto = WithDefaults<Inputs_5.OCCT.LineDto, "start" | "end">;
     // (undocumented)
-    type LinesTangentAtAngleDto<T> = WithDefaults<Inputs_4.OCCT.LinesTangentAtAngleDto<T>, "angle" | "angularTolerance" | "onArgumentsOnly">;
+    type LinesBaseDto = Inputs_5.OCCT.LinesBaseDto;
     // (undocumented)
-    type LinesTangentToTwoDto<T> = WithDefaults<Inputs_4.OCCT.LinesTangentToTwoDto<T>, "angularTolerance" | "onArgumentsOnly">;
+    type LinesDto = WithDefaults<Inputs_5.OCCT.LinesDto, "returnCompound">;
     // (undocumented)
-    type LineWithExtensionsDto = WithDefaults<Inputs_4.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
+    type LinesTangentAtAngleDto<T> = WithDefaults<Inputs_5.OCCT.LinesTangentAtAngleDto<T>, "angle" | "angularTolerance" | "onArgumentsOnly">;
     // (undocumented)
-    type LoadBrepBinaryDto = Inputs_4.OCCT.LoadBrepBinaryDto;
+    type LinesTangentToTwoDto<T> = WithDefaults<Inputs_5.OCCT.LinesTangentToTwoDto<T>, "angularTolerance" | "onArgumentsOnly">;
     // (undocumented)
-    type LoadBrepDto = Inputs_4.OCCT.LoadBrepDto;
+    type LineWithExtensionsDto = WithDefaults<Inputs_5.OCCT.LineWithExtensionsDto, "start" | "end" | "extensionStart" | "extensionEnd">;
     // (undocumented)
-    type LoadGltfToDocDto = Inputs_4.OCCT.LoadGltfToDocDto;
+    type LoadBrepBinaryDto = Inputs_5.OCCT.LoadBrepBinaryDto;
     // (undocumented)
-    type LoadObjToDocDto = Inputs_4.OCCT.LoadObjToDocDto;
+    type LoadBrepDto = Inputs_5.OCCT.LoadBrepDto;
     // (undocumented)
-    type LoadStepOrIgesDto = WithDefaults<Inputs_4.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY">;
+    type LoadGltfToDocDto = Inputs_5.OCCT.LoadGltfToDocDto;
     // (undocumented)
-    type LoadStepToDocDto = Inputs_4.OCCT.LoadStepToDocDto;
+    type LoadObjToDocDto = Inputs_5.OCCT.LoadObjToDocDto;
     // (undocumented)
-    type LoadStlDto = WithDefaults<Inputs_4.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
+    type LoadStepOrIgesDto = WithDefaults<Inputs_5.OCCT.LoadStepOrIgesDto, "fileName" | "adjustZtoY">;
     // (undocumented)
-    type LoadSVGDto = WithDefaults<Inputs_4.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
+    type LoadStepToDocDto = Inputs_5.OCCT.LoadStepToDocDto;
     // (undocumented)
-    type LoftAdvancedDto<T> = WithDefaults<Inputs_4.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
+    type LoadStlDto = WithDefaults<Inputs_5.OCCT.LoadStlDto, "asFaces" | "adjustZtoY">;
     // (undocumented)
-    type LoftDto<T> = WithDefaults<Inputs_4.OCCT.LoftDto<T>, "makeSolid">;
+    type LoadSVGDto = WithDefaults<Inputs_5.OCCT.LoadSVGDto, "svg" | "faceStrategy" | "makeRibbons" | "includeInvisible" | "joinSegments" | "tolerance" | "scale" | "flipY" | "alignment" | "direction" | "center">;
     // (undocumented)
-    type LPolygonDto = WithDefaults<Inputs_4.OCCT.LPolygonDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction">;
+    type LoftAdvancedDto<T> = WithDefaults<Inputs_5.OCCT.LoftAdvancedDto<T>, "makeSolid" | "closed" | "periodic" | "straight" | "nrPeriodicSections" | "useSmoothing" | "maxUDegree" | "tolerance" | "parType">;
     // (undocumented)
-    type LPolygonSolidDto = WithDefaults<Inputs_4.OCCT.LPolygonSolidDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type LoftDto<T> = WithDefaults<Inputs_5.OCCT.LoftDto<T>, "makeSolid">;
     // (undocumented)
-    type MakeDraftDto<T> = WithDefaults<Inputs_4.OCCT.MakeDraftDto<T>, "direction" | "angle" | "lengthMax" | "internal">;
+    type LPolygonDto = WithDefaults<Inputs_5.OCCT.LPolygonDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction">;
     // (undocumented)
-    type MakeDraftToShapeDto<T> = WithDefaults<Inputs_4.OCCT.MakeDraftToShapeDto<T>, "direction" | "angle" | "keepOut" | "internal">;
+    type LPolygonSolidDto = WithDefaults<Inputs_5.OCCT.LPolygonSolidDto, "widthFirst" | "lengthFirst" | "widthSecond" | "lengthSecond" | "align" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type MeshBaseDto = Inputs_4.OCCT.MeshBaseDto;
+    type MakeDraftDto<T> = WithDefaults<Inputs_5.OCCT.MakeDraftDto<T>, "direction" | "angle" | "lengthMax" | "internal">;
     // (undocumented)
-    type MeshMeshesIntersectionOfShapesDto<T> = WithDefaults<Inputs_4.OCCT.MeshMeshesIntersectionOfShapesDto<T>, "precision">;
+    type MakeDraftToShapeDto<T> = WithDefaults<Inputs_5.OCCT.MakeDraftToShapeDto<T>, "direction" | "angle" | "keepOut" | "internal">;
     // (undocumented)
-    type MeshMeshIntersectionTwoShapesDto<T> = WithDefaults<Inputs_4.OCCT.MeshMeshIntersectionTwoShapesDto<T>, "precision1" | "precision2">;
+    type MeshBaseDto = Inputs_5.OCCT.MeshBaseDto;
     // (undocumented)
-    type MinCurvatureRadiusDto<T> = WithDefaults<Inputs_4.OCCT.MinCurvatureRadiusDto<T>, "samples" | "concaveOnly">;
+    type MeshMeshesIntersectionOfShapesDto<T> = WithDefaults<Inputs_5.OCCT.MeshMeshesIntersectionOfShapesDto<T>, "precision">;
     // (undocumented)
-    type MirrorAboutPointDto<T> = WithDefaults<Inputs_4.OCCT.MirrorAboutPointDto<T>, "point">;
+    type MeshMeshIntersectionTwoShapesDto<T> = WithDefaults<Inputs_5.OCCT.MeshMeshIntersectionTwoShapesDto<T>, "precision1" | "precision2">;
     // (undocumented)
-    type MirrorAlongNormalDto<T> = WithDefaults<Inputs_4.OCCT.MirrorAlongNormalDto<T>, "origin" | "normal">;
+    type MinCurvatureRadiusDto<T> = WithDefaults<Inputs_5.OCCT.MinCurvatureRadiusDto<T>, "samples" | "concaveOnly">;
     // (undocumented)
-    type MirrorAlongNormalShapesDto<T> = WithDefaults<Inputs_4.OCCT.MirrorAlongNormalShapesDto<T>, "origins" | "normals">;
+    type MirrorAboutPointDto<T> = WithDefaults<Inputs_5.OCCT.MirrorAboutPointDto<T>, "point">;
     // (undocumented)
-    type MirrorAxisToMatrixDto = WithDefaults<Inputs_4.OCCT.MirrorAxisToMatrixDto, "origin" | "direction">;
+    type MirrorAlongNormalDto<T> = WithDefaults<Inputs_5.OCCT.MirrorAlongNormalDto<T>, "origin" | "normal">;
     // (undocumented)
-    type MirrorDto<T> = WithDefaults<Inputs_4.OCCT.MirrorDto<T>, "origin" | "direction">;
+    type MirrorAlongNormalShapesDto<T> = WithDefaults<Inputs_5.OCCT.MirrorAlongNormalShapesDto<T>, "origins" | "normals">;
     // (undocumented)
-    type MirrorPlaneToMatrixDto = WithDefaults<Inputs_4.OCCT.MirrorPlaneToMatrixDto, "origin" | "normal">;
+    type MirrorAxisToMatrixDto = WithDefaults<Inputs_5.OCCT.MirrorAxisToMatrixDto, "origin" | "direction">;
     // (undocumented)
-    type MirrorPointToMatrixDto = WithDefaults<Inputs_4.OCCT.MirrorPointToMatrixDto, "point">;
+    type MirrorDto<T> = WithDefaults<Inputs_5.OCCT.MirrorDto<T>, "origin" | "direction">;
     // (undocumented)
-    type MirrorShapesDto<T> = WithDefaults<Inputs_4.OCCT.MirrorShapesDto<T>, "origins" | "directions">;
+    type MirrorPlaneToMatrixDto = WithDefaults<Inputs_5.OCCT.MirrorPlaneToMatrixDto, "origin" | "normal">;
     // (undocumented)
-    type MultiplyTransformsDto = Inputs_4.OCCT.MultiplyTransformsDto;
+    type MirrorPointToMatrixDto = WithDefaults<Inputs_5.OCCT.MirrorPointToMatrixDto, "point">;
     // (undocumented)
-    type NGonSolidDto = WithDefaults<Inputs_4.OCCT.NGonSolidDto, "center" | "direction" | "nrCorners" | "radius" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type MirrorShapesDto<T> = WithDefaults<Inputs_5.OCCT.MirrorShapesDto<T>, "origins" | "directions">;
     // (undocumented)
-    type NGonWireDto = WithDefaults<Inputs_4.OCCT.NGonWireDto, "center" | "direction" | "nrCorners" | "radius">;
+    type MultiplyTransformsDto = Inputs_5.OCCT.MultiplyTransformsDto;
     // (undocumented)
-    type NormalizeFaceParametrizationDto<T> = WithDefaults<Inputs_4.OCCT.NormalizeFaceParametrizationDto<T>, "normalizeU" | "normalizeV" | "samples" | "tolerance">;
+    type NGonSolidDto = WithDefaults<Inputs_5.OCCT.NGonSolidDto, "center" | "direction" | "nrCorners" | "radius" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type Offset3DWireDto<T> = WithDefaults<Inputs_4.OCCT.Offset3DWireDto<T>, "offset" | "direction">;
+    type NGonWireDto = WithDefaults<Inputs_5.OCCT.NGonWireDto, "center" | "direction" | "nrCorners" | "radius">;
     // (undocumented)
-    type OffsetAdvancedDto<T, U> = WithDefaults<Inputs_4.OCCT.OffsetAdvancedDto<T, U>, "distance" | "tolerance" | "joinType" | "removeIntEdges">;
+    type NormalizeFaceParametrizationDto<T> = WithDefaults<Inputs_5.OCCT.NormalizeFaceParametrizationDto<T>, "normalizeU" | "normalizeV" | "samples" | "tolerance">;
     // (undocumented)
-    type OffsetDto<T, U> = WithDefaults<Inputs_4.OCCT.OffsetDto<T, U>, "distance" | "tolerance">;
+    type Offset3DWireDto<T> = WithDefaults<Inputs_5.OCCT.Offset3DWireDto<T>, "offset" | "direction">;
     // (undocumented)
-    type OffsetOpenDto<T, U> = WithDefaults<Inputs_4.OCCT.OffsetOpenDto<T, U>, "distance" | "joinType">;
+    type OffsetAdvancedDto<T, U> = WithDefaults<Inputs_5.OCCT.OffsetAdvancedDto<T, U>, "distance" | "tolerance" | "joinType" | "removeIntEdges">;
     // (undocumented)
-    type OrientDto<T> = Inputs_4.OCCT.OrientDto<T>;
+    type OffsetDto<T, U> = WithDefaults<Inputs_5.OCCT.OffsetDto<T, U>, "distance" | "tolerance">;
     // (undocumented)
-    type ParallelogramDto = WithDefaults<Inputs_4.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
+    type OffsetOpenDto<T, U> = WithDefaults<Inputs_5.OCCT.OffsetOpenDto<T, U>, "distance" | "joinType">;
     // (undocumented)
-    type ParallelogramSolidDto = WithDefaults<Inputs_4.OCCT.ParallelogramSolidDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type OrientDto<T> = Inputs_5.OCCT.OrientDto<T>;
     // (undocumented)
-    type ParseStepAssemblyToJsonDto = Inputs_4.OCCT.ParseStepAssemblyToJsonDto;
+    type ParallelogramDto = WithDefaults<Inputs_5.OCCT.ParallelogramDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle">;
     // (undocumented)
-    type PathArcSegment = WithDefaults<Inputs_4.OCCT.PathArcSegment, "type" | "rx" | "ry" | "xAxisRotation" | "startAngle" | "deltaAngle">;
+    type ParallelogramSolidDto = WithDefaults<Inputs_5.OCCT.ParallelogramSolidDto, "center" | "direction" | "aroundCenter" | "width" | "height" | "angle" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type PathCubicSegment = WithDefaults<Inputs_4.OCCT.PathCubicSegment, "type">;
+    type ParseStepAssemblyToJsonDto = Inputs_5.OCCT.ParseStepAssemblyToJsonDto;
     // (undocumented)
-    type PathLineSegment = WithDefaults<Inputs_4.OCCT.PathLineSegment, "type">;
+    type PathArcSegment = WithDefaults<Inputs_5.OCCT.PathArcSegment, "type" | "rx" | "ry" | "xAxisRotation" | "startAngle" | "deltaAngle">;
     // (undocumented)
-    type PathPlacementDto = WithDefaults<Inputs_4.OCCT.PathPlacementDto, "scale" | "flipY" | "origin">;
+    type PathCubicSegment = WithDefaults<Inputs_5.OCCT.PathCubicSegment, "type">;
     // (undocumented)
-    type PathQuadraticSegment = WithDefaults<Inputs_4.OCCT.PathQuadraticSegment, "type">;
+    type PathLineSegment = WithDefaults<Inputs_5.OCCT.PathLineSegment, "type">;
     // (undocumented)
-    type PathSubpath = WithDefaults<Inputs_4.OCCT.PathSubpath, "closed">;
+    type PathPlacementDto = WithDefaults<Inputs_5.OCCT.PathPlacementDto, "scale" | "flipY" | "origin">;
     // (undocumented)
-    type PinWithLabelDto = WithDefaults<Inputs_4.OCCT.PinWithLabelDto, "startPoint" | "endPoint" | "direction" | "offsetFromStart" | "label" | "labelOffset" | "labelSize" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical">;
+    type PathQuadraticSegment = WithDefaults<Inputs_5.OCCT.PathQuadraticSegment, "type">;
     // (undocumented)
-    type PipePolygonWireNGonDto<T> = WithDefaults<Inputs_4.OCCT.PipePolygonWireNGonDto<T>, "radius" | "nrCorners" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    type PathSubpath = WithDefaults<Inputs_5.OCCT.PathSubpath, "closed">;
     // (undocumented)
-    type PipeWireCylindricalDto<T> = WithDefaults<Inputs_4.OCCT.PipeWireCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    type PinWithLabelDto = WithDefaults<Inputs_5.OCCT.PinWithLabelDto, "startPoint" | "endPoint" | "direction" | "offsetFromStart" | "label" | "labelOffset" | "labelSize" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical">;
     // (undocumented)
-    type PipeWiresCylindricalDto<T> = WithDefaults<Inputs_4.OCCT.PipeWiresCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
+    type PipePolygonWireNGonDto<T> = WithDefaults<Inputs_5.OCCT.PipePolygonWireNGonDto<T>, "radius" | "nrCorners" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
     // (undocumented)
-    type PipeWithScalingDto<T, U> = WithDefaults<Inputs_4.OCCT.PipeWithScalingDto<T, U>, "params" | "scales" | "makeSolid">;
+    type PipeWireCylindricalDto<T> = WithDefaults<Inputs_5.OCCT.PipeWireCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
     // (undocumented)
-    type PlaceByMatricesDto<T> = Inputs_4.OCCT.PlaceByMatricesDto<T>;
+    type PipeWiresCylindricalDto<T> = WithDefaults<Inputs_5.OCCT.PipeWiresCylindricalDto<T>, "radius" | "makeSolid" | "trihedronEnum" | "forceApproxC1">;
     // (undocumented)
-    type PlaceOnFramesDto<T> = Inputs_4.OCCT.PlaceOnFramesDto<T>;
+    type PipeWithScalingDto<T, U> = WithDefaults<Inputs_5.OCCT.PipeWithScalingDto<T, U>, "params" | "scales" | "makeSolid">;
     // (undocumented)
-    type PointDto = WithDefaults<Inputs_4.OCCT.PointDto, "point">;
+    type PlaceByMatricesDto<T> = Inputs_5.OCCT.PlaceByMatricesDto<T>;
     // (undocumented)
-    type PointsDto = Inputs_4.OCCT.PointsDto;
+    type PlaceOnFramesDto<T> = Inputs_5.OCCT.PlaceOnFramesDto<T>;
     // (undocumented)
-    type PointsOnWireAtEqualLengthDto<T> = WithDefaults<Inputs_4.OCCT.PointsOnWireAtEqualLengthDto<T>, "length" | "tryNext" | "includeFirst" | "includeLast">;
+    type PointDto = WithDefaults<Inputs_5.OCCT.PointDto, "point">;
     // (undocumented)
-    type PointsOnWireAtPatternOfLengthsDto<T> = WithDefaults<Inputs_4.OCCT.PointsOnWireAtPatternOfLengthsDto<T>, "tryNext" | "includeFirst" | "includeLast">;
+    type PointsDto = Inputs_5.OCCT.PointsDto;
     // (undocumented)
-    type PolygonDto = Inputs_4.OCCT.PolygonDto;
+    type PointsOnWireAtEqualLengthDto<T> = WithDefaults<Inputs_5.OCCT.PointsOnWireAtEqualLengthDto<T>, "length" | "tryNext" | "includeFirst" | "includeLast">;
     // (undocumented)
-    type PolygonsDto = WithDefaults<Inputs_4.OCCT.PolygonsDto, "returnCompound">;
+    type PointsOnWireAtPatternOfLengthsDto<T> = WithDefaults<Inputs_5.OCCT.PointsOnWireAtPatternOfLengthsDto<T>, "tryNext" | "includeFirst" | "includeLast">;
     // (undocumented)
-    type PolylineBaseDto = Inputs_4.OCCT.PolylineBaseDto;
+    type PolygonDto = Inputs_5.OCCT.PolygonDto;
     // (undocumented)
-    type PolylineDto = Inputs_4.OCCT.PolylineDto;
+    type PolygonsDto = WithDefaults<Inputs_5.OCCT.PolygonsDto, "returnCompound">;
     // (undocumented)
-    type PolylinesBaseDto = Inputs_4.OCCT.PolylinesBaseDto;
+    type PolylineBaseDto = Inputs_5.OCCT.PolylineBaseDto;
     // (undocumented)
-    type PolylinesDto = WithDefaults<Inputs_4.OCCT.PolylinesDto, "returnCompound">;
+    type PolylineDto = Inputs_5.OCCT.PolylineDto;
     // (undocumented)
-    type PrismFeatureDto<T, U> = WithDefaults<Inputs_4.OCCT.PrismFeatureDto<T, U>, "sketchFaceIndex" | "direction" | "extent" | "length" | "untilFaceIndex">;
+    type PolylinesBaseDto = Inputs_5.OCCT.PolylinesBaseDto;
     // (undocumented)
-    type ProjectConicalDto<T, U> = WithDefaults<Inputs_4.OCCT.ProjectConicalDto<T, U>, "from">;
+    type PolylinesDto = WithDefaults<Inputs_5.OCCT.PolylinesDto, "returnCompound">;
     // (undocumented)
-    type ProjectNormalDto<T, U> = WithDefaults<Inputs_4.OCCT.ProjectNormalDto<T, U>, "tolerance" | "maxDistance">;
+    type PrismFeatureDto<T, U> = WithDefaults<Inputs_5.OCCT.PrismFeatureDto<T, U>, "sketchFaceIndex" | "direction" | "extent" | "length" | "untilFaceIndex">;
     // (undocumented)
-    type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_4.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
+    type ProjectConicalDto<T, U> = WithDefaults<Inputs_5.OCCT.ProjectConicalDto<T, U>, "from">;
     // (undocumented)
-    type ProjectWireDto<T, U> = WithDefaults<Inputs_4.OCCT.ProjectWireDto<T, U>, "direction">;
+    type ProjectNormalDto<T, U> = WithDefaults<Inputs_5.OCCT.ProjectNormalDto<T, U>, "tolerance" | "maxDistance">;
     // (undocumented)
-    type ProjectWiresDto<T, U> = WithDefaults<Inputs_4.OCCT.ProjectWiresDto<T, U>, "direction">;
+    type ProjectPointsOnShapeDto<T> = WithDefaults<Inputs_5.OCCT.ProjectPointsOnShapeDto<T>, "direction" | "projectionType">;
     // (undocumented)
-    type ProjectWireSharedDto<U> = WithDefaults<Inputs_4.OCCT.ProjectWireSharedDto<U>, "direction">;
+    type ProjectWireDto<T, U> = WithDefaults<Inputs_5.OCCT.ProjectWireDto<T, U>, "direction">;
     // (undocumented)
-    type PushPullFacesDto<T> = WithDefaults<Inputs_4.OCCT.PushPullFacesDto<T>, "distance">;
+    type ProjectWiresDto<T, U> = WithDefaults<Inputs_5.OCCT.ProjectWiresDto<T, U>, "direction">;
     // (undocumented)
-    type QuaternionToMatrixDto = WithDefaults<Inputs_4.OCCT.QuaternionToMatrixDto, "quaternion">;
+    type ProjectWireSharedDto<U> = WithDefaults<Inputs_5.OCCT.ProjectWireSharedDto<U>, "direction">;
     // (undocumented)
-    type RebuildCurveDegreeDto<T> = WithDefaults<Inputs_4.OCCT.RebuildCurveDegreeDto<T>, "degree" | "tolerance">;
+    type PushPullFacesDto<T> = WithDefaults<Inputs_5.OCCT.PushPullFacesDto<T>, "distance">;
     // (undocumented)
-    type RebuildFaceDegreeDto<T> = WithDefaults<Inputs_4.OCCT.RebuildFaceDegreeDto<T>, "uDegree" | "vDegree" | "tolerance" | "keepTrim">;
+    type QuaternionToMatrixDto = WithDefaults<Inputs_5.OCCT.QuaternionToMatrixDto, "quaternion">;
     // (undocumented)
-    type RectangleDto = WithDefaults<Inputs_4.OCCT.RectangleDto, "width" | "length" | "center" | "direction">;
+    type RebuildCurveDegreeDto<T> = WithDefaults<Inputs_5.OCCT.RebuildCurveDegreeDto<T>, "degree" | "tolerance">;
     // (undocumented)
-    type RemoveFacesDto<T> = Inputs_4.OCCT.RemoveFacesDto<T>;
+    type RebuildFaceDegreeDto<T> = WithDefaults<Inputs_5.OCCT.RebuildFaceDegreeDto<T>, "uDegree" | "vDegree" | "tolerance" | "keepTrim">;
     // (undocumented)
-    type RevolvedFeatureDto<T, U> = WithDefaults<Inputs_4.OCCT.RevolvedFeatureDto<T, U>, "sketchFaceIndex" | "axisOrigin" | "axisDirection" | "angle">;
+    type RectangleDto = WithDefaults<Inputs_5.OCCT.RectangleDto, "width" | "length" | "center" | "direction">;
     // (undocumented)
-    type RevolveDto<T> = WithDefaults<Inputs_4.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
+    type RemoveFacesDto<T> = Inputs_5.OCCT.RemoveFacesDto<T>;
     // (undocumented)
-    type RibFeatureDto<T, U> = WithDefaults<Inputs_4.OCCT.RibFeatureDto<T, U>, "thickness" | "otherSideThickness">;
+    type RevolvedFeatureDto<T, U> = WithDefaults<Inputs_5.OCCT.RevolvedFeatureDto<T, U>, "sketchFaceIndex" | "axisOrigin" | "axisDirection" | "angle">;
     // (undocumented)
-    type RotateAroundCenterDto<T> = WithDefaults<Inputs_4.OCCT.RotateAroundCenterDto<T>, "angle" | "center" | "axis">;
+    type RevolveDto<T> = WithDefaults<Inputs_5.OCCT.RevolveDto<T>, "angle" | "direction" | "copy">;
     // (undocumented)
-    type RotateAroundCenterShapesDto<T> = WithDefaults<Inputs_4.OCCT.RotateAroundCenterShapesDto<T>, "angles" | "centers" | "axes">;
+    type RibFeatureDto<T, U> = WithDefaults<Inputs_5.OCCT.RibFeatureDto<T, U>, "thickness" | "otherSideThickness">;
     // (undocumented)
-    type RotateByQuaternionDto<T> = WithDefaults<Inputs_4.OCCT.RotateByQuaternionDto<T>, "quaternion">;
+    type RotateAroundCenterDto<T> = WithDefaults<Inputs_5.OCCT.RotateAroundCenterDto<T>, "angle" | "center" | "axis">;
     // (undocumented)
-    type RotateDto<T> = WithDefaults<Inputs_4.OCCT.RotateDto<T>, "axis" | "angle">;
+    type RotateAroundCenterShapesDto<T> = WithDefaults<Inputs_5.OCCT.RotateAroundCenterShapesDto<T>, "angles" | "centers" | "axes">;
     // (undocumented)
-    type RotateShapesDto<T> = WithDefaults<Inputs_4.OCCT.RotateShapesDto<T>, "axes" | "angles">;
+    type RotateByQuaternionDto<T> = WithDefaults<Inputs_5.OCCT.RotateByQuaternionDto<T>, "quaternion">;
     // (undocumented)
-    type RotationAxisAngleToMatrixDto = WithDefaults<Inputs_4.OCCT.RotationAxisAngleToMatrixDto, "axis" | "angle" | "center">;
+    type RotateDto<T> = WithDefaults<Inputs_5.OCCT.RotateDto<T>, "axis" | "angle">;
     // (undocumented)
-    type RotationExtrudeDto<T> = WithDefaults<Inputs_4.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
+    type RotateShapesDto<T> = WithDefaults<Inputs_5.OCCT.RotateShapesDto<T>, "axes" | "angles">;
     // (undocumented)
-    type SaveBrepBinaryDto<T> = WithDefaults<Inputs_4.OCCT.SaveBrepBinaryDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
+    type RotationAxisAngleToMatrixDto = WithDefaults<Inputs_5.OCCT.RotationAxisAngleToMatrixDto, "axis" | "angle" | "center">;
     // (undocumented)
-    type SaveBrepDto<T> = WithDefaults<Inputs_4.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
+    type RotationExtrudeDto<T> = WithDefaults<Inputs_5.OCCT.RotationExtrudeDto<T>, "height" | "angle" | "makeSolid">;
     // (undocumented)
-    type SaveObjDto<T> = WithDefaults<Inputs_4.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
+    type SaveBrepBinaryDto<T> = WithDefaults<Inputs_5.OCCT.SaveBrepBinaryDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     // (undocumented)
-    type SavePlyDto<T> = WithDefaults<Inputs_4.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
+    type SaveBrepDto<T> = WithDefaults<Inputs_5.OCCT.SaveBrepDto<T>, "fileName" | "tryDownload" | "withTriangulation">;
     // (undocumented)
-    type SaveStepDto<T> = WithDefaults<Inputs_4.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload">;
+    type SaveObjDto<T> = WithDefaults<Inputs_5.OCCT.SaveObjDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     // (undocumented)
-    type SaveStlDto<T> = WithDefaults<Inputs_4.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
+    type SavePlyDto<T> = WithDefaults<Inputs_5.OCCT.SavePlyDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload">;
     // (undocumented)
-    type SaveSvgDto<T> = WithDefaults<Inputs_4.OCCT.SaveSvgDto<T>, "drawHidden" | "precision" | "fileName" | "tryDownload">;
+    type SaveStepDto<T> = WithDefaults<Inputs_5.OCCT.SaveStepDto<T>, "fileName" | "adjustYtoZ" | "fromRightHanded" | "tryDownload">;
     // (undocumented)
-    type Scale3DDto<T> = WithDefaults<Inputs_4.OCCT.Scale3DDto<T>, "scale" | "center">;
+    type SaveStlDto<T> = WithDefaults<Inputs_5.OCCT.SaveStlDto<T>, "fileName" | "precision" | "adjustYtoZ" | "tryDownload" | "binary">;
     // (undocumented)
-    type Scale3DShapesDto<T> = WithDefaults<Inputs_4.OCCT.Scale3DShapesDto<T>, "scales" | "centers">;
+    type SaveSvgDto<T> = WithDefaults<Inputs_5.OCCT.SaveSvgDto<T>, "drawHidden" | "precision" | "fileName" | "tryDownload">;
     // (undocumented)
-    type ScaleDto<T> = WithDefaults<Inputs_4.OCCT.ScaleDto<T>, "factor">;
+    type Scale3DDto<T> = WithDefaults<Inputs_5.OCCT.Scale3DDto<T>, "scale" | "center">;
     // (undocumented)
-    type ScaleFromCenterDto<T> = WithDefaults<Inputs_4.OCCT.ScaleFromCenterDto<T>, "factor" | "center">;
+    type Scale3DShapesDto<T> = WithDefaults<Inputs_5.OCCT.Scale3DShapesDto<T>, "scales" | "centers">;
     // (undocumented)
-    type ScaleShapesDto<T> = WithDefaults<Inputs_4.OCCT.ScaleShapesDto<T>, "factors">;
+    type ScaleDto<T> = WithDefaults<Inputs_5.OCCT.ScaleDto<T>, "factor">;
     // (undocumented)
-    type ScaleUniformToMatrixDto = WithDefaults<Inputs_4.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
+    type ScaleFromCenterDto<T> = WithDefaults<Inputs_5.OCCT.ScaleFromCenterDto<T>, "factor" | "center">;
     // (undocumented)
-    type SectionWiresDto<T> = WithDefaults<Inputs_4.OCCT.SectionWiresDto<T>, "tolerance">;
+    type ScaleShapesDto<T> = WithDefaults<Inputs_5.OCCT.ScaleShapesDto<T>, "factors">;
     // (undocumented)
-    type SegmentBaseDto = Inputs_4.OCCT.SegmentBaseDto;
+    type ScaleUniformToMatrixDto = WithDefaults<Inputs_5.OCCT.ScaleUniformToMatrixDto, "factor" | "center">;
     // (undocumented)
-    type SegmentsBaseDto = Inputs_4.OCCT.SegmentsBaseDto;
+    type SectionWiresDto<T> = WithDefaults<Inputs_5.OCCT.SectionWiresDto<T>, "tolerance">;
     // (undocumented)
-    type SelectBetweenDto<T> = Inputs_4.OCCT.SelectBetweenDto<T>;
+    type SegmentBaseDto = Inputs_5.OCCT.SegmentBaseDto;
     // (undocumented)
-    type SelectByDirectionDto<T> = WithDefaults<Inputs_4.OCCT.SelectByDirectionDto<T>, "direction" | "angle">;
+    type SegmentsBaseDto = Inputs_5.OCCT.SegmentsBaseDto;
     // (undocumented)
-    type SelectConvexityDto<T> = WithDefaults<Inputs_4.OCCT.SelectConvexityDto<T>, "tangentAngle">;
+    type SelectBetweenDto<T> = Inputs_5.OCCT.SelectBetweenDto<T>;
     // (undocumented)
-    type SelectEdgesOfTypeDto<T> = WithDefaults<Inputs_4.OCCT.SelectEdgesOfTypeDto<T>, "type">;
+    type SelectByDirectionDto<T> = WithDefaults<Inputs_5.OCCT.SelectByDirectionDto<T>, "direction" | "angle">;
     // (undocumented)
-    type SelectExtremeDto<T> = WithDefaults<Inputs_4.OCCT.SelectExtremeDto<T>, "direction" | "tolerance">;
+    type SelectConvexityDto<T> = WithDefaults<Inputs_5.OCCT.SelectConvexityDto<T>, "tangentAngle">;
     // (undocumented)
-    type SelectFacesOfTypeDto<T> = WithDefaults<Inputs_4.OCCT.SelectFacesOfTypeDto<T>, "type">;
+    type SelectEdgesOfTypeDto<T> = WithDefaults<Inputs_5.OCCT.SelectEdgesOfTypeDto<T>, "type">;
     // (undocumented)
-    type SelectFromIndexesDto<T> = Inputs_4.OCCT.SelectFromIndexesDto<T>;
+    type SelectExtremeDto<T> = WithDefaults<Inputs_5.OCCT.SelectExtremeDto<T>, "direction" | "tolerance">;
     // (undocumented)
-    type SelectGroupAlongDto<T> = WithDefaults<Inputs_4.OCCT.SelectGroupAlongDto<T>, "direction" | "tolerance">;
+    type SelectFacesOfTypeDto<T> = WithDefaults<Inputs_5.OCCT.SelectFacesOfTypeDto<T>, "type">;
     // (undocumented)
-    type SelectInBoxDto<T> = WithDefaults<Inputs_4.OCCT.SelectInBoxDto<T>, "corner" | "oppositeCorner">;
+    type SelectFromIndexesDto<T> = Inputs_5.OCCT.SelectFromIndexesDto<T>;
     // (undocumented)
-    type SelectInRangeDto<T> = WithDefaults<Inputs_4.OCCT.SelectInRangeDto<T>, "min" | "max">;
+    type SelectGroupAlongDto<T> = WithDefaults<Inputs_5.OCCT.SelectGroupAlongDto<T>, "direction" | "tolerance">;
     // (undocumented)
-    type SelectInSphereDto<T> = WithDefaults<Inputs_4.OCCT.SelectInSphereDto<T>, "center" | "radius">;
+    type SelectInBoxDto<T> = WithDefaults<Inputs_5.OCCT.SelectInBoxDto<T>, "corner" | "oppositeCorner">;
     // (undocumented)
-    type SelectNearestDto<T> = WithDefaults<Inputs_4.OCCT.SelectNearestDto<T>, "point" | "count">;
+    type SelectInRangeDto<T> = WithDefaults<Inputs_5.OCCT.SelectInRangeDto<T>, "min" | "max">;
     // (undocumented)
-    type SelectOnPlaneDto<T> = WithDefaults<Inputs_4.OCCT.SelectOnPlaneDto<T>, "origin" | "normal" | "tolerance">;
+    type SelectInSphereDto<T> = WithDefaults<Inputs_5.OCCT.SelectInSphereDto<T>, "center" | "radius">;
     // (undocumented)
-    type SelectSortAlongDto<T> = WithDefaults<Inputs_4.OCCT.SelectSortAlongDto<T>, "direction">;
+    type SelectNearestDto<T> = WithDefaults<Inputs_5.OCCT.SelectNearestDto<T>, "point" | "count">;
     // (undocumented)
-    type SelectTangentChainDto<T> = WithDefaults<Inputs_4.OCCT.SelectTangentChainDto<T>, "angle">;
+    type SelectOnPlaneDto<T> = WithDefaults<Inputs_5.OCCT.SelectOnPlaneDto<T>, "origin" | "normal" | "tolerance">;
     // (undocumented)
-    type SelfIntersectionsDto<T> = WithDefaults<Inputs_4.OCCT.SelfIntersectionsDto<T>, "precision">;
+    type SelectSortAlongDto<T> = WithDefaults<Inputs_5.OCCT.SelectSortAlongDto<T>, "direction">;
     // (undocumented)
-    type SetDocLabelColorDto<T> = WithDefaults<Inputs_4.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
+    type SelectTangentChainDto<T> = WithDefaults<Inputs_5.OCCT.SelectTangentChainDto<T>, "angle">;
     // (undocumented)
-    type SetDocLabelNameDto<T> = WithDefaults<Inputs_4.OCCT.SetDocLabelNameDto<T>, "name">;
+    type SelfIntersectionsDto<T> = WithDefaults<Inputs_5.OCCT.SelfIntersectionsDto<T>, "precision">;
     // (undocumented)
-    type SewDto<T> = WithDefaults<Inputs_4.OCCT.SewDto<T>, "tolerance">;
+    type SetDocLabelColorDto<T> = WithDefaults<Inputs_5.OCCT.SetDocLabelColorDto<T>, "r" | "g" | "b" | "a">;
     // (undocumented)
-    type SewWithReportDto<T> = WithDefaults<Inputs_4.OCCT.SewWithReportDto<T>, "tolerance" | "nonManifold">;
+    type SetDocLabelNameDto<T> = WithDefaults<Inputs_5.OCCT.SetDocLabelNameDto<T>, "name">;
     // (undocumented)
-    type ShapeDto<T> = Inputs_4.OCCT.ShapeDto<T>;
+    type SewDto<T> = WithDefaults<Inputs_5.OCCT.SewDto<T>, "tolerance">;
     // (undocumented)
-    type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs_4.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "adjustYtoZ" | "reversedPoints">;
+    type SewWithReportDto<T> = WithDefaults<Inputs_5.OCCT.SewWithReportDto<T>, "tolerance" | "nonManifold">;
     // (undocumented)
-    type ShapeFromPathDto = WithDefaults<Inputs_4.OCCT.ShapeFromPathDto, "makeFaces" | "joinSegments" | "tolerance" | "scale" | "flipY" | "origin">;
+    type ShapeDto<T> = Inputs_5.OCCT.ShapeDto<T>;
     // (undocumented)
-    type ShapeIndexDto<T> = WithDefaults<Inputs_4.OCCT.ShapeIndexDto<T>, "index">;
+    type ShapeFacesToPolygonPointsDto<T> = WithDefaults<Inputs_5.OCCT.ShapeFacesToPolygonPointsDto<T>, "precision" | "adjustYtoZ" | "reversedPoints">;
     // (undocumented)
-    type ShapesDto<T> = Inputs_4.OCCT.ShapesDto<T>;
+    type ShapeFromPathDto = WithDefaults<Inputs_5.OCCT.ShapeFromPathDto, "makeFaces" | "joinSegments" | "tolerance" | "scale" | "flipY" | "origin">;
     // (undocumented)
-    type ShapeShapesDto<T, U> = Inputs_4.OCCT.ShapeShapesDto<T, U>;
+    type ShapeIndexDto<T> = WithDefaults<Inputs_5.OCCT.ShapeIndexDto<T>, "index">;
     // (undocumented)
-    type ShapesToMeshesDto<T> = WithDefaults<Inputs_4.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapesDto<T> = Inputs_5.OCCT.ShapesDto<T>;
     // (undocumented)
-    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_4.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    type ShapeShapesDto<T, U> = Inputs_5.OCCT.ShapeShapesDto<T, U>;
     // (undocumented)
-    type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_4.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
+    type ShapesToMeshesDto<T> = WithDefaults<Inputs_5.OCCT.ShapesToMeshesDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type ShapeToMeshDto<T> = WithDefaults<Inputs_4.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
+    type ShapeToDxfPathsDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToDxfPathsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     // (undocumented)
-    type ShapeTransformQueryDto<T> = Inputs_4.OCCT.ShapeTransformQueryDto<T>;
+    type ShapeToManifoldMeshDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToManifoldMeshDto<T>, "precision">;
     // (undocumented)
-    type ShapeWithToleranceDto<T> = WithDefaults<Inputs_4.OCCT.ShapeWithToleranceDto<T>, "tolerance">;
+    type ShapeToMeshDto<T> = WithDefaults<Inputs_5.OCCT.ShapeToMeshDto<T>, "precision" | "angularDeflection" | "relativeDeflection" | "adjustYtoZ" | "computeMetadata" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "isoCurvesU" | "isoCurvesV" | "surfaceAnalysis" | "draftDirection">;
     // (undocumented)
-    type SimpleAngularDimensionDto = WithDefaults<Inputs_4.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    type ShapeTransformQueryDto<T> = Inputs_5.OCCT.ShapeTransformQueryDto<T>;
     // (undocumented)
-    type SimpleLinearLengthDimensionDto = WithDefaults<Inputs_4.OCCT.SimpleLinearLengthDimensionDto, "offsetFromPoints" | "crossingSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "labelRotation" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
+    type ShapeWithToleranceDto<T> = WithDefaults<Inputs_5.OCCT.ShapeWithToleranceDto<T>, "tolerance">;
     // (undocumented)
-    type SketchBulgeArcDto = WithDefaults<Inputs_4.OCCT.SketchBulgeArcDto, "to" | "bulge" | "relative">;
+    type SimpleAngularDimensionDto = WithDefaults<Inputs_5.OCCT.SimpleAngularDimensionDto, "direction1" | "direction2" | "center" | "radius" | "offsetFromCenter" | "extraSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "radians" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelRotation" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
     // (undocumented)
-    type SketchChamferCornerDto = WithDefaults<Inputs_4.OCCT.SketchChamferCornerDto, "distance">;
+    type SimpleLinearLengthDimensionDto = WithDefaults<Inputs_5.OCCT.SimpleLinearLengthDimensionDto, "offsetFromPoints" | "crossingSize" | "decimalPlaces" | "labelSuffix" | "labelSize" | "labelOffset" | "labelRotation" | "endType" | "arrowSize" | "arrowAngle" | "arrowsFlipped" | "labelFlipHorizontal" | "labelFlipVertical" | "labelOverwrite" | "removeTrailingZeros">;
     // (undocumented)
-    type SketchCloseDto = Inputs_4.OCCT.SketchCloseDto;
+    type SketchBulgeArcDto = WithDefaults<Inputs_5.OCCT.SketchBulgeArcDto, "to" | "bulge" | "relative">;
     // (undocumented)
-    type SketchCubicDto = WithDefaults<Inputs_4.OCCT.SketchCubicDto, "control1" | "control2" | "to" | "relative">;
+    type SketchChamferCornerDto = WithDefaults<Inputs_5.OCCT.SketchChamferCornerDto, "distance">;
     // (undocumented)
-    type SketchFilletCornerDto = WithDefaults<Inputs_4.OCCT.SketchFilletCornerDto, "radius">;
+    type SketchCloseDto = Inputs_5.OCCT.SketchCloseDto;
     // (undocumented)
-    type SketchHLineDto = WithDefaults<Inputs_4.OCCT.SketchHLineDto, "length">;
+    type SketchCubicDto = WithDefaults<Inputs_5.OCCT.SketchCubicDto, "control1" | "control2" | "to" | "relative">;
     // (undocumented)
-    type SketchHullDto<T> = WithDefaults<Inputs_4.OCCT.SketchHullDto<T>, "makeFace">;
+    type SketchFilletCornerDto = WithDefaults<Inputs_5.OCCT.SketchFilletCornerDto, "radius">;
     // (undocumented)
-    type SketchLineDto = WithDefaults<Inputs_4.OCCT.SketchLineDto, "to" | "relative">;
+    type SketchHLineDto = WithDefaults<Inputs_5.OCCT.SketchHLineDto, "length">;
     // (undocumented)
-    type SketchPenDto = WithDefaults<Inputs_4.OCCT.SketchPenDto, "start" | "makeFace">;
+    type SketchHullDto<T> = WithDefaults<Inputs_5.OCCT.SketchHullDto<T>, "makeFace">;
     // (undocumented)
-    type SketchPolarLineDto = WithDefaults<Inputs_4.OCCT.SketchPolarLineDto, "length" | "angle">;
+    type SketchLineDto = WithDefaults<Inputs_5.OCCT.SketchLineDto, "to" | "relative">;
     // (undocumented)
-    type SketchQuadraticDto = WithDefaults<Inputs_4.OCCT.SketchQuadraticDto, "control" | "to" | "relative">;
+    type SketchPenDto = WithDefaults<Inputs_5.OCCT.SketchPenDto, "start" | "makeFace">;
     // (undocumented)
-    type SketchSagittaArcDto = WithDefaults<Inputs_4.OCCT.SketchSagittaArcDto, "to" | "sagitta" | "relative">;
+    type SketchPolarLineDto = WithDefaults<Inputs_5.OCCT.SketchPolarLineDto, "length" | "angle">;
     // (undocumented)
-    type SketchStrokeDto<T> = WithDefaults<Inputs_4.OCCT.SketchStrokeDto<T>, "width" | "cap" | "join" | "makeFace">;
+    type SketchQuadraticDto = WithDefaults<Inputs_5.OCCT.SketchQuadraticDto, "control" | "to" | "relative">;
     // (undocumented)
-    type SketchTangentArcDto = WithDefaults<Inputs_4.OCCT.SketchTangentArcDto, "to" | "relative">;
+    type SketchSagittaArcDto = WithDefaults<Inputs_5.OCCT.SketchSagittaArcDto, "to" | "sagitta" | "relative">;
     // (undocumented)
-    type SketchTangentLineDto = WithDefaults<Inputs_4.OCCT.SketchTangentLineDto, "length">;
+    type SketchStrokeDto<T> = WithDefaults<Inputs_5.OCCT.SketchStrokeDto<T>, "width" | "cap" | "join" | "makeFace">;
     // (undocumented)
-    type SketchThreePointArcDto = WithDefaults<Inputs_4.OCCT.SketchThreePointArcDto, "through" | "to" | "relative">;
+    type SketchTangentArcDto = WithDefaults<Inputs_5.OCCT.SketchTangentArcDto, "to" | "relative">;
     // (undocumented)
-    type SketchVLineDto = WithDefaults<Inputs_4.OCCT.SketchVLineDto, "length">;
+    type SketchTangentLineDto = WithDefaults<Inputs_5.OCCT.SketchTangentLineDto, "length">;
     // (undocumented)
-    type SliceByFramesDto<T> = WithDefaults<Inputs_4.OCCT.SliceByFramesDto<T>, "makeFaces" | "tolerance">;
+    type SketchThreePointArcDto = WithDefaults<Inputs_5.OCCT.SketchThreePointArcDto, "through" | "to" | "relative">;
     // (undocumented)
-    type SliceDto<T> = WithDefaults<Inputs_4.OCCT.SliceDto<T>, "step" | "direction">;
+    type SketchVLineDto = WithDefaults<Inputs_5.OCCT.SketchVLineDto, "length">;
     // (undocumented)
-    type SliceInStepPatternDto<T> = WithDefaults<Inputs_4.OCCT.SliceInStepPatternDto<T>, "steps" | "direction">;
+    type SliceByFramesDto<T> = WithDefaults<Inputs_5.OCCT.SliceByFramesDto<T>, "makeFaces" | "tolerance">;
     // (undocumented)
-    type SphereDto = WithDefaults<Inputs_4.OCCT.SphereDto, "radius" | "center">;
+    type SliceDto<T> = WithDefaults<Inputs_5.OCCT.SliceDto<T>, "step" | "direction">;
     // (undocumented)
-    type SplitByFrameDto<T> = Inputs_4.OCCT.SplitByFrameDto<T>;
+    type SliceInStepPatternDto<T> = WithDefaults<Inputs_5.OCCT.SliceInStepPatternDto<T>, "steps" | "direction">;
     // (undocumented)
-    type SplitDto<T> = WithDefaults<Inputs_4.OCCT.SplitDto<T>, "localFuzzyTolerance" | "nonDestructive">;
+    type SphereDto = WithDefaults<Inputs_5.OCCT.SphereDto, "radius" | "center">;
     // (undocumented)
-    type SplitFaceByWiresDto<T, U> = Inputs_4.OCCT.SplitFaceByWiresDto<T, U>;
+    type SplitByFrameDto<T> = Inputs_5.OCCT.SplitByFrameDto<T>;
     // (undocumented)
-    type SplitWireOnPointsDto<T> = Inputs_4.OCCT.SplitWireOnPointsDto<T>;
+    type SplitDto<T> = WithDefaults<Inputs_5.OCCT.SplitDto<T>, "localFuzzyTolerance" | "nonDestructive">;
     // (undocumented)
-    type SquareDto = WithDefaults<Inputs_4.OCCT.SquareDto, "size" | "center" | "direction">;
+    type SplitFaceByWiresDto<T, U> = Inputs_5.OCCT.SplitFaceByWiresDto<T, U>;
     // (undocumented)
-    type StarDto = WithDefaults<Inputs_4.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
+    type SplitWireOnPointsDto<T> = Inputs_5.OCCT.SplitWireOnPointsDto<T>;
     // (undocumented)
-    type StarSolidDto = WithDefaults<Inputs_4.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type SquareDto = WithDefaults<Inputs_5.OCCT.SquareDto, "size" | "center" | "direction">;
     // (undocumented)
-    type SVGResult<T> = Inputs_4.OCCT.SVGResult<T>;
+    type StarDto = WithDefaults<Inputs_5.OCCT.StarDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half">;
     // (undocumented)
-    type SVGShape<T> = Inputs_4.OCCT.SVGShape<T>;
+    type StarSolidDto = WithDefaults<Inputs_5.OCCT.StarSolidDto, "center" | "direction" | "numRays" | "outerRadius" | "innerRadius" | "offsetOuterEdges" | "half" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type SweepEvolvedDto<T, U> = WithDefaults<Inputs_4.OCCT.SweepEvolvedDto<T, U>, "makeSolid">;
+    type SVGResult<T> = Inputs_5.OCCT.SVGResult<T>;
     // (undocumented)
-    type TaperedHelixWireDto = WithDefaults<Inputs_4.OCCT.TaperedHelixWireDto, "startRadius" | "endRadius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
+    type SVGShape<T> = Inputs_5.OCCT.SVGShape<T>;
     // (undocumented)
-    type TaperedPrismFeatureDto<T, U> = WithDefaults<Inputs_4.OCCT.TaperedPrismFeatureDto<T, U>, "sketchFaceIndex" | "angle" | "extent" | "length" | "untilFaceIndex">;
+    type SweepEvolvedDto<T, U> = WithDefaults<Inputs_5.OCCT.SweepEvolvedDto<T, U>, "makeSolid">;
     // (undocumented)
-    type TBeamProfileDto = WithDefaults<Inputs_4.OCCT.TBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
+    type TaperedHelixWireDto = WithDefaults<Inputs_5.OCCT.TaperedHelixWireDto, "startRadius" | "endRadius" | "pitch" | "height" | "center" | "direction" | "clockwise" | "tolerance">;
     // (undocumented)
-    type TBeamProfileSolidDto = WithDefaults<Inputs_4.OCCT.TBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type TaperedPrismFeatureDto<T, U> = WithDefaults<Inputs_5.OCCT.TaperedPrismFeatureDto<T, U>, "sketchFaceIndex" | "angle" | "extent" | "length" | "untilFaceIndex">;
     // (undocumented)
-    type TextWiresDto = WithDefaults<Inputs_4.OCCT.TextWiresDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+    type TBeamProfileDto = WithDefaults<Inputs_5.OCCT.TBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction">;
     // (undocumented)
-    type ThickSolidByJoinDto<T> = WithDefaults<Inputs_4.OCCT.ThickSolidByJoinDto<T>, "offset" | "tolerance" | "intersection" | "selfIntersection" | "joinType" | "removeIntEdges">;
+    type TBeamProfileSolidDto = WithDefaults<Inputs_5.OCCT.TBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type ThisckSolidSimpleDto<T> = WithDefaults<Inputs_4.OCCT.ThisckSolidSimpleDto<T>, "offset">;
+    type TextWiresDto = WithDefaults<Inputs_5.OCCT.TextWiresDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
     // (undocumented)
-    type TorusDto = WithDefaults<Inputs_4.OCCT.TorusDto, "majorRadius" | "minorRadius" | "center" | "direction" | "angle">;
+    type ThickSolidByJoinDto<T> = WithDefaults<Inputs_5.OCCT.ThickSolidByJoinDto<T>, "offset" | "tolerance" | "intersection" | "selfIntersection" | "joinType" | "removeIntEdges">;
     // (undocumented)
-    type TransformByMatrixDto<T> = Inputs_4.OCCT.TransformByMatrixDto<T>;
+    type ThisckSolidSimpleDto<T> = WithDefaults<Inputs_5.OCCT.ThisckSolidSimpleDto<T>, "offset">;
     // (undocumented)
-    type TransformDto<T> = WithDefaults<Inputs_4.OCCT.TransformDto<T>, "translation" | "rotationAxis" | "rotationAngle" | "scaleFactor">;
+    type TorusDto = WithDefaults<Inputs_5.OCCT.TorusDto, "majorRadius" | "minorRadius" | "center" | "direction" | "angle">;
     // (undocumented)
-    type TransformShapesByMatrixDto<T> = Inputs_4.OCCT.TransformShapesByMatrixDto<T>;
+    type TransformByMatrixDto<T> = Inputs_5.OCCT.TransformByMatrixDto<T>;
     // (undocumented)
-    type TransformShapesDto<T> = WithDefaults<Inputs_4.OCCT.TransformShapesDto<T>, "translations" | "rotationAxes" | "rotationAngles" | "scaleFactors">;
+    type TransformDto<T> = WithDefaults<Inputs_5.OCCT.TransformDto<T>, "translation" | "rotationAxis" | "rotationAngle" | "scaleFactor">;
     // (undocumented)
-    type TranslateDto<T> = WithDefaults<Inputs_4.OCCT.TranslateDto<T>, "translation">;
+    type TransformShapesByMatrixDto<T> = Inputs_5.OCCT.TransformShapesByMatrixDto<T>;
     // (undocumented)
-    type TranslateShapesDto<T> = WithDefaults<Inputs_4.OCCT.TranslateShapesDto<T>, "translations">;
+    type TransformShapesDto<T> = WithDefaults<Inputs_5.OCCT.TransformShapesDto<T>, "translations" | "rotationAxes" | "rotationAngles" | "scaleFactors">;
     // (undocumented)
-    type TranslationToMatrixDto = WithDefaults<Inputs_4.OCCT.TranslationToMatrixDto, "translation">;
+    type TranslateDto<T> = WithDefaults<Inputs_5.OCCT.TranslateDto<T>, "translation">;
     // (undocumented)
-    type TriangleBaseDto = Inputs_4.OCCT.TriangleBaseDto;
+    type TranslateShapesDto<T> = WithDefaults<Inputs_5.OCCT.TranslateShapesDto<T>, "translations">;
     // (undocumented)
-    type TwoShapesDto<T> = Inputs_4.OCCT.TwoShapesDto<T>;
+    type TranslationToMatrixDto = WithDefaults<Inputs_5.OCCT.TranslationToMatrixDto, "translation">;
     // (undocumented)
-    type UBeamProfileDto = WithDefaults<Inputs_4.OCCT.UBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction">;
+    type TriangleBaseDto = Inputs_5.OCCT.TriangleBaseDto;
     // (undocumented)
-    type UBeamProfileSolidDto = WithDefaults<Inputs_4.OCCT.UBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
+    type TwoShapesDto<T> = Inputs_5.OCCT.TwoShapesDto<T>;
     // (undocumented)
-    type UnifySameDomainDto<T> = WithDefaults<Inputs_4.OCCT.UnifySameDomainDto<T>, "unifyEdges" | "unifyFaces" | "concatBSplines">;
+    type UBeamProfileDto = WithDefaults<Inputs_5.OCCT.UBeamProfileDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction">;
     // (undocumented)
-    type UnionDto<T> = WithDefaults<Inputs_4.OCCT.UnionDto<T>, "keepEdges" | "strategy">;
+    type UBeamProfileSolidDto = WithDefaults<Inputs_5.OCCT.UBeamProfileSolidDto, "width" | "height" | "webThickness" | "flangeThickness" | "flangeWidth" | "alignment" | "rotation" | "center" | "direction" | "extrusionLengthFront" | "extrusionLengthBack">;
     // (undocumented)
-    type UnrollFaceDto<T> = WithDefaults<Inputs_4.OCCT.UnrollFaceDto<T>, "tolerance">;
+    type UnifySameDomainDto<T> = WithDefaults<Inputs_5.OCCT.UnifySameDomainDto<T>, "unifyEdges" | "unifyFaces" | "concatBSplines">;
     // (undocumented)
-    type WireAlongParamDto<T> = WithDefaults<Inputs_4.OCCT.WireAlongParamDto<T>, "isU" | "param">;
+    type UnionDto<T> = WithDefaults<Inputs_5.OCCT.UnionDto<T>, "keepEdges" | "strategy">;
     // (undocumented)
-    type WireFromTwoCirclesTanDto<T> = WithDefaults<Inputs_4.OCCT.WireFromTwoCirclesTanDto<T>, "keepLines" | "circleRemainders" | "tolerance">;
+    type UnrollFaceDto<T> = WithDefaults<Inputs_5.OCCT.UnrollFaceDto<T>, "tolerance">;
     // (undocumented)
-    type WireOnFaceDto<T, U> = Inputs_4.OCCT.WireOnFaceDto<T, U>;
+    type WireAlongParamDto<T> = WithDefaults<Inputs_5.OCCT.WireAlongParamDto<T>, "isU" | "param">;
     // (undocumented)
-    type WiresAlongParamsDto<T> = WithDefaults<Inputs_4.OCCT.WiresAlongParamsDto<T>, "isU">;
+    type WireFromTwoCirclesTanDto<T> = WithDefaults<Inputs_5.OCCT.WireFromTwoCirclesTanDto<T>, "keepLines" | "circleRemainders" | "tolerance">;
     // (undocumented)
-    type WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_4.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<T>, "wireType" | "closed" | "tolerance">;
+    type WireOnFaceDto<T, U> = Inputs_5.OCCT.WireOnFaceDto<T, U>;
     // (undocumented)
-    type WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_4.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T>, "nrOfDivisions" | "divideByEqualDistance" | "wireType" | "closed" | "tolerance">;
+    type WiresAlongParamsDto<T> = WithDefaults<Inputs_5.OCCT.WiresAlongParamsDto<T>, "isU">;
     // (undocumented)
-    type WiresOnFaceDto<T, U> = Inputs_4.OCCT.WiresOnFaceDto<T, U>;
+    type WiresBetweenStartEndPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_5.OCCT.WiresBetweenStartEndPointsOfWiresAndEdgesDto<T>, "wireType" | "closed" | "tolerance">;
     // (undocumented)
-    type WiresToPointsDto<T> = WithDefaults<Inputs_4.OCCT.WiresToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
+    type WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T> = WithDefaults<Inputs_5.OCCT.WiresBetweenSubdividedPointsOfWiresAndEdgesDto<T>, "nrOfDivisions" | "divideByEqualDistance" | "wireType" | "closed" | "tolerance">;
     // (undocumented)
-    type WrapWiresOnFaceDto<T, U> = WithDefaults<Inputs_4.OCCT.WrapWiresOnFaceDto<T, U>, "tolerance">;
+    type WiresOnFaceDto<T, U> = Inputs_5.OCCT.WiresOnFaceDto<T, U>;
     // (undocumented)
-    type XYZDto = WithDefaults<Inputs_4.OCCT.XYZDto, "x" | "y" | "z">;
+    type WiresToPointsDto<T> = WithDefaults<Inputs_5.OCCT.WiresToPointsDto<T>, "angularDeflection" | "curvatureDeflection" | "minimumOfPoints" | "uTolerance" | "minimumLength">;
     // (undocumented)
-    type ZigZagBetweenTwoWiresDto<T> = WithDefaults<Inputs_4.OCCT.ZigZagBetweenTwoWiresDto<T>, "nrZigZags" | "inverse" | "divideByEqualDistance" | "zigZagsPerEdge">;
+    type WrapWiresOnFaceDto<T, U> = WithDefaults<Inputs_5.OCCT.WrapWiresOnFaceDto<T, U>, "tolerance">;
+    // (undocumented)
+    type XYZDto = WithDefaults<Inputs_5.OCCT.XYZDto, "x" | "y" | "z">;
+    // (undocumented)
+    type ZigZagBetweenTwoWiresDto<T> = WithDefaults<Inputs_5.OCCT.ZigZagBetweenTwoWiresDto<T>, "nrZigZags" | "inverse" | "divideByEqualDistance" | "zigZagsPerEdge">;
 }
 
 // Warning: (ae-forgotten-export) The symbol "OCCT_4" needs to be exported by the entry point index.d.ts
@@ -7589,8 +8275,8 @@ export class OCCTW extends OCCT_4 {
 // @public
 export class OCCTWIO extends OCCTIO {
     constructor(occWorkerManager: OCCTWorkerManager, context: ContextBase);
-    loadSTEPorIGES(inputs: Inputs_6.OCCT.ImportStepIgesDto): Promise<Inputs_6.OCCT.TopoDSShapePointer>;
-    loadSTEPorIGESFromText(inputs: Inputs_6.OCCT.ImportStepIgesFromTextDto): Promise<Inputs_6.OCCT.TopoDSShapePointer>;
+    loadSTEPorIGES(inputs: Inputs_7.OCCT.ImportStepIgesDto): Promise<Inputs_7.OCCT.TopoDSShapePointer>;
+    loadSTEPorIGESFromText(inputs: Inputs_7.OCCT.ImportStepIgesFromTextDto): Promise<Inputs_7.OCCT.TopoDSShapePointer>;
     // (undocumented)
     readonly occWorkerManager: OCCTWorkerManager;
 }
@@ -7622,6 +8308,13 @@ export interface PlacementSource {
 
 // @public
 namespace Point_2 {
+    class ArcThroughThreePointsDto {
+        constructor(start?: Base_2.Point3, middle?: Base_2.Point3, end?: Base_2.Point3, segments?: number);
+        end: Base_2.Point3;
+        middle: Base_2.Point3;
+        segments?: number | undefined;
+        start: Base_2.Point3;
+    }
     class ClosestPointFromPointsDto {
         constructor(points?: Base_2.Point3[], point?: Base_2.Point3);
         point: Base_2.Point3;
@@ -7803,61 +8496,63 @@ namespace Point_2 {
 // @public
 namespace Point_3 {
     // (undocumented)
-    type ClosestPointFromPointsDto = Inputs_5.Point.ClosestPointFromPointsDto;
+    type ArcThroughThreePointsDto = WithDefaults<Inputs_6.Point.ArcThroughThreePointsDto, "segments">;
     // (undocumented)
-    type DrawPointDto<T> = WithDefaults<Inputs_5.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    type ClosestPointFromPointsDto = Inputs_6.Point.ClosestPointFromPointsDto;
     // (undocumented)
-    type DrawPointsDto<T> = WithDefaults<Inputs_5.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;
+    type DrawPointDto<T> = WithDefaults<Inputs_6.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
     // (undocumented)
-    type HexGridCentersDto = WithDefaults<Inputs_5.Point.HexGridCentersDto, "nrHexagonsY" | "nrHexagonsX" | "radiusHexagon" | "orientOnCenter" | "pointsOnGround">;
+    type DrawPointsDto<T> = WithDefaults<Inputs_6.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;
     // (undocumented)
-    type HexGridScaledToFitDto = WithDefaults<Inputs_5.Point.HexGridScaledToFitDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight" | "centerGrid" | "pointsOnGround">;
+    type HexGridCentersDto = WithDefaults<Inputs_6.Point.HexGridCentersDto, "nrHexagonsY" | "nrHexagonsX" | "radiusHexagon" | "orientOnCenter" | "pointsOnGround">;
     // (undocumented)
-    type MultiplyPointDto = Inputs_5.Point.MultiplyPointDto;
+    type HexGridScaledToFitDto = WithDefaults<Inputs_6.Point.HexGridScaledToFitDto, "width" | "height" | "nrHexagonsInWidth" | "nrHexagonsInHeight" | "flatTop" | "extendTop" | "extendBottom" | "extendLeft" | "extendRight" | "centerGrid" | "pointsOnGround">;
     // (undocumented)
-    type PointDto = Inputs_5.Point.PointDto;
+    type MultiplyPointDto = Inputs_6.Point.MultiplyPointDto;
     // (undocumented)
-    type PointsDto = Inputs_5.Point.PointsDto;
+    type PointDto = Inputs_6.Point.PointDto;
     // (undocumented)
-    type PointsMaxFilletsHalfLineDto = WithDefaults<Inputs_5.Point.PointsMaxFilletsHalfLineDto, "checkLastWithFirst" | "tolerance">;
+    type PointsDto = Inputs_6.Point.PointsDto;
     // (undocumented)
-    type PointXYDto = WithDefaults<Inputs_5.Point.PointXYDto, "x" | "y">;
+    type PointsMaxFilletsHalfLineDto = WithDefaults<Inputs_6.Point.PointsMaxFilletsHalfLineDto, "checkLastWithFirst" | "tolerance">;
     // (undocumented)
-    type PointXYZDto = WithDefaults<Inputs_5.Point.PointXYZDto, "x" | "y" | "z">;
+    type PointXYDto = WithDefaults<Inputs_6.Point.PointXYDto, "x" | "y">;
     // (undocumented)
-    type RemoveConsecutiveDuplicatesDto = WithDefaults<Inputs_5.Point.RemoveConsecutiveDuplicatesDto, "tolerance" | "checkFirstAndLast">;
+    type PointXYZDto = WithDefaults<Inputs_6.Point.PointXYZDto, "x" | "y" | "z">;
     // (undocumented)
-    type RotatePointsCenterAxisDto = WithDefaults<Inputs_5.Point.RotatePointsCenterAxisDto, "angle" | "axis" | "center">;
+    type RemoveConsecutiveDuplicatesDto = WithDefaults<Inputs_6.Point.RemoveConsecutiveDuplicatesDto, "tolerance" | "checkFirstAndLast">;
     // (undocumented)
-    type ScalePointsCenterXYZDto = WithDefaults<Inputs_5.Point.ScalePointsCenterXYZDto, "center" | "scaleXyz">;
+    type RotatePointsCenterAxisDto = WithDefaults<Inputs_6.Point.RotatePointsCenterAxisDto, "angle" | "axis" | "center">;
     // (undocumented)
-    type SpiralDto = WithDefaults<Inputs_5.Point.SpiralDto, "phi" | "numberPoints" | "widening" | "radius" | "factor">;
+    type ScalePointsCenterXYZDto = WithDefaults<Inputs_6.Point.ScalePointsCenterXYZDto, "center" | "scaleXyz">;
     // (undocumented)
-    type StartEndPointsDto = Inputs_5.Point.StartEndPointsDto;
+    type SpiralDto = WithDefaults<Inputs_6.Point.SpiralDto, "phi" | "numberPoints" | "widening" | "radius" | "factor">;
     // (undocumented)
-    type StartEndPointsListDto = Inputs_5.Point.StartEndPointsListDto;
+    type StartEndPointsDto = Inputs_6.Point.StartEndPointsDto;
     // (undocumented)
-    type StretchPointsDirFromCenterDto = WithDefaults<Inputs_5.Point.StretchPointsDirFromCenterDto, "center" | "direction" | "scale">;
+    type StartEndPointsListDto = Inputs_6.Point.StartEndPointsListDto;
     // (undocumented)
-    type ThreePointsNormalDto = WithDefaults<Inputs_5.Point.ThreePointsNormalDto, "reverseNormal">;
+    type StretchPointsDirFromCenterDto = WithDefaults<Inputs_6.Point.StretchPointsDirFromCenterDto, "center" | "direction" | "scale">;
     // (undocumented)
-    type ThreePointsToleranceDto = WithDefaults<Inputs_5.Point.ThreePointsToleranceDto, "tolerance">;
+    type ThreePointsNormalDto = WithDefaults<Inputs_6.Point.ThreePointsNormalDto, "reverseNormal">;
     // (undocumented)
-    type TransformPointDto = Inputs_5.Point.TransformPointDto;
+    type ThreePointsToleranceDto = WithDefaults<Inputs_6.Point.ThreePointsToleranceDto, "tolerance">;
     // (undocumented)
-    type TransformPointsDto = Inputs_5.Point.TransformPointsDto;
+    type TransformPointDto = Inputs_6.Point.TransformPointDto;
     // (undocumented)
-    type TransformsForPointsDto = Inputs_5.Point.TransformsForPointsDto;
+    type TransformPointsDto = Inputs_6.Point.TransformPointsDto;
     // (undocumented)
-    type TranslatePointsDto = Inputs_5.Point.TranslatePointsDto;
+    type TransformsForPointsDto = Inputs_6.Point.TransformsForPointsDto;
     // (undocumented)
-    type TranslatePointsWithVectorsDto = Inputs_5.Point.TranslatePointsWithVectorsDto;
+    type TranslatePointsDto = Inputs_6.Point.TranslatePointsDto;
     // (undocumented)
-    type TranslateXYZPointsDto = WithDefaults<Inputs_5.Point.TranslateXYZPointsDto, "x" | "y" | "z">;
+    type TranslatePointsWithVectorsDto = Inputs_6.Point.TranslatePointsWithVectorsDto;
     // (undocumented)
-    type TwoPointsDto = Inputs_5.Point.TwoPointsDto;
+    type TranslateXYZPointsDto = WithDefaults<Inputs_6.Point.TranslateXYZPointsDto, "x" | "y" | "z">;
     // (undocumented)
-    type TwoPointsToleranceDto = WithDefaults<Inputs_5.Point.TwoPointsToleranceDto, "tolerance">;
+    type TwoPointsDto = Inputs_6.Point.TwoPointsDto;
+    // (undocumented)
+    type TwoPointsToleranceDto = WithDefaults<Inputs_6.Point.TwoPointsToleranceDto, "tolerance">;
 }
 
 // @public
@@ -7925,25 +8620,25 @@ namespace Polyline {
 // @public
 namespace Polyline_2 {
     // (undocumented)
-    type DrawPolylineDto<T> = WithDefaults<Inputs_5.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawPolylineDto<T> = WithDefaults<Inputs_6.Polyline.DrawPolylineDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type DrawPolylinesDto<T> = WithDefaults<Inputs_5.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawPolylinesDto<T> = WithDefaults<Inputs_6.Polyline.DrawPolylinesDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type PolylineCreateDto = WithDefaults<Inputs_5.Polyline.PolylineCreateDto, "isClosed">;
+    type PolylineCreateDto = WithDefaults<Inputs_6.Polyline.PolylineCreateDto, "isClosed">;
     // (undocumented)
-    type PolylineDto = Inputs_5.Polyline.PolylineDto;
+    type PolylineDto = Inputs_6.Polyline.PolylineDto;
     // (undocumented)
-    type PolylinePropertiesDto = WithDefaults<Inputs_5.Polyline.PolylinePropertiesDto, "isClosed">;
+    type PolylinePropertiesDto = WithDefaults<Inputs_6.Polyline.PolylinePropertiesDto, "isClosed">;
     // (undocumented)
-    type PolylinesDto = Inputs_5.Polyline.PolylinesDto;
+    type PolylinesDto = Inputs_6.Polyline.PolylinesDto;
     // (undocumented)
-    type PolylineToleranceDto = WithDefaults<Inputs_5.Polyline.PolylineToleranceDto, "tolerance">;
+    type PolylineToleranceDto = WithDefaults<Inputs_6.Polyline.PolylineToleranceDto, "tolerance">;
     // (undocumented)
-    type SegmentsToleranceDto = WithDefaults<Inputs_5.Polyline.SegmentsToleranceDto, "tolerance">;
+    type SegmentsToleranceDto = WithDefaults<Inputs_6.Polyline.SegmentsToleranceDto, "tolerance">;
     // (undocumented)
-    type TransformPolylineDto = Inputs_5.Polyline.TransformPolylineDto;
+    type TransformPolylineDto = Inputs_6.Polyline.TransformPolylineDto;
     // (undocumented)
-    type TwoPolylinesToleranceDto = WithDefaults<Inputs_5.Polyline.TwoPolylinesToleranceDto, "tolerance">;
+    type TwoPolylinesToleranceDto = WithDefaults<Inputs_6.Polyline.TwoPolylinesToleranceDto, "tolerance">;
 }
 
 // @public (undocumented)
@@ -7994,6 +8689,7 @@ declare namespace Resolved {
     export {
         JSCAD_2 as JSCAD,
         Manifold_2 as Manifold,
+        IFC_2 as IFC,
         OCCT_3 as OCCT,
         Color_2 as Color,
         Dates_2 as Dates,
@@ -8024,7 +8720,7 @@ export function samePlacements(first: ReadonlyMap<string, readonly PartPlacement
 // @public
 export interface ShapeWithAppearance {
     appearance?: Models_3.OCCT.DesignBuiltAppearance | undefined;
-    shape: Inputs_6.OCCT.TopoDSShapePointer;
+    shape: Inputs_7.OCCT.TopoDSShapePointer;
 }
 
 // @public
@@ -8044,9 +8740,9 @@ export interface SurfaceAnalysisMesh {
 // @public
 export class Tag {
     constructor(context: ContextBase);
-    create(inputs: Inputs_6.Tag.TagDto): Inputs_6.Tag.TagDto;
-    drawTag(inputs: Inputs_6.Tag.DrawTagDto): Inputs_6.Tag.TagDto;
-    drawTags(inputs: Inputs_6.Tag.DrawTagsDto): Inputs_6.Tag.TagDto[];
+    create(inputs: Inputs_7.Tag.TagDto): Inputs_7.Tag.TagDto;
+    drawTag(inputs: Inputs_7.Tag.DrawTagDto): Inputs_7.Tag.TagDto;
+    drawTags(inputs: Inputs_7.Tag.DrawTagsDto): Inputs_7.Tag.TagDto[];
 }
 
 // @public
@@ -8078,11 +8774,11 @@ namespace Tag_2 {
 // @public
 namespace Tag_3 {
     // (undocumented)
-    type DrawTagDto = WithDefaults<Inputs_6.Tag.DrawTagDto, "updatable">;
+    type DrawTagDto = WithDefaults<Inputs_7.Tag.DrawTagDto, "updatable">;
     // (undocumented)
-    type DrawTagsDto = WithDefaults<Inputs_6.Tag.DrawTagsDto, "updatable">;
+    type DrawTagsDto = WithDefaults<Inputs_7.Tag.DrawTagsDto, "updatable">;
     // (undocumented)
-    type TagDto = WithDefaults<Inputs_6.Tag.TagDto, "position" | "colour" | "size" | "adaptDepth">;
+    type TagDto = WithDefaults<Inputs_7.Tag.TagDto, "position" | "colour" | "size" | "adaptDepth">;
 }
 
 // @public (undocumented)
@@ -8211,39 +8907,39 @@ namespace Text_3 {
 // @public
 namespace Text_4 {
     // (undocumented)
-    type TextConcatDto = WithDefaults<Inputs_5.Text.TextConcatDto, "texts">;
+    type TextConcatDto = WithDefaults<Inputs_6.Text.TextConcatDto, "texts">;
     // (undocumented)
-    type TextDto = WithDefaults<Inputs_5.Text.TextDto, "text">;
+    type TextDto = WithDefaults<Inputs_6.Text.TextDto, "text">;
     // (undocumented)
-    type TextFormatDto = WithDefaults<Inputs_5.Text.TextFormatDto, "text" | "values">;
+    type TextFormatDto = WithDefaults<Inputs_6.Text.TextFormatDto, "text" | "values">;
     // (undocumented)
-    type TextIndexDto = WithDefaults<Inputs_5.Text.TextIndexDto, "text" | "index">;
+    type TextIndexDto = WithDefaults<Inputs_6.Text.TextIndexDto, "text" | "index">;
     // (undocumented)
-    type TextJoinDto = WithDefaults<Inputs_5.Text.TextJoinDto, "separator">;
+    type TextJoinDto = WithDefaults<Inputs_6.Text.TextJoinDto, "separator">;
     // (undocumented)
-    type TextPadDto = WithDefaults<Inputs_5.Text.TextPadDto, "text" | "length" | "padString">;
+    type TextPadDto = WithDefaults<Inputs_6.Text.TextPadDto, "text" | "length" | "padString">;
     // (undocumented)
-    type TextRegexDto = WithDefaults<Inputs_5.Text.TextRegexDto, "text" | "pattern" | "flags">;
+    type TextRegexDto = WithDefaults<Inputs_6.Text.TextRegexDto, "text" | "pattern" | "flags">;
     // (undocumented)
-    type TextRegexReplaceDto = WithDefaults<Inputs_5.Text.TextRegexReplaceDto, "text" | "pattern" | "flags" | "replaceWith">;
+    type TextRegexReplaceDto = WithDefaults<Inputs_6.Text.TextRegexReplaceDto, "text" | "pattern" | "flags" | "replaceWith">;
     // (undocumented)
-    type TextRepeatDto = WithDefaults<Inputs_5.Text.TextRepeatDto, "text" | "count">;
+    type TextRepeatDto = WithDefaults<Inputs_6.Text.TextRepeatDto, "text" | "count">;
     // (undocumented)
-    type TextReplaceDto = WithDefaults<Inputs_5.Text.TextReplaceDto, "text" | "search" | "replaceWith">;
+    type TextReplaceDto = WithDefaults<Inputs_6.Text.TextReplaceDto, "text" | "search" | "replaceWith">;
     // (undocumented)
-    type TextSearchDto = WithDefaults<Inputs_5.Text.TextSearchDto, "text" | "search">;
+    type TextSearchDto = WithDefaults<Inputs_6.Text.TextSearchDto, "text" | "search">;
     // (undocumented)
-    type TextSplitDto = WithDefaults<Inputs_5.Text.TextSplitDto, "text" | "separator">;
+    type TextSplitDto = WithDefaults<Inputs_6.Text.TextSplitDto, "text" | "separator">;
     // (undocumented)
-    type TextSubstringDto = WithDefaults<Inputs_5.Text.TextSubstringDto, "text" | "start">;
+    type TextSubstringDto = WithDefaults<Inputs_6.Text.TextSubstringDto, "text" | "start">;
     // (undocumented)
-    type ToStringDto<T> = Inputs_5.Text.ToStringDto<T>;
+    type ToStringDto<T> = Inputs_6.Text.ToStringDto<T>;
     // (undocumented)
-    type ToStringEachDto<T> = Inputs_5.Text.ToStringEachDto<T>;
+    type ToStringEachDto<T> = Inputs_6.Text.ToStringEachDto<T>;
     // (undocumented)
-    type VectorCharDto = WithDefaults<Inputs_5.Text.VectorCharDto, "char" | "xOffset" | "yOffset" | "height" | "extrudeOffset">;
+    type VectorCharDto = WithDefaults<Inputs_6.Text.VectorCharDto, "char" | "xOffset" | "yOffset" | "height" | "extrudeOffset">;
     // (undocumented)
-    type VectorTextDto = WithDefaults<Inputs_5.Text.VectorTextDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
+    type VectorTextDto = WithDefaults<Inputs_6.Text.VectorTextDto, "text" | "xOffset" | "yOffset" | "height" | "lineSpacing" | "letterSpacing" | "align" | "extrudeOffset" | "centerOnOrigin">;
 }
 
 // @public
@@ -8264,7 +8960,7 @@ namespace Time_2 {
 // @public
 namespace Time_3 {
     // (undocumented)
-    type PostFromIframe = Inputs_6.Time.PostFromIframe;
+    type PostFromIframe = Inputs_7.Time.PostFromIframe;
 }
 
 // @public
@@ -8324,25 +9020,25 @@ namespace Transforms {
 // @public
 namespace Transforms_2 {
     // (undocumented)
-    type RotationCenterAxisDto = WithDefaults<Inputs_5.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
+    type RotationCenterAxisDto = WithDefaults<Inputs_6.Transforms.RotationCenterAxisDto, "angle" | "axis" | "center">;
     // (undocumented)
-    type RotationCenterDto = WithDefaults<Inputs_5.Transforms.RotationCenterDto, "angle" | "center">;
+    type RotationCenterDto = WithDefaults<Inputs_6.Transforms.RotationCenterDto, "angle" | "center">;
     // (undocumented)
-    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_5.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
+    type RotationCenterYawPitchRollDto = WithDefaults<Inputs_6.Transforms.RotationCenterYawPitchRollDto, "yaw" | "pitch" | "roll" | "center">;
     // (undocumented)
-    type ScaleCenterXYZDto = WithDefaults<Inputs_5.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
+    type ScaleCenterXYZDto = WithDefaults<Inputs_6.Transforms.ScaleCenterXYZDto, "center" | "scaleXyz">;
     // (undocumented)
-    type ScaleXYZDto = WithDefaults<Inputs_5.Transforms.ScaleXYZDto, "scaleXyz">;
+    type ScaleXYZDto = WithDefaults<Inputs_6.Transforms.ScaleXYZDto, "scaleXyz">;
     // (undocumented)
-    type StretchDirCenterDto = WithDefaults<Inputs_5.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
+    type StretchDirCenterDto = WithDefaults<Inputs_6.Transforms.StretchDirCenterDto, "center" | "direction" | "scale">;
     // (undocumented)
-    type TranslationsXYZDto = Inputs_5.Transforms.TranslationsXYZDto;
+    type TranslationsXYZDto = Inputs_6.Transforms.TranslationsXYZDto;
     // (undocumented)
-    type TranslationXYZDto = WithDefaults<Inputs_5.Transforms.TranslationXYZDto, "translation">;
+    type TranslationXYZDto = WithDefaults<Inputs_6.Transforms.TranslationXYZDto, "translation">;
     // (undocumented)
-    type UniformScaleDto = WithDefaults<Inputs_5.Transforms.UniformScaleDto, "scale">;
+    type UniformScaleDto = WithDefaults<Inputs_6.Transforms.UniformScaleDto, "scale">;
     // (undocumented)
-    type UniformScaleFromCenterDto = WithDefaults<Inputs_5.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
+    type UniformScaleFromCenterDto = WithDefaults<Inputs_6.Transforms.UniformScaleFromCenterDto, "scale" | "center">;
 }
 
 // @public
@@ -8452,43 +9148,43 @@ namespace Vector {
 // @public
 namespace Vector_2 {
     // (undocumented)
-    type FractionTwoVectorsDto = WithDefaults<Inputs_5.Vector.FractionTwoVectorsDto, "fraction">;
+    type FractionTwoVectorsDto = WithDefaults<Inputs_6.Vector.FractionTwoVectorsDto, "fraction">;
     // (undocumented)
-    type RangeMaxDto = WithDefaults<Inputs_5.Vector.RangeMaxDto, "max">;
+    type RangeMaxDto = WithDefaults<Inputs_6.Vector.RangeMaxDto, "max">;
     // (undocumented)
-    type RayPointDto = WithDefaults<Inputs_5.Vector.RayPointDto, "distance">;
+    type RayPointDto = WithDefaults<Inputs_6.Vector.RayPointDto, "distance">;
     // (undocumented)
-    type RemoveAllDuplicateVectorsDto = WithDefaults<Inputs_5.Vector.RemoveAllDuplicateVectorsDto, "tolerance">;
+    type RemoveAllDuplicateVectorsDto = WithDefaults<Inputs_6.Vector.RemoveAllDuplicateVectorsDto, "tolerance">;
     // (undocumented)
-    type RemoveConsecutiveDuplicateVectorsDto = WithDefaults<Inputs_5.Vector.RemoveConsecutiveDuplicateVectorsDto, "checkFirstAndLast" | "tolerance">;
+    type RemoveConsecutiveDuplicateVectorsDto = WithDefaults<Inputs_6.Vector.RemoveConsecutiveDuplicateVectorsDto, "checkFirstAndLast" | "tolerance">;
     // (undocumented)
-    type SpanDto = WithDefaults<Inputs_5.Vector.SpanDto, "step" | "min" | "max">;
+    type SpanDto = WithDefaults<Inputs_6.Vector.SpanDto, "step" | "min" | "max">;
     // (undocumented)
-    type SpanEaseItemsDto = WithDefaults<Inputs_5.Vector.SpanEaseItemsDto, "nrItems" | "min" | "max" | "ease" | "intervals">;
+    type SpanEaseItemsDto = WithDefaults<Inputs_6.Vector.SpanEaseItemsDto, "nrItems" | "min" | "max" | "ease" | "intervals">;
     // (undocumented)
-    type SpanLinearItemsDto = WithDefaults<Inputs_5.Vector.SpanLinearItemsDto, "nrItems" | "min" | "max">;
+    type SpanLinearItemsDto = WithDefaults<Inputs_6.Vector.SpanLinearItemsDto, "nrItems" | "min" | "max">;
     // (undocumented)
-    type TwoVectorsDto = Inputs_5.Vector.TwoVectorsDto;
+    type TwoVectorsDto = Inputs_6.Vector.TwoVectorsDto;
     // (undocumented)
-    type TwoVectorsReferenceDto = Inputs_5.Vector.TwoVectorsReferenceDto;
+    type TwoVectorsReferenceDto = Inputs_6.Vector.TwoVectorsReferenceDto;
     // (undocumented)
-    type Vector3Dto = Inputs_5.Vector.Vector3Dto;
+    type Vector3Dto = Inputs_6.Vector.Vector3Dto;
     // (undocumented)
-    type VectorBoolDto = Inputs_5.Vector.VectorBoolDto;
+    type VectorBoolDto = Inputs_6.Vector.VectorBoolDto;
     // (undocumented)
-    type VectorDto = Inputs_5.Vector.VectorDto;
+    type VectorDto = Inputs_6.Vector.VectorDto;
     // (undocumented)
-    type VectorScalarDto = WithDefaults<Inputs_5.Vector.VectorScalarDto, "scalar">;
+    type VectorScalarDto = WithDefaults<Inputs_6.Vector.VectorScalarDto, "scalar">;
     // (undocumented)
-    type VectorsDto = Inputs_5.Vector.VectorsDto;
+    type VectorsDto = Inputs_6.Vector.VectorsDto;
     // (undocumented)
-    type VectorsTheSameDto = WithDefaults<Inputs_5.Vector.VectorsTheSameDto, "tolerance">;
+    type VectorsTheSameDto = WithDefaults<Inputs_6.Vector.VectorsTheSameDto, "tolerance">;
     // (undocumented)
-    type VectorStringDto = Inputs_5.Vector.VectorStringDto;
+    type VectorStringDto = Inputs_6.Vector.VectorStringDto;
     // (undocumented)
-    type VectorXYDto = WithDefaults<Inputs_5.Vector.VectorXYDto, "x" | "y">;
+    type VectorXYDto = WithDefaults<Inputs_6.Vector.VectorXYDto, "x" | "y">;
     // (undocumented)
-    type VectorXYZDto = WithDefaults<Inputs_5.Vector.VectorXYZDto, "x" | "y" | "z">;
+    type VectorXYZDto = WithDefaults<Inputs_6.Vector.VectorXYZDto, "x" | "y" | "z">;
 }
 
 // @public @deprecated
@@ -8924,127 +9620,127 @@ namespace Verb_2 {
 // @public
 namespace Verb_3 {
     // (undocumented)
-    type ArcDto = Inputs_6.Verb.ArcDto;
+    type ArcDto = Inputs_7.Verb.ArcDto;
     // (undocumented)
-    type ArcParametersDto = Inputs_6.Verb.ArcParametersDto;
+    type ArcParametersDto = Inputs_7.Verb.ArcParametersDto;
     // (undocumented)
-    type BezierCurveDto = Inputs_6.Verb.BezierCurveDto;
+    type BezierCurveDto = Inputs_7.Verb.BezierCurveDto;
     // (undocumented)
-    type CircleDto = Inputs_6.Verb.CircleDto;
+    type CircleDto = Inputs_7.Verb.CircleDto;
     // (undocumented)
-    type CircleParametersDto = Inputs_6.Verb.CircleParametersDto;
+    type CircleParametersDto = Inputs_7.Verb.CircleParametersDto;
     // (undocumented)
-    type ClosestPointDto = Inputs_6.Verb.ClosestPointDto;
+    type ClosestPointDto = Inputs_7.Verb.ClosestPointDto;
     // (undocumented)
-    type ClosestPointsDto = Inputs_6.Verb.ClosestPointsDto;
+    type ClosestPointsDto = Inputs_7.Verb.ClosestPointsDto;
     // (undocumented)
-    type ConeAndCylinderParametersDto = WithDefaults<Inputs_6.Verb.ConeAndCylinderParametersDto, "axis" | "xAxis" | "base" | "height" | "radius">;
+    type ConeAndCylinderParametersDto = WithDefaults<Inputs_7.Verb.ConeAndCylinderParametersDto, "axis" | "xAxis" | "base" | "height" | "radius">;
     // (undocumented)
-    type ConeDto = Inputs_6.Verb.ConeDto;
+    type ConeDto = Inputs_7.Verb.ConeDto;
     // (undocumented)
-    type CornersDto = Inputs_6.Verb.CornersDto;
+    type CornersDto = Inputs_7.Verb.CornersDto;
     // (undocumented)
-    type CurveCurveDto = Inputs_6.Verb.CurveCurveDto;
+    type CurveCurveDto = Inputs_7.Verb.CurveCurveDto;
     // (undocumented)
-    type CurveCurveIntersectionsDto = Inputs_6.Verb.CurveCurveIntersectionsDto;
+    type CurveCurveIntersectionsDto = Inputs_7.Verb.CurveCurveIntersectionsDto;
     // (undocumented)
-    type CurveDerivativesDto = Inputs_6.Verb.CurveDerivativesDto;
+    type CurveDerivativesDto = Inputs_7.Verb.CurveDerivativesDto;
     // (undocumented)
-    type CurveDivideLengthDto = Inputs_6.Verb.CurveDivideLengthDto;
+    type CurveDivideLengthDto = Inputs_7.Verb.CurveDivideLengthDto;
     // (undocumented)
-    type CurveDto = Inputs_6.Verb.CurveDto;
+    type CurveDto = Inputs_7.Verb.CurveDto;
     // (undocumented)
-    type CurveLengthToleranceDto = Inputs_6.Verb.CurveLengthToleranceDto;
+    type CurveLengthToleranceDto = Inputs_7.Verb.CurveLengthToleranceDto;
     // (undocumented)
-    type CurveNurbsDataDto = Inputs_6.Verb.CurveNurbsDataDto;
+    type CurveNurbsDataDto = Inputs_7.Verb.CurveNurbsDataDto;
     // (undocumented)
-    type CurveParameterDto = Inputs_6.Verb.CurveParameterDto;
+    type CurveParameterDto = Inputs_7.Verb.CurveParameterDto;
     // (undocumented)
-    type CurvePathDataDto = Inputs_6.Verb.CurvePathDataDto;
+    type CurvePathDataDto = Inputs_7.Verb.CurvePathDataDto;
     // (undocumented)
-    type CurvesDivideLengthDto = Inputs_6.Verb.CurvesDivideLengthDto;
+    type CurvesDivideLengthDto = Inputs_7.Verb.CurvesDivideLengthDto;
     // (undocumented)
-    type CurvesDto = Inputs_6.Verb.CurvesDto;
+    type CurvesDto = Inputs_7.Verb.CurvesDto;
     // (undocumented)
-    type CurvesParameterDto = Inputs_6.Verb.CurvesParameterDto;
+    type CurvesParameterDto = Inputs_7.Verb.CurvesParameterDto;
     // (undocumented)
-    type CurvesSubdivisionsDto = Inputs_6.Verb.CurvesSubdivisionsDto;
+    type CurvesSubdivisionsDto = Inputs_7.Verb.CurvesSubdivisionsDto;
     // (undocumented)
-    type CurvesTransformDto = Inputs_6.Verb.CurvesTransformDto;
+    type CurvesTransformDto = Inputs_7.Verb.CurvesTransformDto;
     // (undocumented)
-    type CurveSubdivisionsDto = Inputs_6.Verb.CurveSubdivisionsDto;
+    type CurveSubdivisionsDto = Inputs_7.Verb.CurveSubdivisionsDto;
     // (undocumented)
-    type CurveSurfaceDto = Inputs_6.Verb.CurveSurfaceDto;
+    type CurveSurfaceDto = Inputs_7.Verb.CurveSurfaceDto;
     // (undocumented)
-    type CurveSurfaceIntersectionsDto = Inputs_6.Verb.CurveSurfaceIntersectionsDto;
+    type CurveSurfaceIntersectionsDto = Inputs_7.Verb.CurveSurfaceIntersectionsDto;
     // (undocumented)
-    type CurveToleranceDto = Inputs_6.Verb.CurveToleranceDto;
+    type CurveToleranceDto = Inputs_7.Verb.CurveToleranceDto;
     // (undocumented)
-    type CurveTransformDto = Inputs_6.Verb.CurveTransformDto;
+    type CurveTransformDto = Inputs_7.Verb.CurveTransformDto;
     // (undocumented)
-    type CylinderDto = Inputs_6.Verb.CylinderDto;
+    type CylinderDto = Inputs_7.Verb.CylinderDto;
     // (undocumented)
-    type DerivativesDto = Inputs_6.Verb.DerivativesDto;
+    type DerivativesDto = Inputs_7.Verb.DerivativesDto;
     // (undocumented)
-    type DrawCurveDto<T> = WithDefaults<Inputs_6.Verb.DrawCurveDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawCurveDto<T> = WithDefaults<Inputs_7.Verb.DrawCurveDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type DrawCurvesDto<T> = WithDefaults<Inputs_6.Verb.DrawCurvesDto<T>, "opacity" | "colours" | "size" | "updatable">;
+    type DrawCurvesDto<T> = WithDefaults<Inputs_7.Verb.DrawCurvesDto<T>, "opacity" | "colours" | "size" | "updatable">;
     // (undocumented)
-    type DrawSurfaceDto<T> = WithDefaults<Inputs_6.Verb.DrawSurfaceDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawSurfaceDto<T> = WithDefaults<Inputs_7.Verb.DrawSurfaceDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type DrawSurfacesColoursDto<T> = WithDefaults<Inputs_6.Verb.DrawSurfacesColoursDto<T>, "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawSurfacesColoursDto<T> = WithDefaults<Inputs_7.Verb.DrawSurfacesColoursDto<T>, "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type DrawSurfacesDto<T> = WithDefaults<Inputs_6.Verb.DrawSurfacesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    type DrawSurfacesDto<T> = WithDefaults<Inputs_7.Verb.DrawSurfacesDto<T>, "opacity" | "colours" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     // (undocumented)
-    type EllipseArcParametersDto = Inputs_6.Verb.EllipseArcParametersDto;
+    type EllipseArcParametersDto = Inputs_7.Verb.EllipseArcParametersDto;
     // (undocumented)
-    type EllipseDto = Inputs_6.Verb.EllipseDto;
+    type EllipseDto = Inputs_7.Verb.EllipseDto;
     // (undocumented)
-    type EllipseParametersDto = Inputs_6.Verb.EllipseParametersDto;
+    type EllipseParametersDto = Inputs_7.Verb.EllipseParametersDto;
     // (undocumented)
-    type ExtrusionDto = Inputs_6.Verb.ExtrusionDto;
+    type ExtrusionDto = Inputs_7.Verb.ExtrusionDto;
     // (undocumented)
-    type ExtrusionParametersDto = Inputs_6.Verb.ExtrusionParametersDto;
+    type ExtrusionParametersDto = Inputs_7.Verb.ExtrusionParametersDto;
     // (undocumented)
-    type IsocurvesParametersDto = Inputs_6.Verb.IsocurvesParametersDto;
+    type IsocurvesParametersDto = Inputs_7.Verb.IsocurvesParametersDto;
     // (undocumented)
-    type IsocurveSubdivisionDto = WithDefaults<Inputs_6.Verb.IsocurveSubdivisionDto, "useV" | "includeLast" | "includeFirst">;
+    type IsocurveSubdivisionDto = WithDefaults<Inputs_7.Verb.IsocurveSubdivisionDto, "useV" | "includeLast" | "includeFirst">;
     // (undocumented)
-    type KnotsControlPointsWeightsDto = Inputs_6.Verb.KnotsControlPointsWeightsDto;
+    type KnotsControlPointsWeightsDto = Inputs_7.Verb.KnotsControlPointsWeightsDto;
     // (undocumented)
-    type LineDto = Inputs_6.Verb.LineDto;
+    type LineDto = Inputs_7.Verb.LineDto;
     // (undocumented)
-    type LinesDto = Inputs_6.Verb.LinesDto;
+    type LinesDto = Inputs_7.Verb.LinesDto;
     // (undocumented)
-    type LoftCurvesDto = Inputs_6.Verb.LoftCurvesDto;
+    type LoftCurvesDto = Inputs_7.Verb.LoftCurvesDto;
     // (undocumented)
-    type PolylineDto = Inputs_6.Verb.PolylineDto;
+    type PolylineDto = Inputs_7.Verb.PolylineDto;
     // (undocumented)
-    type PolylinesDto = Inputs_6.Verb.PolylinesDto;
+    type PolylinesDto = Inputs_7.Verb.PolylinesDto;
     // (undocumented)
-    type RevolutionDto = Inputs_6.Verb.RevolutionDto;
+    type RevolutionDto = Inputs_7.Verb.RevolutionDto;
     // (undocumented)
-    type RevolutionParametersDto = Inputs_6.Verb.RevolutionParametersDto;
+    type RevolutionParametersDto = Inputs_7.Verb.RevolutionParametersDto;
     // (undocumented)
-    type SphereDto = Inputs_6.Verb.SphereDto;
+    type SphereDto = Inputs_7.Verb.SphereDto;
     // (undocumented)
-    type SphericalParametersDto = Inputs_6.Verb.SphericalParametersDto;
+    type SphericalParametersDto = Inputs_7.Verb.SphericalParametersDto;
     // (undocumented)
-    type SurfaceDto = Inputs_6.Verb.SurfaceDto;
+    type SurfaceDto = Inputs_7.Verb.SurfaceDto;
     // (undocumented)
-    type SurfaceLocationDto = Inputs_6.Verb.SurfaceLocationDto;
+    type SurfaceLocationDto = Inputs_7.Verb.SurfaceLocationDto;
     // (undocumented)
-    type SurfaceParamDto = Inputs_6.Verb.SurfaceParamDto;
+    type SurfaceParamDto = Inputs_7.Verb.SurfaceParamDto;
     // (undocumented)
-    type SurfaceParameterDto = Inputs_6.Verb.SurfaceParameterDto;
+    type SurfaceParameterDto = Inputs_7.Verb.SurfaceParameterDto;
     // (undocumented)
-    type SurfaceSurfaceDto = Inputs_6.Verb.SurfaceSurfaceDto;
+    type SurfaceSurfaceDto = Inputs_7.Verb.SurfaceSurfaceDto;
     // (undocumented)
-    type SurfaceTransformDto = Inputs_6.Verb.SurfaceTransformDto;
+    type SurfaceTransformDto = Inputs_7.Verb.SurfaceTransformDto;
     // (undocumented)
-    type SweepDto = Inputs_6.Verb.SweepDto;
+    type SweepDto = Inputs_7.Verb.SweepDto;
     // (undocumented)
-    type SweepParametersDto = Inputs_6.Verb.SweepParametersDto;
+    type SweepParametersDto = Inputs_7.Verb.SweepParametersDto;
 }
 
 // @public @deprecated
@@ -9052,185 +9748,185 @@ export class VerbCurve {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
     // (undocumented)
     readonly circle: VerbCurveCircle;
-    clone(inputs: Inputs_6.Verb.CurveDto): any;
-    closestParam(inputs: Inputs_6.Verb.ClosestPointDto): number;
-    closestParams(inputs: Inputs_6.Verb.ClosestPointsDto): number[];
-    closestPoint(inputs: Inputs_6.Verb.ClosestPointDto): Inputs_6.Base.Point3;
-    closestPoints(inputs: Inputs_6.Verb.ClosestPointsDto): Inputs_6.Base.Point3[];
-    controlPoints(inputs: Inputs_6.Verb.CurveDto): Inputs_6.Base.Point3[];
-    convertLinesToNurbsCurves(inputs: Inputs_6.Verb.LinesDto): any[];
-    convertLineToNurbsCurve(inputs: Inputs_6.Verb.LineDto): any;
-    convertPolylinesToNurbsCurves(inputs: Inputs_6.Verb.PolylinesDto): any[];
-    convertPolylineToNurbsCurve(inputs: Inputs_6.Verb.PolylineDto): any;
-    createBezierCurve(inputs: Inputs_6.Verb.BezierCurveDto): any;
-    createCurveByKnotsControlPointsWeights(inputs: Inputs_6.Verb.CurveNurbsDataDto): any;
-    createCurveByPoints(inputs: Inputs_6.Verb.CurvePathDataDto): any;
-    degree(inputs: Inputs_6.Verb.CurveDto): number;
-    derivatives(inputs: Inputs_6.Verb.CurveDerivativesDto): number[];
-    divideByArcLengthToParams(inputs: Inputs_6.Verb.CurveDivideLengthDto): number[];
-    divideByArcLengthToPoints(inputs: Inputs_6.Verb.CurveDivideLengthDto): Inputs_6.Base.Point3[];
-    divideByEqualArcLengthToParams(inputs: Inputs_6.Verb.CurveSubdivisionsDto): number[];
-    divideByEqualArcLengthToPoints(inputs: Inputs_6.Verb.CurveSubdivisionsDto): Inputs_6.Base.Point3[];
-    divideCurvesByArcLengthToPoints(inputs: Inputs_6.Verb.CurvesDivideLengthDto): Inputs_6.Base.Point3[][];
-    divideCurvesByEqualArcLengthToPoints(inputs: Inputs_6.Verb.CurvesSubdivisionsDto): Inputs_6.Base.Point3[][];
-    domain(inputs: Inputs_6.Verb.CurveDto): BaseTypes.IntervalDto;
+    clone(inputs: Inputs_7.Verb.CurveDto): any;
+    closestParam(inputs: Inputs_7.Verb.ClosestPointDto): number;
+    closestParams(inputs: Inputs_7.Verb.ClosestPointsDto): number[];
+    closestPoint(inputs: Inputs_7.Verb.ClosestPointDto): Inputs_7.Base.Point3;
+    closestPoints(inputs: Inputs_7.Verb.ClosestPointsDto): Inputs_7.Base.Point3[];
+    controlPoints(inputs: Inputs_7.Verb.CurveDto): Inputs_7.Base.Point3[];
+    convertLinesToNurbsCurves(inputs: Inputs_7.Verb.LinesDto): any[];
+    convertLineToNurbsCurve(inputs: Inputs_7.Verb.LineDto): any;
+    convertPolylinesToNurbsCurves(inputs: Inputs_7.Verb.PolylinesDto): any[];
+    convertPolylineToNurbsCurve(inputs: Inputs_7.Verb.PolylineDto): any;
+    createBezierCurve(inputs: Inputs_7.Verb.BezierCurveDto): any;
+    createCurveByKnotsControlPointsWeights(inputs: Inputs_7.Verb.CurveNurbsDataDto): any;
+    createCurveByPoints(inputs: Inputs_7.Verb.CurvePathDataDto): any;
+    degree(inputs: Inputs_7.Verb.CurveDto): number;
+    derivatives(inputs: Inputs_7.Verb.CurveDerivativesDto): number[];
+    divideByArcLengthToParams(inputs: Inputs_7.Verb.CurveDivideLengthDto): number[];
+    divideByArcLengthToPoints(inputs: Inputs_7.Verb.CurveDivideLengthDto): Inputs_7.Base.Point3[];
+    divideByEqualArcLengthToParams(inputs: Inputs_7.Verb.CurveSubdivisionsDto): number[];
+    divideByEqualArcLengthToPoints(inputs: Inputs_7.Verb.CurveSubdivisionsDto): Inputs_7.Base.Point3[];
+    divideCurvesByArcLengthToPoints(inputs: Inputs_7.Verb.CurvesDivideLengthDto): Inputs_7.Base.Point3[][];
+    divideCurvesByEqualArcLengthToPoints(inputs: Inputs_7.Verb.CurvesSubdivisionsDto): Inputs_7.Base.Point3[][];
+    domain(inputs: Inputs_7.Verb.CurveDto): BaseTypes.IntervalDto;
     // (undocumented)
     readonly ellipse: VerbCurveEllipse;
-    endPoint(inputs: Inputs_6.Verb.CurveDto): Inputs_6.Base.Point3;
-    endPoints(inputs: Inputs_6.Verb.CurvesDto): Inputs_6.Base.Point3[];
-    knots(inputs: Inputs_6.Verb.CurveDto): number[];
-    length(inputs: Inputs_6.Verb.CurveDto): number;
-    lengthAtParam(inputs: Inputs_6.Verb.CurveParameterDto): number;
-    paramAtLength(inputs: Inputs_6.Verb.CurveLengthToleranceDto): number;
-    pointAtParam(inputs: Inputs_6.Verb.CurveParameterDto): Inputs_6.Base.Point3;
-    pointsAtParam(inputs: Inputs_6.Verb.CurvesParameterDto): Inputs_6.Base.Point3[];
-    reverse(inputs: Inputs_6.Verb.CurveDto): any;
-    split(inputs: Inputs_6.Verb.CurveParameterDto): any[];
-    startPoint(inputs: Inputs_6.Verb.CurveDto): Inputs_6.Base.Point3;
-    startPoints(inputs: Inputs_6.Verb.CurvesDto): Inputs_6.Base.Point3[];
-    tangent(inputs: Inputs_6.Verb.CurveParameterDto): Inputs_6.Base.Vector3;
-    tessellate(inputs: Inputs_6.Verb.CurveToleranceDto): Inputs_6.Base.Point3[];
-    transform(inputs: Inputs_6.Verb.CurveTransformDto): any;
-    transformCurves(inputs: Inputs_6.Verb.CurvesTransformDto): any[];
-    weights(inputs: Inputs_6.Verb.CurveDto): number[];
+    endPoint(inputs: Inputs_7.Verb.CurveDto): Inputs_7.Base.Point3;
+    endPoints(inputs: Inputs_7.Verb.CurvesDto): Inputs_7.Base.Point3[];
+    knots(inputs: Inputs_7.Verb.CurveDto): number[];
+    length(inputs: Inputs_7.Verb.CurveDto): number;
+    lengthAtParam(inputs: Inputs_7.Verb.CurveParameterDto): number;
+    paramAtLength(inputs: Inputs_7.Verb.CurveLengthToleranceDto): number;
+    pointAtParam(inputs: Inputs_7.Verb.CurveParameterDto): Inputs_7.Base.Point3;
+    pointsAtParam(inputs: Inputs_7.Verb.CurvesParameterDto): Inputs_7.Base.Point3[];
+    reverse(inputs: Inputs_7.Verb.CurveDto): any;
+    split(inputs: Inputs_7.Verb.CurveParameterDto): any[];
+    startPoint(inputs: Inputs_7.Verb.CurveDto): Inputs_7.Base.Point3;
+    startPoints(inputs: Inputs_7.Verb.CurvesDto): Inputs_7.Base.Point3[];
+    tangent(inputs: Inputs_7.Verb.CurveParameterDto): Inputs_7.Base.Vector3;
+    tessellate(inputs: Inputs_7.Verb.CurveToleranceDto): Inputs_7.Base.Point3[];
+    transform(inputs: Inputs_7.Verb.CurveTransformDto): any;
+    transformCurves(inputs: Inputs_7.Verb.CurvesTransformDto): any[];
+    weights(inputs: Inputs_7.Verb.CurveDto): number[];
 }
 
 // @public @deprecated
 export class VerbCurveCircle {
     constructor(context: ContextBase, math: MathBitByBit);
-    center(inputs: Inputs_6.Verb.CircleDto): number[];
-    createArc(inputs: Inputs_6.Verb.ArcParametersDto): any;
-    createCircle(inputs: Inputs_6.Verb.CircleParametersDto): any;
-    maxAngle(inputs: Inputs_6.Verb.CircleDto): number;
-    minAngle(inputs: Inputs_6.Verb.CircleDto): number;
-    radius(inputs: Inputs_6.Verb.CircleDto): number;
-    xAxis(inputs: Inputs_6.Verb.CircleDto): number[];
-    yAxis(inputs: Inputs_6.Verb.CircleDto): number[];
+    center(inputs: Inputs_7.Verb.CircleDto): number[];
+    createArc(inputs: Inputs_7.Verb.ArcParametersDto): any;
+    createCircle(inputs: Inputs_7.Verb.CircleParametersDto): any;
+    maxAngle(inputs: Inputs_7.Verb.CircleDto): number;
+    minAngle(inputs: Inputs_7.Verb.CircleDto): number;
+    radius(inputs: Inputs_7.Verb.CircleDto): number;
+    xAxis(inputs: Inputs_7.Verb.CircleDto): number[];
+    yAxis(inputs: Inputs_7.Verb.CircleDto): number[];
 }
 
 // @public @deprecated
 export class VerbCurveEllipse {
     constructor(context: ContextBase, math: MathBitByBit);
-    center(inputs: Inputs_6.Verb.EllipseDto): number[];
-    createArc(inputs: Inputs_6.Verb.EllipseArcParametersDto): any;
-    createEllipse(inputs: Inputs_6.Verb.EllipseParametersDto): any;
-    maxAngle(inputs: Inputs_6.Verb.EllipseDto): number;
-    minAngle(inputs: Inputs_6.Verb.EllipseDto): number;
-    xAxis(inputs: Inputs_6.Verb.EllipseDto): number[];
-    yAxis(inputs: Inputs_6.Verb.EllipseDto): number[];
+    center(inputs: Inputs_7.Verb.EllipseDto): number[];
+    createArc(inputs: Inputs_7.Verb.EllipseArcParametersDto): any;
+    createEllipse(inputs: Inputs_7.Verb.EllipseParametersDto): any;
+    maxAngle(inputs: Inputs_7.Verb.EllipseDto): number;
+    minAngle(inputs: Inputs_7.Verb.EllipseDto): number;
+    xAxis(inputs: Inputs_7.Verb.EllipseDto): number[];
+    yAxis(inputs: Inputs_7.Verb.EllipseDto): number[];
 }
 
 // @public @deprecated
 export class VerbIntersect {
     constructor(context: ContextBase, _geometryHelper: GeometryHelper);
-    curveAndSurface(inputs: Inputs_6.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
-    curveCurveFirstParams(inputs: Inputs_6.Verb.CurveCurveIntersectionsDto): number[];
-    curveCurveFirstPoints(inputs: Inputs_6.Verb.CurveCurveIntersectionsDto): number[][];
-    curveCurveSecondParams(inputs: Inputs_6.Verb.CurveCurveIntersectionsDto): number[];
-    curveCurveSecondPoints(inputs: Inputs_6.Verb.CurveCurveIntersectionsDto): number[][];
-    curves(inputs: Inputs_6.Verb.CurveCurveDto): BaseTypes.CurveCurveIntersection[];
-    curveSurfaceCurveParams(inputs: Inputs_6.Verb.CurveSurfaceIntersectionsDto): number[];
-    curveSurfaceCurvePoints(inputs: Inputs_6.Verb.CurveSurfaceIntersectionsDto): number[][];
-    curveSurfaceSurfaceParams(inputs: Inputs_6.Verb.CurveSurfaceIntersectionsDto): BaseTypes.UVDto[];
-    curveSurfaceSurfacePoints(inputs: Inputs_6.Verb.CurveSurfaceIntersectionsDto): number[][];
-    surfaces(inputs: Inputs_6.Verb.SurfaceSurfaceDto): any[];
+    curveAndSurface(inputs: Inputs_7.Verb.CurveSurfaceDto): BaseTypes.CurveSurfaceIntersection[];
+    curveCurveFirstParams(inputs: Inputs_7.Verb.CurveCurveIntersectionsDto): number[];
+    curveCurveFirstPoints(inputs: Inputs_7.Verb.CurveCurveIntersectionsDto): number[][];
+    curveCurveSecondParams(inputs: Inputs_7.Verb.CurveCurveIntersectionsDto): number[];
+    curveCurveSecondPoints(inputs: Inputs_7.Verb.CurveCurveIntersectionsDto): number[][];
+    curves(inputs: Inputs_7.Verb.CurveCurveDto): BaseTypes.CurveCurveIntersection[];
+    curveSurfaceCurveParams(inputs: Inputs_7.Verb.CurveSurfaceIntersectionsDto): number[];
+    curveSurfaceCurvePoints(inputs: Inputs_7.Verb.CurveSurfaceIntersectionsDto): number[][];
+    curveSurfaceSurfaceParams(inputs: Inputs_7.Verb.CurveSurfaceIntersectionsDto): BaseTypes.UVDto[];
+    curveSurfaceSurfacePoints(inputs: Inputs_7.Verb.CurveSurfaceIntersectionsDto): number[][];
+    surfaces(inputs: Inputs_7.Verb.SurfaceSurfaceDto): any[];
 }
 
 // @public @deprecated
 export class VerbSurface {
     constructor(context: ContextBase, geometryHelper: GeometryHelper, math: MathBitByBit);
-    boundaries(inputs: Inputs_6.Verb.SurfaceDto): any[];
-    clone(inputs: Inputs_6.Verb.SurfaceDto): any;
-    closestParam(inputs: Inputs_6.Verb.SurfaceParamDto): BaseTypes.UVDto;
-    closestPoint(inputs: Inputs_6.Verb.SurfaceParamDto): number[];
+    boundaries(inputs: Inputs_7.Verb.SurfaceDto): any[];
+    clone(inputs: Inputs_7.Verb.SurfaceDto): any;
+    closestParam(inputs: Inputs_7.Verb.SurfaceParamDto): BaseTypes.UVDto;
+    closestPoint(inputs: Inputs_7.Verb.SurfaceParamDto): number[];
     // (undocumented)
     readonly cone: VerbSurfaceConical;
-    controlPoints(inputs: Inputs_6.Verb.SurfaceDto): number[][][];
-    createSurfaceByCorners(inputs: Inputs_6.Verb.CornersDto): any;
-    createSurfaceByKnotsControlPointsWeights(inputs: Inputs_6.Verb.KnotsControlPointsWeightsDto): any;
-    createSurfaceByLoftingCurves(inputs: Inputs_6.Verb.LoftCurvesDto): any;
+    controlPoints(inputs: Inputs_7.Verb.SurfaceDto): number[][][];
+    createSurfaceByCorners(inputs: Inputs_7.Verb.CornersDto): any;
+    createSurfaceByKnotsControlPointsWeights(inputs: Inputs_7.Verb.KnotsControlPointsWeightsDto): any;
+    createSurfaceByLoftingCurves(inputs: Inputs_7.Verb.LoftCurvesDto): any;
     // (undocumented)
     readonly cylinder: VerbSurfaceCylindrical;
-    degreeU(inputs: Inputs_6.Verb.SurfaceDto): number;
-    degreeV(inputs: Inputs_6.Verb.SurfaceDto): number;
-    derivatives(inputs: Inputs_6.Verb.DerivativesDto): number[][][];
-    domainU(inputs: Inputs_6.Verb.SurfaceDto): BaseTypes.IntervalDto;
-    domainV(inputs: Inputs_6.Verb.SurfaceDto): BaseTypes.IntervalDto;
+    degreeU(inputs: Inputs_7.Verb.SurfaceDto): number;
+    degreeV(inputs: Inputs_7.Verb.SurfaceDto): number;
+    derivatives(inputs: Inputs_7.Verb.DerivativesDto): number[][][];
+    domainU(inputs: Inputs_7.Verb.SurfaceDto): BaseTypes.IntervalDto;
+    domainV(inputs: Inputs_7.Verb.SurfaceDto): BaseTypes.IntervalDto;
     // (undocumented)
     readonly extrusion: VerbSurfaceExtrusion;
-    isocurve(inputs: Inputs_6.Verb.SurfaceParameterDto): any;
-    isocurvesAtParams(inputs: Inputs_6.Verb.IsocurvesParametersDto): any[];
-    isocurvesSubdivision(inputs: Inputs_6.Verb.IsocurveSubdivisionDto): any[];
-    knotsU(inputs: Inputs_6.Verb.SurfaceDto): number[];
-    knotsV(inputs: Inputs_6.Verb.SurfaceDto): number[];
-    normal(inputs: Inputs_6.Verb.SurfaceLocationDto): number[];
-    point(inputs: Inputs_6.Verb.SurfaceLocationDto): number[];
-    reverse(inputs: Inputs_6.Verb.SurfaceDto): any;
+    isocurve(inputs: Inputs_7.Verb.SurfaceParameterDto): any;
+    isocurvesAtParams(inputs: Inputs_7.Verb.IsocurvesParametersDto): any[];
+    isocurvesSubdivision(inputs: Inputs_7.Verb.IsocurveSubdivisionDto): any[];
+    knotsU(inputs: Inputs_7.Verb.SurfaceDto): number[];
+    knotsV(inputs: Inputs_7.Verb.SurfaceDto): number[];
+    normal(inputs: Inputs_7.Verb.SurfaceLocationDto): number[];
+    point(inputs: Inputs_7.Verb.SurfaceLocationDto): number[];
+    reverse(inputs: Inputs_7.Verb.SurfaceDto): any;
     // (undocumented)
     readonly revolved: VerbSurfaceRevolved;
     // (undocumented)
     readonly sphere: VerbSurfaceSpherical;
-    split(inputs: Inputs_6.Verb.SurfaceParameterDto): any[];
+    split(inputs: Inputs_7.Verb.SurfaceParameterDto): any[];
     // (undocumented)
     readonly sweep: VerbSurfaceSweep;
-    transformSurface(inputs: Inputs_6.Verb.SurfaceTransformDto): any;
-    weights(inputs: Inputs_6.Verb.SurfaceDto): number[][];
+    transformSurface(inputs: Inputs_7.Verb.SurfaceTransformDto): any;
+    weights(inputs: Inputs_7.Verb.SurfaceDto): number[][];
 }
 
 // @public @deprecated
 export class VerbSurfaceConical {
     constructor(context: ContextBase);
-    axis(inputs: Inputs_6.Verb.ConeDto): number[];
-    base(inputs: Inputs_6.Verb.ConeDto): number[];
-    create(inputs: Inputs_6.Verb.ConeAndCylinderParametersDto): any;
-    height(inputs: Inputs_6.Verb.ConeDto): number;
-    radius(inputs: Inputs_6.Verb.ConeDto): number;
-    xAxis(inputs: Inputs_6.Verb.ConeDto): number[];
+    axis(inputs: Inputs_7.Verb.ConeDto): number[];
+    base(inputs: Inputs_7.Verb.ConeDto): number[];
+    create(inputs: Inputs_7.Verb.ConeAndCylinderParametersDto): any;
+    height(inputs: Inputs_7.Verb.ConeDto): number;
+    radius(inputs: Inputs_7.Verb.ConeDto): number;
+    xAxis(inputs: Inputs_7.Verb.ConeDto): number[];
 }
 
 // @public @deprecated
 export class VerbSurfaceCylindrical {
     constructor(context: ContextBase);
-    axis(inputs: Inputs_6.Verb.CylinderDto): number[];
-    base(inputs: Inputs_6.Verb.CylinderDto): number[];
-    create(inputs: Inputs_6.Verb.ConeAndCylinderParametersDto): any;
-    height(inputs: Inputs_6.Verb.CylinderDto): number;
-    radius(inputs: Inputs_6.Verb.CylinderDto): number;
-    xAxis(inputs: Inputs_6.Verb.CylinderDto): number[];
+    axis(inputs: Inputs_7.Verb.CylinderDto): number[];
+    base(inputs: Inputs_7.Verb.CylinderDto): number[];
+    create(inputs: Inputs_7.Verb.ConeAndCylinderParametersDto): any;
+    height(inputs: Inputs_7.Verb.CylinderDto): number;
+    radius(inputs: Inputs_7.Verb.CylinderDto): number;
+    xAxis(inputs: Inputs_7.Verb.CylinderDto): number[];
 }
 
 // @public @deprecated
 export class VerbSurfaceExtrusion {
     constructor(context: ContextBase);
-    create(inputs: Inputs_6.Verb.ExtrusionParametersDto): any;
-    direction(inputs: Inputs_6.Verb.ExtrusionDto): number[];
-    profile(inputs: Inputs_6.Verb.ExtrusionDto): number[];
+    create(inputs: Inputs_7.Verb.ExtrusionParametersDto): any;
+    direction(inputs: Inputs_7.Verb.ExtrusionDto): number[];
+    profile(inputs: Inputs_7.Verb.ExtrusionDto): number[];
 }
 
 // @public @deprecated
 export class VerbSurfaceRevolved {
     constructor(context: ContextBase, math: MathBitByBit);
-    angle(inputs: Inputs_6.Verb.RevolutionDto): number;
-    axis(inputs: Inputs_6.Verb.RevolutionDto): number[];
-    center(inputs: Inputs_6.Verb.RevolutionDto): number[];
-    create(inputs: Inputs_6.Verb.RevolutionParametersDto): any;
-    profile(inputs: Inputs_6.Verb.RevolutionDto): any;
+    angle(inputs: Inputs_7.Verb.RevolutionDto): number;
+    axis(inputs: Inputs_7.Verb.RevolutionDto): number[];
+    center(inputs: Inputs_7.Verb.RevolutionDto): number[];
+    create(inputs: Inputs_7.Verb.RevolutionParametersDto): any;
+    profile(inputs: Inputs_7.Verb.RevolutionDto): any;
 }
 
 // @public @deprecated
 export class VerbSurfaceSpherical {
     constructor(context: ContextBase);
-    center(inputs: Inputs_6.Verb.SphereDto): number[];
-    create(inputs: Inputs_6.Verb.SphericalParametersDto): any;
-    radius(inputs: Inputs_6.Verb.SphereDto): number;
+    center(inputs: Inputs_7.Verb.SphereDto): number[];
+    create(inputs: Inputs_7.Verb.SphericalParametersDto): any;
+    radius(inputs: Inputs_7.Verb.SphereDto): number;
 }
 
 // @public @deprecated
 export class VerbSurfaceSweep {
     constructor(context: ContextBase);
-    create(inputs: Inputs_6.Verb.SweepParametersDto): any;
-    profile(inputs: Inputs_6.Verb.SweepDto): any;
-    rail(inputs: Inputs_6.Verb.SweepDto): any;
+    create(inputs: Inputs_7.Verb.SweepParametersDto): any;
+    profile(inputs: Inputs_7.Verb.SweepDto): any;
+    rail(inputs: Inputs_7.Verb.SweepDto): any;
 }
 
 // @public
@@ -9241,17 +9937,16 @@ export type WorkerArchitecture = "32" | "64" | "64-mt";
 
 // @public
 export interface WorkerInstances {
-    // (undocumented)
+    ifcWorker?: Worker | undefined;
     jscadWorker?: Worker | undefined;
-    // (undocumented)
     manifoldWorker?: Worker | undefined;
-    // (undocumented)
     occtWorker?: Worker | undefined;
 }
 
 // @public
 interface WorkerOptions_2 {
     cdnUrl?: string | undefined;
+    enableIFC?: boolean | undefined;
     enableJSCAD?: boolean | undefined;
     enableManifold?: boolean | undefined;
     enableOCCT?: boolean | undefined;
@@ -9259,6 +9954,14 @@ interface WorkerOptions_2 {
     occtArchitecture?: WorkerArchitecture | undefined;
 }
 export { WorkerOptions_2 as WorkerOptions }
+
+// @public
+export interface WorkerUrls {
+    ifcWorkerUrl?: URL | string | undefined;
+    jscadWorkerUrl?: URL | string | undefined;
+    manifoldWorkerUrl?: URL | string | undefined;
+    occtWorkerUrl?: URL | string | undefined;
+}
 
 // (No @packageDocumentation comment for this package)
 

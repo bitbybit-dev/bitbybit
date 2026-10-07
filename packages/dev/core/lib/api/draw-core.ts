@@ -71,6 +71,8 @@ export class DrawCore {
             { kind: "manifoldShapes", phase: "async", matches: (e) => this.detectManifoldShapes(e) },
             { kind: "decomposedMeshes", phase: "async", matches: (e) => this.detectDecomposedMeshes(e) },
             { kind: "decomposedMesh", phase: "async", matches: (e) => this.detectDecomposedMesh(e) },
+            { kind: "manifoldMesh", phase: "async", matches: (e) => this.detectManifoldMesh(e) },
+            { kind: "manifoldMeshes", phase: "async", matches: (e) => this.detectManifoldMeshes(e) },
             { kind: "line", phase: "sync", matches: (e) => this.detectLine(e) },
             { kind: "point", phase: "sync", matches: (e) => this.detectPoint(e) },
             { kind: "jscadPath", phase: "sync", matches: (e) => this.detectJscadPath(e) },
@@ -412,6 +414,14 @@ export class DrawCore {
 
     detectDecomposedMeshes(entity: unknown): entity is Inputs.OCCT.DecomposedMeshDto[] {
         return Array.isArray(entity) && entity.length > 0 && !entity.some(el => !this.detectDecomposedMesh(el));
+    }
+
+    detectManifoldMesh(entity: unknown): entity is Inputs.Manifold.DecomposedManifoldMeshDto {
+        return isRecord(entity) && typeof entity["numProp"] === "number" && entity["vertProperties"] instanceof Float32Array && entity["triVerts"] instanceof Uint32Array;
+    }
+
+    detectManifoldMeshes(entity: unknown): entity is Inputs.Manifold.DecomposedManifoldMeshDto[] {
+        return Array.isArray(entity) && entity.length > 0 && entity.every(el => this.detectManifoldMesh(el));
     }
 
     detectTag(entity: unknown): entity is Inputs.Tag.TagDto {

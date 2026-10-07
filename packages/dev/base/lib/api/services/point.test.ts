@@ -2061,4 +2061,46 @@ describe("Point unit tests", () => {
             expect(single).toBe(listed);
         });
     });
+
+    describe("arcThroughThreePoints", () => {
+        it("should lay points along the half circle through three points, ends as given", () => {
+            // Act
+            const points = point.arcThroughThreePoints({ start: [5, 0, 0], middle: [0, 5, 0], end: [-5, 0, 0], segments: 4 });
+
+            // Assert
+            expect(points).toHaveLength(5);
+            expect(points[0]).toEqual([5, 0, 0]);
+            expect(points[4]).toEqual([-5, 0, 0]);
+            expect(points.map(([x, y, z]) => Math.hypot(x, y, z))).toEqual(points.map(() => expect.closeTo(5, 12)));
+            expect(points[2]![0]).toBeCloseTo(0, 12);
+            expect(points[2]![1]).toBeCloseTo(5, 12);
+        });
+
+        it("should divide into 16 steps when the count is left out", () => {
+            // Act
+            const points = point.arcThroughThreePoints({ start: [1, 0, 0], middle: [0, 1, 0], end: [-1, 0, 0] });
+
+            // Assert
+            expect(points).toHaveLength(17);
+        });
+
+        it("should give three points on one line back as they are, as new points", () => {
+            // Arrange
+            const start: Inputs.Base.Point3 = [0, 0, 0];
+
+            // Act
+            const points = point.arcThroughThreePoints({ start, middle: [1, 1, 0], end: [2, 2, 0], segments: 8 });
+
+            // Assert
+            expect(points).toEqual([[0, 0, 0], [1, 1, 0], [2, 2, 0]]);
+            expect(points[0]).not.toBe(start);
+        });
+
+        it("should refuse a count of steps that is not a whole number of at least one", () => {
+            // Act & Assert
+            for (const segments of [0, 2.5, -1, Number.NaN]) {
+                expect(() => point.arcThroughThreePoints({ start: [1, 0, 0], middle: [0, 1, 0], end: [-1, 0, 0], segments })).toThrow("`segments` must be a whole number of at least 1");
+            }
+        });
+    });
 });

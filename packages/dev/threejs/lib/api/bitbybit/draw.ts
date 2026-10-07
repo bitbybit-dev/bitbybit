@@ -102,6 +102,8 @@ export class Draw extends DrawCore {
             manifoldShapes: (i) => this.handleManifoldShapes(i),
             decomposedMeshes: (i) => this.handleDecomposedMeshes(i),
             decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
+            manifoldMesh: (i) => this.handleManifoldMesh(i),
+            manifoldMeshes: (i) => this.handleManifoldMeshes(i),
         };
     }
 
@@ -406,6 +408,18 @@ export class Draw extends DrawCore {
                 manifoldsOrCrossSections: inputs.entity as (Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer)[],
             });
         }, Inputs.Draw.drawingTypes.occt);
+    }
+
+    private handleManifoldMesh(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group | undefined> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
+            return Promise.resolve(this.drawHelper.drawManifoldMesh(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto, this.manifoldOptions(options)));
+        }, Inputs.Draw.drawingTypes.manifold);
+    }
+
+    private handleManifoldMeshes(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {
+        return this.handleAsync(inputs, new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), (options) => {
+            return Promise.resolve(this.drawHelper.drawManifoldMeshes(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto[], this.manifoldOptions(options)));
+        }, Inputs.Draw.drawingTypes.manifold);
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny<THREEJS.Group>): Promise<THREEJS.Group> {

@@ -86,7 +86,7 @@
       "count": 3
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 53
+      "count": 52
     },
     "@typescript-eslint/require-await": {
       "count": 1
@@ -212,11 +212,6 @@
     },
     "bitbybit/no-inline-object-types": {
       "count": 1
-    }
-  },
-  "packages/dev/base/lib/api/services/helpers/mesh-normals.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 26
     }
   },
   "packages/dev/base/lib/api/services/line.ts": {
@@ -499,11 +494,6 @@
       "count": 18
     }
   },
-  "packages/dev/core/lib/api/worker-utils.ts": {
-    "bitbybit/no-inline-object-types": {
-      "count": 1
-    }
-  },
   "packages/dev/core/lib/asset-manager.ts": {
     "@typescript-eslint/no-explicit-any": {
       "count": 1
@@ -743,19 +733,6 @@
   "packages/dev/occt-worker/lib/shape-parser.ts": {
     "bitbybit/no-inline-object-types": {
       "count": 4
-    }
-  },
-  "packages/dev/occt/bench/cases.run.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 5
-    },
-    "bitbybit/no-inline-object-types": {
-      "count": 2
-    }
-  },
-  "packages/dev/occt/bench/cases.ts": {
-    "@typescript-eslint/no-magic-numbers": {
-      "count": 33
     }
   },
   "packages/dev/occt/lib/api/inputs/occt/curve-analysis-and-edits.ts": {
@@ -1220,7 +1197,7 @@
       "count": 1
     },
     "@typescript-eslint/no-magic-numbers": {
-      "count": 41
+      "count": 28
     },
     "@typescript-eslint/require-await": {
       "count": 1

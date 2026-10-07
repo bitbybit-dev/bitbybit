@@ -13,6 +13,9 @@ import type { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import { CACHE_CONFIG, DEFAULT_COLORS, BABYLONJS_MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 
+const POSITION_SIZE = 3;
+const SIXTEEN_BIT_VERTICES = 65536;
+
 interface DesignPartDrawn {
     part: string;
     key: string;
@@ -1099,21 +1102,26 @@ export class DrawHelper extends DrawHelperCore {
 
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldsOrCrossSectionsDto, inputs) as Resolved.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>;
-        const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+        const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-        const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved));
-        const manifoldMeshContainer = new BABYLON.Mesh(this.generateEntityId("manifoldMeshContainer"), this.context.scene);
-        meshes.filter((s): s is BABYLON.Mesh => s !== undefined).forEach(mesh => {
-            mesh.parent = manifoldMeshContainer;
-        });
-        return manifoldMeshContainer;
+        return this.manifoldMeshContainer(decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)));
     }
 
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>): Promise<BABYLON.Mesh | undefined> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldOrCrossSectionDto, inputs) as Resolved.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, BABYLON.PBRMetallicRoughnessMaterial>;
-        const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+        const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
         const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
         return this.handleDecomposedManifold(decomposedMesh, resolved);
+    }
+
+    drawManifoldMesh(mesh: Inputs.Manifold.DecomposedManifoldMeshDto, options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh | undefined {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.handleDecomposedManifold(mesh, resolved);
+    }
+
+    drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<BABYLON.Mesh> {
@@ -1695,6 +1703,16 @@ export class DrawHelper extends DrawHelperCore {
         });
     }
 
+    private manifoldMeshContainer(meshes: readonly (BABYLON.Mesh | undefined)[]): BABYLON.Mesh {
+        const container = new BABYLON.Mesh(this.generateEntityId("manifoldMeshContainer"), this.context.scene);
+        meshes.forEach(mesh => {
+            if (mesh) {
+                mesh.parent = container;
+            }
+        });
+        return container;
+    }
+
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][], options: Resolved.Draw.DrawManifoldOrCrossSectionOptions): BABYLON.Mesh | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
@@ -1704,34 +1722,17 @@ export class DrawHelper extends DrawHelperCore {
 
                 const vertexData = new BABYLON.VertexData();
 
-                vertexData.indices = decomposedMesh.triVerts.length > 65535 ? new Uint32Array(decomposedMesh.triVerts) : new Uint16Array(decomposedMesh.triVerts);
+                const { positions, normals, indices } = this.manifoldMeshAttributes(decomposedMesh, this.manifoldSharpAngle(options));
+                vertexData.indices = positions.length / POSITION_SIZE > SIXTEEN_BIT_VERTICES ? new Uint32Array(indices.length) : new Uint16Array(indices.length);
 
-                for (let i = 0; i < decomposedMesh.triVerts.length; i += 3) {
-                    vertexData.indices[i] = decomposedMesh.triVerts[i + 2]!;
-                    vertexData.indices[i + 1] = decomposedMesh.triVerts[i + 1]!;
-                    vertexData.indices[i + 2] = decomposedMesh.triVerts[i]!;
+                for (let i = 0; i < indices.length; i += 3) {
+                    vertexData.indices[i] = indices[i + 2]!;
+                    vertexData.indices[i + 1] = indices[i + 1]!;
+                    vertexData.indices[i + 2] = indices[i]!;
                 }
 
-                const vertexCount = decomposedMesh.vertProperties.length / decomposedMesh.numProp;
-
-                let offset = 0;
-                for (let componentIndex = 0; componentIndex < 1; componentIndex++) {
-                    const component = { stride: 3, kind: "position" };
-
-                    const data = new Float32Array(vertexCount * component.stride);
-                    for (let i = 0; i < vertexCount; i++) {
-                        for (let strideIndex = 0; strideIndex < component.stride; strideIndex++) {
-                            data[i * component.stride + strideIndex] = decomposedMesh.vertProperties[i * decomposedMesh.numProp + offset + strideIndex]!;
-                        }
-                    }
-                    vertexData.set(data, component.kind);
-                    offset += component.stride;
-                }
-                if (options.computeNormals) {
-                    const normals: number[] = [];
-                    BABYLON.VertexData.ComputeNormals(vertexData.positions, vertexData.indices, normals);
-                    vertexData.normals = normals;
-                }
+                vertexData.positions = positions;
+                vertexData.normals = normals;
                 vertexData.applyToMesh(mesh, false);
 
                 if (options.faceMaterial === undefined) {
@@ -1752,14 +1753,10 @@ export class DrawHelper extends DrawHelperCore {
                 }
 
                 if (options.drawTwoSided !== false) {
-                    const positions = vertexData.positions as number[];
-                    const indices = Array.from(decomposedMesh.triVerts);
-                    const normals = (vertexData.normals || []) as number[];
-
                     const meshDataArray: MeshData[] = [{
-                        positions,
-                        indices,
-                        normals
+                        positions: Array.from(vertexData.positions),
+                        indices: Array.from(indices),
+                        normals: Array.from(normals),
                     }];
 
                     const usesClockWiseSideOrientation = true;

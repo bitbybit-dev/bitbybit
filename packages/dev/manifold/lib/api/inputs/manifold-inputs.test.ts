@@ -78,6 +78,8 @@ const DTOS: [string, AnyDto][] = [
     ["ManifoldOrCrossSectionDto", Inputs.Manifold.ManifoldOrCrossSectionDto<unknown>],
     ["ManifoldsOrCrossSectionsDto", Inputs.Manifold.ManifoldsOrCrossSectionsDto<unknown>],
     ["DecomposeManifoldsOrCrossSectionsDto", Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<unknown>],
+    ["BuildRecipeDto", Inputs.Manifold.BuildRecipeDto],
+    ["RecipeSurfaceMeshesDto", Inputs.Manifold.RecipeSurfaceMeshesDto],
 ];
 
 const sentinels = (count: number): unknown[] => Array.from({ length: count }, (_, index) => ({ argument: index }));
@@ -116,5 +118,16 @@ describe("the Manifold input DTOs", () => {
             // Assert
             expect(held).toHaveLength(values.length);
         });
+    });
+});
+
+describe("the Manifold drawing DTOs", () => {
+    it("should compute normals, sharp past 40 degrees, unless told otherwise", () => {
+        // Act
+        const single = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<unknown, unknown>();
+        const many = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<unknown, unknown>();
+
+        // Assert
+        expect([single.computeNormals, single.minSharpAngle, many.computeNormals, many.minSharpAngle]).toEqual([true, 40, true, 40]);
     });
 });

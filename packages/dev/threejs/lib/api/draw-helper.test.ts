@@ -1113,6 +1113,42 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("drawManifoldOrCrossSection", () => {
+        it("should ask the worker for normals sharp beyond 40 degrees, or flat when computeNormals is false, and use the ones it sends", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
+                numProp: 6,
+                vertProperties: new Float32Array([0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1]),
+                triVerts: new Uint32Array([0, 1, 2]),
+            });
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldOrCrossSection = manifoldShape();
+            const flat = { ...inputs, computeNormals: false };
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
+            await drawHelper.drawManifoldOrCrossSection(flat);
+
+            const geometry = (result.children[0] as THREEJS.Mesh).geometry;
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 40 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldOrCrossSection", expect.objectContaining({ minSharpAngle: 0 }));
+            expect(Array.from(geometry.getAttribute("position").array)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+            expect(Array.from(geometry.getAttribute("normal").array)).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
+        });
+
+        it("should draw a solid with the material it is given instead of making one", async () => {
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
+                vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
+                triVerts: new Uint32Array([0, 1, 2])
+            });
+            const material = new THREEJS.MeshPhysicalMaterial();
+            const inputs = new Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldOrCrossSection = manifoldShape();
+            inputs.faceMaterial = material;
+            inputs.drawTwoSided = false;
+
+            const result = await drawHelper.drawManifoldOrCrossSection(inputs) as THREEJS.Group;
+
+            expect((result.children[0] as THREEJS.Mesh).material).toBe(material);
+        });
+
         it("should draw manifold or cross section", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue({
                 vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]),
@@ -1165,6 +1201,21 @@ describe("DrawHelper unit tests", () => {
     });
 
     describe("drawManifoldsOrCrossSections", () => {
+        it("should ask the worker for every shape's normals sharp beyond 40 degrees, or flat when computeNormals is false", async () => {
+            // Arrange
+            manifoldWorkerCall.mockResolvedValue([]);
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldsOrCrossSections = [manifoldShape()];
+
+            // Act
+            await drawHelper.drawManifoldsOrCrossSections(inputs);
+            await drawHelper.drawManifoldsOrCrossSections({ ...inputs, computeNormals: false });
+
+            // Assert
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(1, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 40 }));
+            expect(manifoldWorkerCall).toHaveBeenNthCalledWith(2, "decomposeManifoldsOrCrossSections", expect.objectContaining({ minSharpAngle: 0 }));
+        });
+
         it("should draw multiple manifolds", async () => {
             (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
                 { vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
@@ -1181,7 +1232,7 @@ describe("DrawHelper unit tests", () => {
 
             expect(result).toBeDefined();
             expect(result).toBeInstanceOf(THREEJS.Group);
-            expect(result.children.length).toBe(0);
+            expect(result.children.length).toBe(2);
 
             if (result.children.length > 0) {
                 result.children.forEach(child => {
@@ -1211,8 +1262,72 @@ describe("DrawHelper unit tests", () => {
             const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
 
             expect(result).toBeDefined();
-            expect(result.children.length).toBe(0);
+            expect(result.children.length).toBe(1);
             expect(result).toBeInstanceOf(THREEJS.Group);
+        });
+
+        it("should hold the meshes it drew, so removing the container removes them", async () => {
+            // Arrange
+            (mockManifoldWorkerManager.genericCallToWorkerPromise as Mock).mockResolvedValue([
+                { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) },
+            ]);
+            const inputs = new Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>();
+            inputs.manifoldsOrCrossSections = [manifoldShape()];
+
+            // Act
+            const result = await drawHelper.drawManifoldsOrCrossSections(inputs);
+
+            // Assert
+            expect(result.children[0]!.parent).toBe(result);
+            expect(mockContext.scene.children.filter((child) => child.name.includes("-manifoldMesh-"))).toHaveLength(0);
+        });
+    });
+
+    describe("drawManifoldMesh and drawManifoldMeshes", () => {
+        const triangle = (): Inputs.Manifold.DecomposedManifoldMeshDto => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) });
+
+        it("should draw a mesh it was handed in the face colour, asking no worker", () => {
+            // Arrange
+            const options = { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), faceColour: "#ff0000", drawTwoSided: false };
+
+            // Act
+            const group = drawHelper.drawManifoldMesh(triangle(), options);
+
+            // Assert
+            const mesh = group!.children[0] as THREEJS.Mesh;
+            expect(manifoldWorkerCall).not.toHaveBeenCalled();
+            expect(colorsAreEqual((mesh.material as THREEJS.MeshPhysicalMaterial).color, hexToRgb("#ff0000"))).toBe(true);
+            expect(mesh.geometry.getAttribute("normal").count).toBe(3);
+        });
+
+        it("should shade every face flat when computeNormals is false, splitting the corners a gentle bend shares", () => {
+            // Arrange
+            const bend = (): Inputs.Manifold.DecomposedManifoldMeshDto => ({ numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1 + Math.cos(Math.PI / 9), Math.sin(Math.PI / 9), 1, 1 + Math.cos(Math.PI / 9), Math.sin(Math.PI / 9)]), triVerts: new Uint32Array([0, 1, 3, 0, 3, 2, 2, 3, 5, 2, 5, 4]) });
+
+            // Act
+            const smooth = drawHelper.drawManifoldMesh(bend(), { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false });
+            const flat = drawHelper.drawManifoldMesh(bend(), { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false, computeNormals: false });
+
+            // Assert
+            const vertices = [smooth, flat].map((group) => (group!.children[0] as THREEJS.Mesh).geometry.getAttribute("position").count);
+            expect(vertices).toEqual([6, 8]);
+        });
+
+        it("should give nothing for a mesh without triangles", () => {
+            // Act
+            const group = drawHelper.drawManifoldMesh({ numProp: 3, vertProperties: new Float32Array(0), triVerts: new Uint32Array(0) }, new Inputs.Draw.DrawManifoldOrCrossSectionOptions());
+
+            // Assert
+            expect(group).toBeUndefined();
+        });
+
+        it("should draw a list into one container in the scene, leaving out the empty ones", () => {
+            // Act
+            const container = drawHelper.drawManifoldMeshes([triangle(), { numProp: 3, vertProperties: new Float32Array(0), triVerts: new Uint32Array(0) }, triangle()], new Inputs.Draw.DrawManifoldOrCrossSectionOptions());
+
+            // Assert
+            expect(container.children).toHaveLength(2);
+            expect(container.parent).toBe(mockContext.scene);
         });
     });
 

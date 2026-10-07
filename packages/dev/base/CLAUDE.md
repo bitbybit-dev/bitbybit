@@ -7,7 +7,11 @@ packages that cannot import each other can share code. Shared package convention
 `lib/api/services/helpers/` is internal: not exported from the services barrel, and reached by direct
 import from the few places that need it. Code lands there when it must be shared but must not become
 public API. `computeVertexNormals` is there because both `jscad` and the shared draw helper need it and
-neither may import the other.
+neither may import the other. The geometry helpers (vectors, frame transforms, polygons, triangulation,
+arcs, mesh measures) are the arithmetic under the public services and the other packages' hot paths:
+plain tuples, no DTOs. When one is useful to users, a service method wraps it rather than copying it,
+and a service never keeps a second copy of the arithmetic (`ARCHITECTURE.md`, "Shared geometry
+helpers").
 
 **`removeAllDuplicateVectors` is the shared implementation**, and the OCCT vector helper calls it
 rather than keeping a copy. Deduplication under a tolerance is quadratic written directly, and it runs

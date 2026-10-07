@@ -45,9 +45,11 @@ const GENERATED = [
     "packages/dev/cad-cloud-sdk/src/types/generated.ts",
     "packages/dev/cad-cloud-sdk/src/validation/request-schemas.ts",
     "packages/dev/mcp/src/guides.generated.ts",
+    "packages/dev/ifc/lib/schema/generated/**",
 ];
 const TESTS = ["**/*.test.ts", "**/*.test.mjs"];
 const STAND_INS = ["**/__mocks__/**", "**/__test__/**"];
+const OUTSIDE_CHECKS = ["packages/dev/*/validation/**", "packages/dev/*/bench/**"];
 const VITEST_CONFIGS = ["**/vitest.config.ts", "packages/dev/vitest.shared.ts"];
 
 export default defineConfig([
@@ -124,7 +126,7 @@ export default defineConfig([
     },
     {
         files: ["packages/dev/**/*.ts"],
-        ignores: [...TESTS, ...STAND_INS, ...VITEST_CONFIGS, "packages/dev/mcp/**"],
+        ignores: [...TESTS, ...STAND_INS, ...OUTSIDE_CHECKS, ...VITEST_CONFIGS, "packages/dev/mcp/**"],
         rules: { "bitbybit/no-loose-comments": ["error", { jsDoc: "public-api" }] },
     },
     {
@@ -150,6 +152,10 @@ export default defineConfig([
         rules: { "@typescript-eslint/no-magic-numbers": "off" },
     },
     {
+        files: OUTSIDE_CHECKS,
+        rules: { "max-lines": "off", "@typescript-eslint/no-magic-numbers": "off" },
+    },
+    {
         files: GENERATED,
         rules: { "bitbybit/no-loose-comments": "off", "bitbybit/no-inline-object-types": "off", "curly": "off", "eqeqeq": "off", "@typescript-eslint/consistent-type-imports": "off", "@typescript-eslint/explicit-function-return-type": "off", "max-lines": "off", "@typescript-eslint/no-magic-numbers": "off" },
     },
@@ -158,19 +164,20 @@ export default defineConfig([
             "packages/dev/occt/lib/services/**/*.ts",
             "packages/dev/jscad/lib/api/services/**/*.ts",
             "packages/dev/manifold/lib/api/services/**/*.ts",
+            "packages/dev/ifc/lib/api/services/**/*.ts",
             "packages/dev/base/lib/api/services/**/*.ts",
         ],
         ignores: TESTS,
         rules: { "bitbybit/no-input-writes": "error" },
     },
     {
-        files: [...TESTS, ...STAND_INS],
+        files: [...TESTS, ...STAND_INS, ...OUTSIDE_CHECKS],
         languageOptions: {
             globals: { ...globals.vitest },
         },
     },
     {
-        files: [...TESTS, ...STAND_INS].filter((glob) => !glob.endsWith(".mjs")),
+        files: [...TESTS, ...STAND_INS, ...OUTSIDE_CHECKS].filter((glob) => !glob.endsWith(".mjs")),
         rules: { "@typescript-eslint/consistent-type-imports": ["error", { disallowTypeAnnotations: false }] },
     },
     {

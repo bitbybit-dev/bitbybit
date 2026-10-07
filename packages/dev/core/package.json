@@ -131,6 +131,8 @@
         "@bitbybit-dev/base": "1.4.1",
         "@bitbybit-dev/occt-worker": "1.4.1",
         "@bitbybit-dev/manifold-worker": "1.4.1",
+        "@bitbybit-dev/ifc-worker": "1.4.1",
+        "@bitbybit-dev/ifc": "1.4.1",
         "@bitbybit-dev/jscad-worker": "1.4.1",
         "@bitbybit-dev/occt": "1.4.1",
         "@bitbybit-dev/jscad": "1.4.1",
@@ -143,6 +145,7 @@
         "@microsoft/api-extractor": "7.59.1",
         "@vitest/coverage-v8": "4.1.11",
         "jsdom": "29.0.1",
+        "manifold-3d": "3.5.3",
         "shx": "0.4.0",
         "typescript": "5.9.3",
         "vitest": "4.1.11"

@@ -46,6 +46,9 @@ export async function initBitByBit(
         workers.jscadWorker,
         workers.manifoldWorker
     );
+    if (workers.ifcWorker) {
+        bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
+    }
 
     const result = await waitForKernelInitialization(bitbybit, options);
 

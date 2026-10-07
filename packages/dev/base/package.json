@@ -108,6 +108,11 @@
             "types": "./dist/lib/api/models/text/index.d.ts",
             "default": "./dist/lib/api/models/text/index.js"
         },
+        "./lib/api/recipes": {
+            "@bitbybit-dev/source": "./lib/api/recipes/index.ts",
+            "types": "./dist/lib/api/recipes/index.d.ts",
+            "default": "./dist/lib/api/recipes/index.js"
+        },
         "./lib/api/resolved-inputs": {
             "@bitbybit-dev/source": "./lib/api/resolved-inputs/index.ts",
             "types": "./dist/lib/api/resolved-inputs/index.d.ts",

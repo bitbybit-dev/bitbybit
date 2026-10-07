@@ -1,50 +1,16 @@
 import { GlobalCDNProvider } from "@bitbybit-dev/base";
-
-/**
- * Worker architecture type for CDN workers. - "32" - 32-bit WebAssembly (default, widest browser support) -
- * "64-bit" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-bit-mt" -
- * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
- */
-export type WorkerArchitecture = "32" | "64" | "64-mt";
-
-/**
- * Worker configuration containing the Worker instance or undefined
- */
-export interface WorkerInstances {
-    occtWorker?: Worker | undefined;
-    jscadWorker?: Worker | undefined;
-    manifoldWorker?: Worker | undefined;
-}
-
-/**
- * Options for worker creation
- */
-export interface WorkerOptions {
-    /** Enable OCCT (OpenCASCADE) kernel */
-    enableOCCT?: boolean | undefined;
-    /** Enable JSCAD kernel */
-    enableJSCAD?: boolean | undefined;
-    /** Enable Manifold kernel */
-    enableManifold?: boolean | undefined;
-    /** Custom CDN URL (defaults to GlobalCDNProvider.BITBYBIT_CDN_URL) */
-    cdnUrl?: string | undefined;
-    /** 
-     * Array of font keys to load for OCCT, or undefined to load all fonts.
-     * Pass an empty array to skip loading fonts.
-     */
-    loadFonts?: string[] | undefined;
-    /**
-     * OCCT worker architecture to use. Defaults to "32" (32-bit). Note: This only applies to OCCT workers.
-     * JSCAD and Manifold always use 32-bit. - "32" - 32-bit WebAssembly (default, widest browser support) -
-     * "64" - 64-bit WebAssembly (better performance, requires browser support for Memory64) - "64-mt" -
-     * 64-bit multithreaded WebAssembly (best performance, requires SharedArrayBuffer and Memory64)
-     */
-    occtArchitecture?: WorkerArchitecture | undefined;
-}
+import type { WorkerArchitecture, WorkerInstances, WorkerOptions, WorkerUrls } from "./worker-types";
 
 function getClassicWorkerURL(url: string): string {
     const content = `importScripts("${url}");`;
     return URL.createObjectURL(new Blob([content], { type: "text/javascript" }));
+}
+
+function classicWorkerFromCDN(baseUrl: string, script: string, name: string): Worker {
+    const workerUrl = getClassicWorkerURL(`${baseUrl}/workers/${script}`);
+    const worker = new Worker(workerUrl, { name });
+    URL.revokeObjectURL(workerUrl);
+    return worker;
 }
 
 function getModuleWorkerURL(url: string): string {
@@ -93,12 +59,7 @@ export function createOcctWorkerFromCDN(cdnUrl?: string, loadFonts?: string[], a
  * @param cdnUrl - Optional custom CDN URL
  */
 export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
-    const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
-    const scriptUrl = `${baseUrl}/workers/bitbybit-dev-jscad-webworker.js`;
-    const workerUrl = getClassicWorkerURL(scriptUrl);
-    const worker = new Worker(workerUrl, { name: "JSCAD_WORKER" });
-    URL.revokeObjectURL(workerUrl);
-    return worker;
+    return classicWorkerFromCDN(cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL, "bitbybit-dev-jscad-webworker.js", "JSCAD_WORKER");
 }
 
 /**
@@ -110,12 +71,20 @@ export function createJscadWorkerFromCDN(cdnUrl?: string): Worker {
  */
 export function createManifoldWorkerFromCDN(cdnUrl?: string): Worker {
     const baseUrl = cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL;
-    const scriptUrl = `${baseUrl}/workers/bitbybit-dev-manifold-webworker.js`;
-    const workerUrl = getClassicWorkerURL(scriptUrl);
-    const worker = new Worker(workerUrl, { name: "MANIFOLD_WORKER" });
-    URL.revokeObjectURL(workerUrl);
+    const worker = classicWorkerFromCDN(baseUrl, "bitbybit-dev-manifold-webworker.js", "MANIFOLD_WORKER");
     worker.postMessage({ type: "initialise", cdnUrl: baseUrl });
     return worker;
+}
+
+/**
+ * Creates an IFC worker from CDN.
+ * No local files needed - worker is loaded from CDN.
+ * The IFC library is plain JavaScript, so there is no WebAssembly to choose an architecture for.
+ * 
+ * @param cdnUrl - Optional custom CDN URL
+ */
+export function createIfcWorkerFromCDN(cdnUrl?: string): Worker {
+    return classicWorkerFromCDN(cdnUrl ?? GlobalCDNProvider.BITBYBIT_CDN_URL, "bitbybit-dev-ifc-webworker.js", "IFC_WORKER");
 }
 
 /**
@@ -146,6 +115,9 @@ export function createWorkersFromCDN(options: WorkerOptions): WorkerInstances {
     if (options.enableJSCAD) {
         workers.jscadWorker = createJscadWorkerFromCDN(cdnUrl);
     }
+    if (options.enableIFC) {
+        workers.ifcWorker = createIfcWorkerFromCDN(cdnUrl);
+    }
     if (options.enableManifold) {
         workers.manifoldWorker = createManifoldWorkerFromCDN(cdnUrl);
     }
@@ -167,11 +139,7 @@ export function createWorkersFromCDN(options: WorkerOptions): WorkerInstances {
  * });
  * ```
  */
-export function createWorkersFromUrls(workerUrls: {
-    occtWorkerUrl?: URL | string | undefined;
-    jscadWorkerUrl?: URL | string | undefined;
-    manifoldWorkerUrl?: URL | string | undefined;
-}): WorkerInstances {
+export function createWorkersFromUrls(workerUrls: WorkerUrls): WorkerInstances {
     const workers: WorkerInstances = {};
     
     if (workerUrls.occtWorkerUrl) {
@@ -182,6 +150,9 @@ export function createWorkersFromUrls(workerUrls: {
     }
     if (workerUrls.manifoldWorkerUrl) {
         workers.manifoldWorker = new Worker(workerUrls.manifoldWorkerUrl, { name: "MANIFOLD_WORKER", type: "module" });
+    }
+    if (workerUrls.ifcWorkerUrl) {
+        workers.ifcWorker = new Worker(workerUrls.ifcWorkerUrl, { name: "IFC_WORKER", type: "module" });
     }
     
     return workers;

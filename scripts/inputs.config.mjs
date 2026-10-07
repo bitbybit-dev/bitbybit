@@ -81,6 +81,27 @@ export const targets = [
             "transforms",
             "booleans-and-splits",
             "conversions",
+            "recipes",
+        ],
+    },
+    {
+        namespace: "IFC",
+        dir: "packages/dev/ifc/lib/api/inputs/ifc",
+        out: "packages/dev/ifc/lib/api/inputs/ifc-inputs.ts",
+        header: [
+            "/* eslint-disable @typescript-eslint/no-namespace */",
+            "import { Base } from \"./base-inputs\";",
+            "import type { IfcValue } from \"../../step/step-types\";",
+        ],
+        order: [
+            "pointers-and-enums",
+            "models",
+            "spatial-and-materials",
+            "walls",
+            "openings-doors-windows",
+            "slabs-columns-beams",
+            "properties",
+            "geometry",
         ],
     },
     {

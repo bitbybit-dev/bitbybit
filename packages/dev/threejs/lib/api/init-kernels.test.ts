@@ -20,13 +20,13 @@ class SilentWorker extends EventTarget implements Worker {
 describe("initBitByBit", () => {
     let scene: THREEJS.Scene;
     let bitbybit: BitByBitBase;
-    let workers: { occtWorker: Worker; jscadWorker: Worker; manifoldWorker: Worker };
+    let workers: { occtWorker: Worker; jscadWorker: Worker; manifoldWorker: Worker; ifcWorker: Worker };
 
     beforeEach(() => {
         vi.spyOn(console, "log").mockImplementation(() => undefined);
         scene = new THREEJS.Scene();
         bitbybit = new BitByBitBase();
-        workers = { occtWorker: new SilentWorker(), jscadWorker: new SilentWorker(), manifoldWorker: new SilentWorker() };
+        workers = { occtWorker: new SilentWorker(), jscadWorker: new SilentWorker(), manifoldWorker: new SilentWorker(), ifcWorker: new SilentWorker() };
     });
 
     afterEach(() => {
@@ -57,6 +57,15 @@ describe("initBitByBit", () => {
         expect(bitbybit.occtWorkerManager.occWorkerAlreadyInitialised()).toBe(true);
         expect(bitbybit.jscadWorkerManager.jscadWorkerAlreadyInitialised()).toBe(true);
         expect(bitbybit.manifoldWorkerManager.manifoldWorkerAlreadyInitialised()).toBe(true);
+        expect(bitbybit.ifcWorkerManager.ifcWorkerAlreadyInitialised()).toBe(true);
+    });
+
+    it("should leave the IFC manager without a worker when it is given none", async () => {
+        // Act
+        await initBitByBit(scene, bitbybit, { enableOCCT: false, enableJSCAD: false, enableManifold: false, workers: { occtWorker: workers.occtWorker } });
+
+        // Assert
+        expect(bitbybit.ifcWorkerManager.ifcWorkerAlreadyInitialised()).toBe(false);
     });
 
     it("should say so when no kernel was asked for", async () => {
@@ -71,13 +80,13 @@ describe("initBitByBit", () => {
 describe("initKernels", () => {
     let scene: THREEJS.Scene;
     let bitbybit: BitByBitBase;
-    let workers: { occtWorker: Worker; jscadWorker: Worker; manifoldWorker: Worker };
+    let workers: { occtWorker: Worker; jscadWorker: Worker; manifoldWorker: Worker; ifcWorker: Worker };
 
     beforeEach(() => {
         vi.spyOn(console, "log").mockImplementation(() => undefined);
         scene = new THREEJS.Scene();
         bitbybit = new BitByBitBase();
-        workers = { occtWorker: new SilentWorker(), jscadWorker: new SilentWorker(), manifoldWorker: new SilentWorker() };
+        workers = { occtWorker: new SilentWorker(), jscadWorker: new SilentWorker(), manifoldWorker: new SilentWorker(), ifcWorker: new SilentWorker() };
     });
 
     afterEach(() => {

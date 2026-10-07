@@ -12,6 +12,7 @@ const KERNELS = [
     { name: "occt", label: "OCCT", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", out: "packages/dev/occt/lib/api/dto-registry.ts", constant: "occtDtoRegistry" },
     { name: "jscad", label: "JSCAD", kernelDir: "packages/dev/jscad/lib", kernelRoot: "Jscad", out: "packages/dev/jscad/lib/api/dto-registry.ts", constant: "jscadDtoRegistry" },
     { name: "manifold", label: "Manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", out: "packages/dev/manifold/lib/api/dto-registry.ts", constant: "manifoldDtoRegistry" },
+    { name: "ifc", label: "IFC", kernelDir: "packages/dev/ifc/lib", kernelRoot: "IFCService", out: "packages/dev/ifc/lib/api/dto-registry.ts", constant: "ifcDtoRegistry" },
 ];
 
 const BASE_INPUTS = "packages/dev/base/lib/api/inputs";
@@ -242,6 +243,7 @@ const RESOLVED = [
     { name: "occt", inputsDir: "packages/dev/occt/lib/api/inputs" },
     { name: "jscad", inputsDir: "packages/dev/jscad/lib/api/inputs" },
     { name: "manifold", inputsDir: "packages/dev/manifold/lib/api/inputs" },
+    { name: "ifc", inputsDir: "packages/dev/ifc/lib/api/inputs" },
     { name: "core", inputsDir: "packages/dev/core/lib/api/inputs" },
     { name: "babylonjs", inputsDir: "packages/dev/babylonjs/lib/api/inputs" },
     { name: "threejs", inputsDir: "packages/dev/threejs/lib/api/inputs" },

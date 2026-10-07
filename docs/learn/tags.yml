@@ -108,6 +108,11 @@ manifold:
   permalink: /manifold
   description: Fast CSG geometry kernel optimized for boolean operations and 3D printing.
 
+ifc:
+  label: IFC
+  permalink: /ifc
+  description: IFC building models - walls, slabs, doors and windows - read, written and authored for BIM tools.
+
 jscad:
   label: JSCAD
   permalink: /jscad

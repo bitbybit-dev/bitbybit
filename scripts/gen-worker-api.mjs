@@ -60,6 +60,20 @@ const PACKAGES = [
             [/(?<![\w.])Base\./g, "Inputs.Base."],
         ],
     },
+    {
+        name: "ifc",
+        kernelDir: "packages/dev/ifc/lib", kernelRoot: "IFCService",
+        workerPkg: "packages/dev/ifc-worker", apiDir: "lib/api", rootFile: "lib/api/ifc-bitbybit.ts",
+        managerClass: "IFCWorkerManager", managerModule: "lib/ifc-worker/ifc-worker-manager", managerParam: "ifcWorkerManager",
+        inputsImport: () => "import * as Inputs from \"@bitbybit-dev/ifc/lib/api/inputs\";",
+        classNames: { IFCService: "IFCBitByBit" },
+        methodNames: {},
+        managerVisibility: {},
+        typeMap: [
+            [/\bIfcModel\b/g, "Inputs.IFC.IfcModelPointer"],
+            [/(?<![\w.])Base\./g, "Inputs.Base."],
+        ],
+    },
 ];
 
 const REGENERATE = "do not edit; regenerate with `npm run gen:worker-api`.";

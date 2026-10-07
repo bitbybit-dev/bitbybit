@@ -59,6 +59,7 @@ describe("DrawCore entity detection", () => {
             ["detectOcctShapes", e => core.detectOcctShapes(e)],
             ["detectManifoldShapes", e => core.detectManifoldShapes(e)],
             ["detectDecomposedMeshes", e => core.detectDecomposedMeshes(e)],
+            ["detectManifoldMeshes", e => core.detectManifoldMeshes(e)],
             ["detectTags", e => core.detectTags(e)],
             ["detectNodes", e => core.detectNodes(e)],
             ["detectVerbCurves", e => core.detectVerbCurves(e)],
@@ -99,6 +100,24 @@ describe("DrawCore entity detection", () => {
 
         it("should not read a kernel handle as a decomposed mesh", () => {
             expect(core.detectDecomposedMesh({ hash: 1, type: "occ-shape" })).toBe(false);
+        });
+    });
+
+    describe("a Manifold mesh is told by its typed arrays", () => {
+        const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+
+        it("should detect the mesh a Manifold worker sends, and a list of them", () => {
+            expect(core.detectManifoldMesh(mesh)).toBe(true);
+            expect(core.detectManifoldMeshes([mesh, mesh])).toBe(true);
+        });
+
+        it("should not read plain lists, a missing property count or a kernel handle as one", () => {
+            expect(core.detectManifoldMesh({ numProp: 3, vertProperties: [0, 0, 0], triVerts: [0, 0, 0] })).toBe(false);
+            expect(core.detectManifoldMesh({ numProp: 3, vertProperties: mesh.vertProperties, triVerts: [0, 1, 2] })).toBe(false);
+            expect(core.detectManifoldMesh({ numProp: 3, vertProperties: [0, 0, 0, 1, 0, 0, 0, 1, 0], triVerts: mesh.triVerts })).toBe(false);
+            expect(core.detectManifoldMesh({ vertProperties: mesh.vertProperties, triVerts: mesh.triVerts })).toBe(false);
+            expect(core.detectManifoldMesh({ hash: 1, type: "manifold-shape" })).toBe(false);
+            expect(core.detectManifoldMeshes([mesh, { hash: 1, type: "manifold-shape" }])).toBe(false);
         });
     });
 });
@@ -345,7 +364,7 @@ describe("the order a draw call tries kinds in", () => {
         expect(probe.kinds().map(k => k.kind)).toEqual([
             "jscadMesh", "occtShape", "occtShapes",
             "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
-            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh",
+            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes",
             "line", "point", "jscadPath", "polyline", "frame", "node", "verbCurve", "verbSurface",
             "jscadPaths", "polylines", "frames", "lines", "points", "nodes",
             "verbCurves", "verbSurfaces", "tag", "tags",
@@ -356,7 +375,7 @@ describe("the order a draw call tries kinds in", () => {
         const async = probe.kinds().filter(k => k.phase === "async").map(k => k.kind);
         expect(async).toEqual(["jscadMesh", "occtShape", "occtShapes",
             "occtShapeWithAppearance", "occtShapesWithAppearance", "designBuild", "jscadMeshes",
-            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh"]);
+            "manifoldShape", "manifoldShapes", "decomposedMeshes", "decomposedMesh", "manifoldMesh", "manifoldMeshes"]);
     });
 
     it("should read a pair of points as a segment, because line is tried before points", () => {

@@ -1,8 +1,10 @@
 import { Color, Dates, Frame, GeometryHelper, Line, Lists, Logic, MathBitByBit, MeshBitByBit, Point, Polyline, TextBitByBit, Transforms, Vector } from "@bitbybit-dev/base";
 import { JSCAD, JSCADWorkerManager } from "@bitbybit-dev/jscad-worker";
 import { ManifoldBitByBit, ManifoldWorkerManager } from "@bitbybit-dev/manifold-worker";
+import { IFCBitByBit, IFCWorkerManager } from "@bitbybit-dev/ifc-worker";
 import { OCCTWorkerManager } from "@bitbybit-dev/occt-worker";
 import type { ContextBase } from "./context";
+import type { SharedServices } from "./shared-services-types";
 import { Tag } from "./bitbybit/tag";
 import { Time } from "./bitbybit/time";
 import { Asset } from "./bitbybit/asset";
@@ -11,45 +13,6 @@ import { CSVBitByBit } from "./bitbybit/csv";
 import { Verb } from "./bitbybit/verb/verb";
 import { OCCTW } from "./bitbybit/occt/occt";
 
-/**
- * Everything a renderer's root object holds that has nothing to do with the renderer: the three
- * kernel worker managers and the geometry, maths and data services built on them.
- */
-export type SharedServices = {
-    jscadWorkerManager: JSCADWorkerManager;
-    manifoldWorkerManager: ManifoldWorkerManager;
-    occtWorkerManager: OCCTWorkerManager;
-    jscad: JSCAD;
-    manifold: ManifoldBitByBit;
-    lists: Lists;
-    math: MathBitByBit;
-    vector: Vector;
-    tag: Tag;
-    color: Color;
-    transforms: Transforms;
-    point: Point;
-    frame: Frame;
-    line: Line;
-    polyline: Polyline;
-    /**
-     * NURBS curves and surfaces.
-     *
-     * @deprecated Verbnurbs is not maintained upstream and this API is removed in the next major
-     * version. Use the OpenCascade (occt) NURBS operations instead. Existing scripts keep working
-     * until the removal.
-     */
-    verb: Verb;
-    time: Time;
-    occt: OCCTW;
-    asset: Asset;
-    logic: Logic;
-    json: JSONBitByBit;
-    csv: CSVBitByBit;
-    text: TextBitByBit;
-    dates: Dates;
-    mesh: MeshBitByBit;
-    geometryHelper: GeometryHelper;
-};
 
 /**
  * Builds the engine-agnostic half of a renderer's root object. Which service takes which
@@ -64,6 +27,8 @@ export function createSharedServices(context: ContextBase): SharedServices {
     const occtWorkerManager = new OCCTWorkerManager();
     const jscad = new JSCAD(jscadWorkerManager);
     const manifold = new ManifoldBitByBit(manifoldWorkerManager);
+    const ifcWorkerManager = new IFCWorkerManager();
+    const ifc = new IFCBitByBit(ifcWorkerManager);
 
     const geometryHelper = new GeometryHelper();
     const lists = new Lists();
@@ -75,7 +40,7 @@ export function createSharedServices(context: ContextBase): SharedServices {
     const polyline = new Polyline(vector, point, line, geometryHelper);
 
     return {
-        jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, jscad, manifold,
+        jscadWorkerManager, manifoldWorkerManager, occtWorkerManager, ifcWorkerManager, jscad, manifold, ifc,
         lists, math, vector, transforms, point, line, polyline, geometryHelper,
         frame: new Frame(vector, math, geometryHelper),
         tag: new Tag(context),

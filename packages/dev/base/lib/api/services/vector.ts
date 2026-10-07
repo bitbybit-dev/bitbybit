@@ -4,6 +4,7 @@ import type { GeometryHelper } from "./geometry-helper";
 import type { MathBitByBit } from "./math";
 import { resolveDto } from "../kernel-calls";
 import type * as Resolved from "../resolved-inputs";
+import { cross3 } from "./helpers/vectors";
 
 /**
  * Vector maths on plain number arrays. A vector is an array of numbers; in 3D it is `[x, y, z]`
@@ -232,11 +233,7 @@ export class Vector {
      * ```
      */
     cross(inputs: Inputs.Vector.TwoVectorsDto): number[] {
-        const res = [];
-        res.push(inputs.first[1]! * inputs.second[2]! - inputs.first[2]! * inputs.second[1]!);
-        res.push(inputs.first[2]! * inputs.second[0]! - inputs.first[0]! * inputs.second[2]!);
-        res.push(inputs.first[0]! * inputs.second[1]! - inputs.first[1]! * inputs.second[0]!);
-        return res;
+        return cross3(inputs.first as Inputs.Base.Vector3, inputs.second as Inputs.Base.Vector3);
     }
 
     /**

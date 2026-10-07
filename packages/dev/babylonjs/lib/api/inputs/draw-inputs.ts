@@ -75,6 +75,7 @@ export namespace Draw {
         | Inputs.OCCT.DecomposedMeshDto
         | Inputs.Manifold.ManifoldPointer
         | Inputs.Manifold.CrossSectionPointer
+        | Inputs.Manifold.DecomposedManifoldMeshDto
         | Inputs.JSCAD.JSCADEntity
         | Inputs.Tag.TagDto
         | CustomGeometryDrawable
@@ -93,6 +94,7 @@ export namespace Draw {
         | Inputs.OCCT.DecomposedMeshDto[]
         | Inputs.Manifold.ManifoldPointer[]
         | Inputs.Manifold.CrossSectionPointer[]
+        | Inputs.Manifold.DecomposedManifoldMeshDto[]
         | Inputs.JSCAD.JSCADEntity[]
         | Inputs.Tag.TagDto[]
         | BABYLON.TransformNode[];
@@ -436,7 +438,7 @@ export namespace Draw {
         /**
          * Provide options without default values
          */
-        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number) {
+        constructor(faceOpacity?: number, faceMaterial?: Base.Material, faceColour?: Base.Color, crossSectionColour?: Base.Color, crossSectionWidth?: number, crossSectionOpacity?: number, computeNormals?: boolean, drawTwoSided?: boolean, backFaceColour?: Base.Color, backFaceOpacity?: number, minSharpAngle?: number) {
             if (faceOpacity !== undefined) { this.faceOpacity = faceOpacity; }
             if (faceMaterial !== undefined) { this.faceMaterial = faceMaterial; }
             if (faceColour !== undefined) { this.faceColour = faceColour; }
@@ -447,6 +449,7 @@ export namespace Draw {
             if (drawTwoSided !== undefined) { this.drawTwoSided = drawTwoSided; }
             if (backFaceColour !== undefined) { this.backFaceColour = backFaceColour; }
             if (backFaceOpacity !== undefined) { this.backFaceOpacity = backFaceOpacity; }
+            if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
         }
         /**
          * Face opacity value between 0 and 1
@@ -486,10 +489,20 @@ export namespace Draw {
          */
         crossSectionOpacity?: number | undefined = 1;
         /**
-         * Compute normals for the shape
-         * @default false
+         * When true, the mesh shades smoothly across edges flatter than `minSharpAngle` and keeps
+         * sharper ones crisp; when false, every face is shaded flat.
+         * @default true
          */
-        computeNormals?: boolean | undefined = false;
+        computeNormals?: boolean | undefined = true;
+        /**
+         * The angle between two faces, in degrees, above which their shared edge is drawn sharp when
+         * `computeNormals` is true.
+         * @default 40
+         * @minimum 0
+         * @maximum 180
+         * @step 5
+         */
+        minSharpAngle?: number | undefined = 40;
         /**
          * Whether to draw two-sided geometry with back face rendering
          * @default true

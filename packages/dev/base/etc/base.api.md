@@ -4,6 +4,9 @@
 
 ```ts
 
+// @beta
+export function assertRecipe(recipe: unknown): asserts recipe is Base.Recipe;
+
 // Warning: (ae-forgotten-export) The symbol "Key" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -96,6 +99,87 @@ export namespace Base {
         isClosed?: boolean;
         color?: number[];
     };
+    // @beta
+    export interface Recipe {
+        buffers: RecipeBuffers;
+        format: "bitbybit.recipe";
+        millimetresPerUnit: number;
+        nodes: RecipeNode[];
+        roots: RecipeRoot[];
+        tolerance: number;
+        version: 1;
+    }
+    // @beta
+    export interface RecipeBuffers {
+        f64: Float64Array;
+        i32: Int32Array;
+    }
+    // @beta
+    export interface RecipeCircleNode {
+        center: Point2;
+        op: "circle";
+        radius: number;
+    }
+    // @beta
+    export interface RecipeCompoundNode {
+        of: number[];
+        op: "compound";
+    }
+    // @beta
+    export interface RecipeDifferenceNode {
+        of: number;
+        op: "difference";
+        tools: number[];
+    }
+    // @beta
+    export interface RecipeExtrudeNode {
+        depth: number;
+        direction: Vector3;
+        op: "extrude";
+        profile: number;
+    }
+    // @beta
+    export interface RecipeHalfSpaceNode {
+        normal: Vector3;
+        op: "halfSpace";
+        origin: Point3;
+    }
+    // @beta
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    // @beta
+    export interface RecipePolygonNode {
+        holes: RecipeRange[];
+        op: "polygon";
+        points: RecipeRange;
+    }
+    // @beta
+    export type RecipeRange = [number, number];
+    // @beta
+    export interface RecipeRoot {
+        matrix: TransformMatrix;
+        node: number;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
+    export type RecipeTagValue = string | number | boolean | number[];
+    // @beta
+    export interface RecipeTransformNode {
+        matrix: TransformMatrix;
+        of: number;
+        op: "transform";
+    }
+    // @beta
+    export interface RecipeTrianglesNode {
+        indices: RecipeRange;
+        op: "triangles";
+        positions: RecipeRange;
+    }
+    // @beta
+    export interface RecipeVoidsNode {
+        host: number;
+        op: "voids";
+        openings: number[];
+    }
     export type Segment2 = [Point2, Point2];
     export type Segment3 = [Point3, Point3];
     export enum topBottomEnum {
@@ -127,6 +211,9 @@ export namespace Base {
 
 // @public
 export function callByPath(root: object, path: string, inputs: unknown): unknown;
+
+// @beta
+export function checkRecipe(recipe: unknown): RecipeIssue[];
 
 // @public
 export function checkStructure(constraints: DtoConstraints, inputs: unknown): InputIssue[];
@@ -1730,11 +1817,20 @@ export class MathBitByBit {
 
 // @public
 namespace Mesh {
+    class MeshDto {
+        constructor(mesh?: Base.Mesh3);
+        mesh: Base.Mesh3;
+    }
     class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
         tolerance?: number | undefined;
+    }
+    class PolygonWithHolesDto {
+        constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
+        holes?: Base.Point3[][] | undefined;
+        points: Base.Point3[];
     }
     class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3);
@@ -1761,7 +1857,11 @@ namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
+    type MeshDto = Inputs_2.Mesh.MeshDto;
+    // (undocumented)
     type MeshMeshToleranceDto = WithDefaults<Inputs_2.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type PolygonWithHolesDto = Inputs_2.Mesh.PolygonWithHolesDto;
     // (undocumented)
     type SignedDistanceFromPlaneToPointDto = Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto;
     // (undocumented)
@@ -1780,7 +1880,9 @@ export class MeshBitByBit {
     meshMeshIntersectionPolylines(inputs: Inputs_2.Mesh.MeshMeshToleranceDto): Inputs_2.Base.Polyline3[];
     meshMeshIntersectionSegments(inputs: Inputs_2.Mesh.MeshMeshToleranceDto): Inputs_2.Base.Segment3[];
     signedDistanceToPlane(inputs: Inputs_2.Mesh.SignedDistanceFromPlaneToPointDto): number;
+    signedVolume(inputs: Inputs_2.Mesh.MeshDto): number;
     triangleTriangleIntersection(inputs: Inputs_2.Mesh.TriangleTriangleToleranceDto): Inputs_2.Base.Segment3 | undefined;
+    triangulatePolygon(inputs: Inputs_2.Mesh.PolygonWithHolesDto): Inputs_2.Base.Mesh3;
 }
 
 // @public
@@ -1800,6 +1902,7 @@ export type NumberBounds = {
 // @public
 export class Point {
     constructor(geometryHelper: GeometryHelper, transforms: Transforms, vector: Vector, lists: Lists);
+    arcThroughThreePoints(inputs: Inputs_2.Point.ArcThroughThreePointsDto): Inputs_2.Base.Point3[];
     averagePoint(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.Point3;
     boundingBoxOfPoints(inputs: Inputs_2.Point.PointsDto): Inputs_2.Base.BoundingBox;
     closestPointFromPoints(inputs: Inputs_2.Point.ClosestPointFromPointsDto): Inputs_2.Base.Point3;
@@ -1838,6 +1941,13 @@ export class Point {
 
 // @public
 namespace Point_2 {
+    class ArcThroughThreePointsDto {
+        constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3, segments?: number);
+        end: Base.Point3;
+        middle: Base.Point3;
+        segments?: number | undefined;
+        start: Base.Point3;
+    }
     class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
         point: Base.Point3;
@@ -2019,6 +2129,8 @@ namespace Point_2 {
 // @public
 namespace Point_3 {
     // (undocumented)
+    type ArcThroughThreePointsDto = WithDefaults<Inputs_2.Point.ArcThroughThreePointsDto, "segments">;
+    // (undocumented)
     type ClosestPointFromPointsDto = Inputs_2.Point.ClosestPointFromPointsDto;
     // (undocumented)
     type DrawPointDto<T> = WithDefaults<Inputs_2.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
@@ -2084,6 +2196,8 @@ export class Polyline {
     getPoints(inputs: Inputs_2.Polyline.PolylineDto): Inputs_2.Base.Point3[];
     length(inputs: Inputs_2.Polyline.PolylineDto): number;
     maxFilletsHalfLine(inputs: Inputs_2.Polyline.PolylineToleranceDto): number[];
+    polygonArea(inputs: Inputs_2.Polyline.PolylineDto): number;
+    polygonNormal(inputs: Inputs_2.Polyline.PolylineDto): Inputs_2.Base.Vector3 | undefined;
     polylineSelfIntersection(inputs: Inputs_2.Polyline.PolylineToleranceDto): Inputs_2.Base.Point3[];
     polylineToLines(inputs: Inputs_2.Polyline.PolylineDto): Inputs_2.Base.Line3[];
     polylineToSegments(inputs: Inputs_2.Polyline.PolylineDto): Inputs_2.Base.Segment3[];
@@ -2197,6 +2311,21 @@ export type PropertyConstraint = {
     readonly values?: readonly string[];
     readonly bounds?: NumberBounds;
 };
+
+// @beta
+export interface RecipeIssue {
+    readonly message: string;
+    readonly path: string;
+}
+
+// @beta
+export interface RecipeSurfaceMesh {
+    readonly indices: Uint32Array;
+    readonly positions: Float32Array;
+}
+
+// @beta
+export function recipeSurfaceMeshes(recipe: unknown, roots?: readonly number[], adjustZtoY?: boolean): (RecipeSurfaceMesh | undefined)[];
 
 // @public
 export type ReferenceHash = (value: object) => string | number | undefined;

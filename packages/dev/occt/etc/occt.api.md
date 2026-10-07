@@ -236,6 +236,87 @@ namespace Base {
         isClosed?: boolean;
         color?: number[];
     };
+    // @beta
+    interface Recipe {
+        buffers: RecipeBuffers;
+        format: "bitbybit.recipe";
+        millimetresPerUnit: number;
+        nodes: RecipeNode[];
+        roots: RecipeRoot[];
+        tolerance: number;
+        version: 1;
+    }
+    // @beta
+    interface RecipeBuffers {
+        f64: Float64Array;
+        i32: Int32Array;
+    }
+    // @beta
+    interface RecipeCircleNode {
+        center: Point2;
+        op: "circle";
+        radius: number;
+    }
+    // @beta
+    interface RecipeCompoundNode {
+        of: number[];
+        op: "compound";
+    }
+    // @beta
+    interface RecipeDifferenceNode {
+        of: number;
+        op: "difference";
+        tools: number[];
+    }
+    // @beta
+    interface RecipeExtrudeNode {
+        depth: number;
+        direction: Vector3;
+        op: "extrude";
+        profile: number;
+    }
+    // @beta
+    interface RecipeHalfSpaceNode {
+        normal: Vector3;
+        op: "halfSpace";
+        origin: Point3;
+    }
+    // @beta
+    type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    // @beta
+    interface RecipePolygonNode {
+        holes: RecipeRange[];
+        op: "polygon";
+        points: RecipeRange;
+    }
+    // @beta
+    type RecipeRange = [number, number];
+    // @beta
+    interface RecipeRoot {
+        matrix: TransformMatrix;
+        node: number;
+        tag: Record<string, RecipeTagValue>;
+    }
+    // @beta
+    type RecipeTagValue = string | number | boolean | number[];
+    // @beta
+    interface RecipeTransformNode {
+        matrix: TransformMatrix;
+        of: number;
+        op: "transform";
+    }
+    // @beta
+    interface RecipeTrianglesNode {
+        indices: RecipeRange;
+        op: "triangles";
+        positions: RecipeRange;
+    }
+    // @beta
+    interface RecipeVoidsNode {
+        host: number;
+        op: "voids";
+        openings: number[];
+    }
     type Segment2 = [Point2, Point2];
     type Segment3 = [Point3, Point3];
     enum topBottomEnum {
@@ -4387,6 +4468,8 @@ export interface EmbindModule {
     // (undocumented)
     PushPullFaces(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): TopoDS_Shape;
     // (undocumented)
+    PushPullFacesWithHistory(_0: TopoDS_Shape, _1: ArrayLike<number>, _2: ArrayLike<number>): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
+    // (undocumented)
     Quantity_Color: {
         new(): Quantity_Color;
         new(_0: number, _1: number, _2: number, _3: Quantity_TypeOfColor): Quantity_Color;
@@ -4425,6 +4508,8 @@ export interface EmbindModule {
     ReleaseKeptMeshes(): void;
     // (undocumented)
     RemoveFaces(_0: TopoDS_Shape, _1: ArrayLike<number>): TopoDS_Shape;
+    // (undocumented)
+    RemoveFacesWithHistory(_0: TopoDS_Shape, _1: ArrayLike<number>): { shape: TopoDS_Shape; histories: { faces: Int32Array[]; edges: Int32Array[]; facesFromFaces: Int32Array[]; edgesFromFaces: Int32Array[]; facesFromEdges: Int32Array[]; facesFromVertices: Int32Array[]; edgesFromVertices: Int32Array[]; firstFaces: Int32Array; lastFaces: Int32Array }[] };
     // (undocumented)
     RotatePeriodicEdgeSeam(_0: TopoDS_Edge, _1: number): TopoDS_Edge;
     // (undocumented)
@@ -7163,11 +7248,20 @@ namespace Math_3 {
 
 // @public
 namespace Mesh {
+    class MeshDto {
+        constructor(mesh?: Base.Mesh3);
+        mesh: Base.Mesh3;
+    }
     class MeshMeshToleranceDto {
         constructor(mesh1?: Base.Mesh3, mesh2?: Base.Mesh3, tolerance?: number);
         mesh1: Base.Mesh3;
         mesh2: Base.Mesh3;
         tolerance?: number | undefined;
+    }
+    class PolygonWithHolesDto {
+        constructor(points?: Base.Point3[], holes?: Base.Point3[][]);
+        holes?: Base.Point3[][] | undefined;
+        points: Base.Point3[];
     }
     class SignedDistanceFromPlaneToPointDto {
         constructor(point?: Base.Point3, plane?: Base.TrianglePlane3);
@@ -7194,7 +7288,11 @@ namespace Mesh {
 // @public
 namespace Mesh_2 {
     // (undocumented)
+    type MeshDto = Inputs_3.Mesh.MeshDto;
+    // (undocumented)
     type MeshMeshToleranceDto = WithDefaults<Inputs_3.Mesh.MeshMeshToleranceDto, "tolerance">;
+    // (undocumented)
+    type PolygonWithHolesDto = Inputs_3.Mesh.PolygonWithHolesDto;
     // (undocumented)
     type SignedDistanceFromPlaneToPointDto = Inputs_3.Mesh.SignedDistanceFromPlaneToPointDto;
     // (undocumented)
@@ -12463,6 +12561,13 @@ declare namespace Point {
 
 // @public
 namespace Point_2 {
+    class ArcThroughThreePointsDto {
+        constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3, segments?: number);
+        end: Base.Point3;
+        middle: Base.Point3;
+        segments?: number | undefined;
+        start: Base.Point3;
+    }
     class ClosestPointFromPointsDto {
         constructor(points?: Base.Point3[], point?: Base.Point3);
         point: Base.Point3;
@@ -12643,6 +12748,8 @@ namespace Point_2 {
 
 // @public
 namespace Point_3 {
+    // (undocumented)
+    type ArcThroughThreePointsDto = WithDefaults<Inputs_3.Point.ArcThroughThreePointsDto, "segments">;
     // (undocumented)
     type ClosestPointFromPointsDto = Inputs_3.Point.ClosestPointFromPointsDto;
     // (undocumented)

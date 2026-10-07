@@ -11,6 +11,12 @@
             "path": "./packages/dev/core/tsconfig.bitbybit.json"
         },
         {
+            "path": "./packages/dev/ifc/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "./packages/dev/ifc-worker/tsconfig.bitbybit.json"
+        },
+        {
             "path": "./packages/dev/jscad/tsconfig.bitbybit.json"
         },
         {

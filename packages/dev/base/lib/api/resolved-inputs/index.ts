@@ -193,7 +193,9 @@ export namespace Math {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Mesh {
+    export type MeshDto = Inputs.Mesh.MeshDto;
     export type MeshMeshToleranceDto = WithDefaults<Inputs.Mesh.MeshMeshToleranceDto, "tolerance">;
+    export type PolygonWithHolesDto = Inputs.Mesh.PolygonWithHolesDto;
     export type SignedDistanceFromPlaneToPointDto = Inputs.Mesh.SignedDistanceFromPlaneToPointDto;
     export type TriangleDto = Inputs.Mesh.TriangleDto;
     export type TriangleToleranceDto = WithDefaults<Inputs.Mesh.TriangleToleranceDto, "tolerance">;
@@ -205,6 +207,7 @@ export namespace Mesh {
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Point {
+    export type ArcThroughThreePointsDto = WithDefaults<Inputs.Point.ArcThroughThreePointsDto, "segments">;
     export type ClosestPointFromPointsDto = Inputs.Point.ClosestPointFromPointsDto;
     export type DrawPointDto<T> = WithDefaults<Inputs.Point.DrawPointDto<T>, "opacity" | "size" | "colours" | "updatable">;
     export type DrawPointsDto<T> = WithDefaults<Inputs.Point.DrawPointsDto<T>, "opacity" | "size" | "colours" | "updatable">;

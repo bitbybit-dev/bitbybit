@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { WithDefaults } from "@bitbybit-dev/base";
 import * as Inputs from "../inputs";
-export type { Asset, CSV, JSON, JSCAD, Manifold, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
+export type { Asset, CSV, JSON, JSCAD, Manifold, IFC, OCCT, Tag, Time, Verb, Color, Dates, Frame, IO, Line, Lists, Logic, Math, Mesh, Point, Polyline, Text, Transforms, Vector } from "@bitbybit-dev/core/lib/api/resolved-inputs";
 
 /**
  * The BabylonCamera inputs DTOs as their defaults leave them: every property with a default is present,
@@ -415,7 +415,7 @@ export namespace Draw {
     export type DrawAny<E extends Inputs.Draw.Entity = Inputs.Draw.Entity> = Inputs.Draw.DrawAny<E>;
     export type DrawBasicGeometryOptions = WithDefaults<Inputs.Draw.DrawBasicGeometryOptions, "colours" | "colorMapStrategy" | "size" | "opacity" | "updatable" | "hidden" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "arrowSize" | "arrowAngle">;
     export type DrawFrameOptions = WithDefaults<Inputs.Draw.DrawFrameOptions, "size" | "colorX" | "colorY" | "colorZ" | "drawPlane" | "colorPlane" | "lineWidth" | "updatable">;
-    export type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    export type DrawManifoldOrCrossSectionOptions = WithDefaults<Inputs.Draw.DrawManifoldOrCrossSectionOptions, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     export type DrawNodeOptions = WithDefaults<Inputs.Draw.DrawNodeOptions, "colorX" | "colorY" | "colorZ" | "size">;
     export type DrawOcctShapeMaterialOptions = WithDefaults<Inputs.Draw.DrawOcctShapeMaterialOptions, "precision" | "drawEdges" | "edgeColour" | "edgeWidth">;
     export type DrawOcctShapeOptions = WithDefaults<Inputs.Draw.DrawOcctShapeOptions, "faceOpacity" | "edgeOpacity" | "edgeColour" | "faceColour" | "vertexColour" | "edgeWidth" | "vertexSize" | "drawEdges" | "drawFaces" | "drawVertices" | "precision" | "angularDeflection" | "relativeDeflection" | "drawEdgeIndexes" | "edgeIndexHeight" | "edgeIndexColour" | "drawFaceIndexes" | "faceIndexHeight" | "faceIndexColour" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity" | "edgeArrowSize" | "edgeArrowAngle" | "keepMeshData" | "allowQualityDecrease" | "forceFaceDeflection" | "drawIsoCurves" | "isoCurvesU" | "isoCurvesV" | "isoCurvesColour" | "surfaceAnalysis" | "draftDirection">;

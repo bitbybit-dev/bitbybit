@@ -47,6 +47,18 @@
             "@bitbybit-dev/manifold-worker/*": [
                 "../manifold-worker/dist/*"
             ],
+            "@bitbybit-dev/ifc-worker": [
+                "../ifc-worker/dist"
+            ],
+            "@bitbybit-dev/ifc-worker/*": [
+                "../ifc-worker/dist/*"
+            ],
+            "@bitbybit-dev/ifc": [
+                "../ifc/dist"
+            ],
+            "@bitbybit-dev/ifc/*": [
+                "../ifc/dist/*"
+            ],
             "@bitbybit-dev/occt": [
                 "../occt/dist"
             ],
@@ -64,6 +76,12 @@
     "references": [
         {
             "path": "../base/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "../ifc/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "../ifc-worker/tsconfig.bitbybit.json"
         },
         {
             "path": "../jscad/tsconfig.bitbybit.json"

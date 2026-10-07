@@ -2,17 +2,27 @@ import { it } from "vitest";
 import { writeFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { BitbybitOcctModule } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import createBitbybitOcct from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import { OccHelper } from "../lib/occ-helper";
 import { OCCTService } from "../lib/occ-service";
 import { VectorHelperService } from "../lib/api/vector-helper.service";
 import { ShapesHelperService } from "../lib/api/shapes-helper.service";
 import { benchCases } from "./cases";
+import type { KernelGlue, LoadedKernel } from "./bench-types";
 
-const RUNS = Number(process.env["BENCH_RUNS"] ?? 5);
+const DEFAULT_RUNS = 5;
 
-const loadKernel = async (): Promise<{ label: string; occ: BitbybitOcctModule }> => {
+const runsWanted = (): number => {
+    const runs = Number(process.env["BENCH_RUNS"] ?? DEFAULT_RUNS);
+    if (!Number.isSafeInteger(runs) || runs < 1) {
+        throw new Error(`BENCH_RUNS is how many times each case runs, a whole number of at least 1, not ${process.env["BENCH_RUNS"]}`);
+    }
+    return runs;
+};
+
+const RUNS = runsWanted();
+
+const loadKernel = async (): Promise<LoadedKernel> => {
     const directory = process.env["BENCH_KERNEL"];
     if (!directory) {
         return { label: "package", occ: await createBitbybitOcct() };
@@ -23,7 +33,7 @@ const loadKernel = async (): Promise<{ label: string; occ: BitbybitOcctModule }>
         throw new Error(`BENCH_KERNEL names ${folder}, which holds no .wasm`);
     }
     const glue: unknown = await import(pathToFileURL(join(folder, `${wasm.split(".")[0]!}.js`)).href);
-    const factory = (glue as { default: (options: object) => Promise<BitbybitOcctModule> }).default;
+    const factory = (glue as KernelGlue).default;
     const occ = await factory({ locateFile: (file: string): string => (file.endsWith(".wasm") ? join(folder, wasm) : join(folder, file)) });
     return { label: folder, occ };
 };

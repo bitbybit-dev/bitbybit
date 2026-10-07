@@ -1,6 +1,7 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
 import { GeometryHelper, MathBitByBit, Vector } from "@bitbybit-dev/base";
 import { DrawHelperCore, type SurfaceAnalysisMesh } from "./draw-helper-core";
+import type { ManifoldMeshAttributes } from "./draw-helper-types";
 
 class ColourReader extends DrawHelperCore {
     readColour(colour: number[] | string | undefined, fallback: string): string {
@@ -16,6 +17,19 @@ class AnalysisPainter extends DrawHelperCore {
         return this.surfaceAnalysisColors(mesh, fallback, min, max, components);
     }
 }
+
+class ManifoldShader extends DrawHelperCore {
+    sharpAngle(computeNormals: boolean, minSharpAngle: number): number {
+        return this.manifoldSharpAngle({ computeNormals, minSharpAngle });
+    }
+
+    attributes(numProp: number, vertProperties: number[], triVerts: number[], minSharpAngle = 40): ManifoldMeshAttributes {
+        return this.manifoldMeshAttributes({ numProp, vertProperties: new Float32Array(vertProperties), triVerts: new Uint32Array(triVerts) }, minSharpAngle);
+    }
+}
+
+const shader = (): ManifoldShader =>
+    new ManifoldShader(new Vector(new MathBitByBit(), new GeometryHelper()));
 
 const painter = (): AnalysisPainter =>
     new AnalysisPainter(new Vector(new MathBitByBit(), new GeometryHelper()));
@@ -252,5 +266,55 @@ describe("DrawHelperCore surface analysis colors", () => {
 
         // Assert
         expect(pooled).toBe(options);
+    });
+});
+
+describe("DrawHelperCore Manifold shading", () => {
+    it("should ask for the sharp angle when normals are computed, and 0 for flat faces when they are not", () => {
+        // Act
+        const angles = [shader().sharpAngle(true, 40), shader().sharpAngle(false, 40), shader().sharpAngle(true, 25)];
+
+        // Assert
+        expect(angles).toEqual([40, 0, 25]);
+    });
+
+    it("should use the normals the worker put after the positions, and the triangles as they are", () => {
+        // Act
+        const mesh = shader().attributes(6, [0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0], [0, 1, 2]);
+
+        // Assert
+        expect(Array.from(mesh.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+        expect(Array.from(mesh.normals)).toEqual([0, 1, 0, 0, 1, 0, 0, 1, 0]);
+        expect(Array.from(mesh.indices)).toEqual([0, 1, 2]);
+    });
+
+    it("should compute the normals by the same rule when an older worker sends none, keeping a cube's edges sharp", () => {
+        // Arrange
+        const corners = [0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1];
+        const triangles = [0, 2, 1, 0, 3, 2, 4, 5, 6, 4, 6, 7, 0, 1, 5, 0, 5, 4, 2, 3, 7, 2, 7, 6, 0, 4, 7, 0, 7, 3, 1, 2, 6, 1, 6, 5];
+
+        // Act
+        const mesh = shader().attributes(3, corners, triangles);
+
+        // Assert
+        expect(mesh.positions.length / 3).toBe(24);
+        expect(mesh.indices).toHaveLength(36);
+    });
+
+    it("should take only the positions of a vertex that carries other values, and compute its normals", () => {
+        // Act
+        const mesh = shader().attributes(4, [0, 0, 0, 9, 1, 0, 0, 9, 0, 1, 0, 9], [0, 1, 2]);
+
+        // Assert
+        expect(Array.from(mesh.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
+        expect(Array.from(mesh.normals)).toEqual([0, 0, 1, 0, 0, 1, 0, 0, 1]);
+    });
+
+    it("should read a mesh that names no property count as positions only", () => {
+        // Act
+        const mesh = shader().attributes(0, [0, 0, 0, 1, 0, 0, 0, 1, 0], [0, 1, 2]);
+
+        // Assert
+        expect(Array.from(mesh.positions)).toEqual([0, 0, 0, 1, 0, 0, 0, 1, 0]);
     });
 });

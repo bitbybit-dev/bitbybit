@@ -1,0 +1,104 @@
+{
+    "name": "@bitbybit-dev/ifc-worker",
+    "version": "1.4.1",
+    "description": "Bit By Bit Developers IFC library to write, read and author BIM models via WebWorker",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.IFC",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/ifc-worker"
+    },
+    "keywords": [
+        "Bit By Bit Developers",
+        "bitbybit",
+        "bitbybit.dev",
+        "IFC",
+        "BIM",
+        "Industry Foundation Classes",
+        "buildingSMART",
+        "IFC4",
+        "WebWorker",
+        "AEC",
+        "Architecture",
+        "Construction",
+        "Building",
+        "Geometry",
+        "CAD",
+        "3D",
+        "Parametric",
+        "Modeling",
+        "Browser CAD"
+    ],
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false",
+        "clean-dist": "shx rm -rf dist",
+        "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
+        "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist",
+        "delete-coverage": "shx rm -rf ./dist/coverage || true",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
+        "api:check": "api-extractor run",
+        "api:update": "api-extractor run --local"
+    },
+    "author": "Bit by bit developers",
+    "license": "MIT",
+    "funding": {
+        "type": "corporate",
+        "url": "https://bitbybit.dev/auth/pick-plan"
+    },
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api": {
+            "@bitbybit-dev/source": "./lib/api/index.ts",
+            "types": "./dist/lib/api/index.d.ts",
+            "default": "./dist/lib/api/index.js"
+        },
+        "./lib/ifc-worker": {
+            "@bitbybit-dev/source": "./lib/ifc-worker/index.ts",
+            "types": "./dist/lib/ifc-worker/index.d.ts",
+            "default": "./dist/lib/ifc-worker/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
+    },
+    "type": "module",
+    "dependencies": {
+        "@bitbybit-dev/base": "1.4.1",
+        "@bitbybit-dev/ifc": "1.4.1",
+        "rxjs": "7.8.2"
+    },
+    "devDependencies": {
+        "@microsoft/api-extractor": "7.59.1",
+        "@vitest/coverage-v8": "4.1.11",
+        "shx": "0.4.0",
+        "typescript": "5.9.3",
+        "vitest": "4.1.11"
+    }
+}

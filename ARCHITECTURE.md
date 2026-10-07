@@ -7,7 +7,7 @@ accepted limitations live in the per-package `CLAUDE.md` files, listed at the bo
 
 ## What this repository is
 
-Thirteen packages in one pnpm workspace, published to npm as `@bitbybit-dev/*` at a single lockstep
+Sixteen packages in one pnpm workspace, published to npm as `@bitbybit-dev/*` at a single lockstep
 version. Together they are a CAD programming layer for the browser and for Node: geometry kernels
 compiled to WebAssembly, wrapped in a typed API, moved off the main thread, and drawn by whichever 3D
 engine the consumer already uses.
@@ -29,12 +29,14 @@ flowchart TD
         occt["<b>occt</b><br/>OpenCascade, WASM"]
         jscad["<b>jscad</b><br/>JSCAD, JS"]
         manifold["<b>manifold</b><br/>Manifold, WASM"]
+        ifc["<b>ifc</b><br/>IFC models, TypeScript"]
     end
 
     subgraph W["worker layers - the same API, off the main thread"]
         occtw["occt-worker"]
         jscadw["jscad-worker"]
         manifoldw["manifold-worker"]
+        ifcw["ifc-worker"]
     end
 
     core["<b>core</b><br/>the engine-agnostic API surface,<br/>the Context, the shared draw layer"]
@@ -49,6 +51,7 @@ flowchart TD
     occt --> occtw
     jscad --> jscadw
     manifold --> manifoldw
+    ifc --> ifcw
     K --> core
     W --> core
     core --> R
@@ -58,13 +61,19 @@ flowchart TD
 Beside that stack sit two packages that depend on none of it: **cad-cloud-sdk**, a typed client for
 the hosted CAD API, and **create-app**, the CLI that scaffolds a starter project.
 
+**ifc** and **ifc-worker** sit in the kernel and worker rows although no geometry engine is behind
+them: `ifc` reads, writes and authors IFC building models in TypeScript on `base` alone, and describes
+their geometry as recipes (`Base.Recipe`) instead of building it. `manifold.recipes.build` builds a
+recipe, so drawing a model goes from the IFC worker to the Manifold worker through the main thread,
+the one place that holds both. `core` includes `ifc-worker` as `bitbybit.ifc`.
+
 | Layer | Holds | Depends on |
 |---|---|---|
 | `base` | the shared vocabulary every other package speaks: points, vectors, transforms, colour, lists, math | nothing |
-| kernel wrappers | one package per geometry engine, each turning that kernel's own idiom into the shared vocabulary | `base` |
+| kernel wrappers | one package per geometry engine, each turning that kernel's own idiom into the shared vocabulary, and `ifc` | `base` |
 | worker layers | the same API again, dispatched across `postMessage`, with the kernel and its cache living in the worker | its own kernel |
-| `core` | the engine-agnostic API surface, the `Context`, and the drawing logic that is not engine-specific | `base`, all three kernels, all three workers |
-| renderer packages | the engine facade and the draw layer that goes through it - and nothing else | `core`, `base`, the three workers |
+| `core` | the engine-agnostic API surface, the `Context`, and the drawing logic that is not engine-specific | `base`, all three kernels, all three workers, `ifc` and `ifc-worker` |
+| renderer packages | the engine facade and the draw layer that goes through it - and nothing else | `core`, `base`, the three workers, `ifc-worker` |
 
 **The renderers are thin on purpose.** Everything that is not engine-specific is built once by
 `createSharedServices` in `core`, so the three packages expose the same API rather than three that
@@ -129,7 +138,7 @@ reads it: it holds the corpus to `scripts/api-docs-baseline.json` against `API_D
 
 Three things leave this repository and cannot be taken back:
 
-1. **The npm packages** - immutable once published, at a version shared by all thirteen.
+1. **The npm packages** - immutable once published, at a version shared by all sixteen.
 2. **The declarations** - the type surface, and the JSDoc metadata on it, that downstream tools
    generate from.
 3. **The dotted API paths** - which downstream tools store as stable identifiers, in data this

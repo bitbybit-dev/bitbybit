@@ -1,0 +1,119 @@
+{
+    "name": "@bitbybit-dev/ifc",
+    "version": "1.4.1",
+    "description": "Bit By Bit Developers IFC library to write, read and author BIM models in TypeScript",
+    "homepage": "https://docs.bitbybit.dev/classes/Bit.IFC",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bitbybit-dev/bitbybit.git",
+        "directory": "packages/dev/ifc"
+    },
+    "keywords": [
+        "Bit By Bit Developers",
+        "bitbybit",
+        "bitbybit.dev",
+        "IFC",
+        "BIM",
+        "Industry Foundation Classes",
+        "buildingSMART",
+        "IFC4",
+        "STEP",
+        "ISO 10303-21",
+        "AEC",
+        "Architecture",
+        "Construction",
+        "Building",
+        "Walls",
+        "Slabs",
+        "Doors",
+        "Windows",
+        "Geometry",
+        "CAD",
+        "3D",
+        "Parametric",
+        "Modeling",
+        "Browser CAD"
+    ],
+    "directories": {
+        "lib": "lib"
+    },
+    "scripts": {
+        "build": "tsc -b tsconfig.bitbybit.json",
+        "typecheck:strict": "tsc -p tsconfig.strict.json --pretty false",
+        "typecheck:tests": "tsc -p tsconfig.json --noEmit --pretty false",
+        "clean-dist": "shx rm -rf dist",
+        "build-p": "npm run build && npm run copy-package && npm run copy-readme && npm run delete-coverage",
+        "copy-package": "node ../../../scripts/dist-manifest.mjs",
+        "copy-readme": "shx cp -R ./README.md ./dist && shx cp -R ./LICENSE ./dist && shx cp -R ./NOTICE ./dist",
+        "delete-coverage": "shx rm -rf ./dist/coverage || true",
+        "test": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest",
+        "validate": "vitest run --config validation/vitest.config.ts",
+        "bench": "NODE_OPTIONS=--max-old-space-size=8192 vitest run --config bench/vitest.config.ts",
+        "api:check": "api-extractor run",
+        "api:update": "api-extractor run --local"
+    },
+    "author": "Bit by bit developers",
+    "license": "MIT",
+    "funding": {
+        "type": "corporate",
+        "url": "https://bitbybit.dev/auth/pick-plan"
+    },
+    "types": "./index.d.ts",
+    "exports": {
+        ".": {
+            "@bitbybit-dev/source": "./index.ts",
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        },
+        "./lib": {
+            "@bitbybit-dev/source": "./lib/index.ts",
+            "types": "./dist/lib/index.d.ts",
+            "default": "./dist/lib/index.js"
+        },
+        "./lib/api/inputs": {
+            "@bitbybit-dev/source": "./lib/api/inputs/index.ts",
+            "types": "./dist/lib/api/inputs/index.d.ts",
+            "default": "./dist/lib/api/inputs/index.js"
+        },
+        "./lib/api/resolved-inputs": {
+            "@bitbybit-dev/source": "./lib/api/resolved-inputs/index.ts",
+            "types": "./dist/lib/api/resolved-inputs/index.d.ts",
+            "default": "./dist/lib/api/resolved-inputs/index.js"
+        },
+        "./lib/api/services": {
+            "@bitbybit-dev/source": "./lib/api/services/index.ts",
+            "types": "./dist/lib/api/services/index.d.ts",
+            "default": "./dist/lib/api/services/index.js"
+        },
+        "./lib/model": {
+            "@bitbybit-dev/source": "./lib/model/index.ts",
+            "types": "./dist/lib/model/index.d.ts",
+            "default": "./dist/lib/model/index.js"
+        },
+        "./package.json": "./package.json",
+        "./*.js": {
+            "@bitbybit-dev/source": "./*.js",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        },
+        "./*": {
+            "@bitbybit-dev/source": "./*.ts",
+            "types": "./dist/*.d.ts",
+            "default": "./dist/*.js"
+        }
+    },
+    "type": "module",
+    "dependencies": {
+        "@bitbybit-dev/base": "1.4.1"
+    },
+    "devDependencies": {
+        "@microsoft/api-extractor": "7.59.1",
+        "@vitest/coverage-v8": "4.1.11",
+        "shx": "0.4.0",
+        "typescript": "5.9.3",
+        "vitest": "4.1.11"
+    }
+}

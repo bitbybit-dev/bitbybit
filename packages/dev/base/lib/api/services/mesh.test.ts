@@ -437,4 +437,77 @@ describe("Mesh unit tests", () => {
             expect(segment).toBeUndefined();
         });
     });
+
+    describe("triangulatePolygon", () => {
+        it("should cut a square into two triangles facing the way it turns", () => {
+            // Act
+            const triangles = meshBitByBit.triangulatePolygon({ points: [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]] });
+
+            // Assert
+            expect(triangles).toEqual([[[0, 0, 0], [4, 0, 0], [4, 4, 0]], [[0, 0, 0], [4, 4, 0], [0, 4, 0]]]);
+        });
+
+        it("should leave a hole open and cover the rest once, keeping every corner", () => {
+            // Arrange
+            const outline: Inputs.Base.Point3[] = [[0, 0, 0], [0, 4, 4], [0, 0, 8]];
+            const hole: Inputs.Base.Point3[] = [[0, 1, 3], [0, 1, 5], [0, 2, 4]];
+
+            // Act
+            const triangles = meshBitByBit.triangulatePolygon({ points: outline, holes: [hole] });
+            const area = triangles.reduce((sum, [a, b, c]) => {
+                const n = vector.cross({ first: vector.sub({ first: b, second: a }), second: vector.sub({ first: c, second: a }) });
+                return sum + vector.length({ vector: n as Inputs.Base.Vector3 }) / 2;
+            }, 0);
+            const corners = new Set(triangles.flat().map((corner) => corner.join(",")));
+
+            // Assert
+            expect(area).toBeCloseTo(16 - 1, 12);
+            expect(corners.size).toBe(6);
+            expect(triangles.every(([a, b, c]) => (b[1] - a[1]) * (c[2] - a[2]) - (b[2] - a[2]) * (c[1] - a[1]) >= 0)).toBe(true);
+        });
+
+        it("should give new points, nothing for fewer than three corners, and leave the input as it was", () => {
+            // Arrange
+            const points: Inputs.Base.Point3[] = [[0, 0, 0], [1, 0, 0], [0, 1, 0]];
+
+            // Act
+            const triangles = meshBitByBit.triangulatePolygon({ points });
+            const none = meshBitByBit.triangulatePolygon({ points: [[0, 0, 0], [1, 0, 0]], holes: [] });
+
+            // Assert
+            expect(triangles).toEqual([points]);
+            expect(triangles[0]![0]).not.toBe(points[0]);
+            expect(none).toEqual([]);
+            expect(points).toEqual([[0, 0, 0], [1, 0, 0], [0, 1, 0]]);
+        });
+    });
+
+    describe("signedVolume", () => {
+        const cube: Inputs.Base.Mesh3 = [
+            [[0, 0, 0], [0, 1, 0], [1, 1, 0]], [[0, 0, 0], [1, 1, 0], [1, 0, 0]],
+            [[0, 0, 1], [1, 0, 1], [1, 1, 1]], [[0, 0, 1], [1, 1, 1], [0, 1, 1]],
+            [[0, 0, 0], [1, 0, 0], [1, 0, 1]], [[0, 0, 0], [1, 0, 1], [0, 0, 1]],
+            [[0, 1, 0], [0, 1, 1], [1, 1, 1]], [[0, 1, 0], [1, 1, 1], [1, 1, 0]],
+            [[0, 0, 0], [0, 0, 1], [0, 1, 1]], [[0, 0, 0], [0, 1, 1], [0, 1, 0]],
+            [[1, 0, 0], [1, 1, 0], [1, 1, 1]], [[1, 0, 0], [1, 1, 1], [1, 0, 1]],
+        ];
+
+        it("should measure a closed mesh facing outwards as positive and one facing inwards as negative", () => {
+            // Act
+            const outward = meshBitByBit.signedVolume({ mesh: cube });
+            const inward = meshBitByBit.signedVolume({ mesh: cube.map(([a, b, c]) => [a, c, b]) });
+
+            // Assert
+            expect(outward).toBeCloseTo(1, 14);
+            expect(inward).toBeCloseTo(-1, 14);
+        });
+
+        it("should measure an empty mesh as holding nothing", () => {
+            // Act
+            const volume = meshBitByBit.signedVolume({ mesh: [] });
+
+            // Assert
+            expect(volume).toBe(0);
+        });
+    });
 });

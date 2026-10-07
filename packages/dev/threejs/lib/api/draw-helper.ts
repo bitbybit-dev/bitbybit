@@ -19,6 +19,8 @@ import { CACHE_CONFIG, DEFAULT_COLORS, MATERIAL_DEFAULTS } from "./constants";
 import type * as Resolved from "./resolved-inputs";
 import { batchedLineShader, matricesTexture, writeMatrices } from "./batched-lines";
 
+const NORMAL_ITEM_SIZE = 3;
+
 interface DesignInstance {
     id: number;
     part: string;
@@ -131,16 +133,9 @@ export class DrawHelper extends DrawHelperCore {
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>): Promise<THREEJS.Group> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldsOrCrossSectionsDto, inputs) as Resolved.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, THREEJS.MeshPhysicalMaterial>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)).filter((s): s is THREEJS.Group => s !== undefined);
-            const manifoldMeshContainer = new THREEJS.Group();
-            manifoldMeshContainer.name = this.generateEntityId("manifoldMeshContainer");
-            meshes.forEach(mesh => {
-                mesh.parent = manifoldMeshContainer;
-            });
-            this.context.scene.add(manifoldMeshContainer);
-            return manifoldMeshContainer;
+            return this.manifoldMeshContainer(decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)));
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
             throw new Error(`Failed to draw manifolds or cross sections: ${messageOf(error)}`, { cause: error });
@@ -153,13 +148,23 @@ export class DrawHelper extends DrawHelperCore {
             if (!resolved.manifoldOrCrossSection) {
                 throw new Error("Manifold or cross section parameter is required");
             }
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
             return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
             throw new Error(`Failed to draw manifold or cross section: ${messageOf(error)}`, { cause: error });
         }
+    }
+
+    drawManifoldMesh(mesh: Inputs.Manifold.DecomposedManifoldMeshDto, options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group | undefined {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.handleDecomposedManifold(mesh, resolved);
+    }
+
+    drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<THREEJS.Group> {
@@ -1551,6 +1556,18 @@ export class DrawHelper extends DrawHelperCore {
         return material;
     }
 
+    private manifoldMeshContainer(meshes: readonly (THREEJS.Group | undefined)[]): THREEJS.Group {
+        const container = new THREEJS.Group();
+        container.name = this.generateEntityId("manifoldMeshContainer");
+        meshes.forEach(mesh => {
+            if (mesh) {
+                container.add(mesh);
+            }
+        });
+        this.context.scene.add(container);
+        return container;
+    }
+
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
         options: Resolved.Draw.DrawManifoldOrCrossSectionOptions): THREEJS.Group | undefined {
@@ -1558,9 +1575,10 @@ export class DrawHelper extends DrawHelperCore {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
                 const geometry = new THREEJS.BufferGeometry();
-                geometry.setAttribute("position", new THREEJS.BufferAttribute(decomposedMesh.vertProperties, 3));
-                geometry.setIndex(new THREEJS.BufferAttribute(decomposedMesh.triVerts, 1));
-                geometry.computeVertexNormals();
+                const { positions, normals, indices } = this.manifoldMeshAttributes(decomposedMesh, this.manifoldSharpAngle(options));
+                geometry.setAttribute("position", new THREEJS.BufferAttribute(positions, 3));
+                geometry.setAttribute("normal", new THREEJS.BufferAttribute(normals, NORMAL_ITEM_SIZE));
+                geometry.setIndex(new THREEJS.BufferAttribute(indices, 1));
 
                 const group = new THREEJS.Group();
                 group.name = this.generateEntityId("manifoldMesh");
@@ -1575,9 +1593,6 @@ export class DrawHelper extends DrawHelperCore {
                         mat.roughness = MATERIAL_DEFAULTS.ROUGHNESS.MANIFOLD;
                         mat.opacity = options.faceOpacity;
                         mat.alphaTest = 1;
-                        if (!options.computeNormals) {
-                            mat.flatShading = true;
-                        }
                         return mat;
                     });
                 } else {
@@ -1590,16 +1605,10 @@ export class DrawHelper extends DrawHelperCore {
                 group.add(mesh);
 
                 if (options.drawTwoSided !== false) {
-                    const positions = Array.from(decomposedMesh.vertProperties);
-                    const indices = Array.from(decomposedMesh.triVerts);
-
-                    const normalAttribute = geometry.getAttribute("normal");
-                    const normals = normalAttribute ? Array.from(normalAttribute.array as Float32Array) : [];
-
                     const meshData: MeshData[] = [{
-                        positions,
-                        indices,
-                        normals
+                        positions: Array.from(positions),
+                        indices: Array.from(indices),
+                        normals: Array.from(normals),
                     }];
 
                     const backFaceMesh = this.createBackFaceMesh(

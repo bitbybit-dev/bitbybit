@@ -1,15 +1,7 @@
 import type { TopoDS_Shape } from "../bitbybit-dev-occt/bitbybit-dev-occt";
 import type { OCCTService } from "../lib/occ-service";
 import type * as Inputs from "../lib/api/inputs";
-
-/**
- * A measured workload. It builds its shapes through the public API, as a script would, and returns
- * numbers that describe its output, so a faster run can be told apart from a different one.
- */
-export type BenchCase = {
-    name: string;
-    run: (occt: OCCTService) => number[];
-};
+import type { BenchCase } from "./bench-types";
 
 const volumeOf = (occt: OCCTService, shape: TopoDS_Shape): number =>
     occt.shapes.solid.getSolids({ shape }).reduce((sum, solid) => sum + occt.shapes.solid.getSolidVolume({ shape: solid }), 0);
@@ -22,7 +14,6 @@ const airfoil = (chord: number, thickness: number, twist: number, y: number): In
         return [x * Math.cos(twist) - z * Math.sin(twist), y, x * Math.sin(twist) + z * Math.cos(twist)];
     });
 
-/** The workloads, each a path many scripts take: patterns, text, sampling, booleans, lofts, fillets and meshing. */
 export const benchCases: BenchCase[] = [
     {
         name: "hexagon facade, 30 x 30 holes",

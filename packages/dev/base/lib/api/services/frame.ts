@@ -5,13 +5,12 @@ import type { GeometryHelper } from "./geometry-helper";
 import type { MathBitByBit } from "./math";
 import type { Vector } from "./vector";
 import type { FrameAxes } from "./helpers/frame-axes";
-import { isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./helpers/frame-axes";
+import { composeAxes, isFrameShaped, isTriple, PARALLEL_SINE, pointToLocal, pointToWorld, relativeAxes, squareFrame, unitOf, vectorToLocal, vectorToWorld, WORLD_AXES } from "./helpers/frame-axes";
 import { composed, symmetricEigen } from "./helpers/matrices";
 
 type Vec3 = Inputs.Base.Vector3;
 type Axes = FrameAxes;
 
-const WORLD: Axes = { origin: [0, 0, 0], x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
 const EQUAL_COMPONENT_TOLERANCE = 1e-12;
 
 const reachOf = (vectors: readonly Vec3[]): number => {
@@ -75,7 +74,7 @@ export class Frame {
      * ```
      */
     world(): Inputs.Base.Frame {
-        return this.frameOf(WORLD);
+        return this.frameOf(WORLD_AXES);
     }
 
     /**
@@ -93,7 +92,7 @@ export class Frame {
      */
     xy(inputs: Inputs.Frame.OriginDto): Inputs.Base.Frame {
         const resolved = resolveDto(Inputs.Frame.OriginDto, inputs) as Resolved.Frame.OriginDto;
-        return this.frameOf({ ...WORLD, origin: this.pointOf(resolved.origin, "origin") });
+        return this.frameOf({ ...WORLD_AXES, origin: this.pointOf(resolved.origin, "origin") });
     }
 
     /**
@@ -469,7 +468,7 @@ export class Frame {
      */
     frameToWorld(inputs: Inputs.Frame.ChildFrameDto): Inputs.Base.Frame {
         const parent = this.axesOf(inputs.parent, "parent");
-        return this.childToWorld(parent, this.axesOf(inputs.child, "child"));
+        return this.frameOf(composeAxes(parent, this.axesOf(inputs.child, "child")));
     }
 
     /**
@@ -489,7 +488,7 @@ export class Frame {
      */
     framesToWorld(inputs: Inputs.Frame.ChildFramesDto): Inputs.Base.Frame[] {
         const parent = this.axesOf(inputs.parent, "parent");
-        return this.axesOfEach(inputs.children, "children").map(child => this.childToWorld(parent, child));
+        return this.axesOfEach(inputs.children, "children").map(child => this.frameOf(composeAxes(parent, child)));
     }
 
     /**
@@ -511,7 +510,7 @@ export class Frame {
      */
     frameToLocal(inputs: Inputs.Frame.ChildFrameDto): Inputs.Base.Frame {
         const parent = this.axesOf(inputs.parent, "parent");
-        return this.childToLocal(parent, this.axesOf(inputs.child, "child"));
+        return this.frameOf(relativeAxes(parent, this.axesOf(inputs.child, "child")));
     }
 
     /**
@@ -530,7 +529,7 @@ export class Frame {
      */
     framesToLocal(inputs: Inputs.Frame.ChildFramesDto): Inputs.Base.Frame[] {
         const parent = this.axesOf(inputs.parent, "parent");
-        return this.axesOfEach(inputs.children, "children").map(child => this.childToLocal(parent, child));
+        return this.axesOfEach(inputs.children, "children").map(child => this.frameOf(relativeAxes(parent, child)));
     }
 
     /**
@@ -550,7 +549,7 @@ export class Frame {
      */
     pointToWorld(inputs: Inputs.Frame.FramePointDto): Inputs.Base.Point3 {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.vector.add({ first: axes.origin, second: this.along(axes, ...this.pointOf(inputs.point, "point")) }) as Vec3;
+        return pointToWorld(axes, this.pointOf(inputs.point, "point"));
     }
 
     /**
@@ -570,7 +569,7 @@ export class Frame {
      */
     pointToLocal(inputs: Inputs.Frame.FramePointDto): Inputs.Base.Point3 {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.against(axes, this.vector.sub({ first: this.pointOf(inputs.point, "point"), second: axes.origin }) as Vec3);
+        return pointToLocal(axes, this.pointOf(inputs.point, "point"));
     }
 
     /**
@@ -588,7 +587,7 @@ export class Frame {
      */
     pointsToWorld(inputs: Inputs.Frame.FramePointsDto): Inputs.Base.Point3[] {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.pointsOf(inputs.points, "points").map(point => this.vector.add({ first: axes.origin, second: this.along(axes, ...point) }) as Vec3);
+        return this.pointsOf(inputs.points, "points").map(point => pointToWorld(axes, point));
     }
 
     /**
@@ -606,7 +605,7 @@ export class Frame {
      */
     pointsToLocal(inputs: Inputs.Frame.FramePointsDto): Inputs.Base.Point3[] {
         const axes = this.axesOf(inputs.frame, "frame");
-        return this.pointsOf(inputs.points, "points").map(point => this.against(axes, this.vector.sub({ first: point, second: axes.origin }) as Vec3));
+        return this.pointsOf(inputs.points, "points").map(point => pointToLocal(axes, point));
     }
 
     /**
@@ -623,7 +622,7 @@ export class Frame {
      * ```
      */
     vectorToWorld(inputs: Inputs.Frame.FrameVectorDto): Inputs.Base.Vector3 {
-        return this.along(this.axesOf(inputs.frame, "frame"), ...this.vectorOf(inputs.vector, "vector"));
+        return vectorToWorld(this.axesOf(inputs.frame, "frame"), this.vectorOf(inputs.vector, "vector"));
     }
 
     /**
@@ -640,7 +639,7 @@ export class Frame {
      * ```
      */
     vectorToLocal(inputs: Inputs.Frame.FrameVectorDto): Inputs.Base.Vector3 {
-        return this.against(this.axesOf(inputs.frame, "frame"), this.vectorOf(inputs.vector, "vector"));
+        return vectorToLocal(this.axesOf(inputs.frame, "frame"), this.vectorOf(inputs.vector, "vector"));
     }
 
     /**
@@ -660,7 +659,7 @@ export class Frame {
      * ```
      */
     toMatrix(inputs: Inputs.Frame.FrameDto): Inputs.Base.TransformMatrixes {
-        return [this.matrixBetween(WORLD, this.axesOf(inputs.frame, "frame"))];
+        return [this.matrixBetween(WORLD_AXES, this.axesOf(inputs.frame, "frame"))];
     }
 
     /**
@@ -724,7 +723,7 @@ export class Frame {
      * ```
      */
     matrixFromTo(inputs: Inputs.Frame.FromToDto): Inputs.Base.TransformMatrixes {
-        const from = inputs.from === undefined ? WORLD : this.axesOf(inputs.from, "from");
+        const from = inputs.from === undefined ? WORLD_AXES : this.axesOf(inputs.from, "from");
         return [this.matrixBetween(from, this.axesOf(inputs.to, "to"))];
     }
 
@@ -746,7 +745,7 @@ export class Frame {
      */
     grid(inputs: Inputs.Frame.GridDto): Inputs.Base.Frame[] {
         const resolved = resolveDto(Inputs.Frame.GridDto, inputs) as Resolved.Frame.GridDto;
-        const axes = resolved.frame === undefined ? WORLD : this.axesOf(resolved.frame, "frame");
+        const axes = resolved.frame === undefined ? WORLD_AXES : this.axesOf(resolved.frame, "frame");
         const countX = this.countOf(resolved.countX, "countX");
         const countY = this.countOf(resolved.countY, "countY");
         const spacingX = this.numberOf(resolved.spacingX, "spacingX");
@@ -756,7 +755,7 @@ export class Frame {
         const frames: Inputs.Base.Frame[] = [];
         for (let row = 0; row < countY; row++) {
             for (let column = 0; column < countX; column++) {
-                frames.push(this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.along(axes, column * spacingX - shiftX, row * spacingY - shiftY, 0) }) as Vec3 }));
+                frames.push(this.frameOf({ ...axes, origin: pointToWorld(axes, [column * spacingX - shiftX, row * spacingY - shiftY, 0]) }));
             }
         }
         return frames;
@@ -780,7 +779,7 @@ export class Frame {
      */
     polar(inputs: Inputs.Frame.PolarDto): Inputs.Base.Frame[] {
         const resolved = resolveDto(Inputs.Frame.PolarDto, inputs) as Resolved.Frame.PolarDto;
-        const axes = resolved.frame === undefined ? WORLD : this.axesOf(resolved.frame, "frame");
+        const axes = resolved.frame === undefined ? WORLD_AXES : this.axesOf(resolved.frame, "frame");
         const count = this.countOf(resolved.count, "count");
         const radius = this.numberOf(resolved.radius, "radius");
         if (radius < 0) {
@@ -823,7 +822,7 @@ export class Frame {
      */
     hexGrid(inputs: Inputs.Frame.HexGridDto): Inputs.Base.Frame[] {
         const resolved = resolveDto(Inputs.Frame.HexGridDto, inputs) as Resolved.Frame.HexGridDto;
-        const axes = resolved.frame === undefined ? WORLD : this.axesOf(resolved.frame, "frame");
+        const axes = resolved.frame === undefined ? WORLD_AXES : this.axesOf(resolved.frame, "frame");
         const countX = this.countOf(resolved.countX, "countX");
         const countY = this.countOf(resolved.countY, "countY");
         const radius = this.numberOf(resolved.radius, "radius");
@@ -838,7 +837,7 @@ export class Frame {
         for (let row = 0; row < countY; row++) {
             for (let column = 0; column < countX; column++) {
                 const u = column * columnSpacing + (row % 2 === 1 ? columnSpacing / 2 : 0);
-                frames.push(this.frameOf({ ...axes, origin: this.vector.add({ first: axes.origin, second: this.along(axes, u - shiftU, row * rowSpacing - shiftV, 0) }) as Vec3 }));
+                frames.push(this.frameOf({ ...axes, origin: pointToWorld(axes, [u - shiftU, row * rowSpacing - shiftV, 0]) }));
             }
         }
         return frames;
@@ -890,32 +889,6 @@ export class Frame {
         return this.frameOf({ origin: axes.origin, x: axes.x, y: this.vector.neg({ vector: axes.y }) as Vec3, z: this.vector.neg({ vector: axes.z }) as Vec3 });
     }
 
-    private childToWorld(parent: Axes, child: Axes): Inputs.Base.Frame {
-        return this.frameOf({
-            origin: this.vector.add({ first: parent.origin, second: this.along(parent, ...child.origin) }) as Vec3,
-            x: this.along(parent, ...child.x),
-            y: this.along(parent, ...child.y),
-            z: this.along(parent, ...child.z),
-        });
-    }
-
-    private childToLocal(parent: Axes, child: Axes): Inputs.Base.Frame {
-        return this.frameOf({
-            origin: this.against(parent, this.vector.sub({ first: child.origin, second: parent.origin }) as Vec3),
-            x: this.against(parent, child.x),
-            y: this.against(parent, child.y),
-            z: this.against(parent, child.z),
-        });
-    }
-
-    private along(axes: Axes, u: number, v: number, w: number): Vec3 {
-        return this.vector.add({ first: this.combined(axes.x, u, axes.y, v), second: this.vector.mul({ vector: axes.z, scalar: w }) }) as Vec3;
-    }
-
-    private against(axes: Axes, vector: Vec3): Vec3 {
-        return [this.vector.dot({ first: vector, second: axes.x }), this.vector.dot({ first: vector, second: axes.y }), this.vector.dot({ first: vector, second: axes.z })];
-    }
-
     private combined(first: Vec3, a: number, second: Vec3, b: number): Vec3 {
         return this.vector.add({ first: this.vector.mul({ vector: first, scalar: a }), second: this.vector.mul({ vector: second, scalar: b }) }) as Vec3;
     }
@@ -931,8 +904,8 @@ export class Frame {
     }
 
     private matrixBetween(from: Axes, to: Axes): Inputs.Base.TransformMatrix {
-        const columns = [0, 1, 2].map(i => this.along(to, from.x[i]!, from.y[i]!, from.z[i]!));
-        const origin = this.vector.add({ first: to.origin, second: this.along(to, ...this.vector.neg({ vector: this.against(from, from.origin) }) as Vec3) }) as Vec3;
+        const columns = [0, 1, 2].map(i => vectorToWorld(to, [from.x[i]!, from.y[i]!, from.z[i]!]));
+        const origin = pointToWorld(to, this.vector.neg({ vector: vectorToLocal(from, from.origin) }) as Vec3);
         return [
             ...columns[0]!, 0,
             ...columns[1]!, 0,

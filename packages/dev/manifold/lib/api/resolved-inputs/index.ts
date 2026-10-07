@@ -9,6 +9,7 @@ export * from "@bitbybit-dev/base/lib/api/resolved-inputs";
  * the way `resolveDto` hands a DTO to the code that reads it.
  */
 export namespace Manifold {
+    export type BuildRecipeDto = WithDefaults<Inputs.Manifold.BuildRecipeDto, "circularSegments" | "adjustZtoY" | "emptyWhenFailed">;
     export type CalculateCurvatureDto<T> = WithDefaults<Inputs.Manifold.CalculateCurvatureDto<T>, "gaussianIdx" | "meanIdx">;
     export type CalculateNormalsDto<T> = WithDefaults<Inputs.Manifold.CalculateNormalsDto<T>, "normalIdx" | "minSharpAngle">;
     export type CircleDto = WithDefaults<Inputs.Manifold.CircleDto, "radius" | "circularSegments">;
@@ -26,8 +27,8 @@ export namespace Manifold {
     export type DecomposedManifoldMeshDto = Inputs.Manifold.DecomposedManifoldMeshDto;
     export type DecomposeManifoldOrCrossSectionDto<T> = Inputs.Manifold.DecomposeManifoldOrCrossSectionDto<T>;
     export type DecomposeManifoldsOrCrossSectionsDto<T> = Inputs.Manifold.DecomposeManifoldsOrCrossSectionsDto<T>;
-    export type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
-    export type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    export type DrawManifoldOrCrossSectionDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldOrCrossSectionDto<T, M>, "faceOpacity" | "faceColour" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
+    export type DrawManifoldsOrCrossSectionsDto<T, M> = WithDefaults<Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<T, M>, "faceColour" | "faceOpacity" | "crossSectionColour" | "crossSectionWidth" | "crossSectionOpacity" | "computeNormals" | "minSharpAngle" | "drawTwoSided" | "backFaceColour" | "backFaceOpacity">;
     export type ExtrudeDto<T> = WithDefaults<Inputs.Manifold.ExtrudeDto<T>, "height" | "nDivisions" | "twistDegrees" | "scaleTopX" | "scaleTopY" | "center">;
     export type FromPolygonPointsDto = Inputs.Manifold.FromPolygonPointsDto;
     export type HullPointsDto<T> = Inputs.Manifold.HullPointsDto<T>;
@@ -55,6 +56,7 @@ export namespace Manifold {
     export type MirrorDto<T> = WithDefaults<Inputs.Manifold.MirrorDto<T>, "normal">;
     export type OffsetDto<T> = WithDefaults<Inputs.Manifold.OffsetDto<T>, "delta" | "joinType" | "miterLimit" | "circularSegments">;
     export type RayCastDto<T> = WithDefaults<Inputs.Manifold.RayCastDto<T>, "origin" | "endpoint">;
+    export type RecipeSurfaceMeshesDto = WithDefaults<Inputs.Manifold.RecipeSurfaceMeshesDto, "adjustZtoY">;
     export type RectangleDto = WithDefaults<Inputs.Manifold.RectangleDto, "length" | "height" | "center">;
     export type RevolveDto<T> = WithDefaults<Inputs.Manifold.RevolveDto<T>, "revolveDegrees" | "matchProfile" | "circularSegments">;
     export type RotateCrossSectionDto<T> = WithDefaults<Inputs.Manifold.RotateCrossSectionDto<T>, "degrees">;

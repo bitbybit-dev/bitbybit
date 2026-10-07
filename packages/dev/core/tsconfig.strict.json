@@ -8,6 +8,12 @@
             "path": "../base/tsconfig.bitbybit.json"
         },
         {
+            "path": "../ifc/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "../ifc-worker/tsconfig.bitbybit.json"
+        },
+        {
             "path": "../jscad/tsconfig.bitbybit.json"
         },
         {

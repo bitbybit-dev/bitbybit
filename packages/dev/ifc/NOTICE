@@ -1,0 +1,23 @@
+NOTICE - third-party material in @bitbybit-dev/ifc
+==================================================
+
+The TypeScript and JavaScript in this package are MIT-licensed (see LICENSE), with one exception
+described below.
+
+1. The IFC4 ADD2 TC1 schema
+   Author:  buildingSMART International Limited
+   Source:  the EXPRESS schema IFC4_ADD2_TC1.exp, published by buildingSMART International
+            (https://github.com/buildingSMART/IFC4.x-development, reference_schemas/)
+   Usage:   translated into a TypeScript table (lib/schema/generated/ifc4.js) that names every
+            type and entity of the schema with its attributes. The translation is generated, and
+            the schema itself is not changed.
+   Notice:  "Any technical documentation made available by buildingSMART International Limited
+            is the copyrighted work of buildingSMART International Limited and is owned by the
+            buildingSMART International Limited. It may be photocopied, used in software
+            development, or translated into another computer language without prior written
+            consent from buildingSMART International Limited provided that full attribution is
+            given. Prior written consent is required if changes are made to the technical
+            specification."
+
+   IFC and Industry Foundation Classes are names of buildingSMART International. This package is
+   not certified by, endorsed by or affiliated with buildingSMART International.

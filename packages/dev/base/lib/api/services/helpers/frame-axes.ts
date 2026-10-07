@@ -76,3 +76,46 @@ export const squareFrame = (origin: Vec3, normal: Vec3, direction: Vec3): FrameA
     const y: Vec3 = [z[1] * x[2] - z[2] * x[1], z[2] * x[0] - z[0] * x[2], z[0] * x[1] - z[1] * x[0]];
     return { origin: [origin[0], origin[1], origin[2]], x, y, z };
 };
+
+export const WORLD_AXES: FrameAxes = { origin: [0, 0, 0], x: [1, 0, 0], y: [0, 1, 0], z: [0, 0, 1] };
+
+export const vectorToWorld = (axes: FrameAxes, vector: Vec3): Vec3 => [
+    (axes.x[0] * vector[0] + axes.y[0] * vector[1]) + axes.z[0] * vector[2],
+    (axes.x[1] * vector[0] + axes.y[1] * vector[1]) + axes.z[1] * vector[2],
+    (axes.x[2] * vector[0] + axes.y[2] * vector[1]) + axes.z[2] * vector[2],
+];
+
+export const pointToWorld = (axes: FrameAxes, point: Vec3): Vec3 => {
+    const along = vectorToWorld(axes, point);
+    return [axes.origin[0] + along[0], axes.origin[1] + along[1], axes.origin[2] + along[2]];
+};
+
+export const vectorToLocal = (axes: FrameAxes, vector: Vec3): Vec3 => [
+    vector[0] * axes.x[0] + vector[1] * axes.x[1] + vector[2] * axes.x[2],
+    vector[0] * axes.y[0] + vector[1] * axes.y[1] + vector[2] * axes.y[2],
+    vector[0] * axes.z[0] + vector[1] * axes.z[1] + vector[2] * axes.z[2],
+];
+
+export const pointToLocal = (axes: FrameAxes, point: Vec3): Vec3 =>
+    vectorToLocal(axes, [point[0] - axes.origin[0], point[1] - axes.origin[1], point[2] - axes.origin[2]]);
+
+export const composeAxes = (parent: FrameAxes, child: FrameAxes): FrameAxes => ({
+    origin: pointToWorld(parent, child.origin),
+    x: vectorToWorld(parent, child.x),
+    y: vectorToWorld(parent, child.y),
+    z: vectorToWorld(parent, child.z),
+});
+
+export const relativeAxes = (parent: FrameAxes, child: FrameAxes): FrameAxes => ({
+    origin: pointToLocal(parent, child.origin),
+    x: vectorToLocal(parent, child.x),
+    y: vectorToLocal(parent, child.y),
+    z: vectorToLocal(parent, child.z),
+});
+
+export const axesToMatrix = (axes: FrameAxes): Inputs.Base.TransformMatrix => [
+    axes.x[0], axes.x[1], axes.x[2], 0,
+    axes.y[0], axes.y[1], axes.y[2], 0,
+    axes.z[0], axes.z[1], axes.z[2], 0,
+    axes.origin[0], axes.origin[1], axes.origin[2], 1,
+];

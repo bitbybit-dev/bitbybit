@@ -12,6 +12,7 @@ const PAIRS = [
     { name: "occt", kernelDir: "packages/dev/occt/lib", kernelRoot: "OCCTService", workerDir: "packages/dev/occt-worker/lib/api", workerRoot: "OCCT", reservedConstants: "packages/dev/occt-worker/lib/occ-worker/constants.ts" },
     { name: "jscad", kernelDir: "packages/dev/jscad/lib", kernelRoot: "Jscad", workerDir: "packages/dev/jscad-worker/lib/api", workerRoot: "JSCAD" },
     { name: "manifold", kernelDir: "packages/dev/manifold/lib", kernelRoot: "ManifoldService", workerDir: "packages/dev/manifold-worker/lib/api", workerRoot: "ManifoldBitByBit" },
+    { name: "ifc", kernelDir: "packages/dev/ifc/lib", kernelRoot: "IFCService", workerDir: "packages/dev/ifc-worker/lib/api", workerRoot: "IFCBitByBit" },
 ];
 
 const typeText = (node, sf) => (node ? node.getText(sf).replace(/\s+/g, "") : "");
@@ -94,7 +95,8 @@ function normalise(t) {
         s = promise[1];
     }
     s = s
-        .replace(/Inputs\.(OCCT|JSCAD|Manifold)\.\w+Pointer\b/g, "PTR")
+        .replace(/Inputs\.(OCCT|JSCAD|Manifold|IFC)\.\w+Pointer\b/g, "PTR")
+        .replace(/\bIfcModel\b/g, "PTR")
         .replace(/\b(TopoDS_\w+|Handle_\w+|Geom2d_\w+|Geom_\w+|gp_\w+|TDocStd_\w+|TDF_\w+|Poly_\w+|BRep\w+)\b/g, "PTR")
         .replace(/\bManifold3D\.(Manifold|CrossSection|Mesh)\b/g, "PTR")
         .replace(/\bManifold3D\.SimplePolygon\b/g, "Inputs.Base.Vector2[]")

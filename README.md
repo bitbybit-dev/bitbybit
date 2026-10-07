@@ -113,6 +113,8 @@ The [full walkthrough of the diagram](https://learn.bitbybit.dev/learn/intro) is
 | [@bitbybit-dev/manifold-worker](https://www.npmjs.com/package/@bitbybit-dev/manifold-worker) | Manifold via WebWorker (non-blocking, browser only) |
 | [@bitbybit-dev/jscad](https://www.npmjs.com/package/@bitbybit-dev/jscad) | JSCAD solid modeling (works in Node.js & browser) |
 | [@bitbybit-dev/jscad-worker](https://www.npmjs.com/package/@bitbybit-dev/jscad-worker) | JSCAD via WebWorker (non-blocking, browser only) |
+| [@bitbybit-dev/ifc](https://www.npmjs.com/package/@bitbybit-dev/ifc) | IFC building models read, written and authored in TypeScript (works in Node.js & browser) |
+| [@bitbybit-dev/ifc-worker](https://www.npmjs.com/package/@bitbybit-dev/ifc-worker) | IFC via WebWorker (non-blocking, browser only) |
 | [@bitbybit-dev/base](https://www.npmjs.com/package/@bitbybit-dev/base) | Base math/vector/matrix algorithms used by all packages |
 | [@bitbybit-dev/create-app](https://www.npmjs.com/package/@bitbybit-dev/create-app) | CLI tool to scaffold 3D/CAD projects |
 | [@bitbybit-dev/cad-cloud-sdk](https://www.npmjs.com/package/@bitbybit-dev/cad-cloud-sdk) | TypeScript SDK for the CAD Cloud API |

@@ -880,4 +880,38 @@ export namespace Point {
          */
         pointsOnGround?: boolean | undefined = false;
     }
+    /**
+     * Three points on a circular arc and how finely to divide it, for `point.arcThroughThreePoints`.
+     */
+    export class ArcThroughThreePointsDto {
+        constructor(start?: Base.Point3, middle?: Base.Point3, end?: Base.Point3, segments?: number) {
+            if (start !== undefined) { this.start = start; }
+            if (middle !== undefined) { this.middle = middle; }
+            if (end !== undefined) { this.end = end; }
+            if (segments !== undefined) { this.segments = segments; }
+        }
+        /**
+         * Where the arc starts.
+         * @default undefined
+         */
+        start!: Base.Point3;
+        /**
+         * A point the arc passes through on its way, which decides the side it bulges to.
+         * @default undefined
+         */
+        middle!: Base.Point3;
+        /**
+         * Where the arc ends.
+         * @default undefined
+         */
+        end!: Base.Point3;
+        /**
+         * How many equal steps the arc is divided into; more steps follow the circle more closely.
+         * @default 16
+         * @minimum 1
+         * @maximum Infinity
+         * @step 1
+         */
+        segments?: number | undefined = 16;
+    }
 }

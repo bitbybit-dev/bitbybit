@@ -36,6 +36,8 @@ packages/dev/
 ├── jscad-worker/   ← @bitbybit-dev/jscad-worker
 ├── manifold/       ← @bitbybit-dev/manifold
 ├── manifold-worker/← @bitbybit-dev/manifold-worker
+├── ifc/            ← @bitbybit-dev/ifc
+├── ifc-worker/     ← @bitbybit-dev/ifc-worker
 └── core/           ← @bitbybit-dev/core
 ```
 
@@ -101,8 +103,14 @@ MeshInstance: vi.fn(function (mesh, material, node = mockNode) {
 | `npm run test-core` | Test core package |
 | `npm run test-jscad` | Test JSCAD package |
 | `npm run test-manifold` | Test Manifold package |
+| `npm run test-ifc` | Test IFC package |
 | `npm run test-threejs` | Test ThreeJS package |
-| `npm run test-playcavnas` | Test PlayCanvas package |
+| `npm run test-playcanvas` | Test PlayCanvas package |
+| `npm run test-babylonjs` | Test BabylonJS package |
+| `npm run test-occt-worker` | Test OCCT worker package |
+| `npm run test-jscad-worker` | Test JSCAD worker package |
+| `npm run test-manifold-worker` | Test Manifold worker package |
+| `npm run test-ifc-worker` | Test IFC worker package |
 
 Within individual packages:
 - `npm run test` - one run

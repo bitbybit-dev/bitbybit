@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { isFrameShaped, isTriple, PARALLEL_SINE, squareFrame, unitOf } from "./frame-axes";
+import { axesToMatrix, composeAxes, isFrameShaped, isTriple, PARALLEL_SINE, pointToLocal, pointToWorld, relativeAxes, squareFrame, unitOf, vectorToLocal, vectorToWorld, WORLD_AXES } from "./frame-axes";
+import type { FrameAxes } from "./frame-axes";
 import type * as Inputs from "../../inputs";
 
 type Vec3 = Inputs.Base.Vector3;
@@ -115,6 +116,59 @@ describe("frame axes", () => {
 
             // Assert
             expect(shaped).toBe(false);
+        });
+    });
+
+    describe("moving between a frame and the world", () => {
+        const turned: FrameAxes = { origin: [1000, 2000, 300], x: [0, 1, 0], y: [-1, 0, 0], z: [0, 0, 1] };
+
+        it("should place a local point in the world and read it back", () => {
+            // Act
+            const world = pointToWorld(turned, [100, 50, 10]);
+            const local = pointToLocal(turned, world);
+
+            // Assert
+            expect(world).toEqual([950, 2100, 310]);
+            expect(local).toEqual([100, 50, 10]);
+        });
+
+        it("should turn a vector without moving it", () => {
+            // Act
+            const world = vectorToWorld(turned, [1, 0, 0]);
+            const local = vectorToLocal(turned, world);
+
+            // Assert
+            expect(world).toEqual([0, 1, 0]);
+            expect(local).toEqual([1, 0, 0]);
+        });
+
+        it("should place a frame inside another and take it back out", () => {
+            // Arrange
+            const inner: FrameAxes = { origin: [10, 0, 0], x: [0, 1, 0], y: [-1, 0, 0], z: [0, 0, 1] };
+
+            // Act
+            const placed = composeAxes(turned, inner);
+            const back = relativeAxes(turned, placed);
+
+            // Assert
+            expect(placed).toEqual({ origin: [1000, 2010, 300], x: [-1, 0, 0], y: [0, -1, 0], z: [0, 0, 1] });
+            expect(back).toEqual(inner);
+        });
+
+        it("should leave a frame as it is when it is placed in the world frame", () => {
+            // Act
+            const placed = composeAxes(WORLD_AXES, turned);
+
+            // Assert
+            expect(placed).toEqual(turned);
+        });
+
+        it("should write a frame as a column-major matrix with the origin last", () => {
+            // Act
+            const matrix = axesToMatrix(turned);
+
+            // Assert
+            expect(matrix).toEqual([0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1, 0, 1000, 2000, 300, 1]);
         });
     });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { composed, followedBy, isTransformMatrix, symmetricEigen } from "./matrices";
+import { composed, followedBy, isTransformMatrix, linearDeterminant, symmetricEigen } from "./matrices";
 
 const IDENTITY = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
@@ -14,6 +14,22 @@ const times = (matrix: readonly (readonly number[])[], vector: readonly number[]
     matrix.map(row => row[0]! * vector[0]! + row[1]! * vector[1]! + row[2]! * vector[2]!);
 
 describe("matrices", () => {
+
+    describe("linearDeterminant", () => {
+        it.each([
+            { matrix: moveBy(5, 6, 7), expected: 1, reason: "a move, which keeps volume" },
+            { matrix: quarterTurnAboutZ, expected: 1, reason: "a turn" },
+            { matrix: [2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1], expected: 24, reason: "a scale, by the volume it scales by" },
+            { matrix: [-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], expected: -1, reason: "a mirror, below zero" },
+            { matrix: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], expected: 0, reason: "a flattening, zero" },
+        ])("should give $expected for $reason", ({ matrix, expected }) => {
+            // Act
+            const determinant = linearDeterminant(matrix);
+
+            // Assert
+            expect(determinant).toBe(expected);
+        });
+    });
 
     describe("isTransformMatrix", () => {
         it("should take sixteen finite numbers", () => {

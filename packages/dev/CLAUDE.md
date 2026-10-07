@@ -1,13 +1,12 @@
 # CLAUDE.md - the published `@bitbybit-dev/*` packages
 
-Fourteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`, `jscad-worker`,
-`manifold`, `manifold-worker`, `core`, `babylonjs`, `threejs`, `playcanvas`, `cad-cloud-sdk`,
-`create-app`, `mcp`.
-
-They form a DAG. `base` is the root and depends on nothing; `core` sits on `base` and the three
-workers; `babylonjs`, `threejs` and `playcanvas` each sit on `core` and carry their engine as a peer
-or hard dependency. The build order is derived from these manifests - see "Building the packages"
-in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
+Sixteen packages, all published to npm: `base`, `occt`, `occt-worker`, `jscad`, `jscad-worker`,
+`manifold`, `manifold-worker`, `ifc`, `ifc-worker`, `core`, `babylonjs`, `threejs`, `playcanvas`,
+`cad-cloud-sdk`, `create-app`, `mcp`. They form a DAG: `base` is the root and depends on nothing;
+`ifc` sits on `base` alone and `ifc-worker` on `ifc` and `base`; `core` sits on `base`, the three
+kernels, `ifc` and all four workers; `babylonjs`, `threejs` and `playcanvas` each sit on `core` and
+carry their engine as a peer or hard dependency. The build order is derived from these manifests - see
+"Building the packages" in the root CLAUDE.md; `npm run build-packages` at the repo root runs it.
 
 ## Per-package commands (run from the package directory)
 
@@ -57,24 +56,26 @@ npm run lint
   or a DTO's types (`check:dto-meta` in `npm test` fails on a stale one). Rules across properties are
   hand-written in `lib/api/validation` (`defineRules`, base/CLAUDE.md).
 - **The worker API classes are generated from the kernel; do not edit them.** Every file under
-  `occt-worker/lib/api/occt`, `manifold-worker/lib/api/{manifold,cross-section,mesh}` and the class
-  files of `jscad-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its
-  signature, its position in the class) and run `npm run gen:worker-api` at the repository root;
+  `occt-worker/lib/api/occt` and `manifold-worker/lib/api/{manifold,cross-section,mesh}`,
+  `manifold-worker/lib/api/recipes.ts`, and the class files of `jscad-worker/lib/api` and
+  `ifc-worker/lib/api` carries a GENERATED header. Change the kernel method (its doc, its signature,
+  its position in the class) and run `npm run gen:worker-api` at the repository root;
   `check:worker-api` in `npm test` fails on a stale file. A new kernel API method appears in the
   worker on the next generation - and in the parity snapshot, which then needs `--update`, because a
   new dotted path is a public API addition. Hand-written members (downloads, File/Blob preparation,
   re-hydration, reserved commands) go into `lib/api-hand/<same path>.ts` with a marker line each; a
   `// replaces <path>` member without a JSDoc receives the kernel's. Every public kernel API method
   needs an explicit return type - the generator refuses an inferred one.
-- **The four assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
-  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts` and `core/.../verb-inputs.ts` are each
-  written from the fragments in the sibling directory beside them. Add or change a DTO in the fragment
-  whose name fits (they are slices of the namespace in a fixed order, so a new DTO lands where its
-  fragment sits), import a sibling fragment's DTO when a property refers to it, and run
-  `npm run gen:inputs` at the repository root; `check:inputs` in `npm test` fails on a stale file. A new
-  fragment is added to its namespace's `order` in `scripts/inputs.config.mjs` - the generator fails on a
-  fragment nothing names rather than dropping it. The fragments are excluded from the build - the
-  assembled namespace is what compiles - and they are what lint sees, the assembled file being ignored.
+- **The five assembled inputs namespaces are generated; do not edit them.** `occt/.../occ-inputs.ts`,
+  `jscad/.../jscad-inputs.ts`, `manifold/.../manifold-inputs.ts`, `ifc/.../ifc-inputs.ts` and
+  `core/.../verb-inputs.ts` are each written from the fragments in the sibling directory beside them.
+  Add or change a DTO in the fragment whose name fits (they are slices of the namespace in a fixed
+  order, so a new DTO lands where its fragment sits), import a sibling fragment's DTO when a property
+  refers to it, and run `npm run gen:inputs` at the repository root; `check:inputs` in `npm test`
+  fails on a stale file. A new fragment is added to its namespace's `order` in
+  `scripts/inputs.config.mjs` - the generator fails on a fragment nothing names rather than dropping
+  it. The fragments are excluded from the build - the assembled namespace is what compiles - and they
+  are what lint sees, the assembled file being ignored.
 - **Method and class JSDoc is authored on the kernel and describes the API as users reach it** - the
   asynchronous, worker-backed one (`await` in examples, File/Blob accepted where the worker converts
   them, `deleteDocument()` for document lifetime) - with the generator tags (`@group`, `@shortname`,
@@ -115,9 +116,8 @@ npm run lint
   carry `@deprecated`, which reaches the TypeScript editor and changes nothing else: every caller's
   code keeps working until the removal. Until then, **do not invest in it** - it holds two thirds of
   the `any` in the published declarations, and typing those would add public types for an area
-  that is going away. Drawing
-  does not depend on the library: `Base.VerbCurve` and `Base.VerbSurface` are `{ tessellate }`
-  structural types, so anything that tessellates still draws.
+  that is going away. Drawing does not depend on the library: `Base.VerbCurve` and
+  `Base.VerbSurface` are `{ tessellate }` structural types, so anything that tessellates still draws.
 - `create-app` is the `npx @bitbybit-dev/create-app` scaffolder, not a library.
 - **The `repository` field is load-bearing.** npm's provenance check compares the published manifest's
   `repository.url` with the repository the publish workflow runs in, so every package declares
@@ -164,7 +164,7 @@ almost every rule here follows from that.
   defaults and the call is cached under them. Only a miss reports what `validateInputs` finds (not
   thrown, for now), replaces the references in the inputs by the cached objects - a new structure, the
   posted inputs untouched - and calls the dotted path with `callByPath`. `describeKernelFailure` words a
-  failure the same way for all three kernels; when even that cannot be posted, a fixed message is.
+  failure the same way for every worker; when even that cannot be posted, a fixed message is.
 - **Structured clone drops prototypes.** A DTO arrives as a plain object: no methods, no getters, no
   `instanceof`. That is why worker-side types are plain records.
 - **Materials cannot cross** - engine material objects are cyclic and throw `DataCloneError`, so

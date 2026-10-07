@@ -11,6 +11,9 @@
             "path": "../core/tsconfig.bitbybit.json"
         },
         {
+            "path": "../ifc-worker/tsconfig.bitbybit.json"
+        },
+        {
             "path": "../jscad-worker/tsconfig.bitbybit.json"
         },
         {

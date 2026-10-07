@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.bitbybit.json",
+    "compilerOptions": {
+        "noEmit": true
+    },
+    "references": [
+        {
+            "path": "../base/tsconfig.bitbybit.json"
+        },
+        {
+            "path": "../ifc/tsconfig.bitbybit.json"
+        }
+    ]
+}

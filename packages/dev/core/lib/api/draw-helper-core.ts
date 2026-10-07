@@ -1,8 +1,11 @@
 import { Base } from "./inputs/base-inputs";
 import type { Vector } from "@bitbybit-dev/base";
 import { srgbToLinear } from "@bitbybit-dev/base";
-import { computeVertexNormals } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
+import { computeVertexNormals, creasedMesh } from "@bitbybit-dev/base/lib/api/services/helpers/mesh-normals";
 import { CACHE_CONFIG, DEFAULT_COLORS } from "./constants";
+import type { ManifoldMeshAttributes, ManifoldShadingOptions, ManifoldVertexData } from "./draw-helper-types";
+
+const POSITION_SIZE = 3;
 
 /**
  * Mesh data structure for geometry processing
@@ -539,6 +542,43 @@ export class DrawHelperCore {
             indices: expandedIndices,
             normals: expandedNormals
         };
+    }
+
+    /**
+     * The sharp angle to ask the Manifold worker for: the drawing's `minSharpAngle` when normals are
+     * computed, and 0, which shades every face flat, when they are not.
+     * @param options - The drawing's shading options
+     * @returns The angle in degrees
+     */
+    protected manifoldSharpAngle(options: ManifoldShadingOptions): number {
+        return options.computeNormals ? options.minSharpAngle : 0;
+    }
+
+    /**
+     * Turns a Manifold mesh into positions, normals and triangles to draw. The normals are the ones
+     * the worker computed after each position; a worker from a release before it could do so sends
+     * none, and they are then computed here by the same rule, smooth across edges flatter than
+     * `minSharpAngle`.
+     * @param mesh - The mesh as the worker sent it
+     * @param minSharpAngle - The angle in degrees above which an edge stays sharp
+     * @returns The positions, normals and triangle indices
+     */
+    protected manifoldMeshAttributes(mesh: ManifoldVertexData, minSharpAngle: number): ManifoldMeshAttributes {
+        const numProp = mesh.numProp || POSITION_SIZE;
+        const count = mesh.vertProperties.length / numProp;
+        const positions = numProp === POSITION_SIZE ? mesh.vertProperties : new Float32Array(count * POSITION_SIZE);
+        const normals = numProp >= POSITION_SIZE * 2 ? new Float32Array(count * POSITION_SIZE) : undefined;
+        if (numProp !== POSITION_SIZE) {
+            for (let vertex = 0; vertex < count; vertex++) {
+                for (let axis = 0; axis < POSITION_SIZE; axis++) {
+                    positions[vertex * POSITION_SIZE + axis] = mesh.vertProperties[vertex * numProp + axis]!;
+                    if (normals) {
+                        normals[vertex * POSITION_SIZE + axis] = mesh.vertProperties[vertex * numProp + POSITION_SIZE + axis]!;
+                    }
+                }
+            }
+        }
+        return normals ? { positions, normals, indices: mesh.triVerts } : creasedMesh(positions, mesh.triVerts, minSharpAngle);
     }
 
     /**

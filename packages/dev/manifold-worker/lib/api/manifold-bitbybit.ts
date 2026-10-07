@@ -4,19 +4,21 @@ import { ManifoldWorkerManager } from "../manifold-worker/manifold-worker-manage
 import { Manifold } from "./manifold/manifold";
 import { ManifoldCrossSection } from "./cross-section/cross-section";
 import { Mesh } from "./mesh/mesh";
+import { ManifoldRecipes } from "./recipes";
 
 /**
  * The entry point to the Manifold kernel, a fast mesh-based solid modeler: `manifold` builds and
- * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from, and
- * `mesh` reads the triangle data. Manifold works on triangle meshes rather than exact curves, so
- * booleans are quick and always watertight, and it keeps its own Z axis as up: extrusions grow
- * along Z and slices are parallel to the XY plane. The methods on the service itself turn solids
- * and cross-sections into plain mesh data for drawing.
+ * changes solids, `crossSection` handles the flat outlines they are extruded and revolved from,
+ * `mesh` reads the triangle data, and `recipes` builds solids described as data. Manifold works on
+ * triangle meshes rather than exact curves, so booleans are quick and always watertight, and it
+ * keeps its own Z axis as up: extrusions grow along Z and slices are parallel to the XY plane. The
+ * methods on the service itself turn solids and cross-sections into plain mesh data for drawing.
  */
 export class ManifoldBitByBit {
     public readonly manifold: Manifold;
     public readonly crossSection: ManifoldCrossSection;
     public readonly mesh: Mesh;
+    public readonly recipes: ManifoldRecipes;
 
     constructor(
         private readonly manifoldWorkerManager: ManifoldWorkerManager
@@ -24,6 +26,7 @@ export class ManifoldBitByBit {
         this.manifold = new Manifold(manifoldWorkerManager);
         this.crossSection = new ManifoldCrossSection(manifoldWorkerManager);
         this.mesh = new Mesh(manifoldWorkerManager);
+        this.recipes = new ManifoldRecipes(manifoldWorkerManager);
     }
 
     /**
@@ -43,7 +46,8 @@ export class ManifoldBitByBit {
      * or export.
      *
      * `normalIdx` names the vertex property channel that holds normals, when the solid carries
-     * them.
+     * them. With `minSharpAngle`, the normals are computed into the properties after the position,
+     * smooth across edges flatter than the angle, so the mesh shades as its surfaces curve.
      * @param inputs - The solid or cross-section and the optional normal channel
      * @returns The mesh data of a solid, or the polygons of a cross-section
      * @group decompose

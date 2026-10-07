@@ -313,6 +313,8 @@ export class Draw extends DrawCore {
             manifoldShapes: (i) => this.handleManifoldShapes(i),
             decomposedMeshes: (i) => this.handleDecomposedMeshes(i),
             decomposedMesh: (i) => this.handleDecomposedMeshShape(i),
+            manifoldMesh: (i) => this.handleManifoldMesh(i),
+            manifoldMeshes: (i) => this.handleManifoldMeshes(i),
         };
     }
 
@@ -962,6 +964,26 @@ export class Draw extends DrawCore {
             this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, r);
             return r;
         });
+    }
+
+    private handleManifoldMesh(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh | undefined> {
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        const drawn = this.drawHelper.drawManifoldMesh(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto, this.manifoldOptions(options));
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, drawn);
+        return Promise.resolve(drawn);
+    }
+
+    private handleManifoldMeshes(inputs: Inputs.Draw.DrawAny): Promise<BABYLON.Mesh> {
+        let options = inputs.options ? inputs.options : new Inputs.Draw.DrawManifoldOrCrossSectionOptions();
+        if (!inputs.options && inputs.babylonMesh && inputs.babylonMesh.metadata.options) {
+            options = inputs.babylonMesh.metadata.options;
+        }
+        const drawn = this.drawHelper.drawManifoldMeshes(inputs.entity as Inputs.Manifold.DecomposedManifoldMeshDto[], this.manifoldOptions(options));
+        this.applyGlobalSettingsAndMetadataAndShadowCasting(Inputs.Draw.drawingTypes.manifold, options, drawn);
+        return Promise.resolve(drawn);
     }
 
     private handleOcctShape(inputs: Inputs.Draw.DrawAny) {

@@ -2,7 +2,11 @@ import * as Inputs from "../inputs";
 import type { Polyline } from "./polyline";
 import type { Vector } from "./vector";
 import { resolveDto } from "../kernel-calls";
+import { signedVolumeOf } from "./helpers/mesh-measures";
+import { triangulateFace } from "./helpers/triangulation";
 import type * as Resolved from "../resolved-inputs";
+
+const TRIANGLE_CORNERS = 3;
 
 /**
  * Geometry on plain triangle meshes: a mesh is a list of triangles, each three points. The methods
@@ -318,5 +322,57 @@ export class MeshBitByBit {
                     scalar: t
                 })
             }) as Inputs.Base.Point3;
+    }
+
+    /**
+     * Cuts a flat polygon, with any holes through it, into triangles.
+     *
+     * Every corner stays a corner of a triangle, so neighbouring polygons give a mesh closed along
+     * the edges they share. The triangles face the way the outline turns, by the right-hand rule;
+     * holes may run either way.
+     * Example: a 4 by 4 square -> two triangles
+     * @param inputs - The outline and its holes
+     * @returns The triangles, each three points
+     * @group polygon
+     * @shortname triangulate polygon
+     * @drawable false
+     * @example
+     * ```typescript
+     * const triangles = bitbybit.mesh.triangulatePolygon({ points: [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]], holes: [[[1, 1, 0], [3, 1, 0], [3, 3, 0], [1, 3, 0]]] });
+     * ```
+     */
+    triangulatePolygon(inputs: Inputs.Mesh.PolygonWithHolesDto): Inputs.Base.Mesh3 {
+        const loops = [inputs.points, ...(inputs.holes ?? [])];
+        const corners = loops.flat();
+        const positions = corners.flat();
+        let next = 0;
+        const indices = loops.map((loop) => loop.map(() => next++));
+        const triangles = triangulateFace(positions, indices);
+        const mesh: Inputs.Base.Mesh3 = [];
+        for (let at = 0; at + 2 < triangles.length; at += TRIANGLE_CORNERS) {
+            mesh.push([[...corners[triangles[at]!]!], [...corners[triangles[at + 1]!]!], [...corners[triangles[at + 2]!]!]]);
+        }
+        return mesh;
+    }
+
+    /**
+     * Measures the volume a closed triangle mesh encloses, with a sign: positive when its triangles
+     * face outwards by the right-hand rule, negative when they all face inwards.
+     *
+     * A mesh that is not closed has no inside, and the number it gives means nothing.
+     * Example: a unit cube facing outwards -> 1
+     * @param inputs - The mesh
+     * @returns The enclosed volume in cubic model units
+     * @group measure
+     * @shortname signed volume
+     * @drawable false
+     * @example
+     * ```typescript
+     * const volume = bitbybit.mesh.signedVolume({ mesh: [[[0, 0, 0], [0, 1, 0], [1, 0, 0]], [[0, 0, 0], [1, 0, 0], [0, 0, 1]], [[0, 0, 0], [0, 0, 1], [0, 1, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]] });
+     * ```
+     */
+    signedVolume(inputs: Inputs.Mesh.MeshDto): number {
+        const positions = inputs.mesh.flat(2);
+        return signedVolumeOf(positions, Array.from({ length: positions.length / TRIANGLE_CORNERS }, (_, at) => at));
     }
 }

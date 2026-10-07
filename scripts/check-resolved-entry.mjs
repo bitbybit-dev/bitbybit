@@ -14,6 +14,7 @@ export const WORKERS = {
     "occt-worker": PACKAGES.occt,
     "jscad-worker": PACKAGES.jscad,
     "manifold-worker": PACKAGES.manifold,
+    "ifc-worker": PACKAGES.ifc,
 };
 
 const parseFile = (file) => ts.createSourceFile(file, readFileSync(file, "utf8"), ts.ScriptTarget.Latest, true);

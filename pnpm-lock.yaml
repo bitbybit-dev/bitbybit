@@ -65,6 +65,9 @@ importers:
       '@bitbybit-dev/core':
         specifier: 1.4.1
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.4.1
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
         specifier: 1.4.1
         version: link:../jscad-worker
@@ -148,6 +151,12 @@ importers:
       '@bitbybit-dev/base':
         specifier: 1.4.1
         version: link:../base
+      '@bitbybit-dev/ifc':
+        specifier: 1.4.1
+        version: link:../ifc
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.4.1
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad':
         specifier: 1.4.1
         version: link:../jscad
@@ -185,6 +194,9 @@ importers:
       jsdom:
         specifier: 29.0.1
         version: 29.0.1(canvas@3.2.3)
+      manifold-3d:
+        specifier: 3.5.3
+        version: 3.5.3(@gltf-transform/core@4.5.0)(@gltf-transform/extensions@4.5.0)(@gltf-transform/functions@4.5.0(@types/node@22.20.1))(esbuild-wasm@0.27.7)
       shx:
         specifier: 0.4.0
         version: 0.4.0
@@ -228,6 +240,56 @@ importers:
       '@types/node':
         specifier: ^22.10.2
         version: 22.20.1
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+
+  packages/dev/ifc:
+    dependencies:
+      '@bitbybit-dev/base':
+        specifier: 1.4.1
+        version: link:../base
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 7.59.1
+        version: 7.59.1(@types/node@22.20.1)
+      '@vitest/coverage-v8':
+        specifier: 4.1.11
+        version: 4.1.11(vitest@4.1.11)
+      shx:
+        specifier: 0.4.0
+        version: 0.4.0
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: 4.1.11
+        version: 4.1.11(@types/node@22.20.1)(@vitest/coverage-v8@4.1.11)(jsdom@29.0.1(canvas@3.2.3))(vite@8.2.2(@types/node@22.20.1)(sass@1.104.1))
+
+  packages/dev/ifc-worker:
+    dependencies:
+      '@bitbybit-dev/base':
+        specifier: 1.4.1
+        version: link:../base
+      '@bitbybit-dev/ifc':
+        specifier: 1.4.1
+        version: link:../ifc
+      rxjs:
+        specifier: 7.8.2
+        version: 7.8.2
+    devDependencies:
+      '@microsoft/api-extractor':
+        specifier: 7.59.1
+        version: 7.59.1(@types/node@22.20.1)
+      '@vitest/coverage-v8':
+        specifier: 4.1.11
+        version: 4.1.11(vitest@4.1.11)
+      shx:
+        specifier: 0.4.0
+        version: 0.4.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -436,6 +498,9 @@ importers:
       '@bitbybit-dev/core':
         specifier: 1.4.1
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.4.1
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
         specifier: 1.4.1
         version: link:../jscad-worker
@@ -482,6 +547,9 @@ importers:
       '@bitbybit-dev/core':
         specifier: 1.4.1
         version: link:../core
+      '@bitbybit-dev/ifc-worker':
+        specifier: 1.4.1
+        version: link:../ifc-worker
       '@bitbybit-dev/jscad-worker':
         specifier: 1.4.1
         version: link:../jscad-worker

@@ -10,18 +10,19 @@ export const FRAGMENT_DIRS = new Set(targets.map((t) => path.join(ROOT, t.dir)))
 
 const TEST_SUPPORT_DIRS = new Set(["__mocks__", "__test__"]);
 
-export const HAND_DIRS = ["occt-worker/lib/api-hand", "jscad-worker/lib/api-hand", "manifold-worker/lib/api-hand"];
-export const HAND_FILES = ["occt-worker/lib/api/bitbybit-occt.ts", "jscad-worker/lib/api/bitbybit-jscad.ts", "manifold-worker/lib/api/bitbybit-manifold.ts"];
+export const HAND_DIRS = ["occt-worker/lib/api-hand", "jscad-worker/lib/api-hand", "manifold-worker/lib/api-hand", "ifc-worker/lib/api-hand"];
+export const HAND_FILES = ["occt-worker/lib/api/bitbybit-occt.ts", "jscad-worker/lib/api/bitbybit-jscad.ts", "manifold-worker/lib/api/bitbybit-manifold.ts", "ifc-worker/lib/api/bitbybit-ifc.ts"];
 
 export const INPUTS_CHAINS = {
     base: ["base"],
     occt: ["occt", "base"],
     jscad: ["jscad", "base"],
     manifold: ["manifold", "base"],
-    core: ["core", "occt", "jscad", "manifold", "base"],
-    babylonjs: ["babylonjs", "core", "occt", "jscad", "manifold", "base"],
-    threejs: ["threejs", "core", "occt", "jscad", "manifold", "base"],
-    playcanvas: ["playcanvas", "core", "occt", "jscad", "manifold", "base"],
+    ifc: ["ifc", "base"],
+    core: ["core", "occt", "jscad", "manifold", "ifc", "base"],
+    babylonjs: ["babylonjs", "core", "occt", "jscad", "manifold", "ifc", "base"],
+    threejs: ["threejs", "core", "occt", "jscad", "manifold", "ifc", "base"],
+    playcanvas: ["playcanvas", "core", "occt", "jscad", "manifold", "ifc", "base"],
 };
 
 export function sourceFiles(dir, { fragments = false } = {}) {

@@ -17,6 +17,12 @@ export const followedBy = (first: readonly number[], second: readonly number[]):
     return product as Inputs.Base.TransformMatrix;
 };
 
+/** The determinant of a column-major 4 x 4 matrix's rotation and scale part: negative when it mirrors, near zero when it flattens. */
+export const linearDeterminant = (matrix: readonly number[]): number => {
+    const [a, b, c, , d, e, f, , g, h, i] = matrix as [number, number, number, number, number, number, number, number, number, number, number];
+    return a * (e * i - f * h) - d * (b * i - c * h) + g * (b * f - c * e);
+};
+
 /** One column-major 4 x 4 matrix that applies a list of them first to last; the identity for an empty list. */
 export const composed = (matrices: readonly (readonly number[])[]): Inputs.Base.TransformMatrix =>
     matrices.reduce<Inputs.Base.TransformMatrix>((total, matrix) => followedBy(total, matrix), [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);

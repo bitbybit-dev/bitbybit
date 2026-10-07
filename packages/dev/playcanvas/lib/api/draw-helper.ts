@@ -81,16 +81,9 @@ export class DrawHelper extends DrawHelperCore {
     async drawManifoldsOrCrossSections(inputs: Inputs.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldsOrCrossSectionsDto, inputs) as Resolved.Manifold.DrawManifoldsOrCrossSectionsDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto[] = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldsOrCrossSections", safeWorkerOptions);
-            const meshes = decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)).filter((s): s is pc.Entity => s !== undefined);
-            const containerId = this.generateEntityId("manifoldMeshContainer");
-            const manifoldMeshContainer = new pc.Entity(containerId);
-            meshes.forEach(mesh => {
-                manifoldMeshContainer.addChild(mesh);
-            });
-            this.context.scene.addChild(manifoldMeshContainer);
-            return manifoldMeshContainer;
+            return this.manifoldMeshContainer(decomposedMesh.map(dec => this.handleDecomposedManifold(dec, resolved)));
         } catch (error) {
             console.error("Error drawing manifolds or cross sections:", error);
             throw new Error(`Failed to draw manifolds or cross sections: ${messageOf(error)}`, { cause: error });
@@ -100,13 +93,23 @@ export class DrawHelper extends DrawHelperCore {
     async drawManifoldOrCrossSection(inputs: Inputs.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>): Promise<pc.Entity | undefined> {
         const resolved = resolveDto(Inputs.Manifold.DrawManifoldOrCrossSectionDto, inputs) as Resolved.Manifold.DrawManifoldOrCrossSectionDto<Inputs.Manifold.ManifoldPointer | Inputs.Manifold.CrossSectionPointer, pc.StandardMaterial>;
         try {
-            const safeWorkerOptions = this.getSafeWorkerOptions(resolved);
+            const safeWorkerOptions = { ...this.getSafeWorkerOptions(resolved), minSharpAngle: this.manifoldSharpAngle(resolved) };
             const decomposedMesh: Inputs.Manifold.DecomposedManifoldMeshDto = await this.manifoldWorkerManager.genericCallToWorkerPromise("decomposeManifoldOrCrossSection", safeWorkerOptions);
             return this.handleDecomposedManifold(decomposedMesh, resolved);
         } catch (error) {
             console.error("Error drawing manifold or cross section:", error);
             throw new Error(`Failed to draw manifold or cross section: ${messageOf(error)}`, { cause: error });
         }
+    }
+
+    drawManifoldMesh(mesh: Inputs.Manifold.DecomposedManifoldMeshDto, options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity | undefined {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.handleDecomposedManifold(mesh, resolved);
+    }
+
+    drawManifoldMeshes(meshes: Inputs.Manifold.DecomposedManifoldMeshDto[], options: Inputs.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity {
+        const resolved = resolveDto(Inputs.Draw.DrawManifoldOrCrossSectionOptions, options) as Resolved.Draw.DrawManifoldOrCrossSectionOptions;
+        return this.manifoldMeshContainer(meshes.map(mesh => this.handleDecomposedManifold(mesh, resolved)));
     }
 
     async drawShape(inputs: Inputs.OCCT.DrawShapeDto<Inputs.OCCT.TopoDSShapePointer>): Promise<pc.Entity> {
@@ -1398,81 +1401,28 @@ export class DrawHelper extends DrawHelperCore {
         );
     }
 
+    private manifoldMeshContainer(meshes: readonly (pc.Entity | undefined)[]): pc.Entity {
+        const container = new pc.Entity(this.generateEntityId("manifoldMeshContainer"));
+        meshes.forEach(mesh => {
+            if (mesh) {
+                container.addChild(mesh);
+            }
+        });
+        this.context.scene.addChild(container);
+        return container;
+    }
+
     private handleDecomposedManifold(
         decomposedManifold: Inputs.Manifold.DecomposedManifoldMeshDto | Inputs.Base.Vector2[][],
         options: Resolved.Draw.DrawManifoldOrCrossSectionOptions): pc.Entity | undefined {
         if ((decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto).vertProperties) {
             const decomposedMesh = decomposedManifold as Inputs.Manifold.DecomposedManifoldMeshDto;
             if (decomposedMesh.triVerts.length !== 0) {
-                const numProp = decomposedMesh.numProp || 3;
-                const vertProperties = decomposedMesh.vertProperties;
-                const triVerts = decomposedMesh.triVerts;
-                
-                let indexedPositions: number[];
-                if (numProp === 3) {
-                    indexedPositions = Array.from(vertProperties);
-                } else {
-                    const numVerts = vertProperties.length / numProp;
-                    indexedPositions = [];
-                    for (let i = 0; i < numVerts; i++) {
-                        const baseIdx = i * numProp;
-                        indexedPositions.push(vertProperties[baseIdx]!, vertProperties[baseIdx + 1]!, vertProperties[baseIdx + 2]!);
-                    }
-                }
-                
-                const positions: number[] = [];
-                const normals: number[] = [];
-                const indices: number[] = [];
-                
-                for (let i = 0; i < triVerts.length; i += 3) {
-                    const i0 = triVerts[i]!;
-                    const i1 = triVerts[i + 1]!;
-                    const i2 = triVerts[i + 2]!;
-                    
-                    const v0x = indexedPositions[i0 * 3]!;
-                    const v0y = indexedPositions[i0 * 3 + 1]!;
-                    const v0z = indexedPositions[i0 * 3 + 2]!;
-                    
-                    const v1x = indexedPositions[i1 * 3]!;
-                    const v1y = indexedPositions[i1 * 3 + 1]!;
-                    const v1z = indexedPositions[i1 * 3 + 2]!;
-                    
-                    const v2x = indexedPositions[i2 * 3]!;
-                    const v2y = indexedPositions[i2 * 3 + 1]!;
-                    const v2z = indexedPositions[i2 * 3 + 2]!;
-                    
-                    const e1x = v1x - v0x;
-                    const e1y = v1y - v0y;
-                    const e1z = v1z - v0z;
-                    
-                    const e2x = v2x - v0x;
-                    const e2y = v2y - v0y;
-                    const e2z = v2z - v0z;
-                    
-                    let nx = e1y * e2z - e1z * e2y;
-                    let ny = e1z * e2x - e1x * e2z;
-                    let nz = e1x * e2y - e1y * e2x;
-                    
-                    const len = Math.sqrt(nx * nx + ny * ny + nz * nz);
-                    if (len > 0) {
-                        nx /= len;
-                        ny /= len;
-                        nz /= len;
-                    }
-                    
-                    const baseIndex = positions.length / 3;
-                    
-                    positions.push(v0x, v0y, v0z);
-                    positions.push(v1x, v1y, v1z);
-                    positions.push(v2x, v2y, v2z);
-                    
-                    normals.push(nx, ny, nz);
-                    normals.push(nx, ny, nz);
-                    normals.push(nx, ny, nz);
-                    
-                    indices.push(baseIndex, baseIndex + 1, baseIndex + 2);
-                }
-                
+                const attributes = this.manifoldMeshAttributes(decomposedMesh, this.manifoldSharpAngle(options));
+                const positions = Array.from(attributes.positions);
+                const normals = Array.from(attributes.normals);
+                const indices = Array.from(attributes.indices);
+
                 const mesh = new pc.Mesh(this.context.app.graphicsDevice);
                 mesh.setPositions(positions);
                 mesh.setIndices(indices);

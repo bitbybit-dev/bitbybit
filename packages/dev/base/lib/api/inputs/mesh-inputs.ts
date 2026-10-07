@@ -123,4 +123,37 @@ export namespace Mesh {
          */
         tolerance?: number | undefined = 1e-7;
     }
+    /**
+     * A flat outline and the holes cut through it, for `mesh.triangulatePolygon`.
+     */
+    export class PolygonWithHolesDto {
+        constructor(points?: Base.Point3[], holes?: Base.Point3[][]) {
+            if (points !== undefined) { this.points = points; }
+            if (holes !== undefined) { this.holes = holes; }
+        }
+        /**
+         * The corners of the outline in order, all in one plane; the last need not repeat the first.
+         * @default undefined
+         */
+        points!: Base.Point3[];
+        /**
+         * The holes, each a list of corners in the outline's plane and inside the outline.
+         * @default undefined
+         * @optional true
+         */
+        holes?: Base.Point3[][] | undefined;
+    }
+    /**
+     * A triangle mesh, for `mesh.signedVolume` and other methods that read one.
+     */
+    export class MeshDto {
+        constructor(mesh?: Base.Mesh3) {
+            if (mesh !== undefined) { this.mesh = mesh; }
+        }
+        /**
+         * The mesh, as a list of triangles.
+         * @default undefined
+         */
+        mesh!: Base.Mesh3;
+    }
 }

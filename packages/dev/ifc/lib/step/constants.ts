@@ -1,0 +1,52 @@
+export const PRINTABLE_FIRST = 0x20;
+export const PRINTABLE_LAST = 0x7e;
+export const BMP_LIMIT = 0xffff;
+export const MAX_CODE_POINT = 0x10ffff;
+export const HEX_RADIX = 16;
+export const DECIMAL_RADIX = 10;
+export const UCS2_DIGITS = 4;
+export const UCS4_DIGITS = 8;
+export const BYTE_DIGITS = 2;
+export const UPPER_HALF_OFFSET = 0x80;
+export const CHARACTERS_PER_CHUNK = 8192;
+export const LATIN1_PART = 1;
+
+export const MAX_NESTING = 64;
+export const INITIAL_ROWS = 1024;
+export const MAX_EXPRESS_ID = 2_147_483_647;
+export const MAX_FILE_BYTES = 2 ** 32 - 1;
+export const MAX_TYPE_CODES = 0x10000;
+export const TYPE_HASH_PRIME = 16_777_619;
+export const UPPER_CASE_OFFSET = 0x20;
+
+export const BOM = [0xef, 0xbb, 0xbf] as const;
+
+export const CHAR_HASH = 0x23;
+export const CHAR_EQUALS = 0x3d;
+export const CHAR_OPEN = 0x28;
+export const CHAR_CLOSE = 0x29;
+export const CHAR_COMMA = 0x2c;
+export const CHAR_SEMICOLON = 0x3b;
+export const CHAR_APOSTROPHE = 0x27;
+export const CHAR_QUOTE = 0x22;
+export const CHAR_DOT = 0x2e;
+export const CHAR_DOLLAR = 0x24;
+export const CHAR_STAR = 0x2a;
+export const CHAR_SLASH = 0x2f;
+export const CHAR_MINUS = 0x2d;
+export const CHAR_PLUS = 0x2b;
+export const CHAR_ZERO = 0x30;
+export const CHAR_NINE = 0x39;
+export const CHAR_UPPER_A = 0x41;
+export const CHAR_UPPER_Z = 0x5a;
+export const CHAR_LOWER_A = 0x61;
+export const CHAR_LOWER_Z = 0x7a;
+export const CHAR_UNDERSCORE = 0x5f;
+export const CHAR_UPPER_E = 0x45;
+export const CHAR_LOWER_E = 0x65;
+export const CHAR_SPACE = 0x20;
+export const CHAR_BACKSLASH = 0x5c;
+export const CHAR_TILDE = 0x7e;
+
+export const DEFAULT_IMPLEMENTATION_LEVEL = "2;1";
+export const HEADER_ENTITIES_READ = ["FILE_DESCRIPTION", "FILE_NAME", "FILE_SCHEMA"] as const;

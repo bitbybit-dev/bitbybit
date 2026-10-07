@@ -1,0 +1,17 @@
+export const RECIPE_FORMAT = "bitbybit.recipe";
+export const RECIPE_VERSION = 1;
+export const MAX_RECIPE_NODES = 10_000_000;
+export const MAX_RECIPE_ROOTS = 10_000_000;
+export const MAX_RECIPE_DEPTH = 1000;
+export const MAX_BUFFER_LENGTH = 1_000_000_000;
+export const MAX_REFERENCED_NUMBERS = 1_000_000_000;
+export const MAX_RECIPE_COORDINATE = 1e9;
+export const MAX_RECIPE_PLACEMENT = 1e13;
+export const MATRIX_SIZE = 16;
+export const POINT2_SIZE = 2;
+export const POINT3_SIZE = 3;
+export const MIN_POLYGON_NUMBERS = 6;
+export const TRIANGLE_CORNERS = 3;
+export const DEGENERATE_DETERMINANT = 1e-12;
+export const MAX_ISSUES = 100;
+export const ISSUES_IN_MESSAGE = 3;

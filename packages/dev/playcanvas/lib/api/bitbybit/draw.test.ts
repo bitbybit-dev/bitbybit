@@ -1190,6 +1190,33 @@ describe("Draw unit tests", () => {
             expect(res).toBeDefined();
             expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.occt);
         });
+
+        it("should draw a mesh a Manifold worker already sent, without asking the worker again", async () => {
+            // Arrange
+            const callWorker = vi.fn();
+            manifoldWorkerManager.genericCallToWorkerPromise = callWorker;
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: mesh }) as DrawnEntity;
+
+            // Assert
+            expect(callWorker).not.toHaveBeenCalled();
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.manifold);
+        });
+
+        it("should draw a list of Manifold meshes into one container", async () => {
+            // Arrange
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+            const options = { ...new Inputs.Draw.DrawManifoldOrCrossSectionOptions(), drawTwoSided: false };
+
+            // Act
+            const res = await draw.drawAnyAsync({ entity: [mesh, mesh], options }) as DrawnEntity;
+
+            // Assert
+            expect(res.children).toHaveLength(2);
+            expect(res.bitbybitMeta.type).toBe(Inputs.Draw.drawingTypes.manifold);
+        });
     });
 
     describe("Draw polylines (multiple)", () => {

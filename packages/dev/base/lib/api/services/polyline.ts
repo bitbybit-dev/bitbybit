@@ -4,6 +4,8 @@ import type { Point } from "./point";
 import type { Vector } from "./vector";
 import type { Line } from "./line";
 import { resolveDto } from "../kernel-calls";
+import { unitOf } from "./helpers/frame-axes";
+import { newellNormal } from "./helpers/triangulation";
 import type * as Resolved from "../resolved-inputs";
 
 /**
@@ -591,5 +593,48 @@ export class Polyline {
         return Math.max(0, safestRadius);
     }
 
-}
+    /**
+     * Finds the unit normal of the plane a polyline encloses, read as a closed outline.
+     *
+     * Newell's method makes it hold for an outline that is not convex or not quite flat. It points
+     * the way the outline turns by the right-hand rule; an outline with no area gives undefined.
+     * Example: [[0,0,0], [4,0,0], [4,4,0], [0,4,0]] -> [0, 0, 1]
+     * @param inputs - The polyline
+     * @returns The unit normal, or undefined
+     * @group polygon
+     * @shortname polygon normal
+     * @drawable false
+     * @example
+     * ```typescript
+     * const normal = bitbybit.polyline.polygonNormal({ polyline: { points: [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]] } });
+     * ```
+     */
+    polygonNormal(inputs: Inputs.Polyline.PolylineDto): Inputs.Base.Vector3 | undefined {
+        return unitOf(this.newellOf(inputs.polyline.points));
+    }
 
+    /**
+     * Measures the area a polyline encloses, read as a closed outline in its own plane.
+     *
+     * The polyline need not repeat its first point at its end. An outline that is not quite flat
+     * gives the area of its outline seen along its normal.
+     * Example: [[0,0,0], [4,0,0], [4,4,0], [0,4,0]] -> 16
+     * @param inputs - The polyline
+     * @returns The area in square model units
+     * @group polygon
+     * @shortname polygon area
+     * @drawable false
+     * @example
+     * ```typescript
+     * const area = bitbybit.polyline.polygonArea({ polyline: { points: [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]] } });
+     * ```
+     */
+    polygonArea(inputs: Inputs.Polyline.PolylineDto): number {
+        const [x, y, z] = this.newellOf(inputs.polyline.points);
+        return Math.hypot(x, y, z) / 2;
+    }
+
+    private newellOf(points: readonly Inputs.Base.Point3[]): Inputs.Base.Vector3 {
+        return newellNormal(points.flat(), points.map((_, at) => at));
+    }
+}

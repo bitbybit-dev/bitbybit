@@ -40,6 +40,9 @@ export async function initBitByBit(
         workers.manifoldWorker,
         options.havokPlugin
     );
+    if (workers.ifcWorker) {
+        bitbybit.ifcWorkerManager.setIfcWorker(workers.ifcWorker);
+    }
 
     const result = await waitForKernelInitialization(bitbybit, options);
 

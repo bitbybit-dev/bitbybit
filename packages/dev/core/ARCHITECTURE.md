@@ -14,6 +14,10 @@ had drifted. The order answers what the checks cannot answer alone:
 - `jscadPath` comes before `polyline`. A JSCAD path carries `points` as a polyline does;
   `detectPolyline` now rules paths out itself, and the order still states it.
 
+`manifoldMesh` and `manifoldMeshes` are the mesh a Manifold worker sends (`numProp`, a `Float32Array`
+of vertex properties and a `Uint32Array` of triangles), told apart by those typed arrays: a mesh from
+`manifoldToMesh` or `recipes.surfaceMeshes` draws without another worker call.
+
 Each entry has a `phase`: a kernel shape has to cross to a worker and back, so it resolves only from
 the asynchronous call. `resolveDrawableKind` looks the handler up before it runs the check, so a
 renderer never asks about a kind it registered no handler for - a renderer without a node concept

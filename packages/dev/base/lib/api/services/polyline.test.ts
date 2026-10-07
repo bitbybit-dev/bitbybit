@@ -894,4 +894,43 @@ describe("Polyline unit tests", () => {
             expect(finer).toHaveLength(3);
         });
     });
+
+    describe("polygonNormal and polygonArea", () => {
+        const notched: Inputs.Base.Point3[] = [[0, 0, 0], [6, 0, 0], [6, 4, 0], [4, 4, 0], [4, 2, 0], [2, 2, 0], [2, 4, 0], [0, 4, 0]];
+
+        it("should find the normal of an outline that is not convex, by the right-hand rule", () => {
+            // Act
+            const up = polyline.polygonNormal({ polyline: { points: notched } });
+            const down = polyline.polygonNormal({ polyline: { points: [...notched].reverse() } });
+
+            // Assert
+            expect(up).toEqual([0, 0, 1]);
+            expect(down).toEqual([0, 0, -1]);
+        });
+
+        it("should measure the area an outline encloses in a tilted plane, closing point or not", () => {
+            // Arrange
+            const tilted: Inputs.Base.Point3[] = [[0, 0, 0], [4, 0, 0], [4, 3, 4], [0, 3, 4]];
+
+            // Act
+            const area = polyline.polygonArea({ polyline: { points: tilted } });
+            const closed = polyline.polygonArea({ polyline: { points: [...tilted, tilted[0]!], isClosed: true } });
+            const normal = polyline.polygonNormal({ polyline: { points: tilted } });
+
+            // Assert
+            expect(area).toBeCloseTo(20, 12);
+            expect(closed).toBeCloseTo(20, 12);
+            expect(normal!.map((value) => Number(value.toFixed(12)) + 0)).toEqual([0, -0.8, 0.6]);
+        });
+
+        it("should give no normal and no area for points on one line", () => {
+            // Act
+            const normal = polyline.polygonNormal({ polyline: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] } });
+            const area = polyline.polygonArea({ polyline: { points: [[0, 0, 0], [1, 1, 1], [2, 2, 2]] } });
+
+            // Assert
+            expect(normal).toBeUndefined();
+            expect(area).toBe(0);
+        });
+    });
 });

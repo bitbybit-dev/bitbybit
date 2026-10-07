@@ -53,9 +53,10 @@ export class ManifoldsToMeshesDto<T> {
  * A solid or cross-section and an optional normal channel for `decomposeManifoldOrCrossSection`.
  */
 export class DecomposeManifoldOrCrossSectionDto<T> {
-    constructor(manifoldOrCrossSection?: T, normalIdx?: number) {
+    constructor(manifoldOrCrossSection?: T, normalIdx?: number, minSharpAngle?: number) {
         if (manifoldOrCrossSection !== undefined) { this.manifoldOrCrossSection = manifoldOrCrossSection; }
         if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+        if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
     }
     /**
      * The solid or cross-section to turn into plain data.
@@ -66,6 +67,16 @@ export class DecomposeManifoldOrCrossSectionDto<T> {
      * @optional true
      */
     normalIdx?: number | undefined;
+    /**
+     * When given, a solid's mesh carries normals after its positions, and edges sharper than this,
+     * in degrees, keep a normal on each side; 0 shades every face flat.
+     * @default undefined
+     * @optional true
+     * @minimum 0
+     * @maximum 180
+     * @step 5
+     */
+    minSharpAngle?: number | undefined;
 }
 /**
  * One solid or cross-section for the methods that accept either.
@@ -96,9 +107,10 @@ export class ManifoldsOrCrossSectionsDto<T> {
  * `decomposeManifoldsOrCrossSections`.
  */
 export class DecomposeManifoldsOrCrossSectionsDto<T> {
-    constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[]) {
+    constructor(manifoldsOrCrossSections?: T[], normalIdx?: number[], minSharpAngle?: number) {
         if (manifoldsOrCrossSections !== undefined) { this.manifoldsOrCrossSections = manifoldsOrCrossSections; }
         if (normalIdx !== undefined) { this.normalIdx = normalIdx; }
+        if (minSharpAngle !== undefined) { this.minSharpAngle = minSharpAngle; }
     }
     /**
      * The solids or cross-sections to turn into plain data, one result each.
@@ -109,4 +121,14 @@ export class DecomposeManifoldsOrCrossSectionsDto<T> {
      * @optional true
      */
     normalIdx?: number[] | undefined;
+    /**
+     * When given, each solid's mesh carries normals after its positions, and edges sharper than
+     * this, in degrees, keep a normal on each side; 0 shades every face flat.
+     * @default undefined
+     * @optional true
+     * @minimum 0
+     * @maximum 180
+     * @step 5
+     */
+    minSharpAngle?: number | undefined;
 }

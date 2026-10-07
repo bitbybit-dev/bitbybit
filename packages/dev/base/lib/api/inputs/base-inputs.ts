@@ -138,6 +138,268 @@ export namespace Base {
     export type TransformMatrixes = TransformMatrix[];
 
     /**
+     * A run of numbers in one of a recipe's buffers: where it starts and how many numbers it holds.
+     * @beta
+     */
+    export type RecipeRange = [number, number];
+    /**
+     * The numbers a recipe's nodes point into: coordinates in `f64`, triangle indices in `i32`.
+     * @beta
+     */
+    export interface RecipeBuffers {
+        /**
+         * Coordinates: flat `x, y` pairs for polygons and `x, y, z` triples for triangle positions.
+         * Every number in it is a coordinate, finite and between minus and plus one billion.
+         */
+        f64: Float64Array;
+        /**
+         * Triangle corners as positions counted from 0, three per triangle.
+         */
+        i32: Int32Array;
+    }
+    /**
+     * A flat region in the XY plane: everything its boundary encloses, less everything any of its
+     * holes encloses. The boundary and each hole are a range of `x, y` pairs without the first point
+     * repeated, in either winding; a boundary that crosses itself keeps every loop it makes.
+     * @beta
+     */
+    export interface RecipePolygonNode {
+        /**
+         * Always `polygon`.
+         */
+        op: "polygon";
+        /**
+         * The boundary, clockwise or counterclockwise.
+         */
+        points: RecipeRange;
+        /**
+         * The holes, clockwise or counterclockwise; they may overlap each other or reach past the
+         * boundary, and only what lies inside the boundary is cut away.
+         */
+        holes: RecipeRange[];
+    }
+    /**
+     * A flat disc in the XY plane. How many straight sides approximate it is left to the kernel that
+     * builds the recipe.
+     * @beta
+     */
+    export interface RecipeCircleNode {
+        /**
+         * Always `circle`.
+         */
+        op: "circle";
+        /**
+         * The centre, as `[x, y]`.
+         */
+        center: Point2;
+        /**
+         * The radius, above zero.
+         */
+        radius: number;
+    }
+    /**
+     * A solid made by sweeping a polygon or circle node along a direction.
+     * @beta
+     */
+    export interface RecipeExtrudeNode {
+        /**
+         * Always `extrude`.
+         */
+        op: "extrude";
+        /**
+         * The index of the polygon or circle node to sweep.
+         */
+        profile: number;
+        /**
+         * The direction of the sweep, which must not lie in the XY plane.
+         */
+        direction: Vector3;
+        /**
+         * How far to sweep along `direction`, which is normalised first, above zero.
+         */
+        depth: number;
+    }
+    /**
+     * Everything on one side of a plane: the side `normal` points to. Used only as a tool of a
+     * difference node, to cut a solid by the plane.
+     * @beta
+     */
+    export interface RecipeHalfSpaceNode {
+        /**
+         * Always `halfSpace`.
+         */
+        op: "halfSpace";
+        /**
+         * A point on the plane.
+         */
+        origin: Point3;
+        /**
+         * The plane's normal, pointing into the half-space.
+         */
+        normal: Vector3;
+    }
+    /**
+     * A solid with other solids or half-spaces cut away.
+     * @beta
+     */
+    export interface RecipeDifferenceNode {
+        /**
+         * Always `difference`.
+         */
+        op: "difference";
+        /**
+         * The index of the solid to cut.
+         */
+        of: number;
+        /**
+         * The indices of what is cut away, all at once.
+         */
+        tools: number[];
+    }
+    /**
+     * A node moved, turned or scaled by a matrix.
+     * @beta
+     */
+    export interface RecipeTransformNode {
+        /**
+         * Always `transform`.
+         */
+        op: "transform";
+        /**
+         * The index of the node to transform.
+         */
+        of: number;
+        /**
+         * Sixteen numbers in column-major order, with 0, 0, 0, 1 as the bottom row: a move, a turn,
+         * a mirror and a scale, never a projection.
+         */
+        matrix: TransformMatrix;
+    }
+    /**
+     * A host solid with openings cut through it, such as a wall with its doors' and windows' holes.
+     * The same as a difference, kept apart so an executor can cut openings through flat hosts in 2D.
+     * @beta
+     */
+    export interface RecipeVoidsNode {
+        /**
+         * Always `voids`.
+         */
+        op: "voids";
+        /**
+         * The index of the host solid.
+         */
+        host: number;
+        /**
+         * The indices of the opening solids.
+         */
+        openings: number[];
+    }
+    /**
+     * A triangle mesh: positions and the triangles between them.
+     * @beta
+     */
+    export interface RecipeTrianglesNode {
+        /**
+         * Always `triangles`.
+         */
+        op: "triangles";
+        /**
+         * A range of `x, y, z` triples in `f64`.
+         */
+        positions: RecipeRange;
+        /**
+         * A range of `i32` indices into the positions, three per triangle.
+         */
+        indices: RecipeRange;
+    }
+    /**
+     * Several solids taken together as one, filling the space any of them fills. Parts that
+     * overlap may come back joined into one solid, depending on the kernel that builds it.
+     * @beta
+     */
+    export interface RecipeCompoundNode {
+        /**
+         * Always `compound`.
+         */
+        op: "compound";
+        /**
+         * The indices of the solids.
+         */
+        of: number[];
+    }
+    /**
+     * One step of a recipe. A node refers only to nodes before it, by their position in the list.
+     * @beta
+     */
+    export type RecipeNode = RecipePolygonNode | RecipeCircleNode | RecipeExtrudeNode | RecipeHalfSpaceNode | RecipeDifferenceNode | RecipeTransformNode | RecipeVoidsNode | RecipeTrianglesNode | RecipeCompoundNode;
+    /**
+     * A value a recipe carries through to its results untouched.
+     * @beta
+     */
+    export type RecipeTagValue = string | number | boolean | number[];
+    /**
+     * What a recipe builds: one node, placed by a matrix, labelled by a tag. Several roots may place
+     * the same node, so a repeated part is described once.
+     * @beta
+     */
+    export interface RecipeRoot {
+        /**
+         * The index of the node to build.
+         */
+        node: number;
+        /**
+         * Where the result is placed: sixteen numbers in column-major order, with 0, 0, 0, 1 as the
+         * bottom row.
+         */
+        matrix: TransformMatrix;
+        /**
+         * Labels handed back with the result unchanged, such as an element's `globalId`.
+         */
+        tag: Record<string, RecipeTagValue>;
+    }
+    /**
+     * Solids described as data rather than built: a list of steps (polygons, extrusions, cuts,
+     * transforms, meshes) and the results to build from them. Every number is already resolved, so
+     * a recipe has no variables or expressions; how finely circles are divided is left to the kernel
+     * that builds it.
+     *
+     * Experimental: the recipe format may still change before it is declared stable.
+     * @beta
+     */
+    export interface Recipe {
+        /**
+         * Always `bitbybit.recipe`.
+         */
+        format: "bitbybit.recipe";
+        /**
+         * The recipe format's version, 1.
+         */
+        version: 1;
+        /**
+         * How many millimetres one unit of the recipe is, for whoever reads the results: the
+         * coordinates are in the recipe's own units, and an executor builds in them unscaled.
+         */
+        millimetresPerUnit: number;
+        /**
+         * The distance below which two positions count as the same, in the recipe's units, as the
+         * recipe's source measured it. An executor may use it where it compares positions, or not.
+         */
+        tolerance: number;
+        /**
+         * The numbers the nodes point into.
+         */
+        buffers: RecipeBuffers;
+        /**
+         * The steps, each referring only to steps before it.
+         */
+        nodes: RecipeNode[];
+        /**
+         * The results to build.
+         */
+        roots: RecipeRoot[];
+    }
+
+    /**
      * Horizontal alignment of content against its anchor: left, center or right.
      */
     export enum horizontalAlignEnum {

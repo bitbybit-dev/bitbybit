@@ -8,7 +8,7 @@ above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before open
 
 | Directory | What it is |
 |---|---|
-| `packages/dev/*` | the 14 published npm packages - see `packages/dev/CLAUDE.md` |
+| `packages/dev/*` | the 16 published npm packages - see `packages/dev/CLAUDE.md` |
 | `docs/` | the Docusaurus site for learn.bitbybit.dev, including the generated API reference |
 | `examples/` | runnable examples per framework (angular, nextjs, nuxt, node, vite, react); `examples/scripts/examples.mjs` installs, builds and audits each one weekly from the registry, in examples.yml, and `examples/scripts/local.mjs` runs them against this repository's own packages instead |
 | `languages/` | the API help text per locale, keyed by each member's dotted path, and `doc-paths.json`, the map from documentation page names to those keys (`API_DOCS_GUIDE.md`) |
@@ -18,8 +18,8 @@ above it. Start with `README.md` for the overview, `CONTRIBUTING.md` before open
 The packages form a dependency DAG, and the order has one source: each package's `package.json`
 dependencies. `scripts/gen-ts-references.mjs` turns them into TypeScript project references -
 every `tsconfig.bitbybit.json` is a composite project that references the siblings its manifest
-declares, and `tsconfig.build.json` at the root references all eleven - so `tsc -b` orders the
-compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`: pnpm orders the eleven stagings by the same
+declares, and `tsconfig.build.json` at the root references all thirteen - so `tsc -b` orders the
+compiles itself and rebuilds only what changed. `npm run build-packages` is `pnpm -r run build-p`: pnpm orders the thirteen stagings by the same
 manifests, each `build-p` compiles with `tsc -b` and stages dist/ for publishing.
 `npm run rebuild-all-packages` empties every dist first; `tsc -b tsconfig.build.json --verbose`
 prints the order it derives and what it considered up to date.
@@ -37,7 +37,7 @@ directory out of the project - a stale one reads the built `dist` back in as sou
 
 ## The workspace
 
-The fourteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
+The sixteen packages under `packages/dev/` are one pnpm workspace (`pnpm-workspace.yaml`): one
 `pnpm install` at the root - `npm run ci-packages` is exactly that, frozen to the lockfile - installs
 all of them, and a sibling dependency whose exact pin matches the sibling's version becomes a symlink
 instead of a registry copy (`linkWorkspacePackages`). One `pnpm-lock.yaml` replaces the per-package
@@ -60,7 +60,7 @@ manifest to that shape and every built `dist/package.json` to the derivation.
 
 pnpm's layout is strict: a package resolves only what its own manifest declares, where npm's flat
 hoisting let it reach anything a sibling had installed. Every import in `lib/` must therefore be a
-dependency of that package - the engine packages import `@bitbybit-dev/base`, the three workers,
+dependency of that package - the engine packages import `@bitbybit-dev/base`, the four workers,
 `jsonpath-plus` and `verb-nurbs-web` directly, and declare them. Verify a build from a clone outside
 your home directory: a stray `~/node_modules` above the checkout satisfies an undeclared import on
 your machine and nowhere else, which is how one reached CI.
@@ -98,7 +98,7 @@ from the build configs: the runner compiles it itself, so dist ships no mocks.
 ```bash
 npm run lint                     # includes the AAA-only comment rule over every *.test.ts
 npm run typecheck:tests          # nothing else typechecks a test file
-npm test                         # the check:* gates and all eleven suites, with coverage
+npm test                         # the check:* gates and all thirteen suites, with coverage
 npm run check:coverage-baseline  # reads what the npm test above it just measured
 ```
 
@@ -132,7 +132,7 @@ carry a report - all but `occt-worker`, whose `BitbybitOcctModule` comes from em
 cannot follow, and which `check:worker-api` and `check:worker-parity` pin harder instead - against its
 built `dist/index.d.ts`, and fails when the public surface differs from the report in that package's
 `etc/`: the dotted API is persisted in users' scripts, so a change lands only with a deliberate
-`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all fourteen,
+`npm run api:update` and the report diff in the same commit. `check:tarballs` packs all sixteen,
 installs the library ones into an empty project and probes each as a consumer would, then reads what
 every tarball carries: a credential, an absolute build path, a source map naming excluded sources.
 

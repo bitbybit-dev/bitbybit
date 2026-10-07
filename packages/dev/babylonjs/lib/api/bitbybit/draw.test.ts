@@ -93,6 +93,10 @@ type DrawPrivateMethods = {
     
     handleManifoldShapes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
     
+    handleManifoldMesh: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    
+    handleManifoldMeshes: (inputs: any) => Promise<BABYLON.Mesh | undefined>;
+    
     updateAny: (inputs: any) => BABYLON.Mesh | undefined;
     
     applyGlobalSettingsAndMetadataAndShadowCasting: (type: any, options: any, mesh?: BABYLON.Mesh) => void;
@@ -142,6 +146,8 @@ const drawPrivateMethodNames: Record<keyof DrawPrivateMethods, true> = {
     handleOcctShapes: true,
     handleManifoldShape: true,
     handleManifoldShapes: true,
+    handleManifoldMesh: true,
+    handleManifoldMeshes: true,
     updateAny: true,
     applyGlobalSettingsAndMetadataAndShadowCasting: true,
     applyNodeSettingsAndMetadata: true,
@@ -1846,6 +1852,74 @@ describe("Draw unit tests", () => {
                 manifoldsOrCrossSections: mockManifoldShapes
             }));
             expect(result).toBeDefined();
+        });
+
+        it("handleManifoldMesh should draw the mesh it is given with the Manifold options, tagged as Manifold", async () => {
+            // Arrange
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+            const drawn = createMockMesh("manifold-mesh");
+            drawn.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldMesh = vi.fn().mockReturnValue(drawn);
+
+            // Act
+            const result = await drawPrivate.handleManifoldMesh({ entity: mesh, options: { faceColour: "#00ff00" } });
+
+            // Assert
+            expect(mockDrawHelper.drawManifoldMesh).toHaveBeenCalledWith(mesh, expect.objectContaining({ faceColour: "#00ff00", minSharpAngle: 40 }));
+            expect(result).toBe(drawn);
+            expect(drawn.metadata.type).toBe(Inputs.Draw.drawingTypes.manifold);
+        });
+
+        it("handleManifoldMeshes should draw the list with the options the redrawn mesh kept", async () => {
+            // Arrange
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+            const drawn = createMockMesh("manifold-meshes");
+            drawn.getChildMeshes = vi.fn().mockReturnValue([]);
+            mockDrawHelper.drawManifoldMeshes = vi.fn().mockReturnValue(drawn);
+            const previous = createMockMesh("previous");
+            previous.metadata = { options: { faceColour: "#123456" } };
+
+            // Act
+            const result = await drawPrivate.handleManifoldMeshes({ entity: [mesh, mesh], babylonMesh: previous });
+
+            // Assert
+            expect(mockDrawHelper.drawManifoldMeshes).toHaveBeenCalledWith([mesh, mesh], expect.objectContaining({ faceColour: "#123456" }));
+            expect(result).toBe(drawn);
+        });
+
+        it("handleManifoldMesh should keep the options the redrawn mesh kept, and handleManifoldMeshes the ones it is given", async () => {
+            // Arrange
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+            const drawn = createMockMesh("manifold-mesh");
+            mockDrawHelper.drawManifoldMesh = vi.fn().mockReturnValue(drawn);
+            mockDrawHelper.drawManifoldMeshes = vi.fn().mockReturnValue(drawn);
+            const previous = createMockMesh("previous");
+            previous.metadata = { options: { faceColour: "#654321" } };
+
+            // Act
+            await drawPrivate.handleManifoldMesh({ entity: mesh, babylonMesh: previous });
+            await drawPrivate.handleManifoldMeshes({ entity: [mesh], options: { faceOpacity: 0.5 } });
+
+            // Assert
+            expect(mockDrawHelper.drawManifoldMesh).toHaveBeenCalledWith(mesh, expect.objectContaining({ faceColour: "#654321" }));
+            expect(mockDrawHelper.drawManifoldMeshes).toHaveBeenCalledWith([mesh], expect.objectContaining({ faceOpacity: 0.5 }));
+        });
+
+        it("should reach the Manifold mesh handlers from drawAnyAsync, for one mesh and for a list", async () => {
+            // Arrange
+            const mesh = { numProp: 3, vertProperties: new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]), triVerts: new Uint32Array([0, 1, 2]) };
+            const one = createMockMesh("manifold-mesh");
+            const many = createMockMesh("manifold-meshes");
+            mockDrawHelper.drawManifoldMesh = vi.fn().mockReturnValue(one);
+            mockDrawHelper.drawManifoldMeshes = vi.fn().mockReturnValue(many);
+
+            // Act
+            const single = await draw.drawAnyAsync({ entity: mesh });
+            const list = await draw.drawAnyAsync({ entity: [mesh, mesh] });
+
+            // Assert
+            expect(single).toBe(one);
+            expect(list).toBe(many);
         });
 
         it("handleJscadMesh should use options from babylonMesh metadata", async () => {
