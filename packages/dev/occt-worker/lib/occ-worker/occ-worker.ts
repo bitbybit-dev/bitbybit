@@ -126,10 +126,14 @@ export const initializationComplete = (
     progressWords = progressWordsOf(occ);
     stepWords = progressWords === undefined ? undefined : stepWords ?? new Int32Array(new SharedArrayBuffer(STEP_WORD_COUNT * Int32Array.BYTES_PER_ELEMENT));
     const steps = stepWords;
-    setKernelStepSink(steps === undefined ? undefined : ({ done, total }) => {
-        Atomics.store(steps, STEPS_TOTAL_WORD, total);
-        Atomics.store(steps, STEPS_DONE_WORD, done);
-    });
+    if (steps !== undefined) {
+        setKernelStepSink(({ done, total }) => {
+            Atomics.store(steps, STEPS_TOTAL_WORD, total);
+            Atomics.store(steps, STEPS_DONE_WORD, done);
+        });
+    } else {
+        setKernelStepSink(doNotPost ? undefined : ({ done, total }) => { postMessage({ steps: { done, total } }); });
+    }
     if (!doNotPost && progressWords !== undefined) {
         postMessage({ progressWords, stepWords });
     }

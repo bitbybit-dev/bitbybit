@@ -6,7 +6,7 @@ import type { MeshRetention } from "./constants";
 import { OccStateEnum } from "./occ-state.enum";
 import type { OCCTWorkerMock } from "./occ-worker-mock";
 
-type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array, stepWords?: Int32Array | undefined } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
+type WorkerResponse = "occ-initialised" | "busy" | { progressWords: Int32Array, stepWords?: Int32Array | undefined } | { steps: KernelSteps } | { uid: string, result?: unknown, error?: string, errorKind?: KernelFailureKind, code?: string, details?: KernelFailureDetails, stack?: string };
 
 /** How far the OCCT call running now has got. */
 export type OccProgress = {
@@ -38,7 +38,9 @@ export class OCCTWorkerManager {
     occWorkerState$: Subject<OccInfo> = new Subject();
     /**
      * The progress of the call running now, read ten times a second while calls are pending, when
-     * the worker can share its progress: in a browser, only on a cross-origin isolated page.
+     * the worker can share its progress: in a browser, only on a cross-origin isolated page. Without
+     * that, only a call that works in steps, such as a design build, reports, as each step is done,
+     * with `fraction` and `algorithms` 0.
      */
     occWorkerProgress$: Subject<OccProgress> = new Subject();
     errorCallback!: (err: string) => void;
@@ -95,6 +97,13 @@ export class OCCTWorkerManager {
         this.stepWords = undefined;
         this.stopWatchingProgress();
         this.occWorker.onmessage = ({ data }: { data: WorkerResponse }) => {
+            if (typeof data === "object" && "steps" in data) {
+                const running = this.promisesMade[0];
+                if (running !== undefined) {
+                    this.occWorkerProgress$.next({ functionName: running.functionName, fraction: 0, algorithms: 0, steps: data.steps });
+                }
+                return;
+            }
             if (typeof data === "object" && "progressWords" in data) {
                 this.progressWords = data.progressWords;
                 this.stepWords = data.stepWords;

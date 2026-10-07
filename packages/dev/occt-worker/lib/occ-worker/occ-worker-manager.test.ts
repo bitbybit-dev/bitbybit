@@ -6,7 +6,7 @@ import { OccStateEnum } from "./occ-state.enum";
 import type { OccInfo } from "./occ-info";
 
 type PostedCall = { action: { functionName: string; inputs: unknown }; uid: string };
-type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array; stepWords?: Int32Array } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
+type WorkerAnswer = "occ-initialised" | "busy" | { progressWords: Int32Array; stepWords?: Int32Array } | { steps: { done: number; total: number } } | { uid: string; result?: unknown; error?: string; errorKind?: "input" | "kernel" | "cancelled"; code?: string; details?: Record<string, unknown>; stack?: string };
 
 class RecordingWorker extends EventTarget implements Worker {
     readonly posted: PostedCall[] = [];
@@ -593,6 +593,23 @@ describe("OCCTWorkerManager unit tests", () => {
             expect(progress).toEqual([
                 { functionName: "design.build", fraction: 0, algorithms: 0 },
                 { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 1, total: 4 } },
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 4, total: 4 } },
+            ]);
+        });
+
+        it("should pass on the steps a worker without shared words posts, for the call running then", () => {
+            // Arrange
+            answer({ steps: { done: 1, total: 4 } });
+            void manager.genericCallToWorkerPromise("design.build", {});
+            void manager.genericCallToWorkerPromise("shapes.solid.createBox", {});
+
+            // Act
+            answer({ steps: { done: 2, total: 4 } });
+            answer({ steps: { done: 4, total: 4 } });
+
+            // Assert
+            expect(progress).toEqual([
+                { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 2, total: 4 } },
                 { functionName: "design.build", fraction: 0, algorithms: 0, steps: { done: 4, total: 4 } },
             ]);
         });

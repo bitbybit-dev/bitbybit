@@ -637,14 +637,23 @@ describe("what the worker says when a call fails", () => {
             expect(Reflect.get(kernel, "bitbybitControl")).toBe(shared);
         });
 
-        it("should share no words for a kernel that has none, and drop the steps a call reports", () => {
+        it("should share no words for a kernel that has none, and post each step a call reports instead", () => {
             // Act
             initializationComplete(A_MODULE, undefined, false);
-            const report = (): void => reportKernelSteps({ done: 1, total: 2 });
+            reportKernelSteps({ done: 1, total: 2 });
+            reportKernelSteps({ done: 2, total: 2 });
 
             // Assert
-            expect(posted).toEqual(["occ-initialised"]);
-            expect(report).not.toThrow();
+            expect(posted).toEqual(["occ-initialised", { steps: { done: 1, total: 2 } }, { steps: { done: 2, total: 2 } }]);
+        });
+
+        it("should post no steps from a worker told not to post", () => {
+            // Act
+            initializationComplete(A_MODULE, undefined, true);
+            reportKernelSteps({ done: 1, total: 2 });
+
+            // Assert
+            expect(posted).toEqual([]);
         });
 
         it("should write the steps a call reports into the step words it shares, and clear them when the next call starts", () => {
