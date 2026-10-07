@@ -2952,8 +2952,13 @@ interface DesignPushPullFeature extends DesignFeatureBase {
     // (undocumented)
     face: DesignFaceReference;
     // (undocumented)
+    mode?: DesignPushPullMode;
+    // (undocumented)
     type: "pushPull";
 }
+
+// @public
+type DesignPushPullMode = "extrude" | "offset";
 
 // @public
 interface DesignReferenceFound {
@@ -10901,6 +10906,7 @@ declare namespace OCCT_2 {
         DesignPolarPatternFeature,
         DesignMirrorFeature,
         DesignTransformFeature,
+        DesignPushPullMode,
         DesignPushPullFeature,
         DesignRemoveFacesFeature,
         DesignSweepFeature,

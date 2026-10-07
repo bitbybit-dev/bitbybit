@@ -40,6 +40,7 @@ export interface DesignTrace {
     face?: boolean;
     indexes?: number[];
     sketchFace?: number;
+    pull?: boolean;
     untilFace?: number;
     format?: string;
     join?: string;

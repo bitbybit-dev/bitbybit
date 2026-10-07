@@ -363,17 +363,28 @@ export interface DesignTransformFeature extends DesignFeatureBase {
 }
 
 /**
- * Moves the face `face` names along its outward normal by `distance`: out of the body when it is above
- * 0, into it when it is below. With a `count` the reference may name several faces, which all move.
- * The faces around them stretch along their own surfaces to follow, as Press Pull and Move Face do in
- * other CAD tools, so curved faces move as flat ones do. The moved faces keep their names and are also
- * named `end`; every other face keeps its names.
+ * How a push or pull moves its face: `extrude` sweeps one flat face straight along its normal and adds
+ * the swept solid to the body or cuts it away, whatever the faces around it do; `offset` moves the
+ * faces themselves, flat or curved, and the faces around them stretch along their own surfaces to
+ * follow.
+ */
+export type DesignPushPullMode = "extrude" | "offset";
+
+/**
+ * Pushes or pulls the face `face` names along its outward normal by `distance`: out of the body when it
+ * is above 0, into it when it is below. With `mode` `extrude`, the default, one flat face is swept
+ * straight, as an extrude from the face would be, and the faces it sweeps out are named `side`. With
+ * `offset` the faces themselves move and the faces around them follow, as Press Pull and Move Face do
+ * in other CAD tools, so curved faces move as flat ones do; with a `count` the reference may name
+ * several faces, which all move. Either way the moved faces keep their names and are also named `end`;
+ * every other face keeps its names.
  */
 export interface DesignPushPullFeature extends DesignFeatureBase {
     type: "pushPull";
     body: string;
     face: DesignFaceReference;
     distance: DesignNumber;
+    mode?: DesignPushPullMode;
 }
 
 /**

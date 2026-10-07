@@ -249,10 +249,45 @@ function pushedOrPulled(feature: Models.OCCT.DesignPushPullFeature, path: string
     if (distance === 0) {
         throw new DesignProblem(pointer(path, "distance"), "the distance is not 0: above 0 pulls the faces out, below 0 pushes them in");
     }
+    return feature.mode === "offset" ? offsetFaces(feature.id, body, indexes, distance, path, run) : extrudedFace(feature.id, body, indexes, distance, path, run);
+}
+
+function extrudedFace(id: string, body: BodyState, indexes: number[], distance: number, path: string, run: DesignRun): DesignOutcome {
+    const [index] = indexes;
+    if (index === undefined || indexes.length > 1) {
+        throw new DesignProblem(pointer(path, "face"), `extruding moves one face, and the reference names ${indexes.length}; mode "offset" moves several`);
+    }
+    const signature = faceSignatures(body.shape, run)[index]!;
+    if (signature.type !== Inputs.OCCT.surfaceTypeEnum.plane) {
+        throw new DesignProblem(pointer(path, "face"), `extruding needs a flat face, and this one is a ${signature.type}; mode "offset" moves curved faces`);
+    }
+    const pull = distance > 0;
+    const direction = pull ? signature.normal : tripleOf(run.base.vector.neg({ vector: signature.normal }));
+    run.trace?.set(path, { sketchFace: index, pull, frame: { origin: signature.centre, normal: direction, direction: [1, 0, 0] } });
+    const face = run.occt.shapes.face.getFace({ shape: body.shape, index });
+    try {
+        const inputs: Inputs.OCCT.PrismFeatureDto<TopoDS_Shape, TopoDS_Face> = { shape: body.shape, profile: face, sketchFaceIndex: index, direction, extent: Inputs.OCCT.featureExtentEnum.length, length: Math.abs(distance) };
+        const made = pull ? run.occt.features.bossWithHistory(inputs) : run.occt.features.pocketWithHistory(inputs);
+        const given = profileNames(id, [{ history: made.histories[1]!, commands: [] }]);
+        const names = carryNames(faceCount(made.shape, run), [{ names: body.names, history: made.histories[0]! }], given);
+        const moved = body.names[index] ?? [];
+        made.histories[1]!.lastFaces.forEach(last => {
+            names[last] = [...new Set([...(names[last] ?? []), ...moved])].sort();
+        });
+        return { kind: "body", shape: made.shape, names };
+    } finally {
+        release(face);
+    }
+}
+
+function offsetFaces(id: string, body: BodyState, indexes: number[], distance: number, path: string, run: DesignRun): DesignOutcome {
     run.trace?.set(path, { indexes });
-    const made = run.occt.features.pushPullFacesWithHistory({ shape: body.shape, indexes, distance });
+    const made = unlessTrapped(() => run.occt.features.pushPullFacesWithHistory({ shape: body.shape, indexes, distance }), () => {
+        const what = indexes.length === 1 ? "the face" : "the faces";
+        throw new DesignProblem(pointer(path, "face"), `OCCT could not move ${what} with the faces around ${indexes.length === 1 ? "it" : "them"} following; mode "extrude" adds or cuts a flat face straight instead`);
+    });
     const given = new Map<number, string[]>();
-    made.histories.forEach(history => give(given, indexes.flatMap(index => history.faces[index] ?? []), nameOf(feature.id, "end")));
+    made.histories.forEach(history => give(given, indexes.flatMap(index => history.faces[index] ?? []), nameOf(id, "end")));
     return { kind: "body", shape: made.shape, names: carryNames(faceCount(made.shape, run), made.histories.map(history => ({ names: body.names, history })), given) };
 }
 

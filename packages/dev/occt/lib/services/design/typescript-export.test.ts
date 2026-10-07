@@ -274,7 +274,7 @@ describe("design documents as TypeScript", () => {
             expect(code).toContain("const assets: Record<string, string | Uint8Array | ArrayBuffer> = {};");
         });
 
-        it("should write face moves, face removals and a shell OCCT cannot hollow as the calls the build made, so the program builds the same volumes", async () => {
+        it("should write face pushes, pulls and moves, face removals and a shell OCCT cannot hollow as the calls the build made, so the program builds the same volumes", async () => {
             // Arrange
             const moved: Document = {
                 schemaVersion: 1,
@@ -285,7 +285,7 @@ describe("design documents as TypeScript", () => {
                     { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: "lift" },
                     { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1 },
                     { id: "rod", type: "operation", operation: "occt.shapes.solid.createCylinder", params: { radius: 2, height: 3, center: [0, 0, 20], direction: [0, 0, 1] } },
-                    { id: "thicker", type: "pushPull", body: "rod", face: { of: "rod", role: "face", filter: { select: "ofType", type: "cylinder" }, count: 1 }, distance: 1 },
+                    { id: "thicker", type: "pushPull", body: "rod", face: { of: "rod", role: "face", filter: { select: "ofType", type: "cylinder" }, count: 1 }, distance: 1, mode: "offset" },
                 ],
             };
             const filled: Document = {
@@ -321,6 +321,8 @@ describe("design documents as TypeScript", () => {
             });
             expect(move?.built.parts.map(part => volume(part.shape))).toEqual([expect.closeTo(32, 6), expect.closeTo(27 * Math.PI, 6)]);
             expect(move?.code).toContain("occt.features.pushPullFaces");
+            expect(move?.code).toContain("occt.features.boss");
+            expect(move?.code).toContain("occt.features.pocket");
             expect(fill?.code).toContain("occt.features.removeFaces");
             expect(fill?.built.parts.map(part => volume(part.shape))).toEqual([expect.closeTo(8000 - 40 * Math.PI, 4)]);
             expect(hollow?.code).toContain("occt.operations.offsetAdv");

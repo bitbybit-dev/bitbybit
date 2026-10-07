@@ -491,6 +491,11 @@ class Exporter {
             case "pushPull":
             case "removeFaces": {
                 const body = this.variable(feature.body);
+                if (feature.type === "pushPull" && feature.mode !== "offset") {
+                    const profile = `await occt.shapes.face.getFace({ shape: ${body}, index: ${trace.sketchFace!} })`;
+                    this.line(`${body} = await occt.features.${trace.pull === true ? "boss" : "pocket"}({ shape: ${body}, profile: ${profile}, sketchFaceIndex: ${trace.sketchFace!}, direction: ${this.numbers(trace.frame!.normal)}, extent: Bit.Inputs.OCCT.featureExtentEnum.length, length: Math.abs(${this.code(feature.distance)}) });`);
+                    return;
+                }
                 const call = feature.type === "pushPull" ? `pushPullFaces({ shape: ${body}, indexes: ${this.numbers(trace.indexes ?? [])}, distance: ${this.code(feature.distance)} })` : `removeFaces({ shape: ${body}, indexes: ${this.numbers(trace.indexes ?? [])} })`;
                 this.line(`${body} = await occt.features.${call};`);
                 return;

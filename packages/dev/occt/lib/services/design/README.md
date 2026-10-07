@@ -34,9 +34,13 @@ each idea comes from, so the reasoning stays next to the code that implements it
   out through the wall. This hollows a body rounded all round, which OCCT's own shell cannot next to
   tangent rounds; it fails too when the offset is not one closed solid, as when the thickness
   reaches a round's radius, and the problem then lists why each way failed.
-- A push or pull moves faces by OCCT's face offset (`features.pushPullFacesWithHistory`): the faces
-  around them stretch along their own surfaces, so a curved face moves as a flat one does, and every
-  face keeps its names. A face removal (`features.removeFacesWithHistory`) closes the gap from the
+- A push or pull has two modes. `extrude`, the default, sweeps one flat face straight along its normal
+  as a boss or a pocket (`features.bossWithHistory`, `features.pocketWithHistory`), whatever the faces
+  around it do, and names the faces it sweeps out `side`. `offset` moves faces by OCCT's face offset
+  (`features.pushPullFacesWithHistory`): the faces around them stretch along their own surfaces, so a
+  curved face moves as a flat one does. An offset fails where those faces cannot follow, as when a
+  raised face is pushed past the face it stands on, and the problem names `extrude` instead. Either
+  way every face keeps its names. A face removal (`features.removeFacesWithHistory`) closes the gap from the
   faces around it, and the faces that stay keep theirs.
 - An import reads the bytes the build is given for its asset (`assets` on `design.build`), checks
   them against the SHA-256 the asset must record (`digest.ts`), and keys the cache by their digest

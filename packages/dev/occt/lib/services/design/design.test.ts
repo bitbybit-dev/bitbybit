@@ -362,7 +362,7 @@ describe("OCCT design documents", () => {
             expect(facesNamed(single!.faceNames, "single:end")).toHaveLength(0);
         });
 
-        it("should pull a flat face out and push one in, the faces keeping their names for the features after it", () => {
+        it("should pull a flat face out straight and push one in by default, naming the faces it sweeps out side", () => {
             // Arrange
             const pulled: Document = {
                 schemaVersion: 1,
@@ -370,6 +370,109 @@ describe("OCCT design documents", () => {
                     rectangle("square", 4, 2),
                     { id: "block", type: "extrude", profile: "square", distance: 3 },
                     { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: 2 },
+                    { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "pull", role: "side" }], count: 4 } },
+                ],
+            };
+            const pushed: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1, mode: "extrude" },
+                ],
+            };
+
+            // Act
+            const out = occt.design.build({ document: pulled });
+            const inward = occt.design.build({ document: pushed });
+
+            // Assert
+            expect(out.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok"]);
+            expect(size(out.parts[0]!.shape)[2]).toBeCloseTo(5, 6);
+            expect(facesNamed(out.parts[0]!.faceNames, "pull:side")).toHaveLength(4);
+            expect(facesNamed(out.parts[0]!.faceNames, "edge:bevel")).toHaveLength(4);
+            const body = inward.parts[0]!;
+            expect(inward.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok"]);
+            expect(volume(body.shape)).toBeCloseTo(16, 6);
+            const start = facesNamed(body.faceNames, "block:start");
+            expect(start).toEqual(facesNamed(body.faceNames, "push:end"));
+            expect(occt.analysis.signatures({ shape: body.shape }).faces[start[0]!]!.centre[2]).toBeCloseTo(1, 6);
+        });
+
+        it("should push a face straight past the faces around it when extruding, where moving it by offset fails and says so", () => {
+            // Arrange
+            const stepped = (mode: Models.OCCT.DesignPushPullMode): Document => ({
+                schemaVersion: 1,
+                features: [
+                    rectangle("base", 10, 10),
+                    { id: "plate", type: "extrude", profile: "base", distance: 2 },
+                    rectangle("top", 4, 4, { face: { of: "plate", role: "end" }, origin: [5, 5, 2] }, [-2, -2]),
+                    { id: "step", type: "boss", profile: "top", body: "plate", distance: 3 },
+                    { id: "sink", type: "pushPull", body: "plate", face: { of: "step", role: "end" }, distance: -4, mode },
+                ],
+            });
+
+            // Act
+            const extruded = occt.design.build({ document: stepped("extrude") });
+            const offset = occt.design.build({ document: stepped("offset") });
+
+            // Assert
+            expect(extruded.report.map(entry => entry.status)).toEqual(["ok", "ok", "ok", "ok", "ok"]);
+            expect(volume(extruded.parts[0]!.shape)).toBeCloseTo(200 + 48 - 64, 6);
+            expect(offset.report[4]!.status).toBe("failed");
+            expect(offset.report[4]!.messages).toEqual(["/features/4/face: OCCT could not move the face with the faces around it following; mode \"extrude\" adds or cuts a flat face straight instead"]);
+        });
+
+        it("should extend a cone's side when moving its top by offset, where extruding adds a straight cylinder", () => {
+            // Arrange
+            const cone = (mode: Models.OCCT.DesignPushPullMode): Document => ({
+                schemaVersion: 1,
+                features: [
+                    { id: "cone", type: "operation", operation: "occt.shapes.solid.createCone", params: { radius1: 2, radius2: 1, height: 2, angle: 360, center: [0, 0, 0], direction: [0, 0, 1] } },
+                    { id: "lift", type: "pushPull", body: "cone", face: { of: "cone", role: "face", filter: { select: "facing", direction: [0, 0, 1] }, count: 1 }, distance: 1, mode },
+                ],
+            });
+
+            // Act
+            const extruded = occt.design.build({ document: cone("extrude") });
+            const offset = occt.design.build({ document: cone("offset") });
+
+            // Assert
+            expect(volume(extruded.parts[0]!.shape)).toBeCloseTo((14 / 3) * Math.PI + Math.PI, 4);
+            expect(volume(offset.parts[0]!.shape)).toBeCloseTo(5.25 * Math.PI, 4);
+        });
+
+        it("should refuse to extrude a face that is not flat, or several faces, naming the offset mode that moves them", () => {
+            // Arrange
+            const rod = (press: Models.OCCT.DesignFeature): Document => ({
+                schemaVersion: 1,
+                features: [
+                    { id: "disc", type: "sketch", on: { plane: "XY" }, pen: [{ type: "circle", centre: [0, 0], radius: 2 }] },
+                    { id: "rod", type: "extrude", profile: "disc", distance: 3 },
+                    press,
+                ],
+            });
+
+            // Act
+            const curved = occt.design.build({ document: rod({ id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "side" }, distance: 1 }) });
+            const both = occt.design.build({ document: { schemaVersion: 1, features: [
+                { id: "can", type: "operation", operation: "occt.shapes.solid.createCylinder", params: { radius: 2, height: 3, center: [0, 0, 0], direction: [0, 0, 1] } },
+                { id: "press", type: "pushPull", body: "can", face: { of: "can", role: "face", filter: { select: "ofType", type: "plane" }, count: 2 }, distance: 1 },
+            ] } });
+
+            // Assert
+            expect(curved.report[2]!.messages).toEqual(["/features/2/face: extruding needs a flat face, and this one is a cylinder; mode \"offset\" moves curved faces"]);
+            expect(both.report[1]!.messages).toEqual(["/features/1/face: extruding moves one face, and the reference names 2; mode \"offset\" moves several"]);
+        });
+
+        it("should move a flat face out and in by offset, the faces around it following and keeping their names", () => {
+            // Arrange
+            const pulled: Document = {
+                schemaVersion: 1,
+                features: [
+                    rectangle("square", 4, 2),
+                    { id: "block", type: "extrude", profile: "square", distance: 3 },
+                    { id: "pull", type: "pushPull", body: "block", face: { of: "block", role: "end" }, distance: 2, mode: "offset" },
                     { id: "edge", type: "chamfer", body: "block", distance: 0.5, edges: { between: [{ of: "block", role: "end" }, { of: "block", role: "side" }], count: 4 } },
                 ],
             };
@@ -378,7 +481,7 @@ describe("OCCT design documents", () => {
                 features: [
                     rectangle("square", 4, 2),
                     { id: "block", type: "extrude", profile: "square", distance: 3 },
-                    { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1 },
+                    { id: "push", type: "pushPull", body: "block", face: { of: "block", role: "start" }, distance: -1, mode: "offset" },
                 ],
             };
 
@@ -399,14 +502,14 @@ describe("OCCT design documents", () => {
             expect(occt.analysis.signatures({ shape: body.shape }).faces[start[0]!]!.centre[2]).toBeCloseTo(1, 6);
         });
 
-        it("should move a curved face as a flat one, naming it, and refuse to move a face by nothing", () => {
+        it("should move a curved face by offset as a flat one, naming it, and refuse to move a face by nothing", () => {
             // Arrange
             const round = (distance: number): Document => ({
                 schemaVersion: 1,
                 features: [
                     { id: "disc", type: "sketch", on: { plane: "XY" }, pen: [{ type: "circle", centre: [0, 0], radius: 2 }] },
                     { id: "rod", type: "extrude", profile: "disc", distance: 3 },
-                    { id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "side" }, distance },
+                    { id: "press", type: "pushPull", body: "rod", face: { of: "rod", role: "side" }, distance, mode: "offset" },
                 ],
             });
 
