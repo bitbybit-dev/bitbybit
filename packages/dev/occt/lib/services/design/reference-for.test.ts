@@ -52,6 +52,37 @@ describe("naming picked faces and edges", () => {
         return part.shape;
     };
     const facing = (document: Document, direction: [number, number, number]): number[] => occt.select.faces.facing({ shape: bodyOf(document), direction, angle: 0 });
+    const withoutHint = (face: Models.OCCT.DesignFaceReference): Models.OCCT.DesignFaceReference => {
+        const plain = { ...face };
+        Reflect.deleteProperty(plain, "hint");
+        return plain;
+    };
+    const unhinted = (inputs: Inputs.OCCT.DesignReferenceForDto): Models.OCCT.DesignReferenceFound => {
+        const found = occt.design.referenceFor(inputs);
+        const reference = found.reference;
+        if (reference === undefined) {
+            return found;
+        }
+        return { ...found, reference: "between" in reference ? { ...reference, between: [withoutHint(reference.between[0]), withoutHint(reference.between[1])] } : withoutHint(reference) };
+    };
+
+    it("should hint the faces it names, and both sides of the edges it names, as a build writing hints would", () => {
+        // Arrange
+        const document = plate(named("base"));
+        const top = facing(document, [0, 0, 1]);
+        const rim = occt.select.edges.ofFaces({ shape: bodyOf(document), indexes: top });
+
+        // Act
+        const face = occt.design.referenceFor({ document, body: "plate", faces: top, nudge: false }).reference;
+        const edges = occt.design.referenceFor({ document, body: "plate", edges: rim, nudge: false }).reference;
+        const written = face === undefined || "between" in face ? undefined : occt.design.withHints({ document: { ...document, features: [...document.features, { id: "hollow", type: "shell", body: "plate", open: withoutHint(face), thickness: 1 }] } });
+
+        // Assert
+        const hollow = written?.features.find(feature => feature.id === "hollow");
+        expect(face !== undefined && !("between" in face) ? [face.hint?.v, face.hint?.faces.length] : []).toEqual([1, 1]);
+        expect(hollow !== undefined && hollow.type === "shell" && !Array.isArray(hollow.open) ? hollow.open.hint : undefined).toEqual(face !== undefined && !("between" in face) ? face.hint : "none");
+        expect(edges !== undefined && "between" in edges ? edges.between.map(side => side.hint?.faces.length) : []).toEqual([1, 4]);
+    });
 
     it("should name a face by the feature and role that made it, and hold it through every nudge", () => {
         // Arrange
@@ -59,7 +90,7 @@ describe("naming picked faces and edges", () => {
         const top = facing(document, [0, 0, 1]);
 
         // Act
-        const found = occt.design.referenceFor({ document, body: "plate", faces: top });
+        const found = unhinted({ document, body: "plate", faces: top });
 
         // Assert
         expect(found).toEqual({ reference: { of: "plate", role: "end", count: 1 }, nudged: ["height", "width"], lost: [] });
@@ -71,8 +102,8 @@ describe("naming picked faces and edges", () => {
         const withoutIds = plate(anonymous("base"));
 
         // Act
-        const byCommand = occt.design.referenceFor({ document: withIds, body: "plate", faces: facing(withIds, [1, 0, 0]), nudge: false });
-        const byFilter = occt.design.referenceFor({ document: withoutIds, body: "plate", faces: facing(withoutIds, [1, 0, 0]), nudge: false });
+        const byCommand = unhinted({ document: withIds, body: "plate", faces: facing(withIds, [1, 0, 0]), nudge: false });
+        const byFilter = unhinted({ document: withoutIds, body: "plate", faces: facing(withoutIds, [1, 0, 0]), nudge: false });
 
         // Assert
         expect(byCommand).toEqual({ reference: { of: "plate", role: "side", from: "base.east", count: 1 }, nudged: [], lost: [] });
@@ -87,7 +118,7 @@ describe("naming picked faces and edges", () => {
         const rim = occt.select.edges.ofFaces({ shape: body, indexes: top });
 
         // Act
-        const found = occt.design.referenceFor({ document, body: "plate", edges: rim });
+        const found = unhinted({ document, body: "plate", edges: rim });
 
         // Assert
         expect(found).toEqual({ reference: { between: [{ of: "plate", role: "end" }, { of: "plate", role: "side" }], count: 4 }, nudged: ["height", "width"], lost: [] });
@@ -103,8 +134,8 @@ describe("naming picked faces and edges", () => {
         const west = occt.select.edges.extreme({ shape: body, indexes: bottomRim, direction: [-1, 0, 0] });
 
         // Act
-        const filtered = occt.design.referenceFor({ document, body: "plate", edges: east, nudge: false });
-        const apart = occt.design.referenceFor({ document, body: "plate", edges: [...east, ...west], nudge: false });
+        const filtered = unhinted({ document, body: "plate", edges: east, nudge: false });
+        const apart = unhinted({ document, body: "plate", edges: [...east, ...west], nudge: false });
 
         // Assert
         expect(filtered.reference).toEqual({ between: [{ of: "plate", role: "end" }, { of: "plate", role: "side" }], filter: { select: "extreme", direction: [1, 0, 0] }, count: 1 });
@@ -125,7 +156,7 @@ describe("naming picked faces and edges", () => {
         const last = occt.select.faces.extreme({ shape: bodyOf(document), indexes: tops, direction: [1, 0, 0] });
 
         // Act
-        const found = occt.design.referenceFor({ document, body: "post", faces: last, nudge: false });
+        const found = unhinted({ document, body: "post", faces: last, nudge: false });
 
         // Assert
         expect(found.reference).toEqual({ of: "post", role: "end", copy: { of: "row", index: 2 }, count: 1 });
@@ -136,8 +167,8 @@ describe("naming picked faces and edges", () => {
         const document = plate(named("base"));
 
         // Act
-        const face = occt.design.referenceFor({ document, body: "plate", faces: [999], nudge: false });
-        const edge = occt.design.referenceFor({ document, body: "plate", edges: [999], nudge: false });
+        const face = unhinted({ document, body: "plate", faces: [999], nudge: false });
+        const edge = unhinted({ document, body: "plate", edges: [999], nudge: false });
 
         // Assert
         expect(face.refused).toBe("no name covers exactly the 1 picked face; pick faces one feature made");
@@ -153,7 +184,7 @@ describe("naming picked faces and edges", () => {
         const bottom = facing(document, [0, 0, -1]);
 
         // Act
-        const found = occt.design.referenceFor({ document, body: "plate", faces: bottom });
+        const found = unhinted({ document, body: "plate", faces: bottom });
 
         // Assert
         expect(found).toEqual({ reference: { of: "plate", role: "start", count: 1 }, nudged: ["height"], lost: [] });
@@ -168,8 +199,8 @@ describe("naming picked faces and edges", () => {
         const bottom = facing(document, [0, 0, -1]);
 
         // Act
-        const fragile = occt.design.referenceFor({ document: rounded, body: "plate", faces: rounds });
-        const unnamed = occt.design.referenceFor({ document, body: "plate", faces: [...top, ...bottom], nudge: false });
+        const fragile = unhinted({ document: rounded, body: "plate", faces: rounds });
+        const unnamed = unhinted({ document, body: "plate", faces: [...top, ...bottom], nudge: false });
 
         // Assert
         expect(fragile.reference).toEqual({ of: "round", role: "round", count: 4 });
@@ -184,7 +215,7 @@ describe("naming picked faces and edges", () => {
         const top = facing(document, [0, 0, 1]);
 
         // Act
-        const found = occt.design.referenceFor({ document, body: "plate", faces: top });
+        const found = unhinted({ document, body: "plate", faces: top });
 
         // Assert
         expect(found).toEqual({ reference: { of: "plate", role: "end", count: 1 }, nudged: ["height", "tilt", "width"], lost: ["tilt"] });
@@ -198,7 +229,7 @@ describe("naming picked faces and edges", () => {
         };
 
         // Act
-        const found = occt.design.referenceFor({ document: breaking, body: "plate", faces: facing(breaking, [0, 0, -1]) });
+        const found = unhinted({ document: breaking, body: "plate", faces: facing(breaking, [0, 0, -1]) });
 
         // Assert
         expect(found).toEqual({ reference: { of: "plate", role: "start", count: 1 }, nudged: ["height", "width"], lost: [] });
@@ -210,11 +241,11 @@ describe("naming picked faces and edges", () => {
         const assembly: Models.OCCT.DesignAssemblyDocument = { schemaVersion: 1, kind: "assembly", components: [] };
 
         // Act
-        const ofAssembly = (): unknown => occt.design.referenceFor({ document: assembly, body: "plate", faces: [0] });
-        const both = (): unknown => occt.design.referenceFor({ document, body: "plate", faces: [0], edges: [0] });
-        const neither = (): unknown => occt.design.referenceFor({ document, body: "plate" });
-        const fractional = (): unknown => occt.design.referenceFor({ document, body: "plate", faces: [1.5] });
-        const missing = (): unknown => occt.design.referenceFor({ document, body: "lid", faces: [0] });
+        const ofAssembly = (): unknown => unhinted({ document: assembly, body: "plate", faces: [0] });
+        const both = (): unknown => unhinted({ document, body: "plate", faces: [0], edges: [0] });
+        const neither = (): unknown => unhinted({ document, body: "plate" });
+        const fractional = (): unknown => unhinted({ document, body: "plate", faces: [1.5] });
+        const missing = (): unknown => unhinted({ document, body: "lid", faces: [0] });
 
         // Assert
         expect(ofAssembly).toThrow(InputError);

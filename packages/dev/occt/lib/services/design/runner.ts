@@ -173,11 +173,13 @@ function apply(feature: Feature, writes: string, outcome: DesignOutcome | undefi
 function withRebinds(report: Models.OCCT.DesignFeatureReport, entries: readonly RebindEntry[]): Models.OCCT.DesignFeatureReport {
     const rebound = entries.filter(entry => entry.kind === "rebound");
     const repairs = entries.filter(entry => entry.kind === "repair");
+    const status = report.status === "ok" && rebound.length > 0 ? "rebound" : report.status;
+    const listed = status === "failed" ? repairs : status === "rebound" ? rebound : [];
     return {
         ...report,
-        status: report.status === "ok" && rebound.length > 0 ? "rebound" : report.status,
+        status,
         messages: [...report.messages, ...rebound.map(entry => `${entry.path}: its faces were lost, and it took faces ${entry.faces.join(", ")}, the most like its hint (score ${entry.score})`)],
-        ...(report.status === "failed" && repairs.length > 0 ? { repairs: repairs.map(entry => ({ path: entry.path, faces: entry.faces, score: entry.score, clear: entry.clear === true })) } : {}),
+        ...(listed.length > 0 ? { repairs: listed.map(entry => ({ path: entry.path, faces: entry.faces, score: entry.score, clear: entry.kind === "rebound" || entry.clear === true })) } : {}),
     };
 }
 

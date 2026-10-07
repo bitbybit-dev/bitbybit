@@ -260,6 +260,7 @@ describe("design hints", () => {
             const dent = statusOf(first, "dent");
             expect(dent.status).toBe("rebound");
             expect(dent.messages).toEqual([`${DENT_FACE}: its faces were lost, and it took faces ${repaired.report[6]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
+            expect(dent.repairs).toEqual([{ path: DENT_FACE, faces: repaired.report[6]!.repairs![0]!.faces, score: 1, clear: true }]);
             expect(statusOf(first, "dip").messages).toEqual([`/features/7/profile: its faces were lost, and it took faces ${repaired.report[6]!.repairs![0]!.faces[0]}, the most like its hint (score 1)`]);
             expect(occt.shapes.solid.getSolidVolume({ shape: first.parts[0]!.shape })).toBeCloseTo(20 * 10 * 5 - 4, 6);
             expect([statusOf(again, "dent").status, statusOf(again, "dent").cached, statusOf(again, "dent").messages]).toEqual(["rebound", true, dent.messages]);

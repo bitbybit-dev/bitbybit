@@ -17,7 +17,8 @@ export interface DesignIssue {
  * faces and, in a build with `rebind: "report"`, took the faces most like its hint, or `pending` when
  * its outcome must come from the caller, as a script's does (see `pending` on the result). `ms` is the
  * time it took and `cached` says it was reused from an earlier build of the same inputs. A failed
- * feature whose lost references have hints lists, in `repairs`, the faces most like each.
+ * feature whose lost references have hints lists, in `repairs`, the faces most like each; a rebound
+ * one lists the faces each took.
  */
 export interface DesignFeatureReport {
     id: string;
@@ -31,8 +32,9 @@ export interface DesignFeatureReport {
 
 /**
  * The faces most like a lost reference's hint, by the reference's JSON pointer, with the score of
- * the least like of them; `clear` says they stand clear enough of the others that a build with
- * `rebind: "report"` takes them.
+ * the least like of them: those a rebound feature took, or those a failed one could take. `clear` says
+ * they stand clear enough of the others that a build with `rebind: "report"` takes them, as a rebound
+ * feature's always do.
  */
 export interface DesignRepair {
     path: string;

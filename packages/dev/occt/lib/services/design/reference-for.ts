@@ -2,6 +2,7 @@ import { isRecord } from "@bitbybit-dev/base";
 import type { TopoDS_Shape } from "../../../bitbybit-dev-occt/bitbybit-dev-occt";
 import type * as Models from "../../api/models";
 import { contextOf } from "./helpers";
+import { referenceHintOf } from "./hints";
 import { DesignProblem, nothing, unlessTrapped } from "./problems";
 import type { ResolveContext } from "./references";
 import { resolveEdges, resolveFaces } from "./references";
@@ -63,6 +64,17 @@ function resolved(reference: Reference, context: ResolveContext): number[] | und
     return unlessTrapped<number[] | undefined>(() => "between" in reference ? resolveEdges(reference, context, "") : resolveFaces(reference, context, ""), nothing);
 }
 
+function hinted(reference: Reference, picked: DesignPicked, context: ResolveContext): Reference {
+    if (!("between" in reference)) {
+        return { ...reference, hint: referenceHintOf(picked.indexes, context.shape, context.names, context) };
+    }
+    const [first, second] = reference.between.map(side => {
+        const faces = unlessTrapped<number[] | undefined>(() => resolveFaces(side, context, ""), nothing);
+        return faces === undefined || faces.length === 0 ? side : { ...side, hint: referenceHintOf(faces, context.shape, context.names, context) };
+    });
+    return first === undefined || second === undefined ? reference : { ...reference, between: [first, second] };
+}
+
 function numberIn(record: Record<string, unknown>, key: string): number | undefined {
     const value = record[key];
     return typeof value === "number" ? value : undefined;
@@ -105,13 +117,14 @@ export function referenceFor(document: Models.OCCT.DesignPartDocument, choice: P
         throw new DesignProblem("/body", `"${body}" is not a body this document builds`);
     }
     const order = new Map(document.features.map((feature, index) => [feature.id, index]));
+    const resolving = contextOf(state, run);
     const synthesized: Synthesized<Reference> = picked.kind === "faces"
-        ? faceReferenceFor(picked.indexes, contextOf(state, run), order)
-        : edgeReferenceFor(picked.indexes, contextOf(state, run), order);
+        ? faceReferenceFor(picked.indexes, resolving, order)
+        : edgeReferenceFor(picked.indexes, resolving, order);
     if ("refused" in synthesized) {
         return { refused: synthesized.refused, nudged: [], lost: [] };
     }
-    const reference = synthesized.reference;
+    const reference = hinted(synthesized.reference, picked, resolving);
     const found: Models.OCCT.DesignReferenceFound = { reference, nudged: [], lost: [] };
     if (!nudge) {
         return found;

@@ -338,7 +338,8 @@ the faces a removal takes; a push or pull without one moves exactly one face, an
 leave it out.
 
 **Hints, for when names are lost.** A face reference may carry a `hint`, which tools write
-(`design.withHints`, from a build with given values) and the version leaves out: the body's box,
+(`design.withHints`, from a build with given values, and `design.referenceFor`, for the faces it
+names) and the version leaves out: the body's box,
 and per face its surface type, its area as a fraction of the body's, its centre as fractions of the
 box, its normal and the names of its neighbours. Edge references carry none of their own; their two
 face references do. A build reads a hint only when its reference finds no face or another count
@@ -357,7 +358,8 @@ than it expects:
 - **`rebind` on `design.build` decides what happens then.** `"never"`, the default for headless
   builds, fails the feature as before and lists the faces most like the hint as `repairs`, saying
   whether they stand clear. `"report"`, for editors, takes them and reports the feature `rebound`,
-  naming the faces each reference took. Nothing is rebound without appearing in the report.
+  naming the faces each reference took, in its messages and as its `repairs`. Nothing is rebound
+  without appearing in the report.
 - **No warning for faces found by name.** A report of faces that a reference found but that look
   unlike its hint was tried on the benchmark and dropped: of its ten flags, nine were correct
   references after an ordinary change (a moved boss, a turned body, a pattern grown longer), and it

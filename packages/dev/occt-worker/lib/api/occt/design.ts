@@ -248,7 +248,8 @@ export class OCCTDesign {
     /**
      * Names faces or edges picked on a built body the way a document stores them: a reference by the
      * names of the features that made them, narrowed by an axis filter when names alone do not single
-     * them out, with their count.
+     * them out, with their count and a hint of what the faces are like, so a build can find them again
+     * by likeness if their names are lost.
      *
      * With `nudge`, the default, the document is built again with each number the body depends on
      * moved a little, at most eight of them; `lost` lists those after which the reference no longer
