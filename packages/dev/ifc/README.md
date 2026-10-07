@@ -62,8 +62,9 @@ Run it with `npx tsx house.ts`. Compiled to JavaScript, run it as `node --import
 |---|---|
 | Schema | IFC4 ADD2 TC1, read and written; IFC2X3 files read through IFC4 to show and query, and upgraded to IFC4 to edit |
 | Spatial structure | project, site, one building, storeys raised or lowered with everything on them, spaces with their areas |
+| Site | terrain with holes where the building and paving meet it, and trees with a trunk and crown in their own materials, as geographic elements of the site |
 | Walls | straight walls from an axis, by thickness, layer set or wall type; centred, left or right aligned; L joins (mitred) and T joins (butt); clipping by planes and under roofs; read back as parameters and edited, also when another tool wrote them |
-| Openings, doors, windows | rectangular openings in walls, moved or resized; any outline through a slab; door and window types with a lining or frame and one panel or pane, placed many times through mapped geometry |
+| Openings, doors, windows | rectangular openings in walls, moved or resized; any outline through a slab; door and window types with a lining or frame and one panel or pane, each part in its own material, doors with lever or pull-bar handles, placed many times through mapped geometry |
 | Slabs and roofs | outlines with holes, by thickness or layer set; flat, mono-pitch, gable and hip roofs over a rectangle |
 | Columns, beams and members | rectangle, circle and I sections; braces, rafters, studs, mullions and other members |
 | Editing | removing elements with what only they use, moving and turning them |

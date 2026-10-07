@@ -100,6 +100,7 @@ export const targets = [
             "walls",
             "openings-doors-windows",
             "slabs-columns-beams",
+            "site",
             "properties",
             "geometry",
         ],

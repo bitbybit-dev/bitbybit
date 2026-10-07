@@ -12,7 +12,7 @@ export namespace IFC {
     export type AddBeamDto<T> = WithDefaults<Inputs.IFC.AddBeamDto<T>, "profile" | "rotation">;
     export type AddColumnDto<T> = WithDefaults<Inputs.IFC.AddColumnDto<T>, "position" | "baseOffset" | "profile" | "rotation">;
     export type AddDoorDto<T> = WithDefaults<Inputs.IFC.AddDoorDto<T>, "sill">;
-    export type AddDoorTypeDto<T> = WithDefaults<Inputs.IFC.AddDoorTypeDto<T>, "name" | "operation">;
+    export type AddDoorTypeDto<T> = WithDefaults<Inputs.IFC.AddDoorTypeDto<T>, "name" | "operation" | "handle">;
     export type AddLayerSetDto<T> = WithDefaults<Inputs.IFC.AddLayerSetDto<T>, "name">;
     export type AddMaterialDto<T> = WithDefaults<Inputs.IFC.AddMaterialDto<T>, "name" | "transparency">;
     export type AddMemberDto<T> = WithDefaults<Inputs.IFC.AddMemberDto<T>, "predefinedType" | "profile" | "rotation">;
@@ -23,6 +23,8 @@ export namespace IFC {
     export type AddSlabOpeningDto<T> = Inputs.IFC.AddSlabOpeningDto<T>;
     export type AddSpaceDto<T> = WithDefaults<Inputs.IFC.AddSpaceDto<T>, "baseOffset" | "predefinedType">;
     export type AddStoreyDto<T> = WithDefaults<Inputs.IFC.AddStoreyDto<T>, "name" | "elevation">;
+    export type AddTerrainDto<T> = WithDefaults<Inputs.IFC.AddTerrainDto<T>, "name" | "elevation">;
+    export type AddTreeDto<T> = WithDefaults<Inputs.IFC.AddTreeDto<T>, "name" | "species" | "position" | "elevation">;
     export type AddWallDto<T> = WithDefaults<Inputs.IFC.AddWallDto<T>, "alignment" | "baseOffset" | "predefinedType">;
     export type AddWallTypeDto<T> = WithDefaults<Inputs.IFC.AddWallTypeDto<T>, "name" | "predefinedType">;
     export type AddWindowDto<T> = Inputs.IFC.AddWindowDto<T>;

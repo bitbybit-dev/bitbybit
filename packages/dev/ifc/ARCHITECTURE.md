@@ -248,6 +248,18 @@ the opening whatever origin the type's geometry has, and its `OverallWidth` and 
 the opening it cuts. An occurrence leaves its predefined, operation and partitioning types unset, so its
 type's apply.
 
+A door type's `handle` (a lever, or a pull bar on two posts) is part of its geometry, on both faces of
+the panel near the edge away from the hinges its operation names (`*_RIGHT` hinges on the right, so the
+handle goes left). Its sizes are millimetres converted to the model's unit
+(`HANDLE_MILLIMETRES`); it stands off the panel past the lining, which deepens the type's box but not its
+width or height, so the opening it cuts is unchanged and the door stays centred in the wall.
+
+A type's parts take materials: a window's frame and glass, a door's lining, panel and handle. Each named
+material styles its part's items with the material's own `IfcSurfaceStyle`, so a viewer shows a dark
+frame around clear glass and the recipe gives each part as a root of its own colour; a material without
+a colour styles nothing. The type is also associated with an `IfcMaterialConstituentSet` naming the
+parts (`Framing` and `Glazing`, `Lining` and `Panel`), which the occurrences take from it.
+
 `openings.edit` reads an opening back as `walls.edit` does and writes it again at its new offset, sill
 or size, carrying the doors and windows in it as `walls.edit` does; one placed anywhere but on the
 opening or the wall is refused. Given a door or
@@ -280,6 +292,17 @@ so anything else that refers to the object makes the commit refuse the removal. 
 types stay as the library items they are; a material usage, a property set or geometry that nothing uses
 any more is pruned. The walls a removed wall trimmed are rebuilt with square ends, when this library
 can read them as walls; a wall another tool wrote in a form it cannot read keeps the footprint it had.
+
+## Site
+
+Terrain and trees are `IfcGeographicElement`s contained in the model's one `IfcSite` and placed on it,
+not on a storey. Terrain (`TERRAIN`) is an outline with holes extruded down from its top by its depth, so
+paving or a building footprint left as a hole meets it flush without two faces in one plane. A tree
+(`USERDEFINED`, its species as `ObjectType`, which IFC4 asks of a user-defined type) is one Tessellation
+body of two closed `IfcTriangulatedFaceSet`s: a crown from base's `icosphere`, stretched upwards and
+rippled so it does not read as a ball, and a tapering trunk from base's `frustum` that reaches into it. The
+crown is at most 45 percent of the tree's height, so every tree has a trunk. Each part takes its material
+the way a door or window part does: a styled item and a constituent of the element's constituent set.
 
 ## Slabs
 

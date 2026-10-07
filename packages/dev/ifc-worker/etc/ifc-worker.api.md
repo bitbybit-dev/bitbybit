@@ -73,6 +73,10 @@ export class IFCBitByBit {
     //
     // (undocumented)
     readonly roofs: IFCRoofs;
+    // Warning: (ae-forgotten-export) The symbol "IFCSite" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    readonly site: IFCSite;
     // Warning: (ae-forgotten-export) The symbol "IFCSlabs" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

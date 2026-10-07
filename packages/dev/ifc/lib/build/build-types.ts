@@ -1,4 +1,5 @@
 import type { Base } from "@bitbybit-dev/base";
+import type { MeshArrays } from "@bitbybit-dev/base/lib/api/services/helpers/helper-types";
 import type { FrameAxes } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import type * as Inputs from "../api/inputs";
 import type { IfcSchema } from "../schema/schema";
@@ -177,6 +178,25 @@ export interface DoorTypeSpec {
     readonly liningDepth: number;
     readonly panelThickness: number;
     readonly operation: Inputs.IFC.doorOperationEnum;
+    readonly liningMaterial: string | undefined;
+    readonly panelMaterial: string | undefined;
+    readonly handle: Inputs.IFC.doorHandleEnum;
+    readonly handleMaterial: string | undefined;
+    readonly hardware: HandleSizes;
+}
+
+export interface HandleSizes {
+    readonly inset: number;
+    readonly leverHeight: number;
+    readonly leverStandoff: number;
+    readonly leverSection: number;
+    readonly leverLength: number;
+    readonly pullBarLength: number;
+    readonly pullBarMiddle: number;
+    readonly pullBarStandoff: number;
+    readonly pullBarSection: number;
+    readonly pullBarPost: number;
+    readonly pullBarPostInset: number;
 }
 
 export interface WindowTypeSpec {
@@ -187,6 +207,42 @@ export interface WindowTypeSpec {
     readonly frameThickness: number;
     readonly frameDepth: number;
     readonly glassThickness: number;
+    readonly frameMaterial: string | undefined;
+    readonly glassMaterial: string | undefined;
+}
+
+export interface TerrainSpec {
+    readonly id: string | undefined;
+    readonly name: string;
+    readonly outline: readonly Base.Point2[];
+    readonly holes: readonly (readonly Base.Point2[])[];
+    readonly depth: number;
+    readonly elevation: number;
+    readonly material: string | undefined;
+}
+
+export interface TreeSpec {
+    readonly id: string | undefined;
+    readonly name: string;
+    readonly species: string;
+    readonly position: Base.Point2;
+    readonly elevation: number;
+    readonly height: number;
+    readonly crownRadius: number;
+    readonly trunkRadius: number;
+    readonly crownMaterial: string | undefined;
+    readonly trunkMaterial: string | undefined;
+}
+
+export interface CrownMesh {
+    readonly mesh: MeshArrays;
+    readonly centre: number;
+}
+
+export interface MaterialPart {
+    readonly name: string;
+    readonly items: readonly number[];
+    readonly material: string | undefined;
 }
 
 export interface FillingSpec {

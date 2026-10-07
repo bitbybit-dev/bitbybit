@@ -50,6 +50,13 @@ export function oneWall(seed = "test"): Fixture {
     return { ifc, model: addRightWall(ifc, model, "south", [0, 0], [10000, 0]) };
 }
 
+export function oneWallWithMaterials(): Fixture {
+    const { ifc, model } = oneWall();
+    const aluminium = ifc.materials.add({ model, name: "Aluminium", color: "#2e3236" });
+    const glass = ifc.materials.add({ model: aluminium, name: "Glass", color: "#a9c7d6", transparency: 0.7 });
+    return { ifc, model: ifc.materials.add({ model: glass, name: "Oak" }) };
+}
+
 export function expressIdOf(model: IfcModel, id: string): number {
     const snapshot = modelOf(model);
     const found = isGlobalId(id) && snapshot.byGlobalId(id) !== undefined ? snapshot.byGlobalId(id) : snapshot.byGlobalId(keyGlobalId(snapshot.keySeed, id));

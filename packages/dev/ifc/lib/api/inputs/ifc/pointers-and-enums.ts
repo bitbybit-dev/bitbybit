@@ -297,6 +297,24 @@ export enum doorOperationEnum {
 }
 
 /**
+ * The handle a door type carries on both faces of its panel, on the side away from its hinges.
+ */
+export enum doorHandleEnum {
+    /**
+     * No handle.
+     */
+    none = "none",
+    /**
+     * A lever handle at hand height.
+     */
+    lever = "lever",
+    /**
+     * A long upright pull bar, as on an entrance door.
+     */
+    pullBar = "pullBar",
+}
+
+/**
  * The shape of the section a column or beam is extruded from: a rectangle, a circle or an I section.
  */
 export enum profileKindEnum {

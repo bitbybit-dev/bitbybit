@@ -1,6 +1,6 @@
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, isList, isReference, ref } from "../step/values";
-import type { LayerSpec, ModelReader, SurfaceColour } from "./build-types";
+import type { LayerSpec, MaterialPart, ModelReader, SurfaceColour } from "./build-types";
 import { MATERIAL_ASSOCIATION } from "./constants";
 import { bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
@@ -8,6 +8,7 @@ import { appendToRelationship, relate, relatingOf } from "./relationships";
 
 const MATERIAL = { type: "IfcMaterial", name: "Name", what: "material" } as const;
 const LAYER_SET = { type: "IfcMaterialLayerSet", name: "LayerSetName", what: "layer set" } as const;
+const MATERIAL_REPRESENTATION = "IfcMaterialDefinitionRepresentation";
 
 function findNamed(reader: ModelReader, type: string, nameAttribute: string, name: string): number | undefined {
     return reader.byType(type).find((entity) => reader.attribute(entity.id, nameAttribute) === name)?.id;
@@ -41,6 +42,26 @@ function surfaceStyle(writer: EntityWriter, name: string, colour: SurfaceColour)
     const rgb = writer.create("IfcColourRgb", { Red: colour.red, Green: colour.green, Blue: colour.blue });
     const shading = writer.create("IfcSurfaceStyleShading", { SurfaceColour: ref(rgb), Transparency: colour.transparency > 0 ? colour.transparency : null });
     return writer.create("IfcSurfaceStyle", { Name: name, Side: enumValue("BOTH"), Styles: [ref(shading)] });
+}
+
+export function materialStyle(reader: ModelReader, material: number): number | undefined {
+    for (const user of reader.referencesTo(material)) {
+        if (reader.get(user)?.type !== MATERIAL_REPRESENTATION) {
+            continue;
+        }
+        const representations = reader.attribute(user, "Representations");
+        for (const representation of (isList(representations) ? representations : []).filter(isReference)) {
+            const items = reader.attribute(representation.ref, "Items");
+            for (const item of (isList(items) ? items : []).filter(isReference)) {
+                const styles = reader.attribute(item.ref, "Styles");
+                const style = (isList(styles) ? styles : []).find(isReference);
+                if (style) {
+                    return style.ref;
+                }
+            }
+        }
+    }
+    return undefined;
 }
 
 export function createMaterial(tx: IfcTransaction, writer: EntityWriter, name: string, category: string | undefined, colour: SurfaceColour | undefined): number {
@@ -140,4 +161,26 @@ export function layerSetUsage(writer: EntityWriter, layerSet: number, direction:
         DirectionSense: enumValue(sense),
         OffsetFromReferenceLine: offset,
     });
+}
+
+export function materialsOfParts(tx: IfcTransaction, parts: readonly MaterialPart[]): (number | undefined)[] {
+    return parts.map((part) => (part.material === undefined ? undefined : requireMaterial(tx, part.material)));
+}
+
+export function dressParts(tx: IfcTransaction, writer: EntityWriter, type: number, parts: readonly MaterialPart[], materials: readonly (number | undefined)[]): void {
+    const constituents: number[] = [];
+    parts.forEach((part, index) => {
+        const material = materials[index];
+        if (material === undefined) {
+            return;
+        }
+        const style = materialStyle(tx, material);
+        if (style !== undefined) {
+            part.items.forEach((item) => writer.create("IfcStyledItem", { Item: ref(item), Styles: [ref(style)], Name: null }));
+        }
+        constituents.push(writer.create("IfcMaterialConstituent", { Name: part.name, Material: ref(material), Category: part.name }));
+    });
+    if (constituents.length) {
+        associateNewMaterial(tx, writer, [type], writer.create("IfcMaterialConstituentSet", { MaterialConstituents: constituents.map(ref) }));
+    }
 }

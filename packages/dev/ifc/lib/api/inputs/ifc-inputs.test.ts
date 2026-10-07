@@ -46,6 +46,8 @@ const DTOS: [string, AnyDto][] = [
     ["AddColumnDto", Inputs.IFC.AddColumnDto<unknown>],
     ["AddBeamDto", Inputs.IFC.AddBeamDto<unknown>],
     ["AddMemberDto", Inputs.IFC.AddMemberDto<unknown>],
+    ["AddTerrainDto", Inputs.IFC.AddTerrainDto<unknown>],
+    ["AddTreeDto", Inputs.IFC.AddTreeDto<unknown>],
     ["PropertyDto", Inputs.IFC.PropertyDto],
     ["AddPropertySetDto", Inputs.IFC.AddPropertySetDto<unknown>],
     ["SetPropertyValuesDto", Inputs.IFC.SetPropertyValuesDto<unknown>],

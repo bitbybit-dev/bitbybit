@@ -312,6 +312,24 @@ export namespace IFC {
     }
 
     /**
+     * The handle a door type carries on both faces of its panel, on the side away from its hinges.
+     */
+    export enum doorHandleEnum {
+        /**
+         * No handle.
+         */
+        none = "none",
+        /**
+         * A lever handle at hand height.
+         */
+        lever = "lever",
+        /**
+         * A long upright pull bar, as on an entrance door.
+         */
+        pullBar = "pullBar",
+    }
+
+    /**
      * The shape of the section a column or beam is extruded from: a rectangle, a circle or an I section.
      */
     export enum profileKindEnum {
@@ -1579,7 +1597,7 @@ export namespace IFC {
      * shares, so the geometry is written once however many doors there are.
      */
     export class AddDoorTypeDto<T> {
-        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum) {
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum, liningMaterial?: string, panelMaterial?: string, handle?: doorHandleEnum, handleMaterial?: string) {
             if (model !== undefined) { this.model = model; }
             if (id !== undefined) { this.id = id; }
             if (name !== undefined) { this.name = name; }
@@ -1589,6 +1607,10 @@ export namespace IFC {
             if (liningDepth !== undefined) { this.liningDepth = liningDepth; }
             if (panelThickness !== undefined) { this.panelThickness = panelThickness; }
             if (operation !== undefined) { this.operation = operation; }
+            if (liningMaterial !== undefined) { this.liningMaterial = liningMaterial; }
+            if (panelMaterial !== undefined) { this.panelMaterial = panelMaterial; }
+            if (handle !== undefined) { this.handle = handle; }
+            if (handleMaterial !== undefined) { this.handleMaterial = handleMaterial; }
         }
         /**
          * The model to change; it stays as it was, and the call returns the changed model.
@@ -1656,13 +1678,40 @@ export namespace IFC {
          * @default singleSwingLeft
          */
         operation?: doorOperationEnum | undefined = doorOperationEnum.singleSwingLeft;
+        /**
+         * The material the lining is made of, added before with `materials.add`; the lining shows its
+         * colour.
+         * @default undefined
+         * @optional true
+         */
+        liningMaterial?: string | undefined;
+        /**
+         * The material the panel is made of, added before with `materials.add`, such as glass for a
+         * sliding glass door; the panel shows its colour.
+         * @default undefined
+         * @optional true
+         */
+        panelMaterial?: string | undefined;
+        /**
+         * The handle on both faces of the panel, near the edge away from the hinges that `operation`
+         * names.
+         * @default none
+         */
+        handle?: doorHandleEnum | undefined = doorHandleEnum.none;
+        /**
+         * The material the handle is made of, added before with `materials.add`; the handle shows its
+         * colour.
+         * @default undefined
+         * @optional true
+         */
+        handleMaterial?: string | undefined;
     }
     /**
      * A window type to add for `windows.addType`: a frame around one pane of glass, which every window
      * of the type shares.
      */
     export class AddWindowTypeDto<T> {
-        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number) {
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number, frameMaterial?: string, glassMaterial?: string) {
             if (model !== undefined) { this.model = model; }
             if (id !== undefined) { this.id = id; }
             if (name !== undefined) { this.name = name; }
@@ -1671,6 +1720,8 @@ export namespace IFC {
             if (frameThickness !== undefined) { this.frameThickness = frameThickness; }
             if (frameDepth !== undefined) { this.frameDepth = frameDepth; }
             if (glassThickness !== undefined) { this.glassThickness = glassThickness; }
+            if (frameMaterial !== undefined) { this.frameMaterial = frameMaterial; }
+            if (glassMaterial !== undefined) { this.glassMaterial = glassMaterial; }
         }
         /**
          * The model to change; it stays as it was, and the call returns the changed model.
@@ -1733,6 +1784,20 @@ export namespace IFC {
          * @exclusiveMinimum true
          */
         glassThickness?: number | undefined;
+        /**
+         * The material the frame is made of, added before with `materials.add`; the frame shows its
+         * colour.
+         * @default undefined
+         * @optional true
+         */
+        frameMaterial?: string | undefined;
+        /**
+         * The material of the glass, added before with `materials.add`, usually with a `transparency`;
+         * the glass shows its colour.
+         * @default undefined
+         * @optional true
+         */
+        glassMaterial?: string | undefined;
     }
     /**
      * A door to place in a wall for `doors.add`: a door type and where along the wall it goes. The door
@@ -2227,6 +2292,161 @@ export namespace IFC {
          * @maximum Infinity
          */
         baseOffset?: number | undefined = 0;
+    }
+    /**
+     * Terrain to add for `site.addTerrain`: the ground of the site as an outline in the site's plan, with
+     * holes where a building or paving meets it, its top at `elevation` and reaching `depth` down.
+     */
+    export class AddTerrainDto<T> {
+        constructor(model?: T, id?: string, name?: string, outline?: Base.Point2[], holes?: Base.Point2[][], depth?: number, elevation?: number, material?: string) {
+            if (model !== undefined) { this.model = model; }
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (outline !== undefined) { this.outline = outline; }
+            if (holes !== undefined) { this.holes = holes; }
+            if (depth !== undefined) { this.depth = depth; }
+            if (elevation !== undefined) { this.elevation = elevation; }
+            if (material !== undefined) { this.material = material; }
+        }
+        /**
+         * The model to change; it stays as it was, and the call returns the changed model.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * An id of your own for the terrain. Leave it out for a generated one.
+         * @default undefined
+         * @optional true
+         */
+        id?: string | undefined;
+        /**
+         * A name for the terrain, which other tools show.
+         * @default Terrain
+         */
+        name?: string | undefined = "Terrain";
+        /**
+         * The outline, as `[x, y]` points in the site's plan, without the first repeated at the end;
+         * either winding works.
+         * @default undefined
+         */
+        outline!: Base.Point2[];
+        /**
+         * Holes in the ground, each an outline like `outline`, inside it, such as a building's footprint
+         * or paving that lies flush with the ground.
+         * @default undefined
+         * @optional true
+         */
+        holes?: Base.Point2[][] | undefined;
+        /**
+         * How far the ground reaches down from its top. Left out, 1 m, in the model's length unit.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum Infinity
+         * @exclusiveMinimum true
+         */
+        depth?: number | undefined;
+        /**
+         * How high the ground's top is above the site's origin.
+         * @default 0
+         */
+        elevation?: number | undefined = 0;
+        /**
+         * The material of the ground, added before with `materials.add`, such as lawn or soil.
+         * @default undefined
+         * @optional true
+         */
+        material?: string | undefined;
+    }
+
+    /**
+     * A tree to add for `site.addTree`: a trunk and a rounded crown standing on the site at `position`,
+     * `height` tall overall, written as a geographic element of the site.
+     */
+    export class AddTreeDto<T> {
+        constructor(model?: T, id?: string, name?: string, species?: string, position?: Base.Point2, elevation?: number, height?: number, crownRadius?: number, trunkRadius?: number, crownMaterial?: string, trunkMaterial?: string) {
+            if (model !== undefined) { this.model = model; }
+            if (id !== undefined) { this.id = id; }
+            if (name !== undefined) { this.name = name; }
+            if (species !== undefined) { this.species = species; }
+            if (position !== undefined) { this.position = position; }
+            if (elevation !== undefined) { this.elevation = elevation; }
+            if (height !== undefined) { this.height = height; }
+            if (crownRadius !== undefined) { this.crownRadius = crownRadius; }
+            if (trunkRadius !== undefined) { this.trunkRadius = trunkRadius; }
+            if (crownMaterial !== undefined) { this.crownMaterial = crownMaterial; }
+            if (trunkMaterial !== undefined) { this.trunkMaterial = trunkMaterial; }
+        }
+        /**
+         * The model to change; it stays as it was, and the call returns the changed model.
+         * @default undefined
+         */
+        model!: T;
+        /**
+         * An id of your own for the tree. Leave it out for a generated one.
+         * @default undefined
+         * @optional true
+         */
+        id?: string | undefined;
+        /**
+         * A name for the tree, which other tools show.
+         * @default Tree
+         */
+        name?: string | undefined = "Tree";
+        /**
+         * What kind of tree it is, such as `Silver birch`, written as the element's object type.
+         * @default Tree
+         */
+        species?: string | undefined = "Tree";
+        /**
+         * Where the trunk stands, as `[x, y]` in the site's plan.
+         * @default [0, 0]
+         */
+        position?: Base.Point2 | undefined = [0, 0];
+        /**
+         * How high above the site's origin the trunk stands.
+         * @default 0
+         */
+        elevation?: number | undefined = 0;
+        /**
+         * The tree's height from the ground to the top of its crown. Left out, 8 m, in the model's length unit.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum Infinity
+         * @exclusiveMinimum true
+         */
+        height?: number | undefined;
+        /**
+         * How far the crown spreads from the trunk. Left out, 2.5 m, in the model's length unit.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum Infinity
+         * @exclusiveMinimum true
+         */
+        crownRadius?: number | undefined;
+        /**
+         * The trunk's radius at the ground; it narrows towards the crown. Left out, 150 mm, in the model's length unit.
+         * @default undefined
+         * @optional true
+         * @minimum 0
+         * @maximum Infinity
+         * @exclusiveMinimum true
+         */
+        trunkRadius?: number | undefined;
+        /**
+         * The material of the crown, added before with `materials.add`.
+         * @default undefined
+         * @optional true
+         */
+        crownMaterial?: string | undefined;
+        /**
+         * The material of the trunk, added before with `materials.add`.
+         * @default undefined
+         * @optional true
+         */
+        trunkMaterial?: string | undefined;
     }
     /**
      * One property of a property set: its name, its value and, when the value needs one, its IFC type.

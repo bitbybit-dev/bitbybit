@@ -2,14 +2,19 @@ import type { Base } from "@bitbybit-dev/base";
 import { WORLD_AXES, pointToWorld } from "@bitbybit-dev/base/lib/api/services/helpers/frame-axes";
 import type { IfcTransaction } from "../model/transaction";
 import { enumValue, isList, isReference, ref } from "../step/values";
-import type { DoorTypeSpec, FillingSpec, ModelReader, TypeBounds, WindowTypeSpec } from "./build-types";
+import type { DoorTypeSpec, FillingSpec, ModelReader, TypeBounds, MaterialPart, WindowTypeSpec } from "./build-types";
 import { requirePositive } from "./checks";
 import { bodyContext } from "./contexts";
 import type { EntityWriter } from "./entity-writer";
 import { extrusionCorners, frameOf } from "./solids";
+import { dressParts, materialsOfParts } from "./materials";
 import { createWallOpening } from "./openings";
 import { containIn, containerOf, describeObject } from "./spatial";
 import { declareInProject, defineByType } from "./type-objects";
+import * as Inputs from "../api/inputs";
+
+const RIGHT_HINGE = "_RIGHT";
+const PULL_BAR_SHARE_OF_HEIGHT = 0.45;
 
 function box(writer: EntityWriter, min: Base.Point3, max: Base.Point3): number {
     const width = max[0] - min[0];
@@ -27,6 +32,46 @@ function positiveSizes(sizes: Readonly<Record<string, number>>): void {
     Object.entries(sizes).forEach(([name, value]) => requirePositive(value, name));
 }
 
+function handleEdge(spec: DoorTypeSpec): number {
+    const reach = spec.liningThickness + spec.hardware.inset;
+    return spec.operation.endsWith(RIGHT_HINGE) ? reach : spec.width - reach;
+}
+
+function handleItems(writer: EntityWriter, spec: DoorTypeSpec, panelFront: number): number[] {
+    if (spec.handle === Inputs.IFC.doorHandleEnum.none) {
+        return [];
+    }
+    const size = spec.hardware;
+    const edge = handleEdge(spec);
+    const inwards = edge < spec.width / 2 ? 1 : -1;
+    const outwardOf = (face: number, side: number, from: number, to: number): [number, number] => {
+        const ends = [face + side * from, face + side * to];
+        return [Math.min(...ends), Math.max(...ends)];
+    };
+    const items: number[] = [];
+    for (const [face, side] of [[panelFront, -1], [panelFront + spec.panelThickness, 1]] as const) {
+        if (spec.handle === Inputs.IFC.doorHandleEnum.lever) {
+            const z = Math.min(size.leverHeight, spec.height - spec.liningThickness - size.leverSection);
+            const [neckFrom, neckTo] = outwardOf(face, side, 0, size.leverStandoff);
+            const [barFrom, barTo] = outwardOf(face, side, size.leverStandoff, size.leverStandoff + size.leverSection);
+            const [x0, x1] = [edge - inwards * size.leverSection / 2, edge + inwards * size.leverLength].sort((a, b) => a - b) as [number, number];
+            items.push(box(writer, [edge - size.leverSection / 2, neckFrom, z - size.leverSection / 2], [edge + size.leverSection / 2, neckTo, z + size.leverSection / 2]));
+            items.push(box(writer, [x0, barFrom, z - size.leverSection / 2], [x1, barTo, z + size.leverSection / 2]));
+        } else {
+            const length = Math.min(size.pullBarLength, spec.height * PULL_BAR_SHARE_OF_HEIGHT);
+            const middle = Math.min(size.pullBarMiddle, spec.height / 2);
+            const [postFrom, postTo] = outwardOf(face, side, 0, size.pullBarStandoff);
+            const [barFrom, barTo] = outwardOf(face, side, size.pullBarStandoff, size.pullBarStandoff + size.pullBarSection);
+            for (const end of [-1, 1]) {
+                const z = middle + end * (length / 2 - size.pullBarPostInset);
+                items.push(box(writer, [edge - size.pullBarPost / 2, postFrom, z - size.pullBarPost / 2], [edge + size.pullBarPost / 2, postTo, z + size.pullBarPost / 2]));
+            }
+            items.push(box(writer, [edge - size.pullBarSection / 2, barFrom, middle - length / 2], [edge + size.pullBarSection / 2, barTo, middle + length / 2]));
+        }
+    }
+    return items;
+}
+
 function representationMap(writer: EntityWriter, items: readonly number[]): number {
     const body = writer.shapeRepresentation(bodyContext(writer.tx, writer), "Body", "SweptSolid", items);
     return writer.create("IfcRepresentationMap", { MappingOrigin: ref(writer.placement3(WORLD_AXES)), MappedRepresentation: ref(body) });
@@ -39,19 +84,27 @@ export function createDoorType(tx: IfcTransaction, writer: EntityWriter, spec: D
         throw new Error("The door's lining and panel do not fit inside its width, height and depth");
     }
     const panelFront = (spec.liningDepth - spec.panelThickness) / 2;
-    const items = [
+    const linings = [
         box(writer, [0, 0, 0], [lining, spec.liningDepth, spec.height]),
         box(writer, [spec.width - lining, 0, 0], [spec.width, spec.liningDepth, spec.height]),
         box(writer, [lining, 0, spec.height - lining], [spec.width - lining, spec.liningDepth, spec.height]),
-        box(writer, [lining, panelFront, 0], [spec.width - lining, panelFront + spec.panelThickness, spec.height - lining]),
     ];
+    const panel = box(writer, [lining, panelFront, 0], [spec.width - lining, panelFront + spec.panelThickness, spec.height - lining]);
+    const handles = handleItems(writer, spec, panelFront);
+    const parts: MaterialPart[] = [
+        { name: "Lining", items: linings, material: spec.liningMaterial },
+        { name: "Panel", items: [panel], material: spec.panelMaterial },
+        ...(handles.length ? [{ name: "Hardware", items: handles, material: spec.handleMaterial }] : []),
+    ];
+    const materials = materialsOfParts(tx, parts);
     const type = writer.create("IfcDoorType", {
         GlobalId: tx.globalId(spec.id),
         Name: spec.name,
-        RepresentationMaps: [ref(representationMap(writer, items))],
+        RepresentationMaps: [ref(representationMap(writer, [...linings, panel, ...handles]))],
         PredefinedType: enumValue("DOOR"),
         OperationType: enumValue(spec.operation),
     });
+    dressParts(tx, writer, type, parts, materials);
     declareInProject(tx, writer, type);
     return type;
 }
@@ -63,20 +116,23 @@ export function createWindowType(tx: IfcTransaction, writer: EntityWriter, spec:
         throw new Error("The window's frame and glass do not fit inside its width, height and depth");
     }
     const glassFront = (spec.frameDepth - spec.glassThickness) / 2;
-    const items = [
+    const frames = [
         box(writer, [0, 0, 0], [frame, spec.frameDepth, spec.height]),
         box(writer, [spec.width - frame, 0, 0], [spec.width, spec.frameDepth, spec.height]),
         box(writer, [frame, 0, 0], [spec.width - frame, spec.frameDepth, frame]),
         box(writer, [frame, 0, spec.height - frame], [spec.width - frame, spec.frameDepth, spec.height]),
-        box(writer, [frame, glassFront, frame], [spec.width - frame, glassFront + spec.glassThickness, spec.height - frame]),
     ];
+    const glass = box(writer, [frame, glassFront, frame], [spec.width - frame, glassFront + spec.glassThickness, spec.height - frame]);
+    const parts: MaterialPart[] = [{ name: "Framing", items: frames, material: spec.frameMaterial }, { name: "Glazing", items: [glass], material: spec.glassMaterial }];
+    const materials = materialsOfParts(tx, parts);
     const type = writer.create("IfcWindowType", {
         GlobalId: tx.globalId(spec.id),
         Name: spec.name,
-        RepresentationMaps: [ref(representationMap(writer, items))],
+        RepresentationMaps: [ref(representationMap(writer, [...frames, glass]))],
         PredefinedType: enumValue("WINDOW"),
         PartitioningType: enumValue("SINGLE_PANEL"),
     });
+    dressParts(tx, writer, type, parts, materials);
     declareInProject(tx, writer, type);
     return type;
 }

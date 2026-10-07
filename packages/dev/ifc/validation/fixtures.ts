@@ -64,8 +64,11 @@ function openingsDoorsAndWindows(): IfcModel {
     model = ifc.walls.add({ model, storey: "ground", id: "wall", start: [0, 0], end: [9000, 0], height: 3000, thickness: 240 });
     model = ifc.openings.add({ model, wall: "wall", id: "hatch", name: "Service hatch", offset: 500, sill: 900, width: 600, height: 600 });
     model = ifc.doors.addType({ model, id: "double", name: "Double door", width: 1600, height: 2200, liningThickness: 60, liningDepth: 140, panelThickness: 50, operation: IFC.doorOperationEnum.doubleSwingLeft });
-    model = ifc.doors.addType({ model, id: "sliding", name: "Sliding door", width: 1000, height: 2100, operation: IFC.doorOperationEnum.slidingToRight });
-    model = ifc.windows.addType({ model, id: "window", name: "Window", width: 1200, height: 1500, frameThickness: 70, frameDepth: 90, glassThickness: 24 });
+    model = ifc.materials.add({ model, name: "Aluminium", category: "aluminium", color: "#2e3236" });
+    model = ifc.materials.add({ model, name: "Glass", category: "glass", color: "#a9c7d6", transparency: 0.7 });
+    model = ifc.materials.add({ model, name: "Oak", category: "wood" });
+    model = ifc.doors.addType({ model, id: "sliding", name: "Sliding door", width: 1000, height: 2100, operation: IFC.doorOperationEnum.slidingToRight, liningMaterial: "Aluminium", panelMaterial: "Glass" });
+    model = ifc.windows.addType({ model, id: "window", name: "Window", width: 1200, height: 1500, frameThickness: 70, frameDepth: 90, glassThickness: 24, frameMaterial: "Oak", glassMaterial: "Glass" });
     model = ifc.doors.add({ model, wall: "wall", doorType: "double", id: "entrance", offset: 1500 });
     model = ifc.doors.add({ model, wall: "wall", doorType: "sliding", offset: 3600 });
     model = ifc.windows.add({ model, wall: "wall", windowType: "window", offset: 5200, sill: 800 });
@@ -207,6 +210,22 @@ function spacesAndStoreys(): IfcModel {
     return ifc.spatial.setElevation({ model, storey: "first", elevation: 3.2 });
 }
 
+function siteAndDoorHardware(): IfcModel {
+    const ifc = new IFCService();
+    let model = house();
+    model = ifc.materials.add({ model, name: "Lawn", category: "soil", color: "#8fa877" });
+    model = ifc.materials.add({ model, name: "Foliage", category: "vegetation", color: "#6d8a5a" });
+    model = ifc.materials.add({ model, name: "Bark", category: "wood", color: "#5b4a3c" });
+    model = ifc.materials.add({ model, name: "Stainless steel", category: "steel", color: "#b8bcc0" });
+    model = ifc.site.addTerrain({ model, id: "terrain", outline: [[-20, -20], [30, -20], [30, 25], [-20, 25]], holes: [[[-0.13, -0.13], [10.13, -0.13], [10.13, 8.13], [-0.13, 8.13]]], depth: 0.5, material: "Lawn" });
+    model = ifc.site.addTree({ model, id: "birch", species: "Silver birch", position: [-6, -7], height: 9, crownRadius: 2.2, crownMaterial: "Foliage", trunkMaterial: "Bark" });
+    model = ifc.site.addTree({ model, id: "maple", position: [16, 12], height: 7 });
+    model = ifc.doors.addType({ model, id: "entrance", name: "Entrance door", width: 1.1, height: 2.2, handle: IFC.doorHandleEnum.pullBar, handleMaterial: "Stainless steel" });
+    model = ifc.doors.addType({ model, id: "lever", name: "Lever door", width: 0.9, height: 2.1, operation: IFC.doorOperationEnum.singleSwingRight, handle: IFC.doorHandleEnum.lever });
+    model = ifc.doors.add({ model, wall: "ground-wall-2", doorType: "entrance", offset: 5 });
+    return ifc.doors.add({ model, wall: "ground-wall-3", doorType: "lever", offset: 2 });
+}
+
 function membersAndMoves(): IfcModel {
     const ifc = new IFCService();
     let model = columnsAndBeams();
@@ -256,6 +275,7 @@ export const VALIDATION_FIXTURES: readonly ValidationFixture[] = [
     { name: "edited-properties", build: editedProperties },
     { name: "spaces-and-storeys", build: spacesAndStoreys },
     { name: "members-and-moves", build: membersAndMoves },
+    { name: "site-and-door-hardware", build: siteAndDoorHardware },
     { name: "gable-roof", build: roofedHouse(IFC.roofKindEnum.gable) },
     { name: "hip-roof", build: roofedHouse(IFC.roofKindEnum.hip) },
     { name: "mono-pitch-roof", build: roofedHouse(IFC.roofKindEnum.monoPitch) },

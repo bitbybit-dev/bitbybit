@@ -1,5 +1,5 @@
 import type { Base } from "../base-inputs";
-import { doorOperationEnum } from "./pointers-and-enums";
+import { doorHandleEnum, doorOperationEnum } from "./pointers-and-enums";
 
 /**
  * A rectangular opening to cut through a wall for `openings.add`, measured along the wall from
@@ -176,7 +176,7 @@ export class AddSlabOpeningDto<T> {
  * shares, so the geometry is written once however many doors there are.
  */
 export class AddDoorTypeDto<T> {
-    constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum) {
+    constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum, liningMaterial?: string, panelMaterial?: string, handle?: doorHandleEnum, handleMaterial?: string) {
         if (model !== undefined) { this.model = model; }
         if (id !== undefined) { this.id = id; }
         if (name !== undefined) { this.name = name; }
@@ -186,6 +186,10 @@ export class AddDoorTypeDto<T> {
         if (liningDepth !== undefined) { this.liningDepth = liningDepth; }
         if (panelThickness !== undefined) { this.panelThickness = panelThickness; }
         if (operation !== undefined) { this.operation = operation; }
+        if (liningMaterial !== undefined) { this.liningMaterial = liningMaterial; }
+        if (panelMaterial !== undefined) { this.panelMaterial = panelMaterial; }
+        if (handle !== undefined) { this.handle = handle; }
+        if (handleMaterial !== undefined) { this.handleMaterial = handleMaterial; }
     }
     /**
      * The model to change; it stays as it was, and the call returns the changed model.
@@ -253,13 +257,40 @@ export class AddDoorTypeDto<T> {
      * @default singleSwingLeft
      */
     operation?: doorOperationEnum | undefined = doorOperationEnum.singleSwingLeft;
+    /**
+     * The material the lining is made of, added before with `materials.add`; the lining shows its
+     * colour.
+     * @default undefined
+     * @optional true
+     */
+    liningMaterial?: string | undefined;
+    /**
+     * The material the panel is made of, added before with `materials.add`, such as glass for a
+     * sliding glass door; the panel shows its colour.
+     * @default undefined
+     * @optional true
+     */
+    panelMaterial?: string | undefined;
+    /**
+     * The handle on both faces of the panel, near the edge away from the hinges that `operation`
+     * names.
+     * @default none
+     */
+    handle?: doorHandleEnum | undefined = doorHandleEnum.none;
+    /**
+     * The material the handle is made of, added before with `materials.add`; the handle shows its
+     * colour.
+     * @default undefined
+     * @optional true
+     */
+    handleMaterial?: string | undefined;
 }
 /**
  * A window type to add for `windows.addType`: a frame around one pane of glass, which every window
  * of the type shares.
  */
 export class AddWindowTypeDto<T> {
-    constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number) {
+    constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number, frameMaterial?: string, glassMaterial?: string) {
         if (model !== undefined) { this.model = model; }
         if (id !== undefined) { this.id = id; }
         if (name !== undefined) { this.name = name; }
@@ -268,6 +299,8 @@ export class AddWindowTypeDto<T> {
         if (frameThickness !== undefined) { this.frameThickness = frameThickness; }
         if (frameDepth !== undefined) { this.frameDepth = frameDepth; }
         if (glassThickness !== undefined) { this.glassThickness = glassThickness; }
+        if (frameMaterial !== undefined) { this.frameMaterial = frameMaterial; }
+        if (glassMaterial !== undefined) { this.glassMaterial = glassMaterial; }
     }
     /**
      * The model to change; it stays as it was, and the call returns the changed model.
@@ -330,6 +363,20 @@ export class AddWindowTypeDto<T> {
      * @exclusiveMinimum true
      */
     glassThickness?: number | undefined;
+    /**
+     * The material the frame is made of, added before with `materials.add`; the frame shows its
+     * colour.
+     * @default undefined
+     * @optional true
+     */
+    frameMaterial?: string | undefined;
+    /**
+     * The material of the glass, added before with `materials.add`, usually with a `transparency`;
+     * the glass shows its colour.
+     * @default undefined
+     * @optional true
+     */
+    glassMaterial?: string | undefined;
 }
 /**
  * A door to place in a wall for `doors.add`: a door type and where along the wall it goes. The door

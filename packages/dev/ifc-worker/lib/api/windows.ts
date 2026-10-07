@@ -19,7 +19,8 @@ export class IFCWindows {
      * placed from.
      *
      * The frame's members are `frameThickness` wide and `frameDepth` deep; the glass sits in the
-     * middle of the depth.
+     * middle of the depth. A `frameMaterial` and a `glassMaterial` give each part its material and
+     * colour.
      * @param inputs - The model, the type's id and name, and its sizes
      * @returns A new model with the window type
      * @group types
@@ -27,7 +28,8 @@ export class IFCWindows {
      * @drawable false
      * @example
      * ```typescript
-     * model = await bitbybit.ifc.windows.addType({ model, id: "window-120", name: "Window 1200", width: 1200, height: 1400 });
+     * model = await bitbybit.ifc.materials.add({ model, name: "Glass", color: "#a9c7d6", transparency: 0.7 });
+     * model = await bitbybit.ifc.windows.addType({ model, id: "window-120", name: "Window 1200", width: 1200, height: 1400, glassMaterial: "Glass" });
      * ```
      */
     addType(inputs: Inputs.IFC.AddWindowTypeDto<Inputs.IFC.IfcModelPointer>): Promise<Inputs.IFC.IfcModelPointer> {

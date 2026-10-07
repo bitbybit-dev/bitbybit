@@ -27,6 +27,7 @@ export const DEGREES_TO_RADIANS = Math.PI / 180;
 export const VERTICAL_COSINE = 1 - 1e-9;
 export const POINT2_SIZE = 2;
 export const POINT3_SIZE = 3;
+export const TRIANGLE_CORNERS = 3;
 export const MIN_OUTLINE_POINTS = 3;
 
 export const CONTAINMENT: RelationshipRoles = { relationship: "IfcRelContainedInSpatialStructure", relating: "RelatingStructure", related: "RelatedElements" };

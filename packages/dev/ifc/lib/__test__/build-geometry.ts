@@ -236,3 +236,18 @@ export function boxOf(model: IfcModel, solid: number): number[][] {
     const z = origin[2] ?? 0;
     return rounded([[x - width / 2, y - depth / 2, z], [x + width / 2, y + depth / 2, z + height]]);
 }
+
+export function styleNamesOf(model: IfcModel, items: readonly number[]): unknown[] {
+    return items.map((item) => {
+        const styled = model.byType("IfcStyledItem").find((entity) => {
+            const target = model.attribute(entity.id, "Item");
+            return isReference(target) && target.ref === item;
+        });
+        return styled === undefined ? undefined : model.attribute(firstOf(refsOf(model.attribute(styled.id, "Styles"))), "Name");
+    });
+}
+
+export function constituentsOf(model: IfcModel, type: number): unknown[][] {
+    const set = firstOf(relatingOf(model, "IfcRelAssociatesMaterial", "RelatingMaterial", "RelatedObjects", type));
+    return refsOf(model.attribute(set, "MaterialConstituents")).map((constituent) => [model.attribute(constituent, "Name"), model.attribute(refOf(model.attribute(constituent, "Material")), "Name")]);
+}

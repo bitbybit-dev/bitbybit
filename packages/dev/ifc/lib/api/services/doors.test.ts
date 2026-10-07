@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
-import { expressIdOf, groundFloor, notAModel, oneWall } from "../../__test__/build-setup";
+import { expressIdOf, groundFloor, notAModel, oneWall, oneWallWithMaterials } from "../../__test__/build-setup";
 import {
-    bodyItemOf, bodyOf, boxOf, countOf, enumOf, firstOf, mapItemsOf, onlyOf, placementOf, refOf, relatedBy, relatingOf, representationMapOf, sweptAreaOf,
+    bodyItemOf, bodyOf, boxOf, constituentsOf, countOf, enumOf, firstOf, mapItemsOf, onlyOf, placementOf, refOf, relatedBy, relatingOf, representationMapOf, styleNamesOf, sweptAreaOf,
 } from "../../__test__/build-geometry";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
@@ -76,6 +76,122 @@ describe("IFCDoors.addType", () => {
         expect(changed.attribute(refOf(changed.attribute(origin, "Location")), "Coordinates")).toEqual([0, 0, 0]);
         expect(changed.attribute(refOf(changed.attribute(map, "MappedRepresentation")), "RepresentationType")).toBe("SweptSolid");
         expect(relatedBy(changed, "IfcRelDeclares", "RelatingContext", "RelatedDefinitions", onlyOf(changed, "IfcProject"))).toEqual([type]);
+    });
+
+    it("should style the lining and the panel with their materials' colours, and give the type both materials as lining and panel", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "door", liningMaterial: "Aluminium", panelMaterial: "Glass" });
+
+        // Assert
+        const type = expressIdOf(changed, "door");
+        expect(styleNamesOf(changed, mapItemsOf(changed, type))).toEqual(["Aluminium", "Aluminium", "Aluminium", "Glass"]);
+        expect(constituentsOf(changed, type)).toEqual([["Lining", "Aluminium"], ["Panel", "Glass"]]);
+    });
+
+    it("should give a door only the panel's material when no lining material is named", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "door", panelMaterial: "Oak" });
+
+        // Assert
+        const type = expressIdOf(changed, "door");
+        expect(styleNamesOf(changed, mapItemsOf(changed, type))).toEqual([undefined, undefined, undefined, undefined]);
+        expect(constituentsOf(changed, type)).toEqual([["Panel", "Oak"]]);
+    });
+
+    it("should put a lever handle on both faces near the edge away from the hinges, at hand height", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+
+        // Act
+        const left = ifc.doors.addType({ model, id: "left", width: 900, height: 2100, liningThickness: 50, liningDepth: 100, panelThickness: 40, handle: Inputs.IFC.doorHandleEnum.lever });
+        const right = ifc.doors.addType({ model: left, id: "right", width: 900, height: 2100, liningThickness: 50, liningDepth: 100, panelThickness: 40, handle: Inputs.IFC.doorHandleEnum.lever, operation: Inputs.IFC.doorOperationEnum.singleSwingRight });
+
+        // Assert
+        expect(mapItemsOf(right, expressIdOf(right, "left")).slice(4).map((item) => boxOf(right, item))).toEqual([
+            [[765, -15, 1040], [785, 30, 1060]],
+            [[645, -35, 1040], [785, -15, 1060]],
+            [[765, 70, 1040], [785, 115, 1060]],
+            [[645, 115, 1040], [785, 135, 1060]],
+        ]);
+        expect(mapItemsOf(right, expressIdOf(right, "right")).slice(4).map((item) => boxOf(right, item)[0]![0])).toEqual([115, 115, 115, 115]);
+    });
+
+    it("should put a pull bar on standoff posts on both faces, as long as the door allows", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "door", width: 1300, height: 2700, liningThickness: 60, liningDepth: 120, panelThickness: 50, handle: Inputs.IFC.doorHandleEnum.pullBar });
+
+        // Assert
+        const hardware = mapItemsOf(changed, expressIdOf(changed, "door")).slice(4).map((item) => boxOf(changed, item));
+        expect(hardware).toHaveLength(6);
+        expect(hardware[2]).toEqual([[1150, -45, 500], [1180, -15, 1700]]);
+        expect(hardware[5]).toEqual([[1150, 135, 500], [1180, 165, 1700]]);
+    });
+
+    it("should lower a lever on a door too low for hand height, keeping it under the head", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "hatch", width: 600, height: 1000, liningThickness: 50, liningDepth: 100, panelThickness: 40, handle: Inputs.IFC.doorHandleEnum.lever });
+
+        // Assert
+        const heights = mapItemsOf(changed, expressIdOf(changed, "hatch")).slice(4).map((item) => [boxOf(changed, item)[0]![2], boxOf(changed, item)[1]![2]]);
+        expect(heights).toEqual([[920, 940], [920, 940], [920, 940], [920, 940]]);
+    });
+
+    it("should shorten a pull bar on a low door and centre it on the door", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "door", width: 900, height: 2000, liningThickness: 60, liningDepth: 120, panelThickness: 50, handle: Inputs.IFC.doorHandleEnum.pullBar });
+
+        // Assert
+        const bar = boxOf(changed, mapItemsOf(changed, expressIdOf(changed, "door"))[6]!);
+        expect([bar[0]![2], bar[1]![2]]).toEqual([550, 1450]);
+    });
+
+    it("should keep a door's opening as wide and high as its type when its handles stand off the panel", () => {
+        // Arrange
+        const { ifc, model } = oneWall();
+        const typed = ifc.doors.addType({ model, id: "door", width: 1000, height: 2200, handle: Inputs.IFC.doorHandleEnum.pullBar });
+
+        // Act
+        const changed = ifc.doors.add({ model: typed, wall: "south", doorType: "door", id: "entrance", offset: 2000 });
+
+        // Assert
+        const door = expressIdOf(changed, "entrance");
+        expect([changed.attribute(door, "OverallWidth"), changed.attribute(door, "OverallHeight")]).toEqual([1000, 2200]);
+    });
+
+    it("should give the handle its material as hardware", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.doors.addType({ model, id: "door", handle: Inputs.IFC.doorHandleEnum.lever, handleMaterial: "Aluminium", panelMaterial: "Oak" });
+
+        // Assert
+        const type = expressIdOf(changed, "door");
+        expect(styleNamesOf(changed, mapItemsOf(changed, type)).slice(4)).toEqual(["Aluminium", "Aluminium", "Aluminium", "Aluminium"]);
+        expect(constituentsOf(changed, type)).toEqual([["Panel", "Oak"], ["Hardware", "Aluminium"]]);
+    });
+
+    it("should refuse a lining material the model does not hold, naming it", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act & Assert
+        expect(() => ifc.doors.addType({ model, liningMaterial: "Bronze" })).toThrow("The model has no material named 'Bronze'");
     });
 
     it("should refuse a lining whose two sides are as wide as the door", () => {

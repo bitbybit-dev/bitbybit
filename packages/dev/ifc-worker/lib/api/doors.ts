@@ -19,7 +19,8 @@ export class IFCDoors {
      * from.
      *
      * The lining's sides and head are `liningThickness` wide and `liningDepth` deep; the panel sits
-     * in the middle of the depth.
+     * in the middle of the depth. A `handle` goes on both faces, away from the hinges. Materials give
+     * the lining, panel and handle their colours.
      * @param inputs - The model, the type's id and name, its sizes and how it opens
      * @returns A new model with the door type
      * @group types

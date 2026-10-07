@@ -13,3 +13,8 @@ export interface CreasedMesh {
     readonly normals: Float32Array;
     readonly indices: Uint32Array;
 }
+
+export interface MeshArrays {
+    readonly positions: number[];
+    readonly indices: number[];
+}

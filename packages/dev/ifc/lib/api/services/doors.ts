@@ -3,8 +3,27 @@ import { createDoorType, createFilling } from "../../build/fillings";
 import type { IfcModel } from "../../model/model-types";
 import * as Inputs from "../inputs";
 import type * as Resolved from "../resolved-inputs";
-import { DEFAULT_MILLIMETRES } from "./defaults.constants";
+import type { HandleSizes } from "../../build/build-types";
+import type { ModelSnapshot } from "../../model/snapshot";
+import { DEFAULT_MILLIMETRES, HANDLE_MILLIMETRES } from "./defaults.constants";
 import { editModel, lengthIn, lengthTolerance, modelOf, oneOf, resolveId } from "./service-support";
+
+function handleSizesIn(model: ModelSnapshot): HandleSizes {
+    const size = (millimetres: number): number => lengthIn(model, undefined, millimetres);
+    return {
+        inset: size(HANDLE_MILLIMETRES.inset),
+        leverHeight: size(HANDLE_MILLIMETRES.leverHeight),
+        leverStandoff: size(HANDLE_MILLIMETRES.leverStandoff),
+        leverSection: size(HANDLE_MILLIMETRES.leverSection),
+        leverLength: size(HANDLE_MILLIMETRES.leverLength),
+        pullBarLength: size(HANDLE_MILLIMETRES.pullBarLength),
+        pullBarMiddle: size(HANDLE_MILLIMETRES.pullBarMiddle),
+        pullBarStandoff: size(HANDLE_MILLIMETRES.pullBarStandoff),
+        pullBarSection: size(HANDLE_MILLIMETRES.pullBarSection),
+        pullBarPost: size(HANDLE_MILLIMETRES.pullBarPost),
+        pullBarPostInset: size(HANDLE_MILLIMETRES.pullBarPostInset),
+    };
+}
 
 /**
  * Doors: door types, each a lining around one panel, and doors of those types placed in walls. A
@@ -19,7 +38,8 @@ export class IFCDoors {
      * from.
      *
      * The lining's sides and head are `liningThickness` wide and `liningDepth` deep; the panel sits
-     * in the middle of the depth.
+     * in the middle of the depth. A `handle` goes on both faces, away from the hinges. Materials give
+     * the lining, panel and handle their colours.
      * @param inputs - The model, the type's id and name, its sizes and how it opens
      * @returns A new model with the door type
      * @group types
@@ -42,6 +62,11 @@ export class IFCDoors {
             liningDepth: lengthIn(model, resolved.liningDepth, DEFAULT_MILLIMETRES.liningDepth),
             panelThickness: lengthIn(model, resolved.panelThickness, DEFAULT_MILLIMETRES.panelThickness),
             operation: oneOf(resolved.operation, Inputs.IFC.doorOperationEnum, "door operation"),
+            liningMaterial: resolved.liningMaterial,
+            panelMaterial: resolved.panelMaterial,
+            handle: oneOf(resolved.handle, Inputs.IFC.doorHandleEnum, "door handle"),
+            handleMaterial: resolved.handleMaterial,
+            hardware: handleSizesIn(model),
         };
         return editModel(model, (tx, writer) => {
             createDoorType(tx, writer, spec);

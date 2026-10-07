@@ -24,4 +24,22 @@ export const DEFAULT_MILLIMETRES = {
     frameThickness: 60,
     frameDepth: 80,
     glassThickness: 24,
+    terrainDepth: 1000,
+    treeHeight: 8000,
+    crownRadius: 2500,
+    trunkRadius: 150,
+} as const;
+
+export const HANDLE_MILLIMETRES = {
+    inset: 75,
+    leverHeight: 1050,
+    leverStandoff: 45,
+    leverSection: 20,
+    leverLength: 130,
+    pullBarLength: 1200,
+    pullBarMiddle: 1100,
+    pullBarStandoff: 50,
+    pullBarSection: 30,
+    pullBarPost: 20,
+    pullBarPostInset: 80,
 } as const;

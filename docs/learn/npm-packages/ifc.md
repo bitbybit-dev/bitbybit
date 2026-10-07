@@ -110,13 +110,14 @@ await initBitByBit(scene, bitbybit, {
 
 `initBitByBit` hands the IFC worker to `bitbybit.ifcWorkerManager.setIfcWorker` and waits for it to start; it rejects if the worker's script cannot load. Code that calls `bitbybit.init` itself instead hands the worker over with `bitbybit.ifcWorkerManager.setIfcWorker(worker)`.
 
-The `vite/threejs/ifc-house` example in the repository builds a two-storey house with a gable roof this way, draws every element in its material's colour and downloads the file.
+The `vite/threejs/ifc-house` example in the repository authors a modern family house for a cold climate this way: insulated rendered masonry below and a timber frame clad in charred larch boards above, cut around every opening, with a cantilever over the garden terrace and an insulated soffit under it, a warm flat roof behind a parapet with copings and a solar array on mounting rails, flashings, sills, window surrounds, downpipes, an entrance canopy, an oak stair with a steel stringer and balusters, a roof terrace, a carport, the garden's ground and trees, U-values on the envelope and thirteen rooms with their areas. It draws every element in its materials' colours, shows and hides each storey, labels the rooms, identifies a clicked element by its GlobalId, and downloads the file.
 
 ## What version 1 covers
 
 - IFC4 (ADD2 TC1), read and written; a file read and written back keeps every unchanged entity character for character.
 - A project, its site, one building, its storeys and the rooms and areas of each storey.
 - Straight walls by thickness, layer set or wall type, joined at corners and T junctions, clipped under planes and roofs, read back and edited.
-- Rectangular openings in walls and any outline through a slab; door and window types placed many times through shared geometry.
+- Rectangular openings in walls and any outline through a slab; door and window types placed many times through shared geometry, each part (frame and glass, lining, panel and handle) in a material of its own; doors with lever or pull-bar handles.
 - Slabs with holes; flat, mono-pitch, gable and hip roofs over a rectangle; columns, beams and members with rectangle, circle and I sections.
+- The site around the building: terrain with holes where the building and paving meet it, and trees, as IFC geographic elements.
 - Materials with colours, layer sets, property sets set and removed value by value, any simple attribute, and the base quantities of every element it builds.

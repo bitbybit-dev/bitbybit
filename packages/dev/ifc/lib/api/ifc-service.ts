@@ -9,6 +9,7 @@ import { IFCOpenings } from "./services/openings";
 import { IFCProperties } from "./services/properties";
 import { IFCQuantities } from "./services/quantities";
 import { IFCRoofs } from "./services/roofs";
+import { IFCSite } from "./services/site";
 import { IFCSlabs } from "./services/slabs";
 import { IFCSpaces } from "./services/spaces";
 import { IFCSpatial } from "./services/spatial";
@@ -17,10 +18,10 @@ import { IFCWindows } from "./services/windows";
 
 /**
  * The entry point to IFC, the open BIM exchange format: `model` creates, reads, writes and edits
- * models, `spatial` adds storeys and `spaces` rooms, `materials` adds materials and layer sets, and
+ * models; `spatial`, `spaces`, `materials` and `site` add storeys, rooms, materials and the terrain;
  * `walls`, `openings`, `doors`, `windows`, `slabs`, `roofs`, `columns`, `beams` and `members` add
- * building elements. `properties` attaches property sets, `quantities` measures elements, and
- * `geometry` describes them as a recipe a geometry kernel builds.
+ * elements; `properties` attaches property sets, `quantities` measures, and `geometry` describes
+ * elements as a recipe a kernel builds.
  *
  * A model is a value: every method that changes one returns a new model and leaves the one it was
  * given as it was. Elements are parametric IFC4 that other BIM tools edit as walls, slabs and doors.
@@ -70,6 +71,10 @@ export class IFCService {
      */
     readonly roofs: IFCRoofs;
     /**
+     * Adds the site's terrain and trees.
+     */
+    readonly site: IFCSite;
+    /**
      * Adds columns standing on a storey.
      */
     readonly columns: IFCColumns;
@@ -108,6 +113,7 @@ export class IFCService {
         this.windows = new IFCWindows();
         this.slabs = new IFCSlabs();
         this.roofs = new IFCRoofs();
+        this.site = new IFCSite();
         this.columns = new IFCColumns();
         this.beams = new IFCBeams();
         this.members = new IFCMembers();

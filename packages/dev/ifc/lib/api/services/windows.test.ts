@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Fixture } from "../../__test__/fixture-types";
-import { addCentredWall, expressIdOf, groundFloor, notAModel, oneWall } from "../../__test__/build-setup";
-import { bodyItemOf, boxOf, countOf, enumOf, firstOf, mapItemsOf, placementOf, refOf, relatedBy, relatingOf, representationMapOf, sweptAreaOf } from "../../__test__/build-geometry";
+import { addCentredWall, expressIdOf, groundFloor, notAModel, oneWall, oneWallWithMaterials } from "../../__test__/build-setup";
+import { bodyItemOf, boxOf, constituentsOf, countOf, enumOf, firstOf, mapItemsOf, placementOf, refOf, relatedBy, relatingOf, representationMapOf, styleNamesOf, sweptAreaOf } from "../../__test__/build-geometry";
 import type { IfcModel } from "../../model/model-types";
 
 function withWindowType(): Fixture {
@@ -55,6 +55,68 @@ describe("IFCWindows.addType", () => {
 
         // Assert
         expect(changed.attribute(expressIdOf(changed, "window"), "Name")).toBe("Window");
+    });
+
+    it("should style the frame and the glass with their materials' colours, and give the type both materials as framing and glazing", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.windows.addType({ model, id: "window", frameMaterial: "Aluminium", glassMaterial: "Glass" });
+
+        // Assert
+        const type = expressIdOf(changed, "window");
+        expect(styleNamesOf(changed, mapItemsOf(changed, type))).toEqual(["Aluminium", "Aluminium", "Aluminium", "Aluminium", "Glass"]);
+        expect(constituentsOf(changed, type)).toEqual([["Framing", "Aluminium"], ["Glazing", "Glass"]]);
+    });
+
+    it("should show a window's frame and glass as two parts in their colours, the glass see-through", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+        const typed = ifc.windows.addType({ model, id: "window", frameMaterial: "Aluminium", glassMaterial: "Glass" });
+        const placed = ifc.windows.add({ model: typed, wall: "south", windowType: "window", offset: 2000 });
+
+        // Act
+        const recipe = ifc.geometry.recipe({ model: placed });
+
+        // Assert
+        const parts = recipe.roots.filter((root) => root.tag["type"] === "IfcWindow").map((root) => root.tag["rgba"] as number[]);
+        expect(parts).toEqual([
+            [expect.closeTo(46 / 255, 9), expect.closeTo(50 / 255, 9), expect.closeTo(54 / 255, 9), 1],
+            [expect.closeTo(169 / 255, 9), expect.closeTo(199 / 255, 9), expect.closeTo(214 / 255, 9), expect.closeTo(0.3, 9)],
+        ]);
+    });
+
+    it("should name a material without a colour for its part and leave the part unstyled, giving no constituent to a part without one", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.windows.addType({ model, id: "window", frameMaterial: "Oak" });
+
+        // Assert
+        const type = expressIdOf(changed, "window");
+        expect(styleNamesOf(changed, mapItemsOf(changed, type))).toEqual([undefined, undefined, undefined, undefined, undefined]);
+        expect(constituentsOf(changed, type)).toEqual([["Framing", "Oak"]]);
+    });
+
+    it("should associate no material with a type given none", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act
+        const changed = ifc.windows.addType({ model, id: "window" });
+
+        // Assert
+        expect(relatingOf(changed, "IfcRelAssociatesMaterial", "RelatingMaterial", "RelatedObjects", expressIdOf(changed, "window"))).toEqual([]);
+    });
+
+    it("should refuse a material the model does not hold, naming it", () => {
+        // Arrange
+        const { ifc, model } = oneWallWithMaterials();
+
+        // Act & Assert
+        expect(() => ifc.windows.addType({ model, glassMaterial: "Bronze" })).toThrow("The model has no material named 'Bronze'");
     });
 
     it("should refuse a frame whose two members are as wide as the window", () => {

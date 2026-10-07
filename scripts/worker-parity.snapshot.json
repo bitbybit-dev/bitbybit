@@ -846,6 +846,8 @@
     "quantities.compute",
     "quantities.get",
     "roofs.add",
+    "site.addTerrain",
+    "site.addTree",
     "slabs.add",
     "spaces.add",
     "spaces.list",

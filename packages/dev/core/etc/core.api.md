@@ -1264,14 +1264,18 @@ namespace IFC {
         wall: string;
     }
     class AddDoorTypeDto<T> {
-        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum);
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, liningThickness?: number, liningDepth?: number, panelThickness?: number, operation?: doorOperationEnum, liningMaterial?: string, panelMaterial?: string, handle?: doorHandleEnum, handleMaterial?: string);
+        handle?: doorHandleEnum | undefined;
+        handleMaterial?: string | undefined;
         height?: number | undefined;
         id?: string | undefined;
         liningDepth?: number | undefined;
+        liningMaterial?: string | undefined;
         liningThickness?: number | undefined;
         model: T;
         name?: string | undefined;
         operation?: doorOperationEnum | undefined;
+        panelMaterial?: string | undefined;
         panelThickness?: number | undefined;
         width?: number | undefined;
     }
@@ -1367,6 +1371,31 @@ namespace IFC {
         model: T;
         name?: string | undefined;
     }
+    class AddTerrainDto<T> {
+        constructor(model?: T, id?: string, name?: string, outline?: Base_2.Point2[], holes?: Base_2.Point2[][], depth?: number, elevation?: number, material?: string);
+        depth?: number | undefined;
+        elevation?: number | undefined;
+        holes?: Base_2.Point2[][] | undefined;
+        id?: string | undefined;
+        material?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        outline: Base_2.Point2[];
+    }
+    class AddTreeDto<T> {
+        constructor(model?: T, id?: string, name?: string, species?: string, position?: Base_2.Point2, elevation?: number, height?: number, crownRadius?: number, trunkRadius?: number, crownMaterial?: string, trunkMaterial?: string);
+        crownMaterial?: string | undefined;
+        crownRadius?: number | undefined;
+        elevation?: number | undefined;
+        height?: number | undefined;
+        id?: string | undefined;
+        model: T;
+        name?: string | undefined;
+        position?: Base_2.Point2 | undefined;
+        species?: string | undefined;
+        trunkMaterial?: string | undefined;
+        trunkRadius?: number | undefined;
+    }
     class AddWallDto<T> {
         constructor(model?: T, storey?: string, id?: string, name?: string, start?: Base_2.Point2, end?: Base_2.Point2, height?: number, thickness?: number, layerSet?: string, alignment?: wallAlignmentEnum, baseOffset?: number, wallType?: string, predefinedType?: wallPredefinedTypeEnum);
         alignment?: wallAlignmentEnum | undefined;
@@ -1402,9 +1431,11 @@ namespace IFC {
         windowType: string;
     }
     class AddWindowTypeDto<T> {
-        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number);
+        constructor(model?: T, id?: string, name?: string, width?: number, height?: number, frameThickness?: number, frameDepth?: number, glassThickness?: number, frameMaterial?: string, glassMaterial?: string);
         frameDepth?: number | undefined;
+        frameMaterial?: string | undefined;
         frameThickness?: number | undefined;
+        glassMaterial?: string | undefined;
         glassThickness?: number | undefined;
         height?: number | undefined;
         id?: string | undefined;
@@ -1445,6 +1476,11 @@ namespace IFC {
         organization?: string | undefined;
         seed?: string | undefined;
         siteName?: string | undefined;
+    }
+    enum doorHandleEnum {
+        lever = "lever",
+        none = "none",
+        pullBar = "pullBar"
     }
     enum doorOperationEnum {
         doubleSwingLeft = "DOUBLE_SWING_LEFT",
@@ -1745,7 +1781,7 @@ namespace IFC_2 {
     // (undocumented)
     type AddDoorDto<T> = WithDefaults<Inputs_4.IFC.AddDoorDto<T>, "sill">;
     // (undocumented)
-    type AddDoorTypeDto<T> = WithDefaults<Inputs_4.IFC.AddDoorTypeDto<T>, "name" | "operation">;
+    type AddDoorTypeDto<T> = WithDefaults<Inputs_4.IFC.AddDoorTypeDto<T>, "name" | "operation" | "handle">;
     // (undocumented)
     type AddLayerSetDto<T> = WithDefaults<Inputs_4.IFC.AddLayerSetDto<T>, "name">;
     // (undocumented)
@@ -1766,6 +1802,10 @@ namespace IFC_2 {
     type AddSpaceDto<T> = WithDefaults<Inputs_4.IFC.AddSpaceDto<T>, "baseOffset" | "predefinedType">;
     // (undocumented)
     type AddStoreyDto<T> = WithDefaults<Inputs_4.IFC.AddStoreyDto<T>, "name" | "elevation">;
+    // (undocumented)
+    type AddTerrainDto<T> = WithDefaults<Inputs_4.IFC.AddTerrainDto<T>, "name" | "elevation">;
+    // (undocumented)
+    type AddTreeDto<T> = WithDefaults<Inputs_4.IFC.AddTreeDto<T>, "name" | "species" | "position" | "elevation">;
     // (undocumented)
     type AddWallDto<T> = WithDefaults<Inputs_4.IFC.AddWallDto<T>, "alignment" | "baseOffset" | "predefinedType">;
     // (undocumented)
