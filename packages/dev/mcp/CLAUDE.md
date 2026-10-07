@@ -78,4 +78,5 @@ or a line here is where an explanation goes.
 Unit tests run against `src/__fixtures__/index.sample.json`, a small index at version `9.9.9`, so
 they need no network. `src/network.test.ts` fetches the real index for this package's version and
 runs only when `BITBYBIT_MCP_NETWORK=1` (the nightly workflow sets it); it skips itself while the
-version's index is not yet published.
+version's index is not yet published. The coverage floor check therefore compares this package's coverage
+only with the switch on, and allows it 2 points below the floor (`scripts/coverage-baseline.mjs`).

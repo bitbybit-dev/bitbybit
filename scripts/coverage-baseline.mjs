@@ -7,7 +7,12 @@ const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DEV = join(ROOT, "packages", "dev");
 const BASELINE = join(DEV, "coverage-baseline.json");
 const COLUMNS = ["lines", "branches", "functions", "statements"];
+const OPT_IN_SUITES = {
+    mcp: { env: "BITBYBIT_MCP_NETWORK", slack: 2 },
+};
 const save = process.argv.includes("--save");
+const optInOff = (name) => OPT_IN_SUITES[name] !== undefined && process.env[OPT_IN_SUITES[name].env] !== "1";
+const slackOf = (name) => OPT_IN_SUITES[name]?.slack ?? 0;
 
 const readJson = (p) => (existsSync(p) ? JSON.parse(readFileSync(p, "utf8")) : null);
 
@@ -85,6 +90,9 @@ const overall = (packages) => {
     return out;
 };
 const forRecord = (entry) => Object.fromEntries(Object.entries(entry).filter(([k, v]) => RECORDED.has(k) && v !== undefined));
+const keptCoverage = (name, entry, previous) => (optInOff(name) && previous
+    ? { ...entry, ...Object.fromEntries(COLUMNS.filter((c) => previous[c] !== undefined).map((c) => [c, previous[c]])) }
+    : entry);
 
 if (save) {
     const previous = readJson(BASELINE);
@@ -98,7 +106,7 @@ if (save) {
         note: "Measured coverage and test counts per package. A floor, not a target: it may rise, never fall. Rewrite it with --save only to record a deliberate, reviewed change - and never to make a drop go away. Two cases are not a drop and do need a re-measure. A change of coverage tool: percentages from different instruments count different things. And the deletion of covered dead code: removing lines the tests did reach lowers the ratio whatever it stands at, because taking k from both sides of C/T gives (C-k)/(T-k), which is smaller for any T greater than C - so this bites at 35% exactly as it does at 85%, even though nothing stopped being tested, so keeping dead code to protect a number is the worse trade. Both have to be argued in the change that re-records the floor, and the test counts here are the check that nothing was quietly lost.",
         measured: new Date().toISOString().slice(0, 10),
         history: [...(previous?.history ?? []), { measured: new Date().toISOString().slice(0, 10), ...overall(current) }].slice(-HISTORY_KEPT),
-        packages: Object.fromEntries(Object.entries(current).map(([name, entry]) => [name, forRecord(entry)])),
+        packages: Object.fromEntries(Object.entries(current).map(([name, entry]) => [name, forRecord(keptCoverage(name, entry, previous?.packages[name]))])),
     }, null, 4) + "\n");
     console.log(`recorded ${Object.keys(current).length} packages`);
     process.exit(0);
@@ -121,12 +129,12 @@ for (const [name, was] of Object.entries(baseline.packages)) {
         problems.push(`${name}: ${was.tests} tests before, ${now.tests} now`);
     }
     const moved = [];
-    for (const c of COLUMNS) {
+    for (const c of optInOff(name) ? [] : COLUMNS) {
         if (was[c] === undefined || now[c] === undefined) {
             continue;
         }
         const delta = +(now[c] - was[c]).toFixed(2);
-        if (delta < 0) {
+        if (delta < -slackOf(name)) {
             problems.push(`${name}: ${c} ${was[c]}% before, ${now[c]}% now`);
         }
         if (delta !== 0) {
@@ -134,7 +142,8 @@ for (const [name, was] of Object.entries(baseline.packages)) {
         }
     }
     const runner = was.runner && now.runner && was.runner !== now.runner ? ` ${was.runner}->${now.runner}` : "";
-    rows.push(`  ${name.padEnd(18)} ${String(now.tests ?? "-").padStart(5)} tests${runner}${moved.length ? `  ${moved.join(", ")}` : "  unchanged"}`);
+    const summary = optInOff(name) ? `  coverage not compared: ${OPT_IN_SUITES[name].env} is off` : moved.length ? `  ${moved.join(", ")}` : "  unchanged";
+    rows.push(`  ${name.padEnd(18)} ${String(now.tests ?? "-").padStart(5)} tests${runner}${summary}`);
 }
 console.log(`coverage against the baseline of ${baseline.measured}:\n${rows.join("\n")}`);
 if (problems.length) {

@@ -434,6 +434,11 @@ lost tests fails, one that improved is reported and passes.
   with the reason. The file's `note` says when a re-measure is legitimate.
 - `history` keeps the last 24 overall floors (coverage summed over packages, not averaged, plus the test
   count), newest last, so the report can show the trend without a second file.
+- A package whose coverage depends on a suite that runs only when asked (`OPT_IN_SUITES`: mcp's network
+  suite, switched on by `BITBYBIT_MCP_NETWORK=1`, which only the nightly workflow sets) has its coverage
+  compared only when the switch is on, and then within `slack` percentage points, because that suite
+  skips itself while what it fetches is not published yet. Its test count is always compared, and
+  `--save` with the switch off keeps the coverage recorded with it on.
 
 ## test-report.mjs
 
