@@ -1,6 +1,6 @@
 import type { BitbybitOcctModule } from "@bitbybit-dev/occt/bitbybit-dev-occt/bitbybit-dev-occt";
 import { ShapesHelperService, VectorHelperService, OccHelper, OCCTService, occtDtoRegistry, occtDtoRules, readKernelException } from "@bitbybit-dev/occt";
-import { describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
+import { InputError, describeKernelFailure, prepareKernelCall, setKernelStepSink } from "@bitbybit-dev/base";
 import { CacheHelper } from "./cache-helper";
 import { WorkerMessages, NON_CACHEABLE_FUNCTIONS } from "./constants";
 import { ShapeResolver, ResultSerializer, FunctionPathResolver } from "./shape-resolver";
@@ -241,6 +241,9 @@ export const onMessageInput = (
     let started = "";
 
     try {
+        if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
+            throw new InputError("An OCCT call must name the method it calls, such as shapes.solid.createBox");
+        }
         const { functionName, inputs } = d.action;
         started = functionName;
 

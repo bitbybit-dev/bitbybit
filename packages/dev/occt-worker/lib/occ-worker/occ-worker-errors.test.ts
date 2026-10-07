@@ -199,23 +199,23 @@ describe("what the worker says when a call fails", () => {
             expect(answer().error).toContain("[object Object]");
         });
 
-        it("should name no function when the call named none", () => {
+        it("should refuse a call that names no method as an input", () => {
             // Act
             run({ functionName: "", inputs: { shape: { type: "occ-shape", hash: 999 } } });
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
-        it("should report a call that named no function at all", () => {
+        it("should refuse a call that leaves the method out as an input", () => {
             // Act
             run({ inputs: {} } as { functionName: string; inputs: Record<string, unknown> });
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
-        it("should report a message that carried no action at all", () => {
+        it("should refuse a message that carries no action as an input", () => {
             // Arrange
             const call = { uid: "uid-1" } as DataInput;
 
@@ -223,7 +223,7 @@ describe("what the worker says when a call fails", () => {
             onMessageInput(call, (message: unknown) => messages.push(message));
 
             // Assert
-            expect(answer().error).toContain("OCCT computation failed:");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "An OCCT call must name the method it calls, such as shapes.solid.createBox", errorKind: "input", stack: expect.any(String) });
         });
 
         it("should report a failure that carried no inputs at all", () => {

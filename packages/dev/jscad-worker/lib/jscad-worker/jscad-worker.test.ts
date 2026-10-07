@@ -667,12 +667,28 @@ describe("the worker message loop", () => {
             expect(answer().result).toBeUndefined();
         });
 
-        it("should still answer when the call named no function", () => {
+        it("should refuse a call that names no method as an input", () => {
+            // Act
+            run({ functionName: "", inputs: { size: 1 } });
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A JSCAD call must name the method it calls, such as shapes.cube", errorKind: "input", stack: expect.any(String) });
+        });
+
+        it("should refuse a call that leaves the method out as an input", () => {
             // Act
             run({ inputs: { size: 1 } });
 
             // Assert
-            expect(answer().error).toContain("JSCAD computation failed: ");
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A JSCAD call must name the method it calls, such as shapes.cube", errorKind: "input", stack: expect.any(String) });
+        });
+
+        it("should refuse a message that carries no action as an input", () => {
+            // Act
+            onMessageInput({ uid: "uid-1" } as DataInput, (message: unknown) => answers.push(message));
+
+            // Assert
+            expect(answer()).toEqual({ uid: "uid-1", result: undefined, error: "A JSCAD call must name the method it calls, such as shapes.cube", errorKind: "input", stack: expect.any(String) });
         });
 
         it("should still answer when there are no inputs to repeat", () => {

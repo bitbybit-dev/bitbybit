@@ -1,7 +1,7 @@
 import type { ObjectDefinition } from "./cache-helper";
 import { CacheHelper } from "./cache-helper";
 import { ManifoldService, manifoldDtoRegistry } from "@bitbybit-dev/manifold";
-import { callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
+import { InputError, callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
 
 const CACHE_THRESHOLD = 10000;
 
@@ -103,6 +103,9 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
 
     let result;
     try {
+        if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
+            throw new InputError("A Manifold call must name the method it calls, such as manifold.shapes.cube");
+        }
         if (!WORKER_COMMANDS.has(d.action.functionName)) {
             result = executeStandardFunction(d.action);
         }

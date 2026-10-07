@@ -1,6 +1,6 @@
 import { CacheHelper } from "./cache-helper";
 import { Jscad, jscadDtoRegistry, jscadDtoRules } from "@bitbybit-dev/jscad";
-import { callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
+import { InputError, callByPath, describeKernelFailure, prepareKernelCall, rehydrateReferences } from "@bitbybit-dev/base";
 
 const CACHE_THRESHOLD = 10000;
 
@@ -73,6 +73,9 @@ export const onMessageInput = (d: DataInput, postMessage: (message: unknown) => 
 
     let result;
     try {
+        if (typeof d.action?.functionName !== "string" || d.action.functionName === "") {
+            throw new InputError("A JSCAD call must name the method it calls, such as shapes.cube");
+        }
         if (d.action.functionName === "startedTheRun") {
             if (cacheHelper && Object.keys(cacheHelper.usedHashes).length > CACHE_THRESHOLD) {
                 cacheHelper.cleanAllCache();
