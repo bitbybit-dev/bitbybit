@@ -12,7 +12,8 @@ const UNCOUNTED = new Set(["Furniture", "Equipment"]);
 const MAX_NESTING = 64;
 
 function pluralOf(words: string): string {
-    const last = words.split(" ").at(-1) ?? words;
+    const parts = words.split(" ");
+    const last = parts[parts.length - 1] ?? words;
     if (UNCOUNTED.has(last.charAt(0).toUpperCase() + last.slice(1))) {
         return words;
     }
